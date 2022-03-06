@@ -9,7 +9,7 @@
       </template>
       <v-card>
         <v-card-title>
-          <span class="text-h5">New Place Type</span>
+          <span class="text-h5">New Purpose</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -21,7 +21,7 @@
                   v-model="valid"
                 >
                   <v-text-field
-                    label="Place Name"
+                    label="Purpose"
                     v-model="input"
                     :rules="generalRules"
                   ></v-text-field>

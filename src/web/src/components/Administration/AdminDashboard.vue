@@ -9,9 +9,7 @@
                     <v-card
                     elevation="1">
                         <v-toolbar
-                            color="grey"
-                            dark
-                            flat
+
                             >
 
                             <v-toolbar-title>Administration</v-toolbar-title>
@@ -35,16 +33,36 @@
                 </v-col>
              <v-col
                 cols="6"
-                >
+                > 
+            <v-card elevation="1">
+           <v-toolbar>
+            <v-toolbar-title>Rates and Estimate Management</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-list class="pb-0 pt-0">
+            <v-list-item-group v-model="estimatemodel">
+              <v-list-item
+                v-for="(item, i) in items"
+                :key="i"
+                @click="goTo(item.url)"
+              >
+                <v-list-item-icon>
+                  <v-icon v-text="item.icon"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.text"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>                 
+                </v-toolbar>
+            
+            </v-card>
                     <v-card
                     elevation="1">
                          <v-toolbar
-                            color="grey"
-                            dark
-                            flat
                             >
 
-                            <v-toolbar-title>Look-up Table Managment</v-toolbar-title>
+                            <v-toolbar-title>Look-up Table Management</v-toolbar-title>
 
                             <v-spacer></v-spacer>
 
@@ -52,15 +70,15 @@
                         <v-list class="pb-0 pt-0">
                         <v-list-item-group v-model="tablemodel" >
                             <v-list-item
-                            v-for="(item, i) in items"
+                            v-for="(lookup, i) in lookups"
                             :key="i"
-                            @click="goTo(item.url)"
+                            @click="goTo(lookup.url)"
                             >
                             <v-list-item-icon>
-                                <v-icon v-text="item.icon"></v-icon>
+                                <v-icon v-text="lookup.icon"></v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
-                                <v-list-item-title v-text="item.text"></v-list-item-title>
+                                <v-list-item-title v-text="lookup.text"></v-list-item-title>
                             </v-list-item-content>
                             </v-list-item>
                         </v-list-item-group>
@@ -82,59 +100,38 @@ export default {
         icon: null,
         usermodel: null,
         tablemodel: null,
-        items: [
-        {
-          icon: 'mdi-ferry',
-          text: 'Boats - Vessel Type',
-          url: "/admin/vessel_type"
-        },
-        {
-          icon: 'mdi-wrench',
-          text: 'Burials - Occupations',
-          url: "/admin/burials/occupations"
-        },
-        {
-          icon: 'mdi-wallet-membership',
-          text: 'Burials - Memberships',
-          url: "/admin/burials/memberships"
-        },
-        {
-          icon: 'mdi-database',
-          text: 'Burials - Cementeries',
-          url: "/admin/burials/cementeries"
-        },
-        {
-          icon: 'mdi-shape',
-          text: 'Burials - Religions',
-          url: "/admin/burials/religions"
-        },
-        {
-          icon: 'mdi-bug',
-          text: 'Burials - Causes',
-          url: "/admin/burials/causes"
-        },
-        {
-          icon: 'mdi-camera',
-          text: 'Photos - Owner',
-          url: ""
-        },
-        {
-          icon: 'mdi-map-marker-multiple',
-          text: 'Community',
-          url: ""
-        },
-        {
-          icon: 'mdi-run',
-          text: 'Contributing Resources',
-          url: ""
-        },
-        {
-          icon: 'mdi-map',
-          text: 'Place Type',
-          url: "/admin/placetype"
-        },
-        
-      ],
+        estimatemodel: null,
+   items: [
+
+      {
+        icon: "mdi-wallet-membership",
+        text: "Flight Estimate",
+        url: "/admin/AirEstimate",
+      },
+      {
+        icon: "mdi-database",
+        text: "Pool Car Costs",
+        url: "/admin/PoolCarCost",
+      },
+      {
+        icon: "mdi-shape",
+        text: "Rental Car Estimate",
+        url: "/admin/RentalCarEstimate",
+      },
+      {
+        icon: "mdi-bug",
+        text: "YG Rates",
+        url: "/admin/YGRates",
+      },
+    ],
+        lookups: [
+
+      {
+        icon: "mdi-wallet-membership",
+        text: "Purpose",
+        url: "/admin/Purpose",
+      },
+    ],
       model: 1,
     }),
     methods:{

@@ -37,15 +37,16 @@ import BoatsGrid from "../components/Boats/Grid/Boats";
 import OwnerGrid from "../components/Boats/Grid/Owner";
 import BoatsForm from "../components/Boats/BoatsComponents/Boat/BoatsForm";
 import BoatsOwnerForm from "../components/Boats/BoatsComponents/Owner/OwnerForm";
-import AirplaneGrid from "../components/AirplaneCrashes/Grid";
-import AirplaneViewForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
-import AirplaneEditForm from "../components/AirplaneCrashes/AirplaneComponents/AirplaneForm";
 import AdminDashboard from "../components/Administration/AdminDashboard";
 import AdminUserGrid from "../components/Administration/UserManagement/Grid";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
-import VesselTypeGrid from "../components/Administration/LookupTableManagement/VesselType/VesselType";
 import BurialsGrid from "../components/Burials/Grid";
 import BurialsForm from "../components/Burials/BurialsComponents/Form";
+import PoolCarCost from "../components/Administration/RatesEstimateManagement/PoolCarCost";
+import Purpose from "../components/Administration/LookupTableManagement/Purpose";
+import AirEstimate from "../components/Administration/RatesEstimateManagement/AirEstimate";
+import YGRates from "../components/Administration/RatesEstimateManagement/YGRates";
+import TravelRequest from "../components/TravelRequest/TravelRequest";
 
 Vue.use(VueRouter);
 
@@ -332,29 +333,6 @@ const routes = [
     component: BoatsOwnerForm
   },
   {
-    path: "/airplane",
-    name: "airplane",
-    component: AirplaneGrid
-  },
-  {
-    path: "/airplane/view/:name",
-    name: "airplaneView",
-    component: AirplaneViewForm,
-    props: true
-  },
-  {
-    path: "/airplane/edit/:name",
-    name: "airplaneEditView",
-    component: AirplaneEditForm,
-    props: true
-  },
-  {
-    path: "/airplane/New",
-    name: "airplaneAddView",
-    component: AirplaneEditForm,
-    props: true
-  },
-  {
     path: "/admin",
     name: "AdminDashboard",
     component: AdminDashboard,
@@ -373,11 +351,6 @@ const routes = [
     path: "/admin/users/edit/:id",
     name: "AdminUserEdit",
     component: AdminUserForm
-  },
-  {
-    path: "/admin/vessel_type",
-    name: "VesselTypeGrid",
-    component: VesselTypeGrid
   },
   {
     path: "/burials",
@@ -400,6 +373,31 @@ const routes = [
     path: "*",
     name: "Not Found",
     component: NotFound
+  },
+  {
+    path: "/admin/PoolCarCost",
+    name: "Pool Car Cost",
+    component: PoolCarCost
+  },
+  {
+    path: "/admin/Purpose",
+    name: "Purpose",
+    component: Purpose
+  },
+  {
+    path: "/admin/AirEstimate",
+    name: "AirEstimate",
+    component: AirEstimate
+  },
+  {
+    path: "/admin/YGRates",
+    name: "YGRates",
+    component: YGRates
+  },
+  {
+    path: "/TravelRequest/request",
+    name: "TravelRequest",
+    component: TravelRequest
   }
 ];
 
