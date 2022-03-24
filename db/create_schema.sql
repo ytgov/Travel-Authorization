@@ -1,997 +1,575 @@
+drop table IF EXISTS Travel.Docs;
+drop table IF EXISTS Travel.RecieptBackup;
+drop Table IF EXISTS Travel.Expense;
+drop table IF EXISTS Travel.Advance;
+drop table IF EXISTS Travel.CostEstimate;
+drop table IF EXISTS Travel.Carryout;
+drop table IF EXISTS Travel.Approve;
+drop table IF EXISTS Travel.FlightRequest;
+drop table IF EXISTS Travel.Stops;
+drop table IF EXISTS Travel.Auth;
+drop table IF EXISTS Travel.PreAppDoc;
+drop table IF EXISTS Travel.PreAppEmployee;
+drop Table IF EXISTS Travel.PreApprove;
+drop Table IF EXISTS Travel.Purpose;
+drop table IF EXISTS Travel.FlightEstimateLookup;
+drop table IF EXISTS Travel.RentalCarLookup;
+drop table IF EXISTS Travel.PoolCarLookup;
+drop table IF EXISTS Travel.PurposeLookup;
+drop table IF EXISTS Travel.user;
+drop table IF EXISTS Travel.destination;
 
 
-CREATE DATABASE [YHSI_Prod]
-GO
 
-USE [YHSI_Prod]
-GO
-/****** Object:  Table [dbo].[Association]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Association](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[Type] [int] NOT NULL,
-	[Description] [nvarchar](256) NULL,
- CONSTRAINT [PK_Association] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[batch_temp]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[batch_temp](
-	[image_id] [int] NOT NULL,
-	[batch_info] [nvarchar](100) NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Community]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Community](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](256) NOT NULL,
- CONSTRAINT [PK_Comunity] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[ConstructionPeriod]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ConstructionPeriod](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[Type] [int] NOT NULL,
- CONSTRAINT [PK_ConstructionPeriod] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Contact]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Contact](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[FirstName] [nvarchar](256) NULL,
-	[LastName] [nvarchar](256) NULL,
-	[PhoneNumber] [nvarchar](256) NULL,
-	[Email] [nvarchar](256) NULL,
-	[MailingAddress] [nvarchar](256) NULL,
-	[Description] [nvarchar](256) NULL,
-	[ContactType] [int] NOT NULL,
- CONSTRAINT [PK_Contact] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Dates]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Dates](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[Type] [int] NOT NULL,
-	[FromDate] [nvarchar](256) NULL,
-	[ToDate] [nvarchar](256) NULL,
-	[Details] [nvarchar](256) NULL,
- CONSTRAINT [PK_Dates] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Description]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Description](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[DescriptionText] [nvarchar](max) NULL,
-	[Type] [int] NOT NULL,
- CONSTRAINT [PK_Description] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Existing_Photos]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Existing_Photos](
-	[RowId] [uniqueidentifier] NOT NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[FirstNation]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[FirstNation](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Description] [nvarchar](256) NULL,
- CONSTRAINT [PK_FirstNation] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[FirstNationAssociation]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[FirstNationAssociation](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[FirstNationId] [int] NOT NULL,
-	[FirstNationAssociationType] [int] NOT NULL,
-	[Comments] [nvarchar](max) NULL,
- CONSTRAINT [PK_FirstNationAssociation] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[FunctionalType]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[FunctionalType](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Description] [nvarchar](256) NULL,
- CONSTRAINT [PK_FunctionalType] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[FunctionalUse]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[FunctionalUse](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[FunctionalTypeId] [int] NOT NULL,
-	[FunctionalUseType] [int] NOT NULL,
-	[Description] [nvarchar](256) NULL,
- CONSTRAINT [PK_FunctionalUse] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[HistoricalPattern]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[HistoricalPattern](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[Comments] [nvarchar](max) NULL,
-	[HistoricalPatternType] [int] NOT NULL,
- CONSTRAINT [PK_HistoricalPattern] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[HSUser]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[HSUser](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[UserId] [int] NOT NULL,
-	[ExpirationDate] [datetime] NULL,
- CONSTRAINT [PK_HSUser] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[HSUserAccess]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[HSUserAccess](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[UserId] [int] NOT NULL,
-	[AccessType] [int] NOT NULL,
-	[AccessText] [nvarchar](150) NOT NULL,
- CONSTRAINT [PK_UserAccess] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ibbit_Content]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ibbit_Content](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Format] [int] NOT NULL,
-	[Version] [int] NOT NULL,
-	[Body] [nvarchar](max) NOT NULL,
-	[IsPublished] [bit] NULL,
- CONSTRAINT [PK_Ibbit_TextContent] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ibbit_Control]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ibbit_Control](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](200) NOT NULL,
-	[Description] [nvarchar](2000) NULL,
-	[Path] [nvarchar](500) NOT NULL,
- CONSTRAINT [PK_Ibbit_Control] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ibbit_Endpoint]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ibbit_Endpoint](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Url] [nvarchar](500) NULL,
-	[IsHome] [bit] NOT NULL,
-	[ExtensionType] [nvarchar](500) NULL,
-	[ParentId] [int] NULL,
- CONSTRAINT [PK_Page] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ibbit_PageLayout]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ibbit_PageLayout](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](150) NOT NULL,
-	[FilePath] [nvarchar](300) NOT NULL,
- CONSTRAINT [PK_Ibbit_PageLayout] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ibbit_PageRevision]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ibbit_PageRevision](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[EndpointId] [int] NOT NULL,
-	[CreateUserId] [int] NOT NULL,
-	[Version] [int] NOT NULL,
-	[CreateDate] [datetime] NOT NULL,
-	[Title] [nvarchar](500) NOT NULL,
-	[LayoutId] [int] NOT NULL,
-	[Keywords] [nvarchar](1000) NULL,
-	[Status] [int] NOT NULL,
-	[ContentItemDetail] [nvarchar](max) NULL,
-	[PublishDate] [datetime] NULL,
- CONSTRAINT [PK_Ibbit_PageRevision] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ibbit_User]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ibbit_User](
-	[UserId] [int] IDENTITY(1,1) NOT NULL,
-	[Email] [nvarchar](max) NOT NULL,
-	[FirstName] [nvarchar](max) NULL,
-	[LastName] [nvarchar](max) NULL,
-	[CreateDate] [datetime] NOT NULL,
-	[LastLogin] [datetime] NOT NULL,
-	[Status] [int] NOT NULL,
- CONSTRAINT [PK_dbo.Ibbit_User] PRIMARY KEY CLUSTERED 
-(
-	[UserId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ibbit_UserSession]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ibbit_UserSession](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[UserId] [int] NOT NULL,
-	[SessionId] [nvarchar](50) NOT NULL,
-	[LoginDate] [datetime] NOT NULL,
-	[ExpirationDate] [datetime] NOT NULL,
-	[IsKilled] [bit] NOT NULL,
- CONSTRAINT [PK_Ibbit_UserSession] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Name]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Name](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[Description] [nvarchar](256) NULL,
- CONSTRAINT [PK_Name] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[OriginalMedia]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[OriginalMedia](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Type] [nvarchar](256) NOT NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Ownership]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Ownership](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[OwnershipType] [int] NOT NULL,
-	[Comments] [nvarchar](256) NULL,
- CONSTRAINT [PK_Ownership] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PhotoOwner]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PhotoOwner](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](256) NULL,
-	[Email] [nvarchar](256) NULL,
-	[Address] [nvarchar](256) NULL,
-	[Telephone] [nvarchar](256) NULL,
-	[ContactPerson] [nvarchar](256) NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PhotoProject]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PhotoProject](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](256) NULL,
-	[Permit] [nvarchar](256) NULL,
-	[Year] [nvarchar](256) NULL,
-	[Section] [int] NOT NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Place]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Place](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PrimaryName] [nvarchar](700) NOT NULL,
-	[YHSIId] [nvarchar](20) NOT NULL,
-	[Jurisdiction] [int] NOT NULL,
-	[StatuteId] [int] NOT NULL,
-	[Statute2Id] [int] NOT NULL,
-	[RecognitionDate] [date] NULL,
-	[OwnerConsent] [int] NOT NULL,
-	[Category] [int] NOT NULL,
-	[IsPubliclyAccessible] [bit] NOT NULL,
-	[NTSMapSheet] [nvarchar](256) NULL,
-	[BordenNumber] [nvarchar](256) NULL,
-	[Geocode] [nvarchar](256) NULL,
-	[HectareArea] [nvarchar](256) NULL,
-	[Latitude] [nvarchar](256) NULL,
-	[Longitude] [nvarchar](256) NULL,
-	[LocationComment] [nvarchar](256) NULL,
-	[ResourceType] [nvarchar](256) NULL,
-	[BuildingSize] [nvarchar](256) NULL,
-	[ConditionComment] [nvarchar](max) NULL,
-	[CurrentUseComment] [nvarchar](256) NULL,
-	[YHSPastUse] [nvarchar](256) NULL,
-	[CIHBNumber] [nvarchar](256) NULL,
-	[GroupYHSI] [nvarchar](256) NULL,
-	[YGBuildingNumber] [nvarchar](256) NULL,
-	[YGReserveNumber] [nvarchar](256) NULL,
-	[FHBRONumber] [nvarchar](256) NULL,
-	[Zoning] [nvarchar](256) NULL,
-	[TownSiteMapNumber] [nvarchar](256) NULL,
-	[SiteDistrictNumber] [nvarchar](256) NULL,
-	[PlanNumber] [nvarchar](256) NULL,
-	[Block] [nvarchar](256) NULL,
-	[Lot] [nvarchar](256) NULL,
-	[SlideNegativeIndex] [nvarchar](max) NULL,
-	[OtherCommunity] [nvarchar](256) NULL,
-	[OtherLocality] [nvarchar](256) NULL,
-	[PreviousAddress] [nvarchar](500) NULL,
-	[YHSThemes] [nvarchar](max) NULL,
-	[RollNumber] [nvarchar](256) NULL,
-	[LocationContext] [nvarchar](max) NULL,
-	[CommunityId] [int] NOT NULL,
-	[LAGroup] [nvarchar](256) NULL,
-	[SiteStatus] [int] NOT NULL,
-	[FloorCondition] [int] NOT NULL,
-	[WallCondition] [int] NOT NULL,
-	[DoorCondition] [int] NOT NULL,
-	[RoofCondition] [int] NOT NULL,
-	[CoordinateDetermination] [int] NOT NULL,
-	[PhysicalAddress] [nvarchar](500) NULL,
-	[PhysicalProvince] [nvarchar](256) NULL,
-	[PhysicalCountry] [nvarchar](256) NULL,
-	[PhysicalPostalCode] [nvarchar](256) NULL,
-	[MailingAddress] [nvarchar](500) NULL,
-	[MailingProvince] [nvarchar](256) NULL,
-	[MailingCountry] [nvarchar](256) NULL,
-	[MailingPostalCode] [nvarchar](256) NULL,
-	[ShowInRegister] [bit] NOT NULL,
-	[SiteCategories] [nvarchar](500) NULL,
-	[Designations] [nvarchar](500) NULL,
-	[ContributingResources] [nvarchar](500) NULL,
-	[Records] [nvarchar](500) NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PlaceEdit]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PlaceEdit](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PrimaryName] [nvarchar](700) NOT NULL,
-	[YHSIId] [nvarchar](20) NOT NULL,
-	[Jurisdiction] [int] NOT NULL,
-	[StatuteId] [int] NOT NULL,
-	[Statute2Id] [int] NOT NULL,
-	[RecognitionDate] [date] NULL,
-	[OwnerConsent] [int] NOT NULL,
-	[Category] [int] NOT NULL,
-	[IsPubliclyAccessible] [bit] NOT NULL,
-	[NTSMapSheet] [nvarchar](256) NULL,
-	[BordenNumber] [nvarchar](256) NULL,
-	[Geocode] [nvarchar](256) NULL,
-	[HectareArea] [nvarchar](256) NULL,
-	[Latitude] [nvarchar](256) NULL,
-	[Longitude] [nvarchar](256) NULL,
-	[LocationComment] [nvarchar](256) NULL,
-	[ResourceType] [nvarchar](256) NULL,
-	[BuildingSize] [nvarchar](256) NULL,
-	[ConditionComment] [nvarchar](max) NULL,
-	[CurrentUseComment] [nvarchar](256) NULL,
-	[YHSPastUse] [nvarchar](256) NULL,
-	[CIHBNumber] [nvarchar](256) NULL,
-	[GroupYHSI] [nvarchar](256) NULL,
-	[YGBuildingNumber] [nvarchar](256) NULL,
-	[YGReserveNumber] [nvarchar](256) NULL,
-	[FHBRONumber] [nvarchar](256) NULL,
-	[Zoning] [nvarchar](256) NULL,
-	[TownSiteMapNumber] [nvarchar](256) NULL,
-	[SiteDistrictNumber] [nvarchar](256) NULL,
-	[PlanNumber] [nvarchar](256) NULL,
-	[Block] [nvarchar](256) NULL,
-	[Lot] [nvarchar](256) NULL,
-	[SlideNegativeIndex] [nvarchar](max) NULL,
-	[OtherCommunity] [nvarchar](256) NULL,
-	[OtherLocality] [nvarchar](256) NULL,
-	[PreviousAddress] [nvarchar](500) NULL,
-	[YHSThemes] [nvarchar](max) NULL,
-	[RollNumber] [nvarchar](256) NULL,
-	[LocationContext] [nvarchar](max) NULL,
-	[CommunityId] [int] NOT NULL,
-	[LAGroup] [nvarchar](256) NULL,
-	[SiteStatus] [int] NOT NULL,
-	[FloorCondition] [int] NOT NULL,
-	[WallCondition] [int] NOT NULL,
-	[DoorCondition] [int] NOT NULL,
-	[RoofCondition] [int] NOT NULL,
-	[CoordinateDetermination] [int] NOT NULL,
-	[PhysicalAddress] [nvarchar](500) NULL,
-	[PhysicalProvince] [nvarchar](256) NULL,
-	[PhysicalCountry] [nvarchar](256) NULL,
-	[PhysicalPostalCode] [nvarchar](256) NULL,
-	[MailingAddress] [nvarchar](500) NULL,
-	[MailingProvince] [nvarchar](256) NULL,
-	[MailingCountry] [nvarchar](256) NULL,
-	[MailingPostalCode] [nvarchar](256) NULL,
-	[EditorUserId] [int] NOT NULL,
-	[EditDate] [date] NULL,
-	[AssociationJSON] [nvarchar](max) NULL,
-	[ConstructionPeriodJSON] [nvarchar](max) NULL,
-	[ContactJSON] [nvarchar](max) NULL,
-	[ContributingResourceJSON] [nvarchar](max) NULL,
-	[DatesJSON] [nvarchar](max) NULL,
-	[DescriptionJSON] [nvarchar](max) NULL,
-	[FirstNationAssociationJSON] [nvarchar](max) NULL,
-	[FunctionalUseJSON] [nvarchar](max) NULL,
-	[HistoricalPatternJSON] [nvarchar](max) NULL,
-	[NameJSON] [nvarchar](max) NULL,
-	[PreviousOwnershipJSON] [nvarchar](max) NULL,
-	[RecordJSON] [nvarchar](max) NULL,
-	[RevisionLogJSON] [nvarchar](max) NULL,
-	[SiteCategoryJSON] [nvarchar](max) NULL,
-	[ThemeJSON] [nvarchar](max) NULL,
-	[WebLinkJSON] [nvarchar](max) NULL,
-	[PlaceId] [int] NULL,
-	[ShowInRegister] [bit] NOT NULL,
-	[OwnershipJSON] [nvarchar](max) NULL,
-	[SiteCategories] [nvarchar](500) NULL,
-	[Designations] [nvarchar](500) NULL,
-	[ContributingResources] [nvarchar](500) NULL,
-	[Records] [nvarchar](500) NULL,
- CONSTRAINT [PK_PlaceEdit] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [UX_PlaceEdit_PlaceId] UNIQUE NONCLUSTERED 
-(
-	[PlaceId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PlaceTheme]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PlaceTheme](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Category] [nvarchar](100) NOT NULL,
-	[Type] [nvarchar](100) NOT NULL,
- CONSTRAINT [PK_PlaceTheme] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PreviousOwnership]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PreviousOwnership](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[OwnershipNumber] [nvarchar](256) NULL,
-	[OwnershipName] [nvarchar](256) NULL,
-	[OwnershipDate] [nvarchar](200) NULL,
- CONSTRAINT [PK_PreviousOwnership] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Prod_Photo_List]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Prod_Photo_List](
-	[Id] [int] NULL,
-	[OriginalFileName] [nvarchar](256) NULL,
-	[FeatureName] [nvarchar](600) NULL,
-	[YHSIRecord] [nvarchar](20) NULL,
-	[IsComplete] [bit] NOT NULL,
-	[PhotoProjectId] [int] NOT NULL,
-	[OriginalMediaId] [int] NOT NULL,
-	[CommunityId] [int] NOT NULL,
-	[PlaceId] [int] NULL,
-	[OwnerId] [int] NOT NULL,
-	[Subjects] [varchar](500) NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[RevisionLog]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[RevisionLog](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[RevisionLogType] [int] NOT NULL,
-	[RevisionDate] [nvarchar](50) NULL,
-	[RevisedBy] [nvarchar](256) NULL,
-	[Details] [nvarchar](256) NULL,
- CONSTRAINT [PK_RevisionLog] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[SavedFilter]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[SavedFilter](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[UserId] [int] NOT NULL,
-	[Name] [nvarchar](100) NOT NULL,
-	[ResultType] [nvarchar](50) NOT NULL,
-	[Value] [nvarchar](2000) NULL,
- CONSTRAINT [PK_SavedFilter] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Site_Status_CD]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Site_Status_CD](
-	[Site_Status_ID] [int] NULL,
-	[Code] [int] NULL,
-	[Description] [varchar](100) NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[SiteImage]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[SiteImage](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NULL,
-	[ImageTypeId] [int] NULL,
-	[Caption] [nvarchar](256) NULL,
-	[ImageDescription] [nvarchar](256) NULL,
-	[FileName] [nvarchar](256) NULL,
-	[Copyright] [nvarchar](256) NULL,
-	[FileLocation] [nvarchar](256) NULL,
-	[ImagePath] [nvarchar](256) NULL,
-	[ThumbnailPath] [nvarchar](256) NULL,
-	[IsPrimary] [bit] NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Statute]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Statute](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[RecognitionAuthority] [nvarchar](256) NULL,
-	[RecognitionType] [nvarchar](256) NULL,
-	[Description] [nvarchar](256) NULL,
-	[AllStatute] [nvarchar](256) NULL,
- CONSTRAINT [PK_Statute] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Theme]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Theme](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[PlaceThemeId] [int] NOT NULL
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[WebLink]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[WebLink](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlaceId] [int] NOT NULL,
-	[Type] [int] NOT NULL,
-	[Address] [nvarchar](256) NULL,
- CONSTRAINT [PK_WebLink] PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[webpages_OAuthMembership]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[webpages_OAuthMembership](
-	[Provider] [nvarchar](30) NOT NULL,
-	[ProviderUserId] [nvarchar](100) NOT NULL,
-	[UserId] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[Provider] ASC,
-	[ProviderUserId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[webpages_Roles]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[webpages_Roles](
-	[RoleId] [int] IDENTITY(1,1) NOT NULL,
-	[RoleName] [nvarchar](256) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[RoleId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
-UNIQUE NONCLUSTERED 
-(
-	[RoleName] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[webpages_UsersInRoles]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[webpages_UsersInRoles](
-	[UserId] [int] NOT NULL,
-	[RoleId] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[UserId] ASC,
-	[RoleId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[YHS_PhotoBatch]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[YHS_PhotoBatch](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Name] [nvarchar](100) NOT NULL,
-	[UserId] [int] NOT NULL,
-	[CreateDate] [datetime] NULL,
-	[PlaceId] [int] NULL,
-	[CommunityId] [int] NOT NULL,
-	[NTSMapNumber] [nvarchar](20) NULL,
-	[Address] [nvarchar](600) NULL,
-	[YHSIRecord] [nvarchar](20) NULL,
-	[BordenRecord] [nvarchar](20) NULL,
-	[PaleoRecord] [nvarchar](20) NULL,
-	[ArchivalRecord] [nvarchar](20) NULL,
-	[IsOtherRecord] [bit] NOT NULL,
-	[OriginalMediaId] [int] NOT NULL,
-	[OriginalRecord] [nvarchar](256) NULL,
-	[MediaStorage] [int] NOT NULL,
-	[Comments] [nvarchar](max) NULL,
-	[Caption] [nvarchar](256) NULL,
-	[Copyright] [int] NOT NULL,
-	[CreditLine] [nvarchar](256) NULL,
-	[OwnerId] [int] NOT NULL,
-	[PhotoProjectId] [int] NOT NULL,
-	[Program] [int] NOT NULL,
-	[Creator] [nvarchar](256) NULL,
-	[CommunityName] [nvarchar](256) NULL,
-	[Location] [nvarchar](256) NULL,
-	[UsageRights] [int] NULL,
-	[IsComplete] [bit] NOT NULL,
-	[Subjects] [varchar](500) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[YHS_PhotoBatchPhoto]    Script Date: 2021-01-05 11:23:53 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[YHS_PhotoBatchPhoto](
-	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PhotoBatchId] [int] NOT NULL,
-	[PhotoFile] [varbinary](max) NULL,
-	[PhotoFileName] [nvarchar](200) NOT NULL,
-	[PhotoContentType] [nvarchar](100) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-ALTER TABLE [dbo].[webpages_UsersInRoles]  WITH CHECK ADD  CONSTRAINT [fk_RoleId] FOREIGN KEY([RoleId])
-REFERENCES [dbo].[webpages_Roles] ([RoleId])
-GO
-ALTER TABLE [dbo].[webpages_UsersInRoles] CHECK CONSTRAINT [fk_RoleId]
-GO
-ALTER TABLE [dbo].[webpages_UsersInRoles]  WITH CHECK ADD  CONSTRAINT [fk_UserId] FOREIGN KEY([UserId])
-REFERENCES [dbo].[Ibbit_User] ([UserId])
-GO
-ALTER TABLE [dbo].[webpages_UsersInRoles] CHECK CONSTRAINT [fk_UserId]
-GO
 
--- delivered by Swarna
-CREATE TABLE [dbo].[Photo](
-	[RowId] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
-	[Id] [int] NULL,
-	[PlaceId] [int] NULL,
-	[File] [varbinary](max)  NULL,
-	[OriginalFileName] [nvarchar](256) NULL,
-	[FeatureName] [nvarchar](600) NULL,
-	[CommunityId] [int] NOT NULL,
-	[NTSMapNumber] [nvarchar](20) NULL,
-	[Address] [nvarchar](600) NULL,
-	[DateCreated] [date] NULL,
-	[YHSIRecord] [nvarchar](20) NULL,
-	[BordenRecord] [nvarchar](20) NULL,
-	[PaleoRecord] [nvarchar](20) NULL,
-	[ArchivalRecord] [nvarchar](20) NULL,
-	[IsOtherRecord] [bit] NOT NULL,
-	[OriginalMediaId] [int] NOT NULL,
-	[OriginalRecord] [nvarchar](256) NULL,
-	[MediaStorage] [int] NOT NULL,
-	[Comments] [nvarchar](max) NULL,
-	[Caption] [nvarchar](256) NULL,
-	[Copyright] [int] NOT NULL,
-	[CreditLine] [nvarchar](256) NULL,
-	[OwnerId] [int] NOT NULL,
-	[PhotoProjectId] [int] NOT NULL,
-	[Program] [int] NOT NULL,
-	[Creator] [nvarchar](256) NULL,
-	[CommunityName] [nvarchar](256) NULL,
-	[Location] [nvarchar](256) NULL,
-	[UsageRights] [int] NULL,
-	[IsComplete] [bit] NOT NULL,
-	[ImageHeight] [int] NULL,
-	[ImageWidth] [int] NULL,
-	[Rating] [int] NOT NULL,
-	[Subjects] [varchar](500) NULL,
-	[LegacyBatchInfo] [nvarchar](150) NULL,
-	[IsSiteDefault] [bit] NOT NULL,
- CONSTRAINT [PK_Image] PRIMARY KEY CLUSTERED 
-(
-	[RowId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
-) 
-GO
+---CREATE TABLES
+CREATE TABLE Travel.user (
+	id smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	email varchar(200) NOT NULL,
+	is_active bit NOT NULL DEFAULT ('1'),
+	first_name varchar(100) NOT NULL,
+	last_name varchar(100) NOT NULL,
+	roles varchar(1000),
+	create_date timestamp NOT NULL DEFAULT (NOW())
+);
 
-ALTER TABLE [dbo].[Photo] ADD  DEFAULT (newid()) FOR [RowId]
-GO
 
-ALTER TABLE [dbo].[Photo] ADD  DEFAULT ((0)) FOR [UsageRights]
-GO
+CREATE TABLE Travel.destination (
+	DestinationID smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	province varchar(5) NOT NULL,
+	city varchar(50) NOT NULL
+);
 
-ALTER TABLE [dbo].[Photo] ADD  CONSTRAINT [DF_Photo_Rating]  DEFAULT ((1)) FOR [Rating]
-GO
+insert into Travel.destination(province, city) values ('AB','Airdrie');
+insert into Travel.destination(province, city) values ('AB','Grande Prairie');
+insert into Travel.destination(province, city) values ('AB','Red Deer');
+insert into Travel.destination(province, city) values ('AB','Beaumont');
+insert into Travel.destination(province, city) values ('AB','Hanna');
+insert into Travel.destination(province, city) values ('AB','St. Albert');
+insert into Travel.destination(province, city) values ('AB','Bonnyville');
+insert into Travel.destination(province, city) values ('AB','Hinton');
+insert into Travel.destination(province, city) values ('AB','Spruce Grove');
+insert into Travel.destination(province, city) values ('AB','Brazeau');
+insert into Travel.destination(province, city) values ('AB','Irricana');
+insert into Travel.destination(province, city) values ('AB','Strathcona County');
+insert into Travel.destination(province, city) values ('AB','Breton');
+insert into Travel.destination(province, city) values ('AB','Lacombe');
+insert into Travel.destination(province, city) values ('AB','Strathmore');
+insert into Travel.destination(province, city) values ('AB','Calgary');
+insert into Travel.destination(province, city) values ('AB','Leduc');
+insert into Travel.destination(province, city) values ('AB','Sylvan Lake');
+insert into Travel.destination(province, city) values ('AB','Camrose');
+insert into Travel.destination(province, city) values ('AB','Lethbridge');
+insert into Travel.destination(province, city) values ('AB','Swan Hills');
+insert into Travel.destination(province, city) values ('AB','Canmore');
+insert into Travel.destination(province, city) values ('AB','McLennan');
+insert into Travel.destination(province, city) values ('AB','Taber');
+insert into Travel.destination(province, city) values ('AB','Didzbury');
+insert into Travel.destination(province, city) values ('AB','Medicine Hat');
+insert into Travel.destination(province, city) values ('AB','Turner Valley');
+insert into Travel.destination(province, city) values ('AB','Drayton Valley');
+insert into Travel.destination(province, city) values ('AB','Olds');
+insert into Travel.destination(province, city) values ('AB','Vermillion');
+insert into Travel.destination(province, city) values ('AB','Edmonton');
+insert into Travel.destination(province, city) values ('AB','Onoway');
+insert into Travel.destination(province, city) values ('AB','Wood Buffalo');
+insert into Travel.destination(province, city) values ('AB','Ft. SK');
+insert into Travel.destination(province, city) values ('AB','Provost');
+insert into Travel.destination(province, city) values ('BC','Burnaby');
+insert into Travel.destination(province, city) values ('BC','Lumby');
+insert into Travel.destination(province, city) values ('BC','City of Port Moody');
+insert into Travel.destination(province, city) values ('BC','Cache Creek');
+insert into Travel.destination(province, city) values ('BC','Maple Ridge');
+insert into Travel.destination(province, city) values ('BC','Prince George');
+insert into Travel.destination(province, city) values ('BC','Castlegar');
+insert into Travel.destination(province, city) values ('BC','Merritt');
+insert into Travel.destination(province, city) values ('BC','Prince Rupert');
+insert into Travel.destination(province, city) values ('BC','Chemainus');
+insert into Travel.destination(province, city) values ('BC','Mission');
+insert into Travel.destination(province, city) values ('BC','Richmond');
+insert into Travel.destination(province, city) values ('BC','Chilliwack');
+insert into Travel.destination(province, city) values ('BC','Nanaimo');
+insert into Travel.destination(province, city) values ('BC','Saanich');
+insert into Travel.destination(province, city) values ('BC','Clearwater');
+insert into Travel.destination(province, city) values ('BC','Nelson');
+insert into Travel.destination(province, city) values ('BC','Sooke');
+insert into Travel.destination(province, city) values ('BC','Colwood');
+insert into Travel.destination(province, city) values ('BC','New Westminster');
+insert into Travel.destination(province, city) values ('BC','Sparwood');
+insert into Travel.destination(province, city) values ('BC','Coquitlam');
+insert into Travel.destination(province, city) values ('BC','North Cowichan');
+insert into Travel.destination(province, city) values ('BC','Surrey');
+insert into Travel.destination(province, city) values ('BC','Cranbrook');
+insert into Travel.destination(province, city) values ('BC','North Vancouver');
+insert into Travel.destination(province, city) values ('BC','Terrace');
+insert into Travel.destination(province, city) values ('BC','Dawson Creek');
+insert into Travel.destination(province, city) values ('BC','North Vancouver');
+insert into Travel.destination(province, city) values ('BC','Tumbler');
+insert into Travel.destination(province, city) values ('BC','Delta');
+insert into Travel.destination(province, city) values ('BC','Osoyoos');
+insert into Travel.destination(province, city) values ('BC','Vancouver');
+insert into Travel.destination(province, city) values ('BC','Fernie');
+insert into Travel.destination(province, city) values ('BC','Parksville');
+insert into Travel.destination(province, city) values ('BC','Vancouver');
+insert into Travel.destination(province, city) values ('BC','Invermere');
+insert into Travel.destination(province, city) values ('BC','Peace River');
+insert into Travel.destination(province, city) values ('BC','Vernon');
+insert into Travel.destination(province, city) values ('BC','Kamloops');
+insert into Travel.destination(province, city) values ('BC','Penticton');
+insert into Travel.destination(province, city) values ('BC','Victoria');
+insert into Travel.destination(province, city) values ('BC','Kaslo');
+insert into Travel.destination(province, city) values ('BC','Port Alberni');
+insert into Travel.destination(province, city) values ('BC','Whistler');
+insert into Travel.destination(province, city) values ('BC','Langley');
+insert into Travel.destination(province, city) values ('BC','Port Hardy');
+insert into Travel.destination(province, city) values ('MB','Birtle');
+insert into Travel.destination(province, city) values ('MB','Flin Flon');
+insert into Travel.destination(province, city) values ('MB','Swan River');
+insert into Travel.destination(province, city) values ('MB','Brandon');
+insert into Travel.destination(province, city) values ('MB','Snow Lake');
+insert into Travel.destination(province, city) values ('MB','The Pas');
+insert into Travel.destination(province, city) values ('MB','Cranberry Portage');
+insert into Travel.destination(province, city) values ('MB','Steinbach');
+insert into Travel.destination(province, city) values ('MB','Thompson');
+insert into Travel.destination(province, city) values ('MB','Dauphin');
+insert into Travel.destination(province, city) values ('MB','Stonewall');
+insert into Travel.destination(province, city) values ('MB','Winnipeg');
+insert into Travel.destination(province, city) values ('NB','Cap-Pele');
+insert into Travel.destination(province, city) values ('NB','Miramichi');
+insert into Travel.destination(province, city) values ('NB','Saint John');
+insert into Travel.destination(province, city) values ('NB','Fredericton');
+insert into Travel.destination(province, city) values ('NB','Moncton');
+insert into Travel.destination(province, city) values ('NB','Saint Stephen');
+insert into Travel.destination(province, city) values ('NB','Grand Bay-Westfield');
+insert into Travel.destination(province, city) values ('NB','Oromocto');
+insert into Travel.destination(province, city) values ('NB','Shippagan');
+insert into Travel.destination(province, city) values ('NB','Grand Falls');
+insert into Travel.destination(province, city) values ('NB','Port Elgin');
+insert into Travel.destination(province, city) values ('NB','Sussex');
+insert into Travel.destination(province, city) values ('NB','Memramcook');
+insert into Travel.destination(province, city) values ('NB','Sackville');
+insert into Travel.destination(province, city) values ('NB','Tracadie-Sheila');
+insert into Travel.destination(province, city) values ('NL''Argentia');
+insert into Travel.destination(province, city) values ('NL','Corner Brook');
+insert into Travel.destination(province, city) values ('NL','Paradise');
+insert into Travel.destination(province, city) values ('NL','Bishop's Falls');
+insert into Travel.destination(province, city) values ('NL','Labrador City');
+insert into Travel.destination(province, city) values ('NL','Portaux Basques');
+insert into Travel.destination(province, city) values ('NL','Botwood');
+insert into Travel.destination(province, city) values ('NL','Mount Pearl');
+insert into Travel.destination(province, city) values ('NL','St. John's');
+insert into Travel.destination(province, city) values ('NL','Brigus');
+insert into Travel.destination(province, city) values ('NT','Town of Hay River');
+insert into Travel.destination(province, city) values ('NT','Town of Inuvik');
+insert into Travel.destination(province, city) values ('NT','Yellowknife');
+insert into Travel.destination(province, city) values ('NS','Amherst');
+insert into Travel.destination(province, city) values ('NS','Hants County');
+insert into Travel.destination(province, city) values ('NS','Pictou');
+insert into Travel.destination(province, city) values ('NS','Annapolis');
+insert into Travel.destination(province, city) values ('NS','Inverness County');
+insert into Travel.destination(province, city) values ('NS','Pictou County');
+insert into Travel.destination(province, city) values ('NS','Argyle');
+insert into Travel.destination(province, city) values ('NS','Kentville');
+insert into Travel.destination(province, city) values ('NS','Queens');
+insert into Travel.destination(province, city) values ('NS','Baddeck');
+insert into Travel.destination(province, city) values ('NS','County of Kings');
+insert into Travel.destination(province, city) values ('NS','Richmond');
+insert into Travel.destination(province, city) values ('NS','Bridgewater');
+insert into Travel.destination(province, city) values ('NS','Lunenburg');
+insert into Travel.destination(province, city) values ('NS','Shelburne');
+insert into Travel.destination(province, city) values ('NS','Cape Breton');
+insert into Travel.destination(province, city) values ('NS','Lunenburg County');
+insert into Travel.destination(province, city) values ('NS','Stellarton');
+insert into Travel.destination(province, city) values ('NS','Chester');
+insert into Travel.destination(province, city) values ('NS','Mahone Bay');
+insert into Travel.destination(province, city) values ('NS','Truro');
+insert into Travel.destination(province, city) values ('NS','Cumberland County');
+insert into Travel.destination(province, city) values ('NS','New Glasgow');
+insert into Travel.destination(province, city) values ('NS','Windsor');
+insert into Travel.destination(province, city) values ('NS','East Hants');
+insert into Travel.destination(province, city) values ('NS','New Minas');
+insert into Travel.destination(province, city) values ('NS','Yarmouth');
+insert into Travel.destination(province, city) values ('NS','Halifax');
+insert into Travel.destination(province, city) values ('NS','Parrsboro');
+insert into Travel.destination(province, city) values ('ON','Ajax');
+insert into Travel.destination(province, city) values ('ON','Halton');
+insert into Travel.destination(province, city) values ('ON','Peterborough');
+insert into Travel.destination(province, city) values ('ON','Atikokan');
+insert into Travel.destination(province, city) values ('ON','Halton Hills');
+insert into Travel.destination(province, city) values ('ON','Pickering');
+insert into Travel.destination(province, city) values ('ON','Barrie');
+insert into Travel.destination(province, city) values ('ON','Hamilton');
+insert into Travel.destination(province, city) values ('ON','Port Bruce');
+insert into Travel.destination(province, city) values ('ON','Belleville');
+insert into Travel.destination(province, city) values ('ON','Hamilton-Wentworth');
+insert into Travel.destination(province, city) values ('ON','Port Burwell');
+insert into Travel.destination(province, city) values ('ON','Blandford-Blenheim');
+insert into Travel.destination(province, city) values ('ON','Hearst');
+insert into Travel.destination(province, city) values ('ON','Port Colborne');
+insert into Travel.destination(province, city) values ('ON','Blind River');
+insert into Travel.destination(province, city) values ('ON','Huntsville');
+insert into Travel.destination(province, city) values ('ON','Port Hope');
+insert into Travel.destination(province, city) values ('ON','Brampton');
+insert into Travel.destination(province, city) values ('ON','Ingersoll');
+insert into Travel.destination(province, city) values ('ON','Prince Edward');
+insert into Travel.destination(province, city) values ('ON','Brant');
+insert into Travel.destination(province, city) values ('ON','James');
+insert into Travel.destination(province, city) values ('ON','Quinte West');
+insert into Travel.destination(province, city) values ('ON','Brantford');
+insert into Travel.destination(province, city) values ('ON','Kanata');
+insert into Travel.destination(province, city) values ('ON','Renfrew');
+insert into Travel.destination(province, city) values ('ON','Brock');
+insert into Travel.destination(province, city) values ('ON','Kincardine');
+insert into Travel.destination(province, city) values ('ON','Richmond Hill');
+insert into Travel.destination(province, city) values ('ON','Brockville');
+insert into Travel.destination(province, city) values ('ON','King');
+insert into Travel.destination(province, city) values ('ON','Sarnia');
+insert into Travel.destination(province, city) values ('ON','Burlington');
+insert into Travel.destination(province, city) values ('ON','Kingston');
+insert into Travel.destination(province, city) values ('ON','Sault Ste. Marie');
+insert into Travel.destination(province, city) values ('ON','Caledon');
+insert into Travel.destination(province, city) values ('ON','Kirkland Lake');
+insert into Travel.destination(province, city) values ('ON','Scarborough');
+insert into Travel.destination(province, city) values ('ON','Cambridge');
+insert into Travel.destination(province, city) values ('ON','Kitchener');
+insert into Travel.destination(province, city) values ('ON','Scugog');
+insert into Travel.destination(province, city) values ('ON','Chatham-Kent');
+insert into Travel.destination(province, city) values ('ON','Larder Lake');
+insert into Travel.destination(province, city) values ('ON','Souix Lookout CoC Sioux Lookout');
+insert into Travel.destination(province, city) values ('ON','Chesterville');
+insert into Travel.destination(province, city) values ('ON','Leamington');
+insert into Travel.destination(province, city) values ('ON','Smiths Falls');
+insert into Travel.destination(province, city) values ('ON','Clarington');
+insert into Travel.destination(province, city) values ('ON','Lennox-Addington');
+insert into Travel.destination(province, city) values ('ON','South-West Oxford');
+insert into Travel.destination(province, city) values ('ON','Cobourg');
+insert into Travel.destination(province, city) values ('ON','Lincoln');
+insert into Travel.destination(province, city) values ('ON','St. Catharines');
+insert into Travel.destination(province, city) values ('ON','Cochrane');
+insert into Travel.destination(province, city) values ('ON','Lindsay');
+insert into Travel.destination(province, city) values ('ON','St. Thomas');
+insert into Travel.destination(province, city) values ('ON','Collingwood');
+insert into Travel.destination(province, city) values ('ON','London');
+insert into Travel.destination(province, city) values ('ON','Stoney Creek');
+insert into Travel.destination(province, city) values ('ON','Cornwall');
+insert into Travel.destination(province, city) values ('ON','Loyalist Township');
+insert into Travel.destination(province, city) values ('ON','Stratford');
+insert into Travel.destination(province, city) values ('ON','Cumberland');
+insert into Travel.destination(province, city) values ('ON','Markham');
+insert into Travel.destination(province, city) values ('ON','Sudbury');
+insert into Travel.destination(province, city) values ('ON','Deep River');
+insert into Travel.destination(province, city) values ('ON','Metro Toronto');
+insert into Travel.destination(province, city) values ('ON','Temagami');
+insert into Travel.destination(province, city) values ('ON','Dundas');
+insert into Travel.destination(province, city) values ('ON','Merrickville');
+insert into Travel.destination(province, city) values ('ON','Thorold');
+insert into Travel.destination(province, city) values ('ON','Durham');
+insert into Travel.destination(province, city) values ('ON','Milton');
+insert into Travel.destination(province, city) values ('ON','Thunder Bay');
+insert into Travel.destination(province, city) values ('ON','Dymond');
+insert into Travel.destination(province, city) values ('ON','Nepean');
+insert into Travel.destination(province, city) values ('ON','Tillsonburg');
+insert into Travel.destination(province, city) values ('ON','Ear Falls');
+insert into Travel.destination(province, city) values ('ON','Newmarket');
+insert into Travel.destination(province, city) values ('ON','Timmins');
+insert into Travel.destination(province, city) values ('ON','East Gwillimbury');
+insert into Travel.destination(province, city) values ('ON','Niagara');
+insert into Travel.destination(province, city) values ('ON','Toronto');
+insert into Travel.destination(province, city) values ('ON','East Zorra-Tavistock');
+insert into Travel.destination(province, city) values ('ON','Niagara Falls');
+insert into Travel.destination(province, city) values ('ON','Uxbridge');
+insert into Travel.destination(province, city) values ('ON','Elgin');
+insert into Travel.destination(province, city) values ('ON','Niagara-on-the-Lake');
+insert into Travel.destination(province, city) values ('ON','Vaughan');
+insert into Travel.destination(province, city) values ('ON','Elliot Lake');
+insert into Travel.destination(province, city) values ('ON','North Bay');
+insert into Travel.destination(province, city) values ('ON','Wainfleet');
+insert into Travel.destination(province, city) values ('ON','Flamborough');
+insert into Travel.destination(province, city) values ('ON','North Dorchester');
+insert into Travel.destination(province, city) values ('ON','Wasaga Beach');
+insert into Travel.destination(province, city) values ('ON','Fort Erie');
+insert into Travel.destination(province, city) values ('ON','North Dumfries');
+insert into Travel.destination(province, city) values ('ON','Waterloo');
+insert into Travel.destination(province, city) values ('ON','Fort Frances');
+insert into Travel.destination(province, city) values ('ON','North York');
+insert into Travel.destination(province, city) values ('ON','Waterloo');
+insert into Travel.destination(province, city) values ('ON','Gananoque');
+insert into Travel.destination(province, city) values ('ON','Norwich');
+insert into Travel.destination(province, city) values ('ON','Welland');
+insert into Travel.destination(province, city) values ('ON','Georgina');
+insert into Travel.destination(province, city) values ('ON','Oakville');
+insert into Travel.destination(province, city) values ('ON','Wellesley');
+insert into Travel.destination(province, city) values ('ON','Glanbrook');
+insert into Travel.destination(province, city) values ('ON','Orangeville');
+insert into Travel.destination(province, city) values ('ON','West Carleton');
+insert into Travel.destination(province, city) values ('ON','Gloucester');
+insert into Travel.destination(province, city) values ('ON','Orillia');
+insert into Travel.destination(province, city) values ('ON','West Lincoln');
+insert into Travel.destination(province, city) values ('ON','Goulbourn');
+insert into Travel.destination(province, city) values ('ON','Osgoode');
+insert into Travel.destination(province, city) values ('ON','Whitby');
+insert into Travel.destination(province, city) values ('ON','Gravenhurst');
+insert into Travel.destination(province, city) values ('ON','Oshawa');
+insert into Travel.destination(province, city) values ('ON','Wilmot');
+insert into Travel.destination(province, city) values ('ON','Grimsby');
+insert into Travel.destination(province, city) values ('ON','Ottawa');
+insert into Travel.destination(province, city) values ('ON','Windsor');
+insert into Travel.destination(province, city) values ('ON','Guelph');
+insert into Travel.destination(province, city) values ('ON','Ottawa-Carleton');
+insert into Travel.destination(province, city) values ('ON','Woolwich');
+insert into Travel.destination(province, city) values ('ON','Haldimand-Norfork');
+insert into Travel.destination(province, city) values ('ON','Owen Sound');
+insert into Travel.destination(province, city) values ('ON','York');
+insert into Travel.destination(province, city) values ('PE','Alberton');
+insert into Travel.destination(province, city) values ('PE','Montague');
+insert into Travel.destination(province, city) values ('PE','Stratford');
+insert into Travel.destination(province, city) values ('PE','Charlottetown');
+insert into Travel.destination(province, city) values ('PE','Souris');
+insert into Travel.destination(province, city) values ('PE','Summerside');
+insert into Travel.destination(province, city) values ('PE','Cornwall');
+insert into Travel.destination(province, city) values ('QC','Alma');
+insert into Travel.destination(province, city) values ('QC','Fleurimont');
+insert into Travel.destination(province, city) values ('QC','Longueuil');
+insert into Travel.destination(province, city) values ('QC','Amos');
+insert into Travel.destination(province, city) values ('QC','Gaspe');
+insert into Travel.destination(province, city) values ('QC','Marieville');
+insert into Travel.destination(province, city) values ('QC','Anjou');
+insert into Travel.destination(province, city) values ('QC','Gatineau');
+insert into Travel.destination(province, city) values ('QC','Mount Royal');
+insert into Travel.destination(province, city) values ('QC','Aylmer');
+insert into Travel.destination(province, city) values ('QC','Hull');
+insert into Travel.destination(province, city) values ('QC','Montreal');
+insert into Travel.destination(province, city) values ('QC','Beauport');
+insert into Travel.destination(province, city) values ('QC','Joliette');
+insert into Travel.destination(province, city) values ('QC','Montreal Region');
+insert into Travel.destination(province, city) values ('QC','Bromptonville');
+insert into Travel.destination(province, city) values ('QC','Jonquiere');
+insert into Travel.destination(province, city) values ('QC','Montreal-Est');
+insert into Travel.destination(province, city) values ('QC','Brosssard');
+insert into Travel.destination(province, city) values ('QC','Lachine');
+insert into Travel.destination(province, city) values ('QC','Quebec');
+insert into Travel.destination(province, city) values ('QC','Chateauguay');
+insert into Travel.destination(province, city) values ('QC','Lasalle');
+insert into Travel.destination(province, city) values ('QC','Saint-Leonard');
+insert into Travel.destination(province, city) values ('QC','Chicoutimi');
+insert into Travel.destination(province, city) values ('QC','Laurentides');
+insert into Travel.destination(province, city) values ('QC','Sherbrooke');
+insert into Travel.destination(province, city) values ('QC','Coaticook');
+insert into Travel.destination(province, city) values ('QC','LaSalle');
+insert into Travel.destination(province, city) values ('QC','Sorel');
+insert into Travel.destination(province, city) values ('QC','Coaticook');
+insert into Travel.destination(province, city) values ('QC','Laval');
+insert into Travel.destination(province, city) values ('QC','Thetford Mines');
+insert into Travel.destination(province, city) values ('QC','Dorval');
+insert into Travel.destination(province, city) values ('QC','Lennoxville');
+insert into Travel.destination(province, city) values ('QC','Victoriaville');
+insert into Travel.destination(province, city) values ('QC','Drummondville');
+insert into Travel.destination(province, city) values ('QC','Levis');
+insert into Travel.destination(province, city) values ('SK','Avonlea');
+insert into Travel.destination(province, city) values ('SK','Melfort');
+insert into Travel.destination(province, city) values ('SK','Swift Current');
+insert into Travel.destination(province, city) values ('SK','Colonsay');
+insert into Travel.destination(province, city) values ('SK','Nipawin');
+insert into Travel.destination(province, city) values ('SK','Tisdale');
+insert into Travel.destination(province, city) values ('SK','Craik');
+insert into Travel.destination(province, city) values ('SK','Prince Albert');
+insert into Travel.destination(province, city) values ('SK','Unity');
+insert into Travel.destination(province, city) values ('SK','Creighton');
+insert into Travel.destination(province, city) values ('SK','Regina');
+insert into Travel.destination(province, city) values ('SK','Weyburn');
+insert into Travel.destination(province, city) values ('SK','Eastend');
+insert into Travel.destination(province, city) values ('SK','Saskatoon');
+insert into Travel.destination(province, city) values ('SK','Wynyard');
+insert into Travel.destination(province, city) values ('SK','Esterhazy');
+insert into Travel.destination(province, city) values ('SK','Shell Lake');
+insert into Travel.destination(province, city) values ('SK','Yorkton');
+insert into Travel.destination(province, city) values ('SK','Gravelbourg');
+insert into Travel.destination(province, city) values ('YT','Carcross');
+insert into Travel.destination(province, city) values ('YT','Whitehorse');
+insert into Travel.destination(province, city) values ('YT','Dawson');
+insert into Travel.destination(province, city) values ('YT','Faro');
+insert into Travel.destination(province, city) values ('YT','Haines Junction'	);
+insert into Travel.destination(province, city) values ('YT','Mayo');
+insert into Travel.destination(province, city) values ('YT','Teslin');
+insert into Travel.destination(province, city) values ('YT','Watson Lake');
+insert into Travel.destination(province, city) values ('YT','Old Crow');
+insert into Travel.destination(province, city) values ('YT','Otter Falls');
+insert into Travel.destination(province, city) values ('YT','Ealge Plains');
+insert into Travel.destination(province, city) values ('YT','Salmon Arm');
 
-ALTER TABLE [dbo].[Photo] ADD  DEFAULT ((0)) FOR [IsSiteDefault]
-GO
+--BUILD LOOKUP TABLES
+Create Table Travel.PurposeLookup(
+PurposeLUpID smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+purposetype varchar (100),
+CreateDate date,
+CreateUser varchar (10),
+ModDate date,
+ModUser varchar(10)
+);
 
-CREATE TABLE [dbo].[Photo_Missing](
-	[RowId] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
-	[Id] [int] NULL,
-	[PlaceId] [int] NULL,
-	[OriginalFileName] [nvarchar](256) NULL,
-	[FeatureName] [nvarchar](600) NULL,
-	[CommunityId] [int] NOT NULL,
-	[NTSMapNumber] [nvarchar](20) NULL,
-	[Address] [nvarchar](600) NULL,
-	[DateCreated] [date] NULL,
-	[YHSIRecord] [nvarchar](20) NULL,
-	[BordenRecord] [nvarchar](20) NULL,
-	[PaleoRecord] [nvarchar](20) NULL,
-	[ArchivalRecord] [nvarchar](20) NULL,
-	[IsOtherRecord] [bit] NOT NULL,
-	[OriginalMediaId] [int] NOT NULL,
-	[OriginalRecord] [nvarchar](256) NULL,
-	[MediaStorage] [int] NOT NULL,
-	[Comments] [nvarchar](max) NULL,
-	[Caption] [nvarchar](256) NULL,
-	[Copyright] [int] NOT NULL,
-	[CreditLine] [nvarchar](256) NULL,
-	[OwnerId] [int] NOT NULL,
-	[PhotoProjectId] [int] NOT NULL,
-	[Program] [int] NOT NULL,
-	[Creator] [nvarchar](256) NULL,
-	[CommunityName] [nvarchar](256) NULL,
-	[Location] [nvarchar](256) NULL,
-	[UsageRights] [int] NULL,
-	[IsComplete] [bit] NOT NULL,
-	[ImageHeight] [int] NULL,
-	[ImageWidth] [int] NULL,
-	[Subjects] [varchar](500) NULL,
-	[Rating] [int] NULL,
- CONSTRAINT [PK_Image-old] PRIMARY KEY CLUSTERED 
-(
-	[RowId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+create table Travel.PoolCarLookup(
+PoolCarLUPID  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+PoolCarType varchar (50) not null,
+PoolCarCost smallint not null,
+CreateDate date,
+CreateUser varchar (10),
+ModDate date,
+ModUser varchar(10)
+);
 
-ALTER TABLE [dbo].[Photo_Missing] ADD  DEFAULT (newid()) FOR [RowId]
-GO
+create table Travel.RentalCarLookup(
+RentalCarLUPID  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+RentalCarType varchar (50) not null,
+RentalCarCost smallint not null,
+CreateDate date,
+CreateUser varchar (10),
+ModDate date,
+ModUser varchar(10)
+);
 
-CREATE TABLE [dbo].[webpages_Membership](
-	[UserId] [int] NOT NULL,
-	[CreateDate] [datetime] NULL,
-	[ConfirmationToken] [nvarchar](128) NULL,
-	[IsConfirmed] [bit] NULL,
-	[LastPasswordFailureDate] [datetime] NULL,
-	[PasswordFailuresSinceLastSuccess] [int] NOT NULL,
-	[Password] [nvarchar](128) NOT NULL,
-	[PasswordChangedDate] [datetime] NULL,
-	[PasswordSalt] [nvarchar](128) NOT NULL,
-	[PasswordVerificationToken] [nvarchar](128) NULL,
-	[PasswordVerificationTokenExpirationDate] [datetime] NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[UserId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
+create table Travel.FlightEstimateLookup(
+FlightEstimLUPID  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+Destination varchar (140) not null,
+RoundCost smallint not null,
+CreateDate date,
+CreateUser varchar (10),
+ModDate date,
+ModUser varchar(10)
+);
 
-ALTER TABLE [dbo].[webpages_Membership] ADD  DEFAULT ((0)) FOR [IsConfirmed]
-GO
 
-ALTER TABLE [dbo].[webpages_Membership] ADD  DEFAULT ((0)) FOR [PasswordFailuresSinceLastSuccess]
-GO
+--BUILD PRIMARY TABLES
+Create Table Travel.Purpose(
+pid  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+taid smallint not null,
+PurposeLUPID smallint not null, --fk
+detail varchar(140),
+name varchar(60),
+URl varchar(150),
+location varchar(100),
+FOREIGN KEY (PurposeLUPID) REFERENCES Travel.PurposeLookup(PurposeLUPID)
+);
+
+create Table Travel.PreApprove(
+preappID smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+deptid varchar(8) not null,
+name varchar(140),
+purposelupid smallint not null, --FK
+purposedesc varchar(140),
+cost smallint,
+traveldate date,
+FOREIGN KEY (purposelupid) REFERENCES Travel.PurposeLookup(PurposeLUPID)
+);
+
+create table Travel.PreAppEmployee(
+preappempID  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+preappid smallint not null, --FK
+employeeynet varchar(8),
+FOREIGN KEY (preappid) REFERENCES Travel.Preapprove(preappid)
+);
+
+create table Travel.PreAppDoc(
+	preappdocID  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	preappid smallint not null, --FK
+	document bytea,
+	FOREIGN KEY (preappid) REFERENCES Travel.Preapprove(preappid)
+);
+
+create table Travel.Auth(
+	taid smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	FirstName varchar (50) not null, --autocompete using Directory API
+	LastName varchar (50) not null,
+	Department varchar (250) not null, --maybe there is an api we can use
+	Branch varchar (50) not null, -- maybe there is an api we can use
+	DaysNotTravel smallint,
+	TravelDuration smallint,
+	DateBackToWork date,
+	preappid smallint,
+	FOREIGN KEY (preappid) REFERENCES Travel.Preapprove(preappid)
+);
+
+create table Travel.Stops(
+	id smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint not null, --fk
+	DepartDestination varchar(100) not null,
+	ReturnDestination varchar (100) not null,
+	DepartDate date not null, 
+	DepartTime time not null,
+	ReturnDate date not null,
+	ReturnTime time not null,
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);
+
+create table Travel.FlightRequest(
+	id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint not null, --fk
+	DOB date not null,
+	LegalFirstName varchar(100) not null,
+	LegalLastName varchar(100) not null,
+	TravellorPhone varchar (25) not null,
+	TravellorEmail varchar (50) not null,
+	PrefDeptDate date,
+	PrefDeptTime varchar (2), --am or pm
+	PrefReturnDate date,
+	PrefReturnTime varchar(2), --am or pm
+	TravelNotes varchar(200),
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);
+
+create table Travel.Approve(
+	id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint not null, -- fk
+	status varchar (20),
+	approverID varchar(10), --ynet name
+	approveDate date,
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);
+
+create table Travel.Carryout(
+	id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint, --fk
+	type varchar(15),
+	otherdesc varchar (140),
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);
+
+create table Travel.CostEstimate(
+	id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint, --fk
+	expensetype varchar(15),
+	expensedesc varchar(100),
+	quantity smallint,
+	amount smallint,
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);
+
+create table Travel.Advance(
+	id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint, --fk
+	amount smallint,
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);
+
+create Table Travel.Expense(
+	id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint, --fk
+	expensetype varchar(15),
+	expensedesc varchar(100),
+	quantity smallint,
+	amount smallint,
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);
+
+create table Travel.RecieptBackup(
+    id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+    expenseid smallint not null, --fk
+    document bytea,
+	FOREIGN KEY (expenseID) REFERENCES Travel.Expense(id)
+);
+
+create table Travel.Docs (
+	id  smallint not null GENERATED BY DEFAULT AS IDENTITY primary key,
+	taid smallint, --fk
+	document bytea,
+	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
+);

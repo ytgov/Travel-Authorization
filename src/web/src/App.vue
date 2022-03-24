@@ -62,29 +62,11 @@
             <v-list-item to="/dashboard">
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/sites">
-              <v-list-item-title>Sites</v-list-item-title>
+            <v-list-item to="/forms">
+              <v-list-item-title>Forms</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/photos">
-              <v-list-item-title>Photos</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/maps">
-              <v-list-item-title>Maps</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/airplane">
-              <v-list-item-title>Airplane Crash Sites</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/boats">
-              <v-list-item-title>Boats & Owners</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/burials">
-              <v-list-item-title>Burials</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/places">
-              <v-list-item-title>Places</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/people">
-              <v-list-item-title>People</v-list-item-title>
+            <v-list-item to="/manage">
+              <v-list-item-title>Manager View</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -152,14 +134,11 @@
               <notifier ref="notifier"></notifier>
             -->
             <router-view></router-view>
-            <RequestAlert/>
+            <RequestAlert />
           </v-col>
         </v-row>
-        
       </v-container>
     </v-main>
-
-    <history-sidebar ref="historySidebar"></history-sidebar>
   </v-app>
 </template>
 
@@ -213,7 +192,6 @@ export default {
     await store.dispatch("checkAuthentication");
   },
   watch: {
-
     isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = store.getters.showAppSidebar;
@@ -240,12 +218,22 @@ export default {
       window.location = LOGOUT_URL;
     },
     isSites(route, chooser) {
-       if(chooser)
-         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-               || route.includes('photo-owners') || route.includes('communities')) ? 'siteslp' :  '';
-       else
-         return (route.includes('sites') || route.includes('photos') || route.includes('users') 
-               || route.includes('photo-owners') || route.includes('communities')) ? 'sitesnp' :  '';
+      if (chooser)
+        return route.includes("sites") ||
+          route.includes("photos") ||
+          route.includes("users") ||
+          route.includes("photo-owners") ||
+          route.includes("communities")
+          ? "siteslp"
+          : "";
+      else
+        return route.includes("sites") ||
+          route.includes("photos") ||
+          route.includes("users") ||
+          route.includes("photo-owners") ||
+          route.includes("communities")
+          ? "sitesnp"
+          : "";
       //this function helps to show certain classes depending on the route
       /*
       if (chooser)

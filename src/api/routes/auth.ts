@@ -3,9 +3,11 @@ import * as ExpressSession from 'express-session';
 import { AUTH_REDIRECT, FRONTEND_URL } from '../config';
 
 import { auth } from 'express-openid-connect';
-import { AuthUser } from "../models";
+import { AuthUser } from '../models';
 
-//const db = new UserService();
+import { UserService } from '../services';
+
+const db = new UserService();
 
 export function configureAuthentication(app: Express) {
 	app.use(
@@ -52,11 +54,11 @@ export function configureAuthentication(app: Express) {
 			req.user = user;
 
 			//console.log("GET/", user)
-			/* let dbUser = await db.getByEmail(req.user.email);
+			let dbUser = await db.getByEmail(req.user.email);
 
-            if (!dbUser) {
-                await db.create(user.email, user.first_name, user.last_name, "Active", "");
-            } */
+			if (!dbUser) {
+				await db.create(user.email, user.first_name, user.last_name, '', '1');
+			}
 
 			res.redirect(AUTH_REDIRECT);
 		} else {

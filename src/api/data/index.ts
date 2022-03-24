@@ -1,5 +1,5 @@
+import { DB_CONFIG } from '../config';
 
-export * from "./photo-entities";
-export * from "./place-entities";
-export * from "./static-entities";
-export * from "./ytplace-entities";
+import * as knex from 'knex';
+
+export * from './form-entities';
