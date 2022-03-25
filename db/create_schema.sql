@@ -149,15 +149,15 @@ insert into Travel.destination(province, city) values ('NB','Sussex');
 insert into Travel.destination(province, city) values ('NB','Memramcook');
 insert into Travel.destination(province, city) values ('NB','Sackville');
 insert into Travel.destination(province, city) values ('NB','Tracadie-Sheila');
-insert into Travel.destination(province, city) values ('NL''Argentia');
+insert into Travel.destination(province, city) values ('NL','Argentia');
 insert into Travel.destination(province, city) values ('NL','Corner Brook');
 insert into Travel.destination(province, city) values ('NL','Paradise');
-insert into Travel.destination(province, city) values ('NL','Bishop's Falls');
+insert into Travel.destination(province, city) values ('NL','Bishop''s Falls');
 insert into Travel.destination(province, city) values ('NL','Labrador City');
 insert into Travel.destination(province, city) values ('NL','Portaux Basques');
 insert into Travel.destination(province, city) values ('NL','Botwood');
 insert into Travel.destination(province, city) values ('NL','Mount Pearl');
-insert into Travel.destination(province, city) values ('NL','St. John's');
+insert into Travel.destination(province, city) values ('NL','St. John''s');
 insert into Travel.destination(province, city) values ('NL','Brigus');
 insert into Travel.destination(province, city) values ('NT','Town of Hay River');
 insert into Travel.destination(province, city) values ('NT','Town of Inuvik');
@@ -388,7 +388,7 @@ insert into Travel.destination(province, city) values ('YT','Carcross');
 insert into Travel.destination(province, city) values ('YT','Whitehorse');
 insert into Travel.destination(province, city) values ('YT','Dawson');
 insert into Travel.destination(province, city) values ('YT','Faro');
-insert into Travel.destination(province, city) values ('YT','Haines Junction'	);
+insert into Travel.destination(province, city) values ('YT','Haines Junction');
 insert into Travel.destination(province, city) values ('YT','Mayo');
 insert into Travel.destination(province, city) values ('YT','Teslin');
 insert into Travel.destination(province, city) values ('YT','Watson Lake');
@@ -485,6 +485,7 @@ create table Travel.Auth(
 	TravelDuration smallint,
 	DateBackToWork date,
 	preappid smallint,
+	summary varchar(2500),
 	FOREIGN KEY (preappid) REFERENCES Travel.Preapprove(preappid)
 );
 

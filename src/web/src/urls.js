@@ -11,5 +11,4 @@ export const STATIC_URL = `${config.apiBaseUrl}/api`;
 export const YTPLACE_URL = `${config.apiBaseUrl}/api/ytplace`;
 
 export const FORM_URL = `${config.apiBaseUrl}/api/form`;
-
 export const DESTINATION_URL = `${config.apiBaseUrl}/api/lookup/destination`;

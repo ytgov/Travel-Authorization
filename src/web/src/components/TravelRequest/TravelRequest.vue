@@ -90,39 +90,63 @@
       </v-row>
 
       <h2>Stops</h2>
-      <v-row v-for="stop in stops" :key="stop.id">
-        <v-col cols="4">
+      <v-row v-for="(stop, index) in stops" :key="index">
+        <v-col cols="3">
           <v-autocomplete
-            v-model="destination"
-            multiple
+            v-model="stops[index].destination"
             outlined
             dense
             label="Where you are travelling to?"
             persistent-hint
             :items="destinations"
+            :item-text="destinations.text"
+            :item-value="destinations.value"
             required
             clearable
             :rules="destinationRules"
-            @input="searchInput = null"
-            :search-input.sync="searchInput"
           >
-            >
           </v-autocomplete>
         </v-col>
         <v-col cols="4">
           <v-menu
-            v-model="menu"
             :close-on-content-click="false"
             :nudge-right="40"
             transition="scale-transition"
             offset-y
             min-width="auto"
+            v-model="arrivalMenu[index]"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 outlined
                 dense
-                v-model="departureDate"
+                v-model="stops[index].arrivalDate"
+                label="Arrival Date"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="stops[index].arrivalDate"
+              @input="arrivalMenu[index] = false"
+            ></v-date-picker> </v-menu
+        ></v-col>
+        <v-col cols="4">
+          <v-menu
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+            v-model="departureMenu[index]"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                outlined
+                dense
+                v-model="stops[index].departureDate"
                 label="Departure Date"
                 prepend-icon="mdi-calendar"
                 readonly
@@ -131,25 +155,59 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="departureDate"
-              @input="menu = false"
-            ></v-date-picker> </v-menu
-        ></v-col>
+              v-model="stops[index].departureDate"
+              @input="departureMenu[index] = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col cols="1">
+          <v-btn
+            class="ma-2"
+            dense
+            small
+            color="red"
+            @click="removeStop(index)"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-btn color="primary" class="mr-5" @click="addStop">Add Stop</v-btn>
+      <h2>Details</h2>
+      <v-row>
+        <v-col cols="2">
+          <v-text-field
+            dense
+            v-model="totalTripLength"
+            outlined
+            label="# of days in trip"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
+            dense
+            v-model="daysNotTraveling"
+            outlined
+            label="# of days NOT traveling"
+            required
+          ></v-text-field>
+        </v-col>
         <v-col cols="4">
           <v-menu
-            v-model="menu2"
             :close-on-content-click="false"
             :nudge-right="40"
             transition="scale-transition"
             offset-y
             min-width="auto"
+            v-model="btwMenu"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 outlined
                 dense
-                v-model="returnDate"
-                label="Return Date"
+                v-model="backToWorkDate"
+                label="Back to work date"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-bind="attrs"
@@ -157,17 +215,16 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="returnDate"
-              @input="menu2 = false"
+              v-model="backToWorkDate"
+              @input="btwMenu = false"
             ></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
-      <v-btn color="primary" class="mr-5" @click="addStop">Submit</v-btn>
-      <h2>Details</h2>
       <v-row>
         <v-col cols="12">
-          <v-textarea outlined label="Travel Summary"> </v-textarea>
+          <v-textarea v-model="summary" outlined label="Travel Summary">
+          </v-textarea>
         </v-col>
       </v-row>
     </v-form>
@@ -183,25 +240,29 @@
 </template>
 
 <script>
-import { DESTINATION_URL } from "../../urls";
+import { DESTINATION_URL, FORM_URL } from "../../urls";
 import axios from "axios";
 export default {
   name: "Form",
   created() {
     this.getDestinations();
+    this.stops.push({
+      destination: "",
+      arrivalDate: this.getToday(),
+      departureDate: this.getToday(),
+    });
+    this.backToWorkDate = this.getToday();
   },
   data: () => ({
-    stops: [{ id: 1 }, { id: 2 }],
-    searchInput: "",
-    departureDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .substr(0, 10),
-    returnDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .substr(0, 10),
-    menu: false,
-    menu2: false,
-    tanumber: "T12343",
+    daysNotTraveling: 0,
+    totalTripLength: 1,
+    backToWorkDate: "",
+    summary: "",
+    stops: [],
+    arrivalMenu: [],
+    departureMenu: [],
+    btwMenu: false,
+    tanumber: "12343",
     firstName: "",
     firstNameRules: [
       (v) => !!v || "First name is required",
@@ -273,37 +334,54 @@ export default {
     apiSuccess: "",
   }),
   methods: {
+    getToday() {
+      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10);
+    },
     addStop() {
-      this.stops.push({ id: Math.random() });
+      this.stops.push({
+        destination: "",
+        arrivalDate: this.getToday(),
+        departureDate: this.getToday(),
+      });
+    },
+    removeStop(index) {
+      if (this.stops.length > 1) this.stops.splice(index, 1);
     },
     getDestinations() {
       axios.get(`${DESTINATION_URL}`).then((resp) => {
         resp.data.forEach((v) => {
-          this.destinations.push(v.city + " (" + v.province + ")");
+          this.destinations.push({
+            value: v.id,
+            text: v.city + " (" + v.province + ")",
+          });
         });
       });
+      console.log(this.destinations);
     },
     saveForm() {
       this.showError = false;
       let form = {
-        tanumber: this.tanumber,
-        first_name: this.firstName,
-        last_name: this.lastName,
+        taid: this.tanumber,
+        firstname: this.firstName,
+        lastname: this.lastName,
         department: this.department,
         branch: this.branch,
         email: this.email,
-
-        departure_date: this.departureDate,
-        return_date: this.returnDate,
+        summary: this.summary,
+        stops: this.stops,
+        daysnotTravel: this.daysNotTraveling,
+        travelduartion: this.totalTripLength,
+        datebacktowork: this.backToWorkDate,
       };
 
       console.log(form);
 
-      axios.get(`${DESTINATION_URL}`).then((resp) => {
-        resp.data.forEach((v) => {
-          this.destinations.push(v.city + " (" + v.province + ")");
-        });
+      axios.post(`${FORM_URL}`, form).then((resp) => {
+        console.log(resp);
       });
+
       console.log("SAVING " + this.team);
 
       if (this.from == "Whitehorse") {

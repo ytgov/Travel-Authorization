@@ -13,7 +13,7 @@ lookupRouter.get(
 		try {
 			let result = await db('destination')
 				.withSchema('travel')
-				.select('province', 'city');
+				.select('destinationid as id', 'province', 'city');
 			res.status(200).json(result);
 		} catch (error: any) {
 			console.log(error);

@@ -34,4 +34,5 @@ export const DB_CONFIG = {
 		database: DB_NAME,
 		port: parseInt(DB_PORT),
 	},
+	useNullAsDefault: true,
 };
