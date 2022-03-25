@@ -574,3 +574,6 @@ create table Travel.Docs (
 	document bytea,
 	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
 );
+
+ALTER TABLE travel.auth
+DROP constraint auth_preappid_fkey;

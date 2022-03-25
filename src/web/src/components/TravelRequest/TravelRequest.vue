@@ -376,8 +376,6 @@ export default {
         datebacktowork: this.backToWorkDate,
       };
 
-      console.log(form);
-
       axios.post(`${FORM_URL}`, form).then((resp) => {
         console.log(resp);
       });

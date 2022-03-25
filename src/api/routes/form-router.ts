@@ -47,15 +47,14 @@ formRouter.post(
 			lastname: req.body.lastname,
 			department: req.body.department,
 			branch: req.body.branch,
-			email: req.body.email,
 			summary: req.body.summary,
-			daysnotTravel: req.body.daysNotTraveling,
-			travelduartion: req.body.totalTripLength,
-			datebacktowork: req.body.backToWorkDate,
-			prepaidid: 1,
+			daysnottravel: req.body.daysnotTravel,
+			travelduration: req.body.travelduartion,
+			datebacktowork: req.body.datebacktowork,
+			preappid: 1,
 		};
 		try {
-			await knex('auth').withSchema('travel').insert(authInsert);
+			await db('auth').withSchema('travel').insert(authInsert);
 
 			console.log('Insert successful', req.body);
 			res.status(200).json('Insert successful');
