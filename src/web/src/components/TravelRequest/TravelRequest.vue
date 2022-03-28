@@ -2,21 +2,7 @@
   <div class="books">
     <h1>Travel Request</h1>
 
-    <p></p>
     <v-form>
-      <v-row>
-        <div class="col-2">
-          <v-text-field
-            dense
-            v-model="tanumber"
-            outlined
-            label="TA No"
-            required
-            disabled
-            filled
-          ></v-text-field>
-        </div>
-      </v-row>
       <v-row>
         <v-col class="col-4">
           <v-text-field
@@ -120,7 +106,7 @@
               <v-text-field
                 outlined
                 dense
-                v-model="stops[index].arrivalDate"
+                v-model="stops[index].arrivaldate"
                 label="Arrival Date"
                 prepend-icon="mdi-calendar"
                 readonly
@@ -129,7 +115,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="stops[index].arrivalDate"
+              v-model="stops[index].arrivaldate"
               @input="arrivalMenu[index] = false"
             ></v-date-picker> </v-menu
         ></v-col>
@@ -146,7 +132,7 @@
               <v-text-field
                 outlined
                 dense
-                v-model="stops[index].departureDate"
+                v-model="stops[index].departuredate"
                 label="Departure Date"
                 prepend-icon="mdi-calendar"
                 readonly
@@ -155,7 +141,7 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="stops[index].departureDate"
+              v-model="stops[index].departuredate"
               @input="departureMenu[index] = false"
             ></v-date-picker>
           </v-menu>
@@ -230,7 +216,7 @@
     </v-form>
 
     <v-btn color="primary" class="mr-5" @click="saveForm">Submit</v-btn>
-    <v-btn color="secondary">Cancel</v-btn>
+    <v-btn color="secondary" @click="report">Cancel</v-btn>
 
     <v-snackbar v-model="snackbar" right color="success">
       <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
@@ -248,8 +234,8 @@ export default {
     this.getDestinations();
     this.stops.push({
       destination: "",
-      arrivalDate: this.getToday(),
-      departureDate: this.getToday(),
+      arrivaldate: this.getToday(),
+      departuredate: this.getToday(),
     });
     this.backToWorkDate = this.getToday();
   },
@@ -342,8 +328,8 @@ export default {
     addStop() {
       this.stops.push({
         destination: "",
-        arrivalDate: this.getToday(),
-        departureDate: this.getToday(),
+        arrivaldate: this.getToday(),
+        departuredate: this.getToday(),
       });
     },
     removeStop(index) {
@@ -388,6 +374,9 @@ export default {
       } else {
         this.showError = true;
       }
+    },
+    report() {
+      console.log(this.stops);
     },
   },
 };

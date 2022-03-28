@@ -1,8 +1,8 @@
 <template>
   <div class="user">
-    <h1>Submitted Forms</h1>
+    <h1>Manage Submissions</h1>
     <v-card class="mt-5" color="#fff2d5">
-      <v-card-title>Travel Requests</v-card-title>
+      <v-card-title>Pending Approvals</v-card-title>
       <v-card-text>
         <v-data-table
           :headers="headers"
@@ -16,8 +16,24 @@
           <template v-slot:item.departureDate="{ item }">
             <span>{{ new Date(item.departureDate).toDateString() }}</span>
           </template></v-data-table
-        ><v-btn to="/TravelRequest/request" color="success"
-          >New Travel Request</v-btn
+        >
+      </v-card-text>
+    </v-card>
+    <v-card class="mt-5" color="#fff2d5">
+      <v-card-title>Approved Trips</v-card-title>
+      <v-card-text>
+        <v-data-table
+          :headers="headers"
+          :items="forms"
+          :items-per-page="20"
+          class="elevation-1"
+        >
+          <template v-slot:item.datebacktowork="{ item }">
+            <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+          </template>
+          <template v-slot:item.departureDate="{ item }">
+            <span>{{ new Date(item.departureDate).toDateString() }}</span>
+          </template></v-data-table
         ></v-card-text
       >
     </v-card>

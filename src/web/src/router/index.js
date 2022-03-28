@@ -9,8 +9,11 @@ import LoginComplete from '../views/LoginComplete';
 import Profile from '../views/Profile';
 import store from '../store';
 import AdminUserForm from '../components/Administration/UserManagement/UserComponent/Form';
+import AdminDashboard from '../components/Administration/Administration';
+import UserManagement from '../components/Administration/UserManagement/Grid';
 import TravelRequest from '../components/TravelRequest/TravelRequest';
 import FormList from '../components/TravelRequest/FormList';
+import ManagerView from '../components/TravelRequest/ManagerView';
 
 Vue.use(VueRouter);
 
@@ -62,6 +65,16 @@ const routes = [
 		component: AdminUserForm,
 	},
 	{
+		path: '/admin',
+		name: 'AdminDashboard',
+		component: AdminDashboard,
+	},
+	{
+		path: '/administration/users',
+		name: 'User Management',
+		component: UserManagement,
+	},
+	{
 		path: '*',
 		name: 'Not Found',
 		component: NotFound,
@@ -75,6 +88,11 @@ const routes = [
 		path: '/forms',
 		name: 'TravelForms',
 		component: FormList,
+	},
+	{
+		path: '/managerView',
+		name: 'managerView',
+		component: ManagerView,
 	},
 ];
 

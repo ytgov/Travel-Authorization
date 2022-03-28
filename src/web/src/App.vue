@@ -54,7 +54,7 @@
         <v-menu offset-y class="ml-0">
           <template v-slot:activator="{ on, attrs }">
             <v-btn text color="primary" v-bind="attrs" v-on="on">
-              Navigation <v-icon>mdi-menu-down</v-icon>
+              Navigation<v-icon>mdi-menu-down</v-icon>
             </v-btn>
           </template>
 
@@ -65,7 +65,7 @@
             <v-list-item to="/forms">
               <v-list-item-title>Forms</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/manage">
+            <v-list-item to="/managerView">
               <v-list-item-title>Manager View</v-list-item-title>
             </v-list-item>
           </v-list>

@@ -12,3 +12,4 @@ export const YTPLACE_URL = `${config.apiBaseUrl}/api/ytplace`;
 
 export const FORM_URL = `${config.apiBaseUrl}/api/form`;
 export const DESTINATION_URL = `${config.apiBaseUrl}/api/lookup/destination`;
+export const USERS_URL = `${config.apiBaseUrl}/api/user`;
