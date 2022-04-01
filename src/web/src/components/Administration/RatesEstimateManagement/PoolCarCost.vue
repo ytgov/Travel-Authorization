@@ -6,7 +6,7 @@
     <v-data-table :headers="headers" :items="vehicles" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>Pool Vehicle Rental Cost</v-toolbar-title>
+          <v-toolbar-title>Pool Vehicle Cost Estimate</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
@@ -21,26 +21,24 @@
               </v-card-title>
 
               <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        dense
-                        outlined
-                        v-model="editedItem.type"
-                        label="Type"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field
-                        dense
-                        outlined
-                        v-model="editedItem.cost"
-                        label="Cost per km"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
+                <v-row>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      dense
+                      outlined
+                      v-model="editedItem.type"
+                      label="Type"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field
+                      dense
+                      outlined
+                      v-model="editedItem.cost"
+                      label="Cost per km"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
               </v-card-text>
 
               <v-card-actions>
