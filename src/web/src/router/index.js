@@ -14,6 +14,10 @@ import UserManagement from '../components/Administration/UserManagement/Grid';
 import TravelRequest from '../components/TravelRequest/TravelRequest';
 import FormList from '../components/TravelRequest/FormList';
 import ManagerView from '../components/TravelRequest/ManagerView';
+import FlightEstimate from '../components/Administration/RatesEstimateManagement/AirEstimate';
+import PoolCarCost from '../components/Administration/RatesEstimateManagement/PoolCarCost';
+import RentalCarEstimates from '../components/Administration/RatesEstimateManagement/RentalCarEstimate';
+import YGRates from '../components/Administration/RatesEstimateManagement/YGRates';
 
 Vue.use(VueRouter);
 
@@ -65,7 +69,7 @@ const routes = [
 		component: AdminUserForm,
 	},
 	{
-		path: '/admin',
+		path: '/administration',
 		name: 'AdminDashboard',
 		component: AdminDashboard,
 	},
@@ -90,9 +94,29 @@ const routes = [
 		component: FormList,
 	},
 	{
-		path: '/managerView',
-		name: 'managerView',
+		path: '//managerView',
+		name: 'ManagerView',
 		component: ManagerView,
+	},
+	{
+		path: '/administration/flightEstimate',
+		name: 'FlightEstimate',
+		component: FlightEstimate,
+	},
+	{
+		path: '/administration/poolCarCost',
+		name: 'PoolCarCost',
+		component: PoolCarCost,
+	},
+	{
+		path: '/administration/rentalCarEstimates',
+		name: 'RentalCarEstimates',
+		component: RentalCarEstimates,
+	},
+	{
+		path: '/administration/ygRates',
+		name: 'YGRates',
+		component: YGRates,
 	},
 ];
 

@@ -1,8 +1,19 @@
 <template>
-    <v-app>
-        <v-container>
-            <v-breadcrumbs></v-breadcrumbs>
-            <H1>Flight Estimates</H1>
-        </v-container>
-    </v-app>
+  <v-app>
+    <v-container fluid>
+      <H1>Flight Estimates</H1>
+      <Breadcrumbs />
+    </v-container>
+  </v-app>
 </template>
+<script>
+import Breadcrumbs from "../../Breadcrumbs.vue";
+export default {
+  name: "flightEstimates",
+  components: {
+    Breadcrumbs,
+  },
+};
+</script>
+
+

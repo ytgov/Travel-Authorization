@@ -21,28 +21,6 @@ export default {
 				console.error(error);
 			});
 	},
-	async getById(aircrashId) {
-		return await api
-			.get(`users/${aircrashId}`)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
-	async put(aircrashId, data) {
-		return await api
-			.put(`users/${aircrashId}`, data)
-			.then((res) => {
-				return res.data;
-			})
-			.catch((error) => {
-				// handle error
-				console.error(error);
-			});
-	},
 	async putAccess(userID, data) {
 		return await api
 			.put(`users/access/${userID}`, data)
