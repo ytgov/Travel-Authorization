@@ -18,6 +18,7 @@ import FlightEstimate from '../components/Administration/RatesEstimateManagement
 import PoolCarCost from '../components/Administration/RatesEstimateManagement/PoolCarCost';
 import RentalCarEstimates from '../components/Administration/RatesEstimateManagement/RentalCarEstimate';
 import YGRates from '../components/Administration/RatesEstimateManagement/YGRates';
+import Test from '../components/Test';
 
 Vue.use(VueRouter);
 
@@ -64,7 +65,7 @@ const routes = [
 		component: AdminUserForm,
 	},
 	{
-		path: '/admin/users/edit/:id',
+		path: '/administration/users/edit/:id',
 		name: 'AdminUserEdit',
 		component: AdminUserForm,
 	},
@@ -94,7 +95,7 @@ const routes = [
 		component: FormList,
 	},
 	{
-		path: '//managerView',
+		path: '/managerView',
 		name: 'ManagerView',
 		component: ManagerView,
 	},
@@ -117,6 +118,11 @@ const routes = [
 		path: '/administration/ygRates',
 		name: 'YGRates',
 		component: YGRates,
+	},
+	{
+		path: '/test',
+		name: 'Test',
+		component: Test,
 	},
 ];
 

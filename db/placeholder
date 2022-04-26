@@ -1,0 +1,205 @@
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Community Services', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Economic Development', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Education', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Energy, Mines and Resources', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Environment', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Executive Council Office', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Finance', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'French Language Services Directorate', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Health and Social Services', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Highways and Public Works', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Justice', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Public Service Commission', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Tourism and Culture', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Women Gender Equity Directorate', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Corporations', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Energy Corporation', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Development Corporation', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Housing Corporation', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Liquor Corporation', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Lottery Commission and Lotteries Yukon', 0);
+INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Workers' Compensation Health and Safety Board', 0);
+
+CS
+Building Safety
+Community Affairs
+Community Operations
+Corporate Affairs
+Emergency Measures Organization
+Emergency Medical Services
+Employment Standards
+Fire Marshal's Office
+Infrastructure Development
+Land Development
+Professional Licensing and Regulatory Affairs
+Property Assessment and Taxation
+Residential Tenancies Office
+Sport and Recreation
+Wildland Fire Management
+Yukon Public Libraries
+Organizational structure
+
+EcDev
+Community Development Fund (CDF)
+Economic Development Fund
+Immigration
+Media Development
+
+Edu
+Apprenticeship Training
+Communications
+Curriculum and Assessment
+Deputy Minister's Office
+Early Learning and Child Care
+First Nations Initiatives
+French Programs
+Human Resources
+Post-Secondary and Labour Market
+Schools and Student Services
+Student Financial Assistance
+Student Support Services
+Student Training and Employment Program (STEP)
+Student Transportation
+Teacher Certification
+Teaching Employment
+Organizational structure
+
+EMR
+Agriculture
+Assessment and Abandoned Mines
+Communications
+Compliance Monitoring and Inspections
+Energy
+Energy, Mines and Resources Library
+Forest Management
+Land Management
+Land Planning
+Mineral Resources
+Oil and Gas Resources
+Strategic Alliances
+Yukon Geological Survey
+
+Env
+Client Solutions
+Animal Health Unit
+Climate Change Secretariat
+Conservation Officer Services
+Environmental Protection and Assessment
+Fish and Wildlife
+Water Resources
+Yukon Parks
+
+ExeCo
+Aboriginal Relations
+Office of the Science Advisor
+Intergovernmental Relations
+Youth Directorate
+Government Internal Audit Services
+Yukon Water Board
+Major Projects Yukon
+
+Fin
+General finance enquiries
+Communications
+Accounts Payable
+Accounts Receivable
+Tax Administration
+Yukon Bureau of Statistics
+
+FLS
+Reception
+Communications and policy
+Finance and planning
+French Web and social media coordination
+Language training and assessment
+Program development
+Translation
+
+HSS
+Corporate Services
+1Health
+Finance
+Policy and Program Development
+Continuing Care
+Program Support
+Safety and Clinical Excellence
+Quality, Risk and Clinical Practice
+Clinical Psychology
+Extended Care Services
+Care and Community
+Aging in Place
+Health Services
+Insured Health and Hearing Services
+Hearing Services
+Extended Benefits and Pharmaceutical Programs
+Registration, Physician and Hospital Claims, Medical Travel
+Vital Statistics
+Community Nursing
+Clinical Practice and Programs
+Chronic Conditions Support Program
+Community Health Programs
+Yukon Children’s Dental Program
+Environmental Health Services
+Health Promotion
+Yukon Communicable Disease Control
+Immunization Program
+Social Services
+
+PSC
+People and Culture
+Communications, Engagement and Strategic Initiatives
+Diversity and Inclusion Services
+People Metrics, Analytics and Projects
+Organizational Development Branch
+Human Resource Service Centre
+Staffing Management and Solutions
+Human Resource Shared Services
+Compensation and Classification
+Human Resource Management Systems
+Policy and Planning
+Finance and Administration
+Human Resource Business Partner
+Labour Relations
+Health, Safety and Wellbeing
+Respectful Workplace Office
+
+TC
+Tourism Marketing
+Industry Services
+Visitor Services
+Arts
+Museums and Heritage
+Collections care
+Yukon Archaeology Program
+Yukon Palaeontology Program
+Yukon Geographical Place Names Program
+Historic Sites
+Yukon Archives
+
+Women Gender
+Women and Gender Equity Directorate
+
+Liq
+Corporate services
+Operations
+Regulatory services
+Sales and distribution
+
+HC
+Corporate Services
+Policy and Communications
+Finance and Risk Management
+Information Management Technology
+Operations
+Capital Development and Maintenance
+Housing Operations
+
+Work Comp
+Assessments
+Claimant Services
+Corporate Services
+Human Resources
+Legislative Development
+Legal Services
+Occupational Health and Safety
+Operations

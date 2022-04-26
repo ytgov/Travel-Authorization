@@ -21,3 +21,54 @@ lookupRouter.get(
 		}
 	}
 );
+
+lookupRouter.get(
+	'/departments',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		try {
+			let result = await db('departments')
+				.withSchema('travel')
+				.select('id', 'name', 'type', 'ownedby')
+				.where('type', '=', 'department');
+			res.status(200).json(result);
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Internal Server Error');
+		}
+	}
+);
+
+lookupRouter.get(
+	'/department/:id',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		try {
+			let result = await db('departments')
+				.withSchema('travel')
+				.select('id', 'name', 'type', 'ownedby')
+				.where('ownedby', '=', req.params.id)
+				.andWhere('type', '=', 'branch');
+			res.status(200).json(result);
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Internal Server Error');
+		}
+	}
+);
+
+lookupRouter.get(
+	'/roles',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		try {
+			let result = await db('roles')
+				.withSchema('travel')
+				.select('id', 'rolename');
+			res.status(200).json(result);
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Internal Server Error');
+		}
+	}
+);

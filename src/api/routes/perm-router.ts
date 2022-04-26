@@ -6,32 +6,16 @@ import { UserService } from '../services';
 
 const db = knex(DB_CONFIG);
 
-export const formRouter = express.Router();
+export const permRouter = express.Router();
 const userService = new UserService();
 
-formRouter.get(
+permRouter.get(
 	'/',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		try {
-			let user = await userService.getByEmail(req.user.email);
-			let auth = await db('auth')
-				.withSchema('travel')
-				.select('*')
-				.where('userid', '=', user.id);
-
-			for (let index = 0; index < auth.length; index++) {
-				auth[index].stops = await db('stops')
-					.withSchema('travel')
-					.select('*')
-					.where('taid', '=', auth[index].taid);
-				let departureDate = await db('stops')
-					.withSchema('travel')
-					.min('arrivaldate')
-					.where('taid', '=', auth[index].taid);
-				auth[index].departureDate = departureDate[0].min;
-			}
-			res.status(200).json(auth);
+			let users = await userService.getAccessFor('Max.parker@yukon.ca');
+			res.status(200).json(users);
 		} catch (error: any) {
 			console.log(error);
 			res.status(500).json('Internal Server Error');
@@ -39,7 +23,7 @@ formRouter.get(
 	}
 );
 
-formRouter.post(
+permRouter.post(
 	'/',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
@@ -84,7 +68,7 @@ formRouter.post(
 	}
 );
 
-formRouter.delete(
+permRouter.delete(
 	'/:id',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
@@ -102,7 +86,7 @@ formRouter.delete(
 	}
 );
 
-formRouter.put(
+permRouter.put(
 	'/:id',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {

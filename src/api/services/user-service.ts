@@ -1,6 +1,6 @@
 import Knex from 'knex';
 import { DB_CONFIG } from '../config';
-import _ from 'lodash';
+import _, { map } from 'lodash';
 export class UserService {
 	private db: Knex;
 
@@ -46,12 +46,68 @@ export class UserService {
 		return this.db('user').withSchema('travel').where({ email }).first();
 	}
 
+	async getById(id: string): Promise<any | undefined> {
+		return this.db('user').withSchema('travel').where({ id }).first();
+	}
+
 	async getAccessFor(email: string): Promise<string[]> {
-		return ['asdf'];
+		return this.db('user')
+			.withSchema('travel')
+			.where({ email })
+			.select('roles');
 	}
 
 	async setAccess(email: string, access: string[]) {
-		return '';
+		return this.db('user')
+			.withSchema('travel')
+			.where({ email })
+			.update({ roles: access });
+	}
+
+	async getDepartmentAccess(id: string): Promise<number[]> {
+		return this.db('departmentassignments')
+			.withSchema('travel')
+			.where('userid', '=', id)
+			.select('*');
+	}
+
+	async saveDepartmentAccess(id: string, access: number[]) {
+		await this.db('departmentassignments')
+			.withSchema('travel')
+			.where('userid', '=', id)
+			.del();
+		if (access) {
+			const fieldsToInsert = access.map((entry) => ({
+				userid: id,
+				objectid: entry,
+			}));
+			return this.db('departmentassignments')
+				.withSchema('travel')
+				.insert(fieldsToInsert);
+		}
+	}
+
+	async getRoleAccess(id: string): Promise<number[]> {
+		return this.db('roleassignments')
+			.withSchema('travel')
+			.where('userid', '=', id)
+			.select('*');
+	}
+
+	async saveRoleAccess(id: string, access: number[]) {
+		await this.db('roleassignments')
+			.withSchema('travel')
+			.where('userid', '=', id)
+			.del();
+		if (access) {
+			const fieldsToInsert = access.map((entry) => ({
+				userid: id,
+				roleid: entry,
+			}));
+			return this.db('roleassignments')
+				.withSchema('travel')
+				.insert(fieldsToInsert);
+		}
 	}
 
 	async makeDTO(userRaw: any) {
