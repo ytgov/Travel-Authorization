@@ -1,149 +1,140 @@
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Community Services', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Economic Development', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Education', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Energy, Mines and Resources', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Environment', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Executive Council Office', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Finance', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'French Language Services Directorate', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Health and Social Services', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Highways and Public Works', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Justice', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Public Service Commission', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Tourism and Culture', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Women Gender Equity Directorate', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Corporations', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Energy Corporation', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Development Corporation', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Housing Corporation', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Liquor Corporation', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Lottery Commission and Lotteries Yukon', 0);
-INSERT INTO travel."departments" (id, body, ownedBy) VALUES (1, 'Yukon Workers' Compensation Health and Safety Board', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (1, 'Community Services', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (2, 'Economic Development', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (3, 'Education', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (4, 'Energy, Mines and Resources', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (5, 'Environment', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (6, 'Executive Council Office', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (7, 'Finance', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (8, 'French Language Services Directorate', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (9, 'Health and Social Services', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (10, 'Highways and Public Works', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (11, 'Justice', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (12, 'Public Service Commission', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (13, 'Tourism and Culture', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (14, 'Women Gender Equity Directorate', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (15, 'Corporations', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (16, 'Yukon Energy Corporation', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (17, 'Yukon Development Corporation', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (18, 'Yukon Housing Corporation', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (19, 'Yukon Liquor Corporation', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (20, 'Yukon Lottery Commission and Lotteries Yukon', 'department', 0);
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (21, 'Yukon Workers'' Compensation Health and Safety Board', 'department', 0);
 
-CS
-Building Safety
-Community Affairs
-Community Operations
-Corporate Affairs
-Emergency Measures Organization
-Emergency Medical Services
-Employment Standards
-Fire Marshal's Office
-Infrastructure Development
-Land Development
-Professional Licensing and Regulatory Affairs
-Property Assessment and Taxation
-Residential Tenancies Office
-Sport and Recreation
-Wildland Fire Management
-Yukon Public Libraries
-Organizational structure
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (22, 'Building Safety', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (23, 'Community Affairs', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (24, 'Community Operations', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (25, 'Corporate Affairs', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (26, 'Emergency Measures Organization', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (27, 'Emergency Medical Services', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (28, 'Employment Standards', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (29, 'Fire Marshal''s Office', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (30, 'Infrastructure Development', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (31, 'Land Development', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (32, 'Professional Licensing and Regulatory Affairs', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (33, 'Property Assessment and Taxation', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (34, 'Residential Tenancies Office', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (35, 'Sport and Recreation', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (36, 'Wildland Fire Management', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (37, 'Yukon Public Libraries', 'branch', 1)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (38, 'Organizational structure', 'branch', 1)
 
-EcDev
-Community Development Fund (CDF)
-Economic Development Fund
-Immigration
-Media Development
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (39, 'Community Development Fund (CDF)', 'branch', 2)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (40, 'Economic Development Fund', 'branch', 2)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (41, 'Immigration', 'branch', 2)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (42, 'Media Development', 'branch', 2)
 
-Edu
-Apprenticeship Training
-Communications
-Curriculum and Assessment
-Deputy Minister's Office
-Early Learning and Child Care
-First Nations Initiatives
-French Programs
-Human Resources
-Post-Secondary and Labour Market
-Schools and Student Services
-Student Financial Assistance
-Student Support Services
-Student Training and Employment Program (STEP)
-Student Transportation
-Teacher Certification
-Teaching Employment
-Organizational structure
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (42, 'Apprenticeship Training', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (43, 'Communications', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (44, 'Curriculum and Assessment', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (45, 'Deputy Minister''s Office', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (46, 'Early Learning and Child Care', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (47, 'First Nations Initiatives', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (48, 'French Programs', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (49, 'Human Resources', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (50, 'Post-Secondary and Labour Market', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (51, 'Schools and Student Services', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (52, 'Student Financial Assistance', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (53, 'Student Support Services', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (54, 'Student Training and Employment Program (STEP)', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (55, 'Student Transportation', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (56, 'Teacher Certification', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (57, 'Teaching Employment', 'branch', 3)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (58, 'Organizational structure', 'branch', 3)
 
-EMR
-Agriculture
-Assessment and Abandoned Mines
-Communications
-Compliance Monitoring and Inspections
-Energy
-Energy, Mines and Resources Library
-Forest Management
-Land Management
-Land Planning
-Mineral Resources
-Oil and Gas Resources
-Strategic Alliances
-Yukon Geological Survey
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (59, 'Agriculture', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (60, 'Assessment and Abandoned Mines', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (61, 'Communications', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (62, 'Compliance Monitoring and Inspections', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (63, 'Energy', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (64, 'Energy, Mines and Resources Library', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (65, 'Forest Management', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (66, 'Land Management', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (67, 'Land Planning', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (68, 'Mineral Resources', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (69, 'Oil and Gas Resources', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (70, 'Strategic Alliances', 'branch', 4)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (71, 'Yukon Geological Survey', 'branch', 4)
 
-Env
-Client Solutions
-Animal Health Unit
-Climate Change Secretariat
-Conservation Officer Services
-Environmental Protection and Assessment
-Fish and Wildlife
-Water Resources
-Yukon Parks
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (72, 'Client Solutions', 'branch', 5)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (73, 'Animal Health Unit', 'branch', 5)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (74, 'Climate Change Secretariat', 'branch', 5)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (75, 'Conservation Officer Services', 'branch', 5)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (76, 'Environmental Protection and Assessment', 'branch', 5)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (77, 'Fish and Wildlife', 'branch', 5)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (78, 'Water Resources', 'branch', 5)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (79, 'Yukon Parks', 'branch', 5)
 
-ExeCo
-Aboriginal Relations
-Office of the Science Advisor
-Intergovernmental Relations
-Youth Directorate
-Government Internal Audit Services
-Yukon Water Board
-Major Projects Yukon
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (80, 'Aboriginal Relations', 'branch', 6)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (81, 'Office of the Science Advisor', 'branch', 6)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (82, 'Intergovernmental Relations', 'branch', 6)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (83, 'Youth Directorate', 'branch', 6)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (84, 'Government Internal Audit Services', 'branch', 6)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (85, 'Yukon Water Board', 'branch', 6)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (86, 'Major Projects Yukon', 'branch', 6)
 
-Fin
-General finance enquiries
-Communications
-Accounts Payable
-Accounts Receivable
-Tax Administration
-Yukon Bureau of Statistics
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (87, 'General finance enquiries', 'branch', 7)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (88, 'Communications', 'branch', 7)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (89, 'Accounts Payable', 'branch', 7)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (90, 'Accounts Receivable', 'branch', 7)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (91, 'Tax Administration', 'branch', 7)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (92, 'Yukon Bureau of Statistics', 'branch', 7)
 
-FLS
-Reception
-Communications and policy
-Finance and planning
-French Web and social media coordination
-Language training and assessment
-Program development
-Translation
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (93, 'Reception', 'branch', 8)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (94, 'Communications and policy', 'branch', 8)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (95, 'Finance and planning', 'branch', 8)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (96, 'French Web and social media coordination', 'branch', 8)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (97, 'Language training and assessment', 'branch', 8)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (98, 'Program development', 'branch', 8)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (99, 'Translation', 'branch', 8)
 
-HSS
-Corporate Services
-1Health
-Finance
-Policy and Program Development
-Continuing Care
-Program Support
-Safety and Clinical Excellence
-Quality, Risk and Clinical Practice
-Clinical Psychology
-Extended Care Services
-Care and Community
-Aging in Place
-Health Services
-Insured Health and Hearing Services
-Hearing Services
-Extended Benefits and Pharmaceutical Programs
-Registration, Physician and Hospital Claims, Medical Travel
-Vital Statistics
-Community Nursing
-Clinical Practice and Programs
-Chronic Conditions Support Program
-Community Health Programs
-Yukon Children’s Dental Program
-Environmental Health Services
-Health Promotion
-Yukon Communicable Disease Control
-Immunization Program
-Social Services
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (100, 'Corporate Services', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (101, 'Health', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (102, 'Finance', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (103, 'Policy and Program Development', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (104, 'Continuing Care', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (105, 'Program Support', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (106, 'Safety and Clinical Excellence', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (107, 'Quality, Risk and Clinical Practice', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (108, 'Clinical Psychology', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (109, 'Extended Care Services', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (110, 'Care and Community', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (111), 'Aging in Place', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (112, 'Health Services', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (113, 'Insured Health and Hearing Services', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (114, 'Hearing Services', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (115, 'Extended Benefits and Pharmaceutical Programs', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (116, 'Registration, Physician and Hospital Claims, Medical Travel', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (117, 'Vital Statistics', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (118, 'Community Nursing', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (119, 'Clinical Practice and Programs', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (120, 'Chronic Conditions Support Program', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (121, 'Community Health Programs', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (122, 'Yukon Children’s Dental Program', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (123, 'Environmental Health Services', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (124, 'Health Promotion', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (125, 'Yukon Communicable Disease Control', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (126, 'Immunization Program', 'branch', 9)
+INSERT INTO travel."departments" (id, name, type, ownedBy) VALUES (127, 'Social Services', 'branch', 9)
 
 PSC
 People and Culture

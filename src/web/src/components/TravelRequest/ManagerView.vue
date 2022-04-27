@@ -10,6 +10,9 @@
           :items-per-page="20"
           class="elevation-1"
         >
+          <template v-slot:item.firstname="{ item }">
+            <span>{{ item.firstname }} {{ item.lastname }}</span>
+          </template>
           <template v-slot:item.datebacktowork="{ item }">
             <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
           </template>
@@ -28,6 +31,9 @@
           :items-per-page="20"
           class="elevation-1"
         >
+          <template v-slot:item.firstname="{ item }">
+            <span>{{ item.firstname }} {{ item.lastname }}</span>
+          </template>
           <template v-slot:item.datebacktowork="{ item }">
             <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
           </template>
@@ -49,6 +55,7 @@ export default {
     headers: [
       { text: "TA Form Number", value: "taid" },
       { text: "Department/Branch", value: "department" },
+      { text: "Requestee", value: "firstname" },
       { text: "Departure Date", value: "departureDate" },
       { text: "Return Date", value: "datebacktowork" },
     ],

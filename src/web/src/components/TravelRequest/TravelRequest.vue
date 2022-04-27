@@ -35,6 +35,9 @@
             dense
             required
             :items="depts"
+            item-text="name"
+            item-value="id"
+            @input="getBranches"
           ></v-autocomplete>
         </v-col>
         <v-col cols="4">
@@ -45,6 +48,8 @@
             dense
             required
             :items="branches"
+            item-text="name"
+            item-value="id"
           ></v-autocomplete>
         </v-col>
       </v-row>
@@ -226,12 +231,13 @@
 </template>
 
 <script>
-import { DESTINATION_URL, FORM_URL } from "../../urls";
+import { DESTINATION_URL, FORM_URL, LOOKUP_URL } from "../../urls";
 import axios from "axios";
 export default {
   name: "Form",
   created() {
     this.getDestinations();
+    this.getDepartments();
     this.stops.push({
       destination: "",
       arrivaldate: this.getToday(),
@@ -262,30 +268,9 @@ export default {
         (v && v.length <= 10) || "Last name must be less than 10 characters",
     ],
     department: "",
-    depts: [
-      "Community Services",
-      "Economic Development",
-      "Education",
-      "Energy, Mines and Resources",
-      "Environment",
-      "Executive Council Office",
-      "Finance",
-      "French Language Services Directorate",
-      "Health and Social Services",
-      "Highways and Public Works",
-      "Justice",
-      "Public Service Commission",
-      "Tourism and Culture",
-      "Women Gender Equity Directorate",
-      "Yukon Energy Corporation",
-      "Yukon Development Corporation",
-      "Yukon Housing Corporation",
-      "Yukon Liquor Corporation",
-      "Yukon Lottery Commission and Lotteries Yukon",
-      "Yukon Workers' Compensation Health and Safety Board",
-    ],
+    depts: [],
     branch: "",
-    branches: ["ICT", "TAD", "TEB", "TMB"],
+    branches: [],
     email: "",
     emailRules: [
       (v) => !!v || "Email is required",
@@ -344,7 +329,16 @@ export default {
           });
         });
       });
-      console.log(this.destinations);
+    },
+    getDepartments() {
+      axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
+        this.depts = resp.data;
+      });
+    },
+    getBranches() {
+      axios.get(`${LOOKUP_URL}/department/${this.department}`).then((resp) => {
+        this.branches = resp.data;
+      });
     },
     saveForm() {
       this.showError = false;

@@ -111,11 +111,16 @@
                     clearable
                     background-color="white"
                     hide-details
+                    @input="getBranches"
                   ></v-select>
                 </v-col>
                 <v-col cols="6">
                   <v-select
-                    label="Units"
+                    :items="branches"
+                    item-text="fullName"
+                    item-value="id"
+                    v-model="pendingBranches"
+                    label="Branches"
                     outlined
                     dense
                     multiple
@@ -194,28 +199,29 @@ export default {
 
     pendingRoles: [],
     pendingDepartments: [],
+    pendingBranches: [],
 
     departments: [],
+    branches: [],
     roles: [],
     showAccessDialog: false,
   }),
   async mounted() {
-    // this.loadRoles();
-    this.loadUser(this.$route.params.id);
     this.loadDepartments();
     this.loadRoles();
+    this.getBranches();
+    this.loadUser(this.$route.params.id);
   },
   computed: {},
   watch: {},
   methods: {
     async doSave() {
       this.saveAccess();
-      this.loadUser(this.$route.params.id);
     },
     async saveAccess() {
       // await this.saveUserAccess(this.accessItem);
       let permsObject = {
-        departments: this.pendingDepartments,
+        departments: [...this.pendingDepartments, ...this.pendingBranches],
         roles: this.pendingRoles,
       };
       axios
@@ -232,9 +238,12 @@ export default {
         else this.user.status = "Inactive";
       });
       axios.get(`${USERS_URL}/${id}/permissions`).then((resp) => {
-        this.pendingDepartments = resp.data.departments.map((entry) => {
-          return entry.objectid;
-        });
+        for (let i = 0; i < resp.data.departments.length; i++) {
+          if (this.departments[resp.data.departments[i].objectid])
+            this.pendingDepartments.push(resp.data.departments[i].objectid);
+          else this.pendingBranches.push(resp.data.departments[i].objectid);
+        }
+
         this.pendingRoles = resp.data.roles.map((entry) => {
           return entry.roleid;
         });
@@ -244,6 +253,23 @@ export default {
       axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
         this.departments = resp.data;
       });
+    },
+    getBranches() {
+      this.branches = [];
+      for (let i = 0; i < this.pendingDepartments.length; i++) {
+        axios
+          .get(`${LOOKUP_URL}/department/${this.pendingDepartments[i]}`)
+          .then((resp) => {
+            if (resp.data.length > 0) {
+              for (let j = 0; j < resp.data.length; j++) {
+                resp.data[
+                  j
+                ].fullName = `(${this.departments[i].name}) - ${resp.data[j].name}`;
+              }
+              this.branches = [...this.branches, ...resp.data];
+            }
+          });
+      }
     },
     loadUnits() {
       axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
