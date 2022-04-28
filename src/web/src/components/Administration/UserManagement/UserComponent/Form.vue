@@ -97,7 +97,7 @@
                     </v-date-picker>
                   </v-menu>
                 </v-col> -->
-                <v-col cols="6">
+                <v-col cols="12">
                   <v-select
                     :items="departments"
                     item-text="name"
@@ -114,9 +114,9 @@
                     @input="getBranches"
                   ></v-select>
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="12">
                   <v-select
-                    :items="branches"
+                    :items="myBranches"
                     item-text="fullName"
                     item-value="id"
                     v-model="pendingBranches"
@@ -207,12 +207,18 @@ export default {
     showAccessDialog: false,
   }),
   async mounted() {
-    this.loadDepartments();
-    this.loadRoles();
+    await this.loadDepartments();
+    await this.loadRoles();
+    await this.loadUser(this.$route.params.id);
     this.getBranches();
-    this.loadUser(this.$route.params.id);
   },
-  computed: {},
+  computed: {
+    myBranches: function () {
+      return this.branches.filter((b) => {
+        return this.pendingDepartments.indexOf(b.ownedby) >= 0;
+      });
+    },
+  },
   watch: {},
   methods: {
     async doSave() {
@@ -220,6 +226,10 @@ export default {
     },
     async saveAccess() {
       // await this.saveUserAccess(this.accessItem);
+      this.pendingBranches = this.pendingBranches.filter((b) => {
+        let found = this.branches.find((x) => x.id === b);
+        return this.pendingDepartments.indexOf(found.ownedby) >= 0;
+      });
       let permsObject = {
         departments: [...this.pendingDepartments, ...this.pendingBranches],
         roles: this.pendingRoles,
@@ -231,7 +241,7 @@ export default {
         });
       // this.showAccessDialog = false;
     },
-    loadUser(id) {
+    async loadUser(id) {
       axios.get(`${USERS_URL}/${id}`).then((resp) => {
         this.user = resp.data;
         if (this.user.is_active == 1) this.user.status = "Active";
@@ -249,27 +259,15 @@ export default {
         });
       });
     },
-    loadDepartments() {
-      axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
+    async loadDepartments() {
+      return axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
         this.departments = resp.data;
       });
     },
-    getBranches() {
-      this.branches = [];
-      for (let i = 0; i < this.pendingDepartments.length; i++) {
-        axios
-          .get(`${LOOKUP_URL}/department/${this.pendingDepartments[i]}`)
-          .then((resp) => {
-            if (resp.data.length > 0) {
-              for (let j = 0; j < resp.data.length; j++) {
-                resp.data[
-                  j
-                ].fullName = `(${this.departments[i].name}) - ${resp.data[j].name}`;
-              }
-              this.branches = [...this.branches, ...resp.data];
-            }
-          });
-      }
+    async getBranches() {
+      await axios.get(`${LOOKUP_URL}/branches`).then((resp) => {
+        this.branches = resp.data;
+      });
     },
     loadUnits() {
       axios.get(`${LOOKUP_URL}/departments`).then((resp) => {

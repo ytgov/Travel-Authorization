@@ -30,6 +30,7 @@
           :items="forms"
           :items-per-page="20"
           class="elevation-1"
+          @click:row="handleClick"
         >
           <template v-slot:item.firstname="{ item }">
             <span>{{ item.firstname }} {{ item.lastname }}</span>
@@ -68,6 +69,10 @@ export default {
       axios.get(`${FORM_URL}`).then((resp) => {
         this.forms = resp.data;
       });
+    },
+    handleClick(value) {
+      //Redirects the user to the edit user form
+      this.$router.push(`/managerView/forms/view/${value.taid}`);
     },
   },
 };

@@ -19,6 +19,7 @@ import PoolCarCost from '../components/Administration/RatesEstimateManagement/Po
 import RentalCarEstimates from '../components/Administration/RatesEstimateManagement/RentalCarEstimate';
 import YGRates from '../components/Administration/RatesEstimateManagement/YGRates';
 import Test from '../components/Test';
+import ManagerFormView from '../components/TravelRequest/ManagerFormView';
 
 Vue.use(VueRouter);
 
@@ -98,6 +99,11 @@ const routes = [
 		path: '/managerView',
 		name: 'ManagerView',
 		component: ManagerView,
+	},
+	{
+		path: '/managerView/forms/view/:id',
+		name: 'ManagerFormView',
+		component: ManagerFormView,
 	},
 	{
 		path: '/administration/flightEstimate',

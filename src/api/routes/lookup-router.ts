@@ -40,6 +40,33 @@ lookupRouter.get(
 );
 
 lookupRouter.get(
+	'/branches',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		try {
+			let result = await db('departments')
+				.withSchema('travel')
+				.select(
+					'departments.id',
+					'departments.name',
+					'departments.type',
+					'departments.ownedby',
+					'b.name as department'
+				)
+				.where('departments.type', '=', 'branch')
+				.innerJoin('departments as b', 'departments.ownedby', 'b.id');
+			result.map((element) => {
+				element.fullName = `${element.department} - ${element.name}`;
+			});
+			res.status(200).json(result);
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Internal Server Error');
+		}
+	}
+);
+
+lookupRouter.get(
 	'/department/:id',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
