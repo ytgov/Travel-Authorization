@@ -35,6 +35,16 @@ userRouter.get('/', async (req: Request, res: Response) => {
 	}
 });
 
+userRouter.get('/unit', async (req: Request, res: Response) => {
+	try {
+		let unit = await userService.getUnit(req.user?.email);
+		res.status(200).json(unit);
+	} catch (error: any) {
+		console.log(error);
+		res.status(500).json('Internal Server Error');
+	}
+});
+
 userRouter.put('/:id/permissions', async (req: Request, res: Response) => {
 	try {
 		await userService.saveDepartmentAccess(req.params.id, req.body.departments);

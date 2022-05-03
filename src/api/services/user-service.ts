@@ -1,6 +1,8 @@
 import Knex from 'knex';
 import { DB_CONFIG } from '../config';
 import _, { map } from 'lodash';
+import axios from 'axios';
+import { timeStamp } from 'console';
 export class UserService {
 	private db: Knex;
 
@@ -108,6 +110,27 @@ export class UserService {
 				.withSchema('travel')
 				.insert(fieldsToInsert);
 		}
+	}
+
+	async getUnit(email: string) {
+		let unitSearch = await axios
+			.get(`http://directory-api-dev.ynet.gov.yk.ca/employees`)
+			.then((resp: any) => {
+				let match = resp.data.employees.filter((user: any) => {
+					return user.email == email;
+				});
+				return match[0];
+			});
+		let unit = {
+			department: unitSearch.department,
+			division: unitSearch.division,
+			branch: unitSearch.branch,
+			unit: unitSearch.unit,
+			mailcode: unitSearch.mailcode,
+			manager: unitSearch.manager,
+		};
+
+		return unit;
 	}
 
 	async makeDTO(userRaw: any) {
