@@ -1,7 +1,6 @@
 <template>
-  <div class="books">
+  <div>
     <h1>Travel Request</h1>
-    <v-divider />
     <h2>General Information</h2>
 
     <v-form>
@@ -9,129 +8,122 @@
         <v-col class="col-4">
           <v-text-field
             dense
-            v-model="firstName"
+            v-model="form.firstName"
             outlined
             label="First name"
             required
             :rules="firstNameRules"
+            hide-details
+            :disabled="review"
           ></v-text-field>
         </v-col>
         <v-col class="col-4">
           <v-text-field
             dense
-            v-model="lastName"
+            v-model="form.lastName"
             outlined
             label="Last name"
             required
             :rules="lastNameRules"
+            hide-details
+            :disabled="review"
           ></v-text-field>
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="4">
-          <v-text-field
+          <v-select
+            :items="myDepartments"
+            v-model="form.department"
             label="Department"
-            v-model="department"
             outlined
             dense
-            required
-            :items="depts"
-            item-text="name"
-            item-value="id"
-            @input="getBranches"
-          ></v-text-field>
+            clearable
+            background-color="white"
+            hide-details
+            :disabled="review"
+          ></v-select>
         </v-col>
+
         <v-col cols="4">
-          <v-autocomplete
+          <v-select
+            :items="myDivisions"
+            v-model="form.division"
             label="Division"
-            v-model="division"
             outlined
             dense
-            required
-            :items="branches"
-            item-text="name"
-            item-value="id"
-          ></v-autocomplete>
+            clearable
+            background-color="white"
+            hide-details
+            :disabled="review"
+          ></v-select>
         </v-col>
       </v-row>
+
       <v-row>
         <v-col cols="4">
-          <v-autocomplete
+          <v-select
+            :items="myBranches"
+            v-model="form.branch"
             label="Branch"
-            v-model="branch"
             outlined
             dense
-            required
-            :items="branches"
-            item-text="name"
-            item-value="id"
-          ></v-autocomplete>
+            clearable
+            background-color="white"
+            hide-details
+            :disabled="review"
+          ></v-select>
         </v-col>
+
         <v-col cols="4">
-          <v-autocomplete
+          <v-select
+            :items="myUnits"
+            v-model="form.unit"
             label="Unit"
-            v-model="unit"
             outlined
             dense
-            required
-            :items="branches"
-            item-text="name"
-            item-value="id"
-          ></v-autocomplete>
+            clearable
+            background-color="white"
+            hide-details
+            :disabled="review"
+          ></v-select>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="4">
           <v-text-field
-            v-model="email"
+            v-model="form.email"
             dense
             outlined
             label="Email"
             required
             :rules="emailRules"
+            :disabled="review"
           ></v-text-field
         ></v-col>
         <v-col cols="4">
           <v-text-field
-            v-model="supervisorEmail"
+            v-model="form.mailcode"
             dense
             outlined
-            label="Supervisor Email"
+            label="mailcode"
             required
-            :rules="emailRules"
+            :disabled="review"
           ></v-text-field>
         </v-col>
       </v-row>
-
       <h2>Itinerary</h2>
-      <div v-for="(stop, index) in stops" :key="index">
-        <div v-if="index > 0">
-          <v-row>
-            <v-col><v-icon>mdi-arrow-down-thick</v-icon></v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="3">
-              <v-select
-                :items="transport"
-                label="Method of transport"
-                dense
-                outlined
-              ></v-select
-            ></v-col>
-          </v-row>
-          <v-row>
-            <v-col><v-icon>mdi-arrow-down-thick</v-icon></v-col>
-          </v-row>
-        </div>
+      <div v-for="(stop, index) in form.stops" :key="index">
+        <v-divider class="mb-6" v-if="index > 0" />
         <v-row>
-          <v-col cols="3">
+          <v-col cols="2">
             <v-autocomplete
-              v-if="index > 0"
-              v-model="stops[index].destination"
+              v-if="index == 0"
+              v-model="form.stops[index].from"
               outlined
               dense
-              label="Where you are travelling to?"
+              label="From"
               persistent-hint
               :items="destinations"
               :item-text="destinations.text"
@@ -139,14 +131,15 @@
               required
               clearable
               :rules="destinationRules"
+              :disabled="review"
             >
             </v-autocomplete>
             <v-autocomplete
-              v-else
-              v-model="stops[index].destination"
+              v-if="index > 0"
+              v-model="form.stops[index - 1].to"
               outlined
               dense
-              label="Starting location"
+              label="From"
               persistent-hint
               :items="destinations"
               :item-text="destinations.text"
@@ -154,63 +147,28 @@
               required
               clearable
               :rules="destinationRules"
+              :disabled="review"
             >
             </v-autocomplete>
           </v-col>
-          <!-- Arrival date -->
-          <v-col cols="2" v-if="index > 0">
-            <v-menu
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-              v-model="arrivalMenu[index]"
+          <v-col cols="2">
+            <v-autocomplete
+              v-model="form.stops[index].to"
+              outlined
+              dense
+              label="To"
+              persistent-hint
+              :items="destinations"
+              :item-text="destinations.text"
+              :item-value="destinations.value"
+              required
+              clearable
+              :rules="destinationRules"
+              :disabled="review"
             >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  outlined
-                  dense
-                  v-model="stops[index].arrivaldate"
-                  label="Arrival Date"
-                  prepend-icon="mdi-calendar"
-                  readonly
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="stops[index].arrivaldate"
-                @input="arrivalMenu[index] = false"
-              ></v-date-picker> </v-menu
-          ></v-col>
-          <!-- Arrival time -->
-          <v-col cols="2" v-if="index > 0">
-            <v-menu
-              :close-on-content-click="false"
-              :nudge-right="40"
-              transition="scale-transition"
-              offset-y
-              min-width="auto"
-              v-model="arrivalTimeMenu[index]"
-            >
-              <template v-slot:activator="{ on, attrs }">
-                <v-text-field
-                  outlined
-                  dense
-                  v-model="stops[index].arrivaltime"
-                  label="Arrival Time"
-                  prepend-icon="mdi-clock"
-                  readonly
-                  v-bind="attrs"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-time-picker
-                v-model="stops[index].arrivaltime"
-                @input="arrivalTimeMenu[index] = false"
-              ></v-time-picker> </v-menu
-          ></v-col>
+            </v-autocomplete>
+          </v-col>
+
           <!-- Departure date -->
           <v-col cols="2">
             <v-menu
@@ -225,17 +183,19 @@
                 <v-text-field
                   outlined
                   dense
-                  v-model="stops[index].departuredate"
+                  v-model="form.stops[index].departuredate"
                   label="Departure Date"
                   prepend-icon="mdi-calendar"
                   readonly
                   v-bind="attrs"
                   v-on="on"
+                  :disabled="review"
                 ></v-text-field>
               </template>
               <v-date-picker
-                v-model="stops[index].departuredate"
+                v-model="form.stops[index].departuredate"
                 @input="departureMenu[index] = false"
+                @change="calculateDaysGone(index)"
               ></v-date-picker>
             </v-menu>
           </v-col>
@@ -253,18 +213,29 @@
                 <v-text-field
                   outlined
                   dense
-                  v-model="stops[index].departuretime"
+                  v-model="form.stops[index].departuretime"
                   label="Departure Time"
                   prepend-icon="mdi-clock"
                   readonly
                   v-bind="attrs"
                   v-on="on"
+                  :disabled="review"
                 ></v-text-field>
               </template>
               <v-time-picker
-                v-model="stops[index].departuretime"
+                v-model="form.stops[index].departuretime"
                 @input="departureTimeMenu[index] = false"
               ></v-time-picker> </v-menu
+          ></v-col>
+          <v-col cols="2">
+            <v-select
+              :items="transport"
+              label="Method of transport"
+              v-model="form.stops[index].transport"
+              dense
+              outlined
+              :disabled="review"
+            ></v-select
           ></v-col>
           <!-- Delete button -->
           <v-col cols="1" v-if="index > 0">
@@ -274,6 +245,7 @@
               small
               color="red"
               @click="removeStop(index)"
+              :disabled="review"
             >
               <v-icon>mdi-close</v-icon>
             </v-btn>
@@ -281,117 +253,27 @@
         </v-row>
       </div>
 
-      <!-- Final Destination -->
-
-      <v-row>
-        <v-col><v-icon>mdi-arrow-down-thick</v-icon></v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="3">
-          <v-select
-            :items="transport"
-            label="Method of transport"
-            dense
-            outlined
-          ></v-select
-        ></v-col>
-      </v-row>
-      <v-row>
-        <v-col><v-icon>mdi-arrow-down-thick</v-icon></v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="3">
-          <v-autocomplete
-            v-model="destination"
-            outlined
-            dense
-            label="Return Destination"
-            persistent-hint
-            :items="destinations"
-            :item-text="destinations.text"
-            :item-value="destinations.value"
-            required
-            clearable
-            :rules="destinationRules"
-          >
-          </v-autocomplete>
-        </v-col>
-        <!-- Destination date -->
-        <v-col cols="2" v-if="index > 0">
-          <v-menu
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-            v-model="destinationMenu"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                outlined
-                dense
-                v-model="destinationDate"
-                label="Arrival Date"
-                prepend-icon="mdi-calendar"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              v-model="destinationDate"
-              @input="destinationMenu = false"
-            ></v-date-picker> </v-menu
-        ></v-col>
-        <!-- Destination time -->
-        <v-col cols="2" v-if="index > 0">
-          <v-menu
-            :close-on-content-click="false"
-            :nudge-right="40"
-            transition="scale-transition"
-            offset-y
-            min-width="auto"
-            v-model="destinationTimeMenu"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                outlined
-                dense
-                v-model="destinationTime"
-                label="Arrival Time"
-                prepend-icon="mdi-clock"
-                readonly
-                v-bind="attrs"
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-time-picker
-              v-model="destinationTime"
-              @input="destinationTimeMenu = false"
-            ></v-time-picker> </v-menu
-        ></v-col>
-      </v-row>
-
       <v-btn color="primary" class="mr-5" @click="addStop">Add Stop</v-btn>
       <h2>Details</h2>
       <v-row>
         <v-col cols="2">
           <v-text-field
             dense
-            v-model="totalTripLength"
+            v-model="form.totalTripLength"
             outlined
             label="# of days in trip"
             required
+            :disabled="review"
           ></v-text-field>
         </v-col>
         <v-col cols="2">
           <v-text-field
             dense
-            v-model="daysNotTraveling"
+            v-model="form.daysNotTraveling"
             outlined
-            label="# of days NOT traveling"
+            label="# of days OFF travel status"
             required
+            :disabled="review"
           ></v-text-field>
         </v-col>
         <v-col cols="4">
@@ -407,49 +289,100 @@
               <v-text-field
                 outlined
                 dense
-                v-model="backToWorkDate"
+                v-model="form.backToWorkDate"
                 label="Back to work date"
                 prepend-icon="mdi-calendar"
                 readonly
                 v-bind="attrs"
                 v-on="on"
+                :disabled="review"
               ></v-text-field>
             </template>
             <v-date-picker
-              v-model="backToWorkDate"
+              v-model="form.backToWorkDate"
               @input="btwMenu = false"
             ></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="4">
-          <v-select :items="purposes" label="Purpose" dense outlined></v-select
+        <v-col cols="5">
+          <v-select
+            :items="purposes"
+            label="Purpose"
+            v-model="form.purposes"
+            dense
+            outlined
+            :disabled="review"
+          ></v-select
         ></v-col>
+        <v-col cols="3">
+          <v-text-field
+            dense
+            v-model="form.travelAdvance"
+            outlined
+            label="Travel Advance"
+            required
+            prefix="$"
+            :disabled="review"
+          ></v-text-field>
+        </v-col>
       </v-row>
       <v-row>
         <v-col cols="8">
           <v-text-field
-            v-model="email"
+            v-model="form.eventName"
             dense
             outlined
             label="Event Name (If applicable)"
             required
-            :rules="emailRules"
+            :disabled="review"
           ></v-text-field>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="12">
-          <v-textarea v-model="summary" outlined label="Travel Summary">
+          <v-textarea
+            v-model="form.summary"
+            outlined
+            label="General Travel Information"
+            :disabled="review"
+          >
           </v-textarea>
         </v-col>
       </v-row>
+
+      <h2>Finalize</h2>
+      <v-row>
+        <v-col cols="4">
+          <v-autocomplete
+            v-model="form.supervisorEmail"
+            outlined
+            dense
+            label="Supervisor Email"
+            persistent-hint
+            :items="emails"
+            required
+            clearable
+            :disabled="review"
+          >
+          </v-autocomplete>
+        </v-col>
+      </v-row>
     </v-form>
-
-    <v-btn color="primary" class="mr-5" @click="saveForm">Submit</v-btn>
-    <v-btn color="secondary" @click="report">Cancel</v-btn>
-
+    <div v-if="!review">
+      <v-btn color="primary" class="mr-5" @click="saveForm">Submit</v-btn>
+      <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
+      <v-btn color="secondary" @click="report">Cancel</v-btn>
+    </div>
+    <div v-else>
+      <v-btn color="primary" class="mr-5" @click="saveForm">Approve</v-btn>
+      <v-btn color="green" class="mr-5" @click="saveForm"
+        >Request Changes</v-btn
+      >
+      <v-btn color="#f3b228" class="mr-5" @click="saveForm">Reasign</v-btn>
+      <v-btn color="red" @click="report">Deny</v-btn>
+    </div>
     <v-snackbar v-model="snackbar" right color="success">
       <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
       {{ apiSuccess }}
@@ -464,57 +397,86 @@ export default {
   name: "Form",
   created() {
     this.getDestinations();
-    this.getDepartments();
-    this.stops.push({
-      destination: "",
-      arrivaldate: this.getToday(),
+    this.getDepartmentList();
+    this.form.stops.push({
+      from: "",
+      to: "",
       departuredate: this.getToday(),
-      arrivaltime: "",
       departuretime: "",
+      transport: "",
     });
-    this.backToWorkDate = this.getToday();
-    this.destinationDate = this.getToday();
+    this.forms.backToWorkDate = this.getToday();
     this.loadUser();
+    this.loadEmails();
   },
   data: () => ({
+    //Form
+    form: {
+      firstName: "",
+      lastName: "",
+      department: "",
+      division: "",
+      branch: "",
+      unit: "",
+      stops: {
+        to: "",
+        from: "",
+        departuredate: "",
+        departuretime: "",
+      },
+      totalTripLength: 1,
+      daysNotTraveling: 0,
+      mailcode: "",
+      travelAdvance: 0,
+      purpose: "",
+      eventName: "",
+      summary: "",
+      supervisorEmail: "",
+    },
+
+    //Dropdowns
+    transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
+    purposes: [
+      "Maintenance",
+      "Conference",
+      "Workshop",
+      "General Travel",
+      "Community Travel",
+    ],
+
+    //Dropdowns that need initialization
+    departments: {},
+    divisons: {},
+    branches: {},
+    units: [],
+    emails: [],
+    destinations: [],
+
+    //Form functionality variables
+    review: false,
     index: 0,
-    daysNotTraveling: 0,
-    totalTripLength: 1,
+
     backToWorkDate: "",
-    summary: "",
-    stops: [],
-    arrivalMenu: [],
+
     departureMenu: [],
-    arrivalTimeMenu: [],
     departureTimeMenu: [],
-    destinationDate: "",
-    destinationTime: "",
-    destinationMenu: "",
-    destinationTimeMenu: "",
     btwMenu: false,
-    tanumber: "12343",
-    firstName: "",
+
+    showError: null,
+    snackbar: null,
+    apiSuccess: "",
+
+    //Rules
     firstNameRules: [
       (v) => !!v || "First name is required",
       (v) =>
         (v && v.length <= 10) || "First name must be less than 10 characters",
     ],
-    lastName: "",
     lastNameRules: [
       (v) => !!v || "Last name is required",
       (v) =>
         (v && v.length <= 10) || "Last name must be less than 10 characters",
     ],
-    department: "",
-    division: "",
-    branch: "",
-    unit: "",
-    depts: [],
-    divisions: [],
-    branches: [],
-    units: [],
-    email: "",
-    supervisorEmail: "",
     emailRules: [
       (v) => !!v || "Email is required",
       (v) => {
@@ -523,71 +485,56 @@ export default {
         return "";
       },
     ],
-    from: "Whitehorse",
     fromRules: [(v) => !!v || "This field is required"],
-    transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
-    purposes: ["Maintenance", "Conference", "Workshop"],
-    destination: "",
+
     destinationRules: [(v) => !!v || "This field is required"],
-    destinations: [],
-    dates: [],
-    showError: null,
-    snackbar: null,
-    apiSuccess: "",
   }),
-  methods: {
-    getToday() {
-      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10);
+  computed: {
+    myDepartments: function () {
+      return Object.keys(this.departments);
     },
+    myDivisions: function () {
+      if (this.departments[this.department]) {
+        return Object.keys(this.departments[this.department]);
+      }
+      return [];
+    },
+    myBranches: function () {
+      if (
+        this.departments[this.department] &&
+        this.departments[this.department][this.division]
+      ) {
+        return Object.keys(this.departments[this.department][this.division]);
+      }
+      return [];
+    },
+    myUnits: function () {
+      if (
+        this.departments[this.department] &&
+        this.departments[this.department][this.division] &&
+        this.departments[this.department][this.division][this.branch]
+      ) {
+        return this.departments[this.department][this.division][this.branch];
+      }
+      return [];
+    },
+  },
+  methods: {
     addStop() {
       this.stops.push({
         destination: "",
-        arrivaldate: this.getToday(),
         departuredate: this.getToday(),
+        departuretime: "",
       });
     },
     removeStop(index) {
       if (this.stops.length > 1) this.stops.splice(index, 1);
     },
-    getDestinations() {
-      axios.get(`${DESTINATION_URL}`).then((resp) => {
-        resp.data.forEach((v) => {
-          this.destinations.push({
-            value: v.id,
-            text: v.city + " (" + v.province + ")",
-          });
-        });
-      });
-    },
-    getDepartments() {
-      axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
-        this.depts = resp.data;
-      });
-    },
-    getBranches() {
-      axios.get(`${LOOKUP_URL}/department/${this.department}`).then((resp) => {
-        this.branches = resp.data;
-      });
-    },
+
     saveForm() {
       this.showError = false;
-      let form = {
-        taid: this.tanumber,
-        firstname: this.firstName,
-        lastname: this.lastName,
-        department: this.department,
-        branch: this.branch,
-        email: this.email,
-        summary: this.summary,
-        stops: this.stops,
-        daysnotTravel: this.daysNotTraveling,
-        travelduartion: this.totalTripLength,
-        datebacktowork: this.backToWorkDate,
-      };
 
-      axios.post(`${FORM_URL}`, form).then((resp) => {
+      axios.post(`${FORM_URL}`, this.form).then((resp) => {
         console.log(resp);
       });
 
@@ -603,19 +550,61 @@ export default {
     report() {
       console.log(this.stops);
     },
+
+    //Axios gets
     loadUser() {
       axios.get(`${USERS_URL}`).then((resp) => {
         this.user = resp.data[0];
-        this.firstName = this.user.first_name;
-        this.lastName = this.user.last_name;
-        this.email = this.user.email;
+        this.form.firstName =
+          this.user.first_name[0].toUpperCase() +
+          this.user.first_name.substring(1);
+        this.form.lastName =
+          this.user.last_name[0].toUpperCase() +
+          this.user.last_name.substring(1);
+        this.form.email = this.user.email;
       });
       axios.get(`${USERS_URL}/unit`).then((resp) => {
-        this.department = resp.data.department;
-        this.division = resp.data.division;
-        this.branch = resp.data.branch;
-        this.unit = resp.data.unit;
+        this.form.department = resp.data.department;
+        this.form.division = resp.data.division;
+        this.form.branch = resp.data.branch;
+        this.form.unit = resp.data.unit;
+        this.form.mailcode = resp.data.mailcode;
+        console.log("deps:", form);
       });
+    },
+    loadEmails() {
+      axios.get(`${LOOKUP_URL}/emailList`).then((resp) => {
+        this.emails = resp.data;
+      });
+    },
+    getDepartmentList() {
+      axios.get(`${LOOKUP_URL}/departmentList`).then((resp) => {
+        this.departments = resp.data;
+      });
+    },
+    getDestinations() {
+      axios.get(`${DESTINATION_URL}`).then((resp) => {
+        resp.data.forEach((v) => {
+          this.destinations.push({
+            value: v.id,
+            text: v.city + " (" + v.province + ")",
+          });
+        });
+      });
+    },
+
+    //Helpers
+    calculateDaysGone(index) {
+      var Difference_In_Time =
+        new Date(this.stops[index].departuredate).getTime() -
+        new Date(this.stops[0].departuredate).getTime();
+
+      this.form.totalTripLength = Difference_In_Time / (1000 * 3600 * 24);
+    },
+    getToday() {
+      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10);
     },
   },
 };
