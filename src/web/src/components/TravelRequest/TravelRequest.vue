@@ -378,13 +378,7 @@
     </v-form>
     <div v-if="!review">
       <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
-      <v-btn
-        v-if="form.status == 'Draft'"
-        color="green"
-        class="mr-5"
-        @click="saveForm"
-        >Save Draft</v-btn
-      >
+      <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
       <v-btn color="secondary" @click="report">Cancel</v-btn>
     </div>
     <div v-else>
@@ -568,7 +562,7 @@ export default {
       });
       console.log(this.form);
 
-      if (true) {
+      if (this.form.status == "") {
         this.snackbar = true;
         this.apiSuccess = "Your form has been saved as a draft";
       } else {

@@ -3,6 +3,7 @@ import { ReturnValidationErrors } from '../middleware';
 import { DB_CONFIG } from '../config';
 import knex from 'knex';
 import { UserService } from '../services';
+import { v4 as uuid } from 'uuid';
 
 const db = knex(DB_CONFIG);
 
@@ -61,22 +62,23 @@ formRouter.post(
 					daysnottravel: req.body.daysNotTraveling,
 					datebacktowork: req.body.backToWorkDate,
 					purpose: req.body.purpose,
-					travelAdvance: req.body.travelAdvance,
-					eventName: req.body.eventName,
+					traveladvance: req.body.travelAdvance,
+					eventname: req.body.eventName,
 					summary: req.body.summary,
-					supervisorEmail: req.body.supervisorEmail,
-					status: req.body.status,
+					supervisoremail: req.body.supervisorEmail,
+					formstatus: req.body.status,
 					userid: user.id,
+					formid: uuid(),
 					preappid: 0,
 					approved: false,
 				};
 				console.log('form', authInsert);
 				console.log('stops', stops);
-				// let id = await db('auth')
-				// 	.withSchema('travel')
-				// 	.insert(authInsert, 'taid')
-				// 	.transacting(trx)
-				// 	.returning('taid');
+				let id = await db('auth')
+					.withSchema('travel')
+					.insert(authInsert, 'taid')
+					.transacting(trx)
+					.returning('taid');
 
 				// for (let index = 0; index < stops.length; index++) {
 				// 	let stop = {
