@@ -46,36 +46,50 @@ formRouter.post(
 		try {
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
+				console.log('body', req.body);
 				let stops = req.body.stops;
 				let authInsert = {
-					firstname: req.body.firstname,
-					lastname: req.body.lastname,
+					firstname: req.body.firstName,
+					lastname: req.body.lastName,
 					department: req.body.department,
+					division: req.body.division,
 					branch: req.body.branch,
+					unit: req.body.unit,
+					email: req.body.email,
+					mailcode: req.body.mailcode,
+					travelduration: req.body.totalTripLength,
+					daysnottravel: req.body.daysNotTraveling,
+					datebacktowork: req.body.backToWorkDate,
+					purpose: req.body.purpose,
+					travelAdvance: req.body.travelAdvance,
+					eventName: req.body.eventName,
 					summary: req.body.summary,
-					daysnottravel: req.body.daysnotTravel,
-					travelduration: req.body.travelduartion,
-					datebacktowork: req.body.datebacktowork,
+					supervisorEmail: req.body.supervisorEmail,
+					status: req.body.status,
 					userid: user.id,
 					preappid: 0,
 					approved: false,
 				};
+				console.log('form', authInsert);
+				console.log('stops', stops);
+				// let id = await db('auth')
+				// 	.withSchema('travel')
+				// 	.insert(authInsert, 'taid')
+				// 	.transacting(trx)
+				// 	.returning('taid');
 
-				let id = await db('auth')
-					.withSchema('travel')
-					.insert(authInsert, 'taid')
-					.transacting(trx)
-					.returning('taid');
-
-				for (let index = 0; index < stops.length; index++) {
-					let stop = {
-						taid: id[0],
-						destination: stops[index].destination,
-						arrivaldate: stops[index].arrivaldate,
-						departuredate: stops[index].departuredate,
-					};
-					await db('stops').withSchema('travel').insert(stop).transacting(trx);
-				}
+				// for (let index = 0; index < stops.length; index++) {
+				// 	let stop = {
+				// 		taid: id[0],
+				// 		to: stops[index].to,
+				// 		from: stops[index].from,
+				// 		departuredate: stops[index].departuredate,
+				// 		departuretime: stops[index].departuretime,
+				// 		transportation: stops[index].transportation,
+				// 		estimate: 0,
+				// 	};
+				// 	await db('stops').withSchema('travel').insert(stop).transacting(trx);
+				// }
 			});
 		} catch (error: any) {
 			console.log(error);

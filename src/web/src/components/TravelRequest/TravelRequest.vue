@@ -3,7 +3,7 @@
     <h1>Travel Request</h1>
     <h2>General Information</h2>
 
-    <v-form>
+    <v-form ref="form" lazy-validation>
       <v-row>
         <v-col class="col-4">
           <v-text-field
@@ -13,7 +13,6 @@
             label="First name"
             required
             :rules="firstNameRules"
-            hide-details
             :disabled="review"
           ></v-text-field>
         </v-col>
@@ -25,7 +24,6 @@
             label="Last name"
             required
             :rules="lastNameRules"
-            hide-details
             :disabled="review"
           ></v-text-field>
         </v-col>
@@ -41,8 +39,8 @@
             dense
             clearable
             background-color="white"
-            hide-details
             :disabled="review"
+            :rules="requiredRules"
           ></v-select>
         </v-col>
 
@@ -55,7 +53,6 @@
             dense
             clearable
             background-color="white"
-            hide-details
             :disabled="review"
           ></v-select>
         </v-col>
@@ -71,7 +68,6 @@
             dense
             clearable
             background-color="white"
-            hide-details
             :disabled="review"
           ></v-select>
         </v-col>
@@ -85,7 +81,6 @@
             dense
             clearable
             background-color="white"
-            hide-details
             :disabled="review"
           ></v-select>
         </v-col>
@@ -110,6 +105,7 @@
             label="mailcode"
             required
             :disabled="review"
+            :rules="requiredRules"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -190,12 +186,14 @@
                   v-bind="attrs"
                   v-on="on"
                   :disabled="review"
+                  :rules="requiredRules"
                 ></v-text-field>
               </template>
               <v-date-picker
                 v-model="form.stops[index].departuredate"
                 @input="departureMenu[index] = false"
                 @change="calculateDaysGone(index)"
+                :rules="requiredRules"
               ></v-date-picker>
             </v-menu>
           </v-col>
@@ -220,11 +218,13 @@
                   v-bind="attrs"
                   v-on="on"
                   :disabled="review"
+                  :rules="requiredRules"
                 ></v-text-field>
               </template>
               <v-time-picker
                 v-model="form.stops[index].departuretime"
                 @input="departureTimeMenu[index] = false"
+                :rules="requiredRules"
               ></v-time-picker> </v-menu
           ></v-col>
           <v-col cols="2">
@@ -235,6 +235,7 @@
               dense
               outlined
               :disabled="review"
+              :rules="requiredRules"
             ></v-select
           ></v-col>
           <!-- Delete button -->
@@ -264,6 +265,7 @@
             label="# of days in trip"
             required
             :disabled="review"
+            :rules="numberRules"
           ></v-text-field>
         </v-col>
         <v-col cols="2">
@@ -274,6 +276,7 @@
             label="# of days OFF travel status"
             required
             :disabled="review"
+            :rules="numberRules"
           ></v-text-field>
         </v-col>
         <v-col cols="4">
@@ -310,10 +313,11 @@
           <v-select
             :items="purposes"
             label="Purpose"
-            v-model="form.purposes"
+            v-model="form.purpose"
             dense
             outlined
             :disabled="review"
+            :rules="requiredRules"
           ></v-select
         ></v-col>
         <v-col cols="3">
@@ -325,6 +329,7 @@
             required
             prefix="$"
             :disabled="review"
+            :rules="numberRules"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -347,6 +352,7 @@
             outlined
             label="General Travel Information"
             :disabled="review"
+            :rules="requiredRules"
           >
           </v-textarea>
         </v-col>
@@ -355,7 +361,7 @@
       <h2>Finalize</h2>
       <v-row>
         <v-col cols="4">
-          <v-autocomplete
+          <v-combobox
             v-model="form.supervisorEmail"
             outlined
             dense
@@ -365,14 +371,20 @@
             required
             clearable
             :disabled="review"
-          >
-          </v-autocomplete>
+            :rules="emailRules"
+          ></v-combobox>
         </v-col>
       </v-row>
     </v-form>
     <div v-if="!review">
-      <v-btn color="primary" class="mr-5" @click="saveForm">Submit</v-btn>
-      <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
+      <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
+      <v-btn
+        v-if="form.status == 'Draft'"
+        color="green"
+        class="mr-5"
+        @click="saveForm"
+        >Save Draft</v-btn
+      >
       <v-btn color="secondary" @click="report">Cancel</v-btn>
     </div>
     <div v-else>
@@ -398,14 +410,8 @@ export default {
   created() {
     this.getDestinations();
     this.getDepartmentList();
-    this.form.stops.push({
-      from: "",
-      to: "",
-      departuredate: this.getToday(),
-      departuretime: "",
-      transport: "",
-    });
-    this.forms.backToWorkDate = this.getToday();
+    this.form.backToWorkDate = this.getToday();
+    this.form.stops[0].departuredate = this.getToday();
     this.loadUser();
     this.loadEmails();
   },
@@ -418,20 +424,24 @@ export default {
       division: "",
       branch: "",
       unit: "",
-      stops: {
-        to: "",
-        from: "",
-        departuredate: "",
-        departuretime: "",
-      },
-      totalTripLength: 1,
-      daysNotTraveling: 0,
+      stops: [
+        {
+          to: "",
+          from: "",
+          departuredate: "",
+          departuretime: "",
+          transport: "",
+        },
+      ],
+      totalTripLength: "1",
+      daysNotTraveling: "0",
       mailcode: "",
-      travelAdvance: 0,
+      travelAdvance: "0",
       purpose: "",
       eventName: "",
       summary: "",
       supervisorEmail: "",
+      status: "",
     },
 
     //Dropdowns
@@ -467,82 +477,100 @@ export default {
     apiSuccess: "",
 
     //Rules
-    firstNameRules: [
-      (v) => !!v || "First name is required",
-      (v) =>
-        (v && v.length <= 10) || "First name must be less than 10 characters",
-    ],
-    lastNameRules: [
-      (v) => !!v || "Last name is required",
-      (v) =>
-        (v && v.length <= 10) || "Last name must be less than 10 characters",
-    ],
+    firstNameRules: [(v) => !!v || "First name is required"],
+    lastNameRules: [(v) => !!v || "Last name is required"],
     emailRules: [
-      (v) => !!v || "Email is required",
-      (v) => {
-        if (v) return true;
-
-        return "";
-      },
+      (v) => !!v || "E-mail is required",
+      (v) =>
+        /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+          v
+        ) || "E-mail must be valid",
     ],
     fromRules: [(v) => !!v || "This field is required"],
-
     destinationRules: [(v) => !!v || "This field is required"],
+    requiredRules: [(v) => !!v || "This field is required"],
+    numberRules: [
+      (v) => !!v || "This field is required",
+      (v) => Number.isInteger(Number(v)) || "This field must be a number",
+    ],
   }),
   computed: {
     myDepartments: function () {
       return Object.keys(this.departments);
     },
     myDivisions: function () {
-      if (this.departments[this.department]) {
-        return Object.keys(this.departments[this.department]);
+      if (this.departments[this.form.department]) {
+        return Object.keys(this.departments[this.form.department]);
       }
       return [];
     },
     myBranches: function () {
       if (
-        this.departments[this.department] &&
-        this.departments[this.department][this.division]
+        this.departments[this.form.department] &&
+        this.departments[this.form.department][this.form.division]
       ) {
-        return Object.keys(this.departments[this.department][this.division]);
+        return Object.keys(
+          this.departments[this.form.department][this.form.division]
+        );
       }
       return [];
     },
     myUnits: function () {
       if (
-        this.departments[this.department] &&
-        this.departments[this.department][this.division] &&
-        this.departments[this.department][this.division][this.branch]
+        this.departments[this.form.department] &&
+        this.departments[this.form.department][this.form.division] &&
+        this.departments[this.form.department][this.form.division][
+          this.form.branch
+        ]
       ) {
-        return this.departments[this.department][this.division][this.branch];
+        return this.departments[this.form.department][this.form.division][
+          this.form.branch
+        ];
       }
       return [];
     },
   },
   methods: {
     addStop() {
-      this.stops.push({
-        destination: "",
+      this.form.stops.push({
+        to: "",
+        from: "",
         departuredate: this.getToday(),
         departuretime: "",
+        transport: "",
       });
     },
     removeStop(index) {
-      if (this.stops.length > 1) this.stops.splice(index, 1);
+      if (this.form.stops.length > 1) this.form.stops.splice(index, 1);
     },
 
-    saveForm() {
+    submitForm() {
       this.showError = false;
+      console.log("log", this.$refs.form.validate());
 
       axios.post(`${FORM_URL}`, this.form).then((resp) => {
         console.log(resp);
       });
-
-      console.log("SAVING " + this.team);
+      console.log(this.form);
 
       if (this.from == "Whitehorse") {
         this.snackbar = true;
         this.apiSuccess = "Your form has been submitted to your supervisor";
+      } else {
+        this.showError = true;
+      }
+    },
+    saveForm() {
+      this.showError = false;
+      this.form.status = "Draft";
+      axios.post(`${FORM_URL}`, this.form).then((resp) => {
+        console.log(resp);
+      });
+      console.log(this.form);
+
+      if (true) {
+        this.snackbar = true;
+        this.apiSuccess = "Your form has been saved as a draft";
       } else {
         this.showError = true;
       }
@@ -569,7 +597,6 @@ export default {
         this.form.branch = resp.data.branch;
         this.form.unit = resp.data.unit;
         this.form.mailcode = resp.data.mailcode;
-        console.log("deps:", form);
       });
     },
     loadEmails() {
@@ -596,8 +623,8 @@ export default {
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
-        new Date(this.stops[index].departuredate).getTime() -
-        new Date(this.stops[0].departuredate).getTime();
+        new Date(this.form.stops[index].departuredate).getTime() -
+        new Date(this.form.stops[0].departuredate).getTime();
 
       this.form.totalTripLength = Difference_In_Time / (1000 * 3600 * 24);
     },

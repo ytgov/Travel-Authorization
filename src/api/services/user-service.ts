@@ -120,7 +120,11 @@ export class UserService {
 					return user.email == email;
 				});
 				return match[0];
+			})
+			.catch((e: Error) => {
+				console.log(e);
 			});
+
 		let unit = {
 			department: unitSearch.department,
 			division: unitSearch.division,

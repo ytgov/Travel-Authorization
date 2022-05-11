@@ -154,7 +154,6 @@ lookupRouter.get(
 					for (let employee of resp.data.employees) {
 						if (employee.email != '') list.push(employee.email);
 					}
-
 					return list;
 				});
 			res.status(200).json(emailList);
@@ -164,3 +163,30 @@ lookupRouter.get(
 		}
 	}
 );
+
+lookupRouter.get('/flightPrice', async function (req: Request, res: Response) {
+	const axios = require('axios');
+
+	const options = {
+		method: 'GET',
+		url: 'https://travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com/v1/prices/direct/',
+		params: { destination: 'LED', origin: 'MOW' },
+		headers: {
+			'X-Access-Token': '77a19abf177de55e2c8027710513be95',
+			'X-RapidAPI-Host':
+				'travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com',
+			'X-RapidAPI-Key': '94bf101f22mshfbfa967125292ecp1dbcd7jsn262338eb3eaa',
+		},
+	};
+
+	// https://api.travelpayouts.com/v2/prices/latest?currency=cad&period_type=year&page=1&limit=30&show_to_affiliates=true&sorting=price&trip_class=0&token=77a19abf177de55e2c8027710513be95
+	//api.travelpayouts.com/v2/prices/month-matrix?currency=usd&origin=YXY&destination=YVR&show_to_affiliates=true&token=77a19abf177de55e2c8027710513be95
+	axios
+		.request(options)
+		.then(function (response: any) {
+			console.log(response.data);
+		})
+		.catch(function (error: any) {
+			console.error(error);
+		});
+});
