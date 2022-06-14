@@ -222,6 +222,8 @@
                 ></v-text-field>
               </template>
               <v-time-picker
+                format="24hr"
+                scrollable
                 v-model="form.stops[index].departuretime"
                 @input="departureTimeMenu[index] = false"
                 :rules="requiredRules"
@@ -406,8 +408,13 @@ export default {
     this.getDepartmentList();
     this.form.backToWorkDate = this.getToday();
     this.form.stops[0].departuredate = this.getToday();
+    this.form.stops[0].departuretime = "12:00";
+
     this.loadUser();
     this.loadEmails();
+    if (this.$route.params.formId) {
+      this.form = this.getForm(this.$route.params.formId);
+    }
   },
   data: () => ({
     //Form
@@ -431,6 +438,7 @@ export default {
       daysNotTraveling: "0",
       mailcode: "",
       travelAdvance: "0",
+      backToWorkDate: "",
       purpose: "",
       eventName: "",
       summary: "",
@@ -530,7 +538,7 @@ export default {
         to: "",
         from: "",
         departuredate: this.getToday(),
-        departuretime: "",
+        departuretime: "12:00",
         transport: "",
       });
     },
@@ -557,10 +565,15 @@ export default {
     saveForm() {
       this.showError = false;
       this.form.status = "Draft";
-      axios.post(`${FORM_URL}`, this.form).then((resp) => {
-        console.log(resp);
+
+      axios.post(`${FORM_URL}/${this.form.formId}`, this.form).then((resp) => {
+        this.$router
+          .push(`/TravelRequest/Request/${resp.data.formId}`)
+          .catch(() => {});
+        this.$router
+          .go(`/TravelRequest/Request/${resp.data.formId}`)
+          .catch(() => {});
       });
-      console.log(this.form);
 
       if (this.form.status == "") {
         this.snackbar = true;
@@ -626,6 +639,11 @@ export default {
       return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10);
+    },
+    getForm(formId) {
+      axios.get(`${FORM_URL}/${formId}`).then((resp) => {
+        this.form = resp.data;
+      });
     },
   },
 };

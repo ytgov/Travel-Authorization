@@ -86,7 +86,12 @@ const routes = [
 		component: NotFound,
 	},
 	{
-		path: '/TravelRequest/request',
+		path: '/TravelRequest/Request',
+		name: 'TravelRequest',
+		component: TravelRequest,
+	},
+	{
+		path: '/TravelRequest/Request/:formId',
 		name: 'TravelRequest',
 		component: TravelRequest,
 	},

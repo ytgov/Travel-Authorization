@@ -6,7 +6,7 @@
       <v-card-text>
         <v-data-table
           :headers="headers"
-          :items="forms"
+          :items="pending"
           :items-per-page="20"
           class="elevation-1"
         >
@@ -27,7 +27,7 @@
       <v-card-text>
         <v-data-table
           :headers="headers"
-          :items="forms"
+          :items="approved"
           :items-per-page="20"
           class="elevation-1"
           @click:row="handleClick"
@@ -53,6 +53,8 @@ export default {
   name: "Home",
   data: () => ({
     forms: [],
+    pending: [],
+    approved: [],
     headers: [
       { text: "TA Form Number", value: "taid" },
       { text: "Department/Branch", value: "department" },
@@ -68,6 +70,12 @@ export default {
     loadForms() {
       axios.get(`${FORM_URL}`).then((resp) => {
         this.forms = resp.data;
+        this.pending = this.forms.filter((form) => {
+          if (form.formstatus == "Draft") return true;
+        });
+        this.approved = this.forms.filter((form) => {
+          if (form.formstatus != "Draft") return true;
+        });
       });
     },
     handleClick(value) {
