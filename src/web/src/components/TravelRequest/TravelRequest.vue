@@ -388,7 +388,7 @@
         <div v-if="!review">
           <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
-          <v-btn color="secondary" @click="report">Cancel</v-btn>
+          <v-btn color="secondary" @click="$router.go(-1)">Back</v-btn>
         </div>
         <div v-else>
           <v-btn color="primary" class="mr-5" @click="saveForm">Approve</v-btn>
@@ -480,7 +480,7 @@ export default {
 
     //Form functionality variables
     tab: null,
-    review: false,
+    review: true,
     index: 0,
 
     backToWorkDate: "",
@@ -563,25 +563,30 @@ export default {
 
     submitForm() {
       this.showError = false;
-      console.log("log", this.$refs.form.validate());
-
-      axios.post(`${FORM_URL}`, this.form).then((resp) => {
-        console.log(resp);
-      });
-      console.log(this.form);
-
-      if (this.from == "Whitehorse") {
-        this.snackbar = true;
-        this.apiSuccess = "Your form has been submitted to your supervisor";
-      } else {
-        this.showError = true;
+      this.form.status = "Pending Approval";
+      if (this.$refs.form.validate()) {
+        axios
+          .post(`${FORM_URL}/${this.form.formId}`, this.form)
+          .then((resp) => {
+            console.log(resp);
+            this.apiSuccess = "Form submitted successfully";
+            this.snackbar = true;
+          });
       }
+      // if () {
+      //   this.snackbar = true;
+      //   this.apiSuccess = "Your form has been submitted to your supervisor";
+      // } else {
+      //   this.showError = true;
+      // }
     },
     saveForm() {
       this.showError = false;
       this.form.status = "Draft";
 
       axios.post(`${FORM_URL}/${this.form.formId}`, this.form).then((resp) => {
+        this.apiSuccess = "Form submitted successfully";
+        this.snackbar = true;
         this.$router
           .push(`/TravelRequest/Request/${resp.data.formId}`)
           .catch(() => {});
@@ -612,6 +617,9 @@ export default {
           this.user.last_name[0].toUpperCase() +
           this.user.last_name.substring(1);
         this.form.email = this.user.email;
+        if (this.user.email != this.form.email) {
+          this.review = true;
+        }
       });
       axios.get(`${USERS_URL}/unit`).then((resp) => {
         this.form.department = resp.data.department;

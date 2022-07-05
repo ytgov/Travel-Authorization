@@ -8,13 +8,7 @@ import { doHealthCheck } from './utils/healthCheck';
 import { configureAuthentication } from './routes/auth';
 import { RequiresAuthentication } from './middleware';
 
-import {
-	userRouter,
-	ownerRouter,
-	formRouter,
-	lookupRouter,
-	permRouter,
-} from './routes';
+import { userRouter, managerRouter, lookupRouter, permRouter } from './routes';
 
 var knex = require('knex');
 
@@ -82,8 +76,7 @@ var conn = knex({
 app.set('db', conn);
 
 app.use('/api/user', RequiresAuthentication, userRouter);
-app.use('/api/owners', RequiresAuthentication, ownerRouter);
-app.use('/api/form', RequiresAuthentication, formRouter);
+app.use('/api/manager', RequiresAuthentication, managerRouter);
 app.use('/api/permissions', RequiresAuthentication, permRouter);
 app.use('/api/lookup', lookupRouter);
 

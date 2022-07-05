@@ -59,6 +59,9 @@
       </v-row>
     </div>
     <v-btn color="primary" class="mr-5" @click="addExpense">Add Expense</v-btn>
+    <v-btn color="green" class="mr-5" @click="saveExpenses"
+      >Save Expenses</v-btn
+    >
   </div>
 </template>
 
@@ -94,7 +97,7 @@ export default {
     removeExpense(index) {
       this.expenses.splice(index, 1);
     },
-
+    saveExpenses() {},
     submitForm() {},
     saveForm() {},
     report() {},

@@ -9,6 +9,7 @@
           :items="pending"
           :items-per-page="20"
           class="elevation-1"
+          @click:row="handleClick"
         >
           <template v-slot:item.firstname="{ item }">
             <span>{{ item.firstname }} {{ item.lastname }}</span>
@@ -48,7 +49,7 @@
 </template> 
 <script>
 import axios from "axios";
-import { FORM_URL } from "../../urls";
+import { MANAGER_URL } from "../../urls";
 export default {
   name: "Home",
   data: () => ({
@@ -68,19 +69,19 @@ export default {
   },
   methods: {
     loadForms() {
-      axios.get(`${FORM_URL}`).then((resp) => {
+      axios.get(`${MANAGER_URL}/forms/`).then((resp) => {
         this.forms = resp.data;
         this.pending = this.forms.filter((form) => {
-          if (form.formstatus == "Draft") return true;
+          if (form.formstatus == "Pending Approval") return true;
         });
         this.approved = this.forms.filter((form) => {
-          if (form.formstatus != "Draft") return true;
+          if (form.formstatus != "Pending Approval") return true;
         });
       });
     },
     handleClick(value) {
       //Redirects the user to the edit user form
-      this.$router.push(`/managerView/forms/view/${value.taid}`);
+      this.$router.push(`/TravelRequest/Request/${value.formid}`);
     },
   },
 };

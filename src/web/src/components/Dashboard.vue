@@ -5,23 +5,15 @@
     <row>
       <cols>
         <v-card class="mt-5" color="#fff2d5">
-          <v-card-title>Travel Requests</v-card-title>
-          <v-card-text> </v-card-text>
+          <v-card-title>Pending Travel Requests</v-card-title>
         </v-card>
       </cols>
     </row>
-
     <row>
       <cols>
         <v-card class="mt-5" color="#fff2d5">
-          <v-card-title>Pending Travel Requests</v-card-title>
-          <v-card-text>List of cars will go here.</v-card-text>
-        </v-card>
-      </cols>
-      <cols>
-        <v-card class="mt-5" color="#fff2d5">
-          <v-card-title>Car Calendars</v-card-title>
-          <v-card-text>List of cars will go here.</v-card-text>
+          <v-card-title>Travel Requests</v-card-title>
+          <v-card-text> </v-card-text>
         </v-card>
       </cols>
     </row>
