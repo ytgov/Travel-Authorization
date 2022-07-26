@@ -16,3 +16,5 @@ export const DESTINATION_URL = `${config.apiBaseUrl}/api/lookup/destination`;
 export const LOOKUP_URL = `${config.apiBaseUrl}/api/lookup`;
 export const USERS_URL = `${config.apiBaseUrl}/api/user`;
 export const PERM_URL = `${config.apiBaseUrl}/api/permissions`;
+
+export const HEALTH_URL = `${config.apiBaseUrl}/api/healthCheck`;

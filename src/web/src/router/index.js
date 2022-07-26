@@ -19,6 +19,7 @@ import PoolCarCost from '../components/Administration/RatesEstimateManagement/Po
 import RentalCarEstimates from '../components/Administration/RatesEstimateManagement/RentalCarEstimate';
 import YGRates from '../components/Administration/RatesEstimateManagement/YGRates';
 import Test from '../components/Test';
+import HealthCheck from '../components/HealthCheck';
 
 Vue.use(VueRouter);
 
@@ -123,6 +124,11 @@ const routes = [
 		path: '/test',
 		name: 'Test',
 		component: Test,
+	},
+	{
+		path: '/healthCheck',
+		name: 'HealthCheck',
+		component: HealthCheck,
 	},
 ];
 
