@@ -1,4 +1,4 @@
-import Knex from 'knex';
+import knex, { Knex } from 'knex';
 import { DB_CONFIG } from '../config';
 import _, { map } from 'lodash';
 import axios from 'axios';
@@ -7,7 +7,7 @@ export class UserService {
 	private db: Knex;
 
 	constructor() {
-		this.db = Knex(DB_CONFIG);
+		this.db = knex(DB_CONFIG);
 	}
 
 	async create(

@@ -1,3 +1,5 @@
+create schema Travel;
+
 drop table IF EXISTS Travel.Docs;
 drop table IF EXISTS Travel.RecieptBackup;
 drop Table IF EXISTS Travel.Expense;
