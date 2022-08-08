@@ -1,0 +1,38 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: travel-authorization-dev
+  labels:
+    app: vue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: travel-authorization-dev
+  template:
+    metadata:
+      labels:
+        app: travel-authorization-dev
+    spec:
+      containers:
+        - image: harbor.ynet.gov.yk.ca/ytgov/travel-authorization:v1.0.5
+          name: travel-authorization
+          ports:
+            - containerPort: 3000
+          resources: {}
+          volumeMounts:
+            - mountPath: "/home/node/app/.env.development"
+              subPath: .env
+              name: env-configmap-volume
+
+
+      volumes:
+        - name: env-configmap-volume
+          configMap:
+            name: travel-auth-env-dev
+
+
+      restartPolicy: Always
+status: {}
+
