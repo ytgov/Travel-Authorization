@@ -1,4 +1,4 @@
- apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: travel-authorization-tst
@@ -27,7 +27,7 @@ spec:
 
 
       volumes:
-        - name: env-configmap-volume
+        - name: env-con figmap-volume
           configMap:
             name: travel-auth-env-tst
 

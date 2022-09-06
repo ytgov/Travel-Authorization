@@ -110,6 +110,239 @@ formRouter.get(
 );
 
 formRouter.post(
+	'/:formId/save',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		console.log('Saving Form');
+
+		try {
+			await db.transaction(async (trx) => {
+				let user = await userService.getByEmail(req.user.email);
+
+				let authInsert = {
+					userid: user.id,
+					firstname: req.body.firstName,
+					lastname: req.body.lastName,
+					department: req.body.department,
+					division: req.body.division,
+					branch: req.body.branch,
+					unit: req.body.unit,
+					email: req.body.email,
+					mailcode: req.body.mailcode,
+					travelduration: req.body.totalTripLength,
+					daysnottravel: req.body.daysNotTraveling,
+					datebacktowork: req.body.backToWorkDate,
+					purpose: req.body.purpose,
+					traveladvance: req.body.travelAdvance,
+					eventname: req.body.eventName,
+					summary: req.body.summary,
+					supervisoremail: req.body.supervisorEmail,
+					formstatus: 'save',
+					formid: req.body.formId,
+				};
+
+				let id = await db('auth')
+					.withSchema('travel')
+					.update(authInsert)
+					.where('formid', '=', authInsert.formid)
+					.transacting(trx)
+					.returning('taid');
+
+				for (let index = 0; index < req.body.stops.length; index++) {
+					let stop = {
+						taid: id[0],
+						travelfrom: req.body.stops[index].from,
+						travelto: req.body.stops[index].to,
+						departuredate: req.body.stops[index].departuredate,
+						departuretime: req.body.stops[index].departuretime,
+						transport: req.body.stops[index].transport,
+						estimate: 0,
+					};
+					await db('stops').withSchema('travel').insert(stop).transacting(trx);
+				}
+			});
+			res.status(200).json({ formId: req.body.formId });
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Insert failed');
+		}
+	}
+);
+
+formRouter.post(
+	'/:formId/submit',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		console.log('Saving Form');
+
+		try {
+			await db.transaction(async (trx) => {
+				let user = await userService.getByEmail(req.user.email);
+
+				let authInsert = {
+					userid: user.id,
+					firstname: req.body.firstName,
+					lastname: req.body.lastName,
+					department: req.body.department,
+					division: req.body.division,
+					branch: req.body.branch,
+					unit: req.body.unit,
+					email: req.body.email,
+					mailcode: req.body.mailcode,
+					travelduration: req.body.totalTripLength,
+					daysnottravel: req.body.daysNotTraveling,
+					datebacktowork: req.body.backToWorkDate,
+					purpose: req.body.purpose,
+					traveladvance: req.body.travelAdvance,
+					eventname: req.body.eventName,
+					summary: req.body.summary,
+					supervisoremail: req.body.supervisorEmail,
+					formstatus: 'submit',
+					formid: req.body.formId,
+				};
+
+				const nulls = Object.values(authInsert).filter((p) => p === null);
+
+				if (nulls.length === 0) {
+					let id = await db('auth')
+						.withSchema('travel')
+						.update(authInsert)
+						.where('formid', '=', authInsert.formid)
+						.transacting(trx)
+						.returning('taid');
+
+					for (let index = 0; index < req.body.stops.length; index++) {
+						let stop = {
+							taid: id[0],
+							travelfrom: req.body.stops[index].from,
+							travelto: req.body.stops[index].to,
+							departuredate: req.body.stops[index].departuredate,
+							departuretime: req.body.stops[index].departuretime,
+							transport: req.body.stops[index].transport,
+							estimate: 0,
+						};
+						await db('stops')
+							.withSchema('travel')
+							.insert(stop)
+							.transacting(trx);
+					}
+					res.status(200).json({ formId: req.body.formId });
+				} else {
+					res.status(500).json('Nulls found in submission');
+				}
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Insert failed');
+		}
+	}
+);
+
+formRouter.post(
+	'/:formId/deny',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		console.log('Saving Form');
+
+		try {
+			await db.transaction(async (trx) => {
+				let user = await userService.getByEmail(req.user.email);
+
+				let denialReason = req.body.denialReason;
+
+				let id = await db('auth')
+					.withSchema('travel')
+					.update({ denialreason: denialReason, status: 'denied' })
+					.where('formid', '=', req.params.formId)
+					.transacting(trx)
+					.returning('taid');
+
+				res.status(200).json({ formId: req.body.formId });
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Insert failed');
+		}
+	}
+);
+
+formRouter.post(
+	'/:formId/approve',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		console.log('Saving Form');
+
+		try {
+			await db.transaction(async (trx) => {
+				let user = await userService.getByEmail(req.user.email);
+
+				let supervisorEmail = await db('auth')
+					.withSchema('travel')
+					.select('email')
+					.where('formid', '=', req.params.formId)
+					.transacting(trx);
+
+				if (supervisorEmail == user.email) {
+					let denialReason = req.body.denialReason;
+
+					let id = await db('auth')
+						.withSchema('travel')
+						.update({ denialreason: denialReason, status: 'denied' })
+						.where('formid', '=', req.params.formId)
+						.transacting(trx)
+						.returning('taid');
+
+					res.status(200).json({ formId: req.body.formId });
+				} else {
+					res.status(401).json('Must be supervisor to approve request');
+				}
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Insert failed');
+		}
+	}
+);
+
+formRouter.post(
+	'/:formId/reassign',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		console.log('Saving Form');
+
+		try {
+			await db.transaction(async (trx) => {
+				let user = await userService.getByEmail(req.user.email);
+
+				let supervisorEmail = await db('auth')
+					.withSchema('travel')
+					.select('email')
+					.where('formid', '=', req.params.formId)
+					.transacting(trx);
+
+				if (supervisorEmail == user.email) {
+					let reassign = req.body.reassign;
+
+					let id = await db('auth')
+						.withSchema('travel')
+						.update({ supervisoremail: reassign })
+						.where('formid', '=', req.params.formId)
+						.transacting(trx)
+						.returning('taid');
+
+					res.status(200).json({ formId: req.body.formId });
+				} else {
+					res.status(401).json('Must be supervisor to approve request');
+				}
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Insert failed');
+		}
+	}
+);
+
+formRouter.post(
 	'/:formId',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {

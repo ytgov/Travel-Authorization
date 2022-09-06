@@ -385,7 +385,7 @@
             </v-col>
           </v-row>
         </v-form>
-        <div v-if="!review">
+        <div v-if="review == true">
           <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
           <v-btn color="secondary" @click="$router.go(-1)">Back</v-btn>
@@ -618,7 +618,7 @@ export default {
           this.user.last_name.substring(1);
         this.form.email = this.user.email;
         if (this.user.email != this.form.email) {
-          this.review = true;
+          this.review = false;
         }
       });
       axios.get(`${USERS_URL}/unit`).then((resp) => {
