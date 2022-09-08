@@ -17,7 +17,7 @@
           <template v-slot:item.departureDate="{ item }">
             <span>{{ new Date(item.departureDate).toDateString() }}</span>
           </template></v-data-table
-        ><v-btn to="/TravelRequest/Request" color="success"
+        ><v-btn @click="createForm()" color="success"
           >New Travel Request</v-btn
         ></v-card-text
       >
@@ -27,6 +27,7 @@
 <script>
 import axios from "axios";
 import { FORM_URL } from "../../urls";
+import { v4 as uuidv4 } from "uuid";
 export default {
   name: "Home",
   data: () => ({
@@ -51,6 +52,9 @@ export default {
     },
     openForm(value) {
       this.$router.push(`/TravelRequest/Request/${value.formid}`);
+    },
+    createForm() {
+      this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
     },
   },
 };

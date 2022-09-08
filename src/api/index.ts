@@ -14,6 +14,7 @@ import {
 	lookupRouter,
 	permRouter,
 	healthCheckRouter,
+	formRouter,
 } from './routes';
 
 var knex = require('knex');
@@ -81,6 +82,7 @@ var conn = knex({
 
 app.set('db', conn);
 
+app.use('/api/form', RequiresAuthentication, formRouter);
 app.use('/api/user', RequiresAuthentication, userRouter);
 app.use('/api/manager', RequiresAuthentication, managerRouter);
 app.use('/api/permissions', RequiresAuthentication, permRouter);

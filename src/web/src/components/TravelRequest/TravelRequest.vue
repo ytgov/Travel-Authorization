@@ -386,17 +386,17 @@
           </v-row>
         </v-form>
         <div v-if="review == true">
-          <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
-          <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
-          <v-btn color="secondary" @click="$router.go(-1)">Back</v-btn>
-        </div>
-        <div v-else>
           <v-btn color="primary" class="mr-5" @click="saveForm">Approve</v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm"
             >Request Changes</v-btn
           >
           <v-btn color="#f3b228" class="mr-5" @click="saveForm">Reasign</v-btn>
           <v-btn color="red" @click="report">Deny</v-btn>
+        </div>
+        <div v-else>
+          <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
+          <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
+          <v-btn color="secondary" @click="$router.go(-1)">Back</v-btn>
         </div>
         <v-snackbar v-model="snackbar" right color="success">
           <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
@@ -480,7 +480,7 @@ export default {
 
     //Form functionality variables
     tab: null,
-    review: true,
+    review: false,
     index: 0,
 
     backToWorkDate: "",
@@ -563,15 +563,16 @@ export default {
 
     submitForm() {
       this.showError = false;
-      this.form.status = "Pending Approval";
       if (this.$refs.form.validate()) {
-        axios
-          .post(`${FORM_URL}/${this.form.formId}`, this.form)
-          .then((resp) => {
-            console.log(resp);
-            this.apiSuccess = "Form submitted successfully";
-            this.snackbar = true;
-          });
+        let formId = this.form.formId
+          ? this.form.formId
+          : this.$route.params.formId;
+        console.log("THIS", formId);
+        axios.post(`${FORM_URL}/${formId}/submit`, this.form).then((resp) => {
+          console.log(resp);
+          this.apiSuccess = "Form submitted successfully";
+          this.snackbar = true;
+        });
       }
       // if () {
       //   this.snackbar = true;
@@ -582,17 +583,14 @@ export default {
     },
     saveForm() {
       this.showError = false;
-      this.form.status = "Draft";
+      let formId = this.form.formId
+        ? this.form.formId
+        : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${this.form.formId}`, this.form).then((resp) => {
+      axios.post(`${FORM_URL}/${formId}/save`, this.form).then((resp) => {
+        console.log(resp);
         this.apiSuccess = "Form submitted successfully";
         this.snackbar = true;
-        this.$router
-          .push(`/TravelRequest/Request/${resp.data.formId}`)
-          .catch(() => {});
-        this.$router
-          .go(`/TravelRequest/Request/${resp.data.formId}`)
-          .catch(() => {});
       });
 
       if (this.form.status == "") {
