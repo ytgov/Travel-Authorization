@@ -426,9 +426,9 @@ export default {
 
     this.loadUser();
     this.loadEmails();
-    if (this.$route.params.formId) {
-      this.form = this.getForm(this.$route.params.formId);
-    }
+    this.form = this.$route.params.formId
+      ? this.getForm(this.$route.params.formId)
+      : this.getForm("blank");
   },
   data: () => ({
     //Form
@@ -451,7 +451,7 @@ export default {
       totalTripLength: "1",
       daysNotTraveling: "0",
       mailcode: "",
-      travelAdvance: "0",
+      travelAdvance: 0,
       backToWorkDate: "",
       purpose: "",
       eventName: "",
@@ -582,6 +582,7 @@ export default {
       // }
     },
     saveForm() {
+      this.$refs.form.resetValidation();
       this.showError = false;
       let formId = this.form.formId
         ? this.form.formId

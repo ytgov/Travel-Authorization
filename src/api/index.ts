@@ -63,7 +63,7 @@ configureAuthentication(app);
 
 console.log('host: ', process.env.DB_HOST);
 console.log('user: ', process.env.DB_USER);
-console.log('psss: ', process.env.DB_PASS);
+console.log('psss: ', '*********');
 console.log('db name: ', process.env.DB_NAME);
 
 var conn = knex({

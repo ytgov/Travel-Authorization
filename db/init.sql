@@ -669,7 +669,7 @@ create table Travel.Auth(
 	EventName varchar(100),
 	Summary varchar(1000),
 	FormStatus varchar(25) not null,
-	FormId varchar(50),
+	FormId varchar(50) UNIQUE,
 	SupervisorEmail varchar(100),
 	PreappId smallint,
 	Approved varchar(50),
