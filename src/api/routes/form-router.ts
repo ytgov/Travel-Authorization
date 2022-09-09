@@ -87,7 +87,6 @@ formRouter.get(
 				}
 
 				for (let stop of auth[0].stops) {
-					console.log(stop);
 					webForm.stops.push({
 						from: stop.travelfrom,
 						to: stop.travelto,

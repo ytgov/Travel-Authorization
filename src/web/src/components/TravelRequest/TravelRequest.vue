@@ -396,13 +396,19 @@
           <v-btn color="green" class="mr-5" @click="saveForm"
             >Request Changes</v-btn
           >
-          <v-btn color="#f3b228" class="mr-5" @click="saveForm">Reasign</v-btn>
-          <v-btn color="red" class="mr-5" @click="report">Deny</v-btn>
+          <v-btn color="#f3b228" class="mr-5" @click="reassignForm()"
+            >Reassign</v-btn
+          >
+          <v-btn color="red" class="mr-5" @click="denyPopup()">Deny</v-btn>
           <v-btn color="secondary" @click="managePage()">Back</v-btn>
         </div>
         <div v-else>
-          <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
-          <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
+          <v-btn color="primary" class="mr-5" @click="submitForm()"
+            >Submit</v-btn
+          >
+          <v-btn color="green" class="mr-5" @click="saveForm()"
+            >Save Draft</v-btn
+          >
           <v-btn color="red" class="mr-5" @click="requestPage()">Delete</v-btn>
           <v-btn color="secondary" @click="requestPage()">Back</v-btn>
         </div>
@@ -410,6 +416,32 @@
           <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
           {{ apiSuccess }}
         </v-snackbar>
+
+        <v-dialog v-model="dialog" width="80%">
+          <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+              Request Denied
+            </v-card-title>
+
+            <v-card-text>
+              Please provide a reason for the denial of this form.
+            </v-card-text>
+            <v-card-text>
+              <v-textarea
+                v-model="form.denialReason"
+                outlined
+                label="Denial Reason"
+              ></v-textarea>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-btn color="primary" text @click="reassignForm()">
+                Submit
+              </v-btn>
+              <v-btn color="red" text @click="dialog = false"> Cancel </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-tab-item>
       <v-tab-item><ExpenseList /></v-tab-item>
     </v-tabs-items>
@@ -493,6 +525,7 @@ export default {
     tab: null,
     review: false,
     index: 0,
+    dialog: false,
 
     backToWorkDate: "",
 
@@ -664,11 +697,26 @@ export default {
         this.form = resp.data;
       });
     },
+    reassignForm() {
+      let formId = this.form.formId
+        ? this.form.formId
+        : this.$route.params.formId;
+
+      axios.post(`${FORM_URL}/${formId}/reassign`, this.form).then((resp) => {
+        console.log(resp);
+        this.apiSuccess = "Form reassigned successfully";
+        this.snackbar = true;
+      });
+      this.dialog = false;
+    },
     managePage() {
       this.$router.push(`/managerView`);
     },
     requestPage() {
       this.$router.push(`/forms`);
+    },
+    denyPopup() {
+      this.dialog = true;
     },
   },
 };
