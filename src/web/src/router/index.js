@@ -91,6 +91,11 @@ const routes = [
 		component: TravelRequest,
 	},
 	{
+		path: '/TravelRequest/Request/:formId?/:manage?',
+		name: 'TravelRequestReview',
+		component: TravelRequest,
+	},
+	{
 		path: '/forms',
 		name: 'TravelForms',
 		component: FormList,

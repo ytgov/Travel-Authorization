@@ -81,7 +81,7 @@ export default {
     },
     handleClick(value) {
       //Redirects the user to the edit user form
-      this.$router.push(`/TravelRequest/Request/${value.formid}`);
+      this.$router.push(`/TravelRequest/Request/${value.formid}/manage`);
     },
   },
 };

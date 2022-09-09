@@ -33,7 +33,6 @@ export default {
   data: () => ({
     forms: [],
     headers: [
-      { text: "TA Form Number", value: "taid" },
       { text: "Department/Branch", value: "department" },
       { text: "Purpose", value: "purpose" },
       { text: "Departure Date", value: "departureDate" },

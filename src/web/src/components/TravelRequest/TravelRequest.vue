@@ -263,7 +263,13 @@
             </v-row>
           </div>
 
-          <v-btn color="primary" class="mr-5" @click="addStop">Add Stop</v-btn>
+          <v-btn
+            color="primary"
+            class="mr-5"
+            @click="addStop"
+            :disabled="review"
+            >Add Stop</v-btn
+          >
           <h2>Details</h2>
           <v-row>
             <v-col cols="2">
@@ -391,12 +397,14 @@
             >Request Changes</v-btn
           >
           <v-btn color="#f3b228" class="mr-5" @click="saveForm">Reasign</v-btn>
-          <v-btn color="red" @click="report">Deny</v-btn>
+          <v-btn color="red" class="mr-5" @click="report">Deny</v-btn>
+          <v-btn color="secondary" @click="managePage()">Back</v-btn>
         </div>
         <div v-else>
           <v-btn color="primary" class="mr-5" @click="submitForm">Submit</v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm">Save Draft</v-btn>
-          <v-btn color="secondary" @click="$router.go(-1)">Back</v-btn>
+          <v-btn color="red" class="mr-5" @click="requestPage()">Delete</v-btn>
+          <v-btn color="secondary" @click="requestPage()">Back</v-btn>
         </div>
         <v-snackbar v-model="snackbar" right color="success">
           <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
@@ -418,6 +426,9 @@ export default {
     ExpenseList,
   },
   created() {
+    if (this.$route.params.manage == "manage") {
+      this.review = true;
+    }
     this.getDestinations();
     this.getDepartmentList();
     this.form.backToWorkDate = this.getToday();
@@ -567,19 +578,12 @@ export default {
         let formId = this.form.formId
           ? this.form.formId
           : this.$route.params.formId;
-        console.log("THIS", formId);
         axios.post(`${FORM_URL}/${formId}/submit`, this.form).then((resp) => {
           console.log(resp);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
         });
       }
-      // if () {
-      //   this.snackbar = true;
-      //   this.apiSuccess = "Your form has been submitted to your supervisor";
-      // } else {
-      //   this.showError = true;
-      // }
     },
     saveForm() {
       this.$refs.form.resetValidation();
@@ -590,16 +594,9 @@ export default {
 
       axios.post(`${FORM_URL}/${formId}/save`, this.form).then((resp) => {
         console.log(resp);
-        this.apiSuccess = "Form submitted successfully";
+        this.apiSuccess = "Form saved as a draft";
         this.snackbar = true;
       });
-
-      if (this.form.status == "") {
-        this.snackbar = true;
-        this.apiSuccess = "Your form has been saved as a draft";
-      } else {
-        this.showError = true;
-      }
     },
     report() {
       console.log(this.stops);
@@ -666,6 +663,12 @@ export default {
       axios.get(`${FORM_URL}/${formId}`).then((resp) => {
         this.form = resp.data;
       });
+    },
+    managePage() {
+      this.$router.push(`/managerView`);
+    },
+    requestPage() {
+      this.$router.push(`/forms`);
     },
   },
 };

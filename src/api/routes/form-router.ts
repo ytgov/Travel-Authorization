@@ -196,7 +196,7 @@ formRouter.post(
 					eventname: req.body.eventName,
 					summary: req.body.summary,
 					supervisoremail: req.body.supervisorEmail,
-					formstatus: 'save',
+					formstatus: 'draft',
 					formid: req.params.formId,
 				};
 
@@ -262,23 +262,46 @@ formRouter.post(
 					eventname: req.body.eventName,
 					summary: req.body.summary,
 					supervisoremail: req.body.supervisorEmail,
-					formstatus: 'submit',
-					formid: req.body.formId,
+					formstatus: 'submitted',
+					formid: req.params.formId,
 				};
 
-				const nulls = Object.values(authInsert).filter((p) => p === null);
-
-				if (nulls.length === 0) {
+				if (
+					authInsert.userid &&
+					authInsert.firstname &&
+					authInsert.lastname &&
+					authInsert.department &&
+					authInsert.division &&
+					authInsert.branch &&
+					authInsert.unit &&
+					authInsert.email &&
+					authInsert.mailcode &&
+					authInsert.travelduration &&
+					authInsert.daysnottravel &&
+					authInsert.datebacktowork &&
+					authInsert.purpose &&
+					authInsert.traveladvance &&
+					authInsert.eventname &&
+					authInsert.summary &&
+					authInsert.supervisoremail &&
+					authInsert.formstatus &&
+					authInsert.formid
+				) {
 					let id = await db('auth')
 						.withSchema('travel')
-						.update(authInsert)
-						.where('formid', '=', authInsert.formid)
-						.transacting(trx)
-						.returning('taid');
+						.insert(authInsert, 'taid')
+						.onConflict('formid')
+						.merge();
+
+					await db('stops')
+						.withSchema('travel')
+						.delete()
+						.where('taid', '=', id[0].taid)
+						.transacting(trx);
 
 					for (let index = 0; index < req.body.stops.length; index++) {
 						let stop = {
-							taid: id[0],
+							taid: id[0].taid,
 							travelfrom: req.body.stops[index].from,
 							travelto: req.body.stops[index].to,
 							departuredate: req.body.stops[index].departuredate,
@@ -291,9 +314,9 @@ formRouter.post(
 							.insert(stop)
 							.transacting(trx);
 					}
-					res.status(200).json({ formId: req.body.formId });
+					res.status(200).json({ formId: req.params.formId });
 				} else {
-					res.status(500).json('Nulls found in submission');
+					res.status(500).json('Nulls in submission');
 				}
 			});
 		} catch (error: any) {
@@ -354,14 +377,16 @@ formRouter.post(
 
 					let id = await db('auth')
 						.withSchema('travel')
-						.update({ denialreason: denialReason, status: 'denied' })
+						.update({ status: 'approved' })
 						.where('formid', '=', req.params.formId)
 						.transacting(trx)
 						.returning('taid');
 
 					res.status(200).json({ formId: req.body.formId });
 				} else {
-					res.status(401).json('Must be supervisor to approve request');
+					res
+						.status(401)
+						.json('Must be assigned supervisor to approve request');
 				}
 			});
 		} catch (error: any) {
@@ -377,7 +402,7 @@ formRouter.post(
 	'/:formId/reassign',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
-		console.log('Saving Form');
+		console.log('Reassigning Form');
 
 		try {
 			await db.transaction(async (trx) => {
