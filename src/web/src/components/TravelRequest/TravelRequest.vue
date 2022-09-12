@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Travel Request</h1>
-
+    <div>Current Status: {{ form.status }}</div>
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
       <v-tab> Expenses </v-tab>
@@ -393,22 +393,22 @@
         </v-form>
         <div v-if="review == true">
           <v-btn color="primary" class="mr-5" @click="saveForm">Approve</v-btn>
-          <v-btn color="green" class="mr-5" @click="saveForm"
-            >Request Changes</v-btn
-          >
-          <v-btn color="#f3b228" class="mr-5" @click="reassignForm()"
-            >Reassign</v-btn
-          >
+          <v-btn color="green" class="mr-5" @click="requestChangePopup()">
+            Request Changes
+          </v-btn>
+          <v-btn color="#f3b228" class="mr-5" @click="reassignPopup()">
+            Reassign
+          </v-btn>
           <v-btn color="red" class="mr-5" @click="denyPopup()">Deny</v-btn>
           <v-btn color="secondary" @click="managePage()">Back</v-btn>
         </div>
         <div v-else>
-          <v-btn color="primary" class="mr-5" @click="submitForm()"
-            >Submit</v-btn
-          >
+          <v-btn color="primary" class="mr-5" @click="submitForm()">
+            Submit
+          </v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm()"
-            >Save Draft</v-btn
-          >
+            >Save Draft
+          </v-btn>
           <v-btn color="red" class="mr-5" @click="requestPage()">Delete</v-btn>
           <v-btn color="secondary" @click="requestPage()">Back</v-btn>
         </div>
@@ -417,7 +417,7 @@
           {{ apiSuccess }}
         </v-snackbar>
 
-        <v-dialog v-model="dialog" width="80%">
+        <v-dialog v-model="denyDialog" width="80%">
           <v-card>
             <v-card-title class="text-h5 grey lighten-2">
               Request Denied
@@ -435,7 +435,62 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="primary" text @click="reassignForm()">
+              <v-btn color="primary" text @click="denyForm()"> Submit </v-btn>
+              <v-btn color="red" text @click="denyDialog = false">
+                Cancel
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="reassignDialog" width="80%">
+          <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+              Reassign Form
+            </v-card-title>
+
+            <v-card-text> Reassign this form to a new supervisor.</v-card-text>
+            <v-card-text>
+              <v-combobox
+                v-model="reassignEmail"
+                outlined
+                dense
+                label="Supervisor Email"
+                persistent-hint
+                :items="emails"
+                required
+                clearable
+                :disabled="!review"
+                :rules="emailRules"
+              ></v-combobox
+            ></v-card-text>
+
+            <v-card-actions>
+              <v-btn color="primary" text @click="reassign()"> Submit </v-btn>
+              <v-btn color="red" text @click="dialog = false"> Cancel </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="requestChangeDialog" width="80%">
+          <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+              Request Change
+            </v-card-title>
+
+            <v-card-text>
+              What changes need to be made to this form?
+            </v-card-text>
+            <v-card-text>
+              <v-textarea
+                v-model="form.requestedChanges"
+                outlined
+                label="Requested Changes"
+              ></v-textarea>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-btn color="primary" text @click="requestChange()">
                 Submit
               </v-btn>
               <v-btn color="red" text @click="dialog = false"> Cancel </v-btn>
@@ -503,6 +558,10 @@ export default {
       status: "",
     },
 
+    requestedChanges: "",
+    denialReason: "",
+    reassignEmail: "",
+
     //Dropdowns
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
     purposes: [
@@ -525,7 +584,9 @@ export default {
     tab: null,
     review: false,
     index: 0,
-    dialog: false,
+    denyDialog: false,
+    requestChangeDialog: false,
+    reassignDialog: false,
 
     backToWorkDate: "",
 
@@ -707,7 +768,33 @@ export default {
         this.apiSuccess = "Form reassigned successfully";
         this.snackbar = true;
       });
-      this.dialog = false;
+      this.denyDialog = false;
+    },
+    denyForm() {
+      let formId = this.form.formId
+        ? this.form.formId
+        : this.$route.params.formId;
+
+      axios.post(`${FORM_URL}/${formId}/deny`, this.form).then((resp) => {
+        console.log(resp);
+        this.apiSuccess = "Form denied";
+        this.snackbar = true;
+      });
+      this.denyDialog = false;
+    },
+    requestChange() {
+      let formId = this.form.formId
+        ? this.form.formId
+        : this.$route.params.formId;
+
+      axios
+        .post(`${FORM_URL}/${formId}/requestChange`, this.form)
+        .then((resp) => {
+          console.log(resp);
+          this.apiSuccess = "Form denied";
+          this.snackbar = true;
+        });
+      this.denyDialog = false;
     },
     managePage() {
       this.$router.push(`/managerView`);
@@ -716,7 +803,13 @@ export default {
       this.$router.push(`/forms`);
     },
     denyPopup() {
-      this.dialog = true;
+      this.denyDialog = true;
+    },
+    requestChangePopup() {
+      this.requestChangeDialog = true;
+    },
+    reassignPopup() {
+      this.reassignDialog = true;
     },
   },
 };

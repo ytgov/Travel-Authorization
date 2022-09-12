@@ -435,6 +435,47 @@ formRouter.post(
 	}
 );
 
+formRouter.post(
+	'/:formId/requestChange',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		console.log('Request Form Changes');
+
+		try {
+			await db.transaction(async (trx) => {
+				let user = await userService.getByEmail(req.user.email);
+
+				let supervisorEmail = await db('auth')
+					.withSchema('travel')
+					.select('email')
+					.where('formid', '=', req.params.formId)
+					.transacting(trx);
+
+				if (supervisorEmail == user.email) {
+					let requestChanges = req.body.requestChanges;
+
+					let id = await db('auth')
+						.withSchema('travel')
+						.update({
+							requestChanges: requestChanges,
+							status: 'changeRequested',
+						})
+						.where('formid', '=', req.params.formId)
+						.transacting(trx)
+						.returning('taid');
+
+					res.status(200).json({ formId: req.body.formId });
+				} else {
+					res.status(401).json('Must be supervisor to approve request');
+				}
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Insert failed');
+		}
+	}
+);
+
 //User to delete their form
 //SHould just hide it in db with staus change
 formRouter.delete(
