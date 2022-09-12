@@ -673,6 +673,8 @@ create table Travel.Auth(
 	SupervisorEmail varchar(100),
 	PreappId smallint,
 	Approved varchar(50),
+	RequestChange varchar(2000),
+	DenialReason varchar(2000),
 	FOREIGN KEY (preappid) REFERENCES Travel.Preapprove(preappid)
 );
 

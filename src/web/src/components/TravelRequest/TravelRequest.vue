@@ -409,7 +409,7 @@
           <v-btn color="green" class="mr-5" @click="saveForm()"
             >Save Draft
           </v-btn>
-          <v-btn color="red" class="mr-5" @click="requestPage()">Delete</v-btn>
+          <v-btn color="red" class="mr-5" @click="deleteForm()">Delete</v-btn>
           <v-btn color="secondary" @click="requestPage()">Back</v-btn>
         </div>
         <v-snackbar v-model="snackbar" right color="success">
@@ -466,7 +466,9 @@
             ></v-card-text>
 
             <v-card-actions>
-              <v-btn color="primary" text @click="reassign()"> Submit </v-btn>
+              <v-btn color="primary" text @click="reassignForm()">
+                Submit
+              </v-btn>
               <v-btn color="red" text @click="dialog = false"> Cancel </v-btn>
             </v-card-actions>
           </v-card>
@@ -483,7 +485,7 @@
             </v-card-text>
             <v-card-text>
               <v-textarea
-                v-model="form.requestedChanges"
+                v-model="form.requestedChange"
                 outlined
                 label="Requested Changes"
               ></v-textarea>
@@ -556,10 +558,10 @@ export default {
       summary: "",
       supervisorEmail: "",
       status: "",
+      requestedChange: "",
+      denialReason: "",
     },
 
-    requestedChanges: "",
-    denialReason: "",
     reassignEmail: "",
 
     //Dropdowns
@@ -692,6 +694,18 @@ export default {
         this.snackbar = true;
       });
     },
+    deleteForm() {
+      let formId = this.form.formId
+        ? this.form.formId
+        : this.$route.params.formId;
+
+      axios.delete(`${FORM_URL}/${formId}`, this.form).then((resp) => {
+        console.log(resp);
+        this.apiSuccess = "Form Deleted";
+        this.snackbar = true;
+        this.requestPage();
+      });
+    },
     report() {
       console.log(this.stops);
     },
@@ -763,11 +777,16 @@ export default {
         ? this.form.formId
         : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${formId}/reassign`, this.form).then((resp) => {
-        console.log(resp);
-        this.apiSuccess = "Form reassigned successfully";
-        this.snackbar = true;
-      });
+      axios
+        .post(`${FORM_URL}/${formId}/reassign`, {
+          reassign: this.reassignEmail,
+          form: this.form,
+        })
+        .then((resp) => {
+          console.log(resp);
+          this.apiSuccess = "Form reassigned successfully";
+          this.snackbar = true;
+        });
       this.denyDialog = false;
     },
     denyForm() {

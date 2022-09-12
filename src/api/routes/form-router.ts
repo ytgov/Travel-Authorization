@@ -336,16 +336,31 @@ formRouter.post(
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
 
-				let denialReason = req.body.denialReason;
-
-				let id = await db('auth')
+				let supervisorEmail = await db('auth')
 					.withSchema('travel')
-					.update({ denialreason: denialReason, status: 'denied' })
+					.select('email')
 					.where('formid', '=', req.params.formId)
-					.transacting(trx)
-					.returning('taid');
+					.transacting(trx);
 
-				res.status(200).json({ formId: req.body.formId });
+				if (
+					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
+				) {
+					let denialReason = req.body.denialReason;
+
+					let id = await db('auth')
+						.withSchema('travel')
+						.update({
+							denialreason: denialReason,
+							formstatus: 'denied',
+						})
+						.where('formid', '=', req.params.formId)
+						.transacting(trx)
+						.returning('taid');
+
+					res.status(200).json({ formId: req.body.formId });
+				} else {
+					res.status(500).json('Not authorized to deny this request');
+				}
 			});
 		} catch (error: any) {
 			console.log(error);
@@ -371,7 +386,9 @@ formRouter.post(
 					.where('formid', '=', req.params.formId)
 					.transacting(trx);
 
-				if (supervisorEmail == user.email) {
+				if (
+					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
+				) {
 					let denialReason = req.body.denialReason;
 
 					let id = await db('auth')
@@ -413,12 +430,16 @@ formRouter.post(
 					.where('formid', '=', req.params.formId)
 					.transacting(trx);
 
-				if (supervisorEmail == user.email) {
+				if (
+					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
+				) {
 					let reassign = req.body.reassign;
 
 					let id = await db('auth')
 						.withSchema('travel')
-						.update({ supervisoremail: reassign })
+						.update({
+							supervisoremail: reassign,
+						})
 						.where('formid', '=', req.params.formId)
 						.transacting(trx)
 						.returning('taid');
@@ -451,14 +472,15 @@ formRouter.post(
 					.where('formid', '=', req.params.formId)
 					.transacting(trx);
 
-				if (supervisorEmail == user.email) {
-					let requestChanges = req.body.requestChanges;
-
+				if (
+					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
+				) {
+					let requestChange = req.body.requestedChange;
 					let id = await db('auth')
 						.withSchema('travel')
 						.update({
-							requestChanges: requestChanges,
-							status: 'changeRequested',
+							requestchange: requestChange,
+							formstatus: 'changeRequested',
 						})
 						.where('formid', '=', req.params.formId)
 						.transacting(trx)
@@ -483,7 +505,13 @@ formRouter.delete(
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		try {
-			let result = await db('Forms').where('id', '=', req.params.id).del();
+			let result = await db('auth')
+				.withSchema('travel')
+				.update({
+					formstatus: 'deleted',
+				})
+				.where('formid', '=', req.params.formId)
+				.returning('formid');
 			if (result) {
 				res.status(200).json('Delete successful');
 				console.log('Delete successful', req.params.id);
