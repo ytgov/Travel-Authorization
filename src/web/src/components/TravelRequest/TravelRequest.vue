@@ -424,7 +424,7 @@
             </v-card-title>
 
             <v-card-text>
-              {{ form.changeRequest }}
+              {{ form.requestedChange }}
             </v-card-text>
 
             <v-card-actions>
@@ -536,7 +536,7 @@ export default {
   components: {
     ExpenseList,
   },
-  created() {
+  async mounted() {
     if (this.$route.params.manage == "manage") {
       this.review = true;
     }
@@ -549,9 +549,14 @@ export default {
     this.loadUser();
     this.loadEmails();
 
-    this.form = this.$route.params.formId
-      ? this.getForm(this.$route.params.formId)
-      : this.getForm("blank");
+    await this.getForm(this.$route.params.formId);
+    if (
+      this.form.requestedChange &&
+      this.review == false &&
+      this.form.status == "changeRequested"
+    ) {
+      this.requestChangeDisplay = true;
+    }
   },
   data: () => ({
     //Form
@@ -793,8 +798,8 @@ export default {
         .toISOString()
         .substr(0, 10);
     },
-    getForm(formId) {
-      axios.get(`${FORM_URL}/${formId}`).then((resp) => {
+    async getForm(formId = "blank") {
+      await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
         this.form = resp.data;
       });
     },
