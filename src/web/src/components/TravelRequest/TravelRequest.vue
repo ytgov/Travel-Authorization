@@ -417,6 +417,24 @@
           {{ apiSuccess }}
         </v-snackbar>
 
+        <v-dialog v-model="requestChangeDisplay" width="80%">
+          <v-card>
+            <v-card-title class="text-h5 grey lighten-2">
+              Change Required
+            </v-card-title>
+
+            <v-card-text>
+              {{ form.changeRequest }}
+            </v-card-text>
+
+            <v-card-actions>
+              <v-btn color="primary" text @click="requestChangeDisplay = false">
+                Ok
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
         <v-dialog v-model="denyDialog" width="80%">
           <v-card>
             <v-card-title class="text-h5 grey lighten-2">
@@ -469,7 +487,9 @@
               <v-btn color="primary" text @click="reassignForm()">
                 Submit
               </v-btn>
-              <v-btn color="red" text @click="dialog = false"> Cancel </v-btn>
+              <v-btn color="red" text @click="reassignDialog = false">
+                Cancel
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -495,7 +515,9 @@
               <v-btn color="primary" text @click="requestChange()">
                 Submit
               </v-btn>
-              <v-btn color="red" text @click="dialog = false"> Cancel </v-btn>
+              <v-btn color="red" text @click="requestChangeDialog = false">
+                Cancel
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -526,6 +548,7 @@ export default {
 
     this.loadUser();
     this.loadEmails();
+
     this.form = this.$route.params.formId
       ? this.getForm(this.$route.params.formId)
       : this.getForm("blank");
@@ -589,6 +612,7 @@ export default {
     denyDialog: false,
     requestChangeDialog: false,
     reassignDialog: false,
+    requestChangeDisplay: false,
 
     backToWorkDate: "",
 
@@ -615,7 +639,8 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
     numberRules: [
       (v) => !!v || "This field is required",
-      (v) => Number.isInteger(Number(v)) || "This field must be a number",
+      (v) =>
+        Number.isInteger(Number(v)) || v == 0 || "This field must be a number",
     ],
   }),
   computed: {
@@ -680,6 +705,7 @@ export default {
           this.snackbar = true;
         });
       }
+      this.requestPage();
     },
     saveForm() {
       this.$refs.form.resetValidation();
@@ -784,10 +810,11 @@ export default {
         })
         .then((resp) => {
           console.log(resp);
-          this.apiSuccess = "Form reassigned successfully";
+          this.apiSuccess = "Form reassigned";
           this.snackbar = true;
         });
-      this.denyDialog = false;
+      this.reassignDialog = false;
+      this.managePage();
     },
     denyForm() {
       let formId = this.form.formId
@@ -800,6 +827,7 @@ export default {
         this.snackbar = true;
       });
       this.denyDialog = false;
+      this.managePage();
     },
     requestChange() {
       let formId = this.form.formId
@@ -810,10 +838,11 @@ export default {
         .post(`${FORM_URL}/${formId}/requestChange`, this.form)
         .then((resp) => {
           console.log(resp);
-          this.apiSuccess = "Form denied";
+          this.apiSuccess = "Change requested";
           this.snackbar = true;
         });
-      this.denyDialog = false;
+      this.requestChangeDialog = false;
+      this.managePage();
     },
     managePage() {
       this.$router.push(`/managerView`);

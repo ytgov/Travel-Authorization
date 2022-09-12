@@ -69,6 +69,7 @@ formRouter.get(
 				supervisorEmail: '',
 				status: '',
 				formId: '',
+				requestedChange: '',
 				stops: new Array<any>(),
 			};
 
@@ -118,6 +119,7 @@ formRouter.get(
 				webForm.supervisorEmail = auth[0].supervisoremail;
 				webForm.status = auth[0].formstatus;
 				webForm.formId = auth[0].formid;
+				webForm.requestedChange = auth[0].requestchange;
 			}
 
 			res.status(200).json(webForm);
@@ -315,7 +317,7 @@ formRouter.post(
 					}
 					res.status(200).json({ formId: req.params.formId });
 				} else {
-					res.status(500).json('Nulls in submission');
+					res.status(500).json('Required fields in submission are blank');
 				}
 			});
 		} catch (error: any) {
