@@ -1,50 +1,108 @@
 <template>
   <div class="user">
     <h1>Manage Submissions</h1>
-    <v-card class="mt-5" color="#fff2d5">
-      <v-card-title>Pending Approvals</v-card-title>
-      <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="pending"
-          :items-per-page="20"
-          class="elevation-1"
-          @click:row="handleClick"
-        >
-          <template v-slot:item.firstname="{ item }">
-            <span>{{ item.firstname }} {{ item.lastname }}</span>
-          </template>
-          <template v-slot:item.datebacktowork="{ item }">
-            <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
-          </template>
-          <template v-slot:item.departureDate="{ item }">
-            <span>{{ new Date(item.departureDate).toDateString() }}</span>
-          </template></v-data-table
-        >
-      </v-card-text>
-    </v-card>
-    <v-card class="mt-5" color="#fff2d5">
-      <v-card-title>Approved Trips</v-card-title>
-      <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="approved"
-          :items-per-page="20"
-          class="elevation-1"
-          @click:row="handleClick"
-        >
-          <template v-slot:item.firstname="{ item }">
-            <span>{{ item.firstname }} {{ item.lastname }}</span>
-          </template>
-          <template v-slot:item.datebacktowork="{ item }">
-            <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
-          </template>
-          <template v-slot:item.departureDate="{ item }">
-            <span>{{ new Date(item.departureDate).toDateString() }}</span>
-          </template></v-data-table
-        ></v-card-text
-      >
-    </v-card>
+    <v-row>
+      <v-col>
+        <v-card class="mt-5" color="#fff2d5">
+          <v-card-title>Pending Approvals</v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="headers"
+              :items="pending"
+              :items-per-page="20"
+              class="elevation-1"
+              @click:row="handleClick"
+            >
+              <template v-slot:item.firstname="{ item }">
+                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              </template>
+              <template v-slot:item.datebacktowork="{ item }">
+                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              </template>
+              <template v-slot:item.departureDate="{ item }">
+                <span>{{ new Date(item.departureDate).toDateString() }}</span>
+              </template></v-data-table
+            >
+          </v-card-text>
+        </v-card>
+      </v-col>
+
+      <v-col>
+        <v-card class="mt-5" color="#fff2d5">
+          <v-card-title>Awaiting changes</v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="headers"
+              :items="changeRequests"
+              :items-per-page="20"
+              class="elevation-1"
+              @click:row="handleClick"
+            >
+              <template v-slot:item.firstname="{ item }">
+                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              </template>
+              <template v-slot:item.datebacktowork="{ item }">
+                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              </template>
+              <template v-slot:item.departureDate="{ item }">
+                <span>{{ new Date(item.departureDate).toDateString() }}</span>
+              </template></v-data-table
+            ></v-card-text
+          >
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-card class="mt-5" color="#fff2d5">
+          <v-card-title>Awaiting Expense Approval</v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="headers"
+              :items="pending"
+              :items-per-page="20"
+              class="elevation-1"
+              @click:row="handleClick"
+            >
+              <template v-slot:item.firstname="{ item }">
+                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              </template>
+              <template v-slot:item.datebacktowork="{ item }">
+                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              </template>
+              <template v-slot:item.departureDate="{ item }">
+                <span>{{ new Date(item.departureDate).toDateString() }}</span>
+              </template></v-data-table
+            >
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card class="mt-5" color="#fff2d5">
+          <v-card-title>Approved Trips</v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="headers"
+              :items="approved"
+              :items-per-page="20"
+              class="elevation-1"
+              @click:row="handleClick"
+            >
+              <template v-slot:item.firstname="{ item }">
+                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              </template>
+              <template v-slot:item.datebacktowork="{ item }">
+                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              </template>
+              <template v-slot:item.departureDate="{ item }">
+                <span>{{ new Date(item.departureDate).toDateString() }}</span>
+              </template></v-data-table
+            ></v-card-text
+          >
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
 </template> 
 <script>
@@ -56,6 +114,7 @@ export default {
     forms: [],
     pending: [],
     approved: [],
+    changeRequests: [],
     headers: [
       { text: "TA Form Number", value: "taid" },
       { text: "Department/Branch", value: "department" },
@@ -72,10 +131,13 @@ export default {
       axios.get(`${MANAGER_URL}/forms/`).then((resp) => {
         this.forms = resp.data;
         this.pending = this.forms.filter((form) => {
-          if (form.formstatus == "Pending Approval") return true;
+          if (form.formstatus == "submitted") return true;
         });
         this.approved = this.forms.filter((form) => {
-          if (form.formstatus != "Pending Approval") return true;
+          if (form.formstatus == "approved") return true;
+        });
+        this.changeRequests = this.forms.filter((form) => {
+          if (form.formstatus == "changeRequested") return true;
         });
       });
     },

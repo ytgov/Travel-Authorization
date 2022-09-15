@@ -392,7 +392,9 @@
           </v-row>
         </v-form>
         <div v-if="review == true">
-          <v-btn color="primary" class="mr-5" @click="saveForm">Approve</v-btn>
+          <v-btn color="primary" class="mr-5" @click="approveForm()"
+            >Approve</v-btn
+          >
           <v-btn color="green" class="mr-5" @click="requestChangePopup()">
             Request Changes
           </v-btn>
@@ -546,10 +548,11 @@ export default {
     this.form.stops[0].departuredate = this.getToday();
     this.form.stops[0].departuretime = "12:00";
 
-    this.loadUser();
-    this.loadEmails();
+    await this.loadEmails();
 
     await this.getForm(this.$route.params.formId);
+    await this.loadUser();
+
     if (
       this.form.requestedChange &&
       this.review == false &&
@@ -557,6 +560,7 @@ export default {
     ) {
       this.requestChangeDisplay = true;
     }
+    this.$refs.form.resetValidation();
   },
   data: () => ({
     //Form
@@ -697,7 +701,6 @@ export default {
     removeStop(index) {
       if (this.form.stops.length > 1) this.form.stops.splice(index, 1);
     },
-
     submitForm() {
       this.showError = false;
       if (this.$refs.form.validate()) {
@@ -708,9 +711,9 @@ export default {
           console.log(resp);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
+          this.requestPage();
         });
       }
-      this.requestPage();
     },
     saveForm() {
       this.$refs.form.resetValidation();
@@ -742,9 +745,10 @@ export default {
     },
 
     //Axios gets
-    loadUser() {
+    async loadUser() {
       axios.get(`${USERS_URL}`).then((resp) => {
         this.user = resp.data[0];
+        console.log(this.user);
         this.form.firstName =
           this.user.first_name[0].toUpperCase() +
           this.user.first_name.substring(1);
@@ -752,9 +756,6 @@ export default {
           this.user.last_name[0].toUpperCase() +
           this.user.last_name.substring(1);
         this.form.email = this.user.email;
-        if (this.user.email != this.form.email) {
-          this.review = false;
-        }
       });
       axios.get(`${USERS_URL}/unit`).then((resp) => {
         this.form.department = resp.data.department;
@@ -764,7 +765,7 @@ export default {
         this.form.mailcode = resp.data.mailcode;
       });
     },
-    loadEmails() {
+    async loadEmails() {
       axios.get(`${LOOKUP_URL}/emailList`).then((resp) => {
         this.emails = resp.data;
       });
@@ -848,6 +849,18 @@ export default {
         });
       this.requestChangeDialog = false;
       this.managePage();
+    },
+    approveForm() {
+      let formId = this.form.formId
+        ? this.form.formId
+        : this.$route.params.formId;
+
+      axios.post(`${FORM_URL}/${formId}/approve`, this.form).then((resp) => {
+        console.log(resp);
+        this.apiSuccess = "Form approved";
+        this.snackbar = true;
+        this.managePage();
+      });
     },
     managePage() {
       this.$router.push(`/managerView`);

@@ -28,21 +28,41 @@
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="2">
-          <v-text-field
-            v-model="expense.date"
-            label="Date"
-            outlined
-            dense
-          ></v-text-field>
+          <v-menu
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+            v-model="expenseDateMenu[index]"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                outlined
+                dense
+                v-model="expenses[index].date"
+                label="Date"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="expenses[index].date"
+              @input="expenseDateMenu[index] = false"
+            ></v-date-picker>
+          </v-menu>
         </v-col>
 
         <v-col cols="12" md="2">
-          <v-text-field
+          <v-select
+            :items="currency"
             v-model="expense.currency"
             label="Currency"
             outlined
             dense
-          ></v-text-field>
+          ></v-select>
         </v-col>
         <v-col>
           <v-btn
@@ -51,7 +71,6 @@
             small
             color="red"
             @click="removeExpense(index)"
-            :disabled="review"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
@@ -66,10 +85,8 @@
 </template>
 
 <script>
-import { FORM_URL } from "../../urls";
-import axios from "axios";
 export default {
-  name: "Form",
+  name: "ExpenseList",
   created() {
     this.expenses.push({
       description: "",
@@ -81,6 +98,9 @@ export default {
   },
   data: () => ({
     expenses: [],
+    currency: ["CAD", "USD", "EUR"],
+    expenseDate: [],
+    expenseDateMenu: [],
   }),
   computed: {},
   methods: {
@@ -97,20 +117,13 @@ export default {
     removeExpense(index) {
       this.expenses.splice(index, 1);
     },
+
     saveExpenses() {},
-    submitForm() {},
-    saveForm() {},
-    report() {},
 
     getToday() {
       return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10);
-    },
-    getForm(formId) {
-      axios.get(`${FORM_URL}/${formId}`).then((resp) => {
-        this.form = resp.data;
-      });
     },
   },
 };

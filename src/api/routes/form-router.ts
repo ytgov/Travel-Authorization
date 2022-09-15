@@ -391,11 +391,9 @@ formRouter.post(
 				if (
 					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
 				) {
-					let denialReason = req.body.denialReason;
-
 					let id = await db('auth')
 						.withSchema('travel')
-						.update({ status: 'approved' })
+						.update({ formstatus: 'approved' })
 						.where('formid', '=', req.params.formId)
 						.transacting(trx)
 						.returning('taid');
