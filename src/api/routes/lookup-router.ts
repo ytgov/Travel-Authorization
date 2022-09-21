@@ -14,9 +14,11 @@ lookupRouter.get(
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		try {
-			let result = await db('destination')
-				.withSchema('travel')
-				.select('destinationid as id', 'province', 'city');
+			let result = await db('destination').select(
+				'destinationid as id',
+				'province',
+				'city'
+			);
 			res.status(200).json(result);
 		} catch (error: any) {
 			console.log(error);
@@ -31,7 +33,6 @@ lookupRouter.get(
 	async function (req: Request, res: Response) {
 		try {
 			let result = await db('departments')
-				.withSchema('travel')
 				.select('id', 'name', 'type', 'ownedby')
 				.where('type', '=', 'department');
 			res.status(200).json(result);
@@ -48,7 +49,6 @@ lookupRouter.get(
 	async function (req: Request, res: Response) {
 		try {
 			let result = await db('departments')
-				.withSchema('travel')
 				.select(
 					'departments.id',
 					'departments.name',
@@ -75,7 +75,6 @@ lookupRouter.get(
 	async function (req: Request, res: Response) {
 		try {
 			let result = await db('departments')
-				.withSchema('travel')
 				.select('id', 'name', 'type', 'ownedby')
 				.where('ownedby', '=', req.params.id)
 				.andWhere('type', '=', 'branch');
@@ -92,9 +91,7 @@ lookupRouter.get(
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		try {
-			let result = await db('roles')
-				.withSchema('travel')
-				.select('id', 'rolename');
+			let result = await db('roles').select('id', 'rolename');
 			res.status(200).json(result);
 		} catch (error: any) {
 			console.log(error);

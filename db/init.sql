@@ -685,8 +685,6 @@ create table Travel.Expenses(
 	type varchar(100),
 	cost numeric,
 	FOREIGN KEY (taid) REFERENCES Travel.Auth(taid)
-
-	
 );
 
 create table Travel.Stops(

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Travel Request</h1>
-    <div>Current Status: {{ form.status }}</div>
+    <div>Current Status: {{ form.formStatus }}</div>
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
       <v-tab> Expenses </v-tab>
@@ -123,7 +123,7 @@
               <v-col cols="2">
                 <v-autocomplete
                   v-if="index == 0"
-                  v-model="form.stops[index].from"
+                  v-model="form.stops[index].travelFrom"
                   outlined
                   dense
                   label="From"
@@ -139,7 +139,7 @@
                 </v-autocomplete>
                 <v-autocomplete
                   v-if="index > 0"
-                  v-model="form.stops[index - 1].to"
+                  v-model="form.stops[index - 1].travelFrom"
                   outlined
                   dense
                   label="From"
@@ -156,7 +156,7 @@
               </v-col>
               <v-col cols="2">
                 <v-autocomplete
-                  v-model="form.stops[index].to"
+                  v-model="form.stops[index].travelTo"
                   outlined
                   dense
                   label="To"
@@ -186,7 +186,7 @@
                     <v-text-field
                       outlined
                       dense
-                      v-model="form.stops[index].departuredate"
+                      v-model="form.stops[index].departureDate"
                       label="Departure Date"
                       prepend-icon="mdi-calendar"
                       readonly
@@ -197,7 +197,7 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
-                    v-model="form.stops[index].departuredate"
+                    v-model="form.stops[index].departureDate"
                     @input="departureMenu[index] = false"
                     @change="calculateDaysGone(index)"
                     :rules="requiredRules"
@@ -218,7 +218,7 @@
                     <v-text-field
                       outlined
                       dense
-                      v-model="form.stops[index].departuretime"
+                      v-model="form.stops[index].departureTime"
                       label="Departure Time"
                       prepend-icon="mdi-clock"
                       readonly
@@ -231,7 +231,7 @@
                   <v-time-picker
                     format="24hr"
                     scrollable
-                    v-model="form.stops[index].departuretime"
+                    v-model="form.stops[index].departureTime"
                     @input="departureTimeMenu[index] = false"
                     :rules="requiredRules"
                   ></v-time-picker> </v-menu
@@ -275,7 +275,7 @@
             <v-col cols="2">
               <v-text-field
                 dense
-                v-model="form.totalTripLength"
+                v-model="form.travelDuration"
                 outlined
                 label="# of days in trip"
                 required
@@ -286,7 +286,7 @@
             <v-col cols="2">
               <v-text-field
                 dense
-                v-model="form.daysNotTraveling"
+                v-model="form.daysNotTravel"
                 outlined
                 label="# of days OFF travel status"
                 required
@@ -307,7 +307,7 @@
                   <v-text-field
                     outlined
                     dense
-                    v-model="form.backToWorkDate"
+                    v-model="form.dateBackToWork"
                     label="Back to work date"
                     prepend-icon="mdi-calendar"
                     readonly
@@ -317,7 +317,7 @@
                   ></v-text-field>
                 </template>
                 <v-date-picker
-                  v-model="form.backToWorkDate"
+                  v-model="form.dateBackToWork"
                   @input="btwMenu = false"
                 ></v-date-picker>
               </v-menu>
@@ -426,7 +426,7 @@
             </v-card-title>
 
             <v-card-text>
-              {{ form.requestedChange }}
+              {{ form.requestChange }}
             </v-card-text>
 
             <v-card-actions>
@@ -507,7 +507,7 @@
             </v-card-text>
             <v-card-text>
               <v-textarea
-                v-model="form.requestedChange"
+                v-model="form.requestChange"
                 outlined
                 label="Requested Changes"
               ></v-textarea>
@@ -544,9 +544,9 @@ export default {
     }
     this.getDestinations();
     this.getDepartmentList();
-    this.form.backToWorkDate = this.getToday();
-    this.form.stops[0].departuredate = this.getToday();
-    this.form.stops[0].departuretime = "12:00";
+    this.form.dateBackToWork = this.getToday();
+    this.form.stops[0].departureDate = this.getToday();
+    this.form.stops[0].departureTime = "12:00";
 
     await this.loadEmails();
 
@@ -554,9 +554,9 @@ export default {
     await this.loadUser();
 
     if (
-      this.form.requestedChange &&
+      this.form.requestChange &&
       this.review == false &&
-      this.form.status == "changeRequested"
+      this.form.formStatus == "changeRequested"
     ) {
       this.requestChangeDisplay = true;
     }
@@ -573,24 +573,24 @@ export default {
       unit: "",
       stops: [
         {
-          to: "",
-          from: "",
-          departuredate: "",
-          departuretime: "",
+          travelTo: "",
+          travelFrom: "",
+          departureDate: "",
+          departureTime: "",
           transport: "",
         },
       ],
-      totalTripLength: "1",
-      daysNotTraveling: "0",
+      travelDuration: "1",
+      daysNotTravel: "0",
       mailcode: "",
       travelAdvance: 0,
-      backToWorkDate: "",
+      dateBackToWork: "",
       purpose: "",
       eventName: "",
       summary: "",
       supervisorEmail: "",
-      status: "",
-      requestedChange: "",
+      formStatus: "",
+      requestChange: "",
       denialReason: "",
     },
 
@@ -623,7 +623,7 @@ export default {
     reassignDialog: false,
     requestChangeDisplay: false,
 
-    backToWorkDate: "",
+    dateBackToWork: "",
 
     departureMenu: [],
     departureTimeMenu: [],
@@ -691,10 +691,10 @@ export default {
   methods: {
     addStop() {
       this.form.stops.push({
-        to: "",
-        from: "",
-        departuredate: this.getToday(),
-        departuretime: "12:00",
+        travelTo: "",
+        travelFrom: "",
+        departureDate: this.getToday(),
+        departureTime: "12:00",
         transport: "",
       });
     },
@@ -789,10 +789,10 @@ export default {
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
-        new Date(this.form.stops[index].departuredate).getTime() -
-        new Date(this.form.stops[0].departuredate).getTime();
+        new Date(this.form.stops[index].departureDate).getTime() -
+        new Date(this.form.stops[0].departureDate).getTime();
 
-      this.form.totalTripLength = Difference_In_Time / (1000 * 3600 * 24);
+      this.form.travelDuration = Difference_In_Time / (1000 * 3600 * 24);
     },
     getToday() {
       return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)

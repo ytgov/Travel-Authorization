@@ -46,7 +46,6 @@ permRouter.post(
 				};
 
 				let id = await db('auth')
-					.withSchema('travel')
 					.insert(authInsert, 'taid')
 					.transacting(trx)
 					.returning('taid');
@@ -58,7 +57,7 @@ permRouter.post(
 						arrivaldate: stops[index].arrivaldate,
 						departuredate: stops[index].departuredate,
 					};
-					await db('stops').withSchema('travel').insert(stop).transacting(trx);
+					await db('stops').insert(stop).transacting(trx);
 				}
 			});
 		} catch (error: any) {

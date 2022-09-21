@@ -19,14 +19,12 @@ managerRouter.get(
 		try {
 			let user = await userService.getByEmail(req.user.email);
 			let auth = await db('auth')
-				.withSchema('travel')
 				.select('*')
 				.where('supervisoremail', '=', user.email)
 				.andWhere('formid', '=', req.params.formId);
 
 			for (let index = 0; index < auth.length; index++) {
 				auth[0].stops = await db('stops')
-					.withSchema('travel')
 					.select('*')
 					.where('taid', '=', auth[0].taid);
 			}
@@ -86,17 +84,14 @@ managerRouter.get(
 		try {
 			let user = await userService.getByEmail(req.user.email);
 			let auth = await db('auth')
-				.withSchema('travel')
 				.select('*')
 				.where('supervisoremail', '=', user.email);
 
 			for (let index = 0; index < auth.length; index++) {
 				auth[index].stops = await db('stops')
-					.withSchema('travel')
 					.select('*')
 					.where('taid', '=', auth[index].taid);
 				let departureDate = await db('stops')
-					.withSchema('travel')
 					.min('departuredate')
 					.where('taid', '=', auth[index].taid);
 				auth[index].departureDate = departureDate[0].min;

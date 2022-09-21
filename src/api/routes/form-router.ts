@@ -18,18 +18,13 @@ formRouter.get(
 	async function (req: Request, res: Response) {
 		try {
 			let user = await userService.getByEmail(req.user.email);
-			let auth = await db('auth')
-				.withSchema('travel')
-				.select('*')
-				.where('userid', '=', user.id);
+			let auth = await db('forms').select('*').where('userid', '=', user.id);
 
 			for (let index = 0; index < auth.length; index++) {
 				auth[index].stops = await db('stops')
-					.withSchema('travel')
 					.select('*')
 					.where('taid', '=', auth[index].taid);
 				let departureDate = await db('stops')
-					.withSchema('travel')
 					.min('departuredate')
 					.where('taid', '=', auth[index].taid);
 				auth[index].departureDate = departureDate[0].min;
@@ -48,81 +43,23 @@ formRouter.get(
 	async function (req: Request, res: Response) {
 		try {
 			let user = await userService.getByEmail(req.user.email);
-			let today = new Date();
 
-			let webForm = {
-				firstName: '',
-				lastName: '',
-				department: '',
-				division: '',
-				branch: '',
-				unit: '',
-				email: '',
-				mailcode: '',
-				totalTripLength: 0,
-				daysNotTraveling: 0,
-				travelAdvance: 0,
-				backToWorkDate: today.toISOString().substr(0, 10),
-				purpose: '',
-				eventName: '',
-				summary: '',
-				supervisorEmail: '',
-				status: '',
-				formId: '',
-				requestedChange: '',
-				stops: new Array<any>(),
-			};
-
-			let auth = await db('auth')
-				.withSchema('travel')
+			let auth = await db('forms')
 				.select('*')
 				.where('userid', '=', user.id)
-				.andWhere('formid', '=', req.params.formId);
+				.andWhere('formid', '=', req.params.formId)
+				.first();
 
-			if (auth[0]) {
-				for (let index = 0; index < auth.length; index++) {
-					auth[0].stops = await db('stops')
-						.withSchema('travel')
-						.select('*')
-						.where('taid', '=', auth[0].taid);
-				}
+			if (auth) {
+				let webForm = auth;
 
-				for (let stop of auth[0].stops) {
-					webForm.stops.push({
-						from: stop.travelfrom,
-						to: stop.travelto,
-						departuretime: stop.departuretime,
-						departuredate: new Date(stop.departuredate)
-							.toISOString()
-							.substr(0, 10),
-						transport: stop.transport,
-						estimate: stop.estimate,
-					});
-				}
-				webForm.firstName = auth[0].firstname;
-				webForm.lastName = auth[0].lastname;
-				webForm.department = auth[0].department;
-				webForm.division = auth[0].division;
-				webForm.branch = auth[0].branch;
-				webForm.unit = auth[0].unit;
-				webForm.email = auth[0].email;
-				webForm.mailcode = auth[0].mailcode;
-				webForm.totalTripLength = auth[0].travelduration;
-				webForm.daysNotTraveling = auth[0].daysnottravel;
-				webForm.travelAdvance = auth[0].traveladvance;
-				webForm.backToWorkDate = new Date(auth[0].datebacktowork)
-					.toISOString()
-					.substr(0, 10);
-				webForm.purpose = auth[0].purpose;
-				webForm.eventName = auth[0].eventname;
-				webForm.summary = auth[0].summary;
-				webForm.supervisorEmail = auth[0].supervisoremail;
-				webForm.status = auth[0].formstatus;
-				webForm.formId = auth[0].formid;
-				webForm.requestedChange = auth[0].requestchange;
+				webForm.stops = await db('stops')
+					.select('*')
+					.where('taid', '=', auth.taid);
+
+				res.status(200).json(webForm);
 			}
-
-			res.status(200).json(webForm);
+			res.status(404).json('Form not found');
 		} catch (error: any) {
 			console.log(error);
 			res.status(500).json('Internal Server Error');
@@ -179,51 +116,35 @@ formRouter.post(
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
 
+				// let authInsert =
+				let stops = req.body.stops;
+				delete req.body.stops;
+
 				let authInsert = {
-					userid: user.id,
-					firstname: req.body.firstName,
-					lastname: req.body.lastName,
-					department: req.body.department,
-					division: req.body.division,
-					branch: req.body.branch,
-					unit: req.body.unit,
-					email: req.body.email,
-					mailcode: req.body.mailcode,
-					travelduration: req.body.totalTripLength,
-					daysnottravel: req.body.daysNotTraveling,
-					datebacktowork: req.body.backToWorkDate,
-					purpose: req.body.purpose,
-					traveladvance: req.body.travelAdvance,
-					eventname: req.body.eventName,
-					summary: req.body.summary,
-					supervisoremail: req.body.supervisorEmail,
-					formstatus: 'draft',
-					formid: req.params.formId,
+					userId: user.id,
+					...req.body,
+					formStatus: 'Draft',
+					formId: req.params.formId,
 				};
 
-				let id = await db('auth')
-					.withSchema('travel')
-					.insert(authInsert, 'taid')
-					.onConflict('formid')
+				console.log(authInsert);
+
+				let id = await db('forms')
+					.insert(authInsert, 'id')
+					.onConflict('formId')
 					.merge();
 
 				await db('stops')
-					.withSchema('travel')
 					.delete()
-					.where('taid', '=', id[0].taid)
+					.where('taid', '=', id[0].id)
 					.transacting(trx);
 
-				for (let index = 0; index < req.body.stops.length; index++) {
+				for (let index = 0; index < stops.length; index++) {
 					let stop = {
-						taid: id[0].taid,
-						travelfrom: req.body.stops[index].from,
-						travelto: req.body.stops[index].to,
-						departuredate: req.body.stops[index].departuredate,
-						departuretime: req.body.stops[index].departuretime,
-						transport: req.body.stops[index].transport,
-						estimate: 0,
+						taid: id[0].id,
+						...stops[index],
 					};
-					await db('stops').withSchema('travel').insert(stop).transacting(trx);
+					await db('stops').insert(stop).transacting(trx);
 				}
 			});
 			res.status(200).json({ formId: req.params.formId });
@@ -245,26 +166,14 @@ formRouter.post(
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
 
+				let stops = req.body.stops;
+				delete req.body.stops;
+
 				let authInsert = {
-					userid: user.id,
-					firstname: req.body.firstName,
-					lastname: req.body.lastName,
-					department: req.body.department,
-					division: req.body.division,
-					branch: req.body.branch,
-					unit: req.body.unit,
-					email: req.body.email,
-					mailcode: req.body.mailcode,
-					travelduration: req.body.totalTripLength,
-					daysnottravel: req.body.daysNotTraveling,
-					datebacktowork: req.body.backToWorkDate,
-					purpose: req.body.purpose,
-					traveladvance: req.body.travelAdvance,
-					eventname: req.body.eventName,
-					summary: req.body.summary,
-					supervisoremail: req.body.supervisorEmail,
-					formstatus: 'submitted',
-					formid: req.params.formId,
+					userId: user.id,
+					...req.body,
+					formStatus: 'Submitted',
+					formId: req.params.formId,
 				};
 
 				if (
@@ -288,32 +197,23 @@ formRouter.post(
 					authInsert.formstatus &&
 					authInsert.formid
 				) {
-					let id = await db('auth')
-						.withSchema('travel')
+					let id = await db('forms')
 						.insert(authInsert, 'taid')
 						.onConflict('formid')
 						.merge();
 
 					await db('stops')
-						.withSchema('travel')
 						.delete()
 						.where('taid', '=', id[0].taid)
 						.transacting(trx);
 
-					for (let index = 0; index < req.body.stops.length; index++) {
+					for (let index = 0; index < stops.length; index++) {
 						let stop = {
 							taid: id[0].taid,
-							travelfrom: req.body.stops[index].from,
-							travelto: req.body.stops[index].to,
-							departuredate: req.body.stops[index].departuredate,
-							departuretime: req.body.stops[index].departuretime,
-							transport: req.body.stops[index].transport,
+							...stops[index],
 							estimate: 0,
 						};
-						await db('stops')
-							.withSchema('travel')
-							.insert(stop)
-							.transacting(trx);
+						await db('stops').insert(stop).transacting(trx);
 					}
 					res.status(200).json({ formId: req.params.formId });
 				} else {
@@ -338,8 +238,7 @@ formRouter.post(
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
 
-				let supervisorEmail = await db('auth')
-					.withSchema('travel')
+				let supervisorEmail = await db('forms')
 					.select('email')
 					.where('formid', '=', req.params.formId)
 					.transacting(trx);
@@ -349,11 +248,10 @@ formRouter.post(
 				) {
 					let denialReason = req.body.denialReason;
 
-					let id = await db('auth')
-						.withSchema('travel')
+					let id = await db('forms')
 						.update({
-							denialreason: denialReason,
-							formstatus: 'denied',
+							denialReason: denialReason,
+							formStatus: 'Denied',
 						})
 						.where('formid', '=', req.params.formId)
 						.transacting(trx)
@@ -382,8 +280,7 @@ formRouter.post(
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
 
-				let supervisorEmail = await db('auth')
-					.withSchema('travel')
+				let supervisorEmail = await db('forms')
 					.select('email')
 					.where('formid', '=', req.params.formId)
 					.transacting(trx);
@@ -391,8 +288,7 @@ formRouter.post(
 				if (
 					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
 				) {
-					let id = await db('auth')
-						.withSchema('travel')
+					let id = await db('forms')
 						.update({ formstatus: 'approved' })
 						.where('formid', '=', req.params.formId)
 						.transacting(trx)
@@ -424,8 +320,7 @@ formRouter.post(
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
 
-				let supervisorEmail = await db('auth')
-					.withSchema('travel')
+				let supervisorEmail = await db('forms')
 					.select('email')
 					.where('formid', '=', req.params.formId)
 					.transacting(trx);
@@ -435,8 +330,7 @@ formRouter.post(
 				) {
 					let reassign = req.body.reassign;
 
-					let id = await db('auth')
-						.withSchema('travel')
+					let id = await db('forms')
 						.update({
 							supervisoremail: reassign,
 						})
@@ -466,8 +360,7 @@ formRouter.post(
 			await db.transaction(async (trx) => {
 				let user = await userService.getByEmail(req.user.email);
 
-				let supervisorEmail = await db('auth')
-					.withSchema('travel')
+				let supervisorEmail = await db('forms')
 					.select('email')
 					.where('formid', '=', req.params.formId)
 					.transacting(trx);
@@ -476,8 +369,7 @@ formRouter.post(
 					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
 				) {
 					let requestChange = req.body.requestedChange;
-					let id = await db('auth')
-						.withSchema('travel')
+					let id = await db('forms')
 						.update({
 							requestchange: requestChange,
 							formstatus: 'changeRequested',
@@ -505,8 +397,7 @@ formRouter.delete(
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		try {
-			let result = await db('auth')
-				.withSchema('travel')
+			let result = await db('forms')
 				.update({
 					formstatus: 'deleted',
 				})
@@ -530,8 +421,7 @@ formRouter.post(
 	async function (req: Request, res: Response) {
 		let user = await userService.getByEmail(req.user.email);
 		try {
-			await db('auth')
-				.withSchema('travel')
+			await db('forms')
 				.delete()
 				.where('taid', '=', req.params.formId)
 				.andWhere('supervisoremail', '=', user.email)
