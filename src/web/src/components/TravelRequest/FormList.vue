@@ -37,7 +37,7 @@ export default {
       { text: "Purpose", value: "purpose" },
       { text: "Departure Date", value: "departureDate" },
       { text: "Return Date", value: "datebacktowork" },
-      { text: "Status", value: "formstatus" },
+      { text: "Status", value: "formStatus" },
     ],
   }),
   created() {
@@ -50,7 +50,7 @@ export default {
       });
     },
     openForm(value) {
-      this.$router.push(`/TravelRequest/Request/${value.formid}`);
+      this.$router.push(`/TravelRequest/Request/${value.formId}`);
     },
     createForm() {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);

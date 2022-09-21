@@ -14,11 +14,7 @@ lookupRouter.get(
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		try {
-			let result = await db('destination').select(
-				'destinationid as id',
-				'province',
-				'city'
-			);
+			let result = await db('destinations').select('id', 'province', 'city');
 			res.status(200).json(result);
 		} catch (error: any) {
 			console.log(error);

@@ -18,15 +18,15 @@ formRouter.get(
 	async function (req: Request, res: Response) {
 		try {
 			let user = await userService.getByEmail(req.user.email);
-			let auth = await db('forms').select('*').where('userid', '=', user.id);
+			let auth = await db('forms').select('*').where('userId', '=', user.id);
 
 			for (let index = 0; index < auth.length; index++) {
 				auth[index].stops = await db('stops')
 					.select('*')
-					.where('taid', '=', auth[index].taid);
+					.where('taid', '=', auth[index].id);
 				let departureDate = await db('stops')
-					.min('departuredate')
-					.where('taid', '=', auth[index].taid);
+					.min('departureDate')
+					.where('taid', '=', auth[index].id);
 				auth[index].departureDate = departureDate[0].min;
 			}
 			res.status(200).json(auth);
@@ -46,58 +46,17 @@ formRouter.get(
 
 			let auth = await db('forms')
 				.select('*')
-				.where('userid', '=', user.id)
-				.andWhere('formid', '=', req.params.formId)
+				.where('userId', '=', user.id)
+				.andWhere('formId', '=', req.params.formId)
 				.first();
 
 			if (auth) {
-				let webForm = auth;
+				auth.stops = await db('stops').select('*').where('taid', '=', auth.id);
 
-				webForm.stops = await db('stops')
-					.select('*')
-					.where('taid', '=', auth.taid);
-
-				res.status(200).json(webForm);
+				res.status(200).json(auth);
+			} else {
+				res.status(404).json('Form not found');
 			}
-			res.status(404).json('Form not found');
-		} catch (error: any) {
-			console.log(error);
-			res.status(500).json('Internal Server Error');
-		}
-	}
-);
-
-//Gets a blank form for first time creation
-formRouter.get(
-	'/blank',
-	ReturnValidationErrors,
-	async function (req: Request, res: Response) {
-		try {
-			let today = new Date();
-
-			let webForm = {
-				firstName: '',
-				lastName: '',
-				department: '',
-				division: '',
-				branch: '',
-				unit: '',
-				email: '',
-				mailcode: '',
-				totalTripLength: 0,
-				daysNotTraveling: 0,
-				travelAdvance: 0,
-				backToWorkDate: today.toISOString().substr(0, 10),
-				purpose: '',
-				eventName: '',
-				summary: '',
-				supervisorEmail: '',
-				status: '',
-				formId: '',
-				stops: [],
-			};
-
-			res.status(200).json(webForm);
 		} catch (error: any) {
 			console.log(error);
 			res.status(500).json('Internal Server Error');
@@ -126,8 +85,6 @@ formRouter.post(
 					formStatus: 'Draft',
 					formId: req.params.formId,
 				};
-
-				console.log(authInsert);
 
 				let id = await db('forms')
 					.insert(authInsert, 'id')
@@ -177,39 +134,38 @@ formRouter.post(
 				};
 
 				if (
-					authInsert.userid &&
-					authInsert.firstname &&
-					authInsert.lastname &&
+					authInsert.userId &&
+					authInsert.firstName &&
+					authInsert.lastName &&
 					authInsert.department &&
 					authInsert.division &&
 					authInsert.branch &&
 					authInsert.unit &&
 					authInsert.email &&
 					authInsert.mailcode &&
-					authInsert.travelduration &&
-					authInsert.daysnottravel &&
-					authInsert.datebacktowork &&
+					authInsert.travelDuration &&
+					authInsert.daysNotTravel &&
+					authInsert.dateBackToWork &&
 					authInsert.purpose &&
-					authInsert.traveladvance &&
-					authInsert.eventname &&
+					authInsert.travelAdvance &&
+					authInsert.eventName &&
 					authInsert.summary &&
-					authInsert.supervisoremail &&
-					authInsert.formstatus &&
-					authInsert.formid
+					authInsert.supervisorEmail &&
+					authInsert.formStatus &&
+					authInsert.formId
 				) {
 					let id = await db('forms')
-						.insert(authInsert, 'taid')
-						.onConflict('formid')
+						.insert(authInsert, 'id')
+						.onConflict('formId')
 						.merge();
-
 					await db('stops')
 						.delete()
-						.where('taid', '=', id[0].taid)
+						.where('taid', '=', id[0].id)
 						.transacting(trx);
 
 					for (let index = 0; index < stops.length; index++) {
 						let stop = {
-							taid: id[0].taid,
+							taid: id[0].id,
 							...stops[index],
 							estimate: 0,
 						};
@@ -240,7 +196,7 @@ formRouter.post(
 
 				let supervisorEmail = await db('forms')
 					.select('email')
-					.where('formid', '=', req.params.formId)
+					.where('formId', '=', req.params.formId)
 					.transacting(trx);
 
 				if (
@@ -253,9 +209,9 @@ formRouter.post(
 							denialReason: denialReason,
 							formStatus: 'Denied',
 						})
-						.where('formid', '=', req.params.formId)
+						.where('formId', '=', req.params.formId)
 						.transacting(trx)
-						.returning('taid');
+						.returning('id');
 
 					res.status(200).json({ formId: req.body.formId });
 				} else {
@@ -282,17 +238,17 @@ formRouter.post(
 
 				let supervisorEmail = await db('forms')
 					.select('email')
-					.where('formid', '=', req.params.formId)
+					.where('formId', '=', req.params.formId)
 					.transacting(trx);
 
 				if (
 					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
 				) {
 					let id = await db('forms')
-						.update({ formstatus: 'approved' })
-						.where('formid', '=', req.params.formId)
+						.update({ formStatus: 'Approved' })
+						.where('formId', '=', req.params.formId)
 						.transacting(trx)
-						.returning('taid');
+						.returning('id');
 
 					res.status(200).json({ formId: req.body.formId });
 				} else {
@@ -322,7 +278,7 @@ formRouter.post(
 
 				let supervisorEmail = await db('forms')
 					.select('email')
-					.where('formid', '=', req.params.formId)
+					.where('formId', '=', req.params.formId)
 					.transacting(trx);
 
 				if (
@@ -332,11 +288,11 @@ formRouter.post(
 
 					let id = await db('forms')
 						.update({
-							supervisoremail: reassign,
+							supervisorEmail: reassign,
 						})
-						.where('formid', '=', req.params.formId)
+						.where('formId', '=', req.params.formId)
 						.transacting(trx)
-						.returning('taid');
+						.returning('id');
 
 					res.status(200).json({ formId: req.body.formId });
 				} else {
@@ -362,21 +318,20 @@ formRouter.post(
 
 				let supervisorEmail = await db('forms')
 					.select('email')
-					.where('formid', '=', req.params.formId)
+					.where('formId', '=', req.params.formId)
 					.transacting(trx);
 
 				if (
 					supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()
 				) {
-					let requestChange = req.body.requestedChange;
 					let id = await db('forms')
 						.update({
-							requestchange: requestChange,
-							formstatus: 'changeRequested',
+							requestChange: req.body.requestChange,
+							formStatus: 'Change Requested',
 						})
-						.where('formid', '=', req.params.formId)
+						.where('formId', '=', req.params.formId)
 						.transacting(trx)
-						.returning('taid');
+						.returning('id');
 
 					res.status(200).json({ formId: req.body.formId });
 				} else {
@@ -401,8 +356,8 @@ formRouter.delete(
 				.update({
 					formstatus: 'deleted',
 				})
-				.where('formid', '=', req.params.formId)
-				.returning('formid');
+				.where('formId', '=', req.params.formId)
+				.returning('formId');
 			if (result) {
 				res.status(200).json('Delete successful');
 				console.log('Delete successful', req.params.id);
@@ -424,7 +379,7 @@ formRouter.post(
 			await db('forms')
 				.delete()
 				.where('taid', '=', req.params.formId)
-				.andWhere('supervisoremail', '=', user.email)
+				.andWhere('supervisorEmail', '=', user.email)
 				// .orWhere('email','=',req.body.email)
 				.update({ status: req.body.status, changes: req.body.changes });
 			console.log('Entry updated', req.body);

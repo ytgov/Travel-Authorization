@@ -133,9 +133,9 @@
                   :item-value="destinations.value"
                   required
                   clearable
-                  :rules="destinationRules"
                   :disabled="review"
                 >
+                  <!-- :rules="destinationRules" -->
                 </v-autocomplete>
                 <v-autocomplete
                   v-if="index > 0"
@@ -149,9 +149,9 @@
                   :item-value="destinations.value"
                   required
                   clearable
-                  :rules="destinationRules"
                   :disabled="review"
                 >
+                  <!-- :rules="destinationRules" -->
                 </v-autocomplete>
               </v-col>
               <v-col cols="2">
@@ -166,9 +166,9 @@
                   :item-value="destinations.value"
                   required
                   clearable
-                  :rules="destinationRules"
                   :disabled="review"
                 >
+                  <!-- :rules="destinationRules" -->
                 </v-autocomplete>
               </v-col>
 
@@ -551,12 +551,13 @@ export default {
     await this.loadEmails();
 
     await this.getForm(this.$route.params.formId);
+
     await this.loadUser();
 
     if (
       this.form.requestChange &&
       this.review == false &&
-      this.form.formStatus == "changeRequested"
+      this.form.formStatus == "Change Requested"
     ) {
       this.requestChangeDisplay = true;
     }
@@ -799,10 +800,12 @@ export default {
         .toISOString()
         .substr(0, 10);
     },
-    async getForm(formId = "blank") {
-      await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
-        this.form = resp.data;
-      });
+    async getForm(formId) {
+      if (formId) {
+        await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
+          this.form = resp.data;
+        });
+      }
     },
     reassignForm() {
       let formId = this.form.formId

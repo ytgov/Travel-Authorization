@@ -131,19 +131,19 @@ export default {
       axios.get(`${MANAGER_URL}/forms/`).then((resp) => {
         this.forms = resp.data;
         this.pending = this.forms.filter((form) => {
-          if (form.formstatus == "submitted") return true;
+          if (form.formStatus == "Submitted") return true;
         });
         this.approved = this.forms.filter((form) => {
-          if (form.formstatus == "approved") return true;
+          if (form.formStatus == "Approved") return true;
         });
         this.changeRequests = this.forms.filter((form) => {
-          if (form.formstatus == "changeRequested") return true;
+          if (form.formStatus == "Change Requested") return true;
         });
       });
     },
     handleClick(value) {
       //Redirects the user to the edit user form
-      this.$router.push(`/TravelRequest/Request/${value.formid}/manage`);
+      this.$router.push(`/TravelRequest/Request/${value.formId}/manage`);
     },
   },
 };
