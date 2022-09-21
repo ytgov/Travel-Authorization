@@ -18,7 +18,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.integer('taid').notNullable();
 		t.string('travelFrom');
 		t.string('travelTo');
-		t.date('departureDate');
+		t.specificType('departureDate', 'DATE');
 		t.time('departureTime');
 		t.string('transport');
 		t.integer('estimate');

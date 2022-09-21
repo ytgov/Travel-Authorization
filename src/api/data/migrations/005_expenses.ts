@@ -16,7 +16,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.integer('taid').notNullable();
 		t.string('type').notNullable();
 		t.string('description').notNullable();
-		t.date('date').notNullable();
+		t.specificType('date', 'DATE');
 		t.integer('cost').notNullable();
 		t.string('currency').notNullable();
 	});

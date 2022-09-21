@@ -9,6 +9,24 @@ import { auth } from 'express-openid-connect';
 
 const db = knex(DB_CONFIG);
 
+const { setTypeParser, builtins } = require('pg').types;
+
+const typesToReset = [
+	builtins.DATE,
+	builtins.TIME,
+	builtins.TIMETZ,
+	builtins.TIMESTAMP,
+	builtins.TIMESTAMPTZ,
+];
+
+function resetPgDateParsers() {
+	for (const pgType of typesToReset) {
+		setTypeParser(pgType, (val: any) => String(val)); // like noParse() function underhood pg lib
+	}
+}
+
+resetPgDateParsers();
+
 export const formRouter = express.Router();
 const userService = new UserService();
 
@@ -45,10 +63,12 @@ formRouter.get(
 			let user = await userService.getByEmail(req.user.email);
 
 			let auth = await db('forms')
-				.select('*')
+				.select('*, back')
 				.where('userId', '=', user.id)
 				.andWhere('formId', '=', req.params.formId)
 				.first();
+
+			console.log(auth);
 
 			if (auth) {
 				auth.stops = await db('stops').select('*').where('taid', '=', auth.id);

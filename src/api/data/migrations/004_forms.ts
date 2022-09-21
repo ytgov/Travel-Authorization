@@ -41,7 +41,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.string('email');
 		t.string('mailcode');
 		t.integer('daysNotTravel');
-		t.date('dateBackToWork');
+		t.specificType('dateBackToWork', 'DATE');
 		t.integer('travelDuration');
 		t.string('purpose');
 		t.integer('travelAdvance');
