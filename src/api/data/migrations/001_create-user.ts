@@ -7,6 +7,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.boolean('is_active').notNullable().defaultTo(true);
 		t.string('first_name').notNullable();
 		t.string('last_name').notNullable();
+		t.string('roles', 1000);
 		t.timestamp('create_date').notNullable().defaultTo(knex.fn.now());
 	});
 };
