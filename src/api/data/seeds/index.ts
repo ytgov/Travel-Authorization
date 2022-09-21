@@ -9,16 +9,6 @@ export async function seedUp() {
 	// roles: string,
 	// is_active: string
 
-	await sqldb('user').delete().whereRaw('1=1');
-	await sqldb('user').insert([
-		{
-			email: 'Max.parker@yukon.ca',
-			first_name: 'Max',
-			last_name: 'Parker',
-			is_active: 'true',
-		},
-	]);
-
 	await sqldb('departments').delete().whereRaw('1=1');
 
 	await sqldb('departments').insert([
