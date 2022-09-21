@@ -17,10 +17,7 @@ export class UserService {
 		roles: string,
 		is_active: string
 	): Promise<any> {
-		let existing = await this.db('user')
-			.withSchema('travel')
-			.where({ email })
-			.count('email as cnt');
+		let existing = await this.db('user').where({ email }).count('email as cnt');
 
 		if (existing[0].cnt > 0) return undefined;
 
@@ -33,82 +30,62 @@ export class UserService {
 			create_date: new Date(),
 		};
 
-		return await this.db('user').withSchema('travel').insert(user);
+		return await this.db('user').insert(user);
 	}
 
 	async update(email: string, item: any) {
-		return this.db('user').withSchema('travel').where({ email }).update(item);
+		return this.db('user').where({ email }).update(item);
 	}
 
 	async getAll() {
-		return this.db('user').withSchema('travel');
+		return this.db('user');
 	}
 
 	async getByEmail(email: string): Promise<any | undefined> {
-		return this.db('user').withSchema('travel').where({ email }).first();
+		return this.db('user').where({ email }).first();
 	}
 
 	async getById(id: string): Promise<any | undefined> {
-		return this.db('user').withSchema('travel').where({ id }).first();
+		return this.db('user').where({ id }).first();
 	}
 
 	async getAccessFor(email: string): Promise<string[]> {
-		return this.db('user')
-			.withSchema('travel')
-			.where({ email })
-			.select('roles');
+		return this.db('user').where({ email }).select('roles');
 	}
 
 	async setAccess(email: string, access: string[]) {
-		return this.db('user')
-			.withSchema('travel')
-			.where({ email })
-			.update({ roles: access });
+		return this.db('user').where({ email }).update({ roles: access });
 	}
 
 	async getDepartmentAccess(id: string): Promise<number[]> {
 		return this.db('departmentassignments')
-			.withSchema('travel')
 			.where('userid', '=', id)
 			.select('*');
 	}
 
 	async saveDepartmentAccess(id: string, access: number[]) {
-		await this.db('departmentassignments')
-			.withSchema('travel')
-			.where('userid', '=', id)
-			.del();
+		await this.db('departmentassignments').where('userid', '=', id).del();
 		if (access) {
 			const fieldsToInsert = access.map((entry) => ({
 				userid: id,
 				objectid: entry,
 			}));
-			return this.db('departmentassignments')
-				.withSchema('travel')
-				.insert(fieldsToInsert);
+			return this.db('departmentassignments').insert(fieldsToInsert);
 		}
 	}
 
 	async getRoleAccess(id: string): Promise<number[]> {
-		return this.db('roleassignments')
-			.withSchema('travel')
-			.where('userid', '=', id)
-			.select('*');
+		return this.db('roleassignments').where('userid', '=', id).select('*');
 	}
 
 	async saveRoleAccess(id: string, access: number[]) {
-		await this.db('roleassignments')
-			.withSchema('travel')
-			.where('userid', '=', id)
-			.del();
+		await this.db('roleassignments').where('userid', '=', id).del();
 		if (access) {
 			const fieldsToInsert = access.map((entry) => ({
 				userid: id,
 				roleid: entry,
 			}));
-			return this.db('roleassignments')
-				.withSchema('travel')
-				.insert(fieldsToInsert);
+			return this.db('roleassignments').insert(fieldsToInsert);
 		}
 	}
 
