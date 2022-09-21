@@ -158,6 +158,7 @@ formRouter.post(
 						.insert(authInsert, 'id')
 						.onConflict('formId')
 						.merge();
+
 					await db('stops')
 						.delete()
 						.where('taid', '=', id[0].id)
@@ -370,22 +371,57 @@ formRouter.delete(
 	}
 );
 
-formRouter.post(
-	'/:formId/expense',
+formRouter.get(
+	'/:formId/expenses',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		let user = await userService.getByEmail(req.user.email);
 		try {
-			await db('forms')
-				.delete()
-				.where('taid', '=', req.params.formId)
-				.andWhere('supervisorEmail', '=', user.email)
-				// .orWhere('email','=',req.body.email)
-				.update({ status: req.body.status, changes: req.body.changes });
-			console.log('Entry updated', req.body);
-			res.status(200).json('Updated successful');
+			await db.transaction(async (trx) => {
+				let id = await db('forms')
+					.select('id')
+					.where('formId', req.params.formId)
+					.transacting(trx);
+
+				let expenses = await db('expenses').select('*').transacting(trx);
+
+				res.status(200).json(expenses);
+			});
 		} catch (error: any) {
-			console.log(error.name, error.detail);
+			console.log(error);
+			res.status(500).json('Update failed');
+		}
+	}
+);
+
+formRouter.post(
+	'/:formId/expenses',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		let user = await userService.getByEmail(req.user.email);
+		try {
+			await db.transaction(async (trx) => {
+				let id = await db('forms')
+					.select('id')
+					.where('formId', req.params.formId)
+					.transacting(trx);
+
+				await db('expenses')
+					.delete()
+					.where('taid', '=', id[0].id)
+					.transacting(trx);
+
+				for (let index = 0; index < req.body.length; index++) {
+					let expense = {
+						taid: id[0].id,
+						...req.body[index],
+					};
+					await db('expenses').insert(expense).transacting(trx);
+				}
+				res.status(200).json('Updated expenses successful');
+			});
+		} catch (error: any) {
+			console.log(error);
 			res.status(500).json('Update failed');
 		}
 	}
