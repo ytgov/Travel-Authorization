@@ -63,7 +63,7 @@ formRouter.get(
 			let user = await userService.getByEmail(req.user.email);
 
 			let auth = await db('forms')
-				.select('*, back')
+				.select('*')
 				.where('userId', '=', user.id)
 				.andWhere('formId', '=', req.params.formId)
 				.first();
