@@ -15,7 +15,7 @@ spec:
         app: travel-authorization-tst
     spec:
       containers:
-        - image: harbor.ynet.gov.yk.ca/yg-github/ytgov/travel-authorization:v1.0.12
+        - image: harbor.ynet.gov.yk.ca/yg-github/ytgov/travel-authorization:v1.0.13
           name: travel-authorization
           ports:
             - containerPort: 3000
