@@ -5,8 +5,8 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.increments('id').notNullable().primary();
 		t.string('email').notNullable();
 		t.boolean('is_active').notNullable().defaultTo(true);
-		t.string('first_name').notNullable();
-		t.string('last_name').notNullable();
+		t.string('first_name');
+		t.string('last_name');
 		t.string('roles', 1000);
 		t.timestamp('create_date').notNullable().defaultTo(knex.fn.now());
 	});

@@ -110,6 +110,12 @@
               </v-list-item-icon>
               <v-list-item-title>Sign out</v-list-item-title>
             </v-list-item>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>mdi-clock</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>{{ appVersion }}</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </div>
@@ -170,6 +176,7 @@ export default {
     },
   },
   data: () => ({
+    appVersion: config.appVersion,
     dialog: false,
     drawer: null,
     drawerRight: null,

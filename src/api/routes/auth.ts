@@ -41,8 +41,8 @@ export function configureAuthentication(app: Express) {
 			(req.session as any).user = oidcUser;
 			req.user = oidcUser;
 
-			//let dbUser = await db.getByEmail(oidcUser.email);
-			//req.user = await db.makeDTO(Object.assign(oidcUser, dbUser));
+			let dbUser = await db.getByEmail(oidcUser.email);
+			req.user = await db.makeDTO(Object.assign(oidcUser, dbUser));
 		}
 
 		next();

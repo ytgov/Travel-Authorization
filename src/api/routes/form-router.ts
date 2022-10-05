@@ -68,12 +68,12 @@ formRouter.get(
 				.andWhere('formId', '=', req.params.formId)
 				.first();
 
-			console.log(auth);
-
 			if (auth) {
 				auth.stops = await db('stops').select('*').where('taid', '=', auth.id);
 
 				res.status(200).json(auth);
+			} else if (auth === undefined) {
+				res.status(200).json({});
 			} else {
 				res.status(404).json('Form not found');
 			}

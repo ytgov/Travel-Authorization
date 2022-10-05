@@ -4,7 +4,7 @@
     <div>Current Status: {{ form.formStatus }}</div>
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
-      <v-tab> Expenses </v-tab>
+      <v-tab> Travel Claims </v-tab>
     </v-tabs>
     <br />
     <v-tabs-items v-model="tab">
@@ -542,6 +542,7 @@ export default {
     if (this.$route.params.manage == "manage") {
       this.review = true;
     }
+
     this.getDestinations();
     this.getDepartmentList();
     this.form.dateBackToWork = this.getToday();
@@ -549,9 +550,7 @@ export default {
     this.form.stops[0].departureTime = "12:00";
 
     await this.loadEmails();
-
     await this.getForm(this.$route.params.formId);
-
     await this.loadUser();
 
     if (
@@ -749,7 +748,7 @@ export default {
     async loadUser() {
       axios.get(`${USERS_URL}`).then((resp) => {
         this.user = resp.data[0];
-        console.log(this.user);
+        console.log("user", this.user);
         this.form.firstName =
           this.user.first_name[0].toUpperCase() +
           this.user.first_name.substring(1);

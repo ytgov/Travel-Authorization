@@ -103,14 +103,23 @@ export class UserService {
 			});
 
 		let unit = {
-			department: unitSearch.department,
-			division: unitSearch.division,
-			branch: unitSearch.branch,
-			unit: unitSearch.unit,
-			mailcode: unitSearch.mailcode,
-			manager: unitSearch.manager,
+			department: '',
+			division: '',
+			branch: '',
+			unit: '',
+			mailcode: '',
+			manager: '',
 		};
-
+		if (unitSearch) {
+			unit = {
+				department: unitSearch.department || '',
+				division: unitSearch.division || '',
+				branch: unitSearch.branch || '',
+				unit: unitSearch.unit || '',
+				mailcode: unitSearch.mailcode || '',
+				manager: unitSearch.manager || '',
+			};
+		}
 		return unit;
 	}
 
