@@ -18,6 +18,13 @@ export async function seedUp() {
 			roles: '',
 			create_date: '2021-08-01',
 		},
+		{
+			email: 'diedred@gmail.com',
+			first_name: 'Test',
+			last_name: 'Admin',
+			roles: '',
+			create_date: '2021-08-01',
+		},
 	]);
 
 	await sqldb('departments').delete().whereRaw('1=1');
