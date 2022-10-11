@@ -73,7 +73,7 @@ formRouter.get(
 
 				res.status(200).json(auth);
 			} else if (auth === undefined) {
-				res.status(200).json({});
+				res.status(200).json({ form: 'empty' });
 			} else {
 				res.status(404).json('Form not found');
 			}

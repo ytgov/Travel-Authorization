@@ -526,6 +526,16 @@
       </v-tab-item>
       <v-tab-item><ExpenseList /></v-tab-item>
     </v-tabs-items>
+    <div class="text-center">
+      <v-overlay :value="overlay">
+        <v-progress-circular
+          indeterminate
+          color="#f3b228"
+          :size="70"
+          :width="7"
+        ></v-progress-circular>
+      </v-overlay>
+    </div>
   </div>
 </template>
 
@@ -544,14 +554,17 @@ export default {
     }
 
     this.getDestinations();
-    this.getDepartmentList();
+    this.departments = await this.getDepartmentList();
+
     this.form.dateBackToWork = this.getToday();
     this.form.stops[0].departureDate = this.getToday();
     this.form.stops[0].departureTime = "12:00";
 
-    await this.loadEmails();
-    await this.getForm(this.$route.params.formId);
+    this.$refs.form.resetValidation();
+
+    this.emails = await this.loadEmails();
     await this.loadUser();
+    await this.getForm(this.$route.params.formId);
 
     if (
       this.form.requestChange &&
@@ -560,7 +573,9 @@ export default {
     ) {
       this.requestChangeDisplay = true;
     }
+    console.log("form!", this.form);
     this.$refs.form.resetValidation();
+    this.overlay = false;
   },
   data: () => ({
     //Form
@@ -632,6 +647,7 @@ export default {
     showError: null,
     snackbar: null,
     apiSuccess: "",
+    overlay: true,
 
     //Rules
     firstNameRules: [(v) => !!v || "First name is required"],
@@ -649,7 +665,7 @@ export default {
     numberRules: [
       (v) => !!v || "This field is required",
       (v) =>
-        Number.isInteger(Number(v)) || v == 0 || "This field must be a number",
+        v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     ],
   }),
   computed: {
@@ -746,9 +762,8 @@ export default {
 
     //Axios gets
     async loadUser() {
-      axios.get(`${USERS_URL}`).then((resp) => {
-        this.user = resp.data[0];
-        console.log("user", this.user);
+      await axios.get(`${USERS_URL}/me`).then((resp) => {
+        this.user = resp.data.data;
         this.form.firstName =
           this.user.first_name[0].toUpperCase() +
           this.user.first_name.substring(1);
@@ -756,23 +771,26 @@ export default {
           this.user.last_name[0].toUpperCase() +
           this.user.last_name.substring(1);
         this.form.email = this.user.email;
+        return resp.data;
       });
-      axios.get(`${USERS_URL}/unit`).then((resp) => {
+      await axios.get(`${USERS_URL}/unit`).then((resp) => {
         this.form.department = resp.data.department;
         this.form.division = resp.data.division;
         this.form.branch = resp.data.branch;
         this.form.unit = resp.data.unit;
         this.form.mailcode = resp.data.mailcode;
+        return resp.data;
       });
+      return;
     },
     async loadEmails() {
-      axios.get(`${LOOKUP_URL}/emailList`).then((resp) => {
-        this.emails = resp.data;
+      return axios.get(`${LOOKUP_URL}/emailList`).then((resp) => {
+        return resp.data;
       });
     },
-    getDepartmentList() {
-      axios.get(`${LOOKUP_URL}/departmentList`).then((resp) => {
-        this.departments = resp.data;
+    async getDepartmentList() {
+      return axios.get(`${LOOKUP_URL}/departmentList`).then((resp) => {
+        return resp.data;
       });
     },
     getDestinations() {
@@ -801,8 +819,10 @@ export default {
     },
     async getForm(formId) {
       if (formId) {
-        await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
-          this.form = resp.data;
+        return await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
+          if (resp.data.form != "empty") {
+            this.form = resp.data;
+          }
         });
       }
     },
