@@ -14,11 +14,11 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 	return knex.schema.createTable('expenses', function (t) {
 		t.increments('id').notNullable().primary();
 		t.integer('taid').notNullable();
-		t.string('type').notNullable();
 		t.string('description').notNullable();
 		t.specificType('date', 'DATE');
-		t.integer('cost').notNullable();
+		t.float('cost').notNullable();
 		t.string('currency').notNullable();
+		t.string('type').notNullable();
 	});
 };
 

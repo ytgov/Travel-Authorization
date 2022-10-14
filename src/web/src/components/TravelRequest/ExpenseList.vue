@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h2>Expense List</h2>
+    <h2>{{ title }}</h2>
     <div v-for="(expense, index) in expenses" :key="index">
       <v-row>
-        <v-col cols="12" md="2">
+        <v-col cols="12" md="4">
           <v-text-field
             v-model="expense.description"
-            label="Name"
+            label="Description"
             outlined
             dense
           ></v-text-field>
@@ -19,13 +19,14 @@
             dense
           ></v-text-field>
         </v-col>
-        <v-col cols="12" md="2">
-          <v-text-field
-            v-model="expense.type"
-            label="Description"
+        <v-col cols="12" md="2  ">
+          <v-select
+            :items="currency"
+            v-model="expense.currency"
+            label="Currency"
             outlined
             dense
-          ></v-text-field>
+          ></v-select>
         </v-col>
         <v-col cols="12" md="2">
           <v-menu
@@ -53,16 +54,6 @@
               @input="expenseDateMenu[index] = false"
             ></v-date-picker>
           </v-menu>
-        </v-col>
-
-        <v-col cols="12" md="2">
-          <v-select
-            :items="currency"
-            v-model="expense.currency"
-            label="Currency"
-            outlined
-            dense
-          ></v-select>
         </v-col>
         <v-col>
           <v-btn
@@ -95,15 +86,13 @@ export default {
   name: "ExpenseList",
   async mounted() {
     this.formId = this.$route.params.formId;
-    await this.getExpenses();
-    this.expenses.push({
-      description: "",
-      cost: "",
-      type: "",
-      date: "",
-      currency: "",
-    });
+    this.expenses = await this.getExpenses();
+    console.log(this.expenses);
+    if (this.expenses.length === 0) {
+      this.addExpense();
+    }
   },
+  props: ["title"],
   data: () => ({
     expenses: [],
     currency: ["CAD", "USD", "EUR"],
@@ -119,7 +108,6 @@ export default {
       this.expenses.push({
         description: "",
         cost: "",
-        type: "",
         date: "",
         currency: "",
       });
@@ -140,10 +128,10 @@ export default {
     },
 
     async getExpenses() {
-      await axios
-        .get(`${FORM_URL}/${this.formId}/expenses`, this.expenses)
+      return await axios
+        .get(`${FORM_URL}/${this.formId}/expenses/${this.title}`)
         .then((resp) => {
-          this.expenses = resp.data;
+          return resp.data;
         });
     },
 

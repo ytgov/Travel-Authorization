@@ -4,7 +4,9 @@
     <div>Current Status: {{ form.formStatus }}</div>
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
-      <v-tab> Travel Claims </v-tab>
+      <v-tab :disabled="form.formStatus != 'Draft'"> Estimates</v-tab>
+      <v-tab :disabled="form.formStatus == 'Draft'"> Expenses </v-tab>
+      <v-tab :disabled="form.formStatus == 'Draft'"> Trip Report </v-tab>
     </v-tabs>
     <br />
     <v-tabs-items v-model="tab">
@@ -109,7 +111,7 @@
                 v-model="form.mailcode"
                 dense
                 outlined
-                label="mailcode"
+                label="Mailcode"
                 required
                 :disabled="review"
                 :rules="requiredRules"
@@ -354,7 +356,7 @@
                 v-model="form.eventName"
                 dense
                 outlined
-                label="Event Name (If applicable)"
+                label="Name of meeting/conference, mission, trade fair or course"
                 required
                 :disabled="review"
               ></v-text-field>
@@ -365,7 +367,19 @@
               <v-textarea
                 v-model="form.summary"
                 outlined
-                label="General Travel Information"
+                label="Purpose of attendance"
+                :disabled="review"
+                :rules="requiredRules"
+              >
+              </v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                v-model="form.summary"
+                outlined
+                label="Relevance and anticipated benefits to branch and Government of Yukon"
                 :disabled="review"
                 :rules="requiredRules"
               >
@@ -524,7 +538,95 @@
           </v-card>
         </v-dialog>
       </v-tab-item>
-      <v-tab-item><ExpenseList /></v-tab-item>
+      <v-tab-item :disabled="form.formStatus != 'Draft'"
+        ><ExpenseList title="Estimates"
+      /></v-tab-item>
+      <v-tab-item :disabled="form.formStatus == 'Draft'"
+        ><ExpenseList title="Expenses"
+      /></v-tab-item>
+      <v-tab-item>
+        <h2>Post Trip Report</h2>
+        <v-row>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.summary"
+              outlined
+              label="Cost differences"
+              hint="Provide a brief rationale if there is significant difference from the estimated cost."
+              :disabled="review"
+              :rules="requiredRules"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.summary"
+              outlined
+              label="Skills gained"
+              hint="Specific knowledge gained which will benefit the Government of Yukon."
+              :disabled="review"
+              :rules="requiredRules"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.summary"
+              outlined
+              label="Skill application timeframe"
+              hint="Estimated timeframe in whichthese benefits will become evident"
+              :disabled="review"
+              :rules="requiredRules"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.summary"
+              outlined
+              label="Benefits to your area (department/unit)"
+              hint="What are the expected benefits to your program?"
+              :disabled="review"
+              :rules="requiredRules"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.summary"
+              outlined
+              label="Benefits to YG"
+              hint="What are the expected benefits to the Government of Yukon?"
+              :disabled="review"
+              :rules="requiredRules"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.summary"
+              outlined
+              label="Future recommendations"
+              hint="What recommendations would you make for similar trips in the future?"
+              :disabled="review"
+              :rules="requiredRules"
+            >
+            </v-textarea>
+          </v-col>
+        </v-row>
+        <v-btn color="primary" class="mr-5"> Submit Expenses and Report </v-btn>
+        <v-btn color="green" class="mr-5">Save Report</v-btn>
+      </v-tab-item>
     </v-tabs-items>
     <div class="text-center">
       <v-overlay :value="overlay">
@@ -663,7 +765,6 @@ export default {
     destinationRules: [(v) => !!v || "This field is required"],
     requiredRules: [(v) => !!v || "This field is required"],
     numberRules: [
-      (v) => !!v || "This field is required",
       (v) =>
         v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     ],
@@ -732,6 +833,7 @@ export default {
       }
     },
     saveForm() {
+      this.form.formStatus = "Draft";
       this.$refs.form.resetValidation();
       this.showError = false;
       let formId = this.form.formId

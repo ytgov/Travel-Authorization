@@ -164,10 +164,8 @@ formRouter.post(
 					authInsert.email &&
 					authInsert.mailcode &&
 					authInsert.travelDuration &&
-					authInsert.daysNotTravel &&
 					authInsert.dateBackToWork &&
 					authInsert.purpose &&
-					authInsert.travelAdvance &&
 					authInsert.eventName &&
 					authInsert.summary &&
 					authInsert.supervisorEmail &&
@@ -392,18 +390,22 @@ formRouter.delete(
 );
 
 formRouter.get(
-	'/:formId/expenses',
+	'/:formId/expenses/:type',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		let user = await userService.getByEmail(req.user.email);
 		try {
 			await db.transaction(async (trx) => {
-				let id = await db('forms')
+				let form = await db('forms')
 					.select('id')
 					.where('formId', req.params.formId)
 					.transacting(trx);
 
-				let expenses = await db('expenses').select('*').transacting(trx);
+				let expenses = await db('expenses')
+					.select('*')
+					.where('type', '=', req.params.type)
+					.andWhere('taid', '=', form[0].id)
+					.transacting(trx);
 
 				res.status(200).json(expenses);
 			});
@@ -421,20 +423,27 @@ formRouter.post(
 		let user = await userService.getByEmail(req.user.email);
 		try {
 			await db.transaction(async (trx) => {
-				let id = await db('forms')
-					.select('id')
+				let form = await db('forms')
+					.select('id', 'formStatus')
 					.where('formId', req.params.formId)
 					.transacting(trx);
 
+				let type = 'Estimates';
+				if (form[0].formStatus == 'Approved') {
+					type = 'Expenses';
+				}
+
 				await db('expenses')
 					.delete()
-					.where('taid', '=', id[0].id)
+					.where('taid', '=', form[0].id)
+					.andWhere('type', '=', type)
 					.transacting(trx);
 
 				for (let index = 0; index < req.body.length; index++) {
 					let expense = {
-						taid: id[0].id,
+						taid: form[0].id,
 						...req.body[index],
+						type: type,
 					};
 					await db('expenses').insert(expense).transacting(trx);
 				}
