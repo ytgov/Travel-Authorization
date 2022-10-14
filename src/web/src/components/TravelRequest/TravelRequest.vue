@@ -377,7 +377,7 @@
           <v-row>
             <v-col cols="12">
               <v-textarea
-                v-model="form.summary"
+                v-model="form.benefits"
                 outlined
                 label="Relevance and anticipated benefits to branch and Government of Yukon"
                 :disabled="review"
@@ -705,6 +705,7 @@ export default {
       purpose: "",
       eventName: "",
       summary: "",
+      benefits: "",
       supervisorEmail: "",
       formStatus: "",
       requestChange: "",
@@ -924,6 +925,8 @@ export default {
         return await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
           if (resp.data.form != "empty") {
             this.form = resp.data;
+          } else {
+            this.form.formStatus = "Draft";
           }
         });
       }
