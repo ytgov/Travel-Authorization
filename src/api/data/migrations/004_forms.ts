@@ -47,6 +47,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.integer('travelAdvance');
 		t.string('eventName');
 		t.string('summary');
+		t.string('benefits');
 		t.string('formStatus');
 		t.string('formId').notNullable().unique();
 		t.string('supervisorEmail');

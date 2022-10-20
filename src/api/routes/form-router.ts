@@ -196,7 +196,7 @@ formRouter.post(
 				}
 			});
 		} catch (error: any) {
-			console.log(error);
+			console.log('Error: ', error);
 			res.status(500).json('Insert failed');
 		}
 	}
@@ -429,7 +429,7 @@ formRouter.post(
 					.transacting(trx);
 
 				let type = 'Estimates';
-				if (form[0].formStatus == 'Approved') {
+				if (form[0].formStatus == 'Submitted') {
 					type = 'Expenses';
 				}
 
