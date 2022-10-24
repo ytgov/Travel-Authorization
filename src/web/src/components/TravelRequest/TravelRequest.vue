@@ -545,91 +545,93 @@
         ><ExpenseList title="Expenses"
       /></v-tab-item>
       <v-tab-item>
-        <h2>Post Trip Report</h2>
-        <v-row>
-          <v-col cols="12">
-            <v-textarea
-              v-model="report.costDifferenceExplanation"
-              outlined
-              label="Cost differences"
-              hint="Provide a brief rationale if there is significant difference from the estimated cost."
-              :disabled="review"
-              :rules="requiredRules"
-            >
-            </v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-textarea
-              v-model="report.skillsGained"
-              outlined
-              label="Skills gained"
-              hint="Specific knowledge gained which will benefit the Government of Yukon."
-              :disabled="review"
-              :rules="requiredRules"
-            >
-            </v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-textarea
-              v-model="report.applicationTimeframe"
-              outlined
-              label="Skill application timeframe"
-              hint="Estimated timeframe in whichthese benefits will become evident"
-              :disabled="review"
-              :rules="requiredRules"
-            >
-            </v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-textarea
-              v-model="report.benefitsToUnit"
-              outlined
-              label="Benefits to your area (department/unit)"
-              hint="What are the expected benefits to your program?"
-              :disabled="review"
-              :rules="requiredRules"
-            >
-            </v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-textarea
-              v-model="report.benefitsToYG"
-              outlined
-              label="Benefits to YG"
-              hint="What are the expected benefits to the Government of Yukon?"
-              :disabled="review"
-              :rules="requiredRules"
-            >
-            </v-textarea>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-textarea
-              v-model="report.futureRecommendations"
-              outlined
-              label="Future recommendations"
-              hint="What recommendations would you make for similar trips in the future?"
-              :disabled="review"
-              :rules="requiredRules"
-            >
-            </v-textarea>
-          </v-col>
-        </v-row>
-        <v-btn color="primary" class="mr-5" @click="submitReport()">
-          Submit Expenses and Report
-        </v-btn>
-        <v-btn color="green" class="mr-5" @click="saveReport()"
-          >Save Report</v-btn
-        >
+        <v-form ref="report" lazy-validation>
+          <h2>Post Trip Report</h2>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                v-model="report.costDifferenceExplanation"
+                outlined
+                label="Cost differences"
+                hint="Provide a brief rationale if there is significant difference from the estimated cost."
+                :disabled="review"
+                :rules="requiredRules"
+              >
+              </v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                v-model="report.skillsGained"
+                outlined
+                label="Skills gained"
+                hint="Specific knowledge gained which will benefit the Government of Yukon."
+                :disabled="review"
+                :rules="requiredRules"
+              >
+              </v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                v-model="report.applicationTimeframe"
+                outlined
+                label="Skill application timeframe"
+                hint="Estimated timeframe in whichthese benefits will become evident"
+                :disabled="review"
+                :rules="requiredRules"
+              >
+              </v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                v-model="report.benefitsToUnit"
+                outlined
+                label="Benefits to your area (department/unit)"
+                hint="What are the expected benefits to your program?"
+                :disabled="review"
+                :rules="requiredRules"
+              >
+              </v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                v-model="report.benefitsToYG"
+                outlined
+                label="Benefits to YG"
+                hint="What are the expected benefits to the Government of Yukon?"
+                :disabled="review"
+                :rules="requiredRules"
+              >
+              </v-textarea>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea
+                v-model="report.futureRecommendations"
+                outlined
+                label="Future recommendations"
+                hint="What recommendations would you make for similar trips in the future?"
+                :disabled="review"
+                :rules="requiredRules"
+              >
+              </v-textarea>
+            </v-col>
+          </v-row>
+          <v-btn color="primary" class="mr-5" @click="submitReport()">
+            Submit Expenses and Report
+          </v-btn>
+          <v-btn color="green" class="mr-5" @click="saveReport()"
+            >Save Report</v-btn
+          >
+        </v-form>
       </v-tab-item>
     </v-tabs-items>
     <div class="text-center">
@@ -671,6 +673,7 @@ export default {
     this.emails = await this.loadEmails();
     await this.loadUser();
     await this.getForm(this.$route.params.formId);
+    this.report = await this.getReport(this.$route.params.formId);
     if (
       this.form.requestChange &&
       this.review == false &&
@@ -714,14 +717,7 @@ export default {
       denialReason: "",
     },
 
-    report: {
-      costDifferenceExplanation: "",
-      skillsGained: "",
-      applicationTimeframe: "",
-      benefitsToUnit: "",
-      benefitsToYG: "",
-      futureRecommendations: "",
-    },
+    report: {},
 
     reassignEmail: "",
 
@@ -872,9 +868,6 @@ export default {
       //   this.requestPage();
       // });
     },
-    report() {
-      console.log(this.stops);
-    },
 
     //Axios gets
     async loadUser() {
@@ -921,16 +914,40 @@ export default {
         return destinations;
       });
     },
+    async getReport() {
+      let formId = this.form.formId || this.$route.params.formId;
+      return axios.get(`${FORM_URL}/${formId}/report`).then((resp) => {
+        return resp.data;
+      });
+    },
 
     submitReport() {
+      if (this.$refs.report.validate()) {
+        let formId = this.form.formId
+          ? this.form.formId
+          : this.$route.params.formId;
+        axios
+          .post(`${FORM_URL}/${formId}/report/submit`, this.report)
+          .then((resp) => {
+            console.log(resp);
+            this.apiSuccess = "Report Submitted";
+            this.snackbar = true;
+            this.requestPage();
+          });
+      }
+    },
+
+    saveReport() {
       let formId = this.form.formId
         ? this.form.formId
         : this.$route.params.formId;
-      axios.post(`${FORM_URL}/${formId}/report`, this.report).then((resp) => {
-        console.log(resp);
-        this.apiSuccess = "Expenses Submitted";
-        this.snackbar = true;
-      });
+      axios
+        .post(`${FORM_URL}/${formId}/report/save`, this.report)
+        .then((resp) => {
+          console.log(resp);
+          this.apiSuccess = "Report Saved";
+          this.snackbar = true;
+        });
     },
 
     //Helpers

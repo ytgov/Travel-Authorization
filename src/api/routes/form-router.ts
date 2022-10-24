@@ -458,7 +458,7 @@ formRouter.post(
 );
 
 formRouter.post(
-	'/:formId/report',
+	'/:formId/report/submit',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		let user = await userService.getByEmail(req.user.email);
@@ -482,6 +482,61 @@ formRouter.post(
 
 				res.status(200).json('Updated report successful');
 			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Update failed');
+		}
+	}
+);
+
+formRouter.post(
+	'/:formId/report/save',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		let user = await userService.getByEmail(req.user.email);
+		try {
+			await db.transaction(async (trx) => {
+				let form = await db('forms')
+					.select('id', 'formStatus')
+					.where('formId', req.params.formId)
+					.transacting(trx);
+
+				let reportInsert = {
+					...req.body,
+					reportStatus: 'Submitted',
+					taid: form[0].id,
+				};
+
+				let id = await db('tripReports')
+					.insert(reportInsert, 'id')
+					.onConflict('taid')
+					.merge();
+
+				res.status(200).json('Updated report successful');
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Update failed');
+		}
+	}
+);
+
+formRouter.get(
+	'/:formId/report',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		let user = await userService.getByEmail(req.user.email);
+		try {
+			let form = await db('forms')
+				.select('id')
+				.where('formId', req.params.formId);
+
+			let report = await db('tripReports')
+				.select('*')
+				.where('taid', '=', form[0].id)
+				.first();
+
+			res.status(200).json(report);
 		} catch (error: any) {
 			console.log(error);
 			res.status(500).json('Update failed');

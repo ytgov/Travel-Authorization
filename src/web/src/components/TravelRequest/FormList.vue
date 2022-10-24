@@ -12,7 +12,7 @@
           @click:row="openForm"
         >
           <template v-slot:item.datebacktowork="{ item }">
-            <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+            <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
           </template>
           <template v-slot:item.departureDate="{ item }">
             <span>{{ new Date(item.departureDate).toDateString() }}</span>
