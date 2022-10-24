@@ -63,7 +63,7 @@
             color="red"
             @click="removeExpense(index)"
           >
-            <v-icon>mdi-close</v-icon>
+            <v-icon>mdi-trash-can</v-icon>
           </v-btn>
         </v-col>
       </v-row>

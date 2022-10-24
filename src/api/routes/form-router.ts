@@ -6,6 +6,7 @@ import { UserService } from '../services';
 import { v4 as uuid } from 'uuid';
 import * as formHelper from '../utils/formHelper';
 import { auth } from 'express-openid-connect';
+import { report } from 'process';
 
 const db = knex(DB_CONFIG);
 
@@ -448,6 +449,38 @@ formRouter.post(
 					await db('expenses').insert(expense).transacting(trx);
 				}
 				res.status(200).json('Updated expenses successful');
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Update failed');
+		}
+	}
+);
+
+formRouter.post(
+	'/:formId/report',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		let user = await userService.getByEmail(req.user.email);
+		try {
+			await db.transaction(async (trx) => {
+				let form = await db('forms')
+					.select('id', 'formStatus')
+					.where('formId', req.params.formId)
+					.transacting(trx);
+
+				let reportInsert = {
+					...req.body,
+					reportStatus: 'Submitted',
+					taid: form[0].id,
+				};
+
+				let id = await db('tripReports')
+					.insert(reportInsert, 'id')
+					.onConflict('taid')
+					.merge();
+
+				res.status(200).json('Updated report successful');
 			});
 		} catch (error: any) {
 			console.log(error);

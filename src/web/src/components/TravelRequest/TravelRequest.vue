@@ -141,7 +141,7 @@
                 </v-autocomplete>
                 <v-autocomplete
                   v-if="index > 0"
-                  v-model="form.stops[index - 1].travelFrom"
+                  v-model="form.stops[index - 1].travelTo"
                   outlined
                   dense
                   label="From"
@@ -259,7 +259,7 @@
                   @click="removeStop(index)"
                   :disabled="review"
                 >
-                  <v-icon>mdi-close</v-icon>
+                  <v-icon>mdi-trash-can</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
@@ -549,7 +549,7 @@
         <v-row>
           <v-col cols="12">
             <v-textarea
-              v-model="form.summary"
+              v-model="report.costDifferenceExplanation"
               outlined
               label="Cost differences"
               hint="Provide a brief rationale if there is significant difference from the estimated cost."
@@ -562,7 +562,7 @@
         <v-row>
           <v-col cols="12">
             <v-textarea
-              v-model="form.summary"
+              v-model="report.skillsGained"
               outlined
               label="Skills gained"
               hint="Specific knowledge gained which will benefit the Government of Yukon."
@@ -575,7 +575,7 @@
         <v-row>
           <v-col cols="12">
             <v-textarea
-              v-model="form.summary"
+              v-model="report.applicationTimeframe"
               outlined
               label="Skill application timeframe"
               hint="Estimated timeframe in whichthese benefits will become evident"
@@ -588,7 +588,7 @@
         <v-row>
           <v-col cols="12">
             <v-textarea
-              v-model="form.summary"
+              v-model="report.benefitsToUnit"
               outlined
               label="Benefits to your area (department/unit)"
               hint="What are the expected benefits to your program?"
@@ -601,7 +601,7 @@
         <v-row>
           <v-col cols="12">
             <v-textarea
-              v-model="form.summary"
+              v-model="report.benefitsToYG"
               outlined
               label="Benefits to YG"
               hint="What are the expected benefits to the Government of Yukon?"
@@ -614,7 +614,7 @@
         <v-row>
           <v-col cols="12">
             <v-textarea
-              v-model="form.summary"
+              v-model="report.futureRecommendations"
               outlined
               label="Future recommendations"
               hint="What recommendations would you make for similar trips in the future?"
@@ -624,8 +624,12 @@
             </v-textarea>
           </v-col>
         </v-row>
-        <v-btn color="primary" class="mr-5"> Submit Expenses and Report </v-btn>
-        <v-btn color="green" class="mr-5">Save Report</v-btn>
+        <v-btn color="primary" class="mr-5" @click="submitReport()">
+          Submit Expenses and Report
+        </v-btn>
+        <v-btn color="green" class="mr-5" @click="saveReport()"
+          >Save Report</v-btn
+        >
       </v-tab-item>
     </v-tabs-items>
     <div class="text-center">
@@ -655,7 +659,7 @@ export default {
       this.review = true;
     }
 
-    this.getDestinations();
+    this.destinations = await this.getDestinations();
     this.departments = await this.getDepartmentList();
 
     this.form.dateBackToWork = this.getToday();
@@ -667,7 +671,6 @@ export default {
     this.emails = await this.loadEmails();
     await this.loadUser();
     await this.getForm(this.$route.params.formId);
-
     if (
       this.form.requestChange &&
       this.review == false &&
@@ -675,7 +678,6 @@ export default {
     ) {
       this.requestChangeDisplay = true;
     }
-    console.log("form!", this.form);
     this.$refs.form.resetValidation();
     this.overlay = false;
   },
@@ -710,6 +712,15 @@ export default {
       formStatus: "",
       requestChange: "",
       denialReason: "",
+    },
+
+    report: {
+      costDifferenceExplanation: "",
+      skillsGained: "",
+      applicationTimeframe: "",
+      benefitsToUnit: "",
+      benefitsToYG: "",
+      futureRecommendations: "",
     },
 
     reassignEmail: "",
@@ -848,16 +859,18 @@ export default {
       });
     },
     deleteForm() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
+      console.log(this.form);
+      console.log(this.destinations);
+      // let formId = this.form.formId
+      //   ? this.form.formId
+      //   : this.$route.params.formId;
 
-      axios.delete(`${FORM_URL}/${formId}`, this.form).then((resp) => {
-        console.log(resp);
-        this.apiSuccess = "Form Deleted";
-        this.snackbar = true;
-        this.requestPage();
-      });
+      // axios.delete(`${FORM_URL}/${formId}`, this.form).then((resp) => {
+      //   console.log(resp);
+      //   this.apiSuccess = "Form Deleted";
+      //   this.snackbar = true;
+      //   this.requestPage();
+      // });
     },
     report() {
       console.log(this.stops);
@@ -896,14 +909,27 @@ export default {
         return resp.data;
       });
     },
-    getDestinations() {
-      axios.get(`${DESTINATION_URL}`).then((resp) => {
+    async getDestinations() {
+      return axios.get(`${DESTINATION_URL}`).then((resp) => {
+        let destinations = [];
         resp.data.forEach((v) => {
-          this.destinations.push({
+          destinations.push({
             value: v.id,
             text: v.city + " (" + v.province + ")",
           });
         });
+        return destinations;
+      });
+    },
+
+    submitReport() {
+      let formId = this.form.formId
+        ? this.form.formId
+        : this.$route.params.formId;
+      axios.post(`${FORM_URL}/${formId}/report`, this.report).then((resp) => {
+        console.log(resp);
+        this.apiSuccess = "Expenses Submitted";
+        this.snackbar = true;
       });
     },
 
@@ -925,6 +951,14 @@ export default {
         return await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
           if (resp.data.form != "empty") {
             this.form = resp.data;
+            this.form.stops.forEach((v, key) => {
+              this.form.stops[key].travelTo = this.destinations.find(
+                (entry) => entry.value == v.travelTo
+              );
+              this.form.stops[key].travelFrom = this.destinations.find(
+                (entry) => entry.value == v.travelFrom
+              );
+            });
           } else {
             this.form.formStatus = "Draft";
           }
