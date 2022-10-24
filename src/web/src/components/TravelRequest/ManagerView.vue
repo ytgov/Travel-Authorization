@@ -13,11 +13,11 @@
               class="elevation-1"
               @click:row="handleClick"
             >
-              <template v-slot:item.firstname="{ item }">
-                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              <template v-slot:item.name="{ item }">
+                <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.datebacktowork="{ item }">
-                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              <template v-slot:item.dateBackToWork="{ item }">
+                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
               <template v-slot:item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
@@ -38,11 +38,11 @@
               class="elevation-1"
               @click:row="handleClick"
             >
-              <template v-slot:item.firstname="{ item }">
-                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              <template v-slot:item.name="{ item }">
+                <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.datebacktowork="{ item }">
-                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              <template v-slot:item.dateBackToWork="{ item }">
+                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
               <template v-slot:item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
@@ -65,11 +65,11 @@
               class="elevation-1"
               @click:row="handleClick"
             >
-              <template v-slot:item.firstname="{ item }">
-                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              <template v-slot:item.name="{ item }">
+                <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.datebacktowork="{ item }">
-                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              <template v-slot:item.dateBackToWork="{ item }">
+                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
               <template v-slot:item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
@@ -89,11 +89,11 @@
               class="elevation-1"
               @click:row="handleClick"
             >
-              <template v-slot:item.firstname="{ item }">
-                <span>{{ item.firstname }} {{ item.lastname }}</span>
+              <template v-slot:item.name="{ item }">
+                <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.datebacktowork="{ item }">
-                <span>{{ new Date(item.datebacktowork).toDateString() }}</span>
+              <template v-slot:item.dateBackToWork="{ item }">
+                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
               <template v-slot:item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
@@ -116,11 +116,11 @@ export default {
     approved: [],
     changeRequests: [],
     headers: [
-      { text: "TA Form Number", value: "taid" },
+      { text: "TA Form Number", value: "id" },
       { text: "Department/Branch", value: "department" },
-      { text: "Requestee", value: "firstname" },
+      { text: "Requestee", value: "name" },
       { text: "Departure Date", value: "departureDate" },
-      { text: "Return Date", value: "datebacktowork" },
+      { text: "Return Date", value: "dateBackToWork" },
     ],
   }),
   created() {

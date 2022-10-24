@@ -16,7 +16,7 @@
           </template>
           <template v-slot:item.departureDate="{ item }">
             <span>{{ new Date(item.departureDate).toDateString() }}</span>
-          </template></v-data-table
+          </template> </v-data-table
         ><v-btn @click="createForm()" color="success"
           >New Travel Request</v-btn
         ></v-card-text
