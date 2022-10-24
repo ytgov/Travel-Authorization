@@ -672,8 +672,9 @@ export default {
 
     this.emails = await this.loadEmails();
     await this.loadUser();
-    await this.getForm(this.$route.params.formId);
     this.report = await this.getReport(this.$route.params.formId);
+
+    await this.getForm(this.$route.params.formId);
     if (
       this.form.requestChange &&
       this.review == false &&

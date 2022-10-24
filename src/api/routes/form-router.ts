@@ -531,10 +531,13 @@ formRouter.get(
 				.select('id')
 				.where('formId', req.params.formId);
 
-			let report = await db('tripReports')
-				.select('*')
-				.where('taid', '=', form[0].id)
-				.first();
+			let report = {};
+			if (form[0]) {
+				report = await db('tripReports')
+					.select('*')
+					.where('taid', '=', form[0].id)
+					.first();
+			}
 
 			res.status(200).json(report);
 		} catch (error: any) {
