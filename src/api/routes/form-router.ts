@@ -197,7 +197,7 @@ formRouter.post(
 				}
 			});
 		} catch (error: any) {
-			console.log('Error: ', error);
+			console.log(error);
 			res.status(500).json('Insert failed');
 		}
 	}
@@ -567,7 +567,6 @@ formRouter.get(
 						.where('taid', '=', form[0].id)
 						.andWhere('type', '=', 'Expenses');
 					let expensesFloat = (parseFloat(expenses[0].sum) || 0).toFixed(2);
-					console.log(estimatesFloat, expensesFloat);
 
 					result = { estimates: estimatesFloat, expenses: expensesFloat };
 				}

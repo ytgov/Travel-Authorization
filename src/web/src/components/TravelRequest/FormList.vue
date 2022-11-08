@@ -8,7 +8,7 @@
           :headers="headers"
           :items="forms"
           :items-per-page="20"
-          class="elevation-1"
+          class="elevation-2"
           @click:row="openForm"
         >
           <template v-slot:item.datebacktowork="{ item }">
@@ -17,7 +17,7 @@
           <template v-slot:item.departureDate="{ item }">
             <span>{{ new Date(item.departureDate).toDateString() }}</span>
           </template> </v-data-table
-        ><v-btn @click="createForm()" color="success"
+        ><v-btn @click="createForm()" color="blue"
           >New Travel Request</v-btn
         ></v-card-text
       >

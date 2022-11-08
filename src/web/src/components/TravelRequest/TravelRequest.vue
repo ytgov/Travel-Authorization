@@ -254,11 +254,7 @@
             </v-row>
           </div>
 
-          <v-btn
-            color="primary"
-            class="mr-5"
-            @click="addStop"
-            :disabled="review"
+          <v-btn color="blue" class="mr-5" @click="addStop" :disabled="review"
             >Add Stop</v-btn
           >
           <h2>Details</h2>
@@ -392,7 +388,7 @@
           </v-row>
         </v-form>
         <div v-if="review == true">
-          <v-btn color="primary" class="mr-5" @click="approveForm()"
+          <v-btn color="blue" class="mr-5" @click="approveForm()"
             >Approve</v-btn
           >
           <v-btn color="green" class="mr-5" @click="requestChangePopup()">
@@ -405,7 +401,7 @@
           <v-btn color="secondary" @click="managePage()">Back</v-btn>
         </div>
         <div v-else>
-          <v-btn color="primary" class="mr-5" @click="submitForm()">
+          <v-btn color="blue" class="mr-5" @click="submitForm()">
             Submit
           </v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm()"
@@ -430,7 +426,7 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="primary" text @click="requestChangeDisplay = false">
+              <v-btn color="blue" text @click="requestChangeDisplay = false">
                 Ok
               </v-btn>
             </v-card-actions>
@@ -456,7 +452,7 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="primary" text @click="denyForm()"> Submit </v-btn>
+              <v-btn color="blue" text @click="denyForm()"> Submit </v-btn>
               <v-btn color="red" text @click="denyDialog = false">
                 Cancel
               </v-btn>
@@ -486,9 +482,7 @@
             ></v-card-text>
 
             <v-card-actions>
-              <v-btn color="primary" text @click="reassignForm()">
-                Submit
-              </v-btn>
+              <v-btn color="blue" text @click="reassignForm()"> Submit </v-btn>
               <v-btn color="red" text @click="reassignDialog = false">
                 Cancel
               </v-btn>
@@ -515,9 +509,7 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="primary" text @click="requestChange()">
-                Submit
-              </v-btn>
+              <v-btn color="blue" text @click="requestChange()"> Submit </v-btn>
               <v-btn color="red" text @click="requestChangeDialog = false">
                 Cancel
               </v-btn>
@@ -628,7 +620,7 @@
               </v-textarea>
             </v-col>
           </v-row>
-          <v-btn color="primary" class="mr-5" @click="submitReport()">
+          <v-btn color="blue" class="mr-5" @click="submitReport()">
             Submit Expenses and Report
           </v-btn>
           <v-btn color="green" class="mr-5" @click="saveReport()"

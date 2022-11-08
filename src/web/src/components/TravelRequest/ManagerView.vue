@@ -1,5 +1,5 @@
 <template>
-  <div class="user">
+  <div>
     <h1>Manage Submissions</h1>
     <v-row>
       <v-col>
@@ -10,7 +10,7 @@
               :headers="headers"
               :items="pending"
               :items-per-page="20"
-              class="elevation-1"
+              class="elevation-2"
               @click:row="handleClick"
             >
               <template v-slot:item.name="{ item }">
@@ -35,7 +35,7 @@
               :headers="headers"
               :items="changeRequests"
               :items-per-page="20"
-              class="elevation-1"
+              class="elevation-2"
               @click:row="handleClick"
             >
               <template v-slot:item.name="{ item }">
@@ -62,7 +62,7 @@
               :headers="headers"
               :items="pending"
               :items-per-page="20"
-              class="elevation-1"
+              class="elevation-2"
               @click:row="handleClick"
             >
               <template v-slot:item.name="{ item }">
@@ -86,7 +86,7 @@
               :headers="headers"
               :items="approved"
               :items-per-page="20"
-              class="elevation-1"
+              class="elevation-2"
               @click:row="handleClick"
             >
               <template v-slot:item.name="{ item }">

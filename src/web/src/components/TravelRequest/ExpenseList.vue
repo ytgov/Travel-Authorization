@@ -3,7 +3,7 @@
     <v-data-table
       :headers="headers"
       :items="expenses"
-      sort-by="calories"
+      sort-by="date"
       class="elevation-1"
       hide-default-footer
       disable-pagination
@@ -15,7 +15,7 @@
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
+              <v-btn color="blue" dark class="mb-2" v-bind="attrs" v-on="on">
                 New Item
               </v-btn>
             </template>
