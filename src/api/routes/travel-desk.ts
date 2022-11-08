@@ -31,12 +31,10 @@ resetPgDateParsers();
 export const travelDeskRouter = express.Router();
 const userService = new UserService();
 
-travelDeskRouter.get(
-	'/travel-desk',
-	ReturnValidationErrors,
-	async (req: Request, res: Response) => {
-		//The CD vendor might have address
-		
-	}
+// travelDeskRouter.get(
+// 	'/travel-desk',
+// 	ReturnValidationErrors,
+// 	async (req: Request, res: Response) => {
+// 		//The CD vendor might have address
 
-
+// 	}
