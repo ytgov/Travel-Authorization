@@ -418,7 +418,7 @@ formRouter.get(
 );
 
 formRouter.post(
-	'/:formId/expenses',
+	'/:formId/expenses/:type',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {
 		let user = await userService.getByEmail(req.user.email);
@@ -429,22 +429,17 @@ formRouter.post(
 					.where('formId', req.params.formId)
 					.transacting(trx);
 
-				let type = 'Estimates';
-				if (form[0].formStatus == 'Submitted') {
-					type = 'Expenses';
-				}
-
 				await db('expenses')
 					.delete()
 					.where('taid', '=', form[0].id)
-					.andWhere('type', '=', type)
+					.andWhere('type', '=', req.params.type)
 					.transacting(trx);
 
 				for (let index = 0; index < req.body.length; index++) {
 					let expense = {
 						taid: form[0].id,
 						...req.body[index],
-						type: type,
+						type: req.params.type,
 					};
 					await db('expenses').insert(expense).transacting(trx);
 				}
@@ -540,6 +535,44 @@ formRouter.get(
 			}
 
 			res.status(200).json(report);
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Update failed');
+		}
+	}
+);
+
+formRouter.get(
+	'/:formId/costDifference',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		let user = await userService.getByEmail(req.user.email);
+		try {
+			await db.transaction(async (trx) => {
+				let form = await db('forms')
+					.select('id', 'formStatus')
+					.where('formId', req.params.formId)
+					.transacting(trx);
+
+				let result = {};
+				if (form[0]) {
+					let estimates = await db('expenses')
+						.sum('cost')
+						.where('taid', '=', form[0].id)
+						.andWhere('type', '=', 'Estimates');
+					let estimatesFloat = (parseFloat(estimates[0].sum) || 0).toFixed(2);
+
+					let expenses = await db('expenses')
+						.sum('cost')
+						.where('taid', '=', form[0].id)
+						.andWhere('type', '=', 'Expenses');
+					let expensesFloat = (parseFloat(expenses[0].sum) || 0).toFixed(2);
+					console.log(estimatesFloat, expensesFloat);
+
+					result = { estimates: estimatesFloat, expenses: expensesFloat };
+				}
+				res.status(200).json(result);
+			});
 		} catch (error: any) {
 			console.log(error);
 			res.status(500).json('Update failed');

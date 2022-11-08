@@ -147,7 +147,7 @@ lookupRouter.get(
 					for (let employee of resp.data.employees) {
 						if (employee.email != '') list.push(employee.email);
 					}
-					return list;
+					return list.sort();
 				});
 			res.status(200).json(emailList);
 		} catch (error: any) {

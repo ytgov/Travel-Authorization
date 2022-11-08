@@ -1,12 +1,15 @@
 <template>
   <div>
-    <h1>Travel Request</h1>
-    <div>Current Status: {{ form.formStatus }}</div>
+    <v-row>
+      <h1>Travel Request</h1>
+      <v-spacer> </v-spacer>
+      <h3>Current Status: {{ form.formStatus }}</h3>
+    </v-row>
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
-      <v-tab :disabled="form.formStatus != 'Draft'"> Estimates</v-tab>
-      <v-tab :disabled="form.formStatus == 'Draft'"> Expenses </v-tab>
-      <v-tab :disabled="form.formStatus == 'Draft'"> Trip Report </v-tab>
+      <v-tab> Estimates</v-tab>
+      <v-tab> Expenses </v-tab>
+      <v-tab> Trip Report </v-tab>
     </v-tabs>
     <br />
     <v-tabs-items v-model="tab">
@@ -18,7 +21,6 @@
               <v-text-field
                 dense
                 v-model="form.firstName"
-                outlined
                 label="First name"
                 required
                 :rules="firstNameRules"
@@ -29,7 +31,6 @@
               <v-text-field
                 dense
                 v-model="form.lastName"
-                outlined
                 label="Last name"
                 required
                 :rules="lastNameRules"
@@ -44,7 +45,6 @@
                 :items="myDepartments"
                 v-model="form.department"
                 label="Department"
-                outlined
                 dense
                 clearable
                 background-color="white"
@@ -58,7 +58,6 @@
                 :items="myDivisions"
                 v-model="form.division"
                 label="Division"
-                outlined
                 dense
                 clearable
                 background-color="white"
@@ -73,7 +72,6 @@
                 :items="myBranches"
                 v-model="form.branch"
                 label="Branch"
-                outlined
                 dense
                 clearable
                 background-color="white"
@@ -86,7 +84,6 @@
                 :items="myUnits"
                 v-model="form.unit"
                 label="Unit"
-                outlined
                 dense
                 clearable
                 background-color="white"
@@ -99,7 +96,6 @@
               <v-text-field
                 v-model="form.email"
                 dense
-                outlined
                 label="Email"
                 required
                 :rules="emailRules"
@@ -110,7 +106,6 @@
               <v-text-field
                 v-model="form.mailcode"
                 dense
-                outlined
                 label="Mailcode"
                 required
                 :disabled="review"
@@ -126,7 +121,6 @@
                 <v-autocomplete
                   v-if="index == 0"
                   v-model="form.stops[index].travelFrom"
-                  outlined
                   dense
                   label="From"
                   persistent-hint
@@ -142,7 +136,6 @@
                 <v-autocomplete
                   v-if="index > 0"
                   v-model="form.stops[index - 1].travelTo"
-                  outlined
                   dense
                   label="From"
                   persistent-hint
@@ -159,7 +152,6 @@
               <v-col cols="2">
                 <v-autocomplete
                   v-model="form.stops[index].travelTo"
-                  outlined
                   dense
                   label="To"
                   persistent-hint
@@ -186,7 +178,6 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      outlined
                       dense
                       v-model="form.stops[index].departureDate"
                       label="Departure Date"
@@ -218,7 +209,6 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
-                      outlined
                       dense
                       v-model="form.stops[index].departureTime"
                       label="Departure Time"
@@ -244,7 +234,6 @@
                   label="Method of transport"
                   v-model="form.stops[index].transport"
                   dense
-                  outlined
                   :disabled="review"
                   :rules="requiredRules"
                 ></v-select
@@ -278,7 +267,6 @@
               <v-text-field
                 dense
                 v-model="form.travelDuration"
-                outlined
                 label="# of days in trip"
                 required
                 :disabled="review"
@@ -289,7 +277,6 @@
               <v-text-field
                 dense
                 v-model="form.daysNotTravel"
-                outlined
                 label="# of days OFF travel status"
                 required
                 :disabled="review"
@@ -307,7 +294,6 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    outlined
                     dense
                     v-model="form.dateBackToWork"
                     label="Back to work date"
@@ -332,7 +318,6 @@
                 label="Purpose"
                 v-model="form.purpose"
                 dense
-                outlined
                 :disabled="review"
                 :rules="requiredRules"
               ></v-select
@@ -341,7 +326,6 @@
               <v-text-field
                 dense
                 v-model="form.travelAdvance"
-                outlined
                 label="Travel Advance"
                 required
                 prefix="$"
@@ -355,7 +339,6 @@
               <v-text-field
                 v-model="form.eventName"
                 dense
-                outlined
                 label="Name of meeting/conference, mission, trade fair or course"
                 required
                 :disabled="review"
@@ -366,10 +349,12 @@
             <v-col cols="12">
               <v-textarea
                 v-model="form.summary"
-                outlined
                 label="Purpose of attendance"
                 :disabled="review"
                 :rules="requiredRules"
+                dense
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -378,10 +363,12 @@
             <v-col cols="12">
               <v-textarea
                 v-model="form.benefits"
-                outlined
                 label="Relevance and anticipated benefits to branch and Government of Yukon"
                 :disabled="review"
                 :rules="requiredRules"
+                dense
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -392,7 +379,6 @@
             <v-col cols="4">
               <v-combobox
                 v-model="form.supervisorEmail"
-                outlined
                 dense
                 label="Supervisor Email"
                 persistent-hint
@@ -463,8 +449,9 @@
             <v-card-text>
               <v-textarea
                 v-model="form.denialReason"
-                outlined
                 label="Denial Reason"
+                rows="1"
+                auto-grow
               ></v-textarea>
             </v-card-text>
 
@@ -487,7 +474,6 @@
             <v-card-text>
               <v-combobox
                 v-model="reassignEmail"
-                outlined
                 dense
                 label="Supervisor Email"
                 persistent-hint
@@ -522,8 +508,9 @@
             <v-card-text>
               <v-textarea
                 v-model="form.requestChange"
-                outlined
                 label="Requested Changes"
+                rows="1"
+                auto-grow
               ></v-textarea>
             </v-card-text>
 
@@ -538,24 +525,35 @@
           </v-card>
         </v-dialog>
       </v-tab-item>
-      <v-tab-item :disabled="form.formStatus != 'Draft'"
-        ><ExpenseList title="Estimates"
+      <v-tab-item
+        ><ExpenseList @reloadCost="getCostDifference" title="Estimates"
       /></v-tab-item>
-      <v-tab-item :disabled="form.formStatus == 'Draft'"
-        ><ExpenseList title="Expenses"
+      <v-tab-item
+        ><ExpenseList @reloadCost="getCostDifference" title="Expenses"
       /></v-tab-item>
       <v-tab-item>
         <v-form ref="report" lazy-validation>
           <h2>Post Trip Report</h2>
           <v-row>
+            <v-card elevation="2" style="margin: 20px">
+              <v-card-title>
+                Expense Total: ${{ expensesTotal }} <br />
+                Estimates Total: ${{ estimatesTotal }} <br />
+                Cost Difference: ${{ costDifference }}
+              </v-card-title>
+            </v-card>
+            <v-spacer></v-spacer>
+          </v-row>
+          <v-row>
             <v-col cols="12">
               <v-textarea
                 v-model="report.costDifferenceExplanation"
-                outlined
                 label="Cost differences"
                 hint="Provide a brief rationale if there is significant difference from the estimated cost."
                 :disabled="review"
                 :rules="requiredRules"
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -564,11 +562,12 @@
             <v-col cols="12">
               <v-textarea
                 v-model="report.skillsGained"
-                outlined
                 label="Skills gained"
                 hint="Specific knowledge gained which will benefit the Government of Yukon."
                 :disabled="review"
                 :rules="requiredRules"
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -577,11 +576,12 @@
             <v-col cols="12">
               <v-textarea
                 v-model="report.applicationTimeframe"
-                outlined
                 label="Skill application timeframe"
                 hint="Estimated timeframe in whichthese benefits will become evident"
                 :disabled="review"
                 :rules="requiredRules"
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -590,11 +590,12 @@
             <v-col cols="12">
               <v-textarea
                 v-model="report.benefitsToUnit"
-                outlined
                 label="Benefits to your area (department/unit)"
                 hint="What are the expected benefits to your program?"
                 :disabled="review"
                 :rules="requiredRules"
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -603,11 +604,12 @@
             <v-col cols="12">
               <v-textarea
                 v-model="report.benefitsToYG"
-                outlined
                 label="Benefits to YG"
                 hint="What are the expected benefits to the Government of Yukon?"
                 :disabled="review"
                 :rules="requiredRules"
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -616,11 +618,12 @@
             <v-col cols="12">
               <v-textarea
                 v-model="report.futureRecommendations"
-                outlined
                 label="Future recommendations"
                 hint="What recommendations would you make for similar trips in the future?"
                 :disabled="review"
                 :rules="requiredRules"
+                rows="1"
+                auto-grow
               >
               </v-textarea>
             </v-col>
@@ -664,15 +667,12 @@ export default {
     this.destinations = await this.getDestinations();
     this.departments = await this.getDepartmentList();
 
-    this.form.dateBackToWork = this.getToday();
-    this.form.stops[0].departureDate = this.getToday();
-    this.form.stops[0].departureTime = "12:00";
-
     this.$refs.form.resetValidation();
 
     this.emails = await this.loadEmails();
-    await this.loadUser();
     this.report = await this.getReport(this.$route.params.formId);
+
+    this.getCostDifference();
 
     await this.getForm(this.$route.params.formId);
     if (
@@ -702,6 +702,13 @@ export default {
           departureTime: "",
           transport: "",
         },
+        {
+          travelTo: "",
+          travelFrom: "",
+          departureDate: "",
+          departureTime: "",
+          transport: "",
+        },
       ],
       travelDuration: "1",
       daysNotTravel: "0",
@@ -719,6 +726,9 @@ export default {
     },
 
     report: {},
+    expensesTotal: 0,
+    estimatesTotal: 0,
+    costDifference: 0,
 
     reassignEmail: "",
 
@@ -951,13 +961,26 @@ export default {
         });
     },
 
+    getCostDifference() {
+      axios
+        .get(`${FORM_URL}/${this.$route.params.formId}/costDifference`)
+        .then((resp) => {
+          this.expensesTotal = resp.data.expenses;
+          this.estimatesTotal = resp.data.estimates;
+          this.costDifference = (
+            this.expensesTotal - this.estimatesTotal
+          ).toFixed(2);
+        });
+    },
+
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
         new Date(this.form.stops[index].departureDate).getTime() -
         new Date(this.form.stops[0].departureDate).getTime();
 
-      this.form.travelDuration = Difference_In_Time / (1000 * 3600 * 24);
+      this.form.travelDuration =
+        (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
     },
     getToday() {
       return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -966,7 +989,7 @@ export default {
     },
     async getForm(formId) {
       if (formId) {
-        return await axios.get(`${FORM_URL}/${formId}`).then((resp) => {
+        return await axios.get(`${FORM_URL}/${formId}`).then(async (resp) => {
           if (resp.data.form != "empty") {
             this.form = resp.data;
             this.form.stops.forEach((v, key) => {
@@ -979,6 +1002,12 @@ export default {
             });
           } else {
             this.form.formStatus = "Draft";
+            await this.loadUser();
+            this.form.dateBackToWork = this.getToday();
+            this.form.stops[0].departureDate = this.getToday();
+            this.form.stops[0].departureTime = "12:00";
+            this.form.stops[1].departureDate = this.getToday();
+            this.form.stops[1].departureTime = "12:00";
           }
         });
       }
