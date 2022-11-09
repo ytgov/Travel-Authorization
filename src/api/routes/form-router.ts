@@ -57,6 +57,34 @@ formRouter.get(
 );
 
 formRouter.get(
+	'/recent',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		let user = await userService.getByEmail(req.user.email);
+		try {
+			await db.transaction(async (trx) => {
+				let form = await db('forms')
+					.select('*')
+					.andWhere('userId', '=', user.id)
+					.limit(1)
+					.transacting(trx);
+
+				let expenses = await db('expenses')
+					.select('*')
+					.where('type', '=', 'Expenses')
+					.andWhere('taid', '=', form[0].id)
+					.transacting(trx);
+
+				res.status(200).json({ form: form[0], expenses: expenses });
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Error retrieving form');
+		}
+	}
+);
+
+formRouter.get(
 	'/:formId',
 	ReturnValidationErrors,
 	async function (req: Request, res: Response) {

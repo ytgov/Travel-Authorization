@@ -1,10 +1,17 @@
 <template>
   <div>
+    <v-card class="mt-5 elevation-2">
+      <v-card-title>Per Diems</v-card-title>
+      <v-card-text> Per Diem Total for food </v-card-text>
+      <v-card-text> Personal vehcle? </v-card-text>
+      <v-card-text> Personal lodging ? </v-card-text>
+    </v-card>
+
     <v-data-table
       :headers="headers"
       :items="expenses"
       sort-by="date"
-      class="elevation-1"
+      class="elevation-2"
       hide-default-footer
       disable-pagination
     >

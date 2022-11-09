@@ -2,10 +2,98 @@
   <div class="home">
     <h1>Dashboard</h1>
 
+    <v-card class="mt-5" color="#fff2d5">
+      <v-card-title>Current/Recent Trip</v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col>
+            <v-row>
+              <v-col>
+                <h3>Purpose:</h3>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <div>Trip stops:</div>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <DatePicker></DatePicker>
+              </v-col>
+              <v-col>
+                <TimePicker></TimePicker>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <DatePicker></DatePicker>
+              </v-col>
+              <v-col>
+                <TimePicker></TimePicker>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  dense
+                  v-model="daysOffTravel"
+                  label="# of days off travel"
+                  prepend-icon="mdi-hail"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="8">
+            <v-data-table
+              :headers="expenseHeaders"
+              :items="data.expenses"
+              hide-default-footer
+              disable-pagination
+              class="elevation-2"
+              @click:row="openForm"
+              style="margin: 20px"
+            >
+              <template v-slot:[`item.actions`]="{ item }">
+                <v-icon small class="mr-2" @click="editItem(item)">
+                  mdi-pencil
+                </v-icon>
+                <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+              </template>
+              <template v-slot:[`item.receipts`]>
+                <v-btn text color="blue" x-small> Upload Receipts </v-btn>
+              </template>
+            </v-data-table>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-btn color="blue" small @click="saveChanges">Save Changes</v-btn>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
     <v-row>
       <v-col>
         <v-card class="mt-5" color="#fff2d5">
-          <v-card-title>Trip Summaries</v-card-title>
+          <v-card-title>Travel Authorization Status</v-card-title>
+          <v-card-text>
+            <v-data-table
+              :headers="expenseHeaders"
+              :items="forms"
+              hide-default-footer
+              disable-pagination
+              class="elevation-2"
+              @click:row="openForm"
+              style="margin: 20px"
+            >
+            </v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card class="mt-5" color="#fff2d5">
+          <v-card-title>Upcoming Trips</v-card-title>
           <v-card-text>
             <v-data-table
               :headers="headers"
@@ -20,7 +108,9 @@
           </v-card-text>
         </v-card>
       </v-col>
+    </v-row>
 
+    <v-row>
       <v-col>
         <v-card class="mt-5" color="#fff2d5">
           <v-card-title>Create a new travel request</v-card-title>
@@ -43,20 +133,36 @@
 import { v4 as uuidv4 } from "uuid";
 import { FORM_URL } from "../urls";
 import axios from "axios";
+import DatePicker from "./Utils/DatePicker.vue";
+import TimePicker from "./Utils/TimePicker.vue";
 
 export default {
   name: "Home",
+  components: {
+    DatePicker,
+    TimePicker,
+  },
   data: () => ({
+    data: {},
     headers: [
       { text: "Purpose", value: "purpose" },
       { text: "Departure Date", value: "departureDate" },
       { text: "Return Date", value: "dateBackToWork" },
       { text: "Status", value: "formStatus" },
     ],
+    expenseHeaders: [
+      { text: "Type", value: "type" },
+      { text: "Description", value: "description" },
+      { text: "Date", value: "date" },
+      { text: "Amount", value: "cost" },
+      { text: "Actions", value: "actions" },
+      { text: "Receipts", value: "receipts" },
+    ],
     forms: [],
   }),
   created() {
     this.loadForms();
+    this.getTrip();
   },
   methods: {
     loadForms() {
@@ -69,6 +175,11 @@ export default {
     },
     createForm() {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
+    },
+    getTrip() {
+      axios.get(`${FORM_URL}/recent`).then((resp) => {
+        this.data = resp.data;
+      });
     },
   },
 };
