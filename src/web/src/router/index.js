@@ -11,7 +11,7 @@ import store from '../store';
 import AdminUserForm from '../components/Administration/UserManagement/UserComponent/Form';
 import AdminDashboard from '../components/Administration/Administration';
 import UserManagement from '../components/Administration/UserManagement/Grid';
-import TravelRequest from '../components/TravelRequest/TravelRequest';
+import TravelForm from '../components/TravelRequest/TravelForm';
 import FormList from '../components/TravelRequest/FormList';
 import ManagerView from '../components/TravelRequest/ManagerView';
 import FlightEstimate from '../components/Administration/RatesEstimateManagement/AirEstimate';
@@ -90,13 +90,13 @@ const routes = [
 	},
 	{
 		path: '/TravelRequest/Request/:formId?',
-		name: 'TravelRequest',
-		component: TravelRequest,
+		name: 'TravelForm',
+		component: TravelForm,
 	},
 	{
 		path: '/TravelRequest/Request/:formId?/:manage?',
 		name: 'TravelRequestReview',
-		component: TravelRequest,
+		component: TravelForm,
 	},
 	{
 		path: '/forms',

@@ -135,28 +135,6 @@ lookupRouter.get(
 	}
 );
 
-lookupRouter.get(
-	'/emailList',
-	ReturnValidationErrors,
-	async function (req: Request, res: Response) {
-		try {
-			let emailList = await axios
-				.get(`http://directory-api-dev.ynet.gov.yk.ca/employees`)
-				.then((resp: any) => {
-					let list = [];
-					for (let employee of resp.data.employees) {
-						if (employee.email != '') list.push(employee.email);
-					}
-					return list.sort();
-				});
-			res.status(200).json(emailList);
-		} catch (error: any) {
-			console.log(error);
-			res.status(500).json('Internal Server Error');
-		}
-	}
-);
-
 lookupRouter.get('/flightPrice', async function (req: Request, res: Response) {
 	const axios = require('axios');
 
