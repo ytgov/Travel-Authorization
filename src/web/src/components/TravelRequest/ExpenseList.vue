@@ -1,10 +1,30 @@
 <template>
   <div>
-    <v-card class="mt-5 elevation-2">
-      <v-card-title>Per Diems</v-card-title>
-      <v-card-text> Per Diem Total for food </v-card-text>
-      <v-card-text> Personal vehcle? </v-card-text>
-      <v-card-text> Personal lodging ? </v-card-text>
+    <v-card elevation="2" style="margin: 5px">
+      <v-card-title>Per Diems Calculator</v-card-title>
+
+      <v-card-text>
+        Per Diem Total for food
+        <v-row>
+          <v-col>
+            <DatePicker></DatePicker>
+          </v-col>
+          <v-col>
+            <TimePicker></TimePicker>
+          </v-col>
+        </v-row>
+      </v-card-text>
+
+      <v-card-text>
+        <v-checkbox
+          dense
+          label="Did you use a personal vehicle during this trip?"
+        >
+        </v-checkbox>
+      </v-card-text>
+      <v-card-text
+        >How many nights did you arrange for personal accomadation?</v-card-text
+      >
     </v-card>
 
     <v-data-table
@@ -136,8 +156,14 @@
 <script>
 import { FORM_URL } from "../../urls";
 import axios from "axios";
+import DatePicker from "../Utils/DatePicker";
+import TimePicker from "../Utils/TimePicker";
 export default {
   name: "ExpenseList",
+  components: {
+    DatePicker,
+    TimePicker,
+  },
   async mounted() {
     this.formId = this.$route.params.formId;
     this.expenses = await this.getExpenses();

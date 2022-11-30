@@ -16,6 +16,7 @@ import {
 	permRouter,
 	healthCheckRouter,
 	formRouter,
+	preapprovedRouter,
 } from './routes';
 
 var knex = require('knex');
@@ -89,6 +90,8 @@ app.use('/api/form', RequiresAuthentication, formRouter);
 app.use('/api/user', RequiresAuthentication, userRouter);
 app.use('/api/manager', RequiresAuthentication, managerRouter);
 app.use('/api/permissions', RequiresAuthentication, permRouter);
+app.use('/api/preapproved', RequiresAuthentication, preapprovedRouter);
+
 app.use('/api/lookup', lookupRouter);
 app.use('/api/healthCheck', healthCheckRouter);
 

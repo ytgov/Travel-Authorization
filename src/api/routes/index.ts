@@ -5,3 +5,4 @@ export * from './perm-router';
 export * from './manager-router';
 export * from './healthcheck-router';
 export * from './form-router';
+export * from './preapproved-router';

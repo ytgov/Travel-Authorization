@@ -102,10 +102,11 @@
   </v-form>
 </template>
 <script>
-import { defineComponent } from "@vue/composition-api";
+import axios from "axios";
+import { FORM_URL } from "../../urls";
 
 export default {
-  data: {
+  data: () => ({
     report: {
       costDifferenceExplanation: "",
       skillsGained: "",
@@ -119,15 +120,9 @@ export default {
     estimatesTotal: 0,
     costDifference: 0,
     review: false,
-  },
+  }),
 
   methods: {
-    submitReport() {
-      this.$emit("submitReport", this.report);
-    },
-    saveReport() {
-      this.$emit("saveReport", this.report);
-    },
     async getReport() {
       let formId = this.form.formId || this.$route.params.formId;
       return axios.get(`${FORM_URL}/${formId}/report`).then((resp) => {
@@ -161,18 +156,6 @@ export default {
           console.log(resp);
           this.apiSuccess = "Report Saved";
           this.snackbar = true;
-        });
-    },
-
-    getCostDifference() {
-      axios
-        .get(`${FORM_URL}/${this.$route.params.formId}/costDifference`)
-        .then((resp) => {
-          this.expensesTotal = resp.data.expenses;
-          this.estimatesTotal = resp.data.estimates;
-          this.costDifference = (
-            this.expensesTotal - this.estimatesTotal
-          ).toFixed(2);
         });
     },
   },

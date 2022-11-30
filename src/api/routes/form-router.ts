@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import { ReturnValidationErrors } from '../middleware';
 import { DB_CONFIG } from '../config';
 import knex from 'knex';
-import { UserService } from '../services';
+import { UserService, FormService } from '../services';
 import { v4 as uuid } from 'uuid';
 import * as formHelper from '../utils/formHelper';
 import { auth } from 'express-openid-connect';
@@ -30,6 +30,7 @@ resetPgDateParsers();
 
 export const formRouter = express.Router();
 const userService = new UserService();
+const formService = new FormService();
 
 formRouter.get(
 	'/',
@@ -75,7 +76,44 @@ formRouter.get(
 					.andWhere('taid', '=', form[0].id)
 					.transacting(trx);
 
-				res.status(200).json({ form: form[0], expenses: expenses });
+				let stops = await db('stops')
+					.select('*')
+					.where('taid', '=', form[0].id)
+					.leftJoin('destinations', 'stops.travelTo', 'destinations.id')
+					.orderBy('departureDate', 'asc');
+				let stopString = stops
+					.map((stop) => {
+						console.log(stop);
+					})
+					.concat();
+
+				let departureDate = await db('stops')
+					.min('departureDate')
+					.where('taid', '=', form[0].id);
+				departureDate = departureDate[0].min;
+
+				res
+					.status(200)
+					.json({ form: form[0], expenses: expenses, stops: stops });
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Error retrieving form');
+		}
+	}
+);
+
+formRouter.get(
+	'/upcomingTrips',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		//let user = await userService.getByEmail(req.user.email);
+		let user = await userService.getByEmail('Max.parker@yukon.ca');
+		try {
+			await db.transaction(async (trx) => {
+				let form = await db('forms').select('*');
+
+				res.status(200).json(await formService.getForm(form[0].id));
 			});
 		} catch (error: any) {
 			console.log(error);
@@ -146,6 +184,9 @@ formRouter.post(
 					.transacting(trx);
 
 				for (let index = 0; index < stops.length; index++) {
+					console.log('stop', stops[index]);
+					stops[index].travelTo = stops[index].travelTo.value;
+					stops[index].travelFrom = stops[index].travelFrom.value;
 					let stop = {
 						taid: id[0].id,
 						...stops[index],
@@ -212,6 +253,9 @@ formRouter.post(
 						.transacting(trx);
 
 					for (let index = 0; index < stops.length; index++) {
+						stops[index].travelTo = stops[index].travelTo.value;
+						stops[index].travelFrom = stops[index].travelFrom.value;
+						console.log(stops);
 						let stop = {
 							taid: id[0].id,
 							...stops[index],
@@ -603,6 +647,60 @@ formRouter.get(
 		} catch (error: any) {
 			console.log(error);
 			res.status(500).json('Update failed');
+		}
+	}
+);
+
+formRouter.get(
+	'/:formId/costDifference',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		let user = await userService.getByEmail(req.user.email);
+		try {
+			await db.transaction(async (trx) => {
+				let form = await db('forms')
+					.select('id', 'formStatus')
+					.where('formId', req.params.formId)
+					.transacting(trx);
+
+				let result = {};
+				if (form[0]) {
+					let estimates = await db('expenses')
+						.sum('cost')
+						.where('taid', '=', form[0].id)
+						.andWhere('type', '=', 'Estimates');
+					let estimatesFloat = (parseFloat(estimates[0].sum) || 0).toFixed(2);
+
+					let expenses = await db('expenses')
+						.sum('cost')
+						.where('taid', '=', form[0].id)
+						.andWhere('type', '=', 'Expenses');
+					let expensesFloat = (parseFloat(expenses[0].sum) || 0).toFixed(2);
+
+					result = { estimates: estimatesFloat, expenses: expensesFloat };
+				}
+				res.status(200).json(result);
+			});
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Update failed');
+		}
+	}
+);
+
+formRouter.get(
+	'/:formId/:expenseId/uploadReceipt',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		try {
+			let user = await userService.getByEmail(req.user.email);
+			let receiptUpload = await db('expenses')
+				.insert('receiptUpload')
+				.where('expenses.id', req.params.expenseId)
+				.andWhere('forms.taid', req.params.formId);
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Internal Server Error');
 		}
 	}
 );

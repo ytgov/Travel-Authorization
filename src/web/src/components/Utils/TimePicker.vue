@@ -11,7 +11,7 @@
       <v-text-field
         dense
         v-model="time"
-        label="Departure Time"
+        :label="value"
         prepend-icon="mdi-clock"
         readonly
         v-bind="attrs"
@@ -33,7 +33,9 @@
 </template>
 <script>
 export default {
-  props: {},
+  props: {
+    value: String,
+  },
   data() {
     return {
       menu: false,

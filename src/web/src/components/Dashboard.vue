@@ -7,42 +7,46 @@
       <v-card-text>
         <v-row>
           <v-col>
-            <v-row>
+            <v-card>
               <v-col>
-                <h3>Purpose:</h3>
+                <v-row>
+                  <v-col>
+                    <h3>Purpose:</h3>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <div>Trip stops:</div>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <DatePicker v-bind:value="'Start Date'"></DatePicker>
+                  </v-col>
+                  <v-col>
+                    <TimePicker v-bind:value="'Start Time'"></TimePicker>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <DatePicker v-bind:value="'End Date'"></DatePicker>
+                  </v-col>
+                  <v-col>
+                    <TimePicker v-bind:value="'End Date'"></TimePicker>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-text-field
+                      dense
+                      v-model="daysOffTravel"
+                      label="# of days off travel"
+                      prepend-icon="mdi-hail"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
               </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <div>Trip stops:</div>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <DatePicker></DatePicker>
-              </v-col>
-              <v-col>
-                <TimePicker></TimePicker>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <DatePicker></DatePicker>
-              </v-col>
-              <v-col>
-                <TimePicker></TimePicker>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  dense
-                  v-model="daysOffTravel"
-                  label="# of days off travel"
-                  prepend-icon="mdi-hail"
-                ></v-text-field>
-              </v-col>
-            </v-row>
+            </v-card>
           </v-col>
           <v-col cols="8">
             <v-data-table
@@ -51,7 +55,6 @@
               hide-default-footer
               disable-pagination
               class="elevation-2"
-              @click:row="openForm"
               style="margin: 20px"
             >
               <template v-slot:[`item.actions`]="{ item }">
@@ -61,16 +64,17 @@
                 <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
               </template>
               <template v-slot:[`item.receipts`]>
-                <v-btn text color="blue" x-small> Upload Receipts </v-btn>
+                <v-btn text color="blue" x-small @click="uploadReceiptDialog">
+                  Upload Receipts
+                </v-btn>
               </template>
             </v-data-table>
+            <v-dialog v-model="dialog" width="400">
+              <UploadReceipts />
+            </v-dialog>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col>
-            <v-btn color="blue" small @click="saveChanges">Save Changes</v-btn>
-          </v-col>
-        </v-row>
+        <v-btn color="blue" small @click="saveChanges">Save Changes</v-btn>
       </v-card-text>
     </v-card>
     <v-row>
@@ -79,7 +83,7 @@
           <v-card-title>Travel Authorization Status</v-card-title>
           <v-card-text>
             <v-data-table
-              :headers="expenseHeaders"
+              :headers="travelAuthHeaders"
               :items="forms"
               hide-default-footer
               disable-pagination
@@ -135,12 +139,14 @@ import { FORM_URL } from "../urls";
 import axios from "axios";
 import DatePicker from "./Utils/DatePicker.vue";
 import TimePicker from "./Utils/TimePicker.vue";
+import UploadReceipts from "./Utils/UploadReceipts.vue";
 
 export default {
   name: "Home",
   components: {
     DatePicker,
     TimePicker,
+    UploadReceipts,
   },
   data: () => ({
     data: {},
@@ -158,7 +164,16 @@ export default {
       { text: "Actions", value: "actions" },
       { text: "Receipts", value: "receipts" },
     ],
+    travelAuthHeaders: [
+      { text: "Location", value: "location" },
+      { text: "Description", value: "description" },
+      { text: "Start Date", value: "date" },
+      { text: "End Date", value: "cost" },
+      { text: "Auth Status", value: "actions" },
+      { text: "Booking Status", value: "receipts" },
+    ],
     forms: [],
+    dialog: false,
   }),
   created() {
     this.loadForms();
@@ -169,6 +184,9 @@ export default {
       axios.get(`${FORM_URL}`).then((resp) => {
         this.forms = resp.data;
       });
+    },
+    uploadReceiptDialog() {
+      this.dialog = true;
     },
     openForm(value) {
       this.$router.push(`/TravelRequest/Request/${value.formId}`);

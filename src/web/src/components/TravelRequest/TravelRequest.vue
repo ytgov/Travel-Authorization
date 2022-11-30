@@ -15,7 +15,7 @@
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <v-form ref="form" lazy-validation>
-          <h2>General Information</h2>
+          <h2>Personal Information</h2>
           <v-row>
             <v-col class="col-4">
               <v-text-field
@@ -114,9 +114,28 @@
             </v-col>
           </v-row>
           <h2>Itinerary</h2>
-          <div v-for="(stop, index) in form.stops" :key="index">
-            <v-divider class="mb-6" v-if="index > 0" />
+          <v-row>
+            <v-col>
+              <v-checkbox
+                v-model="multistop"
+                label="Does this trip involve multipe destinations?"
+                :disabled="review"
+                dense
+              >
+              </v-checkbox>
+              <v-checkbox
+                v-model="noReturnFlight"
+                label="Is this trip only one way?"
+                :disabled="review"
+                dense
+              >
+              </v-checkbox>
+            </v-col>
+          </v-row>
+
+          <div v-if="multistop === false">
             <v-row>
+              <v-col cols="1" style="display: flex"> Destination </v-col>
               <v-col cols="2">
                 <v-autocomplete
                   v-if="index == 0"
@@ -130,8 +149,8 @@
                   required
                   clearable
                   :disabled="review"
+                  :rules="destinationRules"
                 >
-                  <!-- :rules="destinationRules" -->
                 </v-autocomplete>
                 <v-autocomplete
                   v-if="index > 0"
@@ -145,8 +164,145 @@
                   required
                   clearable
                   :disabled="review"
+                  :rules="destinationRules"
+                >
+                </v-autocomplete>
+              </v-col>
+              <v-col cols="2">
+                <v-autocomplete
+                  v-model="form.stops[index].travelTo"
+                  dense
+                  label="To"
+                  persistent-hint
+                  :items="destinations"
+                  :item-text="destinations.text"
+                  :item-value="destinations.value"
+                  required
+                  clearable
+                  :disabled="review"
                 >
                   <!-- :rules="destinationRules" -->
+                </v-autocomplete>
+              </v-col>
+
+              <!-- Departure date -->
+              <v-col cols="2">
+                <v-menu
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                  v-model="departureMenu[index]"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      dense
+                      v-model="form.stops[index].departureDate"
+                      label="Departure Date"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      :disabled="review"
+                      :rules="requiredRules"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="form.stops[index].departureDate"
+                    @input="departureMenu[index] = false"
+                    @change="calculateDaysGone(index)"
+                    :rules="requiredRules"
+                  ></v-date-picker>
+                </v-menu>
+              </v-col>
+              <!-- Departure time -->
+              <v-col cols="2">
+                <v-menu
+                  :close-on-content-click="false"
+                  :nudge-right="40"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                  v-model="departureTimeMenu[index]"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      dense
+                      v-model="form.stops[index].departureTime"
+                      label="Departure Time"
+                      prepend-icon="mdi-clock"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      :disabled="review"
+                      :rules="requiredRules"
+                    ></v-text-field>
+                  </template>
+                  <v-time-picker
+                    format="24hr"
+                    scrollable
+                    v-model="form.stops[index].departureTime"
+                    @input="departureTimeMenu[index] = false"
+                    :rules="requiredRules"
+                  ></v-time-picker> </v-menu
+              ></v-col>
+              <v-col cols="2">
+                <v-select
+                  :items="transport"
+                  label="Method of transport"
+                  v-model="form.stops[index].transport"
+                  dense
+                  :disabled="review"
+                  :rules="requiredRules"
+                ></v-select
+              ></v-col>
+              <!-- Delete button -->
+              <v-col cols="1" v-if="index > 0">
+                <v-btn
+                  class="ma-2"
+                  dense
+                  small
+                  color="red"
+                  @click="removeStop(index)"
+                  :disabled="review"
+                >
+                  <v-icon>mdi-trash-can</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="1"> Destination </v-col>
+              <v-col cols="2">
+                <v-autocomplete
+                  v-if="index == 0"
+                  v-model="form.stops[index].travelFrom"
+                  dense
+                  label="From"
+                  persistent-hint
+                  :items="destinations"
+                  :item-text="destinations.text"
+                  :item-value="destinations.value"
+                  required
+                  clearable
+                  :disabled="review"
+                  :rules="destinationRules"
+                >
+                </v-autocomplete>
+                <v-autocomplete
+                  v-if="index > 0"
+                  v-model="form.stops[index - 1].travelTo"
+                  dense
+                  label="From"
+                  persistent-hint
+                  :items="destinations"
+                  :item-text="destinations.text"
+                  :item-value="destinations.value"
+                  required
+                  clearable
+                  :disabled="review"
+                  :rules="destinationRules"
+                >
                 </v-autocomplete>
               </v-col>
               <v-col cols="2">
@@ -254,9 +410,152 @@
             </v-row>
           </div>
 
-          <v-btn color="blue" class="mr-5" @click="addStop" :disabled="review"
-            >Add Stop</v-btn
-          >
+          <div v-if="multistop === true">
+            <div v-for="(stop, index) in form.stops" :key="index">
+              <v-divider class="mb-6" v-if="index > 0" />
+              <v-row>
+                <v-col cols="2">
+                  <v-autocomplete
+                    v-if="index == 0"
+                    v-model="form.stops[index].travelFrom"
+                    dense
+                    label="From"
+                    persistent-hint
+                    :items="destinations"
+                    :item-text="destinations.text"
+                    :item-value="destinations.value"
+                    required
+                    clearable
+                    :disabled="review"
+                    :rules="destinationRules"
+                  >
+                  </v-autocomplete>
+                  <v-autocomplete
+                    v-if="index > 0"
+                    v-model="form.stops[index - 1].travelTo"
+                    dense
+                    label="From"
+                    persistent-hint
+                    :items="destinations"
+                    :item-text="destinations.text"
+                    :item-value="destinations.value"
+                    required
+                    clearable
+                    :disabled="review"
+                    :rules="destinationRules"
+                  >
+                  </v-autocomplete>
+                </v-col>
+                <v-col cols="2">
+                  <v-autocomplete
+                    v-model="form.stops[index].travelTo"
+                    dense
+                    label="To"
+                    persistent-hint
+                    :items="destinations"
+                    :item-text="destinations.text"
+                    :item-value="destinations.value"
+                    required
+                    clearable
+                    :disabled="review"
+                  >
+                    <!-- :rules="destinationRules" -->
+                  </v-autocomplete>
+                </v-col>
+
+                <!-- Departure date -->
+                <v-col cols="2">
+                  <v-menu
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                    v-model="departureMenu[index]"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        dense
+                        v-model="form.stops[index].departureDate"
+                        label="Departure Date"
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        :disabled="review"
+                        :rules="requiredRules"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="form.stops[index].departureDate"
+                      @input="departureMenu[index] = false"
+                      @change="calculateDaysGone(index)"
+                      :rules="requiredRules"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <!-- Departure time -->
+                <v-col cols="2">
+                  <v-menu
+                    :close-on-content-click="false"
+                    :nudge-right="40"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                    v-model="departureTimeMenu[index]"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        dense
+                        v-model="form.stops[index].departureTime"
+                        label="Departure Time"
+                        prepend-icon="mdi-clock"
+                        readonly
+                        v-bind="attrs"
+                        v-on="on"
+                        :disabled="review"
+                        :rules="requiredRules"
+                      ></v-text-field>
+                    </template>
+                    <v-time-picker
+                      format="24hr"
+                      scrollable
+                      v-model="form.stops[index].departureTime"
+                      @input="departureTimeMenu[index] = false"
+                      :rules="requiredRules"
+                    ></v-time-picker> </v-menu
+                ></v-col>
+                <v-col cols="2">
+                  <v-select
+                    :items="transport"
+                    label="Method of transport"
+                    v-model="form.stops[index].transport"
+                    dense
+                    :disabled="review"
+                    :rules="requiredRules"
+                  ></v-select
+                ></v-col>
+                <!-- Delete button -->
+                <v-col cols="1" v-if="index > 0">
+                  <v-btn
+                    class="ma-2"
+                    dense
+                    small
+                    color="red"
+                    @click="removeStop(index)"
+                    :disabled="review"
+                  >
+                    <v-icon>mdi-trash-can</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </div>
+
+            <v-btn color="blue" class="mr-5" @click="addStop" :disabled="review"
+              >Add Stop</v-btn
+            >
+          </div>
+
           <h2>Details</h2>
           <v-row>
             <v-col cols="2">
@@ -524,109 +823,7 @@
         ><ExpenseList @reloadCost="getCostDifference" title="Expenses"
       /></v-tab-item>
       <v-tab-item>
-        <v-form ref="report" lazy-validation>
-          <h2>Post Trip Report</h2>
-          <v-row>
-            <v-card elevation="2" style="margin: 20px">
-              <v-card-title>
-                Expense Total: ${{ expensesTotal }} <br />
-                Estimates Total: ${{ estimatesTotal }} <br />
-                Cost Difference: ${{ costDifference }}
-              </v-card-title>
-            </v-card>
-            <v-spacer></v-spacer>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
-                v-model="report.costDifferenceExplanation"
-                label="Cost differences"
-                hint="Provide a brief rationale if there is significant difference from the estimated cost."
-                :disabled="review"
-                :rules="requiredRules"
-                rows="1"
-                auto-grow
-              >
-              </v-textarea>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
-                v-model="report.skillsGained"
-                label="Skills gained"
-                hint="Specific knowledge gained which will benefit the Government of Yukon."
-                :disabled="review"
-                :rules="requiredRules"
-                rows="1"
-                auto-grow
-              >
-              </v-textarea>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
-                v-model="report.applicationTimeframe"
-                label="Skill application timeframe"
-                hint="Estimated timeframe in whichthese benefits will become evident"
-                :disabled="review"
-                :rules="requiredRules"
-                rows="1"
-                auto-grow
-              >
-              </v-textarea>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
-                v-model="report.benefitsToUnit"
-                label="Benefits to your area (department/unit)"
-                hint="What are the expected benefits to your program?"
-                :disabled="review"
-                :rules="requiredRules"
-                rows="1"
-                auto-grow
-              >
-              </v-textarea>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
-                v-model="report.benefitsToYG"
-                label="Benefits to YG"
-                hint="What are the expected benefits to the Government of Yukon?"
-                :disabled="review"
-                :rules="requiredRules"
-                rows="1"
-                auto-grow
-              >
-              </v-textarea>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-textarea
-                v-model="report.futureRecommendations"
-                label="Future recommendations"
-                hint="What recommendations would you make for similar trips in the future?"
-                :disabled="review"
-                :rules="requiredRules"
-                rows="1"
-                auto-grow
-              >
-              </v-textarea>
-            </v-col>
-          </v-row>
-          <v-btn color="blue" class="mr-5" @click="submitReport()">
-            Submit Expenses and Report
-          </v-btn>
-          <v-btn color="green" class="mr-5" @click="saveReport()"
-            >Save Report</v-btn
-          >
-        </v-form>
+        <TripReport> </TripReport>
       </v-tab-item>
     </v-tabs-items>
     <div class="text-center">
@@ -646,12 +843,16 @@
 import { DESTINATION_URL, FORM_URL, LOOKUP_URL, USERS_URL } from "../../urls";
 import ExpenseList from "./ExpenseList.vue";
 import axios from "axios";
+import TripReport from "./TripReport.vue";
+
 export default {
   name: "Form",
   components: {
     ExpenseList,
+    TripReport,
   },
   async mounted() {
+    this.overlay = false;
     if (this.$route.params.manage == "manage") {
       this.review = true;
     }
@@ -662,7 +863,6 @@ export default {
     this.$refs.form.resetValidation();
 
     this.emails = await this.loadEmails();
-    this.report = await this.getReport(this.$route.params.formId);
 
     this.getCostDifference();
 
@@ -743,6 +943,7 @@ export default {
     destinations: [],
 
     //Form functionality variables
+    multistop: false,
     tab: null,
     review: false,
     index: 0,
@@ -871,7 +1072,17 @@ export default {
       //   this.requestPage();
       // });
     },
-
+    getCostDifference() {
+      axios
+        .get(`${FORM_URL}/${this.$route.params.formId}/costDifference`)
+        .then((resp) => {
+          this.expensesTotal = resp.data.expenses;
+          this.estimatesTotal = resp.data.estimates;
+          this.costDifference = (
+            this.expensesTotal - this.estimatesTotal
+          ).toFixed(2);
+        });
+    },
     //Axios gets
     async loadUser() {
       await axios.get(`${USERS_URL}/me`).then((resp) => {
@@ -916,53 +1127,6 @@ export default {
         });
         return destinations;
       });
-    },
-    async getReport() {
-      let formId = this.form.formId || this.$route.params.formId;
-      return axios.get(`${FORM_URL}/${formId}/report`).then((resp) => {
-        return resp.data;
-      });
-    },
-
-    submitReport() {
-      if (this.$refs.report.validate()) {
-        let formId = this.form.formId
-          ? this.form.formId
-          : this.$route.params.formId;
-        axios
-          .post(`${FORM_URL}/${formId}/report/submit`, this.report)
-          .then((resp) => {
-            console.log(resp);
-            this.apiSuccess = "Report Submitted";
-            this.snackbar = true;
-            this.requestPage();
-          });
-      }
-    },
-
-    saveReport() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
-      axios
-        .post(`${FORM_URL}/${formId}/report/save`, this.report)
-        .then((resp) => {
-          console.log(resp);
-          this.apiSuccess = "Report Saved";
-          this.snackbar = true;
-        });
-    },
-
-    getCostDifference() {
-      axios
-        .get(`${FORM_URL}/${this.$route.params.formId}/costDifference`)
-        .then((resp) => {
-          this.expensesTotal = resp.data.expenses;
-          this.estimatesTotal = resp.data.estimates;
-          this.costDifference = (
-            this.expensesTotal - this.estimatesTotal
-          ).toFixed(2);
-        });
     },
 
     //Helpers

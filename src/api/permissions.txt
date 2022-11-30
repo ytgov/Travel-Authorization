@@ -1,0 +1,14 @@
+Users have access to their travel requests and forms that have been assigned to them
+Branch manager
+Finance Users - Finance is always on the hook
+
+Pop up window on approval
+
+Supervisor has to give GL code as part of approval
+
+Doug is changing over over to production data.
+Ask Rob and Julie to not change test records.
+Send Jeff a token. If he can't access, book a meeting.
+
+
+Clear up with Aubrey f I can sole source of have to go through MJ

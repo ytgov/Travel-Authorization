@@ -21,9 +21,12 @@ import YGRates from '../components/Administration/RatesEstimateManagement/YGRate
 import Test from '../components/Test';
 import HealthCheck from '../components/HealthCheck';
 
+import preapprovedRouter from '../modules/preapproved/router/router.js';
+
 Vue.use(VueRouter);
 
 const routes = [
+	...preapprovedRouter,
 	{
 		path: '/',
 		name: 'Home',

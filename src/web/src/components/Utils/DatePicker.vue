@@ -11,7 +11,7 @@
       <v-text-field
         dense
         v-model="date"
-        label="Departure Date"
+        :label="value"
         prepend-icon="mdi-calendar"
         readonly
         v-bind="attrs"
@@ -28,7 +28,9 @@
 </template>
 <script>
 export default {
-  props: {},
+  props: {
+    value: String,
+  },
   data() {
     return {
       menu: false,

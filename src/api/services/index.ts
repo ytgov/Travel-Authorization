@@ -1,4 +1,5 @@
 export * from './user-service';
+export * from './form-service';
 export interface QueryStatement {
 	field: string;
 	operator: string;
