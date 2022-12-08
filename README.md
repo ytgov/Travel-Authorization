@@ -1,7 +1,35 @@
-# YHSI Web Application
+General Stack
 
-To start API: in src/api run <npm run serve>
-To start Front End: in src/web run <npm run serve>
-To start DB: in root run <docker-compose -f docker-compose.db.yml up>
+API
+Node + Express
+Typescript
+Knex
 
-If docker isn't running, make sure the docker app is running on your PC
+FrontEnd
+Vue2 + Vuetify
+Typescript
+Axios
+
+DB
+Postgres DB (Switching this to MySQL)
+
+---------------
+
+Deploying (Locally)
+API: 
+npm install
+npm run start
+
+FrontEnd
+npm install
+npm run start
+
+DB
+docker-compose -f docker-compose.db.yml up
+localhost:3000/migrate/latest
+localhost:3000/migrate/seed
+
+----------------
+
+Deploying (Production)
+(Work in progres)
