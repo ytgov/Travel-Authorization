@@ -1,35 +1,46 @@
-General Stack
+# General Stack
 
-API
+## API
 Node + Express
+
 Typescript
+
 Knex
 
-FrontEnd
+## FrontEnd
 Vue2 + Vuetify
+
 Typescript
+
 Axios
 
-DB
+## DB
 Postgres DB (Switching this to MySQL)
 
 ---------------
 
-Deploying (Locally)
-API: 
+# Deploying (Locally)
+
+## API: 
+```
 npm install
 npm run start
+```
 
-FrontEnd
+## FrontEnd:
+```
 npm install
 npm run start
+```
 
-DB
+## DB:
+```
 docker-compose -f docker-compose.db.yml up
 localhost:3000/migrate/latest
 localhost:3000/migrate/seed
+```
 
 ----------------
 
-Deploying (Production)
+# Deploying (Production)
 (Work in progres)
