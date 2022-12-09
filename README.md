@@ -10,8 +10,6 @@ Knex
 ## FrontEnd
 Vue2 + Vuetify
 
-Typescript
-
 Axios
 
 ## DB
