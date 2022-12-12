@@ -103,7 +103,7 @@
 </template>
 <script>
 import axios from "axios";
-import { FORM_URL } from "../../urls";
+import { FORM_URL } from "@/urls";
 
 export default {
   data: () => ({

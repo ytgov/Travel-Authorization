@@ -5,9 +5,51 @@ import knex from 'knex';
 import axios from 'axios';
 import { slice } from 'lodash';
 import { stringify } from 'querystring';
-const db = knex(DB_CONFIG);
+import { LookupService } from '../services';
 
 export const lookupRouter = express.Router();
+const db = knex(DB_CONFIG);
+
+const lookupService = new LookupService();
+
+lookupRouter.get(
+	'/populateEmailList',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		try {
+			lookupService.populateEmailList();
+			res.status(200).json('Success');
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Internal Server Error');
+		}
+	}
+);
+
+lookupRouter.get(
+	'/emailList',
+	ReturnValidationErrors,
+	async function (req: Request, res: Response) {
+		try {
+			let emailList = await axios
+				.get(
+					`http://directory-api-dev.ynet.gov.yk.ca/employees?email=` +
+						req.query.email
+				)
+				.then((resp: any) => {
+					let list = [];
+					for (let employee of resp.data.employees) {
+						if (employee.email != '') list.push(employee.email);
+					}
+					return list.sort();
+				});
+			res.status(200).json(emailList);
+		} catch (error: any) {
+			console.log(error);
+			res.status(500).json('Internal Server Error');
+		}
+	}
+);
 
 lookupRouter.get(
 	'/destination',

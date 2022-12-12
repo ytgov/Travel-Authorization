@@ -30,6 +30,10 @@
 export default {
   props: {
     value: String,
+    review: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -40,7 +44,7 @@ export default {
   },
   methods: {
     returnDate() {
-      this.$emit("returnDate", this.date);
+      this.$emit("date", this.date);
     },
   },
 };

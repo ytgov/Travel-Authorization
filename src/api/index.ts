@@ -104,16 +104,6 @@ app.use((req: Request, res: Response) => {
 	res.sendFile(path.join(__dirname, 'web') + '/index.html');
 });
 
-var job = new cronJob(
-	'0 * * * * *',
-	function () {
-		console.log('You will see this message every second');
-	},
-	null,
-	true,
-	'America/Whitehorse'
-);
-
 app.listen(config.API_PORT, () => {
 	console.log(`API listening on port ${config.API_PORT}`);
 });

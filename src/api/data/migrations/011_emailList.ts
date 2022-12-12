@@ -8,5 +8,5 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 };
 
 exports.down = function (knex: knex.Knex, Promise: any) {
-	return knex.schema.dropTable('user');
+	return knex.schema.dropTable('emailList');
 };

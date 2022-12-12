@@ -27,6 +27,8 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.string('approved');
 		t.string('requestChange');
 		t.string('denialReason');
+		t.boolean('oneWayTrip');
+		t.boolean('multiStop');
 		t.integer('createdBy');
 	});
 };

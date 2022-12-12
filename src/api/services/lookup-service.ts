@@ -11,12 +11,13 @@ export class LookupService {
 		this.db = knex(DB_CONFIG);
 	}
 
-	async function(req: Request, res: Response) {
+	async populateEmailList(): Promise<any | undefined> {
 		try {
 			let emailList = await axios
 				.get(`http://directory-api-dev.ynet.gov.yk.ca/employees`)
 				.then((resp: any) => {
 					for (let employee of resp.data.employees) {
+						console.log(employee);
 						if (employee.email != '')
 							this.db('emailList').insert(employee.email);
 						return;

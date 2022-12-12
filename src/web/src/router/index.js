@@ -11,9 +11,6 @@ import store from '../store';
 import AdminUserForm from '../components/Administration/UserManagement/UserComponent/Form';
 import AdminDashboard from '../components/Administration/Administration';
 import UserManagement from '../components/Administration/UserManagement/Grid';
-import TravelForm from '../components/TravelRequest/TravelForm';
-import FormList from '../components/TravelRequest/FormList';
-import ManagerView from '../components/TravelRequest/ManagerView';
 import FlightEstimate from '../components/Administration/RatesEstimateManagement/AirEstimate';
 import PoolCarCost from '../components/Administration/RatesEstimateManagement/PoolCarCost';
 import RentalCarEstimates from '../components/Administration/RatesEstimateManagement/RentalCarEstimate';
@@ -21,12 +18,14 @@ import YGRates from '../components/Administration/RatesEstimateManagement/YGRate
 import Test from '../components/Test';
 import HealthCheck from '../components/HealthCheck';
 
-import preapprovedRouter from '../modules/preapproved/router/router.js';
+import preapprovedRouter from '../modules/preapproved/router/index.js';
+import travelRequestRouter from '../modules/travelForm/router/index.js';
 
 Vue.use(VueRouter);
 
 const routes = [
 	...preapprovedRouter,
+	...travelRequestRouter,
 	{
 		path: '/',
 		name: 'Home',
@@ -87,26 +86,6 @@ const routes = [
 		path: '*',
 		name: 'Not Found',
 		component: NotFound,
-	},
-	{
-		path: '/TravelRequest/Request/:formId?',
-		name: 'TravelForm',
-		component: TravelForm,
-	},
-	{
-		path: '/TravelRequest/Request/:formId?/:manage?',
-		name: 'TravelRequestReview',
-		component: TravelForm,
-	},
-	{
-		path: '/forms',
-		name: 'TravelForms',
-		component: FormList,
-	},
-	{
-		path: '/managerView',
-		name: 'ManagerView',
-		component: ManagerView,
 	},
 	{
 		path: '/administration/flightEstimate',

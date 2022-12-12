@@ -1,5 +1,6 @@
 export * from './user-service';
 export * from './form-service';
+export * from './lookup-service';
 export interface QueryStatement {
 	field: string;
 	operator: string;

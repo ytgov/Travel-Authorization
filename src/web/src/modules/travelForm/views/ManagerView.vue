@@ -107,7 +107,7 @@
 </template> 
 <script>
 import axios from "axios";
-import { MANAGER_URL } from "../../urls";
+import { MANAGER_URL } from "@/urls";
 export default {
   name: "Home",
   data: () => ({

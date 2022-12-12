@@ -1,7 +1,7 @@
 import * as knex from 'knex';
 
 exports.up = function (knex: knex.Knex, Promise: any) {
-	return knex.schema.createTable('preapproved', function (t) {
+	return knex.schema.createTable('travelDesk', function (t) {
 		t.increments('id').notNullable().primary();
 		t.string('taid');
 		t.string('address');
@@ -20,5 +20,5 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 };
 
 exports.down = function (knex: knex.Knex, Promise: any) {
-	return knex.schema.dropTable('preapproved');
+	return knex.schema.dropTable('travelDesk');
 };
