@@ -6,8 +6,8 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 		t.integer('taid').notNullable();
 		t.integer('stopNumber').notNullable();
 		t.integer('locationId').notNullable();
-		t.specificType('departureFromLocationDate', 'DATE');
-		t.time('departureFromLocationTime');
+		t.specificType('departureDate', 'DATE');
+		t.time('departureTime');
 		t.string('transport');
 	});
 };
