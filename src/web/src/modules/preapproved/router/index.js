@@ -6,7 +6,7 @@ const routes = [
 			{
 				name: 'Home',
 				path: '',
-				meta: { requiresAuth: true },
+				meta: { requiresAuth: false },
 				component: () => import('../views/Preapproved.vue'),
 			},
 		],

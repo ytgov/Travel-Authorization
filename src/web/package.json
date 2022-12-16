@@ -20,6 +20,7 @@
     "lodash": "^4.17.21",
     "point-in-polygon": "^1.1.0",
     "postcss": "^8.4.16",
+    "printd": "^1.5.1",
     "proj4": "^2.8.0",
     "utm-latlng": "^1.0.6",
     "uuid": "^9.0.0",
