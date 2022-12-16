@@ -3,14 +3,14 @@
     <v-row>
       <v-col>
         <v-checkbox
-          v-model="itinerary.multiStop"
+          v-model="multiStop"
           label="Does this trip involve multipe sdestinations?"
           :disabled="review"
           dense
         >
         </v-checkbox>
         <v-checkbox
-          v-model="itinerary.oneWayTrip"
+          v-model="oneWayTrip"
           label="Is this trip one way?"
           :disabled="review"
           dense
@@ -22,7 +22,7 @@
     <v-row>
       <v-col>
         <v-autocomplete
-          v-model="itinerary.stops[0].location"
+          v-model="itinerary[0].locationId"
           dense
           label="Starting Location"
           persistent-hint
@@ -45,7 +45,7 @@
         <v-select
           :items="transport"
           label="Method of transport"
-          v-model="itinerary.stops[0].transport"
+          v-model="itinerary[0].transport"
           dense
           :disabled="review"
           :rules="requiredRules"
@@ -56,7 +56,7 @@
     <v-row>
       <v-col>
         <v-autocomplete
-          v-model="itinerary.stops[1].location"
+          v-model="itinerary[1].location"
           dense
           label="Destination"
           persistent-hint
@@ -72,14 +72,25 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="!itinerary.oneWayTrip === true">
-      <v-col><DatePicker value="Departure Date" :review="review" /> </v-col>
-      <v-col> <TimePicker value="Departure Time" :review="review" /></v-col>
+    <v-row v-if="!oneWayTrip === true">
+      <v-col
+        ><DatePicker
+          :value="itinerary[1].departureDate"
+          text="Departure Date"
+          :review="review"
+        />
+      </v-col>
+      <v-col>
+        <TimePicker
+          :value="itinerary[1].departureTime"
+          text="Departure Time"
+          :review="review"
+      /></v-col>
       <v-col>
         <v-select
           :items="transport"
           label="Method of transport"
-          v-model="itinerary.stops[1].transport"
+          v-model="itinerary[1].transport"
           dense
           :disabled="review"
           :rules="requiredRules"
@@ -87,12 +98,12 @@
       ></v-col>
     </v-row>
 
-    <div v-if="itinerary.multiStop === true">
+    <div v-if="multiStop === true">
       <div v-for="(stop, index) in itinerary.stops.slice(2)" :key="index">
         <v-row>
           <v-col>
             <v-autocomplete
-              v-model="itinerary.stops[index].location"
+              v-model="itinerary[index].location"
               dense
               label="Destination"
               persistent-hint
@@ -120,13 +131,24 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col><DatePicker value="Departure Date" /> </v-col>
-          <v-col> <TimePicker value="Departure Time" /></v-col>
+          <v-col
+            ><DatePicker
+              :value="itinerary[1].departureDate"
+              text="Departure Date"
+              :review="review"
+            />
+          </v-col>
+          <v-col>
+            <TimePicker
+              :value="itinerary[1].departureTime"
+              text="Departure Time"
+              :review="review"
+          /></v-col>
           <v-col>
             <v-select
               :items="transport"
               label="Method of transport"
-              v-model="itinerary.stops[index].transport"
+              v-model="itinerary[index].transport"
               dense
               :disabled="review"
               :rules="requiredRules"
@@ -136,10 +158,10 @@
       </div>
     </div>
 
-    <v-row v-if="!itinerary.oneWayTrip === true">
+    <v-row v-if="!oneWayTrip === true">
       <v-col>
         <v-autocomplete
-          v-model="itinerary.stops[0].location"
+          v-model="itinerary[0].location"
           dense
           label="Final Destination"
           persistent-hint
@@ -155,7 +177,7 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="itinerary.multiStop === true">
+    <v-row v-if="multiStop === true">
       <v-col>
         <v-btn color="blue" @click="addStop" :disabled="review">Add Stop</v-btn>
       </v-col>
@@ -180,9 +202,30 @@ export default {
       type: Boolean,
       default: false,
     },
+    oneWayTrip: {
+      type: Boolean,
+      default: false,
+    },
+    multiStop: {
+      type: Boolean,
+      default: false,
+    },
     itinerary: {
-      type: Object,
-      default: () => {},
+      type: Array,
+      default: () => [
+        {
+          locationId: "",
+          departureDate: "",
+          departureTime: "12:00",
+          transport: "",
+        },
+        {
+          locationId: "",
+          departureDate: "",
+          departureTime: "12:00",
+          transport: "",
+        },
+      ],
     },
   },
   async mounted() {
@@ -196,16 +239,15 @@ export default {
   }),
   methods: {
     addStop() {
-      this.itinerary.stops.push({
-        location: "",
+      this.itinerary.push({
+        locationId: "",
         departureDate: "",
         departureTime: "12:00",
         transport: "",
       });
-      console.log(this.itinerary);
     },
     removeStop(index) {
-      this.itinerary.stops.splice(index, 1);
+      this.itinerary.splice(index, 1);
     },
     async getDestinations() {
       return axios.get(`${DESTINATION_URL}`).then((resp) => {

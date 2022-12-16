@@ -13,11 +13,18 @@ export class AuditService {
 	async insertAudit(
 		userId: number,
 		taid: number,
-		action: string
+		action: string,
+		note: string
 	): Promise<any | undefined> {
 		try {
-			let timeStamp = new Date();
-			await this.db('auditHistory').insert({ userId, taid, action, timeStamp });
+			let timestamp = new Date();
+			await this.db('auditHistory').insert({
+				userId,
+				taid,
+				action,
+				note,
+				timestamp,
+			});
 
 			return true;
 		} catch (error: any) {

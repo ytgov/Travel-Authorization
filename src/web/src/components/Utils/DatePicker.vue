@@ -29,6 +29,7 @@
 <script>
 export default {
   props: {
+    text: String,
     value: String,
     review: {
       type: Boolean,

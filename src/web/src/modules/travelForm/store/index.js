@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { RECOVERY_URL } from '@/urls';
+import { FORM_URL, MANAGER_URL } from '@/urls';
 
 const state = {};
 
@@ -8,19 +8,19 @@ const actions = {
 		console.log('-- Initializing Recovery Store');
 	},
 	async getAll() {
-		return axios.get(RECOVERY_URL).then((resp) => {
+		return axios.get(FORM_URL).then((resp) => {
 			return resp.data.data;
 		});
 	},
 	async getById(store, { id }) {
-		return axios.get(`${RECOVERY_URL}/${id}`).then((resp) => {
+		return axios.get(`${FORM_URL}/${id}`).then((resp) => {
 			return resp.data.data;
 		});
 	},
 	async create(store, { body }) {
 		console.log(body);
 
-		return axios.post(RECOVERY_URL, body).then((resp) => {
+		return axios.post(FORM_URL, body).then((resp) => {
 			return resp.data;
 		});
 	},
@@ -28,12 +28,12 @@ const actions = {
 		let id = item.id;
 		console.log(item);
 
-		return axios.put(`${RECOVERY_URL}/${id}`, item).then((resp) => {
+		return axios.put(`${FORM_URL}/${id}`, item).then((resp) => {
 			return resp.data;
 		});
 	},
 	async delete(store, { id }) {
-		return axios.post(`${RECOVERY_URL}.${id}`).then((resp) => {
+		return axios.post(`${FORM_URL}/${id}`).then((resp) => {
 			return resp.data;
 		});
 	},

@@ -3,9 +3,10 @@ import * as knex from 'knex';
 exports.up = function (knex: knex.Knex, Promise: any) {
 	return knex.schema.createTable('auditHistory', function (t) {
 		t.increments('id').notNullable().primary();
-		t.string('userid');
+		t.string('userId');
 		t.string('taid');
 		t.string('action');
+		t.string('note');
 		t.datetime('timestamp');
 	});
 };

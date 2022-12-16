@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { ReturnValidationErrors } from '../middleware';
-import { DB_CONFIG } from '../config';
+import { DB_CONFIG, AZURE_KEY } from '../config';
 import knex from 'knex';
 import axios from 'axios';
 import { slice } from 'lodash';
@@ -34,7 +34,12 @@ lookupRouter.get(
 			let emailList = await axios
 				.get(
 					`http://directory-api-dev.ynet.gov.yk.ca/employees?email=` +
-						req.query.email
+						req.query.email,
+					{
+						headers: {
+							'Ocp-Apim-Subscription-Key': AZURE_KEY,
+						},
+					}
 				)
 				.then((resp: any) => {
 					let list = [];
@@ -145,7 +150,11 @@ lookupRouter.get(
 		let cleanList: any = {};
 		try {
 			let depList = await axios
-				.get(`http://directory-api-dev.ynet.gov.yk.ca/divisions`)
+				.get(`https://api.gov.yk.ca/directory/divisions`, {
+					headers: {
+						'Ocp-Apim-Subscription-Key': AZURE_KEY,
+					},
+				})
 				.then((resp: any) => {
 					for (let slice of resp.data.divisions) {
 						if (cleanList[slice.department] == null)
@@ -176,30 +185,3 @@ lookupRouter.get(
 		}
 	}
 );
-
-lookupRouter.get('/flightPrice', async function (req: Request, res: Response) {
-	const axios = require('axios');
-
-	const options = {
-		method: 'GET',
-		url: 'https://travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com/v1/prices/direct/',
-		params: { destination: 'LED', origin: 'MOW' },
-		headers: {
-			'X-Access-Token': '77a19abf177de55e2c8027710513be95',
-			'X-RapidAPI-Host':
-				'travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com',
-			'X-RapidAPI-Key': '94bf101f22mshfbfa967125292ecp1dbcd7jsn262338eb3eaa',
-		},
-	};
-
-	// https://api.travelpayouts.com/v2/prices/latest?currency=cad&period_type=year&page=1&limit=30&show_to_affiliates=true&sorting=price&trip_class=0&token=77a19abf177de55e2c8027710513be95
-	//api.travelpayouts.com/v2/prices/month-matrix?currency=usd&origin=YXY&destination=YVR&show_to_affiliates=true&token=77a19abf177de55e2c8027710513be95
-	axios
-		.request(options)
-		.then(function (response: any) {
-			console.log(response.data);
-		})
-		.catch(function (error: any) {
-			console.error(error);
-		});
-});

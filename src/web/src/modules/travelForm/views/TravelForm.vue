@@ -143,7 +143,12 @@
               <h2>Itinerary</h2>
             </v-card-title>
             <v-card-text>
-              <Itinerary :review="review" :itinerary="form.itinerary" />
+              <Itinerary
+                :review="review"
+                :itinerary="form.itinerary"
+                :multiStop="form.multiStop"
+                :oneWayTrip="form.oneWayTrip"
+              />
             </v-card-text>
           </v-card>
 
@@ -166,7 +171,7 @@
                 <v-col cols="2">
                   <v-text-field
                     dense
-                    v-model="form.daysNotTravel"
+                    v-model="form.daysOffTravelStatus"
                     label="# of days OFF travel status"
                     required
                     :disabled="review"
@@ -446,6 +451,7 @@ export default {
     this.getCostDifference();
 
     await this.getForm(this.$route.params.formId);
+
     if (
       this.form.requestChange &&
       this.review == false &&
@@ -469,32 +475,28 @@ export default {
       email: "",
       mailcode: "",
       supervisorEmail: "",
+      multiStop: false,
+      oneWayTrip: false,
 
       //itinerary
-      itinerary: {
-        multiStop: false,
-        oneWayTrrip: false,
-        stops: [
-          {
-            travelTo: "",
-            travelFrom: "",
-            departureDate: "",
-            departureTime: "",
-            transport: "",
-          },
-          {
-            travelTo: "",
-            travelFrom: "",
-            departureDate: "",
-            departureTime: "",
-            transport: "",
-          },
-        ],
-      },
+      itinerary: [
+        {
+          locationId: "",
+          departureDate: "",
+          departureTime: "",
+          transport: "",
+        },
+        {
+          locationId: "",
+          departureDate: "",
+          departureTime: "",
+          transport: "",
+        },
+      ],
 
       //travel details
       travelDuration: "1",
-      daysNotTravel: "0",
+      daysOffTravelStatus: "0",
       dateBackToWork: "",
       travelAdvance: 0,
       purpose: "",
@@ -627,7 +629,7 @@ export default {
       }
     },
     saveForm() {
-      console.log(this.form);
+      console.log("Trying to save", this.form);
       this.form.formStatus = "Draft";
       this.$refs.form.resetValidation();
       this.showError = false;
@@ -716,8 +718,8 @@ export default {
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
-        new Date(this.form.stops[index].departureDate).getTime() -
-        new Date(this.form.stops[0].departureDate).getTime();
+        new Date(this.form.itinerary[index].departureDate).getTime() -
+        new Date(this.form.itinerary[0].departureDate).getTime();
 
       this.form.travelDuration =
         (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
@@ -730,24 +732,22 @@ export default {
     async getForm(formId) {
       if (formId) {
         return await axios.get(`${FORM_URL}/${formId}`).then(async (resp) => {
+          console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
-            this.form.stops.forEach((v, key) => {
-              this.form.stops[key].travelTo = this.destinations.find(
-                (entry) => entry.value == v.travelTo
-              );
-              this.form.stops[key].travelFrom = this.destinations.find(
-                (entry) => entry.value == v.travelFrom
+            this.form.itinerary.forEach((v, key) => {
+              this.form.itinerary[key].location = this.destinations.find(
+                (entry) => entry.value == v.location
               );
             });
           } else {
             this.form.formStatus = "Draft";
             await this.loadUser();
             this.form.dateBackToWork = this.getToday();
-            this.form.itinerary.stops[0].departureDate = this.getToday();
-            this.form.itinerary.stops[0].departureTime = "12:00";
-            this.form.itinerary.stops[1].departureDate = this.getToday();
-            this.form.itinerary.stops[1].departureTime = "12:00";
+            this.form.itinerary[0].departureDate = this.getToday();
+            this.form.itinerary[0].departureTime = "12:00";
+            this.form.itinerary[1].departureDate = this.getToday();
+            this.form.itinerary[1].departureTime = "12:00";
           }
         });
       }
