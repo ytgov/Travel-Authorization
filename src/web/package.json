@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "vue-cli-service serve",
+    "build": "vue-cli-service build",
     "build:web": "vue-cli-service build",
     "build:docker": "vue-cli-service build --dest ../app/dist/web",
     "lint": "vue-cli-service lint"
