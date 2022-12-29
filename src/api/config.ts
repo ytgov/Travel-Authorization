@@ -28,7 +28,7 @@ export const DB_PORT = process.env.DB_PORT || '1433';
 export const AZURE_KEY = process.env.AZURE_KEY || '';
 
 export const DB_CONFIG = {
-	client: 'postgres',
+	client: 'mysql',
 	connection: {
 		host: DB_HOST,
 		user: DB_USER,

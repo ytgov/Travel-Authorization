@@ -1,7 +1,7 @@
-import * as knex from 'knex';
-import { DB_CONFIG } from '../config';
+import { DB_CONFIG } from "../config";
+import knex from "knex";
 
-export * from './migrator';
+export * from "./migrator";
 /*
 console.log("USING DATABASE AT", SQLITE_FILENAME);
 
@@ -12,4 +12,4 @@ console.log("USING DATABASE AT", SQLITE_FILENAME);
   })
 }); */
 
-export const sqldb = knex.knex(DB_CONFIG);
+export const sqldb = knex(DB_CONFIG);
