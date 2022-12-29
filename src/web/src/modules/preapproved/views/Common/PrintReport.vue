@@ -4,6 +4,8 @@
 
             <template v-slot:activator="{ on, attrs }">
                 <v-btn
+                    :disabled="disabled"
+                    @click="initPrint()"
                     :small="buttonInsideTable"
                     :class="buttonInsideTable? 'my-0' :'mr-5 my-7'"
                     elevation="5"
@@ -30,25 +32,72 @@
                 </v-row>
                 
 
-                <div id="pdf"> 
+                <div :id="'pdf-page-'+id">
                     <v-app-bar       
                         color="#fff"
                         flat
                         height="70"
                             style="left: 0; border-bottom: 3px #f3b228 solid"
                         > 
-                        <img src="/yukon.svg" style="margin: -8px 155px 0 0" height="44" /> 
+                        <img src="/yukon.svg" style="margin: -1.2rem 2rem 0 0;" height="44" /> 
+                        <div style="margin: 0 auto !important; font-size:14pt !important;"><b>Out-of-Territory Travel for Training and Conferences</b></div>
                     </v-app-bar>
                     
                     <v-data-table
-                        style="margin-top:1rem;"
+                        style="margin:1rem 0;"
+                        dense
                         :headers="headers"
-                        :items="travelRequests"
+                        :items="printRequests"
                         :items-per-page="5"
                         class="elevation-1"
                         hide-default-footer                    
-                    ></v-data-table>
+                    >
+                        <template v-slot:item.name={item}>
+                            <span> {{item.department}}, </span>                                                        
+                            <span v-for="trv,inx in item.travelers" :key="inx" style="line-height:1rem;">{{trv.fullName.replace('.',' ')}}</span> 
+                        </template>
+
+                        <template v-slot:item.travelDate={item}>
+                            <div v-if="item.dateUnkInd">{{item.month}}</div>
+                            <div v-else>
+                                <div style="line-height:1rem;" >{{item.startDate|beautify-date}}-</div>
+                                <div style="line-height:1rem;" >{{item.endDate|beautify-date}}</div>
+                            </div>            
+                        </template>
+                        <template v-slot:item.estimatedCost={item}>
+                            <div style="text-align: right !important">${{item.estimatedCost|currency}}</div>
+                        </template>
+                        <template v-slot:body.append>
+                            <tr style="" >
+                                <td colspan="4" style="border-top:2px solid !important; font-size:10pt !important;"><b>Total</b></td>
+                                <td style="border-top:2px solid !important; font-size:10pt !important; text-align: right !important"> <b>${{totalCost|currency}}</b></td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+
+                    <v-row style="margin-top:3rem;">
+                        <div style="width:10%" />
+                        <div style="width:40%; border-top:1px solid #333333; font-size:8pt;">
+                            <v-row> 
+                                <v-col cols="2" style="padding-right:0;" >Approved:</v-col>
+                                <v-col style="padding-left:0; margin-left:0;">
+                                <input
+                                    style="width:100%; cursor:pointer; padding-left: 0.25rem;"
+                                    class="yellow darken-3"                                                       
+                                    v-model="approver"                                                                
+                                    clearable/>
+                                </v-col>
+                            </v-row>
+                        </div>
+                        <div style="width:1%" />
+                        <div style="width:10%; border-top:1px solid #333333; font-size:8pt;">
+                            Date:
+                        </div>
+                    </v-row>
+
                 </div>
+
+                <div class="mt-10" />
             </v-card>
 
        </v-dialog>
@@ -56,6 +105,7 @@
 </template>
 
 <script>
+// import Vue from 'vue'
 import { Printd } from 'printd'
 
 export default {
@@ -63,66 +113,93 @@ export default {
     name: "PrintReport",
     props: {
         buttonName: {type: String},
-        buttonInsideTable: {type: Boolean, default: false}
+        buttonInsideTable: {type: Boolean, default: false},
+        travelRequests: {type: []},
+        disabled: {type: Boolean, default: false},
+        id: {type: Number, default: 0}
     },
     data () {
         return {
-            headers: [                
-                { text: 'Name',         value: 'name',        class: 'blue-grey lighten-4'},
-                { text: 'Department',   value: 'department',  class: 'blue-grey lighten-4'},
-                { text: 'Branch',       value: 'branch',      class: 'blue-grey lighten-4' },
-                { text: 'TravelDate',   value: 'travelDate',  class: 'blue-grey lighten-4' },
-                { text: 'Location',     value: 'location',    class: 'blue-grey lighten-4' },
-                { text: 'Purpose Type', value: 'purposeType', class: 'blue-grey lighten-4' },
-                { text: 'Reason',       value: 'reason',      class: 'blue-grey lighten-4' },
-                { text: 'Status',       value: 'status',      class: 'blue-grey lighten-4' },
+            headers: [ 
+                { text: 'Date of Travel ',  value: 'travelDate',  class: 'm-0 p-0', width:'8.5rem' }, 
+                { text: 'Purpose',          value: 'purpose',     class: '' }, 
+                { text: 'Location',         value: 'location',    class: '' },           
+                { text: 'Person/Position Travelling',  value: 'name',  class: ''},
+                { text: 'Estimated Travel Cost',     value: 'estimatedCost', class: 'm-0 p-0', width:'7.5rem' },                
             ],
-            travelRequests: [],
             printReportDialog:false,
+            printRequests: [],
+            totalCost:0,
+            approver:''
         }
     },
-    mounted() {
-        this.extractTravelRequests()
-
+    mounted() {       
+        
     },
     methods: { 
-        
-        extractTravelRequests(){
-            this.travelRequests = [
-                {id:1, name: "TEB ITS staff"},
-                {id:2, name: "Olive Jones", department:"HPW"},
-            ]
+        initPrint() {console.log('Print')
+            this.totalCost = 0
+            for(const req of this.travelRequests)
+                this.totalCost += req.estimatedCost
+            this.printRequests = JSON.parse(JSON.stringify(this.travelRequests))
         },
+        print(){      			
 
-        print(){            			
-			const pdfPage = new Printd()
-			const styles = [								
-				`@media print {
-					@page {
-						size:8.5in 11.7in !important;
-					}
-					.new-page{
-						page-break-before: always;
-						position: relative; top: 8em;
-					}
-				}`,
+            const styles = [								
+                `@media print {
+                    @page {
+                        size: letter landscape !important;
+                    }
+                    .new-page{
+                        page-break-before: always;
+                        position: relative; top: 8em;
+                    }
+                }`,
                 `https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css`,
-                `thead th { background-color: #cfd8dc;}`,
-                `tbody tr:nth-of-type(even) {background-color: #EFEFEF;}`,
-				`table {border: 1px solid #EEEEEE;}`,
-			]
-			const pageToPrint = document.getElementById("pdf")
-			if(pageToPrint) pdfPage.print(pageToPrint, styles)        
+                `thead th {
+                    font-size: 11pt !important;
+                    color: #111111 !important;                     
+                    text-align: center !important;
+                    border:  1px solid #333334 !important;
+                    border-bottom: 2px solid #333334 !important; 
+                }`,
+                `tbody td { border:  1px solid #666666 !important;}`,                               
+                `table {border: 2px solid #333334;}`,
+            ]
+
+            const pdf_id= 'pdf-page-'+this.id
+            const pageToPrint = window.document.getElementById(pdf_id)
+            
+            if(pageToPrint) {                
+                const pdf = new Printd
+                pdf.print(pageToPrint, styles)                   
+                this.printReportDialog=false       
+            }
         }
 
     }
 };
 </script>
 
-<style scoped>
-    ::v-deep(tbody tr:nth-of-type(even)) {
-        background-color: rgba(0, 0, 0, .05);
+<style scoped >
+
+    ::v-deep(tbody td) {
+        font-size: 7.5pt !important;
+        border:  1px solid #666666 !important;        
     }
 
+    ::v-deep(tbody th) {
+        font-size: 7pt !important;
+    }
+
+    ::v-deep(thead th) {
+        border:  1px solid #333334 !important;
+        border-bottom: 2px solid #333334 !important;
+        text-align: center !important;
+        font-size: 9pt !important;
+        color: #111111 !important;       
+    }
+
+    ::v-deep(table) {border: 2px solid #333334;}
     
 </style>

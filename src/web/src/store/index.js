@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import auth from './auth';
 import profile from './profile';
 import alerts from './alerts';
+import preapproved from './preapproved';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -49,5 +50,5 @@ export default new Vuex.Store({
 		search: (state) => state.search,
 		showAppSidebar: (state) => state.showAppSidebar,
 	},
-	modules: { auth, profile, alerts },
+	modules: { auth, profile, alerts, preapproved },
 });

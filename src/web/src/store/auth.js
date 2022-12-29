@@ -5,6 +5,7 @@ const state = {
 	user: null,
 	fullName: '',
 	roles: [],
+	department: '',
 };
 const getters = {
 	isAuthenticated: (state) => !!state.user,
@@ -36,18 +37,26 @@ const actions = {
 				console.error(err);
 			});
 	},
+	UpdateUserDepartment({ commit }, value){
+		commit('setDepartment',value)
+	}
 };
 const mutations = {
 	setUser(state, user) {
 		state.user = user;
 		state.fullName = user.display_name;
 		state.roles = user.roles;
+		state.department = user.department;
 	},
 	clearUser(state) {
 		state.user = null;
 		state.fullName = null;
 		state.roles = [];
+		state.department = null;
 	},
+	setDepartment(state, department) {
+		state.department = department;
+	}
 };
 
 export default {

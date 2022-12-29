@@ -2,21 +2,26 @@
     <div class="mt-15 mx-10 mb-5">
         <v-data-table
             :headers="headers"
-            :items="travelRequests"
+            :items="travelSubmissions"
             :items-per-page="5"
-            class="elevation-1" 
-            :single-select="singleSelect"         
+            class="elevation-1"                     
         >
-        <template v-slot:item.edit={item}>
+        <template v-slot:item.submissionDate={item}>
+            {{item.submissionDate|beautify-date}}
+        </template>
+        <template v-slot:item.submission={item}>
+            <div v-for="sub,inx in item.preapproved" :key="inx" style="line-height:1rem;">{{sub.department}}-{{sub.location}}</div>
+        </template>
+        <template v-slot:item.edit={item}>    
             <v-row>
                 <div style="width:4.5rem;">
-                    <submit-travel :buttonInsideTable="true" buttonName="Edit" v-if="item.status=='Draft'" />
+                    <submit-travel v-if="item.status=='Draft' && admin" :preTSubID="item.preTSubID" :editButton="true" buttonName="Edit" :travelRequests="travelRequests" :selectedRequests="item.preapproved"  @updateTable="updateTable"/>
                 </div>
                 <div style="width:6.75rem;">
-                    <approve-travel v-if="item.status=='Submitted'" />
+                    <approve-travel v-if="item.status=='Submitted' && admin" :travelRequests="item.preapproved" :submissionId="item.preTSubID" @updateTable="updateTable"/>
                 </div>
                 <div style="width:5.75rem;">
-                    <print-report :buttonInsideTable="true" buttonName="Print"/>
+                    <print-report v-if="admin" :travelRequests="item.preapproved" :buttonInsideTable="true" :id="item.preTSubID" buttonName="Print"/>
                 </div>                
             </v-row>
         </template>
@@ -26,6 +31,7 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import PrintReport from "../Common/PrintReport.vue";
 import SubmitTravel from "../Common/SubmitTravel.vue"
 import ApproveTravel from "./ApproveTravel.vue"
@@ -33,6 +39,10 @@ import ApproveTravel from "./ApproveTravel.vue"
 export default {
     components: {PrintReport, SubmitTravel, ApproveTravel},
     name: "Submissions",
+    props: {
+        travelSubmissions: {type: []},
+        travelRequests: {type: []}
+    },
     data () {
         return {
             headers: [
@@ -42,20 +52,24 @@ export default {
                 { text: 'Status',          value: 'status',         class: 'blue-grey lighten-4' },
                 { text: '',sortable:false, value: 'edit',           class: 'blue-grey lighten-4', width: '18rem'},
             ],
-            travelRequests: [],singleSelect: false,
+            admin: false,
         }
     },
-    mounted() {
-        this.extractTravelRequests()
+    mounted() {        
+        
+        this.admin = Vue.filter('isAdmin')()
+
+        const dialogId = this.$store.state.preapproved.openDialogId
+        const el = document.getElementById(dialogId)        
+        if(el){ 
+            this.$store.commit('preapproved/SET_OPEN_DIALOG_ID','')
+            el.click()
+        }
     },
     methods: { 
-        extractTravelRequests(){
-            this.travelRequests = [
-                {submission: "TEB ITS staff", status: "Approved"},
-                {submission: "Olive Jones",   status: "Submitted"},
-                {submission: "Jeff Smith",    status: "Draft"},
-            ]
-        }   
+        updateTable(){
+            this.$emit('updateTable')
+        }
     }
 };
 </script>

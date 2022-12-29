@@ -52,3 +52,28 @@ export async function doHealthCheck(req: Request, res: Response) {
 		`Connection to database on '<strong>${DB_HOST}</strong>' is connected and functioning.`
 	);
 }
+
+
+export function RequiresAuth(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {	
+	if (req?.user?.id>0 && req?.user?.email && req?.user?.is_active == true) {
+		return next();
+	}
+
+	res.status(401).send('Not authenticated'); //;.redirect('/api/auth/login');
+}
+
+export function RequiresRolePatAdminOrAdmin(
+	req: Request,
+	res: Response,
+	next: NextFunction
+) {
+	if (req.user && (req.user.roles.indexOf('Admin') >= 0 || req.user.roles.indexOf('PatAdmin') >= 0)) {
+		return next();
+	}
+	return res.status(401).send('You are not an Administrator for Pre-Approval Travel Requests!');
+	
+}

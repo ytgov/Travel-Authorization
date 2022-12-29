@@ -36,6 +36,7 @@
                         <v-col cols="3">                          
                             <v-text-field
                                 :error="approvalDateErr"
+                                @input="approvalDateErr=false"
                                 v-model="approvalDate"                                
                                 label="Approval Date"                                           
                                 outlined
@@ -53,8 +54,8 @@
                             </v-btn>
                         </v-col>
                         <v-col cols="1" />
-                        <v-col class="blue--text text-h6 text-decoration-underline" cols="7">
-                            {{approvalFileName}}
+                        <v-col :key="update" class="blue--text text-h6 text-decoration-underline" cols="7">
+                            <a v-if="reader.result" :href="reader.result" download="UploadedFile.pdf" target="_blank">{{approvalFileName}}</a>
                         </v-col>
                     </v-row>   
 
@@ -62,19 +63,31 @@
                         <v-col>
                             <v-data-table
                                 :headers="headers"
-                                :items="travelRequests"
+                                :items="approvalRequests"
                                 :items-per-page="5"
                                 class="elevation-1"
                                 hide-default-footer                    
                             >
+                                <template v-slot:item.name={item}>
+                                    <v-tooltip top color="primary">
+                                        <template v-slot:activator="{ on }">
+                                            <div v-on="item.travelers.length>1?on:''">
+                                                <span> {{item.travelers[0].fullName.replace('.',' ')}} </span>
+                                                <span v-if="item.travelers.length>1">, ... </span>
+                                            </div>                
+                                        </template>
+                                        <span><div v-for="trv,inx in item.travelers" :key="inx">{{trv.fullName.replace('.',' ')}}</div></span>
+                                    </v-tooltip>
+                                </template>
+
                                 <template v-slot:item.status={item}>                                    
                                     <v-select 
                                         :background-color="item.status=='Declined'?'red lighten-4':(item.status=='Approved'? 'green lighten-4':'grey lighten-4')"
                                         class="my-0 py-0"
-                                        dense hide-details                                                                                                           
-                                        @change="changeStatus(item)"
+                                        dense hide-details
+                                        @change="alert=false;"
                                         v-model="item.status"
-                                        :items="statusList"
+                                        :items="statusList"                                        
                                         label=""
                                         solo/>                                
                                 </template>
@@ -82,13 +95,16 @@
                             </v-data-table>
                         </v-col>
                     </v-row>
+                    <v-alert v-model="alert" dense color="red darken-4" dark dismissible >
+                        {{alertMsg}}
+                    </v-alert>
                 </v-card-text>
 
                 <v-card-actions>                          
                     <v-btn color="grey darken-5" @click="approveTravelDialog = false">
                         Cancel
                     </v-btn>                   
-                    <v-btn class="ml-auto" color="green darken-1" @click="saveNewTravelRequest()">
+                    <v-btn class="ml-auto" color="green darken-1" :loading="savingData" @click="saveApproval()">
                         Save
                     </v-btn>
                 </v-card-actions>
@@ -100,12 +116,16 @@
 </template>
 
 <script>
+import {PREAPPROVED_URL} from "../../../../urls";
+import axios from "axios";
+
 
 export default {
   components: {  },
     name: "ApproveTravel",
     props: {
-       
+       travelRequests: {type: []},
+       submissionId: {type: Number}
     },
     data () {
         return {
@@ -116,38 +136,41 @@ export default {
                 { text: 'Location',  value: 'location', class: 'blue-grey lighten-4' },
                 { text: 'Status',    value: 'status',   class: 'blue-grey lighten-4', sortable:false, width:'11rem'},
             ],
-            travelRequests: [],
+            approvalRequests: [],            
             approvedBy:"",
             approvedByErr:false,
             approvalDate:"",
             approvalDateErr:false,
             statusList: ['Approved','Declined','Submitted'],
             approveTravelDialog:false,
-            approvalFile:{},
+            approvalFileType:"",
             approvalFileName:"",
+            alert: false,
+            alertMsg:"",
+            savingData: false,
+            reader: new FileReader(),
+            update:0
         }
     },
     mounted() {
-        this.extractTravelRequests()
+        
     },
     methods: { 
         
         extractTravelRequests(){
             
+            this.alert=false;
             this.approvalFileName="";
-            this.approvalFile={};
+            this.approvalFileType="";
             this.approvedBy="";
             this.approvalDate="";
             this.approvedByErr=false;
             this.approvalDateErr=false;
-
-            this.travelRequests = [
-                {id:1, name: "TEB ITS staff", status:"Submitted"},
-                {id:2, name: "Olive Jones",  status:"Submitted"},
-            ]
+            this.approvalRequests = JSON.parse(JSON.stringify(this.travelRequests))
         },
 
         uploadApproval(){
+            this.alert=false
             const el = document.getElementById("inputfile");
             if(el) el.click();
         },
@@ -157,17 +180,75 @@ export default {
             event.preventDefault();
             event.stopPropagation();
             
-            if (event.target.files && event.target.files[0]) 
-            {
-                this.approvalFile = event.target.files[0];
-                this.approvalFileName = this.approvalFile.name
+            if (event.target.files && event.target.files[0]) {   
+                const file = event.target.files[0]
+
+                this.approvalFileType = file.type;
+                this.approvalFileName = file.name
+                
+                this.reader.onload=(()=>{this.update++})
+                this.reader.readAsDataURL(file);
             }
         },
+        
+        checkFields(){
+            this.alert = false
 
-        changeStatus(item){
-            console.log(item)
-            // this.travelRequests= this.travelRequests.filter(travel => travel.id != item.id)
-        },       
+            this.approvedByErr = this.approvedBy? false: true;
+            this.approvalDateErr = this.approvalDate? false :true;
+            if(this.approvedByErr || this.approvalDateErr) return false;
+
+            for(const req of this.approvalRequests){
+                if(req.status !='Approved' && req.status !='Declined'){
+                    this.alertMsg = "Please select either 'Approved' or 'Declined' status for all the records."
+                    this.alert = true
+                    return false
+                }
+            }
+            return true
+        },
+
+        saveApproval(){
+            this.alert = false;
+
+            if(this.checkFields()){
+                if(!this.reader?.result || this.approvalFileType!='application/pdf'){
+                    this.alertMsg = "Please upload the approval PDF file."
+                    this.alert = true
+                    return
+                }
+
+                this.savingData = true
+                const data = { 
+                    "status": "Finished",
+                    "approvalDate": this.approvalDate,
+                    "approvedBy": this.approvedBy,
+                    "preapproved": this.approvalRequests.map(req => {return {preTID: req.preTID, status:req.status}})
+                }
+                const bodyFormData = new FormData();
+                bodyFormData.append('file',this.reader.result);
+                bodyFormData.append('data',JSON.stringify(data));
+
+                const header = {
+                    responseType: "application/pdf",
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                }
+
+                axios.post(`${PREAPPROVED_URL}/approval/${this.submissionId}`, bodyFormData, header).then(() => {
+                    this.savingData = false;                                                                    
+                    this.approveTravelDialog = false;
+                    this.$emit('updateTable');
+                }).catch(e => {
+                    this.savingData = false; 
+                    console.log(e.response.data)
+                    this.alertMsg = e.response.data
+                    this.alert = true
+                });
+                
+            }
+        }
 
     }
 };

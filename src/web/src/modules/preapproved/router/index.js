@@ -1,12 +1,12 @@
 const routes = [
 	{
 		path: '/preapproved',
-		component: () => import('@/layouts/Layout'),
+		component: () => import('@/layouts//BlankLayout'),
 		children: [
 			{
-				name: 'Home',
+				name: 'PreApprovedTravelHome',
 				path: '',
-				meta: { requiresAuth: false },
+				meta: { requiresAuth: true },
 				component: () => import('../views/Preapproved.vue'),
 			},
 		],
