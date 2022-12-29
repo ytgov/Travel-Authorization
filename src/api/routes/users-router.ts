@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { DB_CONFIG } from '../config';
 import knex from 'knex';
-import { ReturnValidationErrors } from '../middleware';
+import { ReturnValidationErrors, RequiresRoleAdmin } from '../middleware';
 import { param, query } from 'express-validator';
 import { UserService } from '../services';
 
@@ -45,7 +45,7 @@ userRouter.get('/unit', async (req: Request, res: Response) => {
 	}
 });
 
-userRouter.put('/:id/permissions', async (req: Request, res: Response) => {
+userRouter.put('/:id/permissions',RequiresRoleAdmin, async (req: Request, res: Response) => {
 	try {
 		await userService.saveDepartmentAccess(req.params.id, req.body.departments);
 		await userService.saveRoleAccess(req.params.id, req.body.roles);
@@ -58,9 +58,10 @@ userRouter.put('/:id/permissions', async (req: Request, res: Response) => {
 
 userRouter.get('/:id/permissions', async (req: Request, res: Response) => {
 	try {
-		let departments = await userService.getDepartmentAccess(req.params.id);
-		let roles = await userService.getRoleAccess(req.params.id);
-		let permissions = { departments: departments, roles: roles };
+		// let departments = await userService.getDepartmentAccess(req.params.id);
+		// let roles = await userService.getRoleAccess(req.params.id);
+		const user = await db('user').select('*').where({'id': req.params.id}).first()
+		let permissions = { departments: user.department, roles: user.roles?.split(',') };
 		res.status(200).json(permissions);
 	} catch (error: any) {
 		console.log(error);
