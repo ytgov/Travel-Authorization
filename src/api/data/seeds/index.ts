@@ -15,14 +15,16 @@ export async function seedUp() {
       email: "maxrparker@gmail.com",
       first_name: "Test",
       last_name: "User",
-      roles: "",
+      roles: "Admin,PatAdmin",
+      department:"Highways and Public Works",
       create_date: "2021-08-01",
     },
     {
       email: "diedred@gmail.com",
       first_name: "Test",
       last_name: "Admin",
-      roles: "",
+      roles: "PatAdmin",
+      department:"Highways and Public Works",
       create_date: "2021-08-01",
     },
   ]);

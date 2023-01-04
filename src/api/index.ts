@@ -21,6 +21,7 @@ import {
 
 var cronJob = require('cron').CronJob;
 var knex = require('knex');
+var fileupload = require("express-fileupload");
 
 const app = express();
 
@@ -86,6 +87,9 @@ var conn = knex({
 });
 
 app.set('db', conn);
+
+// accepts FormData
+app.use(fileupload());
 
 app.use('/api/form', RequiresAuthentication, formRouter);
 app.use('/api/user', RequiresAuthentication, userRouter);
