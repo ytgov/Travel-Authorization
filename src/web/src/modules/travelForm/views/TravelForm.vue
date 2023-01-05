@@ -436,7 +436,7 @@ export default {
   components: {
     ExpenseList,
     TripReport,
-    Itinerary,
+    Itinerary
   },
   async mounted() {
     this.overlay = true;
@@ -484,14 +484,14 @@ export default {
           locationId: "",
           departureDate: "",
           departureTime: "",
-          transport: "",
+          transport: ""
         },
         {
           locationId: "",
           departureDate: "",
           departureTime: "",
-          transport: "",
-        },
+          transport: ""
+        }
       ],
 
       //travel details
@@ -507,7 +507,7 @@ export default {
       //other info
       formStatus: "",
       requestChange: "",
-      denialReason: "",
+      denialReason: ""
     },
 
     report: {},
@@ -524,7 +524,7 @@ export default {
       "Conference",
       "Workshop",
       "General Travel",
-      "Community Travel",
+      "Community Travel"
     ],
 
     //Dropdowns that need initialization
@@ -559,34 +559,34 @@ export default {
     overlay: true,
 
     //Rules
-    firstNameRules: [(v) => !!v || "First name is required"],
-    lastNameRules: [(v) => !!v || "Last name is required"],
+    firstNameRules: [v => !!v || "First name is required"],
+    lastNameRules: [v => !!v || "Last name is required"],
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) =>
+      v => !!v || "E-mail is required",
+      v =>
         /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
           v
-        ) || "E-mail must be valid",
+        ) || "E-mail must be valid"
     ],
-    fromRules: [(v) => !!v || "This field is required"],
-    destinationRules: [(v) => !!v || "This field is required"],
-    requiredRules: [(v) => !!v || "This field is required"],
+    fromRules: [v => !!v || "This field is required"],
+    destinationRules: [v => !!v || "This field is required"],
+    requiredRules: [v => !!v || "This field is required"],
     numberRules: [
-      (v) =>
-        v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
-    ],
+      v =>
+        v == 0 || Number.isInteger(Number(v)) || "This field must be a number"
+    ]
   }),
   computed: {
-    myDepartments: function () {
+    myDepartments: function() {
       return Object.keys(this.departments);
     },
-    myDivisions: function () {
+    myDivisions: function() {
       if (this.departments[this.form.department]) {
         return Object.keys(this.departments[this.form.department]);
       }
       return [];
     },
-    myBranches: function () {
+    myBranches: function() {
       if (
         this.departments[this.form.department] &&
         this.departments[this.form.department][this.form.division]
@@ -597,7 +597,7 @@ export default {
       }
       return [];
     },
-    myUnits: function () {
+    myUnits: function() {
       if (
         this.departments[this.form.department] &&
         this.departments[this.form.department][this.form.division] &&
@@ -610,7 +610,7 @@ export default {
         ];
       }
       return [];
-    },
+    }
   },
   methods: {
     submitForm() {
@@ -620,7 +620,7 @@ export default {
           ? this.form.formId
           : this.$route.params.formId;
 
-        axios.post(`${FORM_URL}/${formId}/submit`, this.form).then((resp) => {
+        axios.post(`${FORM_URL}/${formId}/submit`, this.form).then(resp => {
           console.log(resp);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
@@ -637,7 +637,7 @@ export default {
         ? this.form.formId
         : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${formId}/save`, this.form).then((resp) => {
+      axios.post(`${FORM_URL}/${formId}/save`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form saved as a draft";
         this.snackbar = true;
@@ -660,7 +660,7 @@ export default {
     getCostDifference() {
       axios
         .get(`${FORM_URL}/${this.$route.params.formId}/costDifference`)
-        .then((resp) => {
+        .then(resp => {
           this.expensesTotal = resp.data.expenses;
           this.estimatesTotal = resp.data.estimates;
           this.costDifference = (
@@ -670,7 +670,7 @@ export default {
     },
     //Axios gets
     async loadUser() {
-      await axios.get(`${USERS_URL}/me`).then((resp) => {
+      await axios.get(`${USERS_URL}/me`).then(resp => {
         this.user = resp.data.data;
         this.form.firstName =
           this.user.first_name[0].toUpperCase() +
@@ -681,7 +681,7 @@ export default {
         this.form.email = this.user.email;
         return resp.data;
       });
-      await axios.get(`${USERS_URL}/unit`).then((resp) => {
+      await axios.get(`${USERS_URL}/unit`).then(resp => {
         this.form.department = resp.data.department;
         this.form.division = resp.data.division;
         this.form.branch = resp.data.branch;
@@ -694,12 +694,12 @@ export default {
     async loadEmails() {
       return axios
         .get(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`)
-        .then((resp) => {
+        .then(resp => {
           return resp.data;
         });
     },
     async getDepartmentList() {
-      return axios.get(`${LOOKUP_URL}/departmentList`).then((resp) => {
+      return axios.get(`${LOOKUP_URL}/departmentList`).then(resp => {
         return resp.data;
       });
     },
@@ -707,7 +707,7 @@ export default {
       if (this.emailSearch.length >= 3) {
         return axios
           .get(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`)
-          .then((resp) => {
+          .then(resp => {
             this.emails = resp.data;
           });
       } else {
@@ -731,13 +731,13 @@ export default {
     },
     async getForm(formId) {
       if (formId) {
-        return await axios.get(`${FORM_URL}/${formId}`).then(async (resp) => {
+        return await axios.get(`${FORM_URL}/${formId}`).then(async resp => {
           console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
             this.form.itinerary.forEach((v, key) => {
               this.form.itinerary[key].location = this.destinations.find(
-                (entry) => entry.value == v.location
+                entry => entry.value == v.location
               );
             });
           } else {
@@ -760,9 +760,9 @@ export default {
       axios
         .post(`${FORM_URL}/${formId}/reassign`, {
           reassign: this.reassignEmail,
-          form: this.form,
+          form: this.form
         })
-        .then((resp) => {
+        .then(resp => {
           console.log(resp);
           this.apiSuccess = "Form reassigned";
           this.snackbar = true;
@@ -775,7 +775,7 @@ export default {
         ? this.form.formId
         : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${formId}/deny`, this.form).then((resp) => {
+      axios.post(`${FORM_URL}/${formId}/deny`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form denied";
         this.snackbar = true;
@@ -790,7 +790,7 @@ export default {
 
       axios
         .post(`${FORM_URL}/${formId}/requestChange`, this.form)
-        .then((resp) => {
+        .then(resp => {
           console.log(resp);
           this.apiSuccess = "Change requested";
           this.snackbar = true;
@@ -803,7 +803,7 @@ export default {
         ? this.form.formId
         : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${formId}/approve`, this.form).then((resp) => {
+      axios.post(`${FORM_URL}/${formId}/approve`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form approved";
         this.snackbar = true;
@@ -824,9 +824,7 @@ export default {
     },
     reassignPopup() {
       this.reassignDialog = true;
-    },
-  },
+    }
+  }
 };
 </script>
-
-

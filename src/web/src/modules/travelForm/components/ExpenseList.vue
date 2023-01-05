@@ -173,7 +173,7 @@ export default {
   name: "ExpenseList",
   components: {
     DatePicker,
-    TimePicker,
+    TimePicker
   },
   async mounted() {
     this.formId = this.$route.params.formId;
@@ -186,19 +186,19 @@ export default {
     },
     dialogDelete(val) {
       val || this.closeDelete();
-    },
+    }
   },
   data: () => ({
     headers: [
       {
         text: "Description",
         align: "start",
-        value: "description",
+        value: "description"
       },
       { text: "Cost", value: "cost" },
       { text: "Date", value: "date" },
       { text: "Currency", value: "currency" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: false }
     ],
     dialog: false,
     dialogDelete: false,
@@ -208,13 +208,13 @@ export default {
       description: "",
       cost: "",
       date: "",
-      currency: "",
+      currency: ""
     },
     defaultItem: {
       description: "",
       cost: "",
       date: "",
-      currency: "",
+      currency: ""
     },
 
     currency: ["CAD", "USD", "EUR"],
@@ -222,12 +222,12 @@ export default {
     dateMenu: false,
     formId: "",
     apiSuccess: "",
-    snackbar: null,
+    snackbar: null
   }),
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    },
+    }
   },
   methods: {
     editItem(item) {
@@ -276,7 +276,7 @@ export default {
     async getExpenses() {
       return await axios
         .get(`${FORM_URL}/${this.formId}/expenses/${this.title}`)
-        .then((resp) => {
+        .then(resp => {
           return resp.data;
         });
     },
@@ -287,7 +287,7 @@ export default {
           `${FORM_URL}/${this.formId}/expenses/${this.title}`,
           this.expenses
         )
-        .then((resp) => {
+        .then(resp => {
           this.$emit("reloadCost");
           this.apiSuccess = resp.data;
           this.snackbar = true;
@@ -298,8 +298,7 @@ export default {
       return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10);
-    },
-  },
+    }
+  }
 };
 </script>
-

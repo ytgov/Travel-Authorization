@@ -40,7 +40,7 @@
 
     <v-row>
       <v-col><DatePicker value="Departure Date" /> </v-col>
-      <v-col> <TimePicker value="Departure Time" /></v-col>
+      <v-col> <TimePicker value="Departure Time"/></v-col>
       <v-col>
         <v-select
           :items="transport"
@@ -195,20 +195,20 @@ export default {
   name: "Form",
   components: {
     DatePicker,
-    TimePicker,
+    TimePicker
   },
   props: {
     review: {
       type: Boolean,
-      default: false,
+      default: false
     },
     oneWayTrip: {
       type: Boolean,
-      default: false,
+      default: false
     },
     multiStop: {
       type: Boolean,
-      default: false,
+      default: false
     },
     itinerary: {
       type: Array,
@@ -217,16 +217,16 @@ export default {
           locationId: "",
           departureDate: "",
           departureTime: "12:00",
-          transport: "",
+          transport: ""
         },
         {
           locationId: "",
           departureDate: "",
           departureTime: "12:00",
-          transport: "",
-        },
-      ],
-    },
+          transport: ""
+        }
+      ]
+    }
   },
   async mounted() {
     this.destinations = await this.getDestinations();
@@ -235,7 +235,7 @@ export default {
     destinations: [],
 
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
-    requiredRules: [(v) => !!v || "This field is required"],
+    requiredRules: [v => !!v || "This field is required"]
   }),
   methods: {
     addStop() {
@@ -243,26 +243,24 @@ export default {
         locationId: "",
         departureDate: "",
         departureTime: "12:00",
-        transport: "",
+        transport: ""
       });
     },
     removeStop(index) {
       this.itinerary.splice(index, 1);
     },
     async getDestinations() {
-      return axios.get(`${DESTINATION_URL}`).then((resp) => {
+      return axios.get(`${DESTINATION_URL}`).then(resp => {
         let destinations = [];
-        resp.data.forEach((v) => {
+        resp.data.forEach(v => {
           destinations.push({
             value: v.id,
-            text: v.city + " (" + v.province + ")",
+            text: v.city + " (" + v.province + ")"
           });
         });
         return destinations;
       });
-    },
-  },
+    }
+  }
 };
 </script>
-
-

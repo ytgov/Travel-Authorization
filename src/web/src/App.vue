@@ -176,7 +176,7 @@ export default {
     },
     showAppSidebar() {
       return store.getters.showAppSidebar;
-    },
+    }
   },
   data: () => ({
     appVersion: config.appVersion,
@@ -191,9 +191,9 @@ export default {
     sections: config.sections,
     hasSidebar: config.hasSidebar,
     hasSidebarClosable: config.hasSidebarClosable,
-    currentId: 0,
+    currentId: 0
   }),
-  created: async function () {
+  created: async function() {
     store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
     this.hasSidebar = this.$route.path.startsWith("/sites/");
     this.currentId = this.$route.params.id;
@@ -202,29 +202,29 @@ export default {
     await store.dispatch("checkAuthentication");
   },
   watch: {
-    isAuthenticated: function (val) {
+    isAuthenticated: function(val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = store.getters.showAppSidebar;
     },
-    showAppSidebar: function (val) {
+    showAppSidebar: function(val) {
       if (val) {
         this.currentId = this.$route.params.id;
       }
 
       this.hasSidebar = val && this.isAuthenticated;
-    },
+    }
   },
   methods: {
-    nav: function (location) {
+    nav: function(location) {
       router.push(location);
     },
-    toggleHeader: function () {
+    toggleHeader: function() {
       this.headerShow = !this.headerShow;
     },
-    toggleMenu: function () {
+    toggleMenu: function() {
       this.menuShow = !this.menuShow;
     },
-    signOut: function () {
+    signOut: function() {
       window.location = LOGOUT_URL;
     },
     isSites(route, chooser) {
@@ -259,15 +259,15 @@ export default {
     showHistory() {
       this.$refs.historySidebar.show();
     },
-    showError: function (msg) {
+    showError: function(msg) {
       this.$refs.notifier.showError(msg);
     },
-    showSuccess: function (msg) {
+    showSuccess: function(msg) {
       this.$refs.notifier.showSuccess(msg);
     },
-    showAPIMessages: function (msg) {
+    showAPIMessages: function(msg) {
       this.$refs.notifier.showAPIMessages(msg);
-    },
-  },
+    }
+  }
 };
 </script>

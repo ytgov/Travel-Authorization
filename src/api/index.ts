@@ -1,26 +1,25 @@
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import path from 'path';
-import helmet from 'helmet';
+import express, { Request, Response } from "express";
+import cors from "cors";
+import path from "path";
+import helmet from "helmet";
 
-import * as config from './config';
-import { doHealthCheck } from './utils/healthCheck';
-import { configureAuthentication } from './routes/auth';
-import { RequiresAuthentication } from './middleware';
-import { CreateMigrationRoutes } from './data';
+import * as config from "./config";
+import { doHealthCheck } from "./utils/healthCheck";
+import { RequiresAuth } from "./middleware";
+import { CreateMigrationRoutes } from "./data";
 
 import {
-	userRouter,
-	managerRouter,
-	lookupRouter,
-	permRouter,
-	healthCheckRouter,
-	formRouter,
-	preapprovedRouter,
-} from './routes';
+  userRouter,
+  managerRouter,
+  lookupRouter,
+  permRouter,
+  healthCheckRouter,
+  formRouter,
+  preapprovedRouter,
+} from "./routes";
 
-var cronJob = require('cron').CronJob;
-var knex = require('knex');
+var cronJob = require("cron").CronJob;
+var knex = require("knex");
 var fileupload = require("express-fileupload");
 
 const app = express();
@@ -29,85 +28,83 @@ app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 app.use(
-	helmet.contentSecurityPolicy({
-		directives: {
-			'default-src': ["'self'"],
-			'base-uri': ["'self'"],
-			'block-all-mixed-content': [],
-			'font-src': ["'self'", 'https:', 'data:'],
-			'frame-ancestors': ["'self'"],
-			'img-src': ["'self'", 'data:', 'https:'],
-			'object-src': ["'none'"],
-			'script-src': ["'self'", 'https://js.arcgis.com', "'unsafe-eval'"], // added https to accomodate esri components?
-			'script-src-attr': ["'none'"],
-			'style-src': ["'self'", 'https:', "'unsafe-inline'"],
-			'worker-src': ["'self'", 'blob:'],
-			'connect-src': [
-				"'self'",
-				'https://*.arcgis.com',
-				'https://services.arcgisonline.com',
-			],
-		},
-	})
+  helmet.contentSecurityPolicy({
+    directives: {
+      "default-src": ["'self'"],
+      "base-uri": ["'self'"],
+      "block-all-mixed-content": [],
+      "font-src": ["'self'", "https:", "data:"],
+      "frame-ancestors": ["'self'"],
+      "img-src": ["'self'", "data:", "https:"],
+      "object-src": ["'none'"],
+      "script-src": ["'self'", "https://js.arcgis.com", "'unsafe-eval'"], // added https to accomodate esri components?
+      "script-src-attr": ["'none'"],
+      "style-src": ["'self'", "https:", "'unsafe-inline'"],
+      "worker-src": ["'self'", "blob:"],
+      "connect-src": [
+        "'self'",
+        "https://*.arcgis.com",
+        "https://services.arcgisonline.com",
+      ],
+    },
+  })
 );
 
 app.use(
-	cors({
-		origin: config.FRONTEND_URL,
-		optionsSuccessStatus: 200,
-		credentials: true,
-	})
+  cors({
+    origin: config.FRONTEND_URL,
+    optionsSuccessStatus: 200,
+    credentials: true,
+  })
 );
 
 CreateMigrationRoutes(app);
-
-configureAuthentication(app);
 
 // app.get('/api/healthCheck', (req: Request, res: Response) => {
 // 	res.send('API is up!');
 // });
 
-console.log('host: ', process.env.DB_HOST);
-console.log('user: ', process.env.DB_USER);
-console.log('psss: ', '*********');
-console.log('db name: ', process.env.DB_NAME);
+console.log("host: ", process.env.DB_HOST);
+console.log("user: ", process.env.DB_USER);
+console.log("psss: ", "*********");
+console.log("db name: ", process.env.DB_NAME);
 
 var conn = knex({
-	client: 'mssql',
-	connection: {
-		host: process.env.DB_HOST,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASS,
-		database: process.env.DB_NAME,
-		options: {
-			enableArithAbort: true,
-		},
-	},
-	useNullAsDefault: true,
+  client: "mssql",
+  connection: {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    options: {
+      enableArithAbort: true,
+    },
+  },
+  useNullAsDefault: true,
 });
 
-app.set('db', conn);
+app.set("db", conn);
 
 // accepts FormData
 app.use(fileupload());
 
-app.use('/api/form', RequiresAuthentication, formRouter);
-app.use('/api/user', RequiresAuthentication, userRouter);
-app.use('/api/manager', RequiresAuthentication, managerRouter);
-app.use('/api/permissions', RequiresAuthentication, permRouter);
-app.use('/api/preapproved', RequiresAuthentication, preapprovedRouter);
+app.use("/api/form", RequiresAuth, formRouter);
+app.use("/api/user", RequiresAuth, userRouter);
+app.use("/api/manager", RequiresAuth, managerRouter);
+app.use("/api/permissions", RequiresAuth, permRouter);
+app.use("/api/preapproved", RequiresAuth, preapprovedRouter);
 
-app.use('/api/lookup', lookupRouter);
-app.use('/api/healthCheck', healthCheckRouter);
+app.use("/api/lookup", lookupRouter);
+app.use("/api/healthCheck", healthCheckRouter);
 
 // serves the static files generated by the front-end
-app.use(express.static(path.join(__dirname, 'web')));
+app.use(express.static(path.join(__dirname, "web")));
 
 // if no other routes match, just send the front-end
 app.use((req: Request, res: Response) => {
-	res.sendFile(path.join(__dirname, 'web') + '/index.html');
+  res.sendFile(path.join(__dirname, "web") + "/index.html");
 });
 
 app.listen(config.API_PORT, () => {
-	console.log(`API listening on port ${config.API_PORT}`);
+  console.log(`API listening on port ${config.API_PORT}`);
 });

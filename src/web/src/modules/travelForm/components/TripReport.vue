@@ -113,19 +113,19 @@ export default {
       applicationTimeframe: "",
       benefitsToUnit: "",
       benefitsToYG: "",
-      futureRecommendations: "",
+      futureRecommendations: ""
     },
-    requiredRules: [(v) => !!v || "This field is required"],
+    requiredRules: [v => !!v || "This field is required"],
     expensesTotal: 0,
     estimatesTotal: 0,
     costDifference: 0,
-    review: false,
+    review: false
   }),
 
   methods: {
     async getReport() {
       let formId = this.form.formId || this.$route.params.formId;
-      return axios.get(`${FORM_URL}/${formId}/report`).then((resp) => {
+      return axios.get(`${FORM_URL}/${formId}/report`).then(resp => {
         return resp.data;
       });
     },
@@ -137,7 +137,7 @@ export default {
           : this.$route.params.formId;
         axios
           .post(`${FORM_URL}/${formId}/report/submit`, this.report)
-          .then((resp) => {
+          .then(resp => {
             console.log(resp);
             this.apiSuccess = "Report Submitted";
             this.snackbar = true;
@@ -152,12 +152,12 @@ export default {
         : this.$route.params.formId;
       axios
         .post(`${FORM_URL}/${formId}/report/save`, this.report)
-        .then((resp) => {
+        .then(resp => {
           console.log(resp);
           this.apiSuccess = "Report Saved";
           this.snackbar = true;
         });
-    },
-  },
+    }
+  }
 };
 </script>

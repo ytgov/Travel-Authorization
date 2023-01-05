@@ -23,7 +23,7 @@
       >
     </v-card>
   </div>
-</template> 
+</template>
 <script>
 import axios from "axios";
 import { FORM_URL } from "@/urls";
@@ -37,15 +37,15 @@ export default {
       { text: "Purpose", value: "purpose" },
       { text: "Departure Date", value: "departureDate" },
       { text: "Return Date", value: "datebacktowork" },
-      { text: "Status", value: "formStatus" },
-    ],
+      { text: "Status", value: "formStatus" }
+    ]
   }),
   created() {
     this.loadForms();
   },
   methods: {
     loadForms() {
-      axios.get(`${FORM_URL}`).then((resp) => {
+      axios.get(`${FORM_URL}`).then(resp => {
         this.forms = resp.data;
       });
     },
@@ -54,7 +54,7 @@ export default {
     },
     createForm() {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
-    },
-  },
+    }
+  }
 };
 </script>

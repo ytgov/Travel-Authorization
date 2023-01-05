@@ -11,7 +11,7 @@
       If you have already authenticated and your session is still active, it may
       skip the sign in process and return you here immediately.
     </p>
-    <a class="v-btn primary v-size--default" :href="loginLink"
+    <a class="v-btn primary v-size--default" @click="login"
       >Click here to sign in</a
     >
   </div>
@@ -25,8 +25,7 @@ import store from "../store";
 export default {
   name: "Home",
   data: () => ({
-    loginLink: `${config.apiBaseUrl}/api/auth/login`,
-    title: `Welcome to ${config.applicationName}`,
+    title: `Welcome to ${config.applicationName}`
   }),
   async created() {
     await store.dispatch("checkAuthentication");
@@ -34,6 +33,11 @@ export default {
 
     if (isAuthenticated) {
       router.push("/dashboard");
+    }
+  },
+  methods: {
+    async login() {
+      this.$auth.loginWithRedirect();
     }
   }
 };
