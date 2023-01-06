@@ -50,7 +50,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <div v-if="isAuthenticated">
+      <div v-if="$auth.isAuthenticated">
         <v-menu offset-y class="ml-0">
           <template v-slot:activator="{ on, attrs }">
             <v-btn text color="primary" v-bind="attrs" v-on="on">
@@ -157,7 +157,6 @@ import store from "./store";
 import * as config from "./config";
 import { mapState } from "vuex";
 import RequestAlert from "./components/RequestAlert.vue";
-import { LOGOUT_URL } from "./urls";
 
 export default {
   name: "App",
@@ -225,7 +224,7 @@ export default {
       this.menuShow = !this.menuShow;
     },
     signOut: function() {
-      window.location = LOGOUT_URL;
+      this.$auth.logout();
     },
     isSites(route, chooser) {
       if (chooser)

@@ -5,6 +5,6 @@
 <script>
 export default {
   name: "BlankLayout",
-  components: {},
+  components: {}
 };
 </script>

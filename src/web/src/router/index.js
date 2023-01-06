@@ -20,7 +20,7 @@ import HealthCheck from "../components/HealthCheck";
 import preapprovedRouter from "../modules/preapproved/router/index.js";
 import travelRequestRouter from "../modules/travelForm/router/index.js";
 
-import { authGuard } from "../auth/authGuard";
+// import { authGuard } from "../auth/authGuard";
 
 Vue.use(VueRouter);
 
@@ -28,10 +28,19 @@ const routes = [
   ...preapprovedRouter,
   ...travelRequestRouter,
   {
+    path: "/sign-in",
+    name: "Login",
+    component: Login
+  },
+  {
     path: "/",
+    name: "Login",
+    component: Login
+  },
+  {
+    path: "/dashboard",
     name: "Dashboard",
-    component: Dashboard,
-    beforeEnter: authGuard
+    component: Dashboard
   },
   {
     path: "/form",
@@ -40,11 +49,6 @@ const routes = [
     meta: {
       requiresAuth: false
     }
-  },
-  {
-    path: "/sign-in",
-    name: "Login",
-    component: Login
   },
   {
     path: "/login-complete",

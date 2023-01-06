@@ -1,5 +1,5 @@
-import axios from "axios";
-import { LOGOUT_URL, PROFILE_URL } from "../urls";
+import { PROFILE_URL } from "../urls";
+import { secureGet } from "./jwt";
 
 const state = {
   user: null,
@@ -18,23 +18,12 @@ const getters = {
 };
 const actions = {
   async checkAuthentication({ commit }) {
-    await axios
-      .get(PROFILE_URL)
+    await secureGet(PROFILE_URL)
       .then(resp => {
         commit("setUser", resp.data.data);
       })
       .catch(() => {
         commit("clearUser");
-      });
-  },
-  async signOut({ commit }) {
-    await axios
-      .get(LOGOUT_URL)
-      .then(() => {
-        commit("clearUser");
-      })
-      .catch(err => {
-        console.error(err);
       });
   },
   UpdateUserDepartment({ commit }, value) {

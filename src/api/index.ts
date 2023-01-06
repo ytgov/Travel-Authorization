@@ -16,7 +16,9 @@ import {
   healthCheckRouter,
   formRouter,
   preapprovedRouter,
+  configRouter
 } from "./routes";
+import { checkJwt, loadUser } from "./middleware/authz.middleware";
 
 var cronJob = require("cron").CronJob;
 var knex = require("knex");
@@ -44,9 +46,9 @@ app.use(
       "connect-src": [
         "'self'",
         "https://*.arcgis.com",
-        "https://services.arcgisonline.com",
-      ],
-    },
+        "https://services.arcgisonline.com"
+      ]
+    }
   })
 );
 
@@ -54,7 +56,7 @@ app.use(
   cors({
     origin: config.FRONTEND_URL,
     optionsSuccessStatus: 200,
-    credentials: true,
+    credentials: true
   })
 );
 
@@ -77,10 +79,10 @@ var conn = knex({
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     options: {
-      enableArithAbort: true,
-    },
+      enableArithAbort: true
+    }
   },
-  useNullAsDefault: true,
+  useNullAsDefault: true
 });
 
 app.set("db", conn);
@@ -88,11 +90,13 @@ app.set("db", conn);
 // accepts FormData
 app.use(fileupload());
 
-app.use("/api/form", RequiresAuth, formRouter);
-app.use("/api/user", RequiresAuth, userRouter);
-app.use("/api/manager", RequiresAuth, managerRouter);
-app.use("/api/permissions", RequiresAuth, permRouter);
-app.use("/api/preapproved", RequiresAuth, preapprovedRouter);
+app.use("/api/config", configRouter);
+
+app.use("/api/form", checkJwt, loadUser, formRouter);
+app.use("/api/user", checkJwt, loadUser, userRouter);
+app.use("/api/manager", checkJwt, loadUser, managerRouter);
+app.use("/api/permissions", checkJwt, loadUser, permRouter);
+app.use("/api/preapproved", checkJwt, loadUser, preapprovedRouter);
 
 app.use("/api/lookup", lookupRouter);
 app.use("/api/healthCheck", healthCheckRouter);

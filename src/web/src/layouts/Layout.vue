@@ -162,8 +162,7 @@ export default {
       this.menuShow = !this.menuShow;
     },
     signOut: function() {
-      store.dispatch("signOut");
-      router.push("/");
+      this.$auth.signOut();
     }
   }
 };

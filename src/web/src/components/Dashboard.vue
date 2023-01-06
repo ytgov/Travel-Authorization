@@ -146,7 +146,7 @@ export default {
   components: {
     DatePicker,
     TimePicker,
-    UploadReceipts,
+    UploadReceipts
   },
   data: () => ({
     data: {},
@@ -154,7 +154,7 @@ export default {
       { text: "Purpose", value: "purpose" },
       { text: "Departure Date", value: "departureDate" },
       { text: "Return Date", value: "dateBackToWork" },
-      { text: "Status", value: "formStatus" },
+      { text: "Status", value: "formStatus" }
     ],
     expenseHeaders: [
       { text: "Type", value: "type" },
@@ -162,7 +162,7 @@ export default {
       { text: "Date", value: "date" },
       { text: "Amount", value: "cost" },
       { text: "Actions", value: "actions" },
-      { text: "Receipts", value: "receipts" },
+      { text: "Receipts", value: "receipts" }
     ],
     travelAuthHeaders: [
       { text: "Location", value: "location" },
@@ -170,10 +170,10 @@ export default {
       { text: "Start Date", value: "date" },
       { text: "End Date", value: "cost" },
       { text: "Auth Status", value: "actions" },
-      { text: "Booking Status", value: "receipts" },
+      { text: "Booking Status", value: "receipts" }
     ],
     forms: [],
-    dialog: false,
+    dialog: false
   }),
   created() {
     this.loadForms();
@@ -181,7 +181,7 @@ export default {
   },
   methods: {
     loadForms() {
-      axios.get(`${FORM_URL}`).then((resp) => {
+      axios.get(`${FORM_URL}`).then(resp => {
         this.forms = resp.data;
       });
     },
@@ -195,10 +195,10 @@ export default {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
     },
     getTrip() {
-      axios.get(`${FORM_URL}/recent`).then((resp) => {
+      axios.get(`${FORM_URL}/recent`).then(resp => {
         this.data = resp.data;
       });
-    },
-  },
+    }
+  }
 };
 </script>

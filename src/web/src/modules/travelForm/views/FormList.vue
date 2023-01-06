@@ -25,9 +25,9 @@
   </div>
 </template>
 <script>
-import axios from "axios";
 import { FORM_URL } from "@/urls";
 import { v4 as uuidv4 } from "uuid";
+import { secureGet } from "@/store/jwt";
 export default {
   name: "Home",
   data: () => ({
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     loadForms() {
-      axios.get(`${FORM_URL}`).then(resp => {
+      secureGet(`${FORM_URL}`).then(resp => {
         this.forms = resp.data;
       });
     },

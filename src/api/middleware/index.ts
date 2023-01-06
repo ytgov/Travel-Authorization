@@ -7,13 +7,11 @@ export function RequiresAuthentication(
   res: Response,
   next: NextFunction
 ) {
-  // DJPRATT temporary hack to get around login issue
-  return next();
-  if (req.oidc.isAuthenticated()) {
+  if (req.isAuthenticated()) {
     return next();
   }
 
-  res.status(401).send("Not authenticated"); //;.redirect('/api/auth/login');
+  res.status(401).send("You are not authorized to view this page");
 }
 
 export function ReturnValidationErrors(
@@ -54,11 +52,11 @@ export async function doHealthCheck(req: Request, res: Response) {
 }
 
 export function RequiresAuth(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
+  // if (req.isAuthenticated()) {
+  return next();
+  // }
 
-  res.redirect("/api/auth/login");
+  // res.redirect("/api/auth/login");
 }
 
 export function RequiresRolePatAdminOrAdmin(

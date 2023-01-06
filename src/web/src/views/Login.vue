@@ -11,33 +11,28 @@
       If you have already authenticated and your session is still active, it may
       skip the sign in process and return you here immediately.
     </p>
-    <a class="v-btn primary v-size--default" @click="login"
-      >Click here to sign in</a
-    >
+    <div v-if="!$auth.loading">
+      <a class="v-btn primary v-size--default" @click="login"
+        >Click here to sign in</a
+      >
+    </div>
   </div>
 </template>
 
 <script>
 import * as config from "../config";
-import router from "../router";
-import store from "../store";
 
 export default {
   name: "Login",
   data: () => ({
     title: `Welcome to ${config.applicationName}`
   }),
-  async created() {
-    await store.dispatch("checkAuthentication");
-    var isAuthenticated = store.getters.isAuthenticated;
-
-    if (isAuthenticated) {
-      router.push("/dashboard");
-    }
-  },
+  async created() {},
   methods: {
     async login() {
-      this.$auth.loginWithRedirect();
+      this.$auth.loginWithRedirect({
+        appState: { targetUrl: "/dashboard" }
+      });
     }
   }
 };
