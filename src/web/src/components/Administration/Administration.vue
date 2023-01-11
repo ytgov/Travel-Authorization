@@ -21,11 +21,7 @@
         <v-card-title>Rates and Estimates</v-card-title>
         <v-list class="pb-0 pt-0">
           <v-list-item-group v-model="tablemodel">
-            <v-list-item
-              v-for="(item, i) in items"
-              :key="i"
-              @click="goTo(item.url)"
-            >
+            <v-list-item v-for="(item, i) in items" :key="i" @click="goTo(item.url)">
               <v-list-item-icon>
                 <v-icon v-text="item.icon"></v-icon>
               </v-list-item-icon>
@@ -40,11 +36,7 @@
         <v-card-title>Look up Management</v-card-title>
         <v-list class="pb-0 pt-0">
           <v-list-item-group v-model="tablemodel">
-            <v-list-item
-              v-for="(lookup, i) in lookups"
-              :key="i"
-              @click="goTo(lookup.url)"
-            >
+            <v-list-item v-for="(lookup, i) in lookups" :key="i" @click="goTo(lookup.url)">
               <v-list-item-icon>
                 <v-icon v-text="lookup.icon"></v-icon>
               </v-list-item-icon>
@@ -68,38 +60,38 @@ export default {
       {
         icon: "mdi-wallet-membership",
         text: "Flight Estimate",
-        url: "/administration/FlightEstimate",
+        url: "/administration/FlightEstimate"
       },
       {
         icon: "mdi-database",
         text: "Pool Car Costs",
-        url: "/administration/PoolCarCost",
+        url: "/administration/PoolCarCost"
       },
       {
         icon: "mdi-shape",
         text: "Rental Car Estimates",
-        url: "/administration/RentalCarEstimates",
+        url: "/administration/RentalCarEstimates"
       },
       {
         icon: "mdi-bug",
         text: "YG Rates",
-        url: "/administration/YGRates",
-      },
+        url: "/administration/YGRates"
+      }
     ],
     lookups: [
       {
         icon: "mdi-wallet-membership",
         text: "Purpose",
-        url: "/administration/Purpose",
-      },
+        url: "/administration/Purpose"
+      }
     ],
-    model: 1,
+    model: 1
   }),
   methods: {
     goTo(url) {
       if (url == "") return;
       this.$router.push(url);
-    },
-  },
+    }
+  }
 };
 </script>

@@ -1,5 +1,5 @@
-import axios from "axios";
 import { FORM_URL } from "@/urls";
+import { secureGet, securePost, securePut } from "@/utils/secure";
 
 const state = {};
 
@@ -8,19 +8,19 @@ const actions = {
     console.log("-- Initializing Recovery Store");
   },
   async getAll() {
-    return axios.get(FORM_URL).then(resp => {
+    return secureGet(FORM_URL).then(resp => {
       return resp.data.data;
     });
   },
   async getById(store, { id }) {
-    return axios.get(`${FORM_URL}/${id}`).then(resp => {
+    return secureGet(`${FORM_URL}/${id}`).then(resp => {
       return resp.data.data;
     });
   },
   async create(store, { body }) {
     console.log(body);
 
-    return axios.post(FORM_URL, body).then(resp => {
+    return securePost(FORM_URL, body).then(resp => {
       return resp.data;
     });
   },
@@ -28,12 +28,12 @@ const actions = {
     let id = item.id;
     console.log(item);
 
-    return axios.put(`${FORM_URL}/${id}`, item).then(resp => {
+    return securePut(`${FORM_URL}/${id}`, item).then(resp => {
       return resp.data;
     });
   },
   async delete(store, { id }) {
-    return axios.post(`${FORM_URL}/${id}`).then(resp => {
+    return securePost(`${FORM_URL}/${id}`).then(resp => {
       return resp.data;
     });
   }

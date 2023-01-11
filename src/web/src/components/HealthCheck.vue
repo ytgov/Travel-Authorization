@@ -22,17 +22,17 @@
 </template>
 <script>
 import { HEALTH_URL } from "../urls";
-import axios from "axios";
+import { secureGet } from "@/store/jwt";
 
 export default {
   data: () => ({
-    healthCheck: {},
+    healthCheck: {}
   }),
   created() {
-    axios.get(`${HEALTH_URL}`).then((resp) => {
+    secureGet(`${HEALTH_URL}`).then(resp => {
       this.healthCheck = resp.data;
     });
   },
-  methods: {},
+  methods: {}
 };
 </script>

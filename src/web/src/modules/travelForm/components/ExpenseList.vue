@@ -16,26 +16,14 @@
       </v-card-text>
 
       <v-card-text>
-        <v-checkbox
-          dense
-          label="Did you use a personal vehicle during this trip?"
-        >
-        </v-checkbox>
+        <v-checkbox dense label="Did you use a personal vehicle during this trip?"> </v-checkbox>
       </v-card-text>
-      <v-card-text
-        >How many nights did you arrange for personal accomadation?</v-card-text
-      >
+      <v-card-text>How many nights did you arrange for personal accomadation?</v-card-text>
     </v-card>
 
     <v-card elevation="2" class="mt-5">
       <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="expenses"
-          sort-by="date"
-          hide-default-footer
-          disable-pagination
-        >
+        <v-data-table :headers="headers" :items="expenses" sort-by="date" hide-default-footer disable-pagination>
           <template v-slot:top>
             <v-toolbar flat>
               <h2>{{ title }}</h2>
@@ -43,13 +31,7 @@
               <v-spacer></v-spacer>
               <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="blue"
-                    dark
-                    class="mb-2"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
+                  <v-btn color="blue" dark class="mb-2" v-bind="attrs" v-on="on">
                     New Item
                   </v-btn>
                 </template>
@@ -70,12 +52,7 @@
                           ></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                          <v-text-field
-                            v-model="editedItem.cost"
-                            label="Cost"
-                            outlined
-                            dense
-                          ></v-text-field>
+                          <v-text-field v-model="editedItem.cost" label="Cost" outlined dense></v-text-field>
                         </v-col>
                         <v-col cols="12">
                           <v-select
@@ -107,10 +84,7 @@
                                 v-on="on"
                               ></v-text-field>
                             </template>
-                            <v-date-picker
-                              v-model="editedItem.date"
-                              @input="dateMenu = false"
-                            ></v-date-picker>
+                            <v-date-picker v-model="editedItem.date" @input="dateMenu = false"></v-date-picker>
                           </v-menu>
                         </v-col>
                       </v-row>
@@ -128,17 +102,11 @@
               </v-dialog>
               <v-dialog v-model="dialogDelete" max-width="240px">
                 <v-card>
-                  <v-card-title class="text-h5 text-center"
-                    >Delete this item?</v-card-title
-                  >
+                  <v-card-title class="text-h5 text-center">Delete this item?</v-card-title>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete"
-                      >Cancel</v-btn
-                    >
-                    <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                      >OK</v-btn
-                    >
+                    <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+                    <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
                     <v-spacer></v-spacer>
                   </v-card-actions>
                 </v-card>
@@ -154,9 +122,7 @@
         </v-data-table>
       </v-card-text>
     </v-card>
-    <v-btn color="green" class="mr-5" @click="saveExpenses()"
-      >Save {{ title }}
-    </v-btn>
+    <v-btn color="green" class="mr-5" @click="saveExpenses()">Save {{ title }} </v-btn>
     <v-snackbar v-model="snackbar" right color="success">
       <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
       {{ apiSuccess }}
@@ -166,7 +132,7 @@
 
 <script>
 import { FORM_URL } from "@/urls";
-import axios from "axios";
+import { securePost, secureGet } from "../../../store/jwt";
 import DatePicker from "@/components/Utils/DatePicker";
 import TimePicker from "@/components/Utils/TimePicker";
 export default {
@@ -274,30 +240,21 @@ export default {
     },
 
     async getExpenses() {
-      return await axios
-        .get(`${FORM_URL}/${this.formId}/expenses/${this.title}`)
-        .then(resp => {
-          return resp.data;
-        });
+      return await secureGet(`${FORM_URL}/${this.formId}/expenses/${this.title}`).then(resp => {
+        return resp.data;
+      });
     },
 
     saveExpenses() {
-      axios
-        .post(
-          `${FORM_URL}/${this.formId}/expenses/${this.title}`,
-          this.expenses
-        )
-        .then(resp => {
-          this.$emit("reloadCost");
-          this.apiSuccess = resp.data;
-          this.snackbar = true;
-        });
+      securePost(`${FORM_URL}/${this.formId}/expenses/${this.title}`, this.expenses).then(resp => {
+        this.$emit("reloadCost");
+        this.apiSuccess = resp.data;
+        this.snackbar = true;
+      });
     },
 
     getToday() {
-      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10);
+      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
     }
   }
 };

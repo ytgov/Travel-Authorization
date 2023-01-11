@@ -4,29 +4,21 @@
     <v-card class="mt-5" color="#fff2d5">
       <v-card-title>Travel Requests</v-card-title>
       <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="forms"
-          :items-per-page="20"
-          class="elevation-2"
-          @click:row="openForm"
-        >
+        <v-data-table :headers="headers" :items="forms" :items-per-page="20" class="elevation-2" @click:row="openForm">
           <template v-slot:item.datebacktowork="{ item }">
             <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
           </template>
           <template v-slot:item.departureDate="{ item }">
             <span>{{ new Date(item.departureDate).toDateString() }}</span>
           </template> </v-data-table
-        ><v-btn @click="createForm()" color="blue"
-          >New Travel Request</v-btn
-        ></v-card-text
+        ><v-btn @click="createForm()" color="blue">New Travel Request</v-btn></v-card-text
       >
     </v-card>
   </div>
-</template> 
+</template>
 <script>
-import axios from "axios";
 import { FORM_URL } from "../../urls";
+import { secureGet } from "@/store/jwt";
 import { v4 as uuidv4 } from "uuid";
 export default {
   name: "Home",
@@ -37,15 +29,15 @@ export default {
       { text: "Purpose", value: "purpose" },
       { text: "Departure Date", value: "departureDate" },
       { text: "Return Date", value: "datebacktowork" },
-      { text: "Status", value: "formStatus" },
-    ],
+      { text: "Status", value: "formStatus" }
+    ]
   }),
   created() {
     this.loadForms();
   },
   methods: {
     loadForms() {
-      axios.get(`${FORM_URL}`).then((resp) => {
+      secureGet(`${FORM_URL}`).then(resp => {
         this.forms = resp.data;
       });
     },
@@ -54,7 +46,7 @@ export default {
     },
     createForm() {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
-    },
-  },
+    }
+  }
 };
 </script>

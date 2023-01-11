@@ -174,12 +174,12 @@
 </template>
 
 <script>
-import axios from "axios";
 import { USERS_URL, LOOKUP_URL } from "../../../../urls";
 import Breadcrumbs from "../../../Breadcrumbs.vue";
+import { secureGet } from "@/store/jwt";
 export default {
   components: {
-    Breadcrumbs,
+    Breadcrumbs
   },
   data: () => ({
     overlay: false,
@@ -188,13 +188,13 @@ export default {
     dataAccessValidation: false,
     menu: null,
 
-    rules: [(value) => !!value || "Required."],
+    rules: [value => !!value || "Required."],
 
     user: {
       first_name: "",
       last_name: "",
       email: "",
-      roles: [],
+      roles: []
     },
 
     pendingRoles: [],
@@ -204,7 +204,7 @@ export default {
     departments: [],
     branches: [],
     roles: [],
-    showAccessDialog: false,
+    showAccessDialog: false
   }),
   async mounted() {
     await this.loadDepartments();
@@ -213,11 +213,11 @@ export default {
     this.getBranches();
   },
   computed: {
-    myBranches: function () {
-      return this.branches.filter((b) => {
+    myBranches: function() {
+      return this.branches.filter(b => {
         return this.pendingDepartments.indexOf(b.ownedby) >= 0;
       });
-    },
+    }
   },
   watch: {},
   methods: {
@@ -226,59 +226,57 @@ export default {
     },
     async saveAccess() {
       // await this.saveUserAccess(this.accessItem);
-      this.pendingBranches = this.pendingBranches.filter((b) => {
-        let found = this.branches.find((x) => x.id === b);
+      this.pendingBranches = this.pendingBranches.filter(b => {
+        let found = this.branches.find(x => x.id === b);
         return this.pendingDepartments.indexOf(found.ownedby) >= 0;
       });
       let permsObject = {
         departments: [...this.pendingDepartments, ...this.pendingBranches],
-        roles: this.pendingRoles,
+        roles: this.pendingRoles
       };
-      axios
-        .put(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
-        .then((resp) => {
-          console.log(resp);
-        });
+      securePut(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject).then(resp => {
+        console.log(resp);
+      });
       // this.showAccessDialog = false;
     },
     async loadUser(id) {
-      axios.get(`${USERS_URL}/${id}`).then((resp) => {
+      secureGet(`${USERS_URL}/${id}`).then(resp => {
         this.user = resp.data;
         if (this.user.is_active == 1) this.user.status = "Active";
         else this.user.status = "Inactive";
       });
-      axios.get(`${USERS_URL}/${id}/permissions`).then((resp) => {
+      secureGet(`${USERS_URL}/${id}/permissions`).then(resp => {
         for (let i = 0; i < resp.data.departments.length; i++) {
           if (this.departments[resp.data.departments[i].objectid])
             this.pendingDepartments.push(resp.data.departments[i].objectid);
           else this.pendingBranches.push(resp.data.departments[i].objectid);
         }
 
-        this.pendingRoles = resp.data.roles.map((entry) => {
+        this.pendingRoles = resp.data.roles.map(entry => {
           return entry.roleid;
         });
       });
     },
     async loadDepartments() {
-      return axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
+      return secureGet(`${LOOKUP_URL}/departments`).then(resp => {
         this.departments = resp.data;
       });
     },
     async getBranches() {
-      await axios.get(`${LOOKUP_URL}/branches`).then((resp) => {
+      await secureGet(`${LOOKUP_URL}/branches`).then(resp => {
         this.branches = resp.data;
       });
     },
     loadUnits() {
-      axios.get(`${LOOKUP_URL}/departments`).then((resp) => {
+      secureGet(`${LOOKUP_URL}/departments`).then(resp => {
         this.departments = resp.data;
       });
     },
     loadRoles() {
-      axios.get(`${LOOKUP_URL}/roles`).then((resp) => {
+      secureGet(`${LOOKUP_URL}/roles`).then(resp => {
         this.roles = resp.data;
       });
-    },
-  },
+    }
+  }
 };
 </script>

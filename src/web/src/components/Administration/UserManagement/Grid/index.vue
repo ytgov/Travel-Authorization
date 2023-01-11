@@ -59,11 +59,11 @@
 import Breadcrumbs from "../../../Breadcrumbs.vue";
 import { USERS_URL } from "../../../../urls";
 import { mapActions } from "vuex";
-import axios from "axios";
+import { secureGet } from "@/store/jwt";
 export default {
   name: "usersgrid",
   components: {
-    Breadcrumbs,
+    Breadcrumbs
   },
   data: () => ({
     loading: false,
@@ -75,14 +75,14 @@ export default {
       { text: "Email", value: "email" },
       { text: "First Name", value: "first_name" },
       { text: "Last Name", value: "last_name" },
-      { text: "Status", value: "is_active" },
+      { text: "Status", value: "is_active" }
       //      { text: "Actions", value: "actions"}
     ],
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
     selectedFilter: ["Active"],
-    filterOptions: ["Active", "Expired", "Inactive"],
+    filterOptions: ["Active", "Expired", "Inactive"]
   }),
   async mounted() {
     //this.getDataFromApi();
@@ -96,11 +96,11 @@ export default {
       this.$router.push(`/administration/users/edit/${value.id}`);
     },
     laodUsers() {
-      axios.get(`${USERS_URL}`).then((resp) => {
+      secureGet(`${USERS_URL}`).then(resp => {
         this.users = resp.data;
         console.log(this.users);
       });
-    },
+    }
   },
   computed: {
     filteredData() {
@@ -113,8 +113,8 @@ export default {
         }
       }
       return data;
-    },
-  },
+    }
+  }
 };
 </script>
 

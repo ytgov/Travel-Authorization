@@ -3,23 +3,21 @@
 </template>
 <script>
 import { PERM_URL } from "../urls";
-import axios from "axios";
+import { secureGet } from "@/store/jwt";
 
 export default {
   data: () => ({
-    userData: {},
+    userData: {}
   }),
   created() {
     this.getAccess();
   },
   methods: {
     getAccess() {
-      axios
-        .get(`${PERM_URL}/`, { email: "Max.parker@yukon.ca" })
-        .then((resp) => {
-          this.userData = resp.data;
-        });
-    },
-  },
+      secureGet(`${PERM_URL}/`, { email: "Max.parker@yukon.ca" }).then(resp => {
+        this.userData = resp.data;
+      });
+    }
+  }
 };
 </script>

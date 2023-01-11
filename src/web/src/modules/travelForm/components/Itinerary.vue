@@ -2,20 +2,9 @@
   <div>
     <v-row>
       <v-col>
-        <v-checkbox
-          v-model="multiStop"
-          label="Does this trip involve multipe sdestinations?"
-          :disabled="review"
-          dense
-        >
+        <v-checkbox v-model="multiStop" label="Does this trip involve multipe sdestinations?" :disabled="review" dense>
         </v-checkbox>
-        <v-checkbox
-          v-model="oneWayTrip"
-          label="Is this trip one way?"
-          :disabled="review"
-          dense
-        >
-        </v-checkbox>
+        <v-checkbox v-model="oneWayTrip" label="Is this trip one way?" :disabled="review" dense> </v-checkbox>
       </v-col>
     </v-row>
 
@@ -73,19 +62,8 @@
     </v-row>
 
     <v-row v-if="!oneWayTrip === true">
-      <v-col
-        ><DatePicker
-          :value="itinerary[1].departureDate"
-          text="Departure Date"
-          :review="review"
-        />
-      </v-col>
-      <v-col>
-        <TimePicker
-          :value="itinerary[1].departureTime"
-          text="Departure Time"
-          :review="review"
-      /></v-col>
+      <v-col><DatePicker :value="itinerary[1].departureDate" text="Departure Date" :review="review" /> </v-col>
+      <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review"/></v-col>
       <v-col>
         <v-select
           :items="transport"
@@ -118,32 +96,14 @@
             </v-autocomplete>
           </v-col>
           <v-col>
-            <v-btn
-              class="ma-2"
-              dense
-              small
-              color="red"
-              @click="removeStop(index)"
-              :disabled="review"
-            >
+            <v-btn class="ma-2" dense small color="red" @click="removeStop(index)" :disabled="review">
               <v-icon>mdi-trash-can</v-icon>
             </v-btn>
           </v-col>
         </v-row>
         <v-row>
-          <v-col
-            ><DatePicker
-              :value="itinerary[1].departureDate"
-              text="Departure Date"
-              :review="review"
-            />
-          </v-col>
-          <v-col>
-            <TimePicker
-              :value="itinerary[1].departureTime"
-              text="Departure Time"
-              :review="review"
-          /></v-col>
+          <v-col><DatePicker :value="itinerary[1].departureDate" text="Departure Date" :review="review" /> </v-col>
+          <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review"/></v-col>
           <v-col>
             <v-select
               :items="transport"
@@ -188,7 +148,7 @@
 <script>
 import DatePicker from "@/components/Utils/DatePicker.vue";
 import TimePicker from "@/components/Utils/TimePicker.vue";
-import axios from "axios";
+import { secureGet } from "../../../store/jwt";
 import { DESTINATION_URL } from "@/urls";
 
 export default {
@@ -250,7 +210,7 @@ export default {
       this.itinerary.splice(index, 1);
     },
     async getDestinations() {
-      return axios.get(`${DESTINATION_URL}`).then(resp => {
+      return secureGet(`${DESTINATION_URL}`).then(resp => {
         let destinations = [];
         resp.data.forEach(v => {
           destinations.push({

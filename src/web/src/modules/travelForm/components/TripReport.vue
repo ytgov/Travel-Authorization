@@ -102,7 +102,7 @@
   </v-form>
 </template>
 <script>
-import axios from "axios";
+import { secureGet, securePost } from "@/store/jwt";
 import { FORM_URL } from "@/urls";
 
 export default {
@@ -125,38 +125,30 @@ export default {
   methods: {
     async getReport() {
       let formId = this.form.formId || this.$route.params.formId;
-      return axios.get(`${FORM_URL}/${formId}/report`).then(resp => {
+      return secureGet(`${FORM_URL}/${formId}/report`).then(resp => {
         return resp.data;
       });
     },
 
     submitReport() {
       if (this.$refs.report.validate()) {
-        let formId = this.form.formId
-          ? this.form.formId
-          : this.$route.params.formId;
-        axios
-          .post(`${FORM_URL}/${formId}/report/submit`, this.report)
-          .then(resp => {
-            console.log(resp);
-            this.apiSuccess = "Report Submitted";
-            this.snackbar = true;
-            this.requestPage();
-          });
+        let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+        securePost(`${FORM_URL}/${formId}/report/submit`, this.report).then(resp => {
+          console.log(resp);
+          this.apiSuccess = "Report Submitted";
+          this.snackbar = true;
+          this.requestPage();
+        });
       }
     },
 
     saveReport() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
-      axios
-        .post(`${FORM_URL}/${formId}/report/save`, this.report)
-        .then(resp => {
-          console.log(resp);
-          this.apiSuccess = "Report Saved";
-          this.snackbar = true;
-        });
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      securePost(`${FORM_URL}/${formId}/report/save`, this.report).then(resp => {
+        console.log(resp);
+        this.apiSuccess = "Report Saved";
+        this.snackbar = true;
+      });
     }
   }
 };

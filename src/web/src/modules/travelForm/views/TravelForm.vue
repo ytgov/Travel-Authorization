@@ -199,10 +199,7 @@
                         :disabled="review"
                       ></v-text-field>
                     </template>
-                    <v-date-picker
-                      v-model="form.dateBackToWork"
-                      @input="btwMenu = false"
-                    ></v-date-picker>
+                    <v-date-picker v-model="form.dateBackToWork" @input="btwMenu = false"></v-date-picker>
                   </v-menu>
                 </v-col>
               </v-row>
@@ -272,9 +269,7 @@
           </v-card>
         </v-form>
         <div v-if="review == true">
-          <v-btn color="blue" class="mr-5" @click="approveForm()"
-            >Approve</v-btn
-          >
+          <v-btn color="blue" class="mr-5" @click="approveForm()">Approve</v-btn>
           <v-btn color="green" class="mr-5" @click="requestChangePopup()">
             Request Changes
           </v-btn>
@@ -288,9 +283,7 @@
           <v-btn color="blue" class="mr-5" @click="submitForm()">
             Submit
           </v-btn>
-          <v-btn color="green" class="mr-5" @click="saveForm()"
-            >Save Draft
-          </v-btn>
+          <v-btn color="green" class="mr-5" @click="saveForm()">Save Draft </v-btn>
           <v-btn color="red" class="mr-5" @click="deleteForm()">Delete</v-btn>
           <v-btn color="secondary" @click="requestPage()">Back</v-btn>
         </div>
@@ -327,12 +320,7 @@
               Please provide a reason for the denial of this form.
             </v-card-text>
             <v-card-text>
-              <v-textarea
-                v-model="form.denialReason"
-                label="Denial Reason"
-                rows="1"
-                auto-grow
-              ></v-textarea>
+              <v-textarea v-model="form.denialReason" label="Denial Reason" rows="1" auto-grow></v-textarea>
             </v-card-text>
 
             <v-card-actions>
@@ -384,12 +372,7 @@
               What changes need to be made to this form?
             </v-card-text>
             <v-card-text>
-              <v-textarea
-                v-model="form.requestChange"
-                label="Requested Changes"
-                rows="1"
-                auto-grow
-              ></v-textarea>
+              <v-textarea v-model="form.requestChange" label="Requested Changes" rows="1" auto-grow></v-textarea>
             </v-card-text>
 
             <v-card-actions>
@@ -401,24 +384,15 @@
           </v-card>
         </v-dialog>
       </v-tab-item>
-      <v-tab-item
-        ><ExpenseList @reloadCost="getCostDifference" title="Estimates"
-      /></v-tab-item>
-      <v-tab-item
-        ><ExpenseList @reloadCost="getCostDifference" title="Expenses"
-      /></v-tab-item>
+      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Estimates"/></v-tab-item>
+      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Expenses"/></v-tab-item>
       <v-tab-item>
         <TripReport> </TripReport>
       </v-tab-item>
     </v-tabs-items>
     <div class="text-center">
       <v-overlay :value="overlay">
-        <v-progress-circular
-          indeterminate
-          color="#f3b228"
-          :size="70"
-          :width="7"
-        ></v-progress-circular>
+        <v-progress-circular indeterminate color="#f3b228" :size="70" :width="7"></v-progress-circular>
       </v-overlay>
     </div>
   </div>
@@ -426,7 +400,7 @@
 
 <script>
 import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls";
-import axios from "axios";
+import { secureGet, securePost } from "../../../store/jwt";
 import ExpenseList from "../components/ExpenseList.vue";
 import TripReport from "../components/TripReport.vue";
 import Itinerary from "../components/Itinerary.vue";
@@ -452,11 +426,7 @@ export default {
 
     await this.getForm(this.$route.params.formId);
 
-    if (
-      this.form.requestChange &&
-      this.review == false &&
-      this.form.formStatus == "Change Requested"
-    ) {
+    if (this.form.requestChange && this.review == false && this.form.formStatus == "Change Requested") {
       this.requestChangeDisplay = true;
     }
     this.$refs.form.resetValidation();
@@ -519,13 +489,7 @@ export default {
 
     //Dropdowns
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
-    purposes: [
-      "Maintenance",
-      "Conference",
-      "Workshop",
-      "General Travel",
-      "Community Travel"
-    ],
+    purposes: ["Maintenance", "Conference", "Workshop", "General Travel", "Community Travel"],
 
     //Dropdowns that need initialization
     departments: {},
@@ -571,10 +535,7 @@ export default {
     fromRules: [v => !!v || "This field is required"],
     destinationRules: [v => !!v || "This field is required"],
     requiredRules: [v => !!v || "This field is required"],
-    numberRules: [
-      v =>
-        v == 0 || Number.isInteger(Number(v)) || "This field must be a number"
-    ]
+    numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
   }),
   computed: {
     myDepartments: function() {
@@ -587,13 +548,8 @@ export default {
       return [];
     },
     myBranches: function() {
-      if (
-        this.departments[this.form.department] &&
-        this.departments[this.form.department][this.form.division]
-      ) {
-        return Object.keys(
-          this.departments[this.form.department][this.form.division]
-        );
+      if (this.departments[this.form.department] && this.departments[this.form.department][this.form.division]) {
+        return Object.keys(this.departments[this.form.department][this.form.division]);
       }
       return [];
     },
@@ -601,13 +557,9 @@ export default {
       if (
         this.departments[this.form.department] &&
         this.departments[this.form.department][this.form.division] &&
-        this.departments[this.form.department][this.form.division][
-          this.form.branch
-        ]
+        this.departments[this.form.department][this.form.division][this.form.branch]
       ) {
-        return this.departments[this.form.department][this.form.division][
-          this.form.branch
-        ];
+        return this.departments[this.form.department][this.form.division][this.form.branch];
       }
       return [];
     }
@@ -616,11 +568,9 @@ export default {
     submitForm() {
       this.showError = false;
       if (this.$refs.form.validate()) {
-        let formId = this.form.formId
-          ? this.form.formId
-          : this.$route.params.formId;
+        let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
-        axios.post(`${FORM_URL}/${formId}/submit`, this.form).then(resp => {
+        securePost(`${FORM_URL}/${formId}/submit`, this.form).then(resp => {
           console.log(resp);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
@@ -633,11 +583,9 @@ export default {
       this.form.formStatus = "Draft";
       this.$refs.form.resetValidation();
       this.showError = false;
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${formId}/save`, this.form).then(resp => {
+      securePost(`${FORM_URL}/${formId}/save`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form saved as a draft";
         this.snackbar = true;
@@ -650,7 +598,7 @@ export default {
       //   ? this.form.formId
       //   : this.$route.params.formId;
 
-      // axios.delete(`${FORM_URL}/${formId}`, this.form).then((resp) => {
+      // secureDelete(`${FORM_URL}/${formId}`, this.form).then((resp) => {
       //   console.log(resp);
       //   this.apiSuccess = "Form Deleted";
       //   this.snackbar = true;
@@ -658,30 +606,22 @@ export default {
       // });
     },
     getCostDifference() {
-      axios
-        .get(`${FORM_URL}/${this.$route.params.formId}/costDifference`)
-        .then(resp => {
-          this.expensesTotal = resp.data.expenses;
-          this.estimatesTotal = resp.data.estimates;
-          this.costDifference = (
-            this.expensesTotal - this.estimatesTotal
-          ).toFixed(2);
-        });
+      secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then(resp => {
+        this.expensesTotal = resp.data.expenses;
+        this.estimatesTotal = resp.data.estimates;
+        this.costDifference = (this.expensesTotal - this.estimatesTotal).toFixed(2);
+      });
     },
-    //Axios gets
+    //secureGets
     async loadUser() {
-      await axios.get(`${USERS_URL}/me`).then(resp => {
+      await secureGet(`${USERS_URL}/me`).then(resp => {
         this.user = resp.data.data;
-        this.form.firstName =
-          this.user.first_name[0].toUpperCase() +
-          this.user.first_name.substring(1);
-        this.form.lastName =
-          this.user.last_name[0].toUpperCase() +
-          this.user.last_name.substring(1);
+        this.form.firstName = this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1);
+        this.form.lastName = this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1);
         this.form.email = this.user.email;
         return resp.data;
       });
-      await axios.get(`${USERS_URL}/unit`).then(resp => {
+      await secureGet(`${USERS_URL}/unit`).then(resp => {
         this.form.department = resp.data.department;
         this.form.division = resp.data.division;
         this.form.branch = resp.data.branch;
@@ -692,24 +632,20 @@ export default {
       return;
     },
     async loadEmails() {
-      return axios
-        .get(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`)
-        .then(resp => {
-          return resp.data;
-        });
+      return secureGet(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`).then(resp => {
+        return resp.data;
+      });
     },
     async getDepartmentList() {
-      return axios.get(`${LOOKUP_URL}/departmentList`).then(resp => {
+      return secureGet(`${LOOKUP_URL}/departmentList`).then(resp => {
         return resp.data;
       });
     },
     async search() {
       if (this.emailSearch.length >= 3) {
-        return axios
-          .get(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`)
-          .then(resp => {
-            this.emails = resp.data;
-          });
+        return secureGet(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`).then(resp => {
+          this.emails = resp.data;
+        });
       } else {
         this.emails = [];
       }
@@ -721,24 +657,19 @@ export default {
         new Date(this.form.itinerary[index].departureDate).getTime() -
         new Date(this.form.itinerary[0].departureDate).getTime();
 
-      this.form.travelDuration =
-        (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
+      this.form.travelDuration = (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
     },
     getToday() {
-      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10);
+      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
     },
     async getForm(formId) {
       if (formId) {
-        return await axios.get(`${FORM_URL}/${formId}`).then(async resp => {
+        return await secureGet(`${FORM_URL}/${formId}`).then(async resp => {
           console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
             this.form.itinerary.forEach((v, key) => {
-              this.form.itinerary[key].location = this.destinations.find(
-                entry => entry.value == v.location
-              );
+              this.form.itinerary[key].location = this.destinations.find(entry => entry.value == v.location);
             });
           } else {
             this.form.formStatus = "Draft";
@@ -753,29 +684,23 @@ export default {
       }
     },
     reassignForm() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
-      axios
-        .post(`${FORM_URL}/${formId}/reassign`, {
-          reassign: this.reassignEmail,
-          form: this.form
-        })
-        .then(resp => {
-          console.log(resp);
-          this.apiSuccess = "Form reassigned";
-          this.snackbar = true;
-        });
+      securePost(`${FORM_URL}/${formId}/reassign`, {
+        reassign: this.reassignEmail,
+        form: this.form
+      }).then(resp => {
+        console.log(resp);
+        this.apiSuccess = "Form reassigned";
+        this.snackbar = true;
+      });
       this.reassignDialog = false;
       this.managePage();
     },
     denyForm() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${formId}/deny`, this.form).then(resp => {
+      securePost(`${FORM_URL}/${formId}/deny`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form denied";
         this.snackbar = true;
@@ -784,26 +709,20 @@ export default {
       this.managePage();
     },
     requestChange() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
-      axios
-        .post(`${FORM_URL}/${formId}/requestChange`, this.form)
-        .then(resp => {
-          console.log(resp);
-          this.apiSuccess = "Change requested";
-          this.snackbar = true;
-        });
+      securePost(`${FORM_URL}/${formId}/requestChange`, this.form).then(resp => {
+        console.log(resp);
+        this.apiSuccess = "Change requested";
+        this.snackbar = true;
+      });
       this.requestChangeDialog = false;
       this.managePage();
     },
     approveForm() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
-      axios.post(`${FORM_URL}/${formId}/approve`, this.form).then(resp => {
+      securePost(`${FORM_URL}/${formId}/approve`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form approved";
         this.snackbar = true;

@@ -102,8 +102,8 @@
   </v-form>
 </template>
 <script>
-import axios from "axios";
 import { FORM_URL } from "../../urls";
+import { secureGet, securePost } from "@/store/jwt";
 
 export default {
   data: () => ({
@@ -113,51 +113,43 @@ export default {
       applicationTimeframe: "",
       benefitsToUnit: "",
       benefitsToYG: "",
-      futureRecommendations: "",
+      futureRecommendations: ""
     },
-    requiredRules: [(v) => !!v || "This field is required"],
+    requiredRules: [v => !!v || "This field is required"],
     expensesTotal: 0,
     estimatesTotal: 0,
     costDifference: 0,
-    review: false,
+    review: false
   }),
 
   methods: {
     async getReport() {
       let formId = this.form.formId || this.$route.params.formId;
-      return axios.get(`${FORM_URL}/${formId}/report`).then((resp) => {
+      return secureGet(`${FORM_URL}/${formId}/report`).then(resp => {
         return resp.data;
       });
     },
 
     submitReport() {
       if (this.$refs.report.validate()) {
-        let formId = this.form.formId
-          ? this.form.formId
-          : this.$route.params.formId;
-        axios
-          .post(`${FORM_URL}/${formId}/report/submit`, this.report)
-          .then((resp) => {
-            console.log(resp);
-            this.apiSuccess = "Report Submitted";
-            this.snackbar = true;
-            this.requestPage();
-          });
+        let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+        securePost(`${FORM_URL}/${formId}/report/submit`, this.report).then(resp => {
+          console.log(resp);
+          this.apiSuccess = "Report Submitted";
+          this.snackbar = true;
+          this.requestPage();
+        });
       }
     },
 
     saveReport() {
-      let formId = this.form.formId
-        ? this.form.formId
-        : this.$route.params.formId;
-      axios
-        .post(`${FORM_URL}/${formId}/report/save`, this.report)
-        .then((resp) => {
-          console.log(resp);
-          this.apiSuccess = "Report Saved";
-          this.snackbar = true;
-        });
-    },
-  },
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      securePost(`${FORM_URL}/${formId}/report/save`, this.report).then(resp => {
+        console.log(resp);
+        this.apiSuccess = "Report Saved";
+        this.snackbar = true;
+      });
+    }
+  }
 };
 </script>

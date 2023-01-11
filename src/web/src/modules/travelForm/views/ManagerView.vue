@@ -106,8 +106,8 @@
   </div>
 </template>
 <script>
-import axios from "axios";
 import { MANAGER_URL } from "@/urls";
+import { secureGet } from "@/store/jwt";
 export default {
   name: "Home",
   data: () => ({
@@ -128,7 +128,7 @@ export default {
   },
   methods: {
     loadForms() {
-      axios.get(`${MANAGER_URL}/forms/`).then(resp => {
+      secureGet(`${MANAGER_URL}/forms/`).then(resp => {
         this.forms = resp.data;
         this.pending = this.forms.filter(form => {
           if (form.formStatus == "Submitted") return true;

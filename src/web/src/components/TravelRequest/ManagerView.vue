@@ -104,10 +104,10 @@
       </v-col>
     </v-row>
   </div>
-</template> 
+</template>
 <script>
-import axios from "axios";
 import { MANAGER_URL } from "../../urls";
+import { secureGet } from "@/store/jwt";
 export default {
   name: "Home",
   data: () => ({
@@ -120,23 +120,23 @@ export default {
       { text: "Department/Branch", value: "department" },
       { text: "Requestee", value: "name" },
       { text: "Departure Date", value: "departureDate" },
-      { text: "Return Date", value: "dateBackToWork" },
-    ],
+      { text: "Return Date", value: "dateBackToWork" }
+    ]
   }),
   created() {
     this.loadForms();
   },
   methods: {
     loadForms() {
-      axios.get(`${MANAGER_URL}/forms/`).then((resp) => {
+      secureGet(`${MANAGER_URL}/forms/`).then(resp => {
         this.forms = resp.data;
-        this.pending = this.forms.filter((form) => {
+        this.pending = this.forms.filter(form => {
           if (form.formStatus == "Submitted") return true;
         });
-        this.approved = this.forms.filter((form) => {
+        this.approved = this.forms.filter(form => {
           if (form.formStatus == "Approved") return true;
         });
-        this.changeRequests = this.forms.filter((form) => {
+        this.changeRequests = this.forms.filter(form => {
           if (form.formStatus == "Change Requested") return true;
         });
       });
@@ -144,7 +144,7 @@ export default {
     handleClick(value) {
       //Redirects the user to the edit user form
       this.$router.push(`/TravelRequest/Request/${value.formId}/manage`);
-    },
-  },
+    }
+  }
 };
 </script>

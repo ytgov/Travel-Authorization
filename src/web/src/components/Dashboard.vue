@@ -118,10 +118,7 @@
       <v-col>
         <v-card class="mt-5" color="#fff2d5">
           <v-card-title>Create a new travel request</v-card-title>
-          <v-card-text>
-            To begin the process of creating a new travel request, click the
-            button bellow.</v-card-text
-          >
+          <v-card-text> To begin the process of creating a new travel request, click the button bellow.</v-card-text>
           <v-card-actions>
             <v-btn @click="createForm()" color="blue">
               New Travel Request
@@ -136,7 +133,7 @@
 <script>
 import { v4 as uuidv4 } from "uuid";
 import { FORM_URL } from "../urls";
-import axios from "axios";
+import { secureGet } from "@/store/jwt";
 import DatePicker from "./Utils/DatePicker.vue";
 import TimePicker from "./Utils/TimePicker.vue";
 import UploadReceipts from "./Utils/UploadReceipts.vue";
@@ -181,7 +178,7 @@ export default {
   },
   methods: {
     loadForms() {
-      axios.get(`${FORM_URL}`).then(resp => {
+      secureGet(`${FORM_URL}`).then(resp => {
         this.forms = resp.data;
       });
     },
@@ -195,7 +192,7 @@ export default {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
     },
     getTrip() {
-      axios.get(`${FORM_URL}/recent`).then(resp => {
+      secureGet(`${FORM_URL}/recent`).then(resp => {
         this.data = resp.data;
       });
     }

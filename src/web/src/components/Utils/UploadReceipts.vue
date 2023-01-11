@@ -1,12 +1,11 @@
 <template>
   <v-card :style="{ padding: '10px' }">
-    <v-file-input label="File input" @change="Preview_image" v-model="image">
-    </v-file-input>
+    <v-file-input label="File input" @change="Preview_image" v-model="image"> </v-file-input>
   </v-card>
 </template>
- 
- <script>
-import axios from "axios";
+
+<script>
+import { securePost } from "@/store/jwt";
 import { FORM_URL } from "../../urls";
 
 export default {
@@ -14,7 +13,7 @@ export default {
   data() {
     return {
       url: null,
-      image: null,
+      image: null
     };
   },
   methods: {
@@ -26,19 +25,18 @@ export default {
       }
     },
     uploadImage() {
-      axios
-        .post(`${FORM_URL}/uploadReceipt`, this.image, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
+      securePost(`${FORM_URL}/uploadReceipt`, this.image, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+        .then(res => {
           console.log(res);
         })
-        .catch((err) => {
+        .catch(err => {
           console.log(err);
         });
-    },
-  },
+    }
+  }
 };
 </script>

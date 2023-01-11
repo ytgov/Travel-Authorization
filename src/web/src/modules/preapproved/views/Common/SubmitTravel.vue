@@ -37,13 +37,7 @@
             hide-default-footer
           >
             <template v-slot:item.remove="{ item }">
-              <v-btn
-                @click="removeTravel(item)"
-                style="min-width:0;"
-                color="transparent"
-                class="px-1"
-                small
-              >
+              <v-btn @click="removeTravel(item)" style="min-width:0;" color="transparent" class="px-1" small>
                 <v-icon color="red">mdi-delete</v-icon>
               </v-btn>
             </template>
@@ -78,17 +72,12 @@
                 </template>
                 <span class="black--text">
                   This request is already in another submission.<br />
-                  If you Save/Submit this change, it will be removed from the
-                  other submission.
+                  If you Save/Submit this change, it will be removed from the other submission.
                 </span>
               </v-tooltip>
             </template>
             <template v-slot:item.edit="{ item }">
-              <new-travel-request
-                type="Edit"
-                @updateTable="updateAndOpenDialog"
-                :travelRequest="item"
-              />
+              <new-travel-request type="Edit" @updateTable="updateAndOpenDialog" :travelRequest="item" />
             </template>
           </v-data-table>
         </v-card-text>
@@ -97,27 +86,13 @@
           <v-btn color="grey darken-5" @click="submitTravelDialog = false">
             Cancel
           </v-btn>
-          <v-btn
-            v-if="editButton"
-            color="red darken-5"
-            @click="deleteSubmission()"
-          >
+          <v-btn v-if="editButton" color="red darken-5" @click="deleteSubmission()">
             Delete
           </v-btn>
-          <v-btn
-            class="ml-auto"
-            color="lime darken-1"
-            :loading="savingData"
-            @click="submitTravelRequest('Draft')"
-          >
+          <v-btn class="ml-auto" color="lime darken-1" :loading="savingData" @click="submitTravelRequest('Draft')">
             Save Draft
           </v-btn>
-          <v-btn
-            class="ml-5"
-            color="green darken-1"
-            :loading="savingData"
-            @click="submitTravelRequest('Submitted')"
-          >
+          <v-btn class="ml-5" color="green darken-1" :loading="savingData" @click="submitTravelRequest('Submitted')">
             Submit
           </v-btn>
         </v-card-actions>
@@ -191,7 +166,7 @@
 <script>
 import NewTravelRequest from "../Requests/NewTravelRequest.vue";
 import { PREAPPROVED_URL } from "../../../../urls";
-import { securePost, secureDelete } from "../../../../store/jwt";
+import { securePost, secureDelete } from "@/store/jwt";
 
 export default {
   components: { NewTravelRequest },
@@ -283,19 +258,13 @@ export default {
   methods: {
     extractTravelRequests() {
       this.submittingRequests = JSON.parse(
-        JSON.stringify(
-          this.selectedRequests.filter(
-            req => req.status == null || req.status == "Draft"
-          )
-        )
+        JSON.stringify(this.selectedRequests.filter(req => req.status == null || req.status == "Draft"))
       );
     },
 
     removeTravel(item) {
       this.submittingRequests = JSON.parse(
-        JSON.stringify(
-          this.submittingRequests.filter(travel => travel.preTID != item.preTID)
-        )
+        JSON.stringify(this.submittingRequests.filter(travel => travel.preTID != item.preTID))
       );
       this.update++;
     },
@@ -306,10 +275,7 @@ export default {
     },
 
     addTravel() {
-      this.submittingRequests = [
-        ...this.submittingRequests,
-        ...this.newSelectedRequests
-      ];
+      this.submittingRequests = [...this.submittingRequests, ...this.newSelectedRequests];
       this.addTravelDialog = false;
     },
 
@@ -356,10 +322,7 @@ export default {
     },
 
     updateAndOpenDialog() {
-      this.$store.commit(
-        "preapproved/SET_OPEN_DIALOG_ID",
-        "edit-" + this.preTSubID
-      );
+      this.$store.commit("preapproved/SET_OPEN_DIALOG_ID", "edit-" + this.preTSubID);
       this.updateTable();
     }
   }
