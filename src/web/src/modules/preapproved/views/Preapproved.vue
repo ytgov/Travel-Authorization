@@ -43,7 +43,7 @@
 import PreapprovedRequests from "./Requests/PreapprovedRequests.vue";
 import Submissions from "./Submissions/Submissions.vue";
 import { PREAPPROVED_URL, LOOKUP_URL } from "../../../urls";
-import axios from "axios";
+import { secureGet } from "../../../store/jwt";
 
 export default {
   name: "Preapproved",
@@ -67,8 +67,7 @@ export default {
   methods: {
     getEmployees() {
       this.loadingData = true;
-      axios
-        .get(`${LOOKUP_URL}/employees`)
+      secureGet(`${LOOKUP_URL}/employees`)
         .then(resp => {
           this.$store.commit("preapproved/SET_EMPLOYEES", resp.data);
           this.getDepartmentBranch();
@@ -79,8 +78,7 @@ export default {
     },
 
     getDepartmentBranch() {
-      axios
-        .get(`${LOOKUP_URL}/department-branch`)
+      secureGet(`${LOOKUP_URL}/department-branch`)
         .then(resp => {
           this.$store.commit("preapproved/SET_DEPARTMENT_BRANCH", resp.data);
           this.getPreapprovedTravel();
@@ -92,8 +90,7 @@ export default {
 
     getPreapprovedTravel() {
       this.loadingData = true;
-      axios
-        .get(`${PREAPPROVED_URL}/`)
+      secureGet(`${PREAPPROVED_URL}/`)
         .then(resp => {
           this.travelRequests = resp.data.map(x => ({
             ...x,
@@ -107,8 +104,7 @@ export default {
     },
 
     getPreapprovedTravelSubmissions() {
-      axios
-        .get(`${PREAPPROVED_URL}/submissions`)
+      secureGet(`${PREAPPROVED_URL}/submissions`)
         .then(resp => {
           this.travelSubmissions = resp.data;
           this.determineDepartment();

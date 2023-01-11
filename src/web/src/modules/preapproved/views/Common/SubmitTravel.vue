@@ -191,7 +191,7 @@
 <script>
 import NewTravelRequest from "../Requests/NewTravelRequest.vue";
 import { PREAPPROVED_URL } from "../../../../urls";
-import axios from "axios";
+import { securePost, secureDelete } from "../../../../store/jwt";
 
 export default {
   components: { NewTravelRequest },
@@ -325,8 +325,7 @@ export default {
           preapprovedIds: currentIDs
         };
         // console.log(body)
-        axios
-          .post(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`, body)
+        securePost(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`, body)
           .then(() => {
             this.savingData = false;
             this.submitTravelDialog = false;
@@ -340,8 +339,7 @@ export default {
     },
 
     deleteSubmission() {
-      axios
-        .delete(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`)
+      secureDelete(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`)
         .then(() => {
           this.savingData = false;
           this.submitTravelDialog = false;

@@ -32,6 +32,8 @@ export async function loadUser(
 
   let u = await db.getBySub(sub);
 
+  u.display_name = `${u.first_name} ${u.last_name}`;
+
   if (u) {
     req.user = { ...req.user, ...u };
     return next();
@@ -44,11 +46,13 @@ export async function loadUser(
         let email = resp.data.email;
         let first_name = resp.data.given_name;
         let last_name = resp.data.family_name;
+
         email = resp.data.email;
 
         let u = await db.getBySub(sub);
 
         if (u) {
+          u.display_name = `${u.first_name} ${u.last_name}`;
           req.user = { ...req.user, ...u };
         } else {
           if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`;
@@ -56,6 +60,7 @@ export async function loadUser(
           let eu = await db.getBySub(sub);
 
           if (eu) {
+            eu.display_name = `${eu.first_name} ${eu.last_name}`;
             eu.sub = sub;
             // await db.update(eu._id || new ObjectId(), eu);
 

@@ -377,7 +377,7 @@
 <script>
 import Vue from "vue";
 import { PREAPPROVED_URL } from "../../../../urls";
-import axios from "axios";
+import { secureDelete, secureGet, securePost } from "../../../../store/jwt";
 
 export default {
   name: "NewTravelRequest",
@@ -601,8 +601,7 @@ export default {
         };
         console.log(body);
         const id = this.travelRequest?.preTID ? this.travelRequest.preTID : 0;
-        axios
-          .post(`${PREAPPROVED_URL}/${id}`, body)
+        securePost(`${PREAPPROVED_URL}/${id}`, body)
           .then(() => {
             this.savingData = false;
             this.addNewTravelDialog = false;
@@ -699,8 +698,7 @@ export default {
     },
 
     initSubmission(id) {
-      axios
-        .get(`${PREAPPROVED_URL}/submissions/${id}`)
+      secureGet(`${PREAPPROVED_URL}/submissions/${id}`)
         .then(res => {
           this.showApproval = res.data.status == "Finished";
           this.approvedBy = res.data.approvedBy;
@@ -720,11 +718,10 @@ export default {
         }
       };
 
-      axios
-        .get(
-          `${PREAPPROVED_URL}/document/${this.travelRequest.preTSubID}`,
-          header
-        )
+      secureGet(
+        `${PREAPPROVED_URL}/document/${this.travelRequest.preTSubID}`,
+        header
+      )
         .then(res => {
           this.loadingData = false;
           const link = document.createElement("a");
@@ -743,8 +740,7 @@ export default {
     deleteTravelRequest() {
       this.deleteDialog = false;
       this.savingData = true;
-      axios
-        .delete(`${PREAPPROVED_URL}/${this.travelRequest.preTID}`)
+      secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.preTID}`)
         .then(() => {
           this.savingData = false;
           this.addNewTravelDialog = false;

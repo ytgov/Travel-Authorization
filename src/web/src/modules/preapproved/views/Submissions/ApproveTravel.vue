@@ -155,7 +155,7 @@
 
 <script>
 import { PREAPPROVED_URL } from "../../../../urls";
-import axios from "axios";
+import { securePost } from "../../../../store/jwt";
 
 export default {
   components: {},
@@ -282,12 +282,11 @@ export default {
           }
         };
 
-        axios
-          .post(
-            `${PREAPPROVED_URL}/approval/${this.submissionId}`,
-            bodyFormData,
-            header
-          )
+        securePost(
+          `${PREAPPROVED_URL}/approval/${this.submissionId}`,
+          bodyFormData,
+          header
+        )
           .then(() => {
             this.savingData = false;
             this.approveTravelDialog = false;
