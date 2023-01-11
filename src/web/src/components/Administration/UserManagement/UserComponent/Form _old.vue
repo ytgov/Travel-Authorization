@@ -176,7 +176,7 @@
 <script>
 import { USERS_URL, LOOKUP_URL } from "../../../../urls";
 import Breadcrumbs from "../../../Breadcrumbs.vue";
-import { secureGet } from "@/store/jwt";
+import { secureGet, securePut } from "@/store/jwt";
 export default {
   components: {
     Breadcrumbs
