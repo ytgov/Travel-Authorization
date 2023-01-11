@@ -19,11 +19,7 @@
         :rules="requiredRules"
       ></v-text-field>
     </template>
-    <v-date-picker
-      v-model="date"
-      @input="menu = false"
-      :rules="requiredRules"
-    ></v-date-picker>
+    <v-date-picker v-model="date" @input="menu = false" :rules="requiredRules"></v-date-picker>
   </v-menu>
 </template>
 <script>
@@ -33,21 +29,20 @@ export default {
     value: String,
     review: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
       menu: false,
       date: "",
-      requiredRules: [(v) => !!v || "This field is required"],
+      requiredRules: [v => !!v || "This field is required"]
     };
   },
   methods: {
     returnDate() {
       this.$emit("date", this.date);
-    },
-  },
+    }
+  }
 };
 </script>
-

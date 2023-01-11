@@ -58,15 +58,11 @@
               style="margin: 20px"
             >
               <template v-slot:[`item.actions`]="{ item }">
-                <v-icon small class="mr-2" @click="editItem(item)">
-                  mdi-pencil
-                </v-icon>
+                <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
                 <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
               </template>
               <template v-slot:[`item.receipts`]>
-                <v-btn text color="blue" x-small @click="uploadReceiptDialog">
-                  Upload Receipts
-                </v-btn>
+                <v-btn text color="blue" x-small @click="uploadReceiptDialog"> Upload Receipts </v-btn>
               </template>
             </v-data-table>
             <v-dialog v-model="dialog" width="400">
@@ -120,9 +116,7 @@
           <v-card-title>Create a new travel request</v-card-title>
           <v-card-text> To begin the process of creating a new travel request, click the button bellow.</v-card-text>
           <v-card-actions>
-            <v-btn @click="createForm()" color="blue">
-              New Travel Request
-            </v-btn>
+            <v-btn @click="createForm()" color="blue"> New Travel Request </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -148,26 +142,74 @@ export default {
   data: () => ({
     data: {},
     headers: [
-      { text: "Purpose", value: "purpose" },
-      { text: "Departure Date", value: "departureDate" },
-      { text: "Return Date", value: "dateBackToWork" },
-      { text: "Status", value: "formStatus" }
+      {
+        text: "Purpose",
+        value: "purpose"
+      },
+      {
+        text: "Departure Date",
+        value: "departureDate"
+      },
+      {
+        text: "Return Date",
+        value: "dateBackToWork"
+      },
+      {
+        text: "Status",
+        value: "formStatus"
+      }
     ],
     expenseHeaders: [
-      { text: "Type", value: "type" },
-      { text: "Description", value: "description" },
-      { text: "Date", value: "date" },
-      { text: "Amount", value: "cost" },
-      { text: "Actions", value: "actions" },
-      { text: "Receipts", value: "receipts" }
+      {
+        text: "Type",
+        value: "type"
+      },
+      {
+        text: "Description",
+        value: "description"
+      },
+      {
+        text: "Date",
+        value: "date"
+      },
+      {
+        text: "Amount",
+        value: "cost"
+      },
+      {
+        text: "Actions",
+        value: "actions"
+      },
+      {
+        text: "Receipts",
+        value: "receipts"
+      }
     ],
     travelAuthHeaders: [
-      { text: "Location", value: "location" },
-      { text: "Description", value: "description" },
-      { text: "Start Date", value: "date" },
-      { text: "End Date", value: "cost" },
-      { text: "Auth Status", value: "actions" },
-      { text: "Booking Status", value: "receipts" }
+      {
+        text: "Location",
+        value: "location"
+      },
+      {
+        text: "Description",
+        value: "description"
+      },
+      {
+        text: "Start Date",
+        value: "date"
+      },
+      {
+        text: "End Date",
+        value: "cost"
+      },
+      {
+        text: "Auth Status",
+        value: "actions"
+      },
+      {
+        text: "Booking Status",
+        value: "receipts"
+      }
     ],
     forms: [],
     dialog: false

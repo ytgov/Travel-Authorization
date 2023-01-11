@@ -4,8 +4,10 @@
     <v-row>
       <v-card elevation="2" style="margin: 20px">
         <v-card-title>
-          Expense Total: ${{ expensesTotal }} <br />
-          Estimates Total: ${{ estimatesTotal }} <br />
+          Expense Total: ${{ expensesTotal }}
+          <br />
+          Estimates Total: ${{ estimatesTotal }}
+          <br />
           Cost Difference: ${{ costDifference }}
         </v-card-title>
       </v-card>
@@ -95,9 +97,7 @@
         </v-textarea>
       </v-col>
     </v-row>
-    <v-btn color="blue" class="mr-5" @click="submitReport()">
-      Submit Expenses and Report
-    </v-btn>
+    <v-btn color="blue" class="mr-5" @click="submitReport()"> Submit Expenses and Report </v-btn>
     <v-btn color="green" class="mr-5" @click="saveReport()">Save Report</v-btn>
   </v-form>
 </template>

@@ -6,7 +6,9 @@
       :expand-on-hover="hasSidebarClosable"
       clipped
       color="#f1f1f1"
-      v-bind:class="{ 'd-none': !hasSidebar }"
+      v-bind:class="{
+        'd-none': !hasSidebar
+      }"
     >
       <v-list dense nav style="" class="mt-4">
         <v-list-item
@@ -27,13 +29,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-      app
-      color="#fff"
-      flat
-      height="70"
-      style="left: 0; border-bottom: 3px #f3b228 solid"
-    >
+    <v-app-bar app color="#fff" flat height="70" style="left: 0; border-bottom: 3px #f3b228 solid">
       <!-- <v-icon color="#f3b228" class="mr-5">{{ applicationIcon }}</v-icon> -->
       <img src="/yukon.svg" style="margin: -8px 155px 0 0" height="44" />
       <v-toolbar-title>
@@ -92,7 +88,11 @@
       <!-- <v-app-bar-nav-icon @click.stop="drawerRight = !drawerRight"></v-app-bar-nav-icon> -->
     </v-app-bar>
 
-    <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
+    <v-main
+      v-bind:style="{
+        'padding-left: 33px !important': !hasSidebar
+      }"
+    >
       <!-- Provides the application the proper gutter -->
       <v-container fluid>
         <v-row>
@@ -136,7 +136,7 @@ export default {
     hasSidebar: false, //config.hasSidebar,
     hasSidebarClosable: config.hasSidebarClosable
   }),
-  created: async function() {
+  created: async function () {
     await store.dispatch("checkAuthentication");
     //this.username = store.getters.fullName
     //console.log(this.isAuthenticated);
@@ -145,23 +145,23 @@ export default {
     else this.hasSidebar = config.hasSidebar;
   },
   watch: {
-    isAuthenticated: function(val) {
+    isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = config.hasSidebar;
     }
   },
   methods: {
-    nav: function(location) {
+    nav: function (location) {
       router.push(location);
       console.log(location);
     },
-    toggleHeader: function() {
+    toggleHeader: function () {
       this.headerShow = !this.headerShow;
     },
-    toggleMenu: function() {
+    toggleMenu: function () {
       this.menuShow = !this.menuShow;
     },
-    signOut: function() {
+    signOut: function () {
       this.$auth.signOut();
     }
   }

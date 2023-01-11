@@ -6,25 +6,33 @@ const routes = [
       {
         name: "TravelForm",
         path: "/TravelRequest/Request/:formId?",
-        meta: { requiresAuth: true },
+        meta: {
+          requiresAuth: true
+        },
         component: () => import("../views/TravelForm.vue")
       },
       {
         name: "TravelFormReview",
         path: "/Request/:formId?/:manage?",
-        meta: { requiresAuth: true },
+        meta: {
+          requiresAuth: true
+        },
         component: () => import("../views/TravelForm.vue")
       },
       {
         name: "TravelFormList",
         path: "/forms",
-        meta: { requiresAuth: true },
+        meta: {
+          requiresAuth: true
+        },
         component: () => import("../views/FormList.vue")
       },
       {
         name: "TravelFormManagerList",
         path: "/managerView",
-        meta: { requiresAuth: true },
+        meta: {
+          requiresAuth: true
+        },
         component: () => import("../views/TravelForm.vue")
       }
     ]

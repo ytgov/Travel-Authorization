@@ -27,31 +27,20 @@
           </v-col>
           <v-col cols="3" />
           <v-col cols="2" align="right">
-            <v-btn elevation="5" color="grey" @click="printReportDialog = false"
-              >Close</v-btn
-            >
+            <v-btn elevation="5" color="grey" @click="printReportDialog = false">Close</v-btn>
           </v-col>
         </v-row>
 
         <div :id="'pdf-page-' + id">
-          <v-app-bar
-            color="#fff"
-            flat
-            height="70"
-            style="left: 0; border-bottom: 3px #f3b228 solid"
-          >
-            <img
-              src="/yukon.svg"
-              style="margin: -1.2rem 2rem 0 0;"
-              height="44"
-            />
-            <div style="margin: 0 auto !important; font-size:14pt !important;">
+          <v-app-bar color="#fff" flat height="70" style="left: 0; border-bottom: 3px #f3b228 solid">
+            <img src="/yukon.svg" style="margin: -1.2rem 2rem 0 0" height="44" />
+            <div style="margin: 0 auto !important; font-size: 14pt !important">
               <b>Out-of-Territory Travel for Training and Conferences</b>
             </div>
           </v-app-bar>
 
           <v-data-table
-            style="margin:1rem 0;"
+            style="margin: 1rem 0"
             dense
             :headers="headers"
             :items="printRequests"
@@ -61,59 +50,49 @@
           >
             <template v-slot:item.name="{ item }">
               <span> {{ item.department }}, </span>
-              <span
-                v-for="(trv, inx) in item.travelers"
-                :key="inx"
-                style="line-height:1rem;"
-                >{{ trv.fullName.replace(".", " ") }}</span
-              >
+              <span v-for="(trv, inx) in item.travelers" :key="inx" style="line-height: 1rem">{{
+                trv.fullName.replace(".", " ")
+              }}</span>
             </template>
 
             <template v-slot:item.travelDate="{ item }">
-              <div v-if="item.dateUnkInd">{{ item.month }}</div>
+              <div v-if="item.dateUnkInd">
+                {{ item.month }}
+              </div>
               <div v-else>
-                <div style="line-height:1rem;">
+                <div style="line-height: 1rem">
                   <!-- eslint-disable-next-line vue/no-parsing-error -->
                   {{ item.startDate | (beautify - date) }}-
                 </div>
-                <div style="line-height:1rem;">
+                <div style="line-height: 1rem">
                   <!-- eslint-disable-next-line vue/no-parsing-error -->
                   {{ item.endDate | (beautify - date) }}
                 </div>
               </div>
             </template>
             <template v-slot:item.estimatedCost="{ item }">
-              <div style="text-align: right !important">
-                ${{ item.estimatedCost | currency }}
-              </div>
+              <div style="text-align: right !important">${{ item.estimatedCost | currency }}</div>
             </template>
             <template v-slot:body.append>
               <tr style="">
-                <td
-                  colspan="4"
-                  style="border-top:2px solid !important; font-size:10pt !important;"
-                >
+                <td colspan="4" style="border-top: 2px solid !important; font-size: 10pt !important">
                   <b>Total</b>
                 </td>
-                <td
-                  style="border-top:2px solid !important; font-size:10pt !important; text-align: right !important"
-                >
+                <td style="border-top: 2px solid !important; font-size: 10pt !important; text-align: right !important">
                   <b>${{ totalCost | currency }}</b>
                 </td>
               </tr>
             </template>
           </v-data-table>
 
-          <v-row style="margin-top:3rem;">
-            <div style="width:10%" />
-            <div
-              style="width:40%; border-top:1px solid #333333; font-size:8pt;"
-            >
+          <v-row style="margin-top: 3rem">
+            <div style="width: 10%" />
+            <div style="width: 40%; border-top: 1px solid #333333; font-size: 8pt">
               <v-row>
-                <v-col cols="2" style="padding-right:0;">Approved:</v-col>
-                <v-col style="padding-left:0; margin-left:0;">
+                <v-col cols="2" style="padding-right: 0">Approved:</v-col>
+                <v-col style="padding-left: 0; margin-left: 0">
                   <input
-                    style="width:100%; cursor:pointer; padding-left: 0.25rem;"
+                    style="width: 100%; cursor: pointer; padding-left: 0.25rem"
                     class="yellow darken-3"
                     v-model="approver"
                     clearable
@@ -121,12 +100,8 @@
                 </v-col>
               </v-row>
             </div>
-            <div style="width:1%" />
-            <div
-              style="width:10%; border-top:1px solid #333333; font-size:8pt;"
-            >
-              Date:
-            </div>
+            <div style="width: 1%" />
+            <div style="width: 10%; border-top: 1px solid #333333; font-size: 8pt">Date:</div>
           </v-row>
         </div>
 
@@ -144,11 +119,24 @@ export default {
   components: {},
   name: "PrintReport",
   props: {
-    buttonName: { type: String },
-    buttonInsideTable: { type: Boolean, default: false },
-    travelRequests: { type: [] },
-    disabled: { type: Boolean, default: false },
-    id: { type: Number, default: 0 }
+    buttonName: {
+      type: String
+    },
+    buttonInsideTable: {
+      type: Boolean,
+      default: false
+    },
+    travelRequests: {
+      type: []
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    id: {
+      type: Number,
+      default: 0
+    }
   },
   data() {
     return {
@@ -159,9 +147,21 @@ export default {
           class: "m-0 p-0",
           width: "8.5rem"
         },
-        { text: "Purpose", value: "purpose", class: "" },
-        { text: "Location", value: "location", class: "" },
-        { text: "Person/Position Travelling", value: "name", class: "" },
+        {
+          text: "Purpose",
+          value: "purpose",
+          class: ""
+        },
+        {
+          text: "Location",
+          value: "location",
+          class: ""
+        },
+        {
+          text: "Person/Position Travelling",
+          value: "name",
+          class: ""
+        },
         {
           text: "Estimated Travel Cost",
           value: "estimatedCost",
@@ -180,8 +180,7 @@ export default {
     initPrint() {
       console.log("Print");
       this.totalCost = 0;
-      for (const req of this.travelRequests)
-        this.totalCost += req.estimatedCost;
+      for (const req of this.travelRequests) this.totalCost += req.estimatedCost;
       this.printRequests = JSON.parse(JSON.stringify(this.travelRequests));
     },
     print() {

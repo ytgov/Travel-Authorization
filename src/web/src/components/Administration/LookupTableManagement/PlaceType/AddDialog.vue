@@ -15,16 +15,8 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-form
-                  ref="addPlaceTypeForm"
-                  :lazy-validation="false"
-                  v-model="valid"
-                >
-                  <v-text-field
-                    label="Purpose"
-                    v-model="input"
-                    :rules="generalRules"
-                  ></v-text-field>
+                <v-form ref="addPlaceTypeForm" :lazy-validation="false" v-model="valid">
+                  <v-text-field label="Purpose" v-model="input" :rules="generalRules"></v-text-field>
                 </v-form>
               </v-col>
             </v-row>
@@ -33,9 +25,7 @@
         <v-card-actions>
           <v-btn text @click="closeDialog"> Close </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="success" text :disabled="!valid" @click="save">
-            Save
-          </v-btn>
+          <v-btn color="success" text :disabled="!valid" @click="save"> Save </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -50,7 +40,7 @@ export default {
     dialog: false,
     input: null,
     valid: false,
-    generalRules: [(v) => !!v || "This field is required"],
+    generalRules: [v => !!v || "This field is required"]
   }),
   methods: {
     closeDialog() {
@@ -60,7 +50,9 @@ export default {
     },
     async save() {
       let data = {
-        placeType: { PlaceType: this.input },
+        placeType: {
+          PlaceType: this.input
+        }
       };
       await catalogs.postPlaceType(data);
       this.$router.go();
@@ -74,7 +66,7 @@ export default {
     },
     resetValidation() {
       this.$refs.addPlaceTypeForm.resetValidation();
-    },
-  },
+    }
+  }
 };
 </script>

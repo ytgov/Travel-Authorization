@@ -1,28 +1,19 @@
 <template>
   <div class="mt-15 mx-10 mb-5">
-    <v-data-table
-      :headers="headers"
-      :items="travelSubmissions"
-      :items-per-page="5"
-      class="elevation-1"
-    >
+    <v-data-table :headers="headers" :items="travelSubmissions" :items-per-page="5" class="elevation-1">
       <!-- eslint-disable-next-line vue/no-unused-vars -->
       <template v-slot:item.submissionDate="{ item }">
         <!-- eslint-disable-next-line vue/no-parsing-error -->
         {{ item.submissionDate | (beautify - date) }}
       </template>
       <template v-slot:item.submission="{ item }">
-        <div
-          v-for="(sub, inx) in item.preapproved"
-          :key="inx"
-          style="line-height:1rem;"
-        >
+        <div v-for="(sub, inx) in item.preapproved" :key="inx" style="line-height: 1rem">
           {{ sub.department }}-{{ sub.location }}
         </div>
       </template>
       <template v-slot:item.edit="{ item }">
         <v-row>
-          <div style="width:4.5rem;">
+          <div style="width: 4.5rem">
             <submit-travel
               v-if="item.status == 'Draft' && admin"
               :preTSubID="item.preTSubID"
@@ -33,7 +24,7 @@
               @updateTable="updateTable"
             />
           </div>
-          <div style="width:6.75rem;">
+          <div style="width: 6.75rem">
             <approve-travel
               v-if="item.status == 'Submitted' && admin"
               :travelRequests="item.preapproved"
@@ -41,7 +32,7 @@
               @updateTable="updateTable"
             />
           </div>
-          <div style="width:5.75rem;">
+          <div style="width: 5.75rem">
             <print-report
               v-if="admin"
               :travelRequests="item.preapproved"
@@ -63,11 +54,19 @@ import SubmitTravel from "../Common/SubmitTravel.vue";
 import ApproveTravel from "./ApproveTravel.vue";
 
 export default {
-  components: { PrintReport, SubmitTravel, ApproveTravel },
+  components: {
+    PrintReport,
+    SubmitTravel,
+    ApproveTravel
+  },
   name: "Submissions",
   props: {
-    travelSubmissions: { type: [] },
-    travelRequests: { type: [] }
+    travelSubmissions: {
+      type: []
+    },
+    travelRequests: {
+      type: []
+    }
   },
   data() {
     return {
@@ -82,8 +81,16 @@ export default {
           value: "submission",
           class: "blue-grey lighten-4"
         },
-        { text: "Submitter", value: "submitter", class: "blue-grey lighten-4" },
-        { text: "Status", value: "status", class: "blue-grey lighten-4" },
+        {
+          text: "Submitter",
+          value: "submitter",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Status",
+          value: "status",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "",
           sortable: false,

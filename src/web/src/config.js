@@ -7,7 +7,7 @@ export const sections = [
   {
     name: "Summary",
     icon: "mdi-note-text-outline",
-    makeUrl: function(id) {
+    makeUrl: function (id) {
       return `/sites/${id}/summary`;
     }
   },
@@ -21,7 +21,7 @@ export const sections = [
   {
     name: "Dates & Condition",
     icon: "mdi-calendar-range",
-    makeUrl: function(id) {
+    makeUrl: function (id) {
       return `/sites/${id}/dates_&_condition`;
     }
   },
@@ -42,7 +42,7 @@ export const sections = [
   {
     name: "Legal & Zoning",
     icon: "mdi-script-text-outline",
-    makeUrl: function(id) {
+    makeUrl: function (id) {
       return `/sites/${id}/legal_&_zoning`;
     }
   },
@@ -69,6 +69,5 @@ export const sections = [
   }
 ];
 export const environment = process.env.NODE_ENV;
-export const apiBaseUrl =
-  process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";
+export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";
 export const appVersion = "1.1.3";

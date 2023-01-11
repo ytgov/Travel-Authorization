@@ -6,7 +6,8 @@
     <h1>
       User Editor:
       <small
-        >{{ user.first_name }} {{ user.last_name }}
+        >{{ user.first_name }}
+        {{ user.last_name }}
 
         <small>({{ user.status }})</small>
       </small>
@@ -161,9 +162,7 @@
             <v-row>
               <v-col cols="12" class="d-flex py-0">
                 <v-spacer></v-spacer>
-                <v-btn color="primary" class="mr-5 mt-0" @click="doSave">
-                  Save user
-                </v-btn>
+                <v-btn color="primary" class="mr-5 mt-0" @click="doSave"> Save user </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
@@ -183,7 +182,10 @@ export default {
   },
   data: () => ({
     overlay: false,
-    accessItem: { AccessType: 1, AccessText: 1 },
+    accessItem: {
+      AccessType: 1,
+      AccessText: 1
+    },
     /* VALIDATION*/
     dataAccessValidation: false,
     menu: null,
@@ -213,7 +215,7 @@ export default {
     this.getBranches();
   },
   computed: {
-    myBranches: function() {
+    myBranches: function () {
       return this.branches.filter(b => {
         return this.pendingDepartments.indexOf(b.ownedby) >= 0;
       });

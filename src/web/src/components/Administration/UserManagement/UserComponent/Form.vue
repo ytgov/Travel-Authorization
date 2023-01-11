@@ -6,7 +6,8 @@
     <h1>
       User Editor:
       <small
-        >{{ user.first_name }} {{ user.last_name }}
+        >{{ user.first_name }}
+        {{ user.last_name }}
 
         <small>({{ user.status }})</small>
       </small>
@@ -90,9 +91,7 @@
             <v-row class="mt-5">
               <v-col cols="12" class="d-flex py-0">
                 <v-spacer></v-spacer>
-                <v-btn color="primary" class="mr-5 mt-0" @click="saveUser">
-                  Save user
-                </v-btn>
+                <v-btn color="primary" class="mr-5 mt-0" @click="saveUser"> Save user </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
@@ -113,7 +112,10 @@ export default {
   },
   data: () => ({
     overlay: false,
-    accessItem: { AccessType: 1, AccessText: 1 },
+    accessItem: {
+      AccessType: 1,
+      AccessText: 1
+    },
     /* VALIDATION*/
     dataAccessValidation: false,
     menu: null,
@@ -169,7 +171,10 @@ export default {
     },
     async loadDepartments() {
       return secureGet(`${LOOKUP_URL}/department-branch`).then(resp => {
-        for (const key of Object.keys(resp.data)) this.departments.push({ name: key });
+        for (const key of Object.keys(resp.data))
+          this.departments.push({
+            name: key
+          });
       });
     }
   }

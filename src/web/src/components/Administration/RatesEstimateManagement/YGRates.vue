@@ -11,7 +11,7 @@ import Breadcrumbs from "../../Breadcrumbs.vue";
 export default {
   name: "flightEstimates",
   components: {
-    Breadcrumbs,
-  },
+    Breadcrumbs
+  }
 };
 </script>

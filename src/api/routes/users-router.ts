@@ -13,7 +13,10 @@ const userService = new UserService();
 userRouter.get("/me", async (req: Request, res: Response) => {
   let person = req.user;
 
-  if (person) return res.json({ data: await makeDTO(person) });
+  if (person)
+    return res.json({
+      data: await makeDTO(person)
+    });
 });
 
 async function makeDTO(userRaw: any) {
@@ -46,23 +49,16 @@ userRouter.get("/unit", async (req: Request, res: Response) => {
   }
 });
 
-userRouter.put(
-  "/:id/permissions",
-  RequiresRoleAdmin,
-  async (req: Request, res: Response) => {
-    try {
-      await userService.saveDepartmentAccess(
-        req.params.id,
-        req.body.departments
-      );
-      await userService.saveRoleAccess(req.params.id, req.body.roles);
-      res.status(200).json("Saved permissions");
-    } catch (error: any) {
-      console.log(error);
-      res.status(500).json("Internal Server Error");
-    }
+userRouter.put("/:id/permissions", RequiresRoleAdmin, async (req: Request, res: Response) => {
+  try {
+    await userService.saveDepartmentAccess(req.params.id, req.body.departments);
+    await userService.saveRoleAccess(req.params.id, req.body.roles);
+    res.status(200).json("Saved permissions");
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json("Internal Server Error");
   }
-);
+});
 
 userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
   try {
@@ -70,7 +66,9 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
     // let roles = await userService.getRoleAccess(req.params.id);
     const user = await db("user")
       .select("*")
-      .where({ id: req.params.id })
+      .where({
+        id: req.params.id
+      })
       .first();
     let permissions = {
       departments: user.department,

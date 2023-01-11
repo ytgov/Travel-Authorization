@@ -4,22 +4,14 @@
     <v-card class="mt-5" color="#fff2d5">
       <v-card-title>Travel Requests</v-card-title>
       <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="forms"
-          :items-per-page="20"
-          class="elevation-2"
-          @click:row="openForm"
-        >
+        <v-data-table :headers="headers" :items="forms" :items-per-page="20" class="elevation-2" @click:row="openForm">
           <template v-slot:item.datebacktowork="{ item }">
             <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
           </template>
           <template v-slot:item.departureDate="{ item }">
             <span>{{ new Date(item.departureDate).toDateString() }}</span>
           </template> </v-data-table
-        ><v-btn @click="createForm()" color="blue"
-          >New Travel Request</v-btn
-        ></v-card-text
+        ><v-btn @click="createForm()" color="blue">New Travel Request</v-btn></v-card-text
       >
     </v-card>
   </div>
@@ -33,11 +25,26 @@ export default {
   data: () => ({
     forms: [],
     headers: [
-      { text: "Department/Branch", value: "department" },
-      { text: "Purpose", value: "purpose" },
-      { text: "Departure Date", value: "departureDate" },
-      { text: "Return Date", value: "datebacktowork" },
-      { text: "Status", value: "formStatus" }
+      {
+        text: "Department/Branch",
+        value: "department"
+      },
+      {
+        text: "Purpose",
+        value: "purpose"
+      },
+      {
+        text: "Departure Date",
+        value: "departureDate"
+      },
+      {
+        text: "Return Date",
+        value: "datebacktowork"
+      },
+      {
+        text: "Status",
+        value: "formStatus"
+      }
     ]
   }),
   created() {

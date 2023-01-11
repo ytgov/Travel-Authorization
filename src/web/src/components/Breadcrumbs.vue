@@ -2,11 +2,7 @@
   <v-row>
     <v-col cols="12" class="d-flex">
       <div v-for="(item, i) in items" :key="`rl-${i}`">
-        <router-link
-          :to="item.to"
-          :event="item.disabled ? '' : 'click'"
-          class="text-capitalize"
-        >
+        <router-link :to="item.to" :event="item.disabled ? '' : 'click'" class="text-capitalize">
           {{ item.text }}
         </router-link>
         <v-icon v-if="i + 1 < items.length">mdi-chevron-right</v-icon>
@@ -21,7 +17,7 @@ export default {
   name: "breadcrumbs",
   data: () => ({
     items: [],
-    routes: [],
+    routes: []
   }),
   created() {
     this.generateRoutes();
@@ -37,10 +33,10 @@ export default {
         if (items[i] != "view" && items[i] != "edit") {
           this.items.push({
             text: items[i].replace(/%20/g, " ").replace(/%23/g, "#"),
-            to: { path: "/" + items.slice(0, i + 1).join("/") },
-            disabled: !this.checkAvailableRoutes(
-              "/" + items.slice(0, i + 1).join("/")
-            ),
+            to: {
+              path: "/" + items.slice(0, i + 1).join("/")
+            },
+            disabled: !this.checkAvailableRoutes("/" + items.slice(0, i + 1).join("/"))
           });
         }
       }
@@ -50,13 +46,19 @@ export default {
       let totalRoutes = [];
       for (let i = 0; i < routes.length; i++) {
         if (routes[i].children) {
-          totalRoutes.push({ path: routes[i].path });
+          totalRoutes.push({
+            path: routes[i].path
+          });
           let children = routes[i].children;
           for (let j = 0; j < children.length; j++) {
-            totalRoutes.push({ path: `${routes[i].path}/${children[j].path}` });
+            totalRoutes.push({
+              path: `${routes[i].path}/${children[j].path}`
+            });
           }
         } else {
-          totalRoutes.push({ path: routes[i].path });
+          totalRoutes.push({
+            path: routes[i].path
+          });
         }
       }
       this.routes = totalRoutes;
@@ -69,12 +71,12 @@ export default {
         }
       }
       return false;
-    },
+    }
   },
   watch: {
     $route(to, from) {
       this.generateRouterLinks();
-    },
-  },
+    }
+  }
 };
 </script>

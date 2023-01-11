@@ -21,11 +21,7 @@ export const checkJwt = jwt({
   algorithms: ["RS256"]
 });
 
-export async function loadUser(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function loadUser(req: Request, res: Response, next: NextFunction) {
   const db = new UserService();
   let sub = req.user.sub;
   const token = req.headers.authorization || "";
@@ -35,12 +31,19 @@ export async function loadUser(
   u.display_name = `${u.first_name} ${u.last_name}`;
 
   if (u) {
-    req.user = { ...req.user, ...u };
+    req.user = {
+      ...req.user,
+      ...u
+    };
     return next();
   }
 
   await axios
-    .get(`${AUTH0_DOMAIN}userinfo`, { headers: { authorization: token } })
+    .get(`${AUTH0_DOMAIN}userinfo`, {
+      headers: {
+        authorization: token
+      }
+    })
     .then(async resp => {
       if (resp.data && resp.data.sub) {
         let email = resp.data.email;
@@ -53,7 +56,10 @@ export async function loadUser(
 
         if (u) {
           u.display_name = `${u.first_name} ${u.last_name}`;
-          req.user = { ...req.user, ...u };
+          req.user = {
+            ...req.user,
+            ...u
+          };
         } else {
           if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`;
 
@@ -65,18 +71,17 @@ export async function loadUser(
             // await db.update(eu._id || new ObjectId(), eu);
 
             // console.log("UPDATE USER SUB " + email, sub, u);
-            req.user = { ...req.user, ...eu };
+            req.user = {
+              ...req.user,
+              ...eu
+            };
           } else {
-            u = await db.create(
-              sub,
-              email,
-              first_name,
-              last_name,
-              '["Employee"]',
-              "Active"
-            );
+            u = await db.create(sub, email, first_name, last_name, '["Employee"]', "Active");
             console.log("CREATING USER FOR " + email, u);
-            req.user = { ...req.user, ...u };
+            req.user = {
+              ...req.user,
+              ...u
+            };
           }
         }
       } else {

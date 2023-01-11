@@ -12,7 +12,7 @@ export default {
     visible: null,
     color: "",
     text: "",
-    icon: "",
+    icon: ""
   }),
   methods: {
     show(color, icon, message) {
@@ -52,7 +52,7 @@ export default {
       }
 
       this.show("primary", "mdi-check", "Complete");
-    },
-  },
+    }
+  }
 };
 </script>

@@ -11,7 +11,9 @@ switch (process.env.NODE_ENV) {
   default:
     path = `.env.development`;
 }
-dotenv.config({ path: path });
+dotenv.config({
+  path: path
+});
 
 console.log("Loading env: ", path);
 
@@ -21,13 +23,14 @@ let pattern = "VUE_APP_";
 export const VUE_APP: any = Object.keys(obj)
   .filter(k => k.includes(pattern))
   .reduce((cur, key) => {
-    return Object.assign(cur, { [key]: obj[key] });
+    return Object.assign(cur, {
+      [key]: obj[key]
+    });
   }, {});
 
 export const API_PORT = parseInt(process.env.API_PORT || "3000");
 export const FRONTEND_URL = process.env.FRONTEND_URL || "localhost:8080";
-export const AUTH_REDIRECT =
-  process.env.AUTH_REDIRECT || process.env.FRONTEND_URL || "";
+export const AUTH_REDIRECT = process.env.AUTH_REDIRECT || process.env.FRONTEND_URL || "";
 export const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN || "";
 export const AUTH0_AUDIENCE = process.env.AUTH0_AUDIENCE || "";
 export const NODE_ENV = process.env.NODE_ENV;

@@ -6,7 +6,9 @@ const routes = [
       {
         name: "Home",
         path: "",
-        meta: { requiresAuth: true },
+        meta: {
+          requiresAuth: true
+        },
         component: () => import("../views/Preapproved")
       }
     ]

@@ -14,7 +14,9 @@ export default {
   },
   methods: {
     getAccess() {
-      secureGet(`${PERM_URL}/`, { email: "Max.parker@yukon.ca" }).then(resp => {
+      secureGet(`${PERM_URL}/`, {
+        email: "Max.parker@yukon.ca"
+      }).then(resp => {
         this.userData = resp.data;
       });
     }

@@ -5,60 +5,33 @@
 
     <div class="row">
       <div class="col-md-6 mb-3">
-        <v-text-field
-          v-model="firstName"
-          dense
-          outlined
-          label="First name"
-          readonly
-          hide-details
-        ></v-text-field>
+        <v-text-field v-model="firstName" dense outlined label="First name" readonly hide-details></v-text-field>
       </div>
       <div class="col-md-6 mb-3">
-        <v-text-field
-          v-model="lastName"
-          dense
-          outlined
-          label="Last name"
-          readonly
-          hide-details
-        ></v-text-field>
+        <v-text-field v-model="lastName" dense outlined label="Last name" readonly hide-details></v-text-field>
       </div>
 
       <div class="col-md-6 mb-3">
-        <v-text-field
-          v-model="email"
-          outlined
-          dense
-          label="Email"
-          readonly
-          hide-details
-        ></v-text-field>
+        <v-text-field v-model="email" outlined dense label="Email" readonly hide-details></v-text-field>
       </div>
       <div class="col-md-6">
-        <v-text-field
-          v-model="username"
-          outlined
-          dense
-          label="Username"
-          readonly
-          hide-details
-        ></v-text-field>
+        <v-text-field v-model="username" outlined dense label="Username" readonly hide-details></v-text-field>
       </div>
 
       <div class="col-md-6">
         <h2>Roles</h2>
         <ul>
-          <li v-for="item of roles" :key="item">
-            {{ item }}
-          </li>
+          {{
+            roles
+          }}
         </ul>
       </div>
       <div class="col-md-6">
         <h2>Access</h2>
         <ul>
           <li v-for="item of access" :key="item.id">
-            ({{ item.level }}) {{ item.name }}
+            ({{ item.level }})
+            {{ item.name }}
           </li>
         </ul>
       </div>
@@ -73,14 +46,7 @@ import store from "../store";
 export default {
   name: "Profile",
   computed: {
-    ...mapState("profile", [
-      "firstName",
-      "lastName",
-      "username",
-      "email",
-      "roles",
-      "access"
-    ])
+    ...mapState("profile", ["firstName", "lastName", "username", "email", "roles", "access"])
   },
   data: () => ({}),
   async created() {

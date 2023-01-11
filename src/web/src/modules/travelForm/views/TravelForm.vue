@@ -3,7 +3,10 @@
     <v-row>
       <h1>Travel Request</h1>
       <v-spacer> </v-spacer>
-      <h3>Current Status: {{ form.formStatus }}</h3>
+      <h3>
+        Current Status:
+        {{ form.formStatus }}
+      </h3>
     </v-row>
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
@@ -270,19 +273,13 @@
         </v-form>
         <div v-if="review == true">
           <v-btn color="blue" class="mr-5" @click="approveForm()">Approve</v-btn>
-          <v-btn color="green" class="mr-5" @click="requestChangePopup()">
-            Request Changes
-          </v-btn>
-          <v-btn color="#f3b228" class="mr-5" @click="reassignPopup()">
-            Reassign
-          </v-btn>
+          <v-btn color="green" class="mr-5" @click="requestChangePopup()"> Request Changes </v-btn>
+          <v-btn color="#f3b228" class="mr-5" @click="reassignPopup()"> Reassign </v-btn>
           <v-btn color="red" class="mr-5" @click="denyPopup()">Deny</v-btn>
           <v-btn color="secondary" @click="managePage()">Back</v-btn>
         </div>
         <div v-else>
-          <v-btn color="blue" class="mr-5" @click="submitForm()">
-            Submit
-          </v-btn>
+          <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit </v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm()">Save Draft </v-btn>
           <v-btn color="red" class="mr-5" @click="deleteForm()">Delete</v-btn>
           <v-btn color="secondary" @click="requestPage()">Back</v-btn>
@@ -294,49 +291,37 @@
 
         <v-dialog v-model="requestChangeDisplay" width="80%">
           <v-card>
-            <v-card-title class="text-h5 grey lighten-2">
-              Change Required
-            </v-card-title>
+            <v-card-title class="text-h5 grey lighten-2"> Change Required </v-card-title>
 
             <v-card-text>
               {{ form.requestChange }}
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="blue" text @click="requestChangeDisplay = false">
-                Ok
-              </v-btn>
+              <v-btn color="blue" text @click="requestChangeDisplay = false"> Ok </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
         <v-dialog v-model="denyDialog" width="80%">
           <v-card>
-            <v-card-title class="text-h5 grey lighten-2">
-              Request Denied
-            </v-card-title>
+            <v-card-title class="text-h5 grey lighten-2"> Request Denied </v-card-title>
 
-            <v-card-text>
-              Please provide a reason for the denial of this form.
-            </v-card-text>
+            <v-card-text> Please provide a reason for the denial of this form. </v-card-text>
             <v-card-text>
               <v-textarea v-model="form.denialReason" label="Denial Reason" rows="1" auto-grow></v-textarea>
             </v-card-text>
 
             <v-card-actions>
               <v-btn color="blue" text @click="denyForm()"> Submit </v-btn>
-              <v-btn color="red" text @click="denyDialog = false">
-                Cancel
-              </v-btn>
+              <v-btn color="red" text @click="denyDialog = false"> Cancel </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
         <v-dialog v-model="reassignDialog" width="80%">
           <v-card>
-            <v-card-title class="text-h5 grey lighten-2">
-              Reassign Form
-            </v-card-title>
+            <v-card-title class="text-h5 grey lighten-2"> Reassign Form </v-card-title>
 
             <v-card-text> Reassign this form to a new supervisor.</v-card-text>
             <v-card-text>
@@ -355,37 +340,29 @@
 
             <v-card-actions>
               <v-btn color="blue" text @click="reassignForm()"> Submit </v-btn>
-              <v-btn color="red" text @click="reassignDialog = false">
-                Cancel
-              </v-btn>
+              <v-btn color="red" text @click="reassignDialog = false"> Cancel </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
         <v-dialog v-model="requestChangeDialog" width="80%">
           <v-card>
-            <v-card-title class="text-h5 grey lighten-2">
-              Request Change
-            </v-card-title>
+            <v-card-title class="text-h5 grey lighten-2"> Request Change </v-card-title>
 
-            <v-card-text>
-              What changes need to be made to this form?
-            </v-card-text>
+            <v-card-text> What changes need to be made to this form? </v-card-text>
             <v-card-text>
               <v-textarea v-model="form.requestChange" label="Requested Changes" rows="1" auto-grow></v-textarea>
             </v-card-text>
 
             <v-card-actions>
               <v-btn color="blue" text @click="requestChange()"> Submit </v-btn>
-              <v-btn color="red" text @click="requestChangeDialog = false">
-                Cancel
-              </v-btn>
+              <v-btn color="red" text @click="requestChangeDialog = false"> Cancel </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-tab-item>
-      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Estimates"/></v-tab-item>
-      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Expenses"/></v-tab-item>
+      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Estimates" /></v-tab-item>
+      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Expenses" /></v-tab-item>
       <v-tab-item>
         <TripReport> </TripReport>
       </v-tab-item>
@@ -538,22 +515,22 @@ export default {
     numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
   }),
   computed: {
-    myDepartments: function() {
+    myDepartments: function () {
       return Object.keys(this.departments);
     },
-    myDivisions: function() {
+    myDivisions: function () {
       if (this.departments[this.form.department]) {
         return Object.keys(this.departments[this.form.department]);
       }
       return [];
     },
-    myBranches: function() {
+    myBranches: function () {
       if (this.departments[this.form.department] && this.departments[this.form.department][this.form.division]) {
         return Object.keys(this.departments[this.form.department][this.form.division]);
       }
       return [];
     },
-    myUnits: function() {
+    myUnits: function () {
       if (
         this.departments[this.form.department] &&
         this.departments[this.form.department][this.form.division] &&

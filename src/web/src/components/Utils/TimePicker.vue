@@ -21,13 +21,7 @@
       >
       </v-text-field>
     </template>
-    <v-time-picker
-      format="24hr"
-      scrollable
-      v-model="time"
-      @input="menu = false"
-      :rules="requiredRules"
-    >
+    <v-time-picker format="24hr" scrollable v-model="time" @input="menu = false" :rules="requiredRules">
     </v-time-picker>
   </v-menu>
 </template>
@@ -38,20 +32,20 @@ export default {
     value: String,
     review: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
       menu: false,
       time: "",
-      requiredRules: [(v) => !!v || "This field is required"],
+      requiredRules: [v => !!v || "This field is required"]
     };
   },
   methods: {
     returnDate() {
       this.$emit("time", this.time);
-    },
-  },
+    }
+  }
 };
 </script>

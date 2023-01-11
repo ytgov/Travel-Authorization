@@ -45,7 +45,9 @@
             :loading="loading"
             :search="search"
             @click:row="handleClick"
-            :footer-props="{ 'items-per-page-options': [10, 30, 100] }"
+            :footer-props="{
+              'items-per-page-options': [10, 30, 100]
+            }"
             class="clickable-row"
           >
           </v-data-table
@@ -72,10 +74,22 @@ export default {
     options: {},
     totalLength: 0,
     headers: [
-      { text: "Email", value: "email" },
-      { text: "First Name", value: "first_name" },
-      { text: "Last Name", value: "last_name" },
-      { text: "Status", value: "is_active" }
+      {
+        text: "Email",
+        value: "email"
+      },
+      {
+        text: "First Name",
+        value: "first_name"
+      },
+      {
+        text: "Last Name",
+        value: "last_name"
+      },
+      {
+        text: "Status",
+        value: "is_active"
+      }
       //      { text: "Actions", value: "actions"}
     ],
     page: 1,

@@ -50,5 +50,10 @@ export default new Vuex.Store({
     search: state => state.search,
     showAppSidebar: state => state.showAppSidebar
   },
-  modules: { auth, profile, alerts, preapproved }
+  modules: {
+    auth,
+    profile,
+    alerts,
+    preapproved
+  }
 });

@@ -4,7 +4,7 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           :elevation="type == 'Add New' ? '5' : '0'"
-          style="min-width:0;"
+          style="min-width: 0"
           :class="type == 'Add New' ? 'mr-5 my-7' : 'px-1'"
           :color="type == 'Add New' ? 'primary' : 'transparent'"
           @click="initForm()"
@@ -17,8 +17,11 @@
       </template>
 
       <v-card>
-        <v-card-title class="primary" style="border-bottom:1px solid black">
-          <div class="text-h5">{{ type }} Travel</div>
+        <v-card-title class="primary" style="border-bottom: 1px solid black">
+          <div class="text-h5">
+            {{ type }}
+            Travel
+          </div>
         </v-card-title>
 
         <v-card-text>
@@ -72,13 +75,7 @@
             </v-col>
             <v-col cols="1" />
             <v-col cols="8">
-              <v-textarea
-                :readonly="readonly"
-                v-model="reason"
-                label="Reason"
-                outlined
-                :clearable="!readonly"
-              />
+              <v-textarea :readonly="readonly" v-model="reason" label="Reason" outlined :clearable="!readonly" />
             </v-col>
           </v-row>
 
@@ -104,9 +101,7 @@
                     label="exact date unknown"
                     @change="selectUnknownDate()"
                     :error-messages="
-                      state.unknownDateErr
-                        ? 'Either select Start and End Dates or Select this option'
-                        : ''
+                      state.unknownDateErr ? 'Either select Start and End Dates or Select this option' : ''
                     "
                   />
                 </v-col>
@@ -189,17 +184,12 @@
 
             <v-row class="mt-5 mx-3">
               <v-col cols="9">
-                <v-data-table
-                  :headers="headers"
-                  :items="travellers"
-                  hide-default-footer
-                  class="elevation-1 "
-                >
+                <v-data-table :headers="headers" :items="travellers" hide-default-footer class="elevation-1">
                   <template v-slot:item.remove="{ item }">
                     <v-btn
                       v-if="!readonly"
                       @click="removeTraveller(item)"
-                      style="min-width:0;"
+                      style="min-width: 0"
                       color="transparent"
                       class="px-1"
                       small
@@ -221,7 +211,7 @@
               </v-col>
             </v-row>
 
-            <v-row class=" mx-3">
+            <v-row class="mx-3">
               <v-col cols="12">
                 <v-textarea
                   :readonly="readonly"
@@ -234,16 +224,8 @@
             </v-row>
           </v-card>
 
-          <v-card
-            v-if="showApproval"
-            class="mt-5 grey lighten-5"
-            elevation="4"
-            outlined
-          >
-            <v-card-title
-              class="grey lighten-5"
-              style="border-bottom:1px solid black"
-            >
+          <v-card v-if="showApproval" class="mt-5 grey lighten-5" elevation="4" outlined>
+            <v-card-title class="grey lighten-5" style="border-bottom: 1px solid black">
               <div v-if="approved" class="text-h5">Approval</div>
               <div v-else class="text-h5 red--text">Declined</div>
             </v-card-title>
@@ -259,14 +241,10 @@
               </v-col>
               <v-col cols="1" />
               <v-col cols="5">
-                <v-btn
-                  :loading="loadingData"
-                  color="transparent"
-                  @click="downloadPdf()"
-                  ><span
-                    class="text-h6 primary--text text-decoration-underline"
-                  >
-                    <b v-if="approved">approval</b> doc.pdf</span
+                <v-btn :loading="loadingData" color="transparent" @click="downloadPdf()"
+                  ><span class="text-h6 primary--text text-decoration-underline">
+                    <b v-if="approved">approval</b>
+                    doc.pdf</span
                   >
                 </v-btn>
               </v-col>
@@ -315,7 +293,7 @@
 
     <v-dialog v-model="travellerDialog" persistent max-width="400px">
       <v-card>
-        <v-card-title class="primary" style="border-bottom:1px solid black">
+        <v-card-title class="primary" style="border-bottom: 1px solid black">
           <div class="text-h5">Traveller</div>
         </v-card-title>
 
@@ -336,38 +314,23 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn color="grey darken-5" @click="travellerDialog = false">
-            Cancel
-          </v-btn>
-          <v-btn class="ml-auto" color="green darken-1" @click="addTraveller">
-            Add
-          </v-btn>
+          <v-btn color="grey darken-5" @click="travellerDialog = false"> Cancel </v-btn>
+          <v-btn class="ml-auto" color="green darken-1" @click="addTraveller"> Add </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-dialog v-model="deleteDialog" persistent max-width="400px">
       <v-card>
-        <v-card-title
-          class="amber accent-2"
-          style="border-bottom:1px solid black"
-        >
+        <v-card-title class="amber accent-2" style="border-bottom: 1px solid black">
           <div class="text-h5">Delete Travel Request</div>
         </v-card-title>
 
         <v-card-text> </v-card-text>
 
         <v-card-actions>
-          <v-btn color="grey darken-5" @click="deleteDialog = false">
-            Cancel
-          </v-btn>
-          <v-btn
-            class="ml-auto"
-            color="red darken-1"
-            @click="deleteTravelRequest()"
-          >
-            Delete
-          </v-btn>
+          <v-btn color="grey darken-5" @click="deleteDialog = false"> Cancel </v-btn>
+          <v-btn class="ml-auto" color="red darken-1" @click="deleteTravelRequest()"> Delete </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -382,15 +345,29 @@ import { secureDelete, secureGet, securePost } from "../../../../store/jwt";
 export default {
   name: "NewTravelRequest",
   props: {
-    type: { type: String },
+    type: {
+      type: String
+    },
     travelRequest: {}
   },
   data() {
     return {
       headers: [
-        { text: "Name", value: "fullName", class: "blue-grey lighten-4" },
-        { text: "Dept.", value: "department", class: "blue-grey lighten-4" },
-        { text: "Branch", value: "branch", class: "blue-grey lighten-4" },
+        {
+          text: "Name",
+          value: "fullName",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Dept.",
+          value: "department",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Branch",
+          value: "branch",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "",
           value: "remove",
@@ -401,13 +378,7 @@ export default {
         }
       ],
       travellers: [],
-      purposeList: [
-        "Maintenance",
-        "Conference",
-        "Workshop",
-        "General Travel",
-        "Community Travel"
-      ],
+      purposeList: ["Maintenance", "Conference", "Workshop", "General Travel", "Community Travel"],
       purpose: "",
       addNewTravelDialog: false,
       unknownDate: false,
@@ -477,9 +448,7 @@ export default {
       if (this.adName) {
         this.travellerDialog = false;
         const travellerInx = this.travellers.findIndex(
-          traveller =>
-            traveller.fullName == this.adName &&
-            traveller.department == this.department
+          traveller => traveller.fullName == this.adName && traveller.department == this.department
         );
         if (travellerInx < 0)
           this.travellers.push({
@@ -496,8 +465,7 @@ export default {
       this.adNameErr = false;
       this.adName = "";
       this.state.departmentErr = this.department ? false : true;
-      this.state.branchErr =
-        this.branchList.length > 0 && !this.branch ? true : false;
+      this.state.branchErr = this.branchList.length > 0 && !this.branch ? true : false;
       if (this.department && (this.branch || this.branchList.length == 0)) {
         this.adNameList = this.employeeList
           .filter(employee => employee.department == this.department)
@@ -517,8 +485,7 @@ export default {
     selectUndefinedTraveller() {
       this.undefinedTravellerHint = "";
       this.state.departmentErr = this.department ? false : true;
-      this.state.branchErr =
-        this.branchList.length > 0 && !this.branch ? true : false;
+      this.state.branchErr = this.branchList.length > 0 && !this.branch ? true : false;
       if (!this.undefinedTraveller) {
         this.travellers = [];
         return;
@@ -529,8 +496,7 @@ export default {
       } else
         Vue.nextTick(() => {
           this.undefinedTraveller = false;
-          this.undefinedTravellerHint =
-            "Please Select the Department and Branch First!";
+          this.undefinedTravellerHint = "Please Select the Department and Branch First!";
         });
     },
 
@@ -539,11 +505,7 @@ export default {
       if (this.travellersNum > 0) {
         this.travellers = [
           {
-            fullName:
-              this.department +
-              " " +
-              (this.branch ? this.branch + " " : "") +
-              "staff",
+            fullName: this.department + " " + (this.branch ? this.branch + " " : "") + "staff",
             department: this.department,
             branch: this.branch
           }
@@ -556,23 +518,15 @@ export default {
       this.state.costErr = this.cost ? false : true;
       this.state.locationErr = this.location ? false : true;
 
-      this.state.unknownDateErr =
-        !this.startDate && !this.endDate && !this.unknownDate ? true : false;
-      this.state.anticipatedMonthErr =
-        this.unknownDate && !this.anticipatedMonth ? true : false;
+      this.state.unknownDateErr = !this.startDate && !this.endDate && !this.unknownDate ? true : false;
+      this.state.anticipatedMonthErr = this.unknownDate && !this.anticipatedMonth ? true : false;
 
-      this.state.startDateErr =
-        !this.startDate && this.endDate && !this.unknownDate ? true : false;
-      this.state.endDateErr =
-        this.startDate && !this.endDate && !this.unknownDate ? true : false;
+      this.state.startDateErr = !this.startDate && this.endDate && !this.unknownDate ? true : false;
+      this.state.endDateErr = this.startDate && !this.endDate && !this.unknownDate ? true : false;
 
-      this.state.undefinedTravellerErr =
-        !this.undefinedTraveller && this.travellers.length == 0 ? true : false;
+      this.state.undefinedTravellerErr = !this.undefinedTraveller && this.travellers.length == 0 ? true : false;
       this.state.travellerNumErr =
-        this.undefinedTraveller &&
-        (!this.travellersNum || this.travellersNum < 1)
-          ? true
-          : false;
+        this.undefinedTraveller && (!this.travellersNum || this.travellersNum < 1) ? true : false;
 
       for (const key of Object.keys(this.state)) {
         if (this.state[key]) return false;
@@ -618,47 +572,34 @@ export default {
       this.admin = Vue.filter("isAdmin")();
 
       const userDept = this.$store.state.auth.department;
-      this.lockDepartment =
-        !Vue.filter("isSystemAdmin")() || this.type != "Add New";
+      this.lockDepartment = !Vue.filter("isSystemAdmin")() || this.type != "Add New";
 
       this.initStates();
       this.initTravellers();
       this.initDepartments();
 
-      this.travellers =
-        this.type == "Add New" ? [] : this.travelRequest.travelers;
+      this.travellers = this.type == "Add New" ? [] : this.travelRequest.travelers;
       this.purpose = this.type == "Add New" ? "" : this.travelRequest.purpose;
-      this.unknownDate =
-        this.type == "Add New" ? false : Boolean(this.travelRequest.dateUnkInd);
+      this.unknownDate = this.type == "Add New" ? false : Boolean(this.travelRequest.dateUnkInd);
       this.location = this.type == "Add New" ? "" : this.travelRequest.location;
-      this.cost =
-        this.type == "Add New" ? "" : this.travelRequest.estimatedCost;
+      this.cost = this.type == "Add New" ? "" : this.travelRequest.estimatedCost;
       this.reason = this.type == "Add New" ? "" : this.travelRequest.reason;
-      this.startDate =
-        this.type == "Add New" ? "" : this.travelRequest.startDate;
+      this.startDate = this.type == "Add New" ? "" : this.travelRequest.startDate;
       this.endDate = this.type == "Add New" ? "" : this.travelRequest.endDate;
-      this.department =
-        this.type == "Add New" ? userDept : this.travelRequest.department;
+      this.department = this.type == "Add New" ? userDept : this.travelRequest.department;
       this.branch = this.type == "Add New" ? "" : this.travelRequest.branch;
-      this.undefinedTraveller =
-        this.type == "Add New"
-          ? false
-          : Boolean(this.travelRequest.travelerUnkInd);
+      this.undefinedTraveller = this.type == "Add New" ? false : Boolean(this.travelRequest.travelerUnkInd);
       this.undefinedTravellerHint = "";
-      this.travellersNum =
-        this.type == "Add New" ? null : this.travelRequest.numberTravelers;
-      this.anticipatedMonth =
-        this.type == "Add New" ? "" : this.travelRequest.month;
-      this.travellerNotes =
-        this.type == "Add New" ? "" : this.travelRequest.travelerNotes;
+      this.travellersNum = this.type == "Add New" ? null : this.travelRequest.numberTravelers;
+      this.anticipatedMonth = this.type == "Add New" ? "" : this.travelRequest.month;
+      this.travellerNotes = this.type == "Add New" ? "" : this.travelRequest.travelerNotes;
       this.travellerDialog = false;
       this.adName = "";
       this.deleteDialog = false;
 
       this.readonly = this.type != "Add New" && this.type != "Edit";
 
-      if (this.type != "Add New")
-        this.departmentChanged(this.travelRequest.branch);
+      if (this.type != "Add New") this.departmentChanged(this.travelRequest.branch);
       else this.departmentChanged();
 
       this.loadingData = false;
@@ -669,8 +610,7 @@ export default {
 
       if (
         this.travelRequest?.preTSubID &&
-        (this.travelRequest.status == "Approved" ||
-          this.travelRequest.status == "Declined")
+        (this.travelRequest.status == "Approved" || this.travelRequest.status == "Declined")
       )
         this.initSubmission(this.travelRequest.preTSubID);
     },
@@ -685,7 +625,10 @@ export default {
 
     initTravellers() {
       this.employeeList = this.$store.state.preapproved.employees.map(item => {
-        return { fullName: item.fullName, department: item.department };
+        return {
+          fullName: item.fullName,
+          department: item.department
+        };
       });
     },
 
@@ -693,7 +636,9 @@ export default {
       this.departmentList = [];
       const depts = this.$store.state.preapproved.departmentBranch;
       for (const key of Object.keys(depts)) {
-        this.departmentList.push({ name: key });
+        this.departmentList.push({
+          name: key
+        });
       }
     },
 
@@ -718,10 +663,7 @@ export default {
         }
       };
 
-      secureGet(
-        `${PREAPPROVED_URL}/document/${this.travelRequest.preTSubID}`,
-        header
-      )
+      secureGet(`${PREAPPROVED_URL}/document/${this.travelRequest.preTSubID}`, header)
         .then(res => {
           this.loadingData = false;
           const link = document.createElement("a");
@@ -765,11 +707,7 @@ export default {
 
     removeTraveller(item) {
       this.travellers = this.travellers.filter(
-        traveller =>
-          !(
-            traveller.fullName == item.fullName &&
-            traveller.department == item.department
-          )
+        traveller => !(traveller.fullName == item.fullName && traveller.department == item.department)
       );
       if (this.travellers.length == 0 && this.undefinedTraveller) {
         this.travellersNum = null;

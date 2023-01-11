@@ -18,7 +18,11 @@ export class UserService {
     roles: string,
     status: string
   ): Promise<any> {
-    let existing = await this.db("user").where({ email }).count("email as cnt");
+    let existing = await this.db("user")
+      .where({
+        email
+      })
+      .count("email as cnt");
 
     if (existing[0].cnt > 0) return undefined;
 
@@ -36,7 +40,11 @@ export class UserService {
   }
 
   async update(email: string, item: any) {
-    return this.db("user").where({ email }).update(item);
+    return this.db("user")
+      .where({
+        email
+      })
+      .update(item);
   }
 
   async getAll() {
@@ -44,29 +52,49 @@ export class UserService {
   }
 
   async getByEmail(email: string): Promise<any | undefined> {
-    return this.db("user").where({ email }).first();
+    return this.db("user")
+      .where({
+        email
+      })
+      .first();
   }
 
   async getById(id: string): Promise<any | undefined> {
-    return this.db("user").where({ id }).first();
+    return this.db("user")
+      .where({
+        id
+      })
+      .first();
   }
 
   async getBySub(sub: string): Promise<any> {
-    return this.db("user").where({ sub }).first();
+    return this.db("user")
+      .where({
+        sub
+      })
+      .first();
   }
 
   async getAccessFor(email: string): Promise<string[]> {
-    return this.db("user").where({ email }).select("roles");
+    return this.db("user")
+      .where({
+        email
+      })
+      .select("roles");
   }
 
   async setAccess(email: string, access: string[]) {
-    return this.db("user").where({ email }).update({ roles: access });
+    return this.db("user")
+      .where({
+        email
+      })
+      .update({
+        roles: access
+      });
   }
 
   async getDepartmentAccess(id: string): Promise<number[]> {
-    return this.db("departmentassignments")
-      .where("userid", "=", id)
-      .select("*");
+    return this.db("departmentassignments").where("userid", "=", id).select("*");
   }
 
   async saveDepartmentAccess(id: string, department: string) {
@@ -157,9 +185,7 @@ export class UserService {
     let dto = userRaw;
     dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
     dto.roles = _.split(userRaw.roles, ",").filter((r: string) => r.length > 0);
-    dto.manage_mailcodes = _.split(userRaw.manage_mailcodes, ",").filter(
-      (r: string) => r.length > 0
-    );
+    dto.manage_mailcodes = _.split(userRaw.manage_mailcodes, ",").filter((r: string) => r.length > 0);
     //dto.access = await this.db.getAccessFor(userRaw.email);
     //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")
 

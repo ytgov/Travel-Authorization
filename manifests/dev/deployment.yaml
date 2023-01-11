@@ -21,7 +21,7 @@ spec:
             - containerPort: 3000
           resources: {}
           volumeMounts:
-            - mountPath: '/home/node/app/.env.development'
+            - mountPath: "/home/node/app/.env.development"
               subPath: .env
               name: env-configmap-volume
       volumes:

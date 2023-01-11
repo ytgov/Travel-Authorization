@@ -18,8 +18,7 @@ export const getInstance = () => instance;
  */
 
 export const useAuth0 = ({
-  onRedirectCallback = () =>
-    window.history.replaceState({}, document.title, window.location.pathname),
+  onRedirectCallback = () => window.history.replaceState({}, document.title, window.location.pathname),
   redirectUri = window.location.origin,
   ...pluginOptions
 }) => {
@@ -72,10 +71,7 @@ export const useAuth0 = ({
       });
 
       try {
-        if (
-          window.location.search.includes("code=") &&
-          window.location.search.includes("state=")
-        ) {
+        if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
           const { appState } = await this.auth0Client.handleRedirectCallback();
 
           onRedirectCallback(appState);

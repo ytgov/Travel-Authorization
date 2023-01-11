@@ -25,11 +25,26 @@ export default {
   data: () => ({
     forms: [],
     headers: [
-      { text: "Department/Branch", value: "department" },
-      { text: "Purpose", value: "purpose" },
-      { text: "Departure Date", value: "departureDate" },
-      { text: "Return Date", value: "datebacktowork" },
-      { text: "Status", value: "formStatus" }
+      {
+        text: "Department/Branch",
+        value: "department"
+      },
+      {
+        text: "Purpose",
+        value: "purpose"
+      },
+      {
+        text: "Departure Date",
+        value: "departureDate"
+      },
+      {
+        text: "Return Date",
+        value: "datebacktowork"
+      },
+      {
+        text: "Status",
+        value: "formStatus"
+      }
     ]
   }),
   created() {

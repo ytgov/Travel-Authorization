@@ -116,11 +116,26 @@ export default {
     approved: [],
     changeRequests: [],
     headers: [
-      { text: "TA Form Number", value: "id" },
-      { text: "Department/Branch", value: "department" },
-      { text: "Requestee", value: "name" },
-      { text: "Departure Date", value: "departureDate" },
-      { text: "Return Date", value: "dateBackToWork" }
+      {
+        text: "TA Form Number",
+        value: "id"
+      },
+      {
+        text: "Department/Branch",
+        value: "department"
+      },
+      {
+        text: "Requestee",
+        value: "name"
+      },
+      {
+        text: "Departure Date",
+        value: "departureDate"
+      },
+      {
+        text: "Return Date",
+        value: "dateBackToWork"
+      }
     ]
   }),
   created() {

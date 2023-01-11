@@ -31,14 +31,7 @@
           ></v-text-field>
         </div>
       </div>
-      <v-text-field
-        v-model="email"
-        dense
-        outlined
-        label="Email (required)"
-        required
-        :rules="emailRules"
-      ></v-text-field>
+      <v-text-field v-model="email" dense outlined label="Email (required)" required :rules="emailRules"></v-text-field>
 
       <v-textarea outlined label="Skills">This is the text</v-textarea>
 
@@ -57,22 +50,14 @@
 
       <v-card>
         <v-tabs v-model="tab" background-color="#fff2d5" color="primary">
-          <v-tab key="1">
-            Tab item 1
-          </v-tab>
-          <v-tab key="2">
-            Tab item 2
-          </v-tab>
+          <v-tab key="1"> Tab item 1 </v-tab>
+          <v-tab key="2"> Tab item 2 </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab" style="height: 250px; padding: 20px">
           <v-tab-item key="1">
-            <v-card>
-              This is cool info about tab item 1
-            </v-card>
+            <v-card> This is cool info about tab item 1 </v-card>
           </v-tab-item>
-          <v-tab-item key="2">
-            This is cool info about tab item 2
-          </v-tab-item>
+          <v-tab-item key="2"> This is cool info about tab item 2 </v-tab-item>
         </v-tabs-items>
       </v-card>
     </v-form>
@@ -82,13 +67,7 @@
       <span>That's not the right team!</span>
     </v-banner>
 
-    <v-btn
-      color="primary"
-      class="mr-5"
-      :disabled="!form1Valid"
-      @click="saveForm"
-      >Save</v-btn
-    >
+    <v-btn color="primary" class="mr-5" :disabled="!form1Valid" @click="saveForm">Save</v-btn>
     <v-btn color="secondary">Cancel</v-btn>
 
     <v-snackbar v-model="snackbar" right color="success">

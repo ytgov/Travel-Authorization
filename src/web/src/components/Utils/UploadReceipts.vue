@@ -1,5 +1,9 @@
 <template>
-  <v-card :style="{ padding: '10px' }">
+  <v-card
+    :style="{
+      padding: '10px'
+    }"
+  >
     <v-file-input label="File input" @change="Preview_image" v-model="image"> </v-file-input>
   </v-card>
 </template>

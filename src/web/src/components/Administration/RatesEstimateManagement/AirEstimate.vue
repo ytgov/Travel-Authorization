@@ -12,13 +12,7 @@
           <v-text-field v-model="flightEstimate.estimate"> </v-text-field>
         </v-col>
         <v-col cols="1">
-          <v-btn
-            class="ma-2"
-            dense
-            small
-            color="red"
-            @click="removeStop(index)"
-          >
+          <v-btn class="ma-2" dense small color="red" @click="removeStop(index)">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-col>
@@ -34,12 +28,15 @@ import Breadcrumbs from "../../Breadcrumbs.vue";
 export default {
   name: "flightEstimates",
   components: {
-    Breadcrumbs,
+    Breadcrumbs
   },
   data: () => ({
-    flightEstimates: [{ flight: "Whitehorse to Vancouver", estimate: "780" }],
-  }),
+    flightEstimates: [
+      {
+        flight: "Whitehorse to Vancouver",
+        estimate: "780"
+      }
+    ]
+  })
 };
 </script>
-
-

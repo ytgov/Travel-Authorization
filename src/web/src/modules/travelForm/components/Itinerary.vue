@@ -29,7 +29,7 @@
 
     <v-row>
       <v-col><DatePicker value="Departure Date" /> </v-col>
-      <v-col> <TimePicker value="Departure Time"/></v-col>
+      <v-col> <TimePicker value="Departure Time" /></v-col>
       <v-col>
         <v-select
           :items="transport"
@@ -63,7 +63,7 @@
 
     <v-row v-if="!oneWayTrip === true">
       <v-col><DatePicker :value="itinerary[1].departureDate" text="Departure Date" :review="review" /> </v-col>
-      <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review"/></v-col>
+      <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review" /></v-col>
       <v-col>
         <v-select
           :items="transport"
@@ -103,7 +103,7 @@
         </v-row>
         <v-row>
           <v-col><DatePicker :value="itinerary[1].departureDate" text="Departure Date" :review="review" /> </v-col>
-          <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review"/></v-col>
+          <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review" /></v-col>
           <v-col>
             <v-select
               :items="transport"

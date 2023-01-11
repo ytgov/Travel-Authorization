@@ -16,7 +16,7 @@
       </template>
 
       <v-card>
-        <v-card-title style="border-bottom:1px solid black">
+        <v-card-title style="border-bottom: 1px solid black">
           <div class="text-h5">Approval</div>
         </v-card-title>
 
@@ -48,17 +48,12 @@
 
           <v-row class="mt-1 mb-5" align="center" justify="center">
             <v-col cols="4">
-              <v-btn
-                class="ml-1"
-                color="primary"
-                elevation="5"
-                @click="uploadApproval"
-              >
+              <v-btn class="ml-1" color="primary" elevation="5" @click="uploadApproval">
                 Upload Approval
                 <input
                   id="inputfile"
                   type="file"
-                  style="display: none;"
+                  style="display: none"
                   accept="application/pdf,image/x-png,image/jpeg"
                   @change="handleSelectedFile"
                   onclick="this.value=null;"
@@ -66,18 +61,10 @@
               </v-btn>
             </v-col>
             <v-col cols="1" />
-            <v-col
-              :key="update"
-              class="blue--text text-h6 text-decoration-underline"
-              cols="7"
-            >
-              <a
-                v-if="reader.result"
-                :href="reader.result"
-                download="UploadedFile.pdf"
-                target="_blank"
-                >{{ approvalFileName }}</a
-              >
+            <v-col :key="update" class="blue--text text-h6 text-decoration-underline" cols="7">
+              <a v-if="reader.result" :href="reader.result" download="UploadedFile.pdf" target="_blank">{{
+                approvalFileName
+              }}</a>
             </v-col>
           </v-row>
 
@@ -136,17 +123,8 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn color="grey darken-5" @click="approveTravelDialog = false">
-            Cancel
-          </v-btn>
-          <v-btn
-            class="ml-auto"
-            color="green darken-1"
-            :loading="savingData"
-            @click="saveApproval()"
-          >
-            Save
-          </v-btn>
+          <v-btn color="grey darken-5" @click="approveTravelDialog = false"> Cancel </v-btn>
+          <v-btn class="ml-auto" color="green darken-1" :loading="savingData" @click="saveApproval()"> Save </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -161,16 +139,36 @@ export default {
   components: {},
   name: "ApproveTravel",
   props: {
-    travelRequests: { type: [] },
-    submissionId: { type: Number }
+    travelRequests: {
+      type: []
+    },
+    submissionId: {
+      type: Number
+    }
   },
   data() {
     return {
       headers: [
-        { text: "Name", value: "name", class: "blue-grey lighten-4" },
-        { text: "Branch", value: "branch", class: "blue-grey lighten-4" },
-        { text: "Reason", value: "reason", class: "blue-grey lighten-4" },
-        { text: "Location", value: "location", class: "blue-grey lighten-4" },
+        {
+          text: "Name",
+          value: "name",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Branch",
+          value: "branch",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Reason",
+          value: "reason",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Location",
+          value: "location",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "Status",
           value: "status",
@@ -240,8 +238,7 @@ export default {
 
       for (const req of this.approvalRequests) {
         if (req.status != "Approved" && req.status != "Declined") {
-          this.alertMsg =
-            "Please select either 'Approved' or 'Declined' status for all the records.";
+          this.alertMsg = "Please select either 'Approved' or 'Declined' status for all the records.";
           this.alert = true;
           return false;
         }
@@ -253,10 +250,7 @@ export default {
       this.alert = false;
 
       if (this.checkFields()) {
-        if (
-          !this.reader?.result ||
-          this.approvalFileType != "application/pdf"
-        ) {
+        if (!this.reader?.result || this.approvalFileType != "application/pdf") {
           this.alertMsg = "Please upload the approval PDF file.";
           this.alert = true;
           return;
@@ -268,7 +262,10 @@ export default {
           approvalDate: this.approvalDate,
           approvedBy: this.approvedBy,
           preapproved: this.approvalRequests.map(req => {
-            return { preTID: req.preTID, status: req.status };
+            return {
+              preTID: req.preTID,
+              status: req.status
+            };
           })
         };
         const bodyFormData = new FormData();
@@ -282,11 +279,7 @@ export default {
           }
         };
 
-        securePost(
-          `${PREAPPROVED_URL}/approval/${this.submissionId}`,
-          bodyFormData,
-          header
-        )
+        securePost(`${PREAPPROVED_URL}/approval/${this.submissionId}`, bodyFormData, header)
           .then(() => {
             this.savingData = false;
             this.approveTravelDialog = false;

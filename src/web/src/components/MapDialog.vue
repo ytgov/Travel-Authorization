@@ -23,38 +23,37 @@ export default {
     color: "",
     text: "",
     icon: "",
-    map: {},
+    map: {}
   }),
   methods: {
     show(lat, long) {
       this.visible = true;
 
       loadModules(
-        [
-          "esri/Map",
-          "esri/views/MapView",
-          "esri/symbols/SimpleMarkerSymbol",
-          "esri/geometry/Point",
-          "esri/Graphic",
-        ],
+        ["esri/Map", "esri/views/MapView", "esri/symbols/SimpleMarkerSymbol", "esri/geometry/Point", "esri/Graphic"],
         {
-          css: true,
+          css: true
         }
       ).then(([Map, MapView, SimpleMarkerSymbol, Point, Graphic]) => {
         this.map = new Map({
-          basemap: "topo-vector",
+          basemap: "topo-vector"
         });
 
-        let sms = new SimpleMarkerSymbol({ style: "circle", color: "red" });
+        let sms = new SimpleMarkerSymbol({
+          style: "circle",
+          color: "red"
+        });
         var point = new Point(long, lat);
 
-        var attributes = { value: "Hello" };
+        var attributes = {
+          value: "Hello"
+        };
 
         let view = new MapView({
           container: this.$refs.map,
           map: this.map,
           center: [long, lat],
-          zoom: 11,
+          zoom: 11
         });
 
         view.graphics.add(new Graphic(point, sms, attributes));
@@ -62,8 +61,8 @@ export default {
     },
     close() {
       this.visible = false;
-    },
-  },
+    }
+  }
 };
 </script>
 

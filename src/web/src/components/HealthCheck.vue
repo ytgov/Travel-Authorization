@@ -2,22 +2,29 @@
   <v-app>
     Health Check
     <br />
-    API Port: {{ healthCheck.appHealth.ApiPort }}
+    API Port:
+    {{ healthCheck.appHealth.ApiPort }}
     <br />
-    Frontend Url: {{ healthCheck.appHealth.FrontendUrl }}
+    Frontend Url:
+    {{ healthCheck.appHealth.FrontendUrl }}
     <br />
-    Build Env: {{ healthCheck.appHealth.NodeEnd }}
+    Build Env:
+    {{ healthCheck.appHealth.NodeEnd }}
     <br />
     <br />
     DB Connection Information
     <br />
-    Host: {{ healthCheck.dbHealth.Connection }}
+    Host:
+    {{ healthCheck.dbHealth.Connection }}
     <br />
-    Database: {{ healthCheck.dbHealth.Database }}
+    Database:
+    {{ healthCheck.dbHealth.Database }}
     <br />
-    User: {{ healthCheck.dbHealth.User }}
+    User:
+    {{ healthCheck.dbHealth.User }}
     <br />
-    Port: {{ healthCheck.dbHealth.Port }}
+    Port:
+    {{ healthCheck.dbHealth.Port }}
   </v-app>
 </template>
 <script>

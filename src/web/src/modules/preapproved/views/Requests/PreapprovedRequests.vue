@@ -17,17 +17,13 @@
         :travelRequests="selectedRequests"
         buttonName="Print Report"
       />
-      <new-travel-request
-        type="Add New"
-        @updateTable="updateTable"
-        :class="admin ? '' : 'ml-auto'"
-      />
+      <new-travel-request type="Add New" @updateTable="updateTable" :class="admin ? '' : 'ml-auto'" />
     </v-row>
     <v-data-table
       :headers="headers"
       :items="travelRequests"
       :items-per-page="5"
-      class="elevation-1 "
+      class="elevation-1"
       v-model="selectedRequests"
       item-key="preTID"
       :show-select="admin"
@@ -38,7 +34,9 @@
         <v-tooltip top color="primary">
           <template v-slot:activator="{ on }">
             <div v-on="item.travelers.length > 1 ? on : ''">
-              <span> {{ item.travelers[0].fullName.replace(".", " ") }} </span>
+              <span>
+                {{ item.travelers[0].fullName.replace(".", " ") }}
+              </span>
               <span v-if="item.travelers.length > 1">, ... </span>
             </div>
           </template>
@@ -51,12 +49,19 @@
       </template>
 
       <template v-slot:item.travelDate="{ item }">
-        <div v-if="item.dateUnkInd">{{ item.month }}</div>
+        <div v-if="item.dateUnkInd">
+          {{ item.month }}
+        </div>
         <div v-else>
           <!-- eslint-disable-next-line vue/no-parsing-error -->
-          <div>{{ item.startDate | (beautify - date) }} to</div>
+          <div>
+            {{ item.startDate | (beautify - date) }}
+            to
+          </div>
           <!-- eslint-disable-next-line vue/no-parsing-error -->
-          <div>{{ item.endDate | (beautify - date) }}</div>
+          <div>
+            {{ item.endDate | (beautify - date) }}
+          </div>
         </div>
       </template>
 
@@ -78,34 +83,60 @@ import PrintReport from "../Common/PrintReport.vue";
 import SubmitTravel from "../Common/SubmitTravel.vue";
 
 export default {
-  components: { NewTravelRequest, PrintReport, SubmitTravel },
+  components: {
+    NewTravelRequest,
+    PrintReport,
+    SubmitTravel
+  },
   name: "PreapprovedRequests",
   props: {
-    travelRequests: { type: [] }
+    travelRequests: {
+      type: []
+    }
   },
   data() {
     return {
       headers: [
-        { text: "Name", value: "name", class: "blue-grey lighten-4" },
+        {
+          text: "Name",
+          value: "name",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "Department",
           value: "department",
           class: "blue-grey lighten-4"
         },
-        { text: "Branch", value: "branch", class: "blue-grey lighten-4" },
+        {
+          text: "Branch",
+          value: "branch",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "TravelDate",
           value: "travelDate",
           class: "blue-grey lighten-4"
         },
-        { text: "Location", value: "location", class: "blue-grey lighten-4" },
+        {
+          text: "Location",
+          value: "location",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "Purpose Type",
           value: "purpose",
           class: "blue-grey lighten-4"
         },
-        { text: "Reason", value: "reason", class: "blue-grey lighten-4" },
-        { text: "Status", value: "status", class: "blue-grey lighten-4" },
+        {
+          text: "Reason",
+          value: "reason",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Status",
+          value: "status",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "",
           value: "edit",
@@ -135,13 +166,8 @@ export default {
           this.firstSelectionDept = "";
         }
 
-        if (
-          selection.value == true &&
-          selection.item.department != this.firstSelectionDept
-        ) {
-          this.selectedRequests = this.selectedRequests.filter(
-            req => req.preTID != selection.item.preTID
-          );
+        if (selection.value == true && selection.item.department != this.firstSelectionDept) {
+          this.selectedRequests = this.selectedRequests.filter(req => req.preTID != selection.item.preTID);
         }
       });
     },
@@ -149,9 +175,7 @@ export default {
       console.log(selection);
       Vue.nextTick(() => {
         if (selection.value == true && this.firstSelectionDept) {
-          this.selectedRequests = this.selectedRequests.filter(
-            req => req.department == this.firstSelectionDept
-          );
+          this.selectedRequests = this.selectedRequests.filter(req => req.department == this.firstSelectionDept);
         } else {
           this.selectedRequests = [];
           this.firstSelectionDept = "";

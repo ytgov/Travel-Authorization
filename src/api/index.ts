@@ -25,7 +25,11 @@ var fileupload = require("express-fileupload");
 const app = express();
 
 app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(
+  express.urlencoded({
+    extended: true
+  })
+); // for parsing application/x-www-form-urlencoded
 
 app.use(
   helmet.contentSecurityPolicy({
@@ -41,11 +45,7 @@ app.use(
       "script-src-attr": ["'none'"],
       "style-src": ["'self'", "https:", "'unsafe-inline'"],
       "worker-src": ["'self'", "blob:"],
-      "connect-src": [
-        "'self'",
-        "https://*.arcgis.com",
-        "https://services.arcgisonline.com"
-      ]
+      "connect-src": ["'self'", "https://*.arcgis.com", "https://services.arcgisonline.com"]
     }
   })
 );

@@ -6,7 +6,9 @@
       :expand-on-hover="hasSidebarClosable"
       clipped
       color="#f1f1f1"
-      v-bind:class="{ 'd-none': !hasSidebar }"
+      v-bind:class="{
+        'd-none': !hasSidebar
+      }"
     >
       <v-list dense nav style="" class="mt-4">
         <v-list-item
@@ -27,13 +29,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-      app
-      color="#fff"
-      flat
-      height="70"
-      style="left: 0; border-bottom: 3px #f3b228 solid"
-    >
+    <v-app-bar app color="#fff" flat height="70" style="left: 0; border-bottom: 3px #f3b228 solid">
       <!-- <v-icon color="#f3b228" class="mr-5">{{ applicationIcon }}</v-icon> -->
       <img src="/yukon.svg" style="margin: -8px 155px 0 0" height="44" />
       <v-toolbar-title>
@@ -53,9 +49,7 @@
       <div v-if="$auth.isAuthenticated">
         <v-menu offset-y class="ml-0">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn text color="primary" v-bind="attrs" v-on="on">
-              Navigation<v-icon>mdi-menu-down</v-icon>
-            </v-btn>
+            <v-btn text color="primary" v-bind="attrs" v-on="on"> Navigation<v-icon>mdi-menu-down</v-icon> </v-btn>
           </template>
 
           <v-list dense style="min-width: 200px">
@@ -74,13 +68,7 @@
           </v-list>
         </v-menu>
 
-        <v-btn
-          icon
-          color="primary"
-          class="mr-2"
-          title="Recently visited"
-          @click="showHistory()"
-        >
+        <v-btn icon color="primary" class="mr-2" title="Recently visited" @click="showHistory()">
           <v-icon>mdi-history</v-icon>
         </v-btn>
 
@@ -129,7 +117,11 @@
       <!-- <v-app-bar-nav-icon @click.stop="drawerRight = !drawerRight"></v-app-bar-nav-icon> -->
     </v-app-bar>
 
-    <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
+    <v-main
+      v-bind:style="{
+        'padding-left: 33px !important': !hasSidebar
+      }"
+    >
       <!-- Provides the application the proper gutter -->
       <v-container fluid :class="`${isSites($route.path, true)}`">
         <v-row>
@@ -160,7 +152,9 @@ import RequestAlert from "./components/RequestAlert.vue";
 
 export default {
   name: "App",
-  components: { RequestAlert },
+  components: {
+    RequestAlert
+  },
   computed: {
     ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
     username() {
@@ -192,7 +186,7 @@ export default {
     hasSidebarClosable: config.hasSidebarClosable,
     currentId: 0
   }),
-  created: async function() {
+  created: async function () {
     store.dispatch("setAppSidebar", this.$route.path.startsWith("/sites/"));
     this.hasSidebar = this.$route.path.startsWith("/sites/");
     this.currentId = this.$route.params.id;
@@ -201,11 +195,11 @@ export default {
     await store.dispatch("checkAuthentication");
   },
   watch: {
-    isAuthenticated: function(val) {
+    isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false;
       else this.hasSidebar = store.getters.showAppSidebar;
     },
-    showAppSidebar: function(val) {
+    showAppSidebar: function (val) {
       if (val) {
         this.currentId = this.$route.params.id;
       }
@@ -214,16 +208,16 @@ export default {
     }
   },
   methods: {
-    nav: function(location) {
+    nav: function (location) {
       router.push(location);
     },
-    toggleHeader: function() {
+    toggleHeader: function () {
       this.headerShow = !this.headerShow;
     },
-    toggleMenu: function() {
+    toggleMenu: function () {
       this.menuShow = !this.menuShow;
     },
-    signOut: function() {
+    signOut: function () {
       this.$auth.logout();
     },
     isSites(route, chooser) {
@@ -258,13 +252,13 @@ export default {
     showHistory() {
       this.$refs.historySidebar.show();
     },
-    showError: function(msg) {
+    showError: function (msg) {
       this.$refs.notifier.showError(msg);
     },
-    showSuccess: function(msg) {
+    showSuccess: function (msg) {
       this.$refs.notifier.showSuccess(msg);
     },
-    showAPIMessages: function(msg) {
+    showAPIMessages: function (msg) {
       this.$refs.notifier.showAPIMessages(msg);
     }
   }

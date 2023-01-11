@@ -31,14 +31,14 @@
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <h2>{{ title }}</h2>
+          <h2>
+            {{ title }}
+          </h2>
           <!-- <v-toolbar-title>Expenses</v-toolbar-title> -->
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn color="blue" dark class="mb-2" v-bind="attrs" v-on="on">
-                New Item
-              </v-btn>
+              <v-btn color="blue" dark class="mb-2" v-bind="attrs" v-on="on"> New Item </v-btn>
             </template>
             <v-card>
               <v-card-title>
@@ -93,9 +93,7 @@
 
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
-                </v-btn>
+                <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
                 <v-btn color="blue darken-1" text @click="save"> Ok </v-btn>
               </v-card-actions>
             </v-card>
@@ -118,7 +116,10 @@
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
     </v-data-table>
-    <v-btn color="green" class="mr-5" @click="saveExpenses()">Save {{ title }} </v-btn>
+    <v-btn color="green" class="mr-5" @click="saveExpenses()"
+      >Save
+      {{ title }}
+    </v-btn>
     <v-snackbar v-model="snackbar" right color="success">
       <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
       {{ apiSuccess }}
@@ -157,10 +158,23 @@ export default {
         align: "start",
         value: "description"
       },
-      { text: "Cost", value: "cost" },
-      { text: "Date", value: "date" },
-      { text: "Currency", value: "currency" },
-      { text: "Actions", value: "actions", sortable: false }
+      {
+        text: "Cost",
+        value: "cost"
+      },
+      {
+        text: "Date",
+        value: "date"
+      },
+      {
+        text: "Currency",
+        value: "currency"
+      },
+      {
+        text: "Actions",
+        value: "actions",
+        sortable: false
+      }
     ],
     dialog: false,
     dialogDelete: false,

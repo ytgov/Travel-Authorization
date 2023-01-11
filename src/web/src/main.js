@@ -17,18 +17,14 @@ Vue.use(Auth0Plugin, {
   clientId,
   audience,
   onRedirectCallback: appState => {
-    router.push(
-      appState && appState.targetUrl
-        ? appState.targetUrl
-        : window.location.pathname
-    );
+    router.push(appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
   }
 });
 
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
 Vue.directive("yk-btn", {
-  bind: function(el) {
+  bind: function (el) {
     el.style.backgroundColor = "#a000bb";
     el.style.color = "#fff";
     el.style.fontWeight = "400";

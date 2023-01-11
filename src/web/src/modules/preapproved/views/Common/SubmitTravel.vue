@@ -18,18 +18,16 @@
       </template>
 
       <v-card :key="update">
-        <v-card-title style="border-bottom:1px solid black">
+        <v-card-title style="border-bottom: 1px solid black">
           <div class="text-h5">Submit/Draft Travel Request</div>
         </v-card-title>
 
         <v-card-text>
           <v-row class="mt-3">
-            <v-btn class="ml-auto mr-5" color="primary" @click="openAddTravel">
-              Add Request
-            </v-btn>
+            <v-btn class="ml-auto mr-5" color="primary" @click="openAddTravel"> Add Request </v-btn>
           </v-row>
           <v-data-table
-            style="margin-top:1rem;"
+            style="margin-top: 1rem"
             :headers="headers"
             :items="submittingRequests"
             :items-per-page="5"
@@ -37,7 +35,7 @@
             hide-default-footer
           >
             <template v-slot:item.remove="{ item }">
-              <v-btn @click="removeTravel(item)" style="min-width:0;" color="transparent" class="px-1" small>
+              <v-btn @click="removeTravel(item)" style="min-width: 0" color="transparent" class="px-1" small>
                 <v-icon color="red">mdi-delete</v-icon>
               </v-btn>
             </template>
@@ -62,7 +60,7 @@
               <v-tooltip top color="amber accent-4">
                 <template v-slot:activator="{ on }">
                   <v-icon
-                    style="cursor:pointer"
+                    style="cursor: pointer"
                     v-on="on"
                     v-if="item.status && item.preTSubID != preTSubID"
                     class=""
@@ -83,12 +81,8 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn color="grey darken-5" @click="submitTravelDialog = false">
-            Cancel
-          </v-btn>
-          <v-btn v-if="editButton" color="red darken-5" @click="deleteSubmission()">
-            Delete
-          </v-btn>
+          <v-btn color="grey darken-5" @click="submitTravelDialog = false"> Cancel </v-btn>
+          <v-btn v-if="editButton" color="red darken-5" @click="deleteSubmission()"> Delete </v-btn>
           <v-btn class="ml-auto" color="lime darken-1" :loading="savingData" @click="submitTravelRequest('Draft')">
             Save Draft
           </v-btn>
@@ -101,7 +95,7 @@
 
     <v-dialog v-model="addTravelDialog" persistent max-width="900px">
       <v-card>
-        <v-card-title class="primary" style="border-bottom:1px solid black">
+        <v-card-title class="primary" style="border-bottom: 1px solid black">
           <div class="text-h5">Requests</div>
         </v-card-title>
 
@@ -110,7 +104,7 @@
             :headers="addTravelHeaders"
             :items="remainingTravelRequests"
             :items-per-page="5"
-            class="elevation-1 mt-5 "
+            class="elevation-1 mt-5"
             v-model="newSelectedRequests"
             item-key="preTID"
             show-select
@@ -135,28 +129,33 @@
             </template>
 
             <template v-slot:item.travelDate="{ item }">
-              <div v-if="item.dateUnkInd">{{ item.month }}</div>
+              <div v-if="item.dateUnkInd">
+                {{ item.month }}
+              </div>
               <div v-else>
-                <!-- eslint-disable-next-line vue/no-parsing-error -->
-                <div>{{ item.startDate | (beautify - date) }} to</div>
-                <!-- eslint-disable-next-line vue/no-parsing-error -->
-                <div>{{ item.endDate | (beautify - date) }}</div>
+                <div>
+                  <!-- eslint-disable-next-line vue/no-parsing-error -->
+                  {{ item.startDate | (beautify - date) }}
+                  to
+                </div>
+                <div>
+                  <!-- eslint-disable-next-line vue/no-parsing-error -->
+                  {{ item.endDate | (beautify - date) }}
+                </div>
               </div>
             </template>
 
             <template v-slot:item.status="{ item }">
-              <div v-if="item.preTSubID != preTSubID">{{ item.status }}</div>
+              <div v-if="item.preTSubID != preTSubID">
+                {{ item.status }}
+              </div>
             </template>
           </v-data-table>
         </v-card-text>
 
         <v-card-actions>
-          <v-btn color="grey darken-5" @click="addTravelDialog = false">
-            Cancel
-          </v-btn>
-          <v-btn class="ml-auto" color="green darken-1" @click="addTravel">
-            Add
-          </v-btn>
+          <v-btn color="grey darken-5" @click="addTravelDialog = false"> Cancel </v-btn>
+          <v-btn class="ml-auto" color="green darken-1" @click="addTravel"> Add </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -169,23 +168,56 @@ import { PREAPPROVED_URL } from "../../../../urls";
 import { securePost, secureDelete } from "@/store/jwt";
 
 export default {
-  components: { NewTravelRequest },
+  components: {
+    NewTravelRequest
+  },
   name: "SubmitTravel",
   props: {
-    buttonName: { type: String },
-    editButton: { type: Boolean, default: false },
-    preTSubID: { type: Number, default: 0 },
-    travelRequests: { type: [] },
-    selectedRequests: { type: [] },
-    disabled: { type: Boolean, default: false }
+    buttonName: {
+      type: String
+    },
+    editButton: {
+      type: Boolean,
+      default: false
+    },
+    preTSubID: {
+      type: Number,
+      default: 0
+    },
+    travelRequests: {
+      type: []
+    },
+    selectedRequests: {
+      type: []
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
       headers: [
-        { text: "Name", value: "name", class: "blue-grey lighten-4" },
-        { text: "Branch", value: "branch", class: "blue-grey lighten-4" },
-        { text: "Reason", value: "reason", class: "blue-grey lighten-4" },
-        { text: "Location", value: "location", class: "blue-grey lighten-4" },
+        {
+          text: "Name",
+          value: "name",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Branch",
+          value: "branch",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Reason",
+          value: "reason",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Location",
+          value: "location",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "",
           sortable: false,
@@ -212,15 +244,27 @@ export default {
         }
       ],
       addTravelHeaders: [
-        { text: "Name", value: "name", class: "blue-grey lighten-4" },
+        {
+          text: "Name",
+          value: "name",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "Department",
           value: "department",
           class: "blue-grey lighten-4"
         },
-        { text: "Branch", value: "branch", class: "blue-grey lighten-4" },
+        {
+          text: "Branch",
+          value: "branch",
+          class: "blue-grey lighten-4"
+        },
 
-        { text: "Location", value: "location", class: "blue-grey lighten-4" },
+        {
+          text: "Location",
+          value: "location",
+          class: "blue-grey lighten-4"
+        },
         {
           text: "Purpose Type",
           value: "purpose",
