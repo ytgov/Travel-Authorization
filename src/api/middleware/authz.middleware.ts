@@ -28,9 +28,8 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
 
   let u = await db.getBySub(sub);
 
-  u.display_name = `${u.first_name} ${u.last_name}`;
-
   if (u) {
+    u.display_name = `${u.first_name} ${u.last_name}`;
     req.user = {
       ...req.user,
       ...u
