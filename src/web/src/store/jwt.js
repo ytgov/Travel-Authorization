@@ -3,8 +3,6 @@ import { getInstance } from "../auth";
 
 export async function prepareAxios() {
   const auth = await getInstance();
-
-  //this is failing here...
   const token = await auth.getTokenSilently();
 
   return axios.create({

@@ -28,6 +28,7 @@ export default {
     title: `Welcome to ${config.applicationName}`
   }),
   async created() {},
+  async mounted() {},
   methods: {
     async login() {
       this.$auth.loginWithRedirect({

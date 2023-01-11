@@ -10,8 +10,6 @@ export const userRouter = express.Router();
 const db = knex(DB_CONFIG);
 const userService = new UserService();
 
-userRouter.use(checkJwt, loadUser);
-
 userRouter.get("/me", async (req: Request, res: Response) => {
   let person = req.user;
 

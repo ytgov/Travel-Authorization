@@ -72,7 +72,3 @@ export const environment = process.env.NODE_ENV;
 export const apiBaseUrl =
   process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";
 export const appVersion = "1.1.3";
-export const apiConfigUrl =
-  process.env.NODE_ENV == "production"
-    ? "/api/config"
-    : "http://localhost:3000/api/config";

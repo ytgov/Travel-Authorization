@@ -11,23 +11,25 @@ export class UserService {
   }
 
   async create(
+    sub: string,
     email: string,
     first_name: string,
     last_name: string,
     roles: string,
-    is_active: string
+    status: string
   ): Promise<any> {
     let existing = await this.db("user").where({ email }).count("email as cnt");
 
     if (existing[0].cnt > 0) return undefined;
 
     let user = {
+      sub,
       email,
       first_name,
       last_name,
       roles,
-      is_active,
-      create_date: new Date(),
+      status,
+      create_date: new Date()
     };
 
     return await this.db("user").insert(user);
@@ -49,6 +51,10 @@ export class UserService {
     return this.db("user").where({ id }).first();
   }
 
+  async getBySub(sub: string): Promise<any> {
+    return this.db("user").where({ sub }).first();
+  }
+
   async getAccessFor(email: string): Promise<string[]> {
     return this.db("user").where({ email }).select("roles");
   }
@@ -65,10 +71,10 @@ export class UserService {
 
   async saveDepartmentAccess(id: string, department: string) {
     try {
-      await this.db.transaction(async (trx) => {
+      await this.db.transaction(async trx => {
         await this.db("user")
           .update({
-            department: department,
+            department: department
           })
           .where("id", id)
           .transacting(trx);
@@ -92,10 +98,10 @@ export class UserService {
 
   async saveRoleAccess(id: string, roles: string[]) {
     try {
-      await this.db.transaction(async (trx) => {
+      await this.db.transaction(async trx => {
         await this.db("user")
           .update({
-            roles: roles.join(),
+            roles: roles.join()
           })
           .where("id", id)
           .transacting(trx);
@@ -132,7 +138,7 @@ export class UserService {
       branch: "",
       unit: "",
       mailcode: "",
-      manager: "",
+      manager: ""
     };
     if (unitSearch) {
       unit = {
@@ -141,7 +147,7 @@ export class UserService {
         branch: unitSearch.branch || "",
         unit: unitSearch.unit || "",
         mailcode: unitSearch.mailcode || "",
-        manager: unitSearch.manager || "",
+        manager: unitSearch.manager || ""
       };
     }
     return unit;

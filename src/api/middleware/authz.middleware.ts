@@ -5,6 +5,8 @@ import jwksRsa from "jwks-rsa";
 import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "../config";
 import { UserService } from "../services";
 
+console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}.well-known/jwks.json`);
+
 export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
@@ -24,46 +26,44 @@ export async function loadUser(
   res: Response,
   next: NextFunction
 ) {
-  const db = req.store.Users as UserService;
-
-  let email = req.user.email;
+  const db = new UserService();
+  let sub = req.user.sub;
   const token = req.headers.authorization || "";
-  let u = await db.getByEmail(email);
+
+  let u = await db.getBySub(sub);
 
   if (u) {
     req.user = { ...req.user, ...u };
     return next();
   }
 
-  console.log("User not found in DB:", email, "Looking up userinfo from Auth0");
-
   await axios
     .get(`${AUTH0_DOMAIN}userinfo`, { headers: { authorization: token } })
     .then(async resp => {
       if (resp.data && resp.data.sub) {
-        console.log(resp.data);
         let email = resp.data.email;
         let first_name = resp.data.given_name;
         let last_name = resp.data.family_name;
         email = resp.data.email;
 
-        let u = await db.getByEmail(email);
+        let u = await db.getBySub(sub);
 
         if (u) {
           req.user = { ...req.user, ...u };
         } else {
           if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`;
 
-          let eu = await db.getByEmail(email);
+          let eu = await db.getBySub(sub);
 
           if (eu) {
-            eu.sub = email;
+            eu.sub = sub;
             // await db.update(eu._id || new ObjectId(), eu);
 
             // console.log("UPDATE USER SUB " + email, sub, u);
             req.user = { ...req.user, ...eu };
           } else {
             u = await db.create(
+              sub,
               email,
               first_name,
               last_name,

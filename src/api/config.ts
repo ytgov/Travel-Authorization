@@ -13,6 +13,8 @@ switch (process.env.NODE_ENV) {
 }
 dotenv.config({ path: path });
 
+console.log("Loading env: ", path);
+
 let obj = process.env;
 let pattern = "VUE_APP_";
 

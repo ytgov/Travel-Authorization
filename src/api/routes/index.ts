@@ -6,4 +6,3 @@ export * from "./manager-router";
 export * from "./healthcheck-router";
 export * from "./form-router";
 export * from "./preapproved-router";
-export * from "./config-router";

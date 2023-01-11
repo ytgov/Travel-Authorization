@@ -10,7 +10,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@auth0/auth0-spa-js": "^2.0.1",
+    "@auth0/auth0-spa-js": "^1.22.0",
     "axios": "^0.21.2",
     "esri-loader": "^3.6.0",
     "lodash": "^4.17.21",

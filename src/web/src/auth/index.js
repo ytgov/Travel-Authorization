@@ -1,106 +1,74 @@
-import Vue from "vue";
-import { createAuth0Client } from "@auth0/auth0-spa-js";
-import { secureDelete, secureGet, securePut, securePost } from "@/store/jwt";
-import { getAuthConfig } from "./getAuthConfig";
-import { apiConfigUrl } from "@/config";
+/**
+ *  External Modules
+ */
 
-const DEFAULT_REDIRECT_CALLBACK = () =>
-  window.history.replaceState({}, document.title, window.location.pathname);
+import Vue from "vue";
+import createAuth0Client from "@auth0/auth0-spa-js";
+
+/**
+ *  Vue.js Instance Definition
+ */
 
 let instance;
 
 export const getInstance = () => instance;
 
+/**
+ *  Vue.js Instance Initialization
+ */
+
 export const useAuth0 = ({
-  onRedirectCallback = DEFAULT_REDIRECT_CALLBACK,
+  onRedirectCallback = () =>
+    window.history.replaceState({}, document.title, window.location.pathname),
   redirectUri = window.location.origin,
-  ...options
+  ...pluginOptions
 }) => {
   if (instance) return instance;
 
   instance = new Vue({
     data() {
       return {
-        loading: true,
+        auth0Client: null,
+        isLoading: true,
         isAuthenticated: false,
         user: {},
-        auth0Client: null,
-        popupOpen: false,
         error: null
       };
     },
     methods: {
-      async loginWithPopup(options, config) {
-        this.popupOpen = true;
-
-        try {
-          await this.auth0Client.loginWithPopup(options, config);
-          this.user = await this.auth0Client.getUser();
-          this.isAuthenticated = await this.auth0Client.isAuthenticated();
-          this.error = null;
-        } catch (e) {
-          this.error = e;
-          console.error(e);
-        } finally {
-          this.popupOpen = false;
-        }
-
-        this.user = await this.auth0Client.getUser();
-        console.log(this.user);
-        this.isAuthenticated = true;
-      },
-
       async handleRedirectCallback() {
-        this.loading = true;
+        this.isLoading = true;
         try {
           await this.auth0Client.handleRedirectCallback();
           this.user = await this.auth0Client.getUser();
-          console.log("user", this.user);
           this.isAuthenticated = true;
-          this.error = null;
-        } catch (e) {
-          this.error = e;
+        } catch (error) {
+          this.error = error;
         } finally {
-          this.loading = false;
+          this.isLoading = false;
         }
       },
-      loginWithRedirect(o) {
-        return this.auth0Client.loginWithRedirect(o);
+
+      loginWithRedirect(options) {
+        return this.auth0Client.loginWithRedirect(options);
       },
-      getIdTokenClaims(o) {
-        return this.auth0Client.getIdTokenClaims(o);
+
+      logout(options) {
+        return this.auth0Client.logout(options);
       },
+
       getTokenSilently(o) {
         return this.auth0Client.getTokenSilently(o);
-      },
-      getTokenWithPopup(o) {
-        return this.auth0Client.getTokenWithPopup(o);
-      },
-      logout(o) {
-        return this.auth0Client.logout(o);
-      },
-      get(url) {
-        return secureGet(url);
-      },
-      put(url, body) {
-        return securePut(url, body);
-      },
-      post(url, body) {
-        return securePost(url, body);
-      },
-      delete(url) {
-        return secureDelete(url);
       }
     },
 
     async created() {
-      this.options = await getAuthConfig(apiConfigUrl);
-
       this.auth0Client = await createAuth0Client({
-        ...options,
-        authorizationParams: {
-          redirect_uri: redirectUri
-        }
+        ...pluginOptions,
+        domain: pluginOptions.domain,
+        client_id: pluginOptions.clientId,
+        audience: pluginOptions.audience,
+        redirect_uri: redirectUri
       });
 
       try {
@@ -110,22 +78,24 @@ export const useAuth0 = ({
         ) {
           const { appState } = await this.auth0Client.handleRedirectCallback();
 
-          this.error = null;
-
           onRedirectCallback(appState);
         }
-      } catch (e) {
-        this.error = e;
+      } catch (error) {
+        this.error = error;
       } finally {
         this.isAuthenticated = await this.auth0Client.isAuthenticated();
         this.user = await this.auth0Client.getUser();
-        this.loading = false;
+        this.isLoading = false;
       }
     }
   });
 
   return instance;
 };
+
+/**
+ *  Vue.js Plugin Definition
+ */
 
 export const Auth0Plugin = {
   install(Vue, options) {

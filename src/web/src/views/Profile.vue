@@ -79,12 +79,12 @@ export default {
       "username",
       "email",
       "roles",
-      "access",
-    ]),
+      "access"
+    ])
   },
   data: () => ({}),
   async created() {
     await store.dispatch("profile/loadProfile");
-  },
+  }
 };
 </script>

@@ -9,25 +9,25 @@ export async function seedUp() {
   // roles: string,
   // is_active: string
 
-  await sqldb("user").delete().whereRaw("1=1");
-  await sqldb("user").insert([
-    {
-      email: "maxrparker@gmail.com",
-      first_name: "Test",
-      last_name: "User",
-      roles: "Admin,PatAdmin",
-      department:"Highways and Public Works",
-      create_date: "2021-08-01",
-    },
-    {
-      email: "diedred@gmail.com",
-      first_name: "Test",
-      last_name: "Admin",
-      roles: "PatAdmin",
-      department:"Highways and Public Works",
-      create_date: "2021-08-01",
-    },
-  ]);
+  // await sqldb("user").delete().whereRaw("1=1");
+  // await sqldb("user").insert([
+  //   {
+  //     email: "maxrparker@gmail.com",
+  //     first_name: "Test",
+  //     last_name: "User",
+  //     roles: "Admin,PatAdmin",
+  //     department:"Highways and Public Works",
+  //     create_date: "2021-08-01",
+  //   },
+  //   {
+  //     email: "diedred@gmail.com",
+  //     first_name: "Test",
+  //     last_name: "Admin",
+  //     roles: "PatAdmin",
+  //     department:"Highways and Public Works",
+  //     create_date: "2021-08-01",
+  //   },
+  // ]);
 
   await sqldb("travelPurpose").delete().whereRaw("1=1");
   await sqldb("travelPurpose").insert([
@@ -35,7 +35,7 @@ export async function seedUp() {
     { purpose: "Conference" },
     { purpose: "Workshop" },
     { purpose: "General Travel" },
-    { purpose: "Community Travel" },
+    { purpose: "Community Travel" }
   ]);
 
   await sqldb("transportMethod").delete().whereRaw("1=1");
@@ -43,7 +43,7 @@ export async function seedUp() {
     { method: "Rental vehicle" },
     { method: "Personal vehicle" },
     { method: "Fleet vehicle" },
-    { method: "Plane" },
+    { method: "Plane" }
   ]);
 
   await sqldb("destinations").delete().whereRaw("1=1");
@@ -404,6 +404,6 @@ export async function seedUp() {
     { province: "YT", city: "Old Crow" },
     { province: "YT", city: "Otter Falls" },
     { province: "YT", city: "Ealge Plains" },
-    { province: "YT", city: "Salmon Arm" },
+    { province: "YT", city: "Salmon Arm" }
   ]);
 }

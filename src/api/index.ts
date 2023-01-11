@@ -15,12 +15,10 @@ import {
   permRouter,
   healthCheckRouter,
   formRouter,
-  preapprovedRouter,
-  configRouter
+  preapprovedRouter
 } from "./routes";
 import { checkJwt, loadUser } from "./middleware/authz.middleware";
 
-var cronJob = require("cron").CronJob;
 var knex = require("knex");
 var fileupload = require("express-fileupload");
 
@@ -89,8 +87,6 @@ app.set("db", conn);
 
 // accepts FormData
 app.use(fileupload());
-
-app.use("/api/config", configRouter);
 
 app.use("/api/form", checkJwt, loadUser, formRouter);
 app.use("/api/user", checkJwt, loadUser, userRouter);
