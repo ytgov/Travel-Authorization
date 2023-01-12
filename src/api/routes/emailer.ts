@@ -4,7 +4,7 @@ const db = require("./queries");
 const environment = process.env.NODE_ENV || "staging";
 const config = require("./config/knexfile.js")[environment];
 const knex = require("knex")(config);
-const moment = require("moment");
+// const moment = require("moment");
 
 const ewsConfig = {
   username: process.env.EMAILER_USERNAME,
