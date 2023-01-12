@@ -34,7 +34,7 @@ app.use(
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      "default-src": ["'self'"],
+      "default-src": ["'self'", "https://dev-0tc6bn14.eu.auth0.com"],
       "base-uri": ["'self'"],
       "block-all-mixed-content": [],
       "font-src": ["'self'", "https:", "data:"],
@@ -45,7 +45,7 @@ app.use(
       "script-src-attr": ["'none'"],
       "style-src": ["'self'", "https:", "'unsafe-inline'"],
       "worker-src": ["'self'", "blob:"],
-      "connect-src": ["'self'", "https://*.arcgis.com", "https://services.arcgisonline.com"]
+      "connect-src": ["'self'", "https://dev-0tc6bn14.eu.auth0.com"]
     }
   })
 );
