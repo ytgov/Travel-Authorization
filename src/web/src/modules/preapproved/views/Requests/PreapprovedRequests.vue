@@ -53,13 +53,13 @@
           {{ item.month }}
         </div>
         <div v-else>
-          <!-- eslint-disable-next-line vue/no-parsing-error -->
           <div>
+            <!-- eslint-disable-next-line vue/no-parsing-error -->
             {{ item.startDate | (beautify - date) }}
             to
           </div>
-          <!-- eslint-disable-next-line vue/no-parsing-error -->
           <div>
+            <!-- eslint-disable-next-line vue/no-parsing-error -->
             {{ item.endDate | (beautify - date) }}
           </div>
         </div>
