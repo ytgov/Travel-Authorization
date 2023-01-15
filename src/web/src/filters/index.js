@@ -16,7 +16,7 @@ Vue.filter("isSystemAdmin", function () {
   return admin;
 });
 
-Vue.filter("beautify-date", function (date) {
+Vue.filter("beautifyDate", function (date) {
   const MonthList = {
     1: "Jan",
     2: "Feb",

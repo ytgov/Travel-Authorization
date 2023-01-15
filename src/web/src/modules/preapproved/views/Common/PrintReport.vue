@@ -33,9 +33,9 @@
 
         <div :id="'pdf-page-' + id">
           <v-app-bar color="#fff" flat height="70" style="left: 0; border-bottom: 3px #f3b228 solid">
-            <img src="/yukon.svg" style="margin: -1.2rem 2rem 0 0" height="44" />
+            <img src="/yukon.svg" style="margin: -1.2rem -10rem 0 0" height="44" />
             <div style="margin: 0 auto !important; font-size: 14pt !important">
-              <b>Out-of-Territory Travel for Training and Conferences</b>
+              <b>Out-of-Territory Travel</b>
             </div>
           </v-app-bar>
 
@@ -62,11 +62,11 @@
               <div v-else>
                 <div style="line-height: 1rem">
                   <!-- eslint-disable-next-line vue/no-parsing-error -->
-                  {{ item.startDate | (beautify - date) }}-
+                  {{ item.startDate | beautifyDate }}-
                 </div>
                 <div style="line-height: 1rem">
                   <!-- eslint-disable-next-line vue/no-parsing-error -->
-                  {{ item.endDate | (beautify - date) }}
+                  {{ item.endDate | beautifyDate }}
                 </div>
               </div>
             </template>
@@ -103,6 +103,7 @@
             <div style="width: 1%" />
             <div style="width: 10%; border-top: 1px solid #333333; font-size: 8pt">Date:</div>
           </v-row>
+          <div style="font-size:7pt;" class="form-footer"><i>Printed on: {{currentDate}}</i></div>
         </div>
 
         <div class="mt-10" />
@@ -172,13 +173,15 @@ export default {
       printReportDialog: false,
       printRequests: [],
       totalCost: 0,
-      approver: ""
+      approver: "",
+      currentDate:""
     };
   },
   mounted() {},
   methods: {
     initPrint() {
       console.log("Print");
+      this.currentDate = new Date().toDateString()
       this.totalCost = 0;
       for (const req of this.travelRequests) this.totalCost += req.estimatedCost;
       this.printRequests = JSON.parse(JSON.stringify(this.travelRequests));
@@ -187,12 +190,19 @@ export default {
       const styles = [
         `@media print {
                     @page {
-                        size: letter landscape !important;
+                        size: letter landscape !important;                        
+                    }
+                    div.form-footer {
+                      position: fixed;
+                      bottom: 0;
+                      width:100%; 
+                      display:inline-block;
                     }
                     .new-page{
                         page-break-before: always;
                         position: relative; top: 8em;
                     }
+                    
                 }`,
         `https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css`,
         `thead th {
@@ -239,5 +249,9 @@ export default {
 
 ::v-deep(table) {
   border: 2px solid #333334;
+}
+
+.form-footer{
+  display: none;
 }
 </style>

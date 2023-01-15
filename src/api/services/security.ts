@@ -11,11 +11,11 @@ export class SecurityService {
   }
 
   async isAdmin(email: string): Promise<any | undefined> {
-    try {
+    try {      
       await this.db.transaction(async (trx: any) => {
         let user = await this.db("user").select("roles").where("email", "=", email).first().transacting(trx);
 
-        if (user.find("admin")) {
+        if (user.find("Admin")) {
           return true;
         }
         return false;

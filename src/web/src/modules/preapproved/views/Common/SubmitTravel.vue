@@ -135,12 +135,12 @@
               <div v-else>
                 <div>
                   <!-- eslint-disable-next-line vue/no-parsing-error -->
-                  {{ item.startDate | (beautify - date) }}
+                  {{ item.startDate | beautifyDate }}
                   to
                 </div>
                 <div>
                   <!-- eslint-disable-next-line vue/no-parsing-error -->
-                  {{ item.endDate | (beautify - date) }}
+                  {{ item.endDate | beautifyDate }}
                 </div>
               </div>
             </template>

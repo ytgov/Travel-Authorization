@@ -16,7 +16,7 @@
 
     <v-row>
       <v-col cols="12" md="12">
-        <v-alert v-if="alertMsg" color="red accent-4" dense dark dismissible>{{ alertMsg }}</v-alert>
+        <v-alert v-if="alertMsg" :color="alertType+ ' accent-4'" dense dark dismissible>{{ alertMsg }}</v-alert>
         <v-card class="default">
           <v-card-title>User Details</v-card-title>
           <v-card-text>
@@ -68,6 +68,7 @@
                     clearable
                     background-color="white"
                     hide-details
+                    @change="alertMsg='';"
                   ></v-select>
                 </v-col>
                 <v-col cols="12">
@@ -78,12 +79,9 @@
                     outlined
                     dense
                     multiple
-                    small-chips
-                    clearable
-                    item-value="id"
-                    item-text="rolename"
-                    background-color="white"
-                    hide-details
+                    small-chips                 
+                    background-color="white"                    
+                    @change="alertMsg='';"
                   ></v-select>
                 </v-col>
               </v-row>
@@ -130,14 +128,29 @@ export default {
     },
 
     pendingRoles: [],
-    pendingDepartments: "",
+    pendingDepartments: ["Employee"],
     pendingBranches: [],
 
     departments: [],
     branches: [],
-    roles: ["Admin", "PatAdmin"],
+    roles: [
+      {
+        text: "Employee",
+        value: "Employee",
+        disabled: true,
+      },
+      {
+        text: "PatAdmin",
+        value: "PatAdmin",        
+      },
+      {
+        text: "Admin",
+        value: "Admin",        
+      }
+    ],
     showAccessDialog: false,
-    alertMsg: ""
+    alertMsg: "",
+    alertType:""
   }),
   async mounted() {
     await this.loadDepartments();
@@ -147,6 +160,7 @@ export default {
   methods: {
     async saveUser() {
       this.alertMsg = "";
+      this.alertType ="red";
       let permsObject = {
         departments: this.pendingDepartments,
         roles: this.pendingRoles
@@ -154,6 +168,8 @@ export default {
       securePut(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
         .then(resp => {
           console.log(resp);
+          this.alertMsg = "Permissions and Department Saved Successfully.";
+          this.alertType ="teal";
         })
         .catch(e => (this.alertMsg = e.response.data));
       // this.showAccessDialog = false;

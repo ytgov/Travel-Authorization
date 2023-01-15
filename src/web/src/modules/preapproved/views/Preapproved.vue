@@ -74,6 +74,17 @@ export default {
       secureGet(`${LOOKUP_URL}/department-branch`)
         .then(resp => {
           this.$store.commit("preapproved/SET_DEPARTMENT_BRANCH", resp.data);
+          this.getTravelPurposes();
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+
+    getTravelPurposes(){
+      secureGet(`${LOOKUP_URL}/travelPurpose`)
+        .then(resp => {          
+          this.$store.commit("preapproved/SET_TRAVEL_PURPOSES", resp.data);
           this.getPreapprovedTravel();
         })
         .catch(e => {

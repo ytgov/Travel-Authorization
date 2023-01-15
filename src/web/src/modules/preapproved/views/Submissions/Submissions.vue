@@ -4,11 +4,11 @@
       <!-- eslint-disable-next-line vue/no-unused-vars -->
       <template v-slot:item.submissionDate="{ item }">
         <!-- eslint-disable-next-line vue/no-parsing-error -->
-        {{ item.submissionDate | (beautify - date) }}
+        {{ item.submissionDate | beautifyDate }}
       </template>
-      <template v-slot:item.submission="{ item }">
+      <template v-slot:item.location="{ item }">
         <div v-for="(sub, inx) in item.preapproved" :key="inx" style="line-height: 1rem">
-          {{ sub.department }}-{{ sub.location }}
+          - {{ sub.location }}
         </div>
       </template>
       <template v-slot:item.edit="{ item }">
@@ -77,8 +77,13 @@ export default {
           class: "blue-grey lighten-4"
         },
         {
-          text: "Submission",
-          value: "submission",
+          text: "Department",
+          value: "department",
+          class: "blue-grey lighten-4"
+        },
+        {
+          text: "Location",
+          value: "location",
           class: "blue-grey lighten-4"
         },
         {
