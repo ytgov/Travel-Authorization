@@ -16,7 +16,7 @@
 
     <v-row>
       <v-col cols="12" md="12">
-        <v-alert v-if="alertMsg" :color="alertType+ ' accent-4'" dense dark dismissible>{{ alertMsg }}</v-alert>
+        <v-alert v-if="alertMsg" :color="alertType + ' accent-4'" dense dark dismissible>{{ alertMsg }}</v-alert>
         <v-card class="default">
           <v-card-title>User Details</v-card-title>
           <v-card-text>
@@ -67,7 +67,7 @@
                     clearable
                     background-color="white"
                     hide-details
-                    @change="alertMsg='';"
+                    @change="alertMsg = ''"
                   ></v-select>
                 </v-col>
                 <v-col cols="12">
@@ -78,10 +78,9 @@
                     outlined
                     dense
                     multiple
-                    small-chips                 
-                    background-color="white"                    
-                    @change="alertMsg='';"
                     small-chips
+                    background-color="white"
+                    @change="alertMsg = ''"
                     clearable
                     item-value="id"
                     item-text="name"
@@ -140,7 +139,7 @@ export default {
     roles: [],
     showAccessDialog: false,
     alertMsg: "",
-    alertType:""
+    alertType: ""
   }),
   async mounted() {
     await this.loadDepartments();
@@ -151,7 +150,7 @@ export default {
   methods: {
     async saveUser() {
       this.alertMsg = "";
-      this.alertType ="red";
+      this.alertType = "red";
       let permsObject = {
         first_name: this.user.first_name,
         last_name: this.user.last_name,
@@ -162,7 +161,7 @@ export default {
         .then(resp => {
           console.log(resp);
           this.alertMsg = "Permissions and Department Saved Successfully.";
-          this.alertType ="teal";
+          this.alertType = "teal";
         })
         .catch(e => (this.alertMsg = e.response.data));
       // this.showAccessDialog = false;
