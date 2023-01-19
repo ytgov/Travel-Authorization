@@ -55,7 +55,6 @@
                     hide-details
                   ></v-text-field>
                 </v-col>
-
                 <v-col cols="12">
                   <v-select
                     :items="departments"
@@ -82,6 +81,11 @@
                     small-chips                 
                     background-color="white"                    
                     @change="alertMsg='';"
+                    small-chips
+                    clearable
+                    item-value="id"
+                    item-text="name"
+                    hide-details
                   ></v-select>
                 </v-col>
               </v-row>
@@ -133,27 +137,14 @@ export default {
 
     departments: [],
     branches: [],
-    roles: [
-      {
-        text: "Employee",
-        value: "Employee",
-        disabled: true,
-      },
-      {
-        text: "PatAdmin",
-        value: "PatAdmin",        
-      },
-      {
-        text: "Admin",
-        value: "Admin",        
-      }
-    ],
+    roles: [],
     showAccessDialog: false,
     alertMsg: "",
     alertType:""
   }),
   async mounted() {
     await this.loadDepartments();
+    await this.loadRoles();
     await this.loadUser(this.$route.params.id);
   },
 
@@ -162,6 +153,8 @@ export default {
       this.alertMsg = "";
       this.alertType ="red";
       let permsObject = {
+        first_name: this.user.first_name,
+        last_name: this.user.last_name,
         departments: this.pendingDepartments,
         roles: this.pendingRoles
       };
@@ -191,6 +184,12 @@ export default {
           this.departments.push({
             name: key
           });
+      });
+    },
+    async loadRoles() {
+      return secureGet(`${LOOKUP_URL}/roles`).then(resp => {
+        console.log(resp.data);
+        this.roles = resp.data;
       });
     }
   }

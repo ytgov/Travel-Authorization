@@ -93,15 +93,15 @@ lookupRouter.get("/department/:id", ReturnValidationErrors, async function (req:
   }
 });
 
-// lookupRouter.get("/roles", ReturnValidationErrors, async function (req: Request, res: Response) {
-//   try {
-//     let result = await db("roles").select("id", "rolename");
-//     res.status(200).json(result);
-//   } catch (error: any) {
-//     console.log(error);
-//     res.status(500).json("Internal Server Error");
-//   }
-// });
+lookupRouter.get("/roles", ReturnValidationErrors, async function (req: Request, res: Response) {
+  try {
+    let result = await db("role").select("name");
+    res.status(200).json(result);
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json("Internal Server Error");
+  }
+});
 
 lookupRouter.get("/departmentList", ReturnValidationErrors, async function (req: Request, res: Response) {
   let cleanList: any = {};

@@ -112,22 +112,20 @@ export default {
     laodUsers() {
       secureGet(`${USERS_URL}`).then(resp => {
         this.users = resp.data;
-        console.log(this.users);
       });
     }
   },
   computed: {
     filteredData() {
-      if (this.selectedFilter.length == 0) return this.users;      
-      
-      return this.users.filter(usr => this.selectedFilter.includes(usr.status))
-      // let data = [];
-      // for (let usr of this.users) {
-      //   if (this.selectedFilter.indexOf("Active") >= 0) {
-      //     if (usr.is_active == 1) data.push(usr);
-      //   }
-      // }
-      // return data;
+      if (this.selectedFilter.length == 0) return this.users;
+
+      let data = [];
+      for (let usr of this.users) {
+        if (this.selectedFilter.indexOf("Active") >= 0) {
+          if (usr.status == "Active") data.push(usr);
+        }
+      }
+      return data;
     }
   }
 };
