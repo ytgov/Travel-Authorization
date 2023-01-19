@@ -39,10 +39,18 @@ export class UserService {
     return await this.db("user").insert(user);
   }
 
-  async update(email: string, item: any) {
+  async updateByEmail(email: string, item: any) {
     return this.db("user")
       .where({
         email
+      })
+      .update(item);
+  }
+
+  async updateById(id: string, item: any) {
+    return this.db("user")
+      .where({
+        id
       })
       .update(item);
   }

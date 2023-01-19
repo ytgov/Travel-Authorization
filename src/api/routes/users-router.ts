@@ -51,6 +51,8 @@ userRouter.get("/unit", async (req: Request, res: Response) => {
 
 userRouter.put("/:id/permissions", RequiresRoleAdmin, async (req: Request, res: Response) => {
   try {
+    console.log("body", req.body);
+    await userService.updateById(req.params.id, { first_name: req.body.first_name, last_name: req.body.last_name });
     await userService.saveDepartmentAccess(req.params.id, req.body.departments);
     await userService.saveRoleAccess(req.params.id, req.body.roles);
     res.status(200).json("Saved permissions");
@@ -70,7 +72,10 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
         id: req.params.id
       })
       .first();
+    console.log(user);
     let permissions = {
+      first_name: user.first_name,
+      last_name: user.last_name,
       departments: user.department,
       roles: user.roles?.split(",")
     };

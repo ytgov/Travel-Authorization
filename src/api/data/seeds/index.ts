@@ -3,31 +3,21 @@ import { sqldb } from "..";
 export async function seedUp() {
   console.log("Seeding");
 
-  // email: string,
-  // first_name: string,
-  // last_name: string,
-  // roles: string,
-  // is_active: string
+  await sqldb("user").update({ roles: "User" }).whereRaw("1=1");
+  await sqldb("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" });
 
-  // await sqldb("user").delete().whereRaw("1=1");
-  // await sqldb("user").insert([
-  //   {
-  //     email: "maxrparker@gmail.com",
-  //     first_name: "Test",
-  //     last_name: "User",
-  //     roles: "Admin,PatAdmin",
-  //     department:"Highways and Public Works",
-  //     create_date: "2021-08-01",
-  //   },
-  //   {
-  //     email: "diedred@gmail.com",
-  //     first_name: "Test",
-  //     last_name: "Admin",
-  //     roles: "PatAdmin",
-  //     department:"Highways and Public Works",
-  //     create_date: "2021-08-01",
-  //   },
-  // ]);
+  await sqldb("role").delete().whereRaw("1=1");
+  await sqldb("role").insert([
+    {
+      name: "Admin"
+    },
+    {
+      name: "User"
+    },
+    {
+      name: "PatAdmin"
+    }
+  ]);
 
   await sqldb("travelPurpose").delete().whereRaw("1=1");
   await sqldb("travelPurpose").insert([
@@ -1492,4 +1482,6 @@ export async function seedUp() {
       city: "Salmon Arm"
     }
   ]);
+
+  return "Done  ";
 }
