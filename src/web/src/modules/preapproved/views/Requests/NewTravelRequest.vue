@@ -378,7 +378,7 @@ export default {
         }
       ],
       travellers: [],
-      purposeList: ["Maintenance", "Conference", "Workshop", "General Travel", "Community Travel"],
+      purposeList: [],
       purpose: "",
       addNewTravelDialog: false,
       unknownDate: false,
@@ -553,7 +553,7 @@ export default {
           travelers: this.travellers,
           travelerNotes: this.travellerNotes
         };
-        console.log(body);
+        // console.log(body);
         const id = this.travelRequest?.preTID ? this.travelRequest.preTID : 0;
         securePost(`${PREAPPROVED_URL}/${id}`, body)
           .then(() => {
@@ -577,6 +577,7 @@ export default {
       this.initStates();
       this.initTravellers();
       this.initDepartments();
+      this.purposeList = this.$store.state.preapproved?.travelPurposes?.map(item => item.purpose)
 
       this.travellers = this.type == "Add New" ? [] : this.travelRequest.travelers;
       this.purpose = this.type == "Add New" ? "" : this.travelRequest.purpose;

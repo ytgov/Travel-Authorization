@@ -17,11 +17,21 @@
         :travelRequests="selectedRequests"
         buttonName="Print Report"
       />
+      <v-btn
+           v-if="admin"
+          :disabled="selectedRequests.length == 0"        
+          @click="exportToExcel()"          
+          class="mr-5 my-7"
+          elevation="5"
+          color="primary"          
+        >
+          Export To Excel
+      </v-btn>
       <new-travel-request type="Add New" @updateTable="updateTable" :class="admin ? '' : 'ml-auto'" />
     </v-row>
     <v-data-table
       :headers="headers"
-      :items="travelRequests"
+      :items="grayedOutTravelRequests"
       :items-per-page="5"
       class="elevation-1"
       v-model="selectedRequests"
@@ -55,12 +65,12 @@
         <div v-else>
           <div>
             <!-- eslint-disable-next-line vue/no-parsing-error -->
-            {{ item.startDate | (beautify - date) }}
+            {{ item.startDate | beautifyDate }}
             to
           </div>
           <div>
             <!-- eslint-disable-next-line vue/no-parsing-error -->
-            {{ item.endDate | (beautify - date) }}
+            {{ item.endDate | beautifyDate }}
           </div>
         </div>
       </template>
@@ -81,6 +91,7 @@ import Vue from "vue";
 import NewTravelRequest from "./NewTravelRequest.vue";
 import PrintReport from "../Common/PrintReport.vue";
 import SubmitTravel from "../Common/SubmitTravel.vue";
+import { ExportToCsv } from 'export-to-csv';
 
 export default {
   components: {
@@ -154,6 +165,16 @@ export default {
   mounted() {
     this.admin = Vue.filter("isAdmin")();
   },
+  computed: {
+    grayedOutTravelRequests() {
+      const travelRequests = JSON.parse(JSON.stringify(this.travelRequests));
+      if(this.firstSelectionDept)
+        travelRequests.forEach(req => {
+            req.isSelectable= req.isSelectable? (req.department==this.firstSelectionDept) :false
+        });
+      return travelRequests
+    }
+  },
   methods: {
     updateTable() {
       this.$emit("updateTable");
@@ -181,6 +202,38 @@ export default {
           this.firstSelectionDept = "";
         }
       });
+    },
+    exportToExcel(){
+      // console.log(this.selectedRequests)
+      const csvInfo = this.selectedRequests.map(req =>{
+        return {
+          travelers: req.travelers?.map(trv=>trv.fullName.replace(".", " "))?.join(', '),
+          department: req.department,
+          branch: (req.branch? req.branch:''),
+          travelDate: (req.dateUnkInd? req.month:(req.startDate +' '+ req.endDate)),
+          location: req.location,          
+          purpose: (req.purpose? req.purpose :''),
+          estimatedCost: req.estimatedCost,
+          reason: (req.reason? req.reason :''),
+          status: (req.status? req.status :''),
+          travelerNotes: (req.travelerNotes? req.travelerNotes :'')
+        }
+      })
+      const options = { 
+          fieldSeparator: ',',
+          quoteStrings: '"',
+          decimalSeparator: '.',
+          showLabels: true, 
+          showTitle: false,
+          title: '',
+          filename: 'Preapproved-Travel-Requests',
+          useTextFile: false,
+          useBom: true,
+          useKeysAsHeaders: false,
+          headers: ['Name', 'Department', 'Branch', 'Travel Date', 'Location', 'Purpose', 'Estimated Cost', 'Reason', 'Status', 'Notes']
+      };
+      const csvExporter = new ExportToCsv(options);
+      csvExporter.generateCsv(csvInfo);
     }
   }
 };

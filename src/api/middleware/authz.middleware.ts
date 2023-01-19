@@ -30,6 +30,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
 
   if (u) {
     u.display_name = `${u.first_name} ${u.last_name}`;
+    u.roles = u.roles.split(',');
     req.user = {
       ...req.user,
       ...u
@@ -76,6 +77,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
             };
           } else {
             u = await db.create(sub, email, first_name, last_name, "User", "Active");
+            
             console.log("CREATING USER FOR " + email, u);
             req.user = {
               ...req.user,

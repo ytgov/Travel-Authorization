@@ -1,5 +1,6 @@
 const state = {
   employees: [],
+  travelPurposes: [],
   departmentBranch: {},
   openDialogId: ""
 };
@@ -13,6 +14,9 @@ const mutations = {
   },
   SET_OPEN_DIALOG_ID(state, value) {
     state.openDialogId = value;
+  },
+  SET_TRAVEL_PURPOSES(state, value){
+    state.travelPurposes = value;
   }
 };
 
