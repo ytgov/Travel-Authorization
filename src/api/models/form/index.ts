@@ -1,0 +1,36 @@
+export interface Form {
+  id: any;
+  formId: string;
+  userId: string;
+  firstName?: string;
+  lastName?: string;
+  department?: string;
+  division?: string;
+  branch?: string;
+  unit?: string;
+  email?: string;
+  mailcode?: string;
+  daysOffTravelStatus?: string;
+  dateBackToWork?: Date;
+  travelDuration?: string;
+  purpose?: string;
+  travelAdvance?: string;
+  eventName?: string;
+  summary?: string;
+  benefits?: string;
+  supervisorEmail?: string;
+  status?: string;
+  departureDate?: Date;
+  stops?: any[];
+  expenses?: any[];
+  estimates?: any[];
+  requestChange?: string;
+  denialReason?: string;
+  oneWayTrip?: string;
+  multiStop?: string;
+  createdBy?: string;
+  createdDate?: Date;
+  deletedBy?: string;
+  deletedDate?: Date;
+  deleted?: string;
+}

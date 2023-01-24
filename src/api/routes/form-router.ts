@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid";
 import * as formHelper from "../utils/formHelper";
 import { auth } from "express-openid-connect";
 import { report } from "process";
+import { Form } from "../models/form";
 
 const db = knex(DB_CONFIG);
 
@@ -54,27 +55,16 @@ formRouter.get("/recent", ReturnValidationErrors, async function (req: Request, 
     await db.transaction(async trx => {
       let form = await db("forms").select("*").andWhere("userId", "=", user.id).limit(1).transacting(trx);
 
-      let expenses = await db("expenses")
-        .select("*")
-        .where("type", "=", "Expenses")
-        .andWhere("taid", "=", form[0].id)
-        .transacting(trx);
+      // let stopString = stops.map(stop => {}).concat();
 
-      let stops = await db("stops")
-        .select("*")
-        .where("taid", "=", form[0].id)
-        .leftJoin("destinations", "stops.travelTo", "destinations.id")
-        .orderBy("departureDate", "asc");
-      let stopString = stops.map(stop => {}).concat();
+      // let departureDate = await db("stops").min("departureDate").where("taid", "=", form[0].id);
+      // departureDate = departureDate[0].min;
 
-      let departureDate = await db("stops").min("departureDate").where("taid", "=", form[0].id);
-      departureDate = departureDate[0].min;
-
-      res.status(200).json({
-        form: form[0],
-        expenses: expenses,
-        stops: stops
-      });
+      // res.status(200).json({
+      //   form: form[0],
+      //   expenses: expenses,
+      //   stops: stops
+      // });
     });
   } catch (error: any) {
     console.log(error);
@@ -101,16 +91,9 @@ formRouter.get("/upcomingTrips", ReturnValidationErrors, async function (req: Re
 formRouter.get("/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     let user = await userService.getByEmail(req.user.email);
+    let form = await formService.getForm(req.params.formId);
 
-    let form = await db("forms")
-      .select("*")
-      .where("userId", "=", user.id)
-      .andWhere("formId", "=", req.params.formId)
-      .first();
-
-    if (form) {
-      form.itinerary = await db("stops").select("*").where("taid", "=", form.id);
-
+    if (form && form.userId === user.id) {
       res.status(200).json(form);
     } else if (form === undefined) {
       res.status(200).json({
@@ -128,42 +111,19 @@ formRouter.get("/:formId", ReturnValidationErrors, async function (req: Request,
 //User to save their own form
 formRouter.post("/:formId/save", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    await db.transaction(async trx => {
-      let user = await userService.getByEmail(req.user.email);
+    let user = await userService.getByEmail(req.user.email);
+    let form = await formService.getForm(req.params.formId);
 
-      let itinerary = req.body.itinerary;
-      delete req.body.itinerary;
-
-      let authInsert = {
-        userId: user.id,
-        ...req.body,
-        formStatus: "Draft",
-        formId: req.params.formId
-      };
-
-      let form = await db("forms").select("*").andWhere("formId", "=", req.params.formId).first();
-
-      if (!form || form.userId === user.id) {
-        let id = await db("forms").insert(authInsert, "id").onConflict("formId").merge();
-
-        await db("stops").delete().where("taid", "=", id[0].id).transacting(trx);
-
-        for (let index = 0; index < itinerary.length; index++) {
-          itinerary[index].travelTo = itinerary[index].locationId;
-          let stop = {
-            taid: id[0].id,
-            ...itinerary[index]
-          };
-          await db("stops").insert(stop).transacting(trx);
-        }
-        auditService.insertAudit(user.id, id[0].id, "Save", "Successfully saved form");
-        res.status(200).json({
-          formId: req.params.formId
-        });
+    if (!form || (form && form.userId === user.id)) {
+      const result = await formService.saveForm(user.id, req.body);
+      if (result) {
+        res.status(200).json("Form saved");
       } else {
-        res.status(401).json("Unauthorized");
+        res.status(500).json("Form save failed");
       }
-    });
+    } else {
+      res.status(404).json("Form not found");
+    }
   } catch (error: any) {
     console.log(error);
     res.status(500).json("Insert failed");
@@ -172,67 +132,25 @@ formRouter.post("/:formId/save", ReturnValidationErrors, async function (req: Re
 
 //User to submit their own form
 formRouter.post("/:formId/submit", ReturnValidationErrors, async function (req: Request, res: Response) {
-  console.log("Saving Form");
-
   try {
     await db.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
+      let form = await formService.getForm(req.params.formId);
 
-      let stops = req.body.stops;
-      delete req.body.stops;
-
-      let authInsert = {
-        userId: user.id,
-        ...req.body,
-        formStatus: "Submitted",
-        formId: req.params.formId
-      };
-
-      if (
-        authInsert.userId &&
-        authInsert.firstName &&
-        authInsert.lastName &&
-        authInsert.department &&
-        authInsert.division &&
-        authInsert.branch &&
-        authInsert.unit &&
-        authInsert.email &&
-        authInsert.mailcode &&
-        authInsert.travelDuration &&
-        authInsert.dateBackToWork &&
-        authInsert.purpose &&
-        authInsert.eventName &&
-        authInsert.summary &&
-        authInsert.supervisorEmail &&
-        authInsert.formStatus &&
-        authInsert.formId
-      ) {
-        let id = await db("forms").insert(authInsert, "id").onConflict("formId").merge();
-
-        await db("stops").delete().where("taid", "=", id[0].id).transacting(trx);
-
-        for (let index = 0; index < stops.length; index++) {
-          stops[index].travelTo = stops[index].travelTo.value;
-          stops[index].travelFrom = stops[index].travelFrom.value;
-          let stop = {
-            taid: id[0].id,
-            ...stops[index],
-            estimate: 0
-          };
-          await db("stops").insert(stop).transacting(trx);
+      if (!form || (form && form.userId === user.id)) {
+        const result = await formService.submitForm(req.body);
+        if (result) {
+          res.status(200).json("Form submitted");
+        } else {
+          res.status(500).json("Form submission failed");
         }
-        auditService.insertAudit(user.id, id[0].id, "Submit", "Successfully submitted form");
-
-        res.status(200).json({
-          formId: req.params.formId
-        });
       } else {
-        res.status(500).json("Required fields in submission are blank");
+        res.status(404).json("Form not found");
       }
     });
   } catch (error: any) {
     console.log(error);
-    res.status(500).json("Insert failed");
+    res.status(500).json("Form submission failed");
   }
 });
 

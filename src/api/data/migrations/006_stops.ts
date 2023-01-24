@@ -4,8 +4,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
   return knex.schema.createTable("stops", function (t) {
     t.increments("id").notNullable().primary();
     t.integer("taid").notNullable();
-    t.integer("stopNumber").notNullable();
-    t.integer("locationId").notNullable();
+    t.integer("locationId");
     t.specificType("departureDate", "DATE");
     t.time("departureTime");
     t.string("transport");

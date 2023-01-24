@@ -1,8 +1,7 @@
 import knex, { Knex } from "knex";
 import { DB_CONFIG } from "../config";
 import _, { map } from "lodash";
-import axios from "axios";
-import { timeStamp } from "console";
+import { Form } from "../models/form";
 export class FormService {
   private db: Knex;
 
@@ -10,169 +9,196 @@ export class FormService {
     this.db = knex(DB_CONFIG);
   }
 
-  async getForm(id: string): Promise<any | undefined> {
+  //returns form
+  async getForm(formId: string): Promise<any | undefined> {
     try {
-      await this.db.transaction(async (trx: any) => {
-        let form = await this.db("forms").select("*").first().transacting(trx);
+      let form: Form = await this.db("forms").select("*").first().where({ formId: formId });
 
-        let expenses = await this.db("expenses")
-          .select("*")
-          .where("type", "=", "Expenses")
-          .andWhere("taid", "=", form.id)
-          .transacting(trx);
+      if (_.isEmpty(form)) {
+        return undefined;
+      }
 
-        let stops = await this.db("stops")
-          .select("*")
-          .where("taid", "=", form.id)
-          .leftJoin("destinations", "stops.travelTo", "destinations.id")
-          .orderBy("departureDate", "asc");
-        let stopString = stops
-          .map((stop: any) => {
-            return stop.name;
-          })
-          .concat();
+      let expenses = await this.getExpenses(form.id);
+      let estimates = await this.getEstimates(form.id);
+      let stops = await this.getStops(form.id);
+      let departureDate = await this.db("stops")
+        .select("departureDate")
+        .first()
+        .where({ taid: form.id })
+        .orderBy("departureDate", "asc");
 
-        let departureDate = await this.db("stops").min("departureDate").where("taid", "=", form.id);
-        departureDate = departureDate[0].min;
+      form.stops = stops;
+      form.estimates = estimates;
+      form.expenses = expenses;
+      form.departureDate = departureDate;
 
-        form.expenses = expenses;
-        form.stops = stops;
-        form.departureDate = departureDate;
-        form.stopString = stopString;
-
-        console.log(form);
-
-        return form;
-      });
+      return form;
     } catch (error: any) {
       console.log(error);
+      return undefined;
     }
   }
 
-  async getByEmail(email: string): Promise<any | undefined> {
-    return this.db("user")
-      .where({
-        email
-      })
-      .first();
-  }
+  async saveForm(userId: string, form: Form): Promise<any | undefined> {
+    try {
+      console.log(form);
 
-  async getById(id: string): Promise<any | undefined> {
-    return this.db("user")
-      .where({
-        id
-      })
-      .first();
-  }
+      let stops = form.stops;
+      let expenses = form.expenses;
+      let estimates = form.estimates;
 
-  async getAccessFor(email: string): Promise<string[]> {
-    return this.db("user")
-      .where({
-        email
-      })
-      .select("roles");
-  }
+      delete form.stops;
+      delete form.expenses;
+      delete form.estimates;
+      delete form.departureDate;
 
-  async setAccess(email: string, access: string[]) {
-    return this.db("user")
-      .where({
-        email
-      })
-      .update({
-        roles: access
-      });
-  }
+      form.userId = userId;
 
-  async getDepartmentAccess(id: string): Promise<number[]> {
-    return this.db("departmentassignments").where("userid", "=", id).select("*");
-  }
+      let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge();
+      let id = returnedForm[0].id;
 
-  async saveDepartmentAccess(id: string, access: number[]) {
-    await this.db("departmentassignments").where("userid", "=", id).del();
-    if (access) {
-      const fieldsToInsert = access.map(entry => ({
-        userid: id,
-        objectid: entry
-      }));
-      return this.db("departmentassignments").insert(fieldsToInsert);
+      await this.saveStops(id, stops);
+      await this.saveExpenses(id, expenses);
+      await this.saveEstimates(id, estimates);
+      return true;
+    } catch (error: any) {
+      console.log(error);
+      return false;
     }
   }
 
-  async getRoleAccess(id: string): Promise<number[]> {
-    return this.db("roleassignments").where("userid", "=", id).select("*");
-  }
-
-  async saveRoleAccess(id: string, access: number[]) {
-    await this.db("roleassignments").where("userid", "=", id).del();
-    if (access) {
-      const fieldsToInsert = access.map(entry => ({
-        userid: id,
-        roleid: entry
-      }));
-      return this.db("roleassignments").insert(fieldsToInsert);
+  async getStops(id: string): Promise<any[] | undefined> {
+    try {
+      let stops = await this.db("stops").select("*").where({ taid: id }).orderBy("departureDate", "asc");
+      return stops;
+    } catch (error: any) {
+      console.log(error);
+      return undefined;
     }
   }
 
-  async getUnit(email: string) {
-    let unitSearch = await axios
-      .get(`http://directory-api-dev.ynet.gov.yk.ca/employees`)
-      .then((resp: any) => {
-        let match = resp.data.employees.filter((user: any) => {
-          return user.email == email;
+  async saveStops(taid: string, stops: any): Promise<Boolean> {
+    try {
+      await this.db("stops").delete().where({ taid: taid });
+
+      if (stops) {
+        stops = map(stops, stop => {
+          stop.taid = taid;
+          stop.locationId = stop.locationId != "" ? stop.locationId : null;
+          return stop;
         });
-        return match[0];
-      })
-      .catch((e: Error) => {
-        console.log(e);
-      });
-
-    let unit = {
-      department: "",
-      division: "",
-      branch: "",
-      unit: "",
-      mailcode: "",
-      manager: ""
-    };
-    if (unitSearch) {
-      unit = {
-        department: unitSearch.department || "",
-        division: unitSearch.division || "",
-        branch: unitSearch.branch || "",
-        unit: unitSearch.unit || "",
-        mailcode: unitSearch.mailcode || "",
-        manager: unitSearch.manager || ""
-      };
+        console.log(stops);
+        await this.db("stops").insert(stops);
+      }
+      return true;
+    } catch (error: any) {
+      console.log(error);
+      return false;
     }
-    return unit;
   }
 
-  async makeDTO(userRaw: any) {
-    let dto = userRaw;
-    dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
-    dto.roles = _.split(userRaw.roles, ",").filter((r: string) => r.length > 0);
-    dto.manage_mailcodes = _.split(userRaw.manage_mailcodes, ",").filter((r: string) => r.length > 0);
-    //dto.access = await this.db.getAccessFor(userRaw.email);
-    //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")
-
-    return dto;
+  async getExpenses(id: string): Promise<any[] | undefined> {
+    try {
+      let expenses = await this.db("expenses").select("*").where({ taid: id }).andWhere("type", "=", "Expenses");
+      return expenses;
+    } catch (error: any) {
+      console.log(error);
+      return undefined;
+    }
   }
 
-  isConnected(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      this.db
-        .raw("SELECT 'Connected' as [working]")
-        .then((data: Array<any>) => {
-          if (data && data.length == 1) {
-            resolve(data[0].working === "Connected");
-          }
-
-          resolve(false);
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          resolve(false);
+  async saveExpenses(taid: string, expenses: any): Promise<Boolean> {
+    try {
+      await this.db("expenses").delete().where({ taid: taid });
+      if (expenses) {
+        expenses = map(expenses, expense => {
+          expense.taid = taid;
+          return stop;
         });
-    });
+        await this.db("expenses").insert(expenses);
+      }
+      return true;
+    } catch (error: any) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  async getEstimates(id: string): Promise<any[] | undefined> {
+    try {
+      let estimates = await this.db("expenses").select("*").where({ taid: id }).andWhere("type", "=", "Estimates");
+      return estimates;
+    } catch (error: any) {
+      console.log(error);
+      return undefined;
+    }
+  }
+
+  async saveEstimates(taid: string, estimates: any): Promise<Boolean> {
+    try {
+      await this.db("expenses").delete().where({ taid: taid });
+      if (estimates) {
+        estimates = map(estimates, estimate => {
+          estimate.taid = taid;
+          return stop;
+        });
+        await this.db("expenses").insert(estimates);
+      }
+      return true;
+    } catch (error: any) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  async submitForm(form: Form): Promise<Boolean> {
+    try {
+      let stops = form.stops;
+      delete form.stops;
+
+      let expenses = form.expenses;
+      delete form.expenses;
+
+      let estimates = form.estimates;
+      delete form.estimates;
+
+      if (
+        form.userId &&
+        form.firstName &&
+        form.lastName &&
+        form.department &&
+        form.division &&
+        form.branch &&
+        form.unit &&
+        form.email &&
+        form.mailcode &&
+        form.travelDuration &&
+        form.dateBackToWork &&
+        form.purpose &&
+        form.eventName &&
+        form.summary &&
+        form.supervisorEmail &&
+        form.status &&
+        form.formId
+      ) {
+        let id = await this.db("forms").insert(form, "id").onConflict("formId").merge();
+
+        await this.db("stops").delete().where("taid", "=", id[0].id);
+        await this.db("stops").insert(stops);
+
+        await this.db("expenses").delete().where("taid", "=", id[0].id);
+        await this.db("expenses").insert(expenses);
+
+        await this.db("expenses").delete().where("taid", "=", id[0].id);
+        await this.db("expenses").insert(estimates);
+
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error: any) {
+      console.log(error);
+      return false;
+    }
   }
 }
