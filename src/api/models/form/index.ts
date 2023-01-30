@@ -1,7 +1,7 @@
 export interface Form {
-  id: any;
+  id: number;
   formId: string;
-  userId: string;
+  userId: number;
   firstName?: string;
   lastName?: string;
   department?: string;

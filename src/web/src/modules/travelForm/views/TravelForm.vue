@@ -5,7 +5,7 @@
       <v-spacer> </v-spacer>
       <h3>
         Current Status:
-        {{ form.formStatus }}
+        {{ form.status }}
       </h3>
     </v-row>
     <v-tabs v-model="tab">
@@ -123,7 +123,7 @@
               <v-row>
                 <v-col cols="6">
                   <v-combobox
-                    v-model="emailSearch"
+                    v-model="form.supervisorEmail"
                     dense
                     label="Supervisor Email"
                     persistent-hint
@@ -143,15 +143,10 @@
 
           <v-card elevation="2" class="mt-5">
             <v-card-title>
-              <h2>Itinerary</h2>
+              <h2>stops</h2>
             </v-card-title>
             <v-card-text>
-              <Itinerary
-                :review="review"
-                :itinerary="form.itinerary"
-                :multiStop="form.multiStop"
-                :oneWayTrip="form.oneWayTrip"
-              />
+              <stops :review="review" :stops="form.stops" :multiStop="form.multiStop" :oneWayTrip="form.oneWayTrip" />
             </v-card-text>
           </v-card>
 
@@ -361,8 +356,8 @@
           </v-card>
         </v-dialog>
       </v-tab-item>
-      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Estimates" /></v-tab-item>
-      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Expenses" /></v-tab-item>
+      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Estimates"/></v-tab-item>
+      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Expenses"/></v-tab-item>
       <v-tab-item>
         <TripReport> </TripReport>
       </v-tab-item>
@@ -380,14 +375,14 @@ import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls";
 import { secureGet, securePost } from "../../../store/jwt";
 import ExpenseList from "../components/ExpenseList.vue";
 import TripReport from "../components/TripReport.vue";
-import Itinerary from "../components/Itinerary.vue";
+import stops from "../components/Stops.vue";
 
 export default {
   name: "Form",
   components: {
     ExpenseList,
     TripReport,
-    Itinerary
+    stops
   },
   async mounted() {
     this.overlay = true;
@@ -403,7 +398,7 @@ export default {
 
     await this.getForm(this.$route.params.formId);
 
-    if (this.form.requestChange && this.review == false && this.form.formStatus == "Change Requested") {
+    if (this.form.requestChange && this.review == false && this.form.status == "Change Requested") {
       this.requestChangeDisplay = true;
     }
     this.$refs.form.resetValidation();
@@ -425,8 +420,8 @@ export default {
       multiStop: false,
       oneWayTrip: false,
 
-      //itinerary
-      itinerary: [
+      //stops
+      stops: [
         {
           locationId: "",
           departureDate: "",
@@ -452,7 +447,7 @@ export default {
       benefits: "",
 
       //other info
-      formStatus: "",
+      status: "",
       requestChange: "",
       denialReason: ""
     },
@@ -515,22 +510,22 @@ export default {
     numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
   }),
   computed: {
-    myDepartments: function () {
+    myDepartments: function() {
       return Object.keys(this.departments);
     },
-    myDivisions: function () {
+    myDivisions: function() {
       if (this.departments[this.form.department]) {
         return Object.keys(this.departments[this.form.department]);
       }
       return [];
     },
-    myBranches: function () {
+    myBranches: function() {
       if (this.departments[this.form.department] && this.departments[this.form.department][this.form.division]) {
         return Object.keys(this.departments[this.form.department][this.form.division]);
       }
       return [];
     },
-    myUnits: function () {
+    myUnits: function() {
       if (
         this.departments[this.form.department] &&
         this.departments[this.form.department][this.form.division] &&
@@ -557,12 +552,12 @@ export default {
     },
     saveForm() {
       console.log("Trying to save", this.form);
-      this.form.formStatus = "Draft";
+      this.form.status = "Draft";
       this.$refs.form.resetValidation();
       this.showError = false;
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      this.form.formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
-      securePost(`${FORM_URL}/${formId}/save`, this.form).then(resp => {
+      securePost(`${FORM_URL}/${this.form.formId}/save`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form saved as a draft";
         this.snackbar = true;
@@ -631,8 +626,7 @@ export default {
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
-        new Date(this.form.itinerary[index].departureDate).getTime() -
-        new Date(this.form.itinerary[0].departureDate).getTime();
+        new Date(this.form.stops[index].departureDate).getTime() - new Date(this.form.stops[0].departureDate).getTime();
 
       this.form.travelDuration = (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
     },
@@ -645,17 +639,17 @@ export default {
           console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
-            this.form.itinerary.forEach((v, key) => {
-              this.form.itinerary[key].location = this.destinations.find(entry => entry.value == v.location);
+            this.form.stops.forEach((v, key) => {
+              this.form.stops[key].location = this.destinations.find(entry => entry.value == v.location);
             });
           } else {
-            this.form.formStatus = "Draft";
+            this.form.status = "New Form";
             await this.loadUser();
             this.form.dateBackToWork = this.getToday();
-            this.form.itinerary[0].departureDate = this.getToday();
-            this.form.itinerary[0].departureTime = "12:00";
-            this.form.itinerary[1].departureDate = this.getToday();
-            this.form.itinerary[1].departureTime = "12:00";
+            this.form.stops[0].departureDate = this.getToday();
+            this.form.stops[0].departureTime = "12:00";
+            this.form.stops[1].departureDate = this.getToday();
+            this.form.stops[1].departureTime = "12:00";
           }
         });
       }

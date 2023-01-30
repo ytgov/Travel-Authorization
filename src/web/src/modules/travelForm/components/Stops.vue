@@ -11,7 +11,7 @@
     <v-row>
       <v-col>
         <v-autocomplete
-          v-model="itinerary[0].locationId"
+          v-model="stops[0].locationId"
           dense
           label="Starting Location"
           persistent-hint
@@ -29,12 +29,12 @@
 
     <v-row>
       <v-col><DatePicker value="Departure Date" /> </v-col>
-      <v-col> <TimePicker value="Departure Time" /></v-col>
+      <v-col> <TimePicker value="Departure Time"/></v-col>
       <v-col>
         <v-select
           :items="transport"
           label="Method of transport"
-          v-model="itinerary[0].transport"
+          v-model="stops[0].transport"
           dense
           :disabled="review"
           :rules="requiredRules"
@@ -45,7 +45,7 @@
     <v-row>
       <v-col>
         <v-autocomplete
-          v-model="itinerary[1].location"
+          v-model="stops[1].locationId"
           dense
           label="Destination"
           persistent-hint
@@ -62,13 +62,13 @@
     </v-row>
 
     <v-row v-if="!oneWayTrip === true">
-      <v-col><DatePicker :value="itinerary[1].departureDate" text="Departure Date" :review="review" /> </v-col>
-      <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review" /></v-col>
+      <v-col><DatePicker :value="stops[1].departureDate" text="Departure Date" :review="review" /> </v-col>
+      <v-col> <TimePicker :value="stops[1].departureTime" text="Departure Time" :review="review"/></v-col>
       <v-col>
         <v-select
           :items="transport"
           label="Method of transport"
-          v-model="itinerary[1].transport"
+          v-model="stops[1].transport"
           dense
           :disabled="review"
           :rules="requiredRules"
@@ -77,11 +77,11 @@
     </v-row>
 
     <div v-if="multiStop === true">
-      <div v-for="(stop, index) in itinerary.stops.slice(2)" :key="index">
+      <div v-for="(stop, index) in stops.stops.slice(2)" :key="index">
         <v-row>
           <v-col>
             <v-autocomplete
-              v-model="itinerary[index].location"
+              v-model="stops[index].locationId"
               dense
               label="Destination"
               persistent-hint
@@ -102,13 +102,13 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col><DatePicker :value="itinerary[1].departureDate" text="Departure Date" :review="review" /> </v-col>
-          <v-col> <TimePicker :value="itinerary[1].departureTime" text="Departure Time" :review="review" /></v-col>
+          <v-col><DatePicker :value="stops[1].departureDate" text="Departure Date" :review="review" /> </v-col>
+          <v-col> <TimePicker :value="stops[1].departureTime" text="Departure Time" :review="review"/></v-col>
           <v-col>
             <v-select
               :items="transport"
               label="Method of transport"
-              v-model="itinerary[index].transport"
+              v-model="stops[index].transport"
               dense
               :disabled="review"
               :rules="requiredRules"
@@ -121,7 +121,7 @@
     <v-row v-if="!oneWayTrip === true">
       <v-col>
         <v-autocomplete
-          v-model="itinerary[0].location"
+          v-model="stops[0].locationId"
           dense
           label="Final Destination"
           persistent-hint
@@ -170,7 +170,7 @@ export default {
       type: Boolean,
       default: false
     },
-    itinerary: {
+    stops: {
       type: Array,
       default: () => [
         {
@@ -199,7 +199,7 @@ export default {
   }),
   methods: {
     addStop() {
-      this.itinerary.push({
+      this.stops.push({
         locationId: "",
         departureDate: "",
         departureTime: "12:00",
@@ -207,7 +207,7 @@ export default {
       });
     },
     removeStop(index) {
-      this.itinerary.splice(index, 1);
+      this.stops.splice(index, 1);
     },
     async getDestinations() {
       return secureGet(`${DESTINATION_URL}`).then(resp => {

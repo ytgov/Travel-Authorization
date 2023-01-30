@@ -20,7 +20,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
     t.string("eventName");
     t.string("summary");
     t.string("benefits");
-    t.string("formStatus");
+    t.string("status");
     t.string("formId").notNullable().unique();
     t.string("supervisorEmail");
     t.integer("preappId");

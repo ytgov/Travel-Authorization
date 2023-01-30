@@ -117,11 +117,14 @@ formRouter.post("/:formId/save", ReturnValidationErrors, async function (req: Re
     if (!form || (form && form.userId === user.id)) {
       const result = await formService.saveForm(user.id, req.body);
       if (result) {
+        auditService.log(user.id, form.id, "Save", "Form saved successfully.");
         res.status(200).json("Form saved");
       } else {
+        auditService.log(user.id, form.id, "Save", "Form did not save successfully.");
         res.status(500).json("Form save failed");
       }
     } else {
+      auditService.log(user.id, 0, "Save", "Form does not exist or user lacking permissions on form.");
       res.status(404).json("Form not found");
     }
   } catch (error: any) {
@@ -138,13 +141,16 @@ formRouter.post("/:formId/submit", ReturnValidationErrors, async function (req: 
       let form = await formService.getForm(req.params.formId);
 
       if (!form || (form && form.userId === user.id)) {
-        const result = await formService.submitForm(req.body);
+        const result = await formService.submitForm(user.id, req.body);
         if (result) {
+          auditService.log(user.id, form.id, "Submit", "Form submitted successfully.");
           res.status(200).json("Form submitted");
         } else {
+          auditService.log(user.id, form.id, "Submit", "Form did not submit successfully.");
           res.status(500).json("Form submission failed");
         }
       } else {
+        auditService.log(user.id, 0, "Submit", "Form does not exist or user lacking permissions on form.");
         res.status(404).json("Form not found");
       }
     });

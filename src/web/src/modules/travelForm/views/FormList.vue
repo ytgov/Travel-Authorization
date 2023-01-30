@@ -1,6 +1,6 @@
 <template>
   <div class="user">
-    <h1>Submitted Forms</h1>
+    <h1>Your Travel Forms</h1>
     <v-card class="mt-5" color="#fff2d5">
       <v-card-title>Travel Requests</v-card-title>
       <v-card-text>
@@ -43,7 +43,7 @@ export default {
       },
       {
         text: "Status",
-        value: "formStatus"
+        value: "status"
       }
     ]
   }),

@@ -39,7 +39,7 @@ export class FormService {
     }
   }
 
-  async saveForm(userId: string, form: Form): Promise<any | undefined> {
+  async saveForm(userId: number, form: Form): Promise<any | undefined> {
     try {
       console.log(form);
 
@@ -53,6 +53,7 @@ export class FormService {
       delete form.departureDate;
 
       form.userId = userId;
+      form.status = "Draft";
 
       let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge();
       let id = returnedForm[0].id;
@@ -60,6 +61,7 @@ export class FormService {
       await this.saveStops(id, stops);
       await this.saveExpenses(id, expenses);
       await this.saveEstimates(id, estimates);
+
       return true;
     } catch (error: any) {
       console.log(error);
@@ -67,9 +69,9 @@ export class FormService {
     }
   }
 
-  async getStops(id: string): Promise<any[] | undefined> {
+  async getStops(taid: number): Promise<any[] | undefined> {
     try {
-      let stops = await this.db("stops").select("*").where({ taid: id }).orderBy("departureDate", "asc");
+      let stops = await this.db("stops").select("*").where({ taid: taid }).orderBy("departureDate", "asc");
       return stops;
     } catch (error: any) {
       console.log(error);
@@ -77,7 +79,7 @@ export class FormService {
     }
   }
 
-  async saveStops(taid: string, stops: any): Promise<Boolean> {
+  async saveStops(taid: number, stops: any): Promise<Boolean> {
     try {
       await this.db("stops").delete().where({ taid: taid });
 
@@ -97,9 +99,9 @@ export class FormService {
     }
   }
 
-  async getExpenses(id: string): Promise<any[] | undefined> {
+  async getExpenses(taid: number): Promise<any[] | undefined> {
     try {
-      let expenses = await this.db("expenses").select("*").where({ taid: id }).andWhere("type", "=", "Expenses");
+      let expenses = await this.db("expenses").select("*").where({ taid: taid }).andWhere("type", "=", "Expenses");
       return expenses;
     } catch (error: any) {
       console.log(error);
@@ -107,7 +109,7 @@ export class FormService {
     }
   }
 
-  async saveExpenses(taid: string, expenses: any): Promise<Boolean> {
+  async saveExpenses(taid: number, expenses: any): Promise<Boolean> {
     try {
       await this.db("expenses").delete().where({ taid: taid });
       if (expenses) {
@@ -124,9 +126,9 @@ export class FormService {
     }
   }
 
-  async getEstimates(id: string): Promise<any[] | undefined> {
+  async getEstimates(taid: number): Promise<any[] | undefined> {
     try {
-      let estimates = await this.db("expenses").select("*").where({ taid: id }).andWhere("type", "=", "Estimates");
+      let estimates = await this.db("expenses").select("*").where({ taid: taid }).andWhere("type", "=", "Estimates");
       return estimates;
     } catch (error: any) {
       console.log(error);
@@ -134,7 +136,7 @@ export class FormService {
     }
   }
 
-  async saveEstimates(taid: string, estimates: any): Promise<Boolean> {
+  async saveEstimates(taid: number, estimates: any): Promise<Boolean> {
     try {
       await this.db("expenses").delete().where({ taid: taid });
       if (estimates) {
@@ -151,7 +153,7 @@ export class FormService {
     }
   }
 
-  async submitForm(form: Form): Promise<Boolean> {
+  async submitForm(userId: number, form: Form): Promise<Boolean> {
     try {
       let stops = form.stops;
       delete form.stops;
@@ -162,39 +164,22 @@ export class FormService {
       let estimates = form.estimates;
       delete form.estimates;
 
-      if (
-        form.userId &&
-        form.firstName &&
-        form.lastName &&
-        form.department &&
-        form.division &&
-        form.branch &&
-        form.unit &&
-        form.email &&
-        form.mailcode &&
-        form.travelDuration &&
-        form.dateBackToWork &&
-        form.purpose &&
-        form.eventName &&
-        form.summary &&
-        form.supervisorEmail &&
-        form.status &&
-        form.formId
-      ) {
-        let id = await this.db("forms").insert(form, "id").onConflict("formId").merge();
+      delete form.departureDate;
 
-        await this.db("stops").delete().where("taid", "=", id[0].id);
-        await this.db("stops").insert(stops);
+      // This is where we would check if the form is valid
+      if (true) {
+        form.userId = userId;
+        form.status = "Submitted";
 
-        await this.db("expenses").delete().where("taid", "=", id[0].id);
-        await this.db("expenses").insert(expenses);
+        let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge();
+        let id = returnedForm[0].id;
 
-        await this.db("expenses").delete().where("taid", "=", id[0].id);
-        await this.db("expenses").insert(estimates);
-
+        await this.saveStops(id, stops);
+        await this.saveExpenses(id, expenses);
+        await this.saveEstimates(id, estimates);
         return true;
       } else {
-        return false;
+        throw new Error("Form is missing required fields");
       }
     } catch (error: any) {
       console.log(error);

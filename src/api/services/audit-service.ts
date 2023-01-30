@@ -10,7 +10,7 @@ export class AuditService {
     this.db = knex(DB_CONFIG);
   }
 
-  async insertAudit(userId: number, taid: number, action: string, note: string): Promise<any | undefined> {
+  async log(userId: number, taid: number, action: string, note?: string): Promise<any | undefined> {
     try {
       let timestamp = new Date();
       await this.db("auditHistory").insert({
