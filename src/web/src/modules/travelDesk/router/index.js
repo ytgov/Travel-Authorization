@@ -1,6 +1,6 @@
 const routes = [
   {
-    path: "/traveldesk",
+    path: "/travel-request",
     component: () => import("@/layouts/BlankLayout"),
     children: [
       {
