@@ -62,6 +62,9 @@
             <v-list-item to="/preapproved">
               <v-list-item-title>PreApproved</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/travel-desk">
+              <v-list-item-title>Travel Desk </v-list-item-title>
+            </v-list-item>
             <v-list-item to="/managerView">
               <v-list-item-title>Manager View</v-list-item-title>
             </v-list-item>

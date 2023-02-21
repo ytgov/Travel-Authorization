@@ -1,13 +1,13 @@
 const routes = [
   {
-    path: "/travel-request",
+    path: "/travel-desk",
     component: () => import("@/layouts/BlankLayout"),
     children: [
       {
         name: "TravelDeskHome",
         path: "",
         meta: {
-          requiresAuth: false
+          requiresAuth: true
         },
         component: () => import("../views/TravelDesk.vue")
       }

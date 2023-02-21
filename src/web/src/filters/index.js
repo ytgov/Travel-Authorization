@@ -35,6 +35,14 @@ Vue.filter("beautifyDate", function (date) {
   else return "";
 });
 
+Vue.filter("beautifyDateTime", function (date) {
+  if (date){
+    const time = date.length>10 ? (' '+date.substr(11, 5)):''
+    return Vue.filter("beautifyDate")(date.substr(0, 10))+time
+  }
+  else return "";
+});
+
 Vue.filter("capitalize", function (text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 });

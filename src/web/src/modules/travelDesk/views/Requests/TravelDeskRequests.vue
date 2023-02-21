@@ -1,39 +1,23 @@
 <template>
 	<div class="mx-10 mb-5">	
-		<v-row class="my-0 mx-0">
-      
-			<print-report
-				v-if="admin"
-				:disabled="selectedRequests.length == 0"
-				:travelRequests="selectedRequests"
-				buttonName="Print Report"
-			/>
-			<v-btn
-				v-if="admin"
-				:disabled="selectedRequests.length == 0"        
-				@click="exportToExcel()"          
-				class="mr-5 my-7"
-				elevation="5"
-				color="primary"          
-				>
-				Export To Excel
-			</v-btn>
 		
-		</v-row>	
 		<v-data-table
 			:headers="headers"
-			:items="grayedOutTravelRequests"
+			:items="authorizedTravels"
 			:items-per-page="5"
-			class="elevation-1"
-			v-model="selectedRequests"
-			item-key="preTID"
-			:show-select="admin"
-			@item-selected="applySameDeptSelection"
-			@toggle-select-all="applyAllSameDeptSelection">			
+			class="elevation-1 mt-4">
+
+			<template v-slot:[`item.name`]="{ item }">
+				{{item.name.replace('.', ' ')}}
+			</template>			
+
+			<template v-slot:[`item.location`]="{ item }">
+				{{getLocationName(item.locationIds)}}
+			</template>
 
 			<template v-slot:[`item.startDate`]="{ item }">
 				<div v-if="item.dateUnkInd">
-				{{ item.month }}
+					{{ item.month }}
 				</div>
 				<div v-else>
 					<div>
@@ -44,7 +28,7 @@
 			</template>
 			<template v-slot:[`item.endDate`]="{ item }">
 				<div v-if="item.dateUnkInd">
-				{{ item.month }}
+					{{ item.month }}
 				</div>
 				<div v-else>					
 					<div>
@@ -56,9 +40,10 @@
 
 			<template v-slot:[`item.edit`]="{ item }">
 				<new-travel-desk-request
+					v-if="item.status=='Approved' && item.phase != 'Travel Request Submitted'"
 					:type="item.status=='Approved'?((item.phase == 'Travel Approved')?'Submit': 'Review'):''"
-					@updateTable="updateTable"
-					:travelRequest="item"/>
+					@updateTable="updateTable()"
+					:authorizedTravel="item"/>
 			</template>
 		</v-data-table>
 	</div>
@@ -67,23 +52,26 @@
 <script>
 	import Vue from "vue";
 	import NewTravelDeskRequest from "./NewTravelDeskRequest.vue";
-	import PrintReport from "../Common/PrintTravelDeskReport.vue";	
-	import { ExportToCsv } from 'export-to-csv';
+
 
 	export default {
 		components: {
-			NewTravelDeskRequest,
-			PrintReport
+			NewTravelDeskRequest
 		},
 		name: "TravelDeskRequests",
 		props: {
-			travelRequests: {
+			authorizedTravels: {
 				type: []
 			}
 		},
 		data() {
 			return {
-				headers: [				
+				headers: [	
+					{
+						text: "Name",
+						value: "name",
+						class: "blue-grey lighten-4"
+					},			
 					{
 						text: "Phase",
 						value: "phase",
@@ -122,84 +110,32 @@
 						sortable: false
 					}
 				],
-				admin: true,//
-				selectedRequests: [],
-				firstSelectionDept: ""
+				admin: false,
+				department: "",				
 			};
 		},
 		mounted() {
+			this.department = this.$store.state.auth.department
 			this.admin = Vue.filter("isAdmin")();
+			
 		},
 		computed: {
-			grayedOutTravelRequests() {
-				const travelRequests = JSON.parse(JSON.stringify(this.travelRequests));
-				if(this.firstSelectionDept)
-					travelRequests.forEach(req => {
-						req.isSelectable= req.isSelectable? (req.department==this.firstSelectionDept) :false
-					});
-				return travelRequests
-			}
+			
 		},
 		methods: {
 			updateTable() {
 				this.$emit("updateTable");
 			},
-			applySameDeptSelection(selection) {
-				Vue.nextTick(() => {
-					if (this.selectedRequests.length == 1) {
-						this.firstSelectionDept = this.selectedRequests[0].department;
-					} else if (this.selectedRequests.length == 0) {
-						this.firstSelectionDept = "";
-					}
-
-					if (selection.value == true && selection.item.department != this.firstSelectionDept) {
-						this.selectedRequests = this.selectedRequests.filter(req => req.preTID != selection.item.preTID);
-					}
-				});
-			},
-			applyAllSameDeptSelection(selection) {
-				console.log(selection);
-				Vue.nextTick(() => {
-					if (selection.value == true && this.firstSelectionDept) {
-						this.selectedRequests = this.selectedRequests.filter(req => req.department == this.firstSelectionDept);
-					} else {
-						this.selectedRequests = [];
-						this.firstSelectionDept = "";
-					}
-				});
-			},
-			exportToExcel(){
-			// console.log(this.selectedRequests)
-				const csvInfo = this.selectedRequests.map(req =>{
-					return {
-					travelers: req.travelers?.map(trv=>trv.fullName.replace(".", " "))?.join(', '),
-					department: req.department,
-					branch: (req.branch? req.branch:''),
-					travelDate: (req.dateUnkInd? req.month:(req.startDate +' '+ req.endDate)),
-					location: req.location,          
-					purpose: (req.purpose? req.purpose :''),
-					estimatedCost: req.estimatedCost,
-					reason: (req.reason? req.reason :''),
-					status: (req.status? req.status :''),
-					travelerNotes: (req.travelerNotes? req.travelerNotes :'')
-					}
-				})
-				const options = { 
-					fieldSeparator: ',',
-					quoteStrings: '"',
-					decimalSeparator: '.',
-					showLabels: true, 
-					showTitle: false,
-					title: '',
-					filename: 'Preapproved-Travel-Requests',
-					useTextFile: false,
-					useBom: true,
-					useKeysAsHeaders: false,
-					headers: ['Name', 'Department', 'Branch', 'Travel Date', 'Location', 'Purpose', 'Estimated Cost', 'Reason', 'Status', 'Notes']
-				};
-				const csvExporter = new ExportToCsv(options);
-				csvExporter.generateCsv(csvInfo);
+			getLocationName(locations){
+				const names = []
+				const destinations = this.$store.state.traveldesk.destinations; 
+				for(const locationId of locations){
+					names.push(destinations.filter(dest =>dest.value==locationId)[0].text)
+				}
+				return names.join(', ')
 			}
+
+
 		}
 	};
 	</script>
