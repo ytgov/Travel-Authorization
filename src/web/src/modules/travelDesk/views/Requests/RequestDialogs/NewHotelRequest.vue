@@ -1,19 +1,21 @@
 <template>
 	<div>
-		<v-dialog v-model="hotelDialog" persistent >
+		<v-dialog v-model="hotelDialog" persistent max-width="80%">
 			<template v-slot:activator="{ on, attrs }">
 				<v-btn				
-					class="my-4 right"					
-					color="primary"
+				:class="type=='Add New'? 'my-4 right':'mx-0 px-0'"					
+					:color="type=='Add New'? 'primary':'transparent'"
+					style="min-width: 0;"
 					@click="initForm()"
 					v-bind="attrs"
 					v-on="on">
-					<div>Add Hotel</div>
+					<div v-if="type=='Add New'" >Add Hotel</div>
+					<v-icon v-else class="mx-0 px-0" color="blue">mdi-pencil</v-icon>
 				</v-btn>
 			</template>
 
 			<v-card>
-				<v-card-title class="primary" style="border-bottom: 1px solid black">
+				<v-card-title class="blue">
 					<div class="text-h5">
 						Add Hotel
 					</div>
@@ -23,28 +25,30 @@
 					
 					<v-row class="mt-0 mx-3">
 						<v-col cols="4">
-							<v-text-field
-								:readonly="readonly"
-								:error="state.checkInDateErr"
-								v-model="checkInDate"
-								@input="state.checkInDateErr = false"
+							<v-text-field								
+								:error="state.checkInErr"
+								v-model="checkIn"
+								@input="state.checkInErr = false"
 								label="Check-in Date"
 								outlined
 								type="date"/>
-							<v-text-field
-								:readonly="readonly"
-								:error="state.checkOutDateErr"
-								v-model="checkOutDate"
-								@input="state.checkOutDateErr = false"
+							<v-text-field								
+								:error="state.checkOutErr"
+								v-model="checkOut"
+								@input="state.checkOutErr = false"
 								label="Check-out Date"
 								outlined
 								type="date"/>
-							<v-radio-group
-								:readonly="readonly"								
-								:error="state.conferenceHotelErr"
-								:disabled="readonly"
+							<v-text-field
+								:error="state.cityErr"
+								v-model="hotelRequest.city"
+								@input="state.cityErr = false"
+								label="City"
+								outlined/>
+							<v-radio-group																
+								:error="state.rsvConferenceHotelErr"
 								label="Conference/Meeting Hotel?"
-								v-model="conferenceHotel"								
+								v-model="hotelRequest.rsvConferenceHotel"								
 								outlined
 								row>
 								<v-radio label="Yes" :value="true"></v-radio>
@@ -52,10 +56,9 @@
 							</v-radio-group>
 						</v-col>						
 						<v-col cols="8">
-							<v-textarea
-								:readonly="readonly"
+							<v-textarea								
 								:error="state.additionalInfoErr"
-								v-model="additionalInfo"
+								v-model="hotelRequest.additionalInformation"
 								label="Additional Information"
 								rows="8"
 								outlined
@@ -66,19 +69,17 @@
 					<v-row class="mt-0 mx-3">
 						<v-col cols="4">
 							<v-text-field
-								:readonly="readonly"
 								:error="state.conferenceNameErr"
-								v-model="conferenceName"
+								v-model="hotelRequest.conferenceName"
 								@input="state.conferenceNameErr = false"
 								label="Conference/Meeting Name"
 								outlined/>						
 							
 						</v-col>						
 						<v-col cols="8">
-							<v-text-field
-								:readonly="readonly"
+							<v-text-field								
 								:error="state.conferenceHotelNameErr"
-								v-model="conferenceHotelName"
+								v-model="hotelRequest.conferenceHotelName"
 								@input="state.conferenceHotelNameErr = false"
 								label="Conference/Meeting Hotel"
 								outlined/>	
@@ -90,48 +91,22 @@
 					<v-btn color="grey darken-5" @click="hotelDialog = false">
 						<div v-if="type == 'View'">Close</div>
 						<div v-else>Cancel</div>
-					</v-btn>
-					<v-btn
-						v-if="type == 'Edit' && admin"
-						class="ml-5"
-						color="red darken-5"
-						@click="deleteDialog = true"
-						:loading="savingData">Delete
-					</v-btn>
-					<v-btn
-						v-if="type == 'Add New' || type == 'Edit'"
+					</v-btn>					
+					<v-btn						
 						class="ml-auto"
 						color="green darken-1"
-						@click="saveHotelRequest()"
-						:loading="savingData">
+						@click="saveHotelRequest()">
 						<div v-if="type == 'View'">Save</div>
 						<div v-else>Add</div>
 					</v-btn>
 				</v-card-actions>
 			</v-card>
-		</v-dialog>		
-
-		<v-dialog v-model="deleteDialog" persistent max-width="400px">
-			<v-card>
-				<v-card-title class="amber accent-2" style="border-bottom: 1px solid black">
-					<div class="text-h5">Delete Hotel Request</div>
-				</v-card-title>
-
-				<v-card-text> </v-card-text>
-
-				<v-card-actions>
-					<v-btn color="grey darken-5" @click="deleteDialog = false"> Cancel </v-btn>
-					<v-btn class="ml-auto" color="red darken-1" @click="deleteHotelRequest()"> Delete </v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
+		</v-dialog>	
 	</div>
 </template>
 
 <script>
-	import Vue from "vue";
-	import { PREAPPROVED_URL } from "../../../../../urls";
-	import { secureDelete, securePost } from "@/store/jwt";
+	
 
 	export default {		
 		name: "NewHotelRequest",
@@ -143,23 +118,16 @@
 		},
 		data() {
 			return {			
-				checkInDate: "",
-				checkOutDate: "",
-				conferenceHotel: true,
-				conferenceName: "",
-				conferenceHotelName: "",
-				additionalInfo: "",
+				checkIn: "",
+				checkOut: "",				
 				hotelDialog: false,
-				savingData: false,
-				loadingData: false,
 				readonly: false,
-				deleteDialog: false,
-				admin: false,
 
 				state: {
-					checkInDateErr: false,
-					checkOutDateErr: false,
-					conferenceHotelErr: false,
+					checkInErr: false,
+					checkOutErr: false,
+					cityErr: false,
+					rsvConferenceHotelErr: false,
 					conferenceNameErr: false,
 					conferenceHotelNameErr: false,
 					additionalInfoErr: false					
@@ -173,12 +141,13 @@
 
 			checkFields() {
 
-				this.state.checkInDateErr = this.checkInDate? false:true;
-				this.state.checkOutDateErr = this.checkOutDate? false:true;
-				this.state.conferenceHotelErr = this.conferenceHotel != null? false: true;
-				this.state.conferenceNameErr = this.conferenceName? false:true;
-				this.state.conferenceHotelNameErr = this.conferenceHotelName? false:true;
-				this.state.additionalInfoErr = false;// this.additionalInfo?false: true;
+				this.state.checkInErr = this.checkIn? false:true;
+				this.state.checkOutErr = this.checkOut? false:true;
+				this.state.cityErr = this.hotelRequest.city? false:true;
+				this.state.rsvConferenceHotelErr = this.hotelRequest.rsvConferenceHotel != null? false: true;
+				this.state.conferenceNameErr = this.hotelRequest.conferenceName? false:true;
+				this.state.conferenceHotelNameErr = this.hotelRequest.conferenceHotelName? false:true;
+				this.state.additionalInfoErr = false;
 
 				for (const key of Object.keys(this.state)) {
 					if (this.state[key]) return false;
@@ -187,96 +156,54 @@
 			},
 
 			saveHotelRequest() {
-				if (this.checkFields()) {
-					this.savingData = true;
-					//TODO: add functionality
-					const body = {
-						location: Vue.filter("capitalize")(this.location),
-						purpose: this.purpose,
-						estimatedCost: this.cost,
-						reason: this.reason,
-						dateUnkInd: this.unknownDate ? 1 : 0,
-						month: this.anticipatedMonth,
-						startDate: !this.unknownDate ? this.startDate : null,
-						endDate: !this.unknownDate ? this.endDate : null,
-						department: this.department,
-						branch: this.branch,
-						travelerUnkInd: this.undefinedTraveller ? 1 : 0,
-						numberTravelers: this.travellersNum,
-						travelers: this.travellers,
-						travelerNotes: this.travellerNotes
-					};
-					// console.log(body);
-					const id = this.hotelRequest?.preTID ? this.hotelRequest.preTID : 0;
-					securePost(`${PREAPPROVED_URL}/${id}`, body)
-					.then(() => {
-						this.savingData = false;
-						this.hotelDialog = false;
-						this.$emit("updateTable");
-					})
-					.catch(e => {
-						this.savingData = false;
-						console.log(e);
-					});
+				if (this.checkFields()) {					
+					this.hotelRequest.checkIn=this.checkIn;
+					this.hotelRequest.checkOut=this.checkOut;
+					
+					this.$emit("updateTable", this.type);
+					this.hotelDialog = false;
 				}
+				
 			},
 
 			initForm() {
-				
-				this.admin = Vue.filter("isAdmin")();				
 
-				this.initStates();
-				this.initRequests();
+				this.initStates();				
 
-				this.requestType = this.type == "Add New" ? "" : this.hotelRequest.requestType;
-				this.depart = this.type == "Add New" ? "" : this.hotelRequest.depart;
-				this.arrive = this.type == "Add New" ? "" : this.hotelRequest.arrive;
-				this.date = this.type == "Add New" ? "" : this.hotelRequest.date;				
-				this.additionalInfo = this.type == "Add New" ? "" : this.hotelRequest.additionalInfo;
-				
-				this.deleteDialog = false;
-				
-				this.readonly = this.type != "Submit" && this.type != "Edit";
-				this.internationalTravel = true;//TODO: 				
+				if(this.type == "Add New"){
 
-				this.loadingData = false;				
+					this.hotelRequest.checkIn="";
+					this.hotelRequest.checkOut="";
+					this.hotelRequest.city="";
+					this.hotelRequest.rsvConferenceHotel=true;
+					this.hotelRequest.conferenceName="";
+					this.hotelRequest.conferenceHotelName="";
+					this.hotelRequest.additionalInformation="";
+
+					this.checkIn="";
+					this.checkOut="";
+					
+				} else {
+					this.checkIn=this.hotelRequest.checkIn;					
+					this.checkOut=this.hotelRequest.checkOut;
+				}
+					
 			},
 
 			initStates() {				
 				for (const key of Object.keys(this.state)) {
 					this.state[key] = false;
 				}
-			},
-
-			initRequests() {
-				this.requestList = ['Shuttle', 'Bus', 'Train']// this.$store.state.preapproved.employees.map(item => {
-				// 	return {
-				// 		fullName: item.fullName,
-				// 		department: item.department
-				// 	};
-				// });
-			},						
-
-			deleteHotelRequest() {
-				//TODO: add functionality here
-				this.deleteDialog = false;
-				this.savingData = true;
-				secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.preTID}`)
-					.then(() => {
-						this.savingData = false;
-						this.hotelDialog = false;
-						this.$emit("updateTable");
-					})
-					.catch(e => {
-						this.savingData = false;
-						console.log(e);
-					});
 			}
-
 		}
 	};
 </script>
 
 <style scoped lang="css" src="@/styles/_travel_desk.css">
+
+.label {
+	font-weight: 600;
+	font-size: 10pt !important;
+}
 
 </style>

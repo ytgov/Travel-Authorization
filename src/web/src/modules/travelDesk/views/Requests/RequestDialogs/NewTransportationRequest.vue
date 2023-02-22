@@ -1,124 +1,96 @@
 <template>
 	<div>
-		<v-dialog v-model="TransportationDialog" persistent >
+		<v-dialog v-model="transportationDialog" persistent >
 			<template v-slot:activator="{ on, attrs }">
-				<v-btn				
-					class="my-4 right"					
-					color="primary"
+				<v-btn	
+					:class="type=='Add New'? 'my-4 right':'mx-0 px-0'"					
+					:color="type=='Add New'? 'primary':'transparent'"
+					style="min-width: 0;"
 					@click="initForm()"
 					v-bind="attrs"
 					v-on="on">
-					<div>Add Transportation</div>
+					<div v-if="type=='Add New'" >Add Transportation</div>
+					<v-icon v-else class="mx-0 px-0" color="blue">mdi-pencil</v-icon>
 				</v-btn>
 			</template>
 
 			<v-card>
-				<v-card-title class="primary" style="border-bottom: 1px solid black">
+				<v-card-title class="blue">
 					<div class="text-h5">
 						Add Transportation
 					</div>
 				</v-card-title>
 
 				<v-card-text>					
-					<v-row class="mt-5 mx-3">
+					<v-row class="mt-5 mx-0">
 						<v-col cols="4">
 							<v-select
-								:items="requestList"
-								:readonly="readonly"								
-								:error="state.requestTypesErr"
-								:disabled="readonly"
+								:items="requestList"															
+								:error="state.transportationTypeErr"								
 								label="Request Type:"
-								v-model="requestType"								
+								v-model="otherTransportationRequest.transportationType"								
 								outlined/>		
 						</v-col>
 						<v-col cols="8">
 						</v-col>											
 					</v-row>
-					<v-row class="mt-0 mx-3">
+					<v-row class="mt-0 mx-0">
 						<v-col cols="3">
-							<v-text-field
-								:readonly="readonly"
+							<v-text-field								
 								:error="state.departErr"
-								v-model="depart"								
+								v-model="otherTransportationRequest.depart"								
 								label="Depart"
 								outlined/>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field
-								:readonly="readonly"
+							<v-text-field								
 								:error="state.arriveErr"
-								v-model="arrive"
+								v-model="otherTransportationRequest.arrive"
 								label="Arrive"
 								outlined/>
 						</v-col>
 						<v-col cols="3">
 							<v-text-field
 								:readonly="readonly"
-								:error="state.dateTimeErr"
-								v-model="dateTime"
-								@input="state.dateTimeErr = false"
+								:error="state.dateErr"
+								v-model="date"
+								@input="state.dateErr = false"
 								label="Date"
 								outlined
 								type="date"/>
 						</v-col>
 						<v-col cols="3">
-							<v-textarea
-								:readonly="readonly"
-								:error="state.additionalInfoErr"
-								v-model="additionalInfo"
+							<v-textarea								
+								:error="state.additionalNotesErr"
+								v-model="otherTransportationRequest.additionalNotes"
 								label="Additional Information"
-								outlined
-								:clearable="!readonly"/>	
+								outlined/>	
 						</v-col>				
 					</v-row>
 				</v-card-text>
 
 				<v-card-actions>
-					<v-btn color="grey darken-5" @click="TransportationDialog = false">
+					<v-btn color="grey darken-5" @click="transportationDialog = false">
 						<div v-if="type == 'View'">Close</div>
 						<div v-else>Cancel</div>
-					</v-btn>
-					<v-btn
-						v-if="type == 'Edit' && admin"
-						class="ml-5"
-						color="red darken-5"
-						@click="deleteDialog = true"
-						:loading="savingData">Delete
-					</v-btn>
-					<v-btn
-						v-if="type == 'Add New' || type == 'Edit'"
+					</v-btn>					
+					<v-btn						
 						class="ml-auto"
 						color="green darken-1"
 						@click="saveTransportationRequest()"
-						:loading="savingData">
+						>
 						<div v-if="type == 'View'">Save</div>
 						<div v-else>Add</div>
-					</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>		
-
-		<v-dialog v-model="deleteDialog" persistent max-width="400px">
-			<v-card>
-				<v-card-title class="amber accent-2" style="border-bottom: 1px solid black">
-					<div class="text-h5">Delete Transportation Request</div>
-				</v-card-title>
-
-				<v-card-text> </v-card-text>
-
-				<v-card-actions>
-					<v-btn color="grey darken-5" @click="deleteDialog = false"> Cancel </v-btn>
-					<v-btn class="ml-auto" color="red darken-1" @click="deleteTransportationRequest()"> Delete </v-btn>
+					</v-btn>					
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
+		
 	</div>
 </template>
 
 <script>
-	import Vue from "vue";
-	import { PREAPPROVED_URL } from "../../../../../urls";
-	import { secureDelete, securePost } from "@/store/jwt";
+	
 
 	export default {		
 		name: "NewTransportationRequest",
@@ -126,29 +98,20 @@
 			type: {
 				type: String
 			},
-			transportationRequest: {}
+			otherTransportationRequest: {}
 		},
 		data() {
-			return {			
-				requestType: "",
-				depart: "",
-				arrive: "",
-				date: "",
-				additionalInfo: "",
-				TransportationDialog: false,
-				requestList: [],
-				savingData: false,
-				loadingData: false,
+			return {
+				date: "",				
+				transportationDialog: false,
+				requestList: ["Shuttle", "Bus", "Train"],				
 				readonly: false,
-				deleteDialog: false,
-				admin: false,
-
 				state: {
-					requestTypeErr: false,
+					transportationTypeErr: false,
 					departErr: false,
 					arriveErr: false,			
 					dateErr: false,
-					additionalInfoErr: false					
+					additionalNotesErr: false					
 				},
 
 			};
@@ -158,11 +121,11 @@
 		methods: {
 
 			checkFields() {
-				this.state.requestTypeErr = this.requestType? false:true;
-				this.state.departErr = this.depart?false:true;
-				this.state.arriveErr = this.arrive?false: true;				
+				this.state.transportationTypeErr = this.otherTransportationRequest.transportationType? false:true;
+				this.state.departErr = this.otherTransportationRequest.depart?false:true;
+				this.state.arriveErr = this.otherTransportationRequest.arrive?false: true;				
 				this.state.dateErr = this.date?false: true;				
-				this.state.additionalInfoErr = false;// this.additionalInfo?false: true;
+				this.state.additionalNotesErr = false;// 
 
 				for (const key of Object.keys(this.state)) {
 					if (this.state[key]) return false;
@@ -172,90 +135,37 @@
 
 			saveTransportationRequest() {
 				if (this.checkFields()) {
-					this.savingData = true;
-					//TODO: add functionality
-					const body = {
-						location: Vue.filter("capitalize")(this.location),
-						purpose: this.purpose,
-						estimatedCost: this.cost,
-						reason: this.reason,
-						dateUnkInd: this.unknownDate ? 1 : 0,
-						month: this.anticipatedMonth,
-						startDate: !this.unknownDate ? this.startDate : null,
-						endDate: !this.unknownDate ? this.endDate : null,
-						department: this.department,
-						branch: this.branch,
-						travelerUnkInd: this.undefinedTraveller ? 1 : 0,
-						numberTravelers: this.travellersNum,
-						travelers: this.travellers,
-						travelerNotes: this.travellerNotes
-					};
-					// console.log(body);
-					const id = this.transportationRequest?.preTID ? this.transportationRequest.preTID : 0;
-					securePost(`${PREAPPROVED_URL}/${id}`, body)
-					.then(() => {
-						this.savingData = false;
-						this.TransportationDialog = false;
-						this.$emit("updateTable");
-					})
-					.catch(e => {
-						this.savingData = false;
-						console.log(e);
-					});
+
+					this.otherTransportationRequest.date=this.date+'T00:00:00.000Z';					
+					this.$emit("updateTable",this.type)
+					this.transportationDialog= false;						
 				}
 			},
 
 			initForm() {
-				
-				this.admin = Vue.filter("isAdmin")();				
 
 				this.initStates();
-				this.initRequests();
 
-				this.requestType = this.type == "Add New" ? "" : this.transportationRequest.requestType;
-				this.depart = this.type == "Add New" ? "" : this.transportationRequest.depart;
-				this.arrive = this.type == "Add New" ? "" : this.transportationRequest.arrive;
-				this.date = this.type == "Add New" ? "" : this.transportationRequest.date;				
-				this.additionalInfo = this.type == "Add New" ? "" : this.transportationRequest.additionalInfo;
-				
-				this.deleteDialog = false;
-				
-				this.readonly = this.type != "Submit" && this.type != "Edit";
-				this.internationalTravel = true;//TODO: 				
+				if(this.type == "Add New"){
 
-				this.loadingData = false;				
+					this.otherTransportationRequest.transportationType="";
+					this.otherTransportationRequest.depart="";
+					this.otherTransportationRequest.arrive="";	
+					this.otherTransportationRequest.additionalNotes="";
+					this.otherTransportationRequest.status="Requested";//, Reserved"
+					this.date="";
+
+				} else {
+					this.date=this.otherTransportationRequest.date.slice(0,10)
+				}
+								
 			},
 
 			initStates() {				
 				for (const key of Object.keys(this.state)) {
 					this.state[key] = false;
 				}
-			},
-
-			initRequests() {
-				this.requestList = ['Shuttle', 'Bus', 'Train']// this.$store.state.preapproved.employees.map(item => {
-				// 	return {
-				// 		fullName: item.fullName,
-				// 		department: item.department
-				// 	};
-				// });
-			},						
-
-			deleteTransportationRequest() {
-				//TODO: add functionality here
-				this.deleteDialog = false;
-				this.savingData = true;
-				secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.preTID}`)
-					.then(() => {
-						this.savingData = false;
-						this.TransportationDialog = false;
-						this.$emit("updateTable");
-					})
-					.catch(e => {
-						this.savingData = false;
-						console.log(e);
-					});
-			}
+			}			
 
 		}
 	};

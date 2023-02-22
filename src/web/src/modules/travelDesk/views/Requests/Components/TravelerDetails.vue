@@ -1,6 +1,6 @@
 <template>
 	<div>	
-		<div class="mt-4">{{travelerDetails}}</div>
+		<!-- <div class="mt-4">{{travelerDetails}}</div> -->
 		<div id="traveller-detail">Traveller Details</div>					
 		<v-card elevation="2" outlined>
 

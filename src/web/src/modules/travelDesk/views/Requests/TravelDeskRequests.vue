@@ -1,6 +1,5 @@
 <template>
-	<div class="mx-10 mb-5">	
-		
+	<div class="mx-10 mb-5">
 		<v-data-table
 			:headers="headers"
 			:items="authorizedTravels"
@@ -130,7 +129,11 @@
 				const names = []
 				const destinations = this.$store.state.traveldesk.destinations; 
 				for(const locationId of locations){
-					names.push(destinations.filter(dest =>dest.value==locationId)[0].text)
+					const location = destinations.filter(dest =>dest.value==locationId)
+					if (location.length > 0){
+						names.push(location[0].text)
+					}
+					
 				}
 				return names.join(', ')
 			}

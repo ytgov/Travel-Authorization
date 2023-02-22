@@ -89,8 +89,7 @@
 					{ text: "",     value: "edit", class: "blue-grey lighten-4", width: "4rem", sortable: false}
 				],
 				carRequest:{},
-				tmpId:1,				
-
+				tmpId:1,
 				admin: false,
 				travelerDetails: {},
 				savingData: false,
