@@ -19,8 +19,7 @@
 					{{ item.month }}
 				</div>
 				<div v-else>
-					<div>
-						<!-- eslint-disable-next-line vue/no-parsing-error -->
+					<div>						
 						{{ item.startDate | beautifyDate }}
 					</div>					
 				</div>
@@ -30,8 +29,7 @@
 					{{ item.month }}
 				</div>
 				<div v-else>					
-					<div>
-						<!-- eslint-disable-next-line vue/no-parsing-error -->
+					<div>						
 						{{ item.endDate | beautifyDate }}
 					</div>
 				</div>
@@ -52,7 +50,6 @@
 	import Vue from "vue";
 	import NewTravelDeskRequest from "./NewTravelDeskRequest.vue";
 
-
 	export default {
 		components: {
 			NewTravelDeskRequest
@@ -66,48 +63,14 @@
 		data() {
 			return {
 				headers: [	
-					{
-						text: "Name",
-						value: "name",
-						class: "blue-grey lighten-4"
-					},			
-					{
-						text: "Phase",
-						value: "phase",
-						class: "blue-grey lighten-4"
-					},
-					{
-						text: "Location",
-						value: "location",
-						class: "blue-grey lighten-4"
-					},
-					{
-						text: "Description",
-						value: "description",
-						class: "blue-grey lighten-4"
-					},
-					{
-						text: "Start Date",
-						value: "startDate",
-						class: "blue-grey lighten-4"
-					},
-					{
-						text: "End Date",
-						value: "endDate",
-						class: "blue-grey lighten-4"
-					},
-					{
-						text: "Travel Auth Status",
-						value: "status",
-						class: "blue-grey lighten-4"
-					},
-					{
-						text: "Travel Action",
-						value: "edit",
-						class: "blue-grey lighten-4",
-						cellClass: "px-0 mx-0",
-						sortable: false
-					}
+					{ text: "Name",				  value: "name",		class: "blue-grey lighten-4"},			
+					{ text: "Phase",			  value: "phase",		class: "blue-grey lighten-4"},
+					{ text: "Location",			  value: "location",	class: "blue-grey lighten-4"},
+					{ text: "Description", 		  value: "description", class: "blue-grey lighten-4"},
+					{ text: "Start Date",		  value: "startDate",	class: "blue-grey lighten-4"},
+					{ text: "End Date", 		  value: "endDate",		class: "blue-grey lighten-4"},
+					{ text: "Travel Auth Status", value: "status", 		class: "blue-grey lighten-4"},
+					{ text: "Travel Action", 	  value: "edit",	    class: "blue-grey lighten-4", cellClass: "px-0 mx-0",sortable: false}
 				],
 				admin: false,
 				department: "",				
@@ -116,11 +79,8 @@
 		mounted() {
 			this.department = this.$store.state.auth.department
 			this.admin = Vue.filter("isAdmin")();
-			
 		},
-		computed: {
-			
-		},
+		computed: {},
 		methods: {
 			updateTable() {
 				this.$emit("updateTable");
@@ -137,14 +97,12 @@
 				}
 				return names.join(', ')
 			}
-
-
 		}
 	};
-	</script>
+</script>
 
-	<style scoped>
+<style scoped>
 	::v-deep(tbody tr:nth-of-type(even)) {
-	background-color: rgba(0, 0, 0, 0.05);
+		background-color: rgba(0, 0, 0, 0.05);
 	}
-	</style>
+</style>

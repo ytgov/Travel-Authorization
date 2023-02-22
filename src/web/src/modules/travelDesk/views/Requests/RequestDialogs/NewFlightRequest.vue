@@ -68,15 +68,24 @@
 							</v-radio-group>
 						</v-col>
 						<v-col cols="4">
-							<div class="label">Seat Preference</div>
-							<v-radio-group								
+							<v-select
+								:items="seatPreferenceList"								
 								:error="state.seatPreferenceErr"
+								@input="state.seatPreferenceErr=false"							
+								label="Seat Preference"
+								v-model="flightRequest.seatPreference"								
+								outlined/>
+							<!-- <div class="label"></div>
+							<v-radio-group								
+								:error=""
 								class="mt-1"								
-								v-model="flightRequest.seatPreference"
+								v-model=""
 								row>
 								<v-radio label="Aisle" value="Aisle"></v-radio>
+								<v-radio label="Middle" value="Middle"></v-radio>								
 								<v-radio label="Window" value="Window"></v-radio>
-							</v-radio-group>	
+								<v-radio label="Aisle" value="Aisle"></v-radio>
+							</v-radio-group>	 -->
 						</v-col>				
 					</v-row>
 				</v-card-text>
@@ -116,9 +125,9 @@
 		data() {
 			return {							
 				date: "",
-				flightDialog: false,
-				
-				readonly: false,				
+				flightDialog: false,				
+				readonly: false,
+				seatPreferenceList: ["Aisle", "Middle", "Window", "No Preference"],			
 
 				state: {
 					departLocationErr: false,

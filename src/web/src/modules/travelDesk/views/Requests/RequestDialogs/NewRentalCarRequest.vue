@@ -15,15 +15,13 @@
 			</template>
 
 			<v-card>
-				{{state}}
 				<v-card-title class="blue" >
 					<div class="text-h5">
 						Add Rental Car
 					</div>
 				</v-card-title>
 
-				<v-card-text>	{{carRequest}}
-
+				<v-card-text>
 <!-- <ROW-1> -->
 					<v-row class="mt-5 mx-0">
 						<v-col cols="4">
@@ -188,8 +186,6 @@
 </template>
 
 <script>
-
-
 	export default {		
 		name: "NewRentalCarRequest",
 		props: {
@@ -301,9 +297,7 @@
 				for (const key of Object.keys(this.state)) {
 					this.state[key] = false;
 				}
-			},
-
-			
+			},	
 
 		}
 	};

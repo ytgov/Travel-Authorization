@@ -23,12 +23,12 @@
 					</div>
 				</v-card-title>
 
-				<v-card-text>
-
-					<!-- TODO REMOVE -->
-					<!-- <div class="mt-3">{{authorizedTravel}}</div>  -->
+				<v-card-text>					
 				
-					<traveler-details :travelerDetails="travelerDetails" :readonly="false"/>
+					<traveler-details 
+						:travelerDetails="travelerDetails" 
+						:travelerState="state" 
+						:readonly="false"/>
 					
 					<div id="travel-detail">Travel Information</div>
 					<v-card elevation="2" outlined>
@@ -37,8 +37,9 @@
 						<v-card class="mx-5 my-5" elevation="1" outlined>
 							<v-row class="mt-5 mx-3">
 								<v-col cols="8">
-									<flight-request-table :readonly="false" :flightRequests="travelerDetails.flightRequests" />
-
+									<flight-request-table 
+										:readonly="false" 
+										:flightRequests="travelerDetails.flightRequests" />
 								</v-col>
 								<v-col cols="4">
 									<v-textarea
@@ -46,15 +47,19 @@
 										v-model="travelerDetails.additionalInformation"
 										label="Additional Information"
 										outlined
-										:clearable="!readonly"
-									/>									
+										:clearable="!readonly"/>									
 								</v-col>
 							</v-row>
 						</v-card>
-						<rental-car-request-table :readonly="false" :rentalCars="travelerDetails.rentalCars" />
-						<hotel-request-table :readonly="false" :hotels="travelerDetails.hotels" />
-						<transportation-request-table :readonly="false" :otherTransportations="travelerDetails.otherTransportation" />
-						
+						<rental-car-request-table 
+							:readonly="false" 
+							:rentalCars="travelerDetails.rentalCars" />
+						<hotel-request-table 
+							:readonly="false" 
+							:hotels="travelerDetails.hotels" />
+						<transportation-request-table 
+							:readonly="false" 
+							:otherTransportations="travelerDetails.otherTransportation" />						
 					</v-card>	
 					
 				</v-card-text>
@@ -85,8 +90,7 @@
 	</div>
 </template>
 
-<script>
-	// import Vue from "vue";
+<script>	
 	import { LOOKUP_URL, TRAVEL_DESK_URL } from "../../../../urls";
 	import { secureGet, securePost } from "@/store/jwt";
 	import TravelerDetails from "./Components/TravelerDetails.vue";
@@ -112,73 +116,49 @@
 			authorizedTravel: {}
 		},
 		data() {
-			return {
-				flights: [
-					{departLocation: 'Whitehorse', arriveLocation: 'Toronto', date: '22-08-2022', preferences: 'AM'}
-				],
-
-				// ,
-				// otherTransport: [
-				// 	{type: 'Shuttle', departLocation: 'Missisauga', arriveLocation: 'Toronto', date: '22-08-2022', additionalInfo: 'shuttle from airport to downtown'}
-				// ],
-			
-					
-				monthList: [
-					"January",
-					"February",
-					"March",
-					"April",
-					"May",
-					"June",
-					"July",
-					"August",
-					"September",
-					"October",
-					"November",
-					"December"
-				],
-				addNewTravelDialog: false,
-				adNameList: [],
-				adName: "",				
-				loadingData: false,
-				showApproval: false,
-				approved: false,
-				approvedBy: "",
-				approvalDate: "",
+			return {					
+				
+				addNewTravelDialog: false,				
 				readonly: false,
 				internationalTravel: false,				
-				admin: false,
-
-
-
+				
 				travelerDetails: {},
 				savingData: false,
 
 				state: {
-					purposeErr: false,
-					costErr: false,
-					locationErr: false,
-					departmentErr: false,
-					branchErr: false,
-					anticipatedMonthErr: false,
-					travellerNumErr: false,
-					startDateErr: false,
-					endDateErr: false,
-					unknownDateErr: false,
-					differentTravelContactErr: false
+					firstNameErr: false,
+					middleNameErr: false,
+					lastNameErr: false,
+					birthDateErr: false,
+					travelAuthErr: false,
+					addressErr: false,
+					cityErr: false,
+					provinceErr: false,
+					postalCodeErr: false,
+					passportNumberErr: false,
+					passportCountryErr: false,
+					businessPhoneErr: false,
+					businessEmailErr: false,
+					travelPhoneErr: false,
+					travelEmailErr: false,
+					flightRequestsErr: false,					
+					rentalCarsErr: false,
+					hotelsErr: false,
+					otherTransportationErr: false
 				},
 
-				adNameErr: false
+				differentTravelContactHint: ""				
 			};
 		},
 		mounted() {						
 		},
 		methods: {
-			// updateTable() {
-			// 	this.$emit("updateTable");
-			// },
+			updateTable() {
+				this.$emit("updateTable");
+			},
 
 			async initForm() {
+				this.initStates();
 				this.savingData = false;
 				const travelRequest = await this.getTravelRequestInfo()
 				console.log(travelRequest)
@@ -255,7 +235,7 @@
 				console.log(saveType)
 				console.log(this.travelerDetails)
 
-				// if (this.checkFields()) {
+				if (this.checkFields()) {
 					this.savingData = true;
 					const body = this.travelerDetails
 					delete body.internationalTravel;
@@ -268,102 +248,52 @@
 					securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
 					.then(() => {
 						this.savingData = false;
-						// this.addNewTravelDialog = false;
-						// this.$emit("updateTable");
+						this.addNewTravelDialog = false;
+						this.$emit("updateTable");
 					})
 					.catch(e => {
 						this.savingData = false;
 						console.log(e);
 					});
-				// }
+				}
+			},
+
+			initStates() {
+				
+				this.differentTravelContactHint = "";
+				for (const key of Object.keys(this.state)) {
+					this.state[key] = false;
+				}
 			},
 			
+			checkFields() {
 
-			// initStates() {
-			// 	this.adNameErr = false;
-			// 	this.differentTravelContactHint = "";
-			// 	for (const key of Object.keys(this.state)) {
-			// 		this.state[key] = false;
-			// 	}
-			// },			
+				this.state.firstNameErr = this.travelerDetails.legalFirstName? false:true;
+				this.state.middleNameErr = false,
+				this.state.lastNameErr = this.travelerDetails.legalLastName? false:true;
+				this.state.birthDateErr = this.travelerDetails.birthDate? false:true;
+				this.state.travelAuthErr = false; //this.travelerDetails.travelAuth? false:true; TODO: add this in backend
+				this.state.addressErr = this.travelerDetails.strAddress? false:true;
+				this.state.cityErr = this.travelerDetails.city? false:true;
+				this.state.provinceErr = this.travelerDetails.province? false:true;
+				this.state.postalCodeErr = this.travelerDetails.postalCode? false:true;
+				this.state.passportNumberErr = this.internationalTravel && !this.travelerDetails.passportNum? true: false;
+				this.state.passportCountryErr = this.internationalTravel && !this.travelerDetails.passportCountry? true: false;
+				this.state.businessPhoneErr = this.travelerDetails.busPhone? false:true;
+				this.state.businessEmailErr = this.travelerDetails.busEmail? false:true;
+				this.state.travelPhoneErr = this.travelerDetails.travelContact && !this.travelerDetails.travelPhone? true: false;//show hint
+				this.state.travelEmailErr = this.travelerDetails.travelContact && !this.travelerDetails.travelEmail? true: false;//show hint
+				this.state.flightRequestsErr = false;					
+				this.state.rentalCarsErr = false;
+				this.state.hotelsErr = false;
+				this.state.otherTransportationErr = false;				
 
-			// initDepartments() {
-			// 	this.departmentList = [];
-			// 	const depts = this.$store.state.preapproved.departmentBranch;
-			// 	for (const key of Object.keys(depts)) {
-			// 		this.departmentList.push({
-			// 		name: key
-			// 		});
-			// 	}
-			// },
-
-			// initSubmission(id) {
-			// 	secureGet(`${PREAPPROVED_URL}/submissions/${id}`)
-			// 		.then(res => {
-			// 			this.showApproval = res.data.status == "Finished";
-			// 			this.approvedBy = res.data.approvedBy;
-			// 			this.approvalDate = res.data.approvalDate;
-			// 		})
-			// 		.catch(e => {
-			// 			console.log(e);
-			// 		});
-			// },
-
-			// downloadPdf() {
-			// 	this.loadingData = true;
-			// 	const header = {
-			// 		responseType: "application/pdf",
-			// 		headers: {
-			// 			"Content-Type": "application/text"
-			// 		}
-			// 	};
-
-			// 	secureGet(`${PREAPPROVED_URL}/document/${this.travelRequest.preTSubID}`, header)
-			// 		.then(res => {
-			// 			this.loadingData = false;
-			// 			const link = document.createElement("a");
-			// 			link.href = res.data;
-			// 			document.body.appendChild(link);
-			// 			link.download = this.approved ? "approval_doc.pdf" : "doc.pdf";
-			// 			link.click();
-			// 			setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-			// 		})
-			// 		.catch(e => {
-			// 			this.loadingData = false;
-			// 			console.log(e);
-			// 		});
-			// },
-
+				for (const key of Object.keys(this.state)) {
+					if (this.state[key]) return false;
+				}
+				return true;
+			},
 			
-
-			// departmentChanged(branch) {
-			// 	this.state.departmentErr = false;
-			// 	this.branch = branch ? branch : "";
-			// 	const depts = this.$store.state.preapproved.departmentBranch;
-			// 	if (this.department) {
-			// 		this.branchList = depts[this.department].branches;
-			// 	} else {
-			// 		this.branchList = [];
-			// 	}
-			// },
-
-			// editFlight(item) {
-			// 	this.travellers = this.travellers.filter(
-			// 		traveller => !(traveller.fullName == item.fullName && traveller.department == item.department)
-			// 	);
-			// 	if (this.travellers.length == 0 && this.differentTravelContact) {
-			// 		this.travellersNum = null;
-			// 	}
-			// },
-
-			// removeFlight(item) {
-			// 	this.travellers = this.travellers.filter(
-			// 		traveller => !(traveller.fullName == item.fullName && traveller.department == item.department)
-			// 	);
-			// 	if (this.travellers.length == 0 && this.differentTravelContact) {
-			// 		this.travellersNum = null;
-			// 	}
-			// }
 		}
 	};
 </script>

@@ -8,7 +8,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.firstNameErr"
+						:error="travelerState.firstNameErr"
 						label="Legal First Name"
 						v-model="travelerDetails.legalFirstName"								
 						outlined/>
@@ -16,7 +16,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.middleNameErr"
+						:error="travelerState.middleNameErr"
 						label="Legal Middle Name"
 						v-model="travelerDetails.legalMiddleName"								
 						outlined/>
@@ -24,7 +24,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.lastNameErr"
+						:error="travelerState.lastNameErr"
 						label="Legal Last Name"
 						v-model="travelerDetails.legalLastName"								
 						outlined/>
@@ -32,19 +32,19 @@
 				<v-col cols="2">
 					<v-text-field
 					:readonly="readonly"
-					:error="state.birthDateErr"
+					:error="travelerState.birthDateErr"
 					v-model="travelerDetails.birthDate"
-					@input="state.birthDateErr = false"
+					@input="travelerState.birthDateErr = false"
 					label="Birth Date"
 					outlined
 					type="date"/>
 				</v-col>
 				<v-col cols="2">
 					<v-text-field
-						:readonly="readonly"								
-						:error="state.travelAuthErr"
+						readonly								
+						:error="travelerState.travelAuthErr"
 						label="Travel Auth"
-						v-model="travelerDetails.travelAuth"								
+						v-model="taid"								
 						outlined/>
 				</v-col>						
 			</v-row>
@@ -52,7 +52,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.addressErr"
+						:error="travelerState.addressErr"
 						label="Address"
 						v-model="travelerDetails.strAddress"								
 						outlined/>
@@ -60,7 +60,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.cityErr"
+						:error="travelerState.cityErr"
 						label="City"
 						v-model="travelerDetails.city"								
 						outlined/>
@@ -68,7 +68,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.provinceErr"
+						:error="travelerState.provinceErr"
 						label="Province"
 						v-model="travelerDetails.province"								
 						outlined/>
@@ -76,7 +76,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.postalCodeErr"
+						:error="travelerState.postalCodeErr"
 						label="Postal Code"
 						v-model="travelerDetails.postalCode"								
 						outlined/>
@@ -91,7 +91,7 @@
 				<v-col cols="2" v-if="travelerDetails.internationalTravel">
 					<v-text-field						
 						:readonly="readonly"								
-						:error="state.passportNumberErr"
+						:error="travelerState.passportNumberErr"
 						label="Passport Number"
 						v-model="travelerDetails.passportNum"								
 						outlined/>
@@ -99,7 +99,7 @@
 				<v-col cols="2" v-if="travelerDetails.internationalTravel">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.passportCountryErr"
+						:error="travelerState.passportCountryErr"
 						label="Passport Country"
 						v-model="travelerDetails.passportCountry"								
 						outlined/>
@@ -110,7 +110,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.businessPhoneErr"									
+						:error="travelerState.businessPhoneErr"									
 						label="Business Phone"
 						v-model="travelerDetails.busPhone"								
 						outlined/>
@@ -118,7 +118,7 @@
 				<v-col cols="2">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.businessEmailErr"									
+						:error="travelerState.businessEmailErr"									
 						label="Business Email"
 						v-model="travelerDetails.busEmail"								
 						outlined/>
@@ -133,7 +133,7 @@
 				<v-col cols="2" v-if="travelerDetails.travelContact">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.travelPhoneErr"									
+						:error="travelerState.travelPhoneErr"									
 						label="Travel Phone"
 						v-model="travelerDetails.travelPhone"								
 						outlined/>
@@ -141,7 +141,7 @@
 				<v-col cols="3" v-if="travelerDetails.travelContact">
 					<v-text-field
 						:readonly="readonly"								
-						:error="state.travelEmailErr"									
+						:error="travelerState.travelEmailErr"									
 						label="Travel Email"
 						v-model="travelerDetails.travelEmail"								
 						outlined/>
@@ -160,40 +160,24 @@
 		name: "TravelerDetails",
 		props: {			
 			readonly: Boolean,
-			travelerDetails: {}
+			travelerDetails: {},
+			travelerState: {}
 		},
 		data() {
 			return {
 				admin: false,
+				taid: ''
 
-				state: {
-					firstNameErr: false,
-					middleNameErr: false,
-					lastNameErr: false,
-					birthDateErr: false,
-					travelAuthErr: false,
-					addressErr: false,
-					cityErr: false,
-					provinceErr: false,
-					postalCodeErr: false,
-					passportNumberErr: false,
-					passportCountryErr: false,
-					businessPhoneErr: false,
-					businessEmailErr: false,
-					travelPhoneErr: false,
-					travelEmailErr: false,					
-				},
-
-				
+						
 			};
 		},
 		mounted() {	
-			console.log('mount')					
+		
+			this.taid = this.travelerDetails.TAID.toString().padStart(5, '0');
+						
 		},
 		methods: {
-			// updateTable() {
-			// 	this.$emit("updateTable");
-			// },			
+			
 		}
 	};
 </script>
