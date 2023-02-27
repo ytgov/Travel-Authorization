@@ -2,7 +2,7 @@
   position: relative;
   top: 12px;
   left: 24px;
-  width: 9.5%;
+  width: 15%;
   font-size: 15pt;
   height: 100%;
   background: rgb(255, 255, 255);
@@ -24,9 +24,20 @@
   z-index: 99;
 }
 
+#travel-process-detail {
+  position: relative;
+  top: 60px;
+  left: 20px;
+  width: 16%;
+  font-size: 15pt;
+  height: 5%;
+  background: rgb(255, 255, 255);
+  z-index: 99;
+}
+
 #flight-request {
   position: relative;
-  top: 40px;
+  top: 20px;
   padding: 10px;
   left: 37px;
   width: 140px;
@@ -74,4 +85,35 @@
   height: 100%;
   background: rgb(255, 255, 255);
   z-index: 99;
+}
+
+#questions-table {
+  position: relative;
+  top: 16px;
+  padding: 10px;
+  left: 37px;
+  width: 100px;
+  font-size: 12pt;
+  font-weight: 600;
+  height: 2%;
+  background: rgb(255, 255, 255);
+  z-index: 99;
+}
+
+#question-card {
+  position: relative;
+  top: 18px;
+  padding: 10px;
+  left: 25px;
+  width: 100px;
+  font-size: 12pt;
+  font-weight: 600;
+  height: 8%;
+  background: rgb(255, 255, 255);
+  z-index: 99;
+}
+
+.questions-column {  
+  height: 76rem;  
+  overflow-y: auto;
 }

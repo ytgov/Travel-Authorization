@@ -7,6 +7,7 @@
 					class="ml-auto mr-3"
 					type="Add New"
 					@updateTable="updateTable"
+					:flightRequests="flightRequests"
 					:carRequest="carRequest"/>								
 			</v-row>
 			<v-row class="mb-3 mx-3">
@@ -43,6 +44,7 @@
 								<new-rental-car-request									
 									type="Edit"
 									@updateTable="updateTable"
+									:flightRequests="flightRequests"
 									:carRequest="item"/>
 								<v-btn
 									v-if="!readonly"
@@ -72,7 +74,8 @@
 		name: "NewTravelDeskRequest",
 		props: {
 			readonly: Boolean,
-			rentalCars: {}
+			rentalCars: {},
+			flightRequests: {}
 		},
 		data() {
 			return {
@@ -121,7 +124,7 @@
 				carRequest.matchFlightTimes=false
 				carRequest.pickUpDate=""
 				carRequest.dropOffDate=""
-				carRequest.vehicleType=""
+				carRequest.vehicleType="Compact"
 				carRequest.vehicleChangeRationale=""
 				carRequest.additionalNotes=""
 				carRequest.status="Requested"

@@ -5,6 +5,7 @@ import { ReturnValidationErrors, RequiresRoleAdmin } from "../middleware";
 import { param, query } from "express-validator";
 import { loadUser, checkJwt } from "../middleware/authz.middleware";
 import { UserService } from "../services";
+import { RequiresRoleTdUser } from "../middleware";
 
 export const userRouter = express.Router();
 const db = knex(DB_CONFIG);
@@ -43,6 +44,21 @@ userRouter.get("/unit", async (req: Request, res: Response) => {
   try {
     let unit = await userService.getUnit(req.user?.email);
     res.status(200).json(unit);
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json("Internal Server Error");
+  }
+});
+
+userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, res: Response) => {
+  try {    
+    const users = await db("user")
+      .select('email','first_name','last_name')
+      .where('status','=','Active')      
+      .andWhereLike('roles', '%TdUser%');
+
+    // console.log(users);    
+    res.status(200).json(users);
   } catch (error: any) {
     console.log(error);
     res.status(500).json("Internal Server Error");

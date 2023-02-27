@@ -27,6 +27,9 @@ exports.up = function (knex: knex.Knex, Promise: any) {
       t.string("travelEmail");
       t.string("additionalInformation");
 
+      t.string("status").notNullable(); //draft, submitted, options_provided, options_ranked, booked
+      t.datetime("submitDate");
+      t.string("travelDeskOfficer");
     });
 };
 

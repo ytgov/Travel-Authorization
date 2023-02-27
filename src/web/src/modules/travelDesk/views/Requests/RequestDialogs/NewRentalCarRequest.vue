@@ -34,9 +34,11 @@
 						</v-col>
 						<v-col cols="5">
 							<label>Pick-up/Drop-off match flights</label>
-							<v-radio-group								
+							<v-radio-group
+								:disabled="!flightStart || !flightEnd"
 								:error="state.matchFlightTimesErr"								
-								v-model="carRequest.matchFlightTimes"								
+								v-model="carRequest.matchFlightTimes"
+								@change="matchWithFlight"								
 								class="mt-1"
 								row>								
 								<v-radio label="Yes" :value="true"></v-radio>
@@ -73,6 +75,7 @@
 						</v-col>
 						<v-col cols="2">
 							<v-text-field
+								:disabled="carRequest.matchFlightTimes"
 								:readonly="readonly"
 								:error="state.pickUpDateErr"
 								v-model="pickUpDate"
@@ -82,6 +85,7 @@
 								type="date"/>
 							<v-text-field
 								class="mt-n3"
+								:disabled="carRequest.matchFlightTimes"
 								:readonly="readonly"
 								:error="state.dropOffDateErr"
 								v-model="dropOffDate"
@@ -186,13 +190,16 @@
 </template>
 
 <script>
+	import Vue from "vue";
+
 	export default {		
 		name: "NewRentalCarRequest",
 		props: {
 			type: {
 				type: String
 			},
-			carRequest: {}			
+			carRequest: {},
+			flightRequests: {}			
 		},
 		data() {
 			return {							
@@ -201,8 +208,11 @@
 				dropOffDate: "",
 				dropOffTime: "",
 
+				flightStart: "",
+				flightEnd:"",
+
 				rentalCarDialog: false,
-				vehicleList: ["Economy Car", "Compact Car", "Standard Car", "SUV", "Mini Van", "Luxury Car", "Pickup Truck", "Electric Car"],
+				vehicleList: ["Economy", "Compact", "Intermediate", "Standard", "Full-Size", "Intermediate SUV", "Luxury", "Minivan", "Standard SUV", "Full-Size SUV", "Pickup Truck"],
 				pickUpLocations: ['Airport', 'Hotel', 'Downtown', 'Other'],
 
 				readonly: false,				
@@ -238,7 +248,7 @@
 				this.state.dropOffLocationErr = (!this.carRequest.sameDropOffLocation && !this.carRequest.dropOffLocation)? true: false;				
 				this.state.matchFlightTimesErr = this.carRequest.matchFlightTimes != null? false: true;				
 				this.state.vehicleTypesErr = this.carRequest.vehicleType? false: true;
-				this.state.reasonForChangeErr = false; 
+				this.state.reasonForChangeErr = this.carRequest.vehicleType != "Compact" && !this.carRequest.vehicleChangeRationale ? true: false; 
 				this.state.additionalNotesErr = false;
 
 				this.state.pickUpDateErr = this.pickUpDate? false: true;
@@ -264,6 +274,9 @@
 
 			initForm() {
 				this.initStates();
+				const flightDates = Vue.filter("flightStartEnd")(this.flightRequests)
+				this.flightStart= flightDates.start
+				this.flightEnd= flightDates.end
 
 				if(this.type == "Add New"){
 					this.carRequest.pickUpCity=""
@@ -272,7 +285,7 @@
 					this.carRequest.dropOffLocation= ""
 					this.carRequest.dropOffLocOther=""
 					this.carRequest.sameDropOffLocation=true
-					this.carRequest.vehicleType=""
+					this.carRequest.vehicleType="Compact"
 					this.carRequest.pickUpDate=""
 					this.carRequest.dropOffDate=""
 					this.carRequest.additionalNotes=""
@@ -289,6 +302,7 @@
 					this.pickUpTime=this.carRequest.pickUpDate.slice(11,16)
 					this.dropOffDate=this.carRequest.dropOffDate.slice(0,10)
 					this.dropOffTime=this.carRequest.dropOffDate.slice(11,16)
+					if(!this.flightStart || !this.flightEnd) this.carRequest.matchFlightTimes=false
 				}				
 			
 			},
@@ -297,7 +311,14 @@
 				for (const key of Object.keys(this.state)) {
 					this.state[key] = false;
 				}
-			},	
+			},
+			
+			matchWithFlight(){
+				if(this.carRequest.matchFlightTimes){
+					this.pickUpDate = this.flightStart
+					this.dropOffDate = this.flightEnd
+				}
+			}
 
 		}
 	};

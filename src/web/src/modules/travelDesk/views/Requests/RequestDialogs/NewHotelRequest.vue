@@ -23,18 +23,18 @@
 
 				<v-card-text>					
 					
-					<v-row class="mt-0 mx-3">
+					<v-row class="mt-5 mx-3">
 						<v-col cols="4">
 							<v-text-field								
 								:error="state.checkInErr"
-								v-model="checkIn"
+								v-model="hotelRequest.checkIn"
 								@input="state.checkInErr = false"
 								label="Check-in Date"
 								outlined
 								type="date"/>
 							<v-text-field								
 								:error="state.checkOutErr"
-								v-model="checkOut"
+								v-model="hotelRequest.checkOut"
 								@input="state.checkOutErr = false"
 								label="Check-out Date"
 								outlined
@@ -106,7 +106,7 @@
 </template>
 
 <script>
-	
+	import Vue from "vue";
 
 	export default {		
 		name: "NewHotelRequest",
@@ -114,7 +114,8 @@
 			type: {
 				type: String
 			},
-			hotelRequest: {}
+			hotelRequest: {},
+			flightRequests: {}
 		},
 		data() {
 			return {			
@@ -156,10 +157,7 @@
 			},
 
 			saveHotelRequest() {
-				if (this.checkFields()) {					
-					this.hotelRequest.checkIn=this.checkIn;
-					this.hotelRequest.checkOut=this.checkOut;
-					
+				if (this.checkFields()) {
 					this.$emit("updateTable", this.type);
 					this.hotelDialog = false;
 				}
@@ -168,24 +166,19 @@
 
 			initForm() {
 
-				this.initStates();				
+				this.initStates();
+				const flightDates = Vue.filter("flightStartEnd")(this.flightRequests)				
 
 				if(this.type == "Add New"){
 
-					this.hotelRequest.checkIn="";
-					this.hotelRequest.checkOut="";
+					this.hotelRequest.checkIn=flightDates.start;
+					this.hotelRequest.checkOut=flightDates.end;
 					this.hotelRequest.city="";
 					this.hotelRequest.rsvConferenceHotel=true;
 					this.hotelRequest.conferenceName="";
 					this.hotelRequest.conferenceHotelName="";
 					this.hotelRequest.additionalInformation="";
-
-					this.checkIn="";
-					this.checkOut="";
 					
-				} else {
-					this.checkIn=this.hotelRequest.checkIn;					
-					this.checkOut=this.hotelRequest.checkOut;
 				}
 					
 			},

@@ -1,11 +1,15 @@
 const state = {
-  destinations: [],  
+  destinations: [],
+  travelDeskUsers: [],  
 };
 const getters = {};
 const mutations = {
   SET_DESTINATIONS(state, value) {
     state.destinations = value;
   },  
+  SET_TRAVEL_DESK_USERS(state, value) {
+    state.travelDeskUsers = value;
+  },
 };
 
 export default {

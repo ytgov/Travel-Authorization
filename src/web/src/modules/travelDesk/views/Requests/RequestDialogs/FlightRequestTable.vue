@@ -1,39 +1,60 @@
 <template>
 	<div>
-		<v-row class="mt-3 mx-3">
+		<v-row class="mt-0 mx-0">
 			<new-flight-request
 				class="ml-auto mr-3"
 				type="Add New"
 				@updateTable="updateTable"
 				:flightRequest="flightRequest"/>								
 		</v-row>
-		<v-row class="mb-3 mx-3">
+		<v-row class="mb-3 mx-0">
 			<v-col cols="12" v-if="flightRequests?.length>0">
 				<v-data-table 
 					:headers="flightHeaders" 
 					:items="flightRequests" 
+					:expanded.sync="expanded"
+					:show-expand="false"
 					hide-default-footer 
 					class="elevation-1">
-					
+					<template v-slot:expanded-item="{item }">						
+						<td v-if="showFlightOptions" :colspan="6" >
+							<!-- {{ item.flightOptions }} -->
+							<v-row v-for="flightOption,inx in item.flightOptions" :key="'flight-'+flightOption.flightOptionID+'-'+inx">
+								<v-col>
+									<flight-option-card :flightOption="flightOption" :preferenceList="Array.from(Array(item.flightOptions.length+1).keys()).slice(1)" />
+								</v-col>
+							</v-row>							
+						</td>								
+					</template>
 
 					<template v-slot:[`item.date`]="{ item }">
 						{{item.date | beautifyDateTime }}
 					</template>
 					
 					<template v-slot:[`item.edit`]="{ item }">
-						<v-row class="m-0 p-0">								
-							<new-flight-request									
-								type="Edit"
-								@updateTable="updateTable"
-								:flightRequest="item"/>
-							<v-btn
-								v-if="!readonly"
-								@click="removeFlight(item)"
-								style="min-width: 0"
-								color="transparent"
-								class="px-1 pt-2"
-								small><v-icon class="" color="red">mdi-close</v-icon>
+						<v-row v-if="travelDeskUser" class="mx-0 py-0">	
+							<travel-port-modal								
+								:flightOptions="item.flightOptions"
+								:flightRequest="item"
+								/>
+						</v-row>
+						<v-row class="mx-0 py-0 mt-n9 mb-n6">
+							<v-col cols="6">						
+								<new-flight-request									
+									type="Edit"
+									@updateTable="updateTable"
+									:flightRequest="item"/>
+							</v-col>
+							<v-col cols="6">		
+								<v-btn
+									v-if="!readonly"
+									@click="removeFlight(item)"
+									style="min-width: 0"
+									color="transparent"
+									class="px-1 pt-2"
+									small><v-icon class="" color="red">mdi-close</v-icon>
 							</v-btn>
+							</v-col>
 						</v-row>
 					</template>
 				</v-data-table>
@@ -45,15 +66,27 @@
 <script>
 
 	import NewFlightRequest from "./NewFlightRequest.vue";
+	import FlightOptionCard from "./FlightComponents/FlightOptionCard.vue";
+	import TravelPortModal from '../../Desk/Components/TravelPortModal.vue'
 
 	export default {
 		components: {			
-			NewFlightRequest
+			NewFlightRequest,
+			FlightOptionCard,
+			TravelPortModal
 		},
 		name: "FlightRequestTable",
 		props: {
 			readonly: Boolean,
-			flightRequests: {}
+			flightRequests: {},
+			travelDeskUser:{
+				type: Boolean,
+				default: false
+			},
+			showFlightOptions:{
+				type: Boolean,
+				default: false
+			},
 		},
 		data() {
 			return {
@@ -70,6 +103,7 @@
 				admin: false,
 				travelerDetails: {},
 				savingData: false,
+				expanded: [true],
 			};
 		},
 		mounted() {	
@@ -114,11 +148,14 @@
 					delIndex = this.flightRequests.findIndex(flight => (flight.tmpId && flight.tmpId == item.tmpId));				
 				console.log(delIndex)
 				if(delIndex>=0) this.flightRequests.splice(delIndex,1)
-			}
+			},
 		}
 	};
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
+<style scoped>
 
+::v-deep .v-data-table>.v-data-table__wrapper tbody tr.v-data-table__expanded__content {
+	background: #F9F9F9 !important;
+}
 </style>

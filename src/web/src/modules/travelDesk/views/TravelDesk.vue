@@ -4,12 +4,11 @@
         
         <v-toolbar v-if="!loadingData" class="" height="100px" flat>
             <v-toolbar-title>
-                <b>Travel Status </b>
-                <b v-if="admin" class="mt-4 blue--text">( {{department}} )</b>
+                <b>Travel Desk Requests </b>                
             </v-toolbar-title>		
         </v-toolbar>		
         <v-card>
-            <travel-desk-requests :authorizedTravels="authorizedTravels" @updateTable="getAuthorizedTravels()" />
+            <travel-desk-requests :travelDeskRequests="travelDeskRequests" @updateTable="getTravelDeskRequests()" />
         </v-card>
         
     </v-card>
@@ -17,20 +16,20 @@
 
 <script>
     import Vue from "vue";
-    import TravelDeskRequests from "./Requests/TravelDeskRequests.vue";
-    import { FORM_URL, DESTINATION_URL } from "../../../urls";
+    import TravelDeskRequests from "./Desk/TravelDeskRequests.vue";
+    import {TRAVEL_DESK_URL,  DESTINATION_URL, USERS_URL} from "../../../urls";
     import { secureGet } from "../../../store/jwt";    
 
     export default {
 
-        name: "Preapproved",
+        name: "TravelDesk",
         components: {
             TravelDeskRequests
         },
         data() {
             return {
                 tabs: null,
-                authorizedTravels: [],
+                travelDeskRequests: [],
                 loadingData: false,
                 department: "",
                 admin: false
@@ -44,6 +43,7 @@
         },
         methods: {
             getDestinations() {
+                this.loadingData = true
                 secureGet(`${DESTINATION_URL}`).then(resp => {
                     const destinations = [];
                     resp.data.forEach(v => {
@@ -53,56 +53,32 @@
                         });
                     });
                     this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);
-                    this.getAuthorizedTravels()				
+                    this.getTravelDeskUsers()
                 });
-            },        
-
-            getAuthorizedTravels() {
-                secureGet(`${FORM_URL}/`)
-                    .then(resp => {
-                    const authorizedTravels = resp.data;
-                    this.extractAuthorizedTravels(authorizedTravels);
-                })
-                .catch(e => {
-                    console.log(e);
+            },
+            
+            getTravelDeskUsers() {
+                this.loadingData = true
+                secureGet(`${USERS_URL}/travel-desk-users`).then(resp => {
+                    // console.log(resp.data)
+                    this.$store.commit("traveldesk/SET_TRAVEL_DESK_USERS", resp.data);
+                    this.getTravelDeskRequests()				
                 });
             },
 
-            extractAuthorizedTravels(authorizedTravels) {
+            getTravelDeskRequests() {
+                this.loadingData = true
+                secureGet(`${TRAVEL_DESK_URL}/`)
+                    .then(resp => {
+                    this.travelDeskRequests= resp.data;
+                    this.loadingData = false                    
+                })
+                .catch(e => {
+                    console.log(e);
+                    this.loadingData = false;
+                });
+            },
 
-                //console.log(authorizedTravels)
-                this.authorizedTravels = []
-                // if (this.$store.state.auth.department){
-                const departmentAuthorizedTravels = authorizedTravels.filter(authTravel => 
-                    (authTravel.department == this.$store.state.auth.department &&
-                        (authTravel.status=="Approved")// || authTravel.status=="Submitted")
-                    )
-                )
-                for(const authorizedTravels of departmentAuthorizedTravels){
-                    //console.log(authorizedTravels)
-                    const phase = authorizedTravels.status=="Approved"? 'Travel Approved':'Authorization'
-                    const status = authorizedTravels.status=="Approved"? 'Approved':'Awaiting Director Approval'
-                    const startDate = new Date(authorizedTravels.dateBackToWork);                 
-                    //console.log(startDate.toUTCString())
-                    startDate.setDate(startDate.getDate()-1*Number(authorizedTravels.travelDuration));
-                    //console.log(startDate.toISOString())
-                    const locationIds = authorizedTravels.stops.map(stop => stop.locationId)
-                                            
-                    this.authorizedTravels.push({	
-                        id: authorizedTravels.id,
-                        email: authorizedTravels.email,
-                        phase: phase,
-                        name: authorizedTravels.firstName + ' ' + authorizedTravels.lastName,
-                        locationIds: locationIds,						 
-                        description: authorizedTravels.purpose, 
-                        startDate: startDate.toISOString(), 
-                        endDate:  authorizedTravels.dateBackToWork, 
-                        status: status
-                    })                
-                    
-                }
-                
-            }
         }
 };
 </script>

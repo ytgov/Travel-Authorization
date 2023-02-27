@@ -7,6 +7,7 @@
 					class="ml-auto mr-3"
 					type="Add New"
 					@updateTable="updateTable"
+					:flightRequests="flightRequests"
 					:hotelRequest="hotelRequest"/>
 			</v-row>
 			<v-row class="mb-3 mx-3">
@@ -35,6 +36,7 @@
 								<new-hotel-request									
 									type="Edit"
 									@updateTable="updateTable"
+									:flightRequests="flightRequests"
 									:hotelRequest="item"/>
 								<v-btn
 									v-if="!readonly"
@@ -64,7 +66,8 @@
 		name: "HotelRequestTable",
 		props: {
 			readonly: Boolean,
-			hotels: {}
+			hotels: {},
+			flightRequests: {}
 		},
 		data() {
 			return {

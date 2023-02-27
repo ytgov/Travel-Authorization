@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<v-dialog v-model="transportationDialog" persistent >
+		<v-dialog v-model="transportationDialog" persistent max-width="80%">
 			<template v-slot:activator="{ on, attrs }">
 				<v-btn	
 					:class="type=='Add New'? 'my-4 right':'mx-0 px-0'"					
@@ -23,7 +23,7 @@
 
 				<v-card-text>					
 					<v-row class="mt-5 mx-0">
-						<v-col cols="4">
+						<v-col cols="3">
 							<v-select
 								:items="requestList"															
 								:error="state.transportationTypeErr"								
@@ -31,7 +31,7 @@
 								v-model="otherTransportationRequest.transportationType"								
 								outlined/>		
 						</v-col>
-						<v-col cols="8">
+						<v-col cols="9">
 						</v-col>											
 					</v-row>
 					<v-row class="mt-0 mx-0">
@@ -49,7 +49,7 @@
 								label="Arrive"
 								outlined/>
 						</v-col>
-						<v-col cols="3">
+						<v-col cols="2">
 							<v-text-field
 								:readonly="readonly"
 								:error="state.dateErr"
@@ -59,7 +59,7 @@
 								outlined
 								type="date"/>
 						</v-col>
-						<v-col cols="3">
+						<v-col cols="4">
 							<v-textarea								
 								:error="state.additionalNotesErr"
 								v-model="otherTransportationRequest.additionalNotes"

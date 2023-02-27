@@ -16,15 +16,14 @@
 				</v-btn>
 			</template>
 
-			<v-card>
+			<v-card :loading="loadingData" :disabled="loadingData" en>
 				<v-card-title class="primary" style="border-bottom: 1px solid black">
 					<div class="text-h5">
 						Travel Desk Request
 					</div>
 				</v-card-title>
-
-				<v-card-text>					
-				
+				<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
+				<v-card-text v-if="!loadingData">										
 					<traveler-details 
 						:travelerDetails="travelerDetails" 
 						:travelerState="state" 
@@ -35,14 +34,15 @@
 
 						<div id="flight-request">Flight Request</div>
 						<v-card class="mx-5 my-5" elevation="1" outlined>
-							<v-row class="mt-5 mx-3">
-								<v-col cols="8">
+							<v-row class="mt-0 mx-0">
+								<v-col cols="8" >
 									<flight-request-table 
 										:readonly="false" 
 										:flightRequests="travelerDetails.flightRequests" />
 								</v-col>
-								<v-col cols="4">
+								<v-col cols="4" >
 									<v-textarea
+										class="mt-7 mr-3"
 										:readonly="readonly"
 										v-model="travelerDetails.additionalInformation"
 										label="Additional Information"
@@ -52,13 +52,15 @@
 							</v-row>
 						</v-card>
 						<rental-car-request-table 
-							:readonly="false" 
+							:readonly="false"
+							:flightRequests="travelerDetails.flightRequests" 
 							:rentalCars="travelerDetails.rentalCars" />
 						<hotel-request-table 
-							:readonly="false" 
+							:readonly="false"
+							:flightRequests="travelerDetails.flightRequests" 
 							:hotels="travelerDetails.hotels" />
 						<transportation-request-table 
-							:readonly="false" 
+							:readonly="false"
 							:otherTransportations="travelerDetails.otherTransportation" />						
 					</v-card>	
 					
@@ -147,7 +149,8 @@
 					otherTransportationErr: false
 				},
 
-				differentTravelContactHint: ""				
+				differentTravelContactHint: "",
+				loadingData: false				
 			};
 		},
 		mounted() {						
@@ -160,10 +163,11 @@
 			async initForm() {
 				this.initStates();
 				this.savingData = false;
+				this.loadingData = true;
 				const travelRequest = await this.getTravelRequestInfo()
 				console.log(travelRequest)
-				if(travelRequest?.length>0){
-					this.extractTravelRequestInfo(travelRequest[0])
+				if(travelRequest){
+					this.extractTravelRequestInfo(travelRequest)
 				}else
 					await this.getEmployeeInfo()
 			},
@@ -214,11 +218,14 @@
 							flightRequests: [],
 							hotels: [],
 							otherTransportation: [],
+							status: 'draft',
 						}
 						this.travelerDetails = travelerDetails
+						this.loadingData = false;
 					})
 					.catch(e => {
 						console.log(e);
+						this.loadingData = false;
 					});
 			},
 
@@ -228,6 +235,7 @@
 				travelerDetails.department= this.$store.state.auth.department;
 				travelerDetails.fullName= travelerDetails.legalFirstName+'.'+travelerDetails.legalLastName;
 				this.travelerDetails = travelerDetails;
+				this.loadingData = false;
 			},
 			
 

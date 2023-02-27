@@ -54,7 +54,7 @@
 		components: {
 			NewTravelDeskRequest
 		},
-		name: "TravelDeskRequests",
+		name: "TravelerRequests",
 		props: {
 			authorizedTravels: {
 				type: []

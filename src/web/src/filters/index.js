@@ -37,7 +37,7 @@ Vue.filter("beautifyDate", function (date) {
 
 Vue.filter("beautifyDateTime", function (date) {
   if (date){
-    const time = date.length>10 ? (' '+date.substr(11, 5)):''
+    const time = date.length>10 ? (', '+date.substr(11, 5)):''
     return Vue.filter("beautifyDate")(date.substr(0, 10))+time
   }
   else return "";
@@ -49,4 +49,13 @@ Vue.filter("capitalize", function (text) {
 
 Vue.filter("currency", function (currency) {
   return currency.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+});
+
+Vue.filter("flightStartEnd", function (flights) {
+  if(flights.length>0){
+    const dates = flights.map(flight =>flight.date)
+    dates.sort()
+    return {start:dates[0], end:((flights.length>1) ? (dates[flights.length-1]):'')}
+  }else
+    return {start:'', end:''}
 });
