@@ -68,6 +68,9 @@
             <v-list-item to="/travel-request">
               <v-list-item-title>Travel Request </v-list-item-title>
             </v-list-item>
+            <v-list-item to="/flight-expense">
+              <v-list-item-title>Flight Expense </v-list-item-title>
+            </v-list-item>
             <v-list-item to="/managerView">
               <v-list-item-title>Manager View</v-list-item-title>
             </v-list-item>

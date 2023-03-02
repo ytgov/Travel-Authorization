@@ -20,6 +20,7 @@ import HealthCheck from "../components/HealthCheck";
 import preapprovedRouter from "../modules/preapproved/router/index.js";
 import travelDeskRouter from "../modules/travelDesk/router/index.js";
 import travelRequestRouter from "../modules/travelForm/router/index.js";
+import flightExpenseRouter from "../modules/flightExpenses/router/index.js";
 
 // import { authGuard } from "../auth/authGuard";
 
@@ -29,6 +30,7 @@ const routes = [
   ...preapprovedRouter,
   ...travelDeskRouter,
   ...travelRequestRouter,
+  ...flightExpenseRouter,
   {
     path: "/sign-in",
     name: "Login",
