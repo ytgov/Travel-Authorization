@@ -30,6 +30,10 @@ exports.up = function (knex: knex.Knex, Promise: any) {
       t.string("status").notNullable(); //draft, submitted, options_provided, options_ranked, booked
       t.datetime("submitDate");
       t.string("travelDeskOfficer");
+      
+      t.integer("agencyID").unsigned();
+      t.foreign("agencyID").references("agencyID").inTable("travelDeskTravelAgent").onDelete("SET NULL");
+
     });
 };
 

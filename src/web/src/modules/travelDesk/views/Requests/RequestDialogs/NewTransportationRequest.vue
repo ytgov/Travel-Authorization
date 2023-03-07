@@ -36,15 +36,21 @@
 					</v-row>
 					<v-row class="mt-0 mx-0">
 						<v-col cols="3">
-							<v-text-field								
+							<v-autocomplete
+								:items="destinations"								
+								item-value="text"							
 								:error="state.departErr"
+								@change="state.departErr=false"
 								v-model="otherTransportationRequest.depart"								
 								label="Depart"
 								outlined/>
 						</v-col>
 						<v-col cols="3">
-							<v-text-field								
+							<v-autocomplete
+								:items="destinations"								
+								item-value="text"
 								:error="state.arriveErr"
+								@change="state.arriveErr=false"
 								v-model="otherTransportationRequest.arrive"
 								label="Arrive"
 								outlined/>
@@ -57,6 +63,8 @@
 								@input="state.dateErr = false"
 								label="Date"
 								outlined
+								:min="minDate"
+								:max="maxDate"
 								type="date"/>
 						</v-col>
 						<v-col cols="4">
@@ -95,10 +103,10 @@
 	export default {		
 		name: "NewTransportationRequest",
 		props: {
-			type: {
-				type: String
-			},
-			otherTransportationRequest: {}
+			type: { type: String },
+			otherTransportationRequest: {},
+			minDate: { type: String, default:""	},
+			maxDate: { type: String, default:""	},
 		},
 		data() {
 			return {
@@ -113,10 +121,11 @@
 					dateErr: false,
 					additionalNotesErr: false					
 				},
-
+				destinations:[],
 			};
 		},
-		mounted() {			
+		mounted() {
+			this.destinations = this.$store.state.traveldesk.destinations;	
 		},
 		methods: {
 

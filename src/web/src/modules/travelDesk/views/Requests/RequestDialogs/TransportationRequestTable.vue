@@ -1,60 +1,72 @@
 <template>
 	<div>
-		<div id="other-transportation-request">Other Transportation Request</div>
-		<v-card class="mx-5 my-5" elevation="2" outlined>
-			<v-row class="mt-3 mx-3">
-				<new-transportation-request
-					class="ml-auto mr-3"
-					type="Add New"
-					@updateTable="updateTable"
-					:otherTransportationRequest="otherTransportationRequest"/>
-			</v-row>
-			<v-row class="mb-3 mx-3">
-				<v-col cols="12" v-if="otherTransportations?.length>0">
-					<v-data-table 
-						:headers="otherTransportationHeaders" 
-						:items="otherTransportations" 
-						hide-default-footer 
-						class="elevation-1">
-						<template v-slot:[`item.date`]="{ item }">
-							{{item.date | beautifyDate }}
-						</template>
-						<template v-slot:[`item.edit`]="{ item }">
-							<v-row class="m-0 p-0">								
-								<new-transportation-request									
-									type="Edit"
-									@updateTable="updateTable"
-									:otherTransportationRequest="item"/>
-								<v-btn
-									v-if="!readonly"
-									@click="removeOtherTransportation(item)"
-									style="min-width: 0"
-									color="transparent"
-									class="px-1 pt-2"
-									small><v-icon class="" color="red">mdi-close</v-icon>
-								</v-btn>
-							</v-row>
-							
-						</template>
-					</v-data-table>
-				</v-col>								
-			</v-row>
-		</v-card>			
+		<title-card class="mt-10 mx-5 mb-5" titleWidth="15rem">
+			<template #title>
+				<div>Other Transportation Request</div>
+			</template>
+			<template #body >
+				<v-row class="mt-3 mx-3">
+					<new-transportation-request
+						v-if="!readonly"
+						class="ml-auto mr-3"
+						type="Add New"
+						:minDate="minDate"
+						:maxDate="maxDate"
+						@updateTable="updateTable"
+						:otherTransportationRequest="otherTransportationRequest"/>
+				</v-row>
+				<v-row class="mb-3 mx-3">
+					<v-col cols="12" v-if="otherTransportations?.length>0">
+						<v-data-table 
+							:headers="otherTransportationHeaders" 
+							:items="otherTransportations" 
+							hide-default-footer 
+							class="elevation-1">
+							<template v-slot:[`item.date`]="{ item }">
+								{{item.date | beautifyDate }}
+							</template>
+							<template v-slot:[`item.edit`]="{ item }">
+								<v-row class="m-0 p-0">								
+									<new-transportation-request
+										v-if="!readonly"									
+										type="Edit"
+										:minDate="minDate"
+										:maxDate="maxDate"
+										@updateTable="updateTable"
+										:otherTransportationRequest="item"/>
+									<v-btn
+										v-if="!readonly"
+										@click="removeOtherTransportation(item)"
+										style="min-width: 0"
+										color="transparent"
+										class="px-1 pt-2"
+										small><v-icon class="" color="red">mdi-close</v-icon>
+									</v-btn>
+								</v-row>
+								
+							</template>
+						</v-data-table>
+					</v-col>								
+				</v-row>
+			</template>	
+		</title-card>		
 	</div>
 </template>
 
 <script>
-
+	import TitleCard from '../../Common/TitleCard.vue';
 	import NewTransportationRequest from "./NewTransportationRequest.vue";
 
 	export default {
-		components: {			
+		components: {
+			TitleCard,
 			NewTransportationRequest
 		},
 		name: "TransportationRequestTable",
 		props: {
 			readonly: Boolean,
-			otherTransportations: {}
+			otherTransportations: {},
+			authorizedTravel: {required: false},
 		},
 		data() {
 			return {
@@ -72,6 +84,8 @@
 				admin: false,
 				travelerDetails: {},
 				savingData: false,
+				minDate:"",
+				maxDate:"",
 			};
 		},
 		mounted() {	
@@ -88,6 +102,12 @@
 			},	
 			
 			initForm(){
+
+				if(this.authorizedTravel?.startDate && this.authorizedTravel?.endDate){
+					this.minDate = this.authorizedTravel.startDate.slice(0,10)
+					this.maxDate = this.authorizedTravel.endDate.slice(0,10)
+				}
+
 				const otherTransportationRequest = {}
 				otherTransportationRequest.transportationID=null
 				otherTransportationRequest.tmpId=null

@@ -2,7 +2,8 @@
 	<div>
 		<v-dialog v-model="flightDialog" persistent  max-width="80%">
 			<template v-slot:activator="{ on, attrs }">
-				<v-btn				
+				<v-btn
+					:disabled="disabled"				
 					:class="type=='Add New'? 'my-4 right':'mx-0 px-0'"					
 					:color="type=='Add New'? 'primary':'transparent'"
 					style="min-width: 0;"
@@ -27,7 +28,9 @@
 <!-- <ROW-1> -->
 					<v-row class="mt-5 mx-0">
 						<v-col cols="4">
-							<v-text-field								
+							<v-autocomplete
+								:items="destinations"								
+								item-value="text"								
 								:error="state.departLocationErr"
 								@input="state.departLocationErr=false"								
 								label="Depart Location"
@@ -35,7 +38,9 @@
 								outlined/>
 						</v-col>
 						<v-col cols="4">
-							<v-text-field								
+							<v-autocomplete
+								:items="destinations"								
+								item-value="text"								
 								:error="state.arriveLocationErr"
 								@input="state.arriveLocationErr=false"								
 								label="Arrive Location"
@@ -51,6 +56,8 @@
 								:readonly="readonly"
 								:error="state.dateErr"
 								v-model="date"
+								:min="minDate"
+								:max="maxDate"
 								@input="state.dateErr = false"
 								label="Date"
 								outlined
@@ -117,10 +124,11 @@
 	export default {		
 		name: "NewFlightRequest",
 		props: {
-			type: {
-				type: String
-			},
-			flightRequest: {}			
+			disabled: {	type: Boolean, default:false },
+			type: {	type: String },
+			flightRequest: {},
+			minDate: { type: String, default:""	},
+			maxDate: { type: String, default:""	},
 		},
 		data() {
 			return {							
@@ -136,10 +144,12 @@
 					timePreferenceErr: false,
 					seatPreferenceErr: false
 				},
+				destinations:[],
 
 			};
 		},
-		mounted() {			
+		mounted() {
+			this.destinations = this.$store.state.traveldesk.destinations;		
 		},
 		methods: {			
 			checkFields() {
@@ -175,6 +185,7 @@
 					this.flightRequest.date=""
 					this.flightRequest.timePreference=""
 					this.flightRequest.seatPreference=""
+					this.flightRequest.flightOptions=[]
 					// this.flightRequest.status="Requested"//, Reserved"
 
 					this.date="";

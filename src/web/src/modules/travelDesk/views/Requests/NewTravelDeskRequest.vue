@@ -22,47 +22,83 @@
 						Travel Desk Request
 					</div>
 				</v-card-title>
-				<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
-				<v-card-text v-if="!loadingData">										
-					<traveler-details 
-						:travelerDetails="travelerDetails" 
-						:travelerState="state" 
-						:readonly="false"/>
-					
-					<div id="travel-detail">Travel Information</div>
-					<v-card elevation="2" outlined>
 
-						<div id="flight-request">Flight Request</div>
-						<v-card class="mx-5 my-5" elevation="1" outlined>
-							<v-row class="mt-0 mx-0">
-								<v-col cols="8" >
-									<flight-request-table 
-										:readonly="false" 
-										:flightRequests="travelerDetails.flightRequests" />
-								</v-col>
-								<v-col cols="4" >
-									<v-textarea
-										class="mt-7 mr-3"
-										:readonly="readonly"
-										v-model="travelerDetails.additionalInformation"
-										label="Additional Information"
-										outlined
-										:clearable="!readonly"/>									
-								</v-col>
+				<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
+				<v-card-text v-if="!loadingData">
+					<v-row class="mb-3">
+						<v-col :cols="type != 'Submit'? 8 : 12">										
+							<traveler-details 
+								:travelerDetails="travelerDetails" 
+								:travelerState="state" 
+								:readonly="false"/>
+							
+							<title-card class="mt-10" titleWidth="11rem" largeTitle>
+								<template #title>
+									<div>Travel Information</div>
+								</template>
+								<template #body>
+							
+									<title-card class="mt-5 mx-5" titleWidth="8rem">
+										<template #title>
+											<div>Flight Request</div>
+										</template>
+										<template #body>						
+											<v-row class="mt-0 mx-0">
+												<v-col cols="8" >
+													<flight-request-table 
+														:authorizedTravel="authorizedTravel"
+														:readonly="false"
+														:travelDeskUser="false"
+														:showFlightOptions="travelerDetails.status!='draft'" 
+														:flightRequests="travelerDetails.flightRequests" />
+												</v-col>
+												<v-col cols="4" >
+													<v-textarea
+														class="mt-5 mr-3"
+														:readonly="readonly"
+														v-model="travelerDetails.additionalInformation"
+														label="Additional Information"
+														outlined
+														:clearable="!readonly"/>									
+												</v-col>
+											</v-row>
+										</template>
+									</title-card>
+								
+									<rental-car-request-table
+										:authorizedTravel="authorizedTravel"
+										:readonly="false"
+										:flightRequests="travelerDetails.flightRequests" 
+										:rentalCars="travelerDetails.rentalCars" />
+									<hotel-request-table
+										:authorizedTravel="authorizedTravel"
+										:readonly="false"
+										:flightRequests="travelerDetails.flightRequests" 
+										:hotels="travelerDetails.hotels" />
+									<transportation-request-table
+										:authorizedTravel="authorizedTravel" 
+										:readonly="false"
+										:otherTransportations="travelerDetails.otherTransportation" />						
+								</template>
+							</title-card>	
+						</v-col>
+						<v-col v-if="type != 'Submit'" cols="4">
+							<v-row class="mt-3 mb-0 mx-0">
+								<v-col cols="6"/>
+								<v-col cols="6">
+									<v-text-field
+										readonly
+										class="mr-2"																	
+										label="Travel Desk Agent Assigned"
+										v-model="travelerDetails.travelDeskOfficer"								
+										outlined/>		
+								</v-col>											
 							</v-row>
-						</v-card>
-						<rental-car-request-table 
-							:readonly="false"
-							:flightRequests="travelerDetails.flightRequests" 
-							:rentalCars="travelerDetails.rentalCars" />
-						<hotel-request-table 
-							:readonly="false"
-							:flightRequests="travelerDetails.flightRequests" 
-							:hotels="travelerDetails.hotels" />
-						<transportation-request-table 
-							:readonly="false"
-							:otherTransportations="travelerDetails.otherTransportation" />						
-					</v-card>	
+							<questions-table 
+								:readonly="false"								
+								:questions="travelerDetails.questions" />
+						</v-col>
+					</v-row>
 					
 				</v-card-text>
 
@@ -95,20 +131,23 @@
 <script>	
 	import { LOOKUP_URL, TRAVEL_DESK_URL } from "../../../../urls";
 	import { secureGet, securePost } from "@/store/jwt";
+	import TitleCard from  '../Common/TitleCard.vue'
 	import TravelerDetails from "./Components/TravelerDetails.vue";
 	import FlightRequestTable from "./RequestDialogs/FlightRequestTable.vue";
 	import RentalCarRequestTable from "./RequestDialogs/RentalCarRequestTable.vue";
 	import HotelRequestTable from "./RequestDialogs/HotelRequestTable.vue";
 	import TransportationRequestTable from "./RequestDialogs/TransportationRequestTable.vue";
-	
+	import QuestionsTable from '../Desk/Components/QuestionsTable.vue'
 
 	export default {
 		components: {
+			TitleCard,
 			TravelerDetails,
 			FlightRequestTable,
 			RentalCarRequestTable,
 			TransportationRequestTable,
-			HotelRequestTable
+			HotelRequestTable,
+			QuestionsTable
 		},
 		name: "NewTravelDeskRequest",
 		props: {
@@ -149,7 +188,6 @@
 					otherTransportationErr: false
 				},
 
-				differentTravelContactHint: "",
 				loadingData: false				
 			};
 		},
@@ -165,7 +203,7 @@
 				this.savingData = false;
 				this.loadingData = true;
 				const travelRequest = await this.getTravelRequestInfo()
-				console.log(travelRequest)
+				// console.log(travelRequest)
 				if(travelRequest){
 					this.extractTravelRequestInfo(travelRequest)
 				}else
@@ -175,7 +213,7 @@
 			async getTravelRequestInfo() {				
 				return secureGet(`${TRAVEL_DESK_URL}/travel-request/`+this.authorizedTravel.id)
 					.then(resp => {
-						console.log(resp.data)						
+						// console.log(resp.data)						
 						return(resp.data)
 					})
 					.catch(e => {
@@ -207,7 +245,7 @@
 							travelContact:false,
 							travelPhone: employee.mobile,
 							travelEmail: "",
-
+							travelDeskOfficer: "",
 							internationalTravel:false,							
 							office: employee.office,
 							department: employee.department,
@@ -218,6 +256,7 @@
 							flightRequests: [],
 							hotels: [],
 							otherTransportation: [],
+							questions: [],
 							status: 'draft',
 						}
 						this.travelerDetails = travelerDetails
@@ -241,16 +280,23 @@
 
 			saveNewTravelRequest(saveType) {
 				console.log(saveType)
-				console.log(this.travelerDetails)
+				// console.log(this.travelerDetails)
 
-				if (this.checkFields()) {
-					this.savingData = true;
+				if (saveType=='save' || this.checkFields()) {
+					this.savingData = true;					
 					const body = this.travelerDetails
 					delete body.internationalTravel;
 					delete body.differentTravelContact
 					delete body.office
 					delete body.department
 					delete body.fullName
+					if(saveType=="submit" && body.status=="draft"){ 
+						const today = new Date();
+						body.status="submitted"
+						body.submitDate= today
+					}else if (saveType=="submit" && body.status=="options_provided"){
+						body.status="options_ranked"
+					}
 					// console.log(body);
 					const id = this.authorizedTravel.id
 					securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
@@ -267,8 +313,6 @@
 			},
 
 			initStates() {
-				
-				this.differentTravelContactHint = "";
 				for (const key of Object.keys(this.state)) {
 					this.state[key] = false;
 				}
@@ -294,7 +338,23 @@
 				this.state.flightRequestsErr = false;					
 				this.state.rentalCarsErr = false;
 				this.state.hotelsErr = false;
-				this.state.otherTransportationErr = false;				
+				this.state.otherTransportationErr = false;
+				
+				if(this.travelerDetails.status=='options_provided'){
+					let error=false
+					for(const question of this.travelerDetails.questions){						
+						if(question.response) question.state.responseErr=false;
+						else { question.state.responseErr=true; error=true} 
+					}
+
+					for(const flightRequest of this.travelerDetails.flightRequests){
+						for(const flightOption of flightRequest.flightOptions){
+							if(!flightOption.flightPreference){ error=true;}
+						}						
+					}
+
+					if(error) return false;
+				}
 
 				for (const key of Object.keys(this.state)) {
 					if (this.state[key]) return false;

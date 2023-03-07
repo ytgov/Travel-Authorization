@@ -25,7 +25,9 @@
 <!-- <ROW-1> -->
 					<v-row class="mt-5 mx-0">
 						<v-col cols="4">
-							<v-text-field								
+							<v-autocomplete
+								:items="destinations"								
+								item-value="text"						
 								:error="state.pickUpCityErr"
 								@input="state.pickUpCityErr=false"								
 								label="Pick-up City"
@@ -82,6 +84,8 @@
 								@input="state.pickUpDateErr = false"
 								label="Pick-up date"
 								outlined
+								:min="minDate"
+								:max="maxDate"
 								type="date"/>
 							<v-text-field
 								class="mt-n3"
@@ -92,6 +96,8 @@
 								@input="state.dropOffDateErr = false"
 								label="Drop-off date"
 								outlined
+								:min="minDate"
+								:max="maxDate"
 								type="date"/>
 						</v-col>
 						<v-col cols="2">
@@ -136,6 +142,16 @@
 								<v-radio label="Yes" :value="true"></v-radio>
 								<v-radio label="No" :value="false"></v-radio>
 							</v-radio-group>
+							<v-autocomplete
+								:items="destinations"								
+								item-value="text"								
+								v-if="!carRequest.sameDropOffLocation"								
+								:error="state.dropOffCityErr"
+								class="mt-n1"
+								@input="state.dropOffCityErr=false"								
+								label="Drop-off City"
+								v-model="carRequest.dropOffCity"								
+								outlined/>
 						</v-col>
 						<v-col cols="3">
 							<v-select
@@ -195,11 +211,11 @@
 	export default {		
 		name: "NewRentalCarRequest",
 		props: {
-			type: {
-				type: String
-			},
+			type: { type: String },
 			carRequest: {},
-			flightRequests: {}			
+			flightRequests: {},
+			minDate: { type: String, default:""	},
+			maxDate: { type: String, default:""	},	
 		},
 		data() {
 			return {							
@@ -219,6 +235,7 @@
 
 				state: {
 					pickUpCityErr: false,
+					dropOffCityErr: false,
 					pickUpLocationErr: false,
 					pickUpLocOtherErr: false,
 					dropOffLocationErr: false,
@@ -233,10 +250,12 @@
 					reasonForChangeErr: false,
 					additionalNotesErr: false					
 				},
+				destinations:[],
 
 			};
 		},
-		mounted() {			
+		mounted() {
+			this.destinations = this.$store.state.traveldesk.destinations;			
 		},
 		methods: {			
 			checkFields() {
@@ -246,6 +265,8 @@
 				
 				this.state.sameDropOffLocationErr = this.carRequest.sameDropOffLocation != null? false: true;
 				this.state.dropOffLocationErr = (!this.carRequest.sameDropOffLocation && !this.carRequest.dropOffLocation)? true: false;				
+				this.state.dropOffCityErr = (!this.carRequest.sameDropOffLocation && !this.carRequest.dropOffCity)? true: false;
+				
 				this.state.matchFlightTimesErr = this.carRequest.matchFlightTimes != null? false: true;				
 				this.state.vehicleTypesErr = this.carRequest.vehicleType? false: true;
 				this.state.reasonForChangeErr = this.carRequest.vehicleType != "Compact" && !this.carRequest.vehicleChangeRationale ? true: false; 
@@ -280,6 +301,7 @@
 
 				if(this.type == "Add New"){
 					this.carRequest.pickUpCity=""
+					this.carRequest.dropOffCity=""
 					this.carRequest.pickUpLocation=""
 					this.carRequest.pickUpLocOther=""					
 					this.carRequest.dropOffLocation= ""
@@ -294,9 +316,9 @@
 					this.carRequest.matchFlightTimes=false
 
 					this.pickUpDate=""
-					this.pickUpTime=""
+					this.pickUpTime="12:00"
 					this.dropOffDate=""
-					this.dropOffTime=""
+					this.dropOffTime="12:00"
 				}else{
 					this.pickUpDate=this.carRequest.pickUpDate.slice(0,10)
 					this.pickUpTime=this.carRequest.pickUpDate.slice(11,16)

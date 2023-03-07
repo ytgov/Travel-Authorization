@@ -49,7 +49,9 @@
                     resp.data.forEach(v => {
                         destinations.push({
                             value: v.id,
-                            text: v.city + " (" + v.province + ")"
+                            text: v.city + " (" + v.province + ")",
+                            city: v.city,
+                            province: v.province
                         });
                     });
                     this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);
@@ -71,12 +73,25 @@
                 secureGet(`${TRAVEL_DESK_URL}/`)
                     .then(resp => {
                     this.travelDeskRequests= resp.data;
+                    console.log(this.travelDeskRequests)
+                    console.log(this.$store.state.auth.user.id)
+                    this.travelDeskRequests.forEach(req =>{
+                        req.userTravel = (this.$store.state.auth.user.id == req.form.userId)? 1:0
+                        req.bookedStatus = req.status =="booked"? 1 : 0                        
+                        req.startDate = this.getStartDate(req.form.dateBackToWork, req.form.travelDuration);
+                    })
                     this.loadingData = false                    
                 })
                 .catch(e => {
                     console.log(e);
                     this.loadingData = false;
                 });
+            },
+
+            getStartDate(endDate, travelDuration){
+                const startDate = new Date(endDate);
+                startDate.setDate(startDate.getDate()-1*Number(travelDuration));
+                return startDate.toISOString()
             },
 
         }

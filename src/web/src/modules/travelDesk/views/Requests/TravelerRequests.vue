@@ -3,7 +3,7 @@
 		<v-data-table
 			:headers="headers"
 			:items="authorizedTravels"
-			:items-per-page="5"
+			:items-per-page="15"
 			class="elevation-1 mt-4">
 
 			<template v-slot:[`item.name`]="{ item }">
@@ -37,10 +37,16 @@
 
 			<template v-slot:[`item.edit`]="{ item }">
 				<new-travel-desk-request
-					v-if="item.status=='Approved' && item.phase != 'Travel Request Submitted'"
-					:type="item.status=='Approved'?((item.phase == 'Travel Approved')?'Submit': 'Review'):''"
+					v-if="item.status=='Approved' && item.phase != 'Travel Arrangements Requested' && item.phase != 'Options Ranked' && item.phase != 'Booked'"
+					:type="(item.phase=='Travel Approved' || item.phase=='Request Draft')? 'Submit': 'Review'"
 					@updateTable="updateTable()"
 					:authorizedTravel="item"/>
+				<v-btn
+					v-if="item.status=='Approved' && item.phase == 'Booked'"
+					class="ml-2 mr-2 px-5"
+					color="green darken-1"
+					>View Itinerary 
+				</v-btn>
 			</template>
 		</v-data-table>
 	</div>

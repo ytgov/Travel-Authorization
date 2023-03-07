@@ -1,15 +1,16 @@
 <template>
-    <div>		
+    <div v-if="dataReady">		
         <v-row class="mt-0 mb-0 mx-0">
             <v-col cols="2" >
-                <div class="my-0 mx-1">Preference</div>
+                <div style="font-size:9pt;" :class="state.preferenceErr?'my-0 mx-1 pl-1 red white--text':'my-0 mx-1'" >Preference</div>                
                 <v-select
+                    :readonly="travelDeskUser"
                     class="mr-5"
-                    :items="preferenceList"								
+                    :items="preferenceList"
                     :error="state.preferenceErr"
                     @input="state.preferenceErr=false"
                     label="Preference"
-                    v-model="flightOption.preference"								
+                    v-model="flightOption.flightPreference"								
                     solo />
             </v-col>
             
@@ -18,7 +19,7 @@
                     <v-row class="mt-1 mx-2">
                         <b>COST:</b> <b class="ml-2">$ {{flightOption.cost}}</b>
                     </v-row>
-                    <div class="px-1" v-for="flightSegment,inx in flightOption.flightSegments" :key="'segment-'+flightSegment.flightSegmentID+'-'+inx">
+                    <div class="px-1" v-for="flightSegment,inx in sortByOrder" :key="'segment-'+flightSegment.flightSegmentID+'-'+inx">
                         <table style="width:100%; margin-top:1rem;">
                             <tbody > 
                                 <tr style="line-height:1rem;">
@@ -36,7 +37,8 @@
                                 </tr>
                                 <tr style="background:#F9F9F9;">
                                     <td style="width:16%;" >Duration</td>
-                                    <td style="width:30%;" >{{flightSegment.duration}}</td>
+                                    <td style="wi
+                                    dth:30%;" >{{flightSegment.duration}}</td>
                                     <td style="width:50%;" ></td>
                                 </tr>                                
                             </tbody>
@@ -49,39 +51,47 @@
 </template>
 
 <script>
-    // import Vue from "vue";
+    import Vue from "vue";
 
     export default {		
         name: "FlightOptionCard",
         props: {			
             flightOption: {},
-            preferenceList: {}
+            optLen: { type:Number},
+			travelDeskUser:{ type: Boolean }
         },
         data() {
             return {
                 
-                readonly: false,				
-
+                readonly: false,
+                preferenceList: [],				
+                dataReady: false,
                 state: {
                     preferenceErr: false,				
                 },
 
             };
         },
-        mounted() {			
+        mounted() {	
+            this.dataReady=false            
+            this.preferenceList=[]
+            for(let i=1; i<=this.optLen; i++)
+                this.preferenceList.push(String(i))
+
+            if(!this.travelDeskUser){
+                this.state.preferenceErr = this.flightOption.flightPreference? false : true
+            }
+            
+            Vue.nextTick(()=>this.dataReady=true)
+        },
+        computed: {
+            sortByOrder() {                
+                const flight = JSON.parse(JSON.stringify(this.flightOption.flightSegments))                
+                flight.sort((a,b)=>{ return (a.sortOrder > b.sortOrder ? 1 :-1) })
+                return flight
+            }
         },
         methods: {			
-            checkFields() {
-                // this.state.pickUpCityErr = this.carRequest.pickUpCity? false:true;
-                // this.state.pickUpLocationErr = this.carRequest.pickUpLocation? false:true;
-                // this.state.pickUpLocOtherErr = this.carRequest.pickUpLocation=="Other" && !this.carRequest.pickUpLocOther? true: false;				
-
-                // for (const key of Object.keys(this.state)) {
-                // 	if (this.state[key]) return false;
-                // }
-                return true;
-            },
-
         }
     };
 </script>
