@@ -239,7 +239,7 @@ travelDeskRouter.post("/flight-request/:requestID", RequiresAuth, async function
     await db.transaction(async trx => {
       const requestID = Number(req.params.requestID);
       const flightRequests = req.body;
-      console.log(flightRequests)
+      // console.log(flightRequests)
 
       if (requestID) {        
         await db("travelDeskFlightRequest").delete().where("requestID", requestID);
@@ -366,7 +366,7 @@ travelDeskRouter.post("/travel-request/:taid", RequiresAuth, async function (req
     await db.transaction(async trx => {
       const TAID = Number(req.params.taid);
       const newTravelRequest = req.body;
-      console.log(newTravelRequest)
+      // console.log(newTravelRequest)
 
       if (TAID) {
 

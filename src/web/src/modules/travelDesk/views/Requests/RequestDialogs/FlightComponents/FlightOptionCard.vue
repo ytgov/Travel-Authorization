@@ -1,12 +1,14 @@
 <template>
     <div v-if="dataReady">		
         <v-row class="mt-0 mb-0 mx-0">
-            <v-col cols="2" >
+            <v-col cols="2" class="px-0">
                 <div style="font-size:9pt;" :class="state.preferenceErr?'my-0 mx-1 pl-1 red white--text':'my-0 mx-1'" >Preference</div>                
                 <v-select
                     :readonly="travelDeskUser"
-                    class="mr-5"
+                    class="mr-2"
                     :items="preferenceList"
+                    :hint="flightOption.flightPreference=='Does Not Work'? (travelDeskUser? 'Please see the Additional Information.':'Please add your comment to the Additional Information field.'):''"
+                    persistent-hint
                     :error="state.preferenceErr"
                     @input="state.preferenceErr=false"
                     label="Preference"
@@ -14,7 +16,7 @@
                     solo />
             </v-col>
             
-            <v-col cols="10" >
+            <v-col cols="10" class="px-0">
                 <v-card color="#FAFAFA" style="border:2px solid #AACCFF !important;">
                     <v-row class="mt-1 mx-2">
                         <b>COST:</b> <b class="ml-2">$ {{flightOption.cost}}</b>
@@ -74,7 +76,7 @@
         },
         mounted() {	
             this.dataReady=false            
-            this.preferenceList=[]
+            this.preferenceList=['Does Not Work']
             for(let i=1; i<=this.optLen; i++)
                 this.preferenceList.push(String(i))
 

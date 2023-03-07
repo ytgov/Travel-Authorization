@@ -60,14 +60,16 @@
 														travelDeskUser
 														:flightRequests="travelRequest.flightRequests" />
 												</v-col>
-												<v-col cols="3" >
+												<v-col cols="3" class="px-0" >
 													<v-textarea
-														class="mt-3 ml-0 mr-3"
+														class="mt-3 ml-0 mr-5"
 														:readonly="readonly"
 														v-model="travelRequest.additionalInformation"
 														label="Additional Information"
 														outlined
-														rows="10"
+														auto-grow
+														counter
+														:rules="[v => (v || '' ).length <= 255 || 'Must be 255 characters or less']"
 														:clearable="!readonly"/>									
 												</v-col>
 											</v-row>

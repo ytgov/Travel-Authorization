@@ -1,5 +1,6 @@
 <template>
     <v-card :loading="loadingData" :disabled="loadingData" en class="px-5 pb-15">
+        <v-alert v-if="alertMsg" class="mt-5" type="blue">{{ alertMsg }}</v-alert>
         <div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
         
         <v-toolbar v-if="!loadingData" class="" height="100px" flat>
@@ -32,7 +33,8 @@
                 travelDeskRequests: [],
                 loadingData: false,
                 department: "",
-                admin: false
+                admin: false,
+                alertMsg: ""
             };
         },
         mounted() {
@@ -65,6 +67,11 @@
                     // console.log(resp.data)
                     this.$store.commit("traveldesk/SET_TRAVEL_DESK_USERS", resp.data);
                     this.getTravelDeskRequests()				
+                })
+                .catch(e => {
+                    console.log(e.response);
+                    this.alertMsg= e.response.data
+                    this.loadingData = false;
                 });
             },
 
