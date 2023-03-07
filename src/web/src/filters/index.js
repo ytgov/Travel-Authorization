@@ -1,5 +1,6 @@
 import Vue from "vue";
 import store from "../store";
+import {parseTravel} from './parseTravel'
 
 Vue.filter("isAdmin", function () {
   const userDept = store.state.auth.department;
@@ -59,3 +60,17 @@ Vue.filter("flightStartEnd", function (flights) {
   }else
     return {start:'', end:''}
 });
+
+Vue.filter("getTravelStatus", function (status) {
+  if( status == 'draft') return 'Request Draft'
+  if( status == 'submitted') return 'Travel Arrangements Requested'
+  if( status == 'options_provided') return 'Options Provided'
+  if( status == 'options_ranked') return 'Options Ranked'
+  if( status == 'booked') return 'Booked'
+  if( status == 'claim') return 'Travel Claim'
+  if( status == 'complete') return 'Complete'
+  return 'Unknown'
+});
+
+
+Vue.filter("parseTravel", parseTravel);

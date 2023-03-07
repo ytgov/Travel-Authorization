@@ -7,7 +7,7 @@
             <template #body>
                 <v-row class="mx-0">
                     <v-btn                
-                        @click="addFlightSegment()"
+                        @click="addBlankFlightSegment()"
                         style="min-width: 0"
                         color="primary"
                         class="ml-3 my-5 px-3 py-4"
@@ -15,10 +15,18 @@
                     </v-btn>
                     <v-btn 
                         :disabled="selectedSegments.length==0"               
+                        @click="removeFlightSegments()"
+                        style="min-width: 0"
+                        color="red"
+                        class="ml-auto mr-3 my-5 px-3 py-4"
+                        small>Delete Selected
+                    </v-btn>
+                    <v-btn 
+                        :disabled="selectedSegments.length==0"               
                         @click="groupFlightSegments()"
                         style="min-width: 0"
                         color="primary"
-                        class="ml-auto mr-3 my-5 px-3 py-4"
+                        class="ml-3 mr-3 my-5 px-3 py-4"
                         small>Group Selected
                     </v-btn>
                 </v-row>
@@ -62,7 +70,16 @@
             readonly: Boolean,
             flightSegments: {},
             flightOptions: {},
-
+            flightText:{}
+        },
+        watch:{
+            flightText(val) {
+                console.log(val)
+                if(val.length>0){
+                    this.addFlightSegment(val)
+                    // this.flightText.splice(0)
+                }
+            },
         },
         data() {
             return {
@@ -76,7 +93,7 @@
             };
         },
         mounted() {	
-            this.initForm()					
+            // this.initForm()					
         },
         methods: {
             // updateTable(type) {
@@ -99,12 +116,13 @@
             },
             
             initForm(){
-                // const carRequest = {}							
+                // this.selectedSegments=[]
+
             },
 
-            addFlightSegment(){
-                const state ={
-					flightErr:false,
+            getState(){
+                return {
+                    flightErr:false,
                     departDateErr:false,
                     departTimeErr:false,
                     departLocationErr:false,
@@ -114,7 +132,10 @@
                     durationErr:false,
                     classErr:false,
                     statusErr:false,
-				}
+                }
+            },
+
+            addBlankFlightSegment(){
                 const  flightSegment= {
                     tmpId:this.tmpId,
                     flightNumber:"",
@@ -130,20 +151,77 @@
                     status:"",
                     class:"",
                     sortOrder:null,
-                    state:state
+                    state:this.getState()
                 }
                 this.tmpId++;
                 this.flightSegments.push(flightSegment)
             },
 
+            addFlightSegment(flights){
+                
+                for(const flight of flights){
+                    
+                    const arrivalDate = this.getFlightDate(flight.arrivalDate)
+                    const departureDate = this.getFlightDate(flight.departureDate)
+                    
+                    const  flightSegment= {
+                        tmpId:this.tmpId,
+                        sortOrder:null,
+                        state:this.getState(),
+
+                        flightNumber:this.cleanText(flight.airline + ' ' +flight.flightNumber),
+                        departDate:departureDate,
+                        departDay:departureDate.toISOString().slice(0,10),
+                        departTime:this.cleanText(flight.departureTime),
+                        departLocation:this.cleanText(flight.departureAirport+ ' ' +flight.departureAirportCode+' Terminal: '+flight.departureTerminal),
+                        arriveDate:arrivalDate,
+                        arriveDay:arrivalDate.toISOString().slice(0,10),
+                        arriveTime:this.cleanText(flight.arrivalTime),
+                        arriveLocation:this.cleanText(flight.arrivalAirport+ ' ' +flight.arrivalAirportCode+' Terminal: '+flight.arrivalTerminal),
+                        duration:this.cleanText(flight.duration),
+                        status:this.cleanText(flight.status),
+                        class:this.cleanText(flight.class),                        
+                    }
+                    this.tmpId++;
+                    this.flightSegments.push(flightSegment)
+                }
+                this.$emit('cleanPortText')
+            },
+
+            cleanText(txt){
+                txt=txt.replace('undefined','');
+                txt = txt.replace(/\s\s+/g, ' ');
+                txt=txt.trim();                
+                return txt
+            },
+
+            getFlightDate(date){
+                const today = new Date()
+                const flightDate = this.cleanText(date)
+                let fullDate = new Date()
+                
+                const datePattern = /^(\d{1,2})(\/|\s|-)([A-Za-z]{2,3})(,?)(\/|\s|-)(\d{2}|\d{4})$/;
+                const datePatternI = /^(\d{1,2})(\/|\s|-)([A-Za-z]{3})$/;
+                const datePatternII = /^([A-Za-z]{3})(\/|\s|-)(\d{1,2})$/;
+                
+                if(flightDate.match(datePattern)) {
+                    fullDate = new Date(flightDate);
+                }
+                else if(flightDate.match(datePatternI) || flightDate.match(datePatternII)){
+                    fullDate = new Date(flightDate+' '+(today.getFullYear()));
+                    if(fullDate<today) fullDate = new Date(flightDate+' '+(today.getFullYear()+1));                        
+                }
+                return (fullDate)
+            },
+
             segmentSelected(event){
-                console.log(event)
+                // console.log(event)
                 this.checkStates(event.item)
             },
 
             checkStates(item){
                 const state={
-					flightErr: item.flightNumber? false:true,
+                    flightErr: item.flightNumber? false:true,
                     departDateErr: item.departDay? false:true,
                     departTimeErr: item.departTime? false:true,
                     departLocationErr: item.departLocation? false:true,
@@ -153,19 +231,17 @@
                     durationErr: item.duration? false:true,
                     classErr: item.class? false:true,
                     statusErr: item.status? false:true,
-				}
+                }
                 item.state=state
 
-                // Vue.nextTick(() => {
-                    for (const key of Object.keys(state)) {
-                        if (state[key]){
-                            this.selectedSegments = this.selectedSegments.filter(seg => seg.tmpId != item.tmpId);
-                            return false;
-                        }
+                for (const key of Object.keys(state)) {
+                    if (state[key]){
+                        // const delIndex = this.selectedSegments = this.selectedSegments.findIndex(seg => seg.tmpId == item.tmpId);                         
+                        // if(delIndex>=0) this.selectedSegments.splice(delIndex,1);
+                        return false;
                     }
-                    return true
-                // });                    
-                
+                }
+                return true
             },
 
             groupFlightSegments(){
@@ -181,7 +257,7 @@
                     durationHours += Number(duration.hours);
                     durationMinutes += Number(duration.minutes);
                     if(this.checkStates(segment)==false){
-                        this.selectedSegments=[];
+                        // this.selectedSegments=[];
                         return null;
                     }
                 }
@@ -224,20 +300,13 @@
                 return { hours:hours, minutes:minutes }
             },
 
-            // editRentalCar(item) {				
-            // 	// this.carRequest=item						
-            // },
-
-            // removeRentalCar(item) {
-            // 	// console.log(item)
-            // 	// let delIndex = -1
-            // 	// if(item.rentalVehicleID>0)
-            // 	// 	delIndex = this.rentalCars.findIndex(rentalCar => (rentalCar.rentalVehicleID && rentalCar.rentalVehicleID == item.rentalVehicleID) );
-            // 	// else
-            // 	// 	delIndex = this.rentalCars.findIndex(rentalCar => (rentalCar.tmpId && rentalCar.tmpId == item.tmpId));				
-            // 	// console.log(delIndex)
-            // 	// if(delIndex>=0) this.rentalCars.splice(delIndex,1)
-            // }
+            removeFlightSegments() {
+                for(const selectedSegment of this.selectedSegments){
+                    const delIndex = this.flightSegments.findIndex(segment => (segment.tmpId == selectedSegment.tmpId));
+                    if(delIndex>=0) this.flightSegments.splice(delIndex,1);
+                }
+                this.selectedSegments.splice(0)
+            }
         }
     };
 </script>

@@ -1,73 +1,86 @@
 <template>
 	<div>
-		<div id="hotel-request">Hotel Request</div>
-		<v-card class="mx-5 my-5" elevation="2" outlined>
-			<v-row class="mt-3 mx-3">
-				<new-hotel-request
-					class="ml-auto mr-3"
-					type="Add New"
-					@updateTable="updateTable"
-					:flightRequests="flightRequests"
-					:hotelRequest="hotelRequest"/>
-			</v-row>
-			<v-row class="mb-3 mx-3">
-				<v-col cols="12" v-if="hotels?.length>0">
-					<v-data-table 
-						:headers="hotelHeaders" 
-						:items="hotels" 
-						hide-default-footer 
-						class="elevation-1">
+		<title-card class="mt-10 mx-5" titleWidth="7.5rem">
+			<template #title>
+				<div>Hotel Request</div>
+			</template>
+			<template #body>							
+		
+				<v-row class="mt-3 mx-3">
+					<new-hotel-request
+						v-if="!readonly"
+						class="ml-auto mr-3"
+						type="Add New"
+						:minDate="minDate"
+						:maxDate="maxDate"
+						@updateTable="updateTable"
+						:flightRequests="flightRequests"
+						:hotelRequest="hotelRequest"/>
+				</v-row>
+				<v-row class="mb-3 mx-3">
+					<v-col cols="12" v-if="hotels?.length>0">
+						<v-data-table 
+							:headers="hotelHeaders" 
+							:items="hotels" 
+							hide-default-footer 
+							class="elevation-1">
 
-						<template v-slot:[`item.rsvConferenceHotel`]="{ item }">
-							{{item.rsvConferenceHotel? 'Yes' : 'No'}}
-						</template>
+							<template v-slot:[`item.rsvConferenceHotel`]="{ item }">
+								{{item.rsvConferenceHotel? 'Yes' : 'No'}}
+							</template>
 
-						<template v-slot:[`item.checkIn`]="{ item }">
-							{{item.checkIn | beautifyDateTime }}
-						</template>
+							<template v-slot:[`item.checkIn`]="{ item }">
+								{{item.checkIn | beautifyDateTime }}
+							</template>
 
-						<template v-slot:[`item.checkOut`]="{ item }">
-							{{item.checkOut | beautifyDateTime }}
-						</template>
+							<template v-slot:[`item.checkOut`]="{ item }">
+								{{item.checkOut | beautifyDateTime }}
+							</template>
 
-						<template v-slot:[`item.edit`]="{ item }">
+							<template v-slot:[`item.edit`]="{ item }">
 
-							<v-row class="m-0 p-0">								
-								<new-hotel-request									
-									type="Edit"
-									@updateTable="updateTable"
-									:flightRequests="flightRequests"
-									:hotelRequest="item"/>
-								<v-btn
-									v-if="!readonly"
-									@click="removeHotel(item)"
-									style="min-width: 0"
-									color="transparent"
-									class="px-1 pt-2"
-									small><v-icon class="" color="red">mdi-close</v-icon>
-								</v-btn>
-							</v-row>							
-						</template>
-					</v-data-table>
-				</v-col>								
-			</v-row>
-		</v-card>
+								<v-row class="m-0 p-0">								
+									<new-hotel-request
+										v-if="!readonly"									
+										type="Edit"
+										:minDate="minDate"
+										:maxDate="maxDate"
+										@updateTable="updateTable"
+										:flightRequests="flightRequests"
+										:hotelRequest="item"/>
+									<v-btn
+										v-if="!readonly"
+										@click="removeHotel(item)"
+										style="min-width: 0"
+										color="transparent"
+										class="px-1 pt-2"
+										small><v-icon class="" color="red">mdi-close</v-icon>
+									</v-btn>
+								</v-row>							
+							</template>
+						</v-data-table>
+					</v-col>								
+				</v-row>
+			</template>
+		</title-card>
 	</div>
 </template>
 
 <script>
-
+	import TitleCard from '../../Common/TitleCard.vue';
 	import NewHotelRequest from "./NewHotelRequest.vue";
 
 	export default {
-		components: {			
+		components: {
+			TitleCard,
 			NewHotelRequest
 		},
 		name: "HotelRequestTable",
 		props: {
 			readonly: Boolean,
 			hotels: {},
-			flightRequests: {}
+			flightRequests: {},
+			authorizedTravel: {required: false},
 		},
 		data() {
 			return {
@@ -86,6 +99,8 @@
 				admin: false,
 				travelerDetails: {},
 				savingData: false,
+				minDate:"",
+				maxDate:"",
 			};
 		},
 		mounted() {	
@@ -102,6 +117,12 @@
 			},	
 			
 			initForm(){
+				
+				if(this.authorizedTravel?.startDate && this.authorizedTravel?.endDate){
+					this.minDate = this.authorizedTravel.startDate.slice(0,10)
+					this.maxDate = this.authorizedTravel.endDate.slice(0,10)
+				}
+
 				const hotelRequest = {}
 				hotelRequest.hotelID=null
 				hotelRequest.tmpId=null
@@ -135,6 +156,6 @@
 	};
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
+<style scoped>
 
 </style>

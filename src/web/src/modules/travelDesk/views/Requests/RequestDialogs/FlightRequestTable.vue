@@ -1,13 +1,17 @@
 <template>
-	<div>
-		<v-row class="mt-0 mx-0">
+	<v-card :loading="loadingData" class="pt-1" style="border:0px solid red !important;">
+		<v-row  class="mt-n1 mx-0">
 			<new-flight-request
+				v-if="!readonly"
+				:disabled="loadingData"
+				:minDate="minDate"
+				:maxDate="maxDate"
 				class="ml-auto mr-3"
 				type="Add New"
 				@updateTable="updateTable"
 				:flightRequest="flightRequest"/>								
 		</v-row>
-		<v-row class="mb-3 mx-0">
+		<v-row v-if="!loadingData" class="mb-3 mx-0">
 			<v-col cols="12" v-if="flightRequests?.length>0">
 				<v-data-table 
 					:headers="flightHeaders" 
@@ -21,7 +25,7 @@
 							<!-- {{ item.flightOptions }} -->
 							<v-row v-for="flightOption,inx in item.flightOptions" :key="'flight-'+flightOption.flightOptionID+'-'+inx">
 								<v-col>
-									<flight-option-card :flightOption="flightOption" :preferenceList="Array.from(Array(item.flightOptions.length+1).keys()).slice(1)" />
+									<flight-option-card :flightOption="flightOption" :optLen="item.flightOptions.length" :travelDeskUser="travelDeskUser" />
 								</v-col>
 							</v-row>							
 						</td>								
@@ -31,17 +35,14 @@
 						{{item.date | beautifyDateTime }}
 					</template>
 					
-					<template v-slot:[`item.edit`]="{ item }">
-						<v-row v-if="travelDeskUser" class="mx-0 py-0">	
-							<travel-port-modal								
-								:flightOptions="item.flightOptions"
-								:flightRequest="item"
-								/>
-						</v-row>
-						<v-row class="mx-0 py-0 mt-n9 mb-n6">
+					<template v-slot:[`item.edit`]="{ item }">						
+						<v-row class="mx-0 py-0 mt-n6 mb-n6">
 							<v-col cols="6">						
-								<new-flight-request									
+								<new-flight-request	
+									v-if="!readonly"								
 									type="Edit"
+									:minDate="minDate"
+									:maxDate="maxDate"
 									@updateTable="updateTable"
 									:flightRequest="item"/>
 							</v-col>
@@ -60,33 +61,29 @@
 				</v-data-table>
 			</v-col>								
 		</v-row>
-	</div>
+	</v-card>
 </template>
 
 <script>
 
 	import NewFlightRequest from "./NewFlightRequest.vue";
-	import FlightOptionCard from "./FlightComponents/FlightOptionCard.vue";
-	import TravelPortModal from '../../Desk/Components/TravelPortModal.vue'
+	import FlightOptionCard from "./FlightComponents/FlightOptionCard.vue";	
+	import { TRAVEL_DESK_URL } from "../../../../../urls"
+	import { secureGet, securePost } from '../../../../../store/jwt';
 
 	export default {
 		components: {			
 			NewFlightRequest,
 			FlightOptionCard,
-			TravelPortModal
 		},
 		name: "FlightRequestTable",
 		props: {
 			readonly: Boolean,
 			flightRequests: {},
-			travelDeskUser:{
-				type: Boolean,
-				default: false
-			},
-			showFlightOptions:{
-				type: Boolean,
-				default: false
-			},
+			travelDeskUser: { type: Boolean, default: false },
+			showFlightOptions: { type: Boolean, default: false },
+			requestID: {},
+			authorizedTravel: {required: false},
 		},
 		data() {
 			return {
@@ -104,23 +101,36 @@
 				travelerDetails: {},
 				savingData: false,
 				expanded: [true],
+				loadingData: false,
+				minDate:"",
+				maxDate:"",
 			};
 		},
 		mounted() {	
 			this.initForm()					
 		},
 		methods: {
-			updateTable(type) {
+			async updateTable(type) {
 				
 				if(type=='Add New'){
-					console.log(this.flightRequests)
+					// console.log(this.flightRequests)
 					this.flightRequest.tmpId=this.tmpId
 					this.flightRequests.push(JSON.parse(JSON.stringify(this.flightRequest)))
 					this.tmpId++
+					await this.saveFlightRequests();
+				}else if (type=='Edit'){
+					await this.saveFlightRequests();
 				}
+
 			},	
 			
-			initForm(){
+			async initForm(){
+				
+				if(this.authorizedTravel?.startDate && this.authorizedTravel?.endDate){
+					this.minDate = this.authorizedTravel.startDate.slice(0,10)
+					this.maxDate = this.authorizedTravel.endDate.slice(0,10)
+				}
+				if(this.requestID) await this.loadFlightRequests()
 				const flightRequest = {}
 				flightRequest.flightRequestID=null
 				flightRequest.tmpId=null
@@ -130,6 +140,7 @@
 				flightRequest.date="";
 				flightRequest.timePreference="";
 				flightRequest.seatPreference="";
+				flightRequest.flightOptions=[]
 				// flightRequest.status="Requested";
 
 				this.flightRequest = flightRequest								
@@ -139,16 +150,53 @@
 				this.flightRequest=item						
 			},
 
-			removeFlight(item) {
-				console.log(item)
+			async removeFlight(item) {
+				// console.log(item)
 				let delIndex = -1
 				if(item.flightRequestID>0)
 					delIndex = this.flightRequests.findIndex(flight => (flight.flightRequestID && flight.flightRequestID == item.flightRequestID) );
 				else
 					delIndex = this.flightRequests.findIndex(flight => (flight.tmpId && flight.tmpId == item.tmpId));				
-				console.log(delIndex)
-				if(delIndex>=0) this.flightRequests.splice(delIndex,1)
+				// console.log(delIndex)
+				if(delIndex>=0){
+					this.flightRequests.splice(delIndex,1)
+					await this.saveFlightRequests();
+				}
 			},
+
+			async loadFlightRequests(){
+				this.loadingData=true
+
+				secureGet(`${TRAVEL_DESK_URL}/flight-request/${this.requestID}`)
+					.then(resp => {
+						// console.log(resp.data) 
+						this.flightRequests.splice(0)
+						for(const flightRequest of resp.data)
+							this.flightRequests.push(flightRequest)
+						this.loadingData=false 						              
+				})
+				.catch(e => {
+					console.log(e);
+					this.loadingData=false
+				});	
+			},
+
+			async saveFlightRequests(){
+				this.loadingData=true
+				const body = this.flightRequests;
+
+				securePost(`${TRAVEL_DESK_URL}/flight-request/${this.requestID}`, body)
+					.then( () => {
+						// console.log(resp)
+						this.loadFlightRequests()
+						this.loadingData=false            
+				})
+				.catch(e => {
+					console.log(e);
+					this.loadingData=false
+				});
+				
+            },
 		}
 	};
 </script>

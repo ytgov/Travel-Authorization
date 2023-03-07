@@ -1,57 +1,59 @@
 <template>
 	<div>
-		<div id="questions-table">Questions</div>
-		<v-card class="questions-column mx-5 my-0" elevation="2" outlined>
-			<v-row class="my-3 mx-3">
-				<v-btn				
-					class="ml-auto px-2"
-					style="min-width: 0;"
-					@click="newForm()"
-					color="primary">
-					<div>Add Question</div>					
-				</v-btn>				
-			</v-row>
-			<v-row v-for="question,inx in questions" :key="'question-'+inx" class="mb-3 mt-0 mx-2">
-				<v-col>
-					<new-question class="mt-n10" :question="question" />				
-				</v-col>
-			</v-row>
-		</v-card>					
+		<title-card class="mt-10 mx-5" titleWidth="6rem" >
+            <template #title>
+                <div>Questions</div>
+            </template>
+            <template #body>
+		
+				<v-row v-if="travelDeskUser && !readonly" class="my-1 mx-3">
+					<v-btn				
+						class="ml-auto px-2"
+						style="min-width: 0;"
+						@click="newForm()"
+						color="primary">
+						<div>Add Question</div>					
+					</v-btn>				
+				</v-row>
+				<v-row v-for="question,inx in sortedQuestions" :key="'question-'+inx" class="mb-3 mt-3 mx-2">
+					<v-col>
+						<new-question class="mt-n10" :readonly="readonly" :question="question" :travelDeskUser="travelDeskUser" />				
+					</v-col>
+				</v-row>
+			</template>
+		</title-card>							
 	</div>
 </template>
 
 <script>
-
+	import TitleCard from '../../Common/TitleCard.vue';
 	import NewQuestion from "./NewQuestion.vue";
 
 	export default {
-		components: {			
+		components: {	
+			TitleCard,
 			NewQuestion
 		},
 		name: "QuestionsTable",
 		props: {
-			readonly: Boolean,
-			questions: {}
+			readonly: { type: Boolean, default:false },
+			questions: {},
+			travelDeskUser:{ type: Boolean, default:false }
 		},
 		data() {
 			return {
 				tmpId:1,
 				admin: false,
 				savingData: false,
+				sortedQuestions: []
 			};
 		},
-		mounted() {	
-			this.initForm()					
+		mounted() {
+			this.sortedQuestions = 	this.sortQuestion(this.questions)								
 		},
-		methods: {
-			// updateTable(type) {
-				
-			// 	// if(type=='Add New'){
-			// 	// 	this.carRequest.tmpId=this.tmpId
-			// 	// 	this.rentalCars.push(JSON.parse(JSON.stringify(this.carRequest)))
-			// 	// 	this.tmpId++
-			// 	// }
-			// },	
+		computed: {			
+		},
+		methods: {			
 
 			newForm(){
 				const today = new Date()
@@ -59,49 +61,26 @@
 					creatingDate: today.toISOString(),
 					question:"",
 					response:"",
-					requestType:"Hotel"
+					requestType:"Hotel",
+					state:{
+						questionErr: false,
+						responseErr: false,
+					}
 				})
 			},
+
+			sortQuestion(questions) {
+                questions.sort((a,)=>{
+					if(!a.response) return -1                     
+					else return 1 
+                })
+                return questions
+            },
 			
-			initForm(){
-				// const carRequest = {}
-				// carRequest.rentalVehicleID=null
-				// carRequest.tmpId=null
-				// carRequest.pickUpCity=""
-				// carRequest.pickUpLocation=""
-				// carRequest.pickUpLocOther=""
-				// carRequest.dropOffLocation= ""
-				// carRequest.dropOffLocOther=""
-				// carRequest.sameDropOffLocation=true
-				// carRequest.matchFlightTimes=false
-				// carRequest.pickUpDate=""
-				// carRequest.dropOffDate=""
-				// carRequest.vehicleType=""
-				// carRequest.vehicleChangeRationale=""
-				// carRequest.additionalNotes=""
-				// carRequest.status="Requested"
-
-				// this.carRequest = carRequest								
-			},
-
-			// editRentalCar(item) {				
-			// 	// this.carRequest=item						
-			// },
-
-			// removeRentalCar(item) {
-			// 	// console.log(item)
-			// 	// let delIndex = -1
-			// 	// if(item.rentalVehicleID>0)
-			// 	// 	delIndex = this.rentalCars.findIndex(rentalCar => (rentalCar.rentalVehicleID && rentalCar.rentalVehicleID == item.rentalVehicleID) );
-			// 	// else
-			// 	// 	delIndex = this.rentalCars.findIndex(rentalCar => (rentalCar.tmpId && rentalCar.tmpId == item.tmpId));				
-			// 	// console.log(delIndex)
-			// 	// if(delIndex>=0) this.rentalCars.splice(delIndex,1)
-			// }
 		}
 	};
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
+<style scoped >
 
 </style>

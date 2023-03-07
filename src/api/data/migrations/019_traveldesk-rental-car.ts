@@ -10,6 +10,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
       t.string("pickUpCity").notNullable();
       t.string("pickUpLocation").notNullable();      
       t.string("pickUpLocOther");
+      t.string("dropOffCity");
       t.string("dropOffLocation");
       t.string("dropOffLocOther");
       t.boolean("sameDropOffLocation").notNullable().defaultTo(true);
@@ -25,10 +26,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 
       t.string("status").notNullable();
 
-      t.string("reservedVehicleInfo")
-      t.integer("questionInd");      
-      t.string("question");
-      t.string("response");
+      t.string("reservedVehicleInfo");
       t.string("booking");
 
     });

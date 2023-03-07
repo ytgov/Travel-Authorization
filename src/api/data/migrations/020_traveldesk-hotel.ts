@@ -20,10 +20,7 @@ exports.up = function (knex: knex.Knex, Promise: any) {
 
       t.string("status").notNullable();
 
-      t.string("reservedHotelInfo")
-      t.integer("questionInd");      
-      t.string("question");
-      t.string("response");
+      t.string("reservedHotelInfo");
       t.string("booking");
 
     });

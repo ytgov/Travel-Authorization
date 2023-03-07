@@ -31,6 +31,8 @@
 								@input="state.checkInErr = false"
 								label="Check-in Date"
 								outlined
+								:min="minDate"
+								:max="maxDate"
 								type="date"/>
 							<v-text-field								
 								:error="state.checkOutErr"
@@ -38,8 +40,12 @@
 								@input="state.checkOutErr = false"
 								label="Check-out Date"
 								outlined
+								:min="minDate"
+								:max="maxDate"
 								type="date"/>
-							<v-text-field
+							<v-autocomplete
+								:items="destinations"								
+								item-value="text"
 								:error="state.cityErr"
 								v-model="hotelRequest.city"
 								@input="state.cityErr = false"
@@ -115,7 +121,9 @@
 				type: String
 			},
 			hotelRequest: {},
-			flightRequests: {}
+			flightRequests: {},
+			minDate: { type: String, default:""	},
+			maxDate: { type: String, default:""	},
 		},
 		data() {
 			return {			
@@ -133,17 +141,18 @@
 					conferenceHotelNameErr: false,
 					additionalInfoErr: false					
 				},
-
+				destinations:[],
 			};
 		},
-		mounted() {			
+		mounted() {
+			this.destinations = this.$store.state.traveldesk.destinations;		
 		},
 		methods: {
 
 			checkFields() {
 
-				this.state.checkInErr = this.checkIn? false:true;
-				this.state.checkOutErr = this.checkOut? false:true;
+				this.state.checkInErr = this.hotelRequest.checkIn? false:true;
+				this.state.checkOutErr = this.hotelRequest.checkOut? false:true;
 				this.state.cityErr = this.hotelRequest.city? false:true;
 				this.state.rsvConferenceHotelErr = this.hotelRequest.rsvConferenceHotel != null? false: true;
 				this.state.conferenceNameErr = this.hotelRequest.conferenceName? false:true;

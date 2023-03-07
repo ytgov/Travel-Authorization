@@ -18,7 +18,7 @@
 <script>
     import Vue from "vue";
     import TravelerRequests from "./Requests/TravelerRequests.vue";
-    import { FORM_URL, DESTINATION_URL } from "../../../urls";
+    import { TRAVEL_DESK_URL, DESTINATION_URL } from "../../../urls";
     import { secureGet } from "../../../store/jwt";    
 
     export default {
@@ -49,7 +49,9 @@
                     resp.data.forEach(v => {
                         destinations.push({
                             value: v.id,
-                            text: v.city + " (" + v.province + ")"
+                            text: v.city + " (" + v.province + ")",
+                            city: v.city,
+                            province: v.province
                         });
                     });
                     this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);
@@ -58,7 +60,7 @@
             },        
 
             getAuthorizedTravels() {
-                secureGet(`${FORM_URL}/`)
+                secureGet(`${TRAVEL_DESK_URL}/authorized-travels/`)
                     .then(resp => {
                     const authorizedTravels = resp.data;
                     this.extractAuthorizedTravels(authorizedTravels);
@@ -70,38 +72,43 @@
 
             extractAuthorizedTravels(authorizedTravels) {
 
-                //console.log(authorizedTravels)
+                // console.log(authorizedTravels)
                 this.authorizedTravels = []
-                // if (this.$store.state.auth.department){
-                const departmentAuthorizedTravels = authorizedTravels.filter(authTravel => 
-                    (authTravel.department == this.$store.state.auth.department &&
-                        (authTravel.status=="Approved")// || authTravel.status=="Submitted")
-                    )
-                )
-                for(const authorizedTravels of departmentAuthorizedTravels){
-                    //console.log(authorizedTravels)
-                    const phase = authorizedTravels.status=="Approved"? 'Travel Approved':'Authorization'
-                    const status = authorizedTravels.status=="Approved"? 'Approved':'Awaiting Director Approval'
-                    const startDate = new Date(authorizedTravels.dateBackToWork);                 
+                
+                for(const authorizedTravel of authorizedTravels){
+                    // console.log(authorizedTravel)
+                    const phase = this.determineTravelPhase(authorizedTravel)
+                    
+                    
+                    const status = authorizedTravel.status=="Approved"? 'Approved':'Awaiting Director Approval'
+
+                    const startDate = new Date(authorizedTravel.dateBackToWork.slice(0,10) +'T01:00:00.000Z');                                   
                     //console.log(startDate.toUTCString())
-                    startDate.setDate(startDate.getDate()-1*Number(authorizedTravels.travelDuration));
-                    //console.log(startDate.toISOString())
-                    const locationIds = authorizedTravels.stops.map(stop => stop.locationId)
+                    startDate.setDate(startDate.getDate()-1*Number(authorizedTravel.travelDuration));
+                    // console.log(startDate.toISOString())
+                    // console.log(startDate.toUTCString())
+                    
+                    const locationIds = authorizedTravel.stops.map(stop => stop.locationId)
                                             
                     this.authorizedTravels.push({	
-                        id: authorizedTravels.id,
-                        email: authorizedTravels.email,
+                        id: authorizedTravel.id,
+                        email: authorizedTravel.email,
                         phase: phase,
-                        name: authorizedTravels.firstName + ' ' + authorizedTravels.lastName,
+                        name: authorizedTravel.firstName + ' ' + authorizedTravel.lastName,
                         locationIds: locationIds,						 
-                        description: authorizedTravels.purpose, 
+                        description: authorizedTravel.purpose, 
                         startDate: startDate.toISOString(), 
-                        endDate:  authorizedTravels.dateBackToWork, 
+                        endDate:  authorizedTravel.dateBackToWork, 
                         status: status
                     })                
                     
-                }
-                
+                }                
+            },
+
+            determineTravelPhase(authorizedTravel){
+                if(authorizedTravel.status!="Approved") return 'Authorization'
+                if(!authorizedTravel?.travelRequest?.status) return 'Travel Approved'
+                return Vue.filter("getTravelStatus")(authorizedTravel.travelRequest.status)
             }
         }
 };
