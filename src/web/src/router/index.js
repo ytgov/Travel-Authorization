@@ -18,6 +18,7 @@ import Test from "../components/Test";
 import HealthCheck from "../components/HealthCheck";
 
 import preapprovedRouter from "../modules/preapproved/router/index.js";
+import travelDeskRouter from "../modules/travelDesk/router/index.js";
 import travelRequestRouter from "../modules/travelForm/router/index.js";
 
 // import { authGuard } from "../auth/authGuard";
@@ -26,6 +27,7 @@ Vue.use(VueRouter);
 
 const routes = [
   ...preapprovedRouter,
+  ...travelDeskRouter,
   ...travelRequestRouter,
   {
     path: "/sign-in",

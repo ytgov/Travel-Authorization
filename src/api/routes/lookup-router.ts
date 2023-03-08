@@ -214,3 +214,42 @@ lookupRouter.get("/employees", RequiresAuth, ReturnValidationErrors, async funct
     res.status(500).json("Internal Server Error");
   }
 });
+
+lookupRouter.get("/employee-info", async function (req: Request, res: Response) {
+  
+  // console.log(req.query.email)
+
+  try {
+    let employeeInfo = await axios
+      .get(`https://api.gov.yk.ca/directory/employees?email=`+req.query.email, {
+        headers: {
+          "Ocp-Apim-Subscription-Key": AZURE_KEY
+        }
+      })
+      .then((resp: any) => {
+        // console.log(resp.data)
+        if(resp.data?.count>0){
+          const employee = resp.data.employees[0]
+          return {
+            firstName: employee.first_name,
+            lastName: employee.last_name,
+            department: employee.department,
+            fullName: employee.full_name,
+            email: employee.email,
+            businessPhone: employee.phone_office,
+            mobile: employee.mobile,
+            office: employee.office,
+            address: employee.address,
+            community: employee.community,
+            postalCode: employee.postal_code,      
+          };
+        }
+        return {};
+        
+      });
+    res.status(200).json(employeeInfo);
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json("Internal Server Error");
+  }
+});

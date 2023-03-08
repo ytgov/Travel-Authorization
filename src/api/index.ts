@@ -15,7 +15,8 @@ import {
   permRouter,
   healthCheckRouter,
   formRouter,
-  preapprovedRouter
+  preapprovedRouter,
+  travelDeskRouter
 } from "./routes";
 import { checkJwt, loadUser } from "./middleware/authz.middleware";
 
@@ -93,6 +94,7 @@ app.use("/api/user", checkJwt, loadUser, userRouter);
 app.use("/api/manager", checkJwt, loadUser, managerRouter);
 app.use("/api/permissions", checkJwt, loadUser, permRouter);
 app.use("/api/preapproved", checkJwt, loadUser, preapprovedRouter);
+app.use("/api/traveldesk", checkJwt, loadUser, travelDeskRouter);
 
 app.use("/api/lookup", lookupRouter);
 app.use("/api/healthCheck", healthCheckRouter);

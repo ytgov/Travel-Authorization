@@ -53,3 +53,10 @@ export function RequiresRolePatAdminOrAdmin(req: Request, res: Response, next: N
   }
   return res.status(401).send("You are not an Administrator for Pre-Approval Travel Requests!");
 }
+
+export function RequiresRoleTdUser(req: Request, res: Response, next: NextFunction) {
+  if (req.user && (req.user.roles.indexOf("TdUser") >= 0)) {
+    return next();
+  }
+  return res.status(401).send("You are not a Travel Desk User!");
+}
