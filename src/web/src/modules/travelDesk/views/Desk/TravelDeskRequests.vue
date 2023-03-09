@@ -1,6 +1,24 @@
 <template>
     <div class="mx-10 mb-5">
-        
+
+        <v-row class="my-0 mx-0" :key="update">      
+            <print-travel-desk-report
+                class="ml-auto"
+                :disabled="selectedRequests.length == 0"
+                :travelDeskRequests="selectedRequests"
+                buttonName="Print Report"
+                @update="update++"
+            />
+            <v-btn                
+                :disabled="selectedRequests.length == 0"        
+                @click="exportToExcel()"          
+                class="ml-3 mr-2 my-7"
+                elevation="5"
+                color="primary"          
+                > Export To Excel
+            </v-btn>        
+        </v-row>
+
         <v-data-table
             :headers="headers"
             :items="travelDeskRequests"
@@ -9,6 +27,9 @@
             :item-class="itemRowBackground"
             multi-sort
             :items-per-page="15"
+            v-model="selectedRequests"
+            show-select
+            item-key="requestID"
             class="elevation-1 mt-4">
             
             <template v-slot:[`item.submitDate`]="{ item }">								
@@ -69,12 +90,15 @@
 </template>
 
 <script>
-    // import Vue from "vue";
+    import Vue from "vue";
     import ProcessTravelDeskRequest from "./ProcessTravelDeskRequest.vue";
+    import PrintTravelDeskReport from '../Common/PrintTravelDeskReport.vue'
+    import { ExportToCsv } from 'export-to-csv';
 
     export default {
         components: {
-            ProcessTravelDeskRequest
+            ProcessTravelDeskRequest,
+            PrintTravelDeskReport
         },
         name: "TravelDeskRequests",
         props: {
@@ -96,7 +120,9 @@
                     { text: "",value: "edit", class: "blue-grey lighten-4", cellClass: "px-0 mx-0",sortable: false}
                 ],
                 admin: false,
-                department: "",				
+                department: "",
+                selectedRequests: [],
+                update: 0,				
             };
         },
         mounted() {
@@ -106,11 +132,12 @@
             updateTable() {
                 this.$emit("updateTable");
             },
+
             getLocationName(stops){
                 const names = []
                 const destinations = this.$store.state.traveldesk.destinations; 
-                for(const stop of stops){
-                    const location = destinations.filter(dest =>dest.value==stop.locationId)
+                for(const stop of stops){                    
+                    const location = destinations.filter(dest => dest.value==stop.locationId)                    
                     if (location.length > 0){
                         names.push(location[0].text)
                     }
@@ -131,12 +158,40 @@
 
             itemRowBackground: function (item) {
                 return item.userTravel > 0 ? 'red lighten-5' : ''
-            }
+            },
 
-            // getTravelRequest(item){
-            // 	const travelRequest = JSON.parse(JSON.stringify(item))
-            // 	return travelRequest
-            // }
+            exportToExcel(){
+                console.log(this.selectedRequests)
+                const csvInfo = this.selectedRequests.map(req =>{
+                    return {
+                        submitDate: req.submitDate.slice(0,10),
+                        name: req.form.firstName+' '+req.form.lastName,
+                        department: req.form.department,
+                        branch: (req.form.branch? req.form.branch:''),
+                        travelStartDate: req.startDate.slice(0,10),
+                        travelEndDate: req.form.dateBackToWork.slice(0,10),
+                        location: this.getLocationName(req.form.stops),
+                        requested: this.getRequested(req),                        
+                        status: (req.status=='submitted' && !req.travelDeskOfficer? 'Not started': Vue.filter('getTravelStatus')(req.status)),
+                        travelDeskOfficer: (req.travelDeskOfficer? req.travelDeskOfficer :'')
+                    }
+                })
+                const options = { 
+                    fieldSeparator: ',',
+                    quoteStrings: '"',
+                    decimalSeparator: '.',
+                    showLabels: true, 
+                    showTitle: false,
+                    title: '',
+                    filename: 'Travel-Desk-Requests',
+                    useTextFile: false,
+                    useBom: true,
+                    useKeysAsHeaders: false,
+                    headers: ['Submit Date', 'Name', 'Department', 'Branch', 'Travel Start Date', 'Travel End Date', 'Location', 'Requested', 'Status', 'Travel Desk Officer']
+                };
+                const csvExporter = new ExportToCsv(options);
+                csvExporter.generateCsv(csvInfo);
+            }
         }
     };
 </script>
