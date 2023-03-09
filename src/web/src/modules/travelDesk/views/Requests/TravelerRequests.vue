@@ -41,12 +41,9 @@
 					:type="(item.phase=='Travel Approved' || item.phase=='Request Draft')? 'Submit': 'Review'"
 					@updateTable="updateTable()"
 					:authorizedTravel="item"/>
-				<v-btn
-					v-if="item.status=='Approved' && item.phase == 'Booked'"
-					class="ml-2 mr-2 px-5"
-					color="green darken-1"
-					>View Itinerary 
-				</v-btn>
+				<itinerary-modal 
+					v-if="item.status=='Approved' && item.phase == 'Booked'"					
+					/>
 			</template>
 		</v-data-table>
 	</div>
@@ -55,10 +52,12 @@
 <script>
 	import Vue from "vue";
 	import NewTravelDeskRequest from "./NewTravelDeskRequest.vue";
+	import ItineraryModal from './Components/ItineraryModal.vue';
 
 	export default {
 		components: {
-			NewTravelDeskRequest
+			NewTravelDeskRequest,
+			ItineraryModal
 		},
 		name: "TravelerRequests",
 		props: {

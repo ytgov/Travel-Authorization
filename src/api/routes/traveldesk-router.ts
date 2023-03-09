@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { RequiresAuth, RequiresRolePatAdminOrAdmin, RequiresRoleTdUser } from "../middleware";
+import { RequiresAuth, RequiresRoleAdmin, RequiresRoleTdUser, RequiresRoleTdUserOrAdmin } from "../middleware";
 import { DB_CONFIG } from "../config";
 import knex from "knex";
 import { UserService } from "../services";
@@ -40,6 +40,9 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
       question.state = { questionErr: false, responseErr: false }
     }
     travelRequest.questions=questions
+
+    const invoiceNumber = await db("travelDeskPnrDocuments").select("invoiceNumber").where("requestID", requestID).first();
+    travelRequest.invoiceNumber = invoiceNumber?.invoiceNumber? invoiceNumber.invoiceNumber : ''
 
   }
 
@@ -353,7 +356,10 @@ travelDeskRouter.get("/travel-request/:taid", RequiresAuth, async function (req:
     for(const question of questions){
       question.state = { questionErr: false, responseErr: false }
     }
-    travelRequest.questions=questions
+    travelRequest.questions = questions
+
+    const invoiceNumber = await db("travelDeskPnrDocuments").select("invoiceNumber").where("requestID", requestID).first();
+    travelRequest.invoiceNumber = invoiceNumber?.invoiceNumber? invoiceNumber.invoiceNumber : ''
   }
 
   res.status(200).json(travelRequest);
@@ -369,6 +375,8 @@ travelDeskRouter.post("/travel-request/:taid", RequiresAuth, async function (req
       // console.log(newTravelRequest)
 
       if (TAID) {
+
+        delete newTravelRequest.invoiceNumber
 
         const flightRequests = newTravelRequest.flightRequests
         delete newTravelRequest.flightRequests
@@ -495,14 +503,14 @@ travelDeskRouter.post("/travel-request/:taid", RequiresAuth, async function (req
 
 
 
-travelDeskRouter.get("/travel-agents/", RequiresAuth, async function (req: Request, res: Response) {
+travelDeskRouter.get("/travel-agents/", RequiresAuth, RequiresRoleTdUserOrAdmin, async function (req: Request, res: Response) {
 
   const travelAgents = await db("travelDeskTravelAgent").select("*");
   res.status(200).json(travelAgents);
 });
 
 
-travelDeskRouter.delete("/travel-agents/:agencyID", RequiresAuth, RequiresRoleTdUser, async function (req: Request, res: Response) {  
+travelDeskRouter.delete("/travel-agents/:agencyID", RequiresAuth, RequiresRoleAdmin, async function (req: Request, res: Response) {  
   
   try {       
     const agencyID = Number(req.params.agencyID);
@@ -518,7 +526,7 @@ travelDeskRouter.delete("/travel-agents/:agencyID", RequiresAuth, RequiresRoleTd
 });
 
 
-travelDeskRouter.post("/travel-agents/:agencyID", RequiresAuth, async function (req: Request, res: Response) {
+travelDeskRouter.post("/travel-agents/:agencyID", RequiresAuth, RequiresRoleAdmin,async function (req: Request, res: Response) {
   
   try {
     
@@ -542,5 +550,61 @@ travelDeskRouter.post("/travel-agents/:agencyID", RequiresAuth, async function (
   } catch (error: any) {
     console.log(error);
     res.status(500).json("Saving the Agency Information failed");
+  }
+});
+
+
+travelDeskRouter.post("/pnr-document/:requestID", RequiresAuth, RequiresRoleTdUser,async function (req: Request, res: Response) {
+    
+  const file = req.body.file;
+  const requestID = req.params.requestID;
+  const data = JSON.parse(req.body.data);
+
+  try {
+    await db.transaction(async trx => {
+      
+      const pnrDoc = await db("travelDeskPnrDocuments").select("documentID").where("requestID", requestID).first();
+      if (pnrDoc) {
+        await db("travelDeskPnrDocuments")
+          .update({         
+            invoiceNumber: data.invoiceNumber,
+            pnrDocument:file
+          })
+          .where("requestID", requestID);
+      } 
+      else {
+        const newDocument = {
+          requestID: requestID,
+          invoiceNumber: data.invoiceNumber,
+          pnrDocument: file
+        };
+        await db("travelDeskPnrDocuments").insert(newDocument, "documentID");
+      }
+
+      if(data.agencyID){
+        await db("travelDeskTravelRequest").update({
+          agencyID: data.agencyID
+        })
+        .where("requestID", requestID);
+      }
+      
+      res.status(200).json("Successful");
+     
+    });
+    } catch (error: any) {
+      console.log(error);
+      res.status(500).json("Insert failed");
+    }
+  }
+);
+
+travelDeskRouter.get("/pnr-document/:requestID", RequiresAuth, RequiresRoleTdUser, async function (req, res) {
+  try {
+    const requestID = req.params.requestID;
+    const doc = await db("travelDeskPnrDocuments").select("pnrDocument").where("requestID", requestID).first();
+    res.status(200).send(doc.pnrDocument);
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json("PDF not Found");
   }
 });

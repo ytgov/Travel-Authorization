@@ -60,3 +60,10 @@ export function RequiresRoleTdUser(req: Request, res: Response, next: NextFuncti
   }
   return res.status(401).send("You are not a Travel Desk User!");
 }
+
+export function RequiresRoleTdUserOrAdmin(req: Request, res: Response, next: NextFunction) {
+  if (req.user && (req.user.roles.indexOf("Admin") >= 0 || req.user.roles.indexOf("TdUser") >= 0)) {
+    return next();
+  }
+  return res.status(401).send("You are not an Administrator or Travel Desk User!");
+}

@@ -1,6 +1,6 @@
 <template>
     <v-card :loading="loadingData" :disabled="loadingData" en class="px-5 pb-15">
-        <v-alert v-if="alertMsg" class="mt-5" type="blue">{{ alertMsg }}</v-alert>
+        <v-alert v-if="alertMsg" class="mt-5" type="info">{{ alertMsg }}</v-alert>
         <div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
         
         <v-toolbar v-if="!loadingData" class="" height="100px" flat>
@@ -83,7 +83,7 @@
                     console.log(this.travelDeskRequests)
                     console.log(this.$store.state.auth.user.id)
                     this.travelDeskRequests.forEach(req =>{
-                        req.userTravel = (this.$store.state.auth.user.id == req.form.userId)? 1:0
+                        req.userTravel = (this.$store.state.auth.fullName == req.travelDeskOfficer)? 1:0
                         req.bookedStatus = req.status =="booked"? 1 : 0                        
                         req.startDate = this.getStartDate(req.form.dateBackToWork, req.form.travelDuration);
                     })
