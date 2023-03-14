@@ -16,6 +16,12 @@ export async function seedUp() {
     },
     {
       name: "PatAdmin"
+    },
+    {
+      name: "DeptAdmin"
+    },
+    {
+      name: "TdUser"
     }
   ]);
 

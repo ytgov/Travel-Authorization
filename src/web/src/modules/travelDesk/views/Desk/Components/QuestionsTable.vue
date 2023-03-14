@@ -15,6 +15,8 @@
 						<div>Add Question</div>					
 					</v-btn>				
 				</v-row>
+				<div v-else-if="sortedQuestions.length==0" class="text-center my-5"> No Question</div>
+					
 				<v-row v-for="question,inx in sortedQuestions" :key="'question-'+inx" class="mb-3 mt-3 mx-2">
 					<v-col>
 						<new-question class="mt-n10" :readonly="readonly" :question="question" :travelDeskUser="travelDeskUser" />				

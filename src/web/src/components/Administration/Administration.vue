@@ -83,6 +83,11 @@ export default {
         icon: "mdi-wallet-membership",
         text: "Purpose",
         url: "/administration/Purpose"
+      },
+      {
+        icon: "mdi-airplane",
+        text: "Travel Agents",
+        url: "/administration/TravelAgents"
       }
     ],
     model: 1

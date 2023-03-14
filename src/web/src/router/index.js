@@ -14,6 +14,7 @@ import FlightEstimate from "../components/Administration/RatesEstimateManagement
 import PoolCarCost from "../components/Administration/RatesEstimateManagement/PoolCarCost";
 import RentalCarEstimates from "../components/Administration/RatesEstimateManagement/RentalCarEstimate";
 import YGRates from "../components/Administration/RatesEstimateManagement/YGRates";
+import TravelAgents from "../components/Administration/LookupTableManagement/TravelAgents";
 import Test from "../components/Test";
 import HealthCheck from "../components/HealthCheck";
 
@@ -111,6 +112,14 @@ const routes = [
     path: "/administration/ygRates",
     name: "YGRates",
     component: YGRates
+  },
+  {
+    path: "/administration/TravelAgents",
+    name: "TravelAgents",
+    meta: {
+      requiresAuth: true
+    },
+    component: TravelAgents
   },
   {
     path: "/test",

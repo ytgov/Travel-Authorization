@@ -44,7 +44,7 @@
 										</template>
 										<template #body>						
 											<v-row class="mt-0 mx-0">
-												<v-col cols="8" >
+												<v-col cols="9" >
 													<flight-request-table 
 														:authorizedTravel="authorizedTravel"
 														:readonly="false"
@@ -52,13 +52,15 @@
 														:showFlightOptions="travelerDetails.status!='draft'" 
 														:flightRequests="travelerDetails.flightRequests" />
 												</v-col>
-												<v-col cols="4" >
+												<v-col cols="3" class="px-0" >
 													<v-textarea
-														class="mt-5 mr-3"
+														class="mt-5 mr-5"
 														:readonly="readonly"
 														v-model="travelerDetails.additionalInformation"
 														label="Additional Information"
 														outlined
+														auto-grow
+														counter
 														:clearable="!readonly"/>									
 												</v-col>
 											</v-row>

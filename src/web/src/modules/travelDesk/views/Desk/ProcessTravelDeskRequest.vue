@@ -60,14 +60,16 @@
 														travelDeskUser
 														:flightRequests="travelRequest.flightRequests" />
 												</v-col>
-												<v-col cols="3" >
+												<v-col cols="3" class="px-0" >
 													<v-textarea
-														class="mt-3 ml-0 mr-3"
+														class="mt-3 ml-0 mr-5"
 														:readonly="readonly"
 														v-model="travelRequest.additionalInformation"
 														label="Additional Information"
 														outlined
-														rows="10"
+														auto-grow
+														counter
+														:rules="[v => (v || '' ).length <= 255 || 'Must be 255 characters or less']"
 														:clearable="!readonly"/>									
 												</v-col>
 											</v-row>
@@ -91,7 +93,15 @@
 						</v-col>	 
 						<v-col cols="4">
 							<v-row class="mt-3 mb-0 mx-0">
-								<v-col cols="6"/>
+								<v-col cols="6">
+									<v-select								
+										:items="travelAgentsInfo"
+										item-text="agencyName"
+										item-value="agencyID"										
+										label="Assign Agent"
+										v-model="travelRequest.agencyID"								
+										outlined />
+								</v-col>
 								<v-col cols="6">
 									<v-select
 										:readonly="readonly"
@@ -101,6 +111,18 @@
 										v-model="travelRequest.travelDeskOfficer"								
 										outlined/>		
 								</v-col>											
+							</v-row>
+							<v-row class="mx-0 mb-5 mt-n6" v-if="travelRequest.invoiceNumber">
+								<div class="my-auto ml-4 text-h6 blue--text">
+									Invoice #: {{travelRequest.invoiceNumber}}
+								</div>
+								<v-btn
+									class="ml-5 px-5"
+									color="blue lighten-5"
+									@click="downloadPdf()"
+									:loading="savingData" small>
+									<div class="text-h6 blue--text">Download PNR</div>
+								</v-btn>
 							</v-row>
 							<questions-table 
 								:readonly="readonly"
@@ -115,7 +137,10 @@
 					<v-btn color="grey darken-5" class="px-5" @click="closeDialog">						
 						<div>{{readonly?'Close':'Cancel'}}</div>
 					</v-btn>
-					<travel-agents-modal class="ml-auto mr-3"/>
+					<upload-pnr-modal 
+						:travelAgentsInfo="travelAgentsInfo"
+						:travelRequest="travelRequest"
+						class="ml-auto mr-3"/>
 					<v-btn
 						v-if="!readonly"
 						class="ml-2 mr-2 px-5"
@@ -130,6 +155,9 @@
 						@click="saveNewTravelRequest('sendback')"
 						:loading="savingData">Send to Traveler
 					</v-btn>
+					<itinerary-modal 
+						v-if="type=='booked'"					
+					/>
 					<v-btn
 						v-if="!readonly"
 						class="mr-5 px-5 "
@@ -156,9 +184,10 @@
 	import TransportationRequestTable from "../Requests/RequestDialogs/TransportationRequestTable.vue";
 	import TravelPortModal from "./Components/TravelPortModal.vue"
 	
-	import TravelAgentsModal from "./TravelAgent/TravelAgentsModal.vue"
+	import UploadPnrModal from "./PnrDocument/UploadPnrModal.vue"
 
 	import QuestionsTable from "./Components/QuestionsTable.vue"
+	import ItineraryModal from '../Requests/Components/ItineraryModal.vue';
 	
 
 	export default {
@@ -171,9 +200,10 @@
 			HotelRequestTable,
 			QuestionsTable,
 			TravelPortModal,
-			TravelAgentsModal
+			UploadPnrModal,
+			ItineraryModal
 		},
-		name: "NewTravelDeskRequest",
+		name: "ProcessTravelDeskRequest",
 		props: {
 			type: {
 				type: String
@@ -213,7 +243,8 @@
 					hotelsErr: false,
 					otherTransportationErr: false
 				},
-
+				travelAgentsInfo: [],
+				agencyID: null,
 				loadingData: false				
 			};
 		},
@@ -231,6 +262,8 @@
 				this.loadingData = true;
 				const taid = this.travelDetail.TAID
 				this.travelRequest = await this.getTravelRequestInfo(taid)
+				this.travelAgentsInfo = await this.getTravelAgentsInfo()
+				this.travelAgentsInfo.push({"agencyID": null, "agencyName": "None", "agencyInfo": ""})
 
 				const agents=this.$store.state.traveldesk.travelDeskUsers;
 				this.travelDeskAgentList=agents.map(agent => agent.first_name+' '+agent.last_name);
@@ -240,8 +273,10 @@
 					if(currentUser)
 						this.travelRequest.travelDeskOfficer=currentUser.first_name+' '+currentUser.last_name
 				}
+				this.travelRequest.internationalTravel= (this.travelRequest.passportCountry || this.travelRequest.passportNum)
 				Vue.nextTick(()=>this.loadingData = false)				
-			},	
+			},
+
 			closeDialog(){
 				this.updateTable()
 				this.addNewTravelDialog = false
@@ -257,7 +292,16 @@
 						console.log(e);
 					});
 			},
-			
+
+			async getTravelAgentsInfo() {				
+				return secureGet(`${TRAVEL_DESK_URL}/travel-agents/`)
+					.then(resp => {						
+						return(resp.data)
+					})
+					.catch(e => {
+						console.log(e);
+					});
+			},	
 
 			saveNewTravelRequest(saveType) {
 				console.log(saveType)
@@ -332,6 +376,32 @@
 				}
 				return true;
 			},
+
+			downloadPdf() {
+				this.savingData = true;
+				const header = {
+					responseType: "application/pdf",
+					headers: {
+					"Content-Type": "application/text"
+					}
+				};
+				const requestID = this.travelRequest.requestID
+
+				secureGet(`${TRAVEL_DESK_URL}/pnr-document/${requestID}`, header)
+					.then(res => {
+						this.savingData = false;
+						const link = document.createElement("a");
+						link.href = res.data;
+						document.body.appendChild(link);
+						link.download = "pnr_doc.pdf";
+						link.click();
+						setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+					})
+					.catch(e => {
+						this.savingData = false;
+						console.log(e);
+					});
+			},		
 			
 		}
 	};
