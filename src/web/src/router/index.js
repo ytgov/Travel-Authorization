@@ -22,6 +22,7 @@ import preapprovedRouter from "../modules/preapproved/router/index.js";
 import travelDeskRouter from "../modules/travelDesk/router/index.js";
 import travelRequestRouter from "../modules/travelForm/router/index.js";
 import flightExpenseRouter from "../modules/flightExpenses/router/index.js";
+import reportsRouter from "../modules/reports/router/index.js";
 
 // import { authGuard } from "../auth/authGuard";
 
@@ -32,6 +33,7 @@ const routes = [
   ...travelDeskRouter,
   ...travelRequestRouter,
   ...flightExpenseRouter,
+  ...reportsRouter,
   {
     path: "/sign-in",
     name: "Login",

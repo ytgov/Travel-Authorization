@@ -182,7 +182,7 @@ export default {
 
 		openUnReconcile() {
 			this.unReconcileDialog = true;
-		},
+		}, 
 
 		unReconcile() {
 			//TODO: remove period and change to reconcile=no
