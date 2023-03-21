@@ -32,7 +32,9 @@
 		</v-card>
 		
 		<v-card class="mt-5" v-if="views.filters" flat>
-			<filters/>
+			<filters
+				:flightReport="flightReport"
+				@updateFilters="updateFilters"/>
 		</v-card>
 		
 		<v-card class="mt-5" v-if="!loadingData" flat>
@@ -47,9 +49,8 @@
 import FlightReport from "./FlightReport.vue";
 import Filters from "./Filters/Filters.vue";
 import Graphs from "./Graphs/Graphs.vue";
-
-	// import { PREAPPROVED_URL, LOOKUP_URL } from "../../../urls";
-	// import { secureGet } from "../../../store/jwt";
+// import { LOOKUP_URL } from "../../../urls";
+// import { secureGet } from "../../../store/jwt";
 
 export default {
 	name: "Report",
@@ -63,28 +64,36 @@ export default {
 			views: {filters: false, graphs: false},
 			flightReport: [],
 			loadingData: false,
-			alertMsg: ""
+			alertMsg: "",
+			filters: {departments: [], locations: []}
 		};
 	},
 	mounted() {	
-		this.initViews();	
-		this.getFlights();
+		this.loadingData = true;
+		this.initViews();
+		this.getFlights();		
 	},
+	
 	methods: {
 
 		initViews() {
-
 			this.views = {
 				filters: false, 
 				graphs: false
 			};
 		},
 
-		getFlights() {
+		updateFilters(departments, locations){
 			this.loadingData = true;
-			this.flightReport = [
+			this.filters = {departments: departments, locations: locations}
+			this.getFlights();
+		},
+
+		getFlights() {
+			
+			const tmpFlightReport = [
 				{
-					dept: 'HPW',
+					dept: 'Highways and Public Works',
 					finalDestinationCity: 'Calgary',
 					finalDestinationProvince: 'Alberta',
 					totalTrips: '36', 
@@ -95,7 +104,7 @@ export default {
 					averageRoundTripFlightCost: ''
 				},
 				{
-					dept: 'Tourism',
+					dept: 'Tourism and Culture',
 					finalDestinationCity: 'Calgary',
 					finalDestinationProvince: 'Alberta',
 					totalTrips: '18', 
@@ -106,7 +115,7 @@ export default {
 					averageRoundTripFlightCost: ''
 				},
 				{
-					dept: 'CS',
+					dept: 'Community Services',
 					finalDestinationCity: 'Calgary',
 					finalDestinationProvince: 'Alberta',
 					totalTrips: '6', 
@@ -117,7 +126,7 @@ export default {
 					averageRoundTripFlightCost: ''
 				},
 				{
-					dept: 'HPW',
+					dept: 'Highways and Public Works',
 					finalDestinationCity: 'Vancouver',
 					finalDestinationProvince: 'British Columbia',
 					totalTrips: '47', 
@@ -128,7 +137,7 @@ export default {
 					averageRoundTripFlightCost: ''
 				},
 				{
-					dept: 'HPW',
+					dept: 'Highways and Public Works',
 					finalDestinationCity: 'Vancouver',
 					finalDestinationProvince: 'British Columbia',
 					totalTrips: '25', 
@@ -139,21 +148,24 @@ export default {
 					averageRoundTripFlightCost: ''
 				}
 			]
-			// this.extractFlights();
-			this.loadingData = false;
-			// TODO: get flights
-			// secureGet(`${PREAPPROVED_URL}/`)
-			// 	.then(resp => {
-			// 		this.travelRequests = resp.data.map(x => ({
-			// 			...x,
-			// 			isSelectable: x.status != "Approved" && x.status != "Declined"
-			// 		}));
-			// 		this.getPreapprovedTravelSubmissions();
+
+			// return secureGet(`${FLIGHTS_URL}/flights/`)
+			// 	.then(resp => {						
+			// 		this.flightReport = this.applyFilters(resp.data)
+			//      this.loadingData = false;	
 			// 	})
 			// 	.catch(e => {
 			// 		console.log(e);
+			// 		this.alertMsg = e.response.data
+			// 		this.savingData=false
 			// 	});
-		},
+
+			
+
+			this.flightReport = this.applyFilters(tmpFlightReport);
+			this.loadingData = false;			
+
+		},		
 
 		switchFilterView(display){
 			this.views.filters = !display;
@@ -161,11 +173,21 @@ export default {
 
 		switchGraphView(display){
 			this.views.graphs = !display;
-		}
+		},
 
-		// extractFlights() {
-		// 
-		// }
+		applyFilters(flightReport) {			
+
+			if (this.filters.departments?.length>0){
+				flightReport = flightReport.filter(flight => this.filters.departments.includes(flight.dept));
+			}
+
+			if (this.filters.locations.Canada?.length>0){
+
+				flightReport = flightReport.filter(flight => this.filters.locations.Canada.includes(flight.finalDestinationProvince));
+			}
+
+			return flightReport;		
+		}
 		
 	}
 };

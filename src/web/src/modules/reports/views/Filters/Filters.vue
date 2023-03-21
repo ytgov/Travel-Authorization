@@ -27,6 +27,7 @@
 								<v-checkbox v-for="(locationSubCategory, inx) in location.subCategories[locationCategory]" :key="inx"
 									multiple 
 									dense
+									@change="updateFilters"
 									:value="locationSubCategory" 
 									v-model="selectedSubCategories[locationCategory]" 
 									:label="locationSubCategory"/>
@@ -43,7 +44,22 @@
 					<div>Department</div>
 				</template>
 				<template #body>
-					<v-row style="height: 6rem;">
+					<v-row style="margin: 0; padding: 0;"  v-for="rowInx of [...Array(numberOfDeptRows).keys()]"  :key="rowInx">						
+
+						<v-col 
+							style="margin: 0; padding: 0;"
+							cols="3"
+							v-for="(dept, deptInx) in departmentList.slice(rowInx*4, rowInx*4 + 4)" 
+							:key="deptInx">							
+							<v-checkbox 
+								multiple
+								style="font-size: 12px;"
+								dense
+								@change="updateFilters"
+								v-model="selectedDepartments" 
+								:value="dept"
+								:label="dept"/>							
+						</v-col>
 
 					</v-row>															
 				</template>
@@ -55,7 +71,7 @@
 </template>
 
 <script>
-
+import Vue from "vue";
 import TitleCard from  '@/modules/travelDesk/views/Common/TitleCard.vue'
 
 export default {
@@ -63,6 +79,11 @@ export default {
 		TitleCard
 	},
 	name: "Filters",
+	props: {		
+		flightReport: {
+			type: []
+		}
+	},
 	
 	data() {
 		return {
@@ -70,7 +91,7 @@ export default {
 				categories: ['Yukon Communities', 'Canada', 'International'],
 				subCategories: {
 					'Yukon Communities': ['Beaver Creek', 'Burwash Landing', 'Carmocks', 'Carcross', 'Dawson', 'Whitehorse'],
-					'Canada': ['Alberta', 'British Columbia', 'Saskatchewan', 'Manitoba', 'Ontario'],
+					'Canada': [],
 					'International': ['England', 'United States of Ameria']
 				}
 			},
@@ -80,10 +101,15 @@ export default {
 									'International': []
 								},			
 			loadingData: false,
-			alertMsg: ""
+			alertMsg: "",
+			departmentList: [],
+			selectedDepartments: [],
+			numberOfDeptRows: 0
 		};
 	},
 	mounted() {	
+		this.initDepartments();		
+		this.initLocations();
 		this.initFilters();			
 	},
 	methods: {
@@ -96,15 +122,35 @@ export default {
 				'Canada': [],
 				'International': []
 			};
+			this.selectedDepartments = [];
 		},
+
+		initDepartments() {
+			const existingDepartments = this.flightReport.map(flight => flight.dept);
+			this.departmentList = [...new Set(existingDepartments)];	
+			this.numberOfDeptRows = Math.ceil(this.departmentList.length/4);
+		},		
+
+		initLocations() {
+
+			const existingProvinces = this.flightReport.map(flight => flight.finalDestinationProvince);
+			this.location.subCategories.Canada = [...new Set(existingProvinces)];			
+			
+		},	
 
 		selectCategory($event, locationCategory) {			
 			
 			if (!$event.includes(locationCategory)){
 				this.selectedSubCategories[locationCategory] = [];
 			}
-		}
-		
+			this.updateFilters();
+		},
+
+		updateFilters() {
+			Vue.nextTick(() => {
+				this.$emit("updateFilters", this.selectedDepartments, this.selectedSubCategories);
+			});	
+		}		
 		
 	}
 };
