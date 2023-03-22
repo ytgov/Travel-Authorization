@@ -126,93 +126,94 @@
 
 <script>
 import { v4 as uuidv4 } from "uuid";
-import { FORM_URL } from "../urls";
+import { FORM_URL } from "@/urls";
 import { secureGet } from "@/store/jwt";
-import DatePicker from "./Utils/DatePicker.vue";
-import TimePicker from "./Utils/TimePicker.vue";
-import UploadReceipts from "./Utils/UploadReceipts.vue";
+import DatePicker from "@/components/Utils/DatePicker.vue";
+import TimePicker from "@/components/Utils/TimePicker.vue";
+import UploadReceipts from "@/components/Utils/UploadReceipts.vue";
 
 export default {
   name: "Home",
   components: {
     DatePicker,
     TimePicker,
-    UploadReceipts
+    UploadReceipts,
   },
   data: () => ({
+    daysOffTravel: 1,
     data: {},
     headers: [
       {
         text: "Purpose",
-        value: "purpose"
+        value: "purpose",
       },
       {
         text: "Departure Date",
-        value: "departureDate"
+        value: "departureDate",
       },
       {
         text: "Return Date",
-        value: "dateBackToWork"
+        value: "dateBackToWork",
       },
       {
         text: "Status",
-        value: "status"
-      }
+        value: "status",
+      },
     ],
     expenseHeaders: [
       {
         text: "Type",
-        value: "type"
+        value: "type",
       },
       {
         text: "Description",
-        value: "description"
+        value: "description",
       },
       {
         text: "Date",
-        value: "date"
+        value: "date",
       },
       {
         text: "Amount",
-        value: "cost"
+        value: "cost",
       },
       {
         text: "Actions",
-        value: "actions"
+        value: "actions",
       },
       {
         text: "Receipts",
-        value: "receipts"
-      }
+        value: "receipts",
+      },
     ],
     travelAuthHeaders: [
       {
         text: "Location",
-        value: "location"
+        value: "location",
       },
       {
         text: "Description",
-        value: "description"
+        value: "description",
       },
       {
         text: "Start Date",
-        value: "date"
+        value: "date",
       },
       {
         text: "End Date",
-        value: "cost"
+        value: "cost",
       },
       {
         text: "Auth Status",
-        value: "actions"
+        value: "actions",
       },
       {
         text: "Booking Status",
-        value: "receipts"
-      }
+        value: "receipts",
+      },
     ],
     forms: [],
-    dialog: false
+    dialog: false,
   }),
   created() {
     this.loadForms();
@@ -220,7 +221,7 @@ export default {
   },
   methods: {
     loadForms() {
-      secureGet(`${FORM_URL}`).then(resp => {
+      secureGet(`${FORM_URL}`).then((resp) => {
         this.forms = resp.data;
       });
     },
@@ -234,10 +235,13 @@ export default {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
     },
     getTrip() {
-      secureGet(`${FORM_URL}/recent`).then(resp => {
+      secureGet(`${FORM_URL}/recent`).then((resp) => {
         this.data = resp.data;
       });
-    }
-  }
+    },
+    editItem() {},
+    deleteItem() {},
+    saveChanges() {}
+  },
 };
 </script>

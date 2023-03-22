@@ -1,11 +1,19 @@
 const routes = [
   {
     path: "/TravelRequest",
-    component: () => import("@/layouts/BlankLayout"),
+    component: () => import("@/layouts/Layout"),
     children: [
       {
+        name: "TravelFormList",
+        path: "",
+        meta: {
+          requiresAuth: true
+        },
+        component: () => import("../views/FormList.vue")
+      },
+      {
         name: "TravelForm",
-        path: "/TravelRequest/Request/:formId?",
+        path: "Request/:formId?",
         meta: {
           requiresAuth: true
         },
@@ -13,19 +21,11 @@ const routes = [
       },
       {
         name: "TravelFormReview",
-        path: "/Request/:formId?/:manage?",
+        path: "Request/:formId?/:manage?",
         meta: {
           requiresAuth: true
         },
         component: () => import("../views/TravelForm.vue")
-      },
-      {
-        name: "TravelFormList",
-        path: "/forms",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/FormList.vue")
       },
       {
         name: "TravelFormManagerList",
@@ -33,7 +33,7 @@ const routes = [
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/TravelForm.vue")
+        component: () => import("../views/ManagerView.vue")
       }
     ]
   }

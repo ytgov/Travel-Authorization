@@ -1,4 +1,4 @@
-export const applicationName = "Yukon Travel Authorization";
+export const applicationName = "Travel Authorization";
 export const applicationIcon = "mdi-cash-register";
 export const hasSidebar = true;
 export const hasSidebarClosable = false;

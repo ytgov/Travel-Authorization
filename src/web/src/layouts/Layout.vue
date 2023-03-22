@@ -1,37 +1,7 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      v-bind:app="hasSidebar"
-      permanent
-      :expand-on-hover="hasSidebarClosable"
-      clipped
-      color="#f1f1f1"
-      v-bind:class="{
-        'd-none': !hasSidebar
-      }"
-    >
-      <v-list dense nav style="" class="mt-4">
-        <v-list-item
-          link
-          nav
-          v-bind:title="section.name"
-          v-bind:to="section.url"
-          v-for="section in sections"
-          v-bind:key="section.name"
-        >
-          <v-list-item-icon>
-            <v-icon>{{ section.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>{{ section.name }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-
     <v-app-bar app color="#fff" flat height="70" style="left: 0; border-bottom: 3px #f3b228 solid">
-      <!-- <v-icon color="#f3b228" class="mr-5">{{ applicationIcon }}</v-icon> -->
-      <img src="/yukon.svg" style="margin: -8px 155px 0 0" height="44" />
+      <img src="/yukon.svg" style="margin: -8px 85px 0 0" height="44" />
       <v-toolbar-title>
         <span style="font-weight: 700">{{ applicationName }}</span>
 
@@ -45,17 +15,45 @@
         ></v-progress-circular>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!-- <v-label dark>License Year:</v-label>
-      <v-select
-        v-model="licenseYear"
-        smaller
-        :items="licenseYears"
-        dense
-        style="margin-left: 15px; max-width: 150px; margin-right: 20px"
-        hide-details
-      ></v-select> -->
 
-      <div v-if="isAuthenticated">
+      <div>
+        <v-menu offset-y class="ml-0">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn text color="primary" v-bind="attrs" v-on="on"> {{ menuTitle }}<v-icon>mdi-menu-down</v-icon> </v-btn>
+          </template>
+
+          <v-list dense style="min-width: 200px">
+            <v-list-item @click="menuItemSelected('Dashboard')" to="/dashboard">
+              <v-list-item-title>Dashboard</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="menuItemSelected('Forms')" to="/forms">
+              <v-list-item-title>Forms</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="menuItemSelected('PreApproved')" to="/preapproved">
+              <v-list-item-title>PreApproved</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="menuItemSelected('Travel Desk')" to="/travel-desk">
+              <v-list-item-title>Travel Desk </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="menuItemSelected('Travel Request')" to="/travel-request">
+              <v-list-item-title>Travel Request </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="menuItemSelected('Flight Expense')" to="/flight-expense">
+              <v-list-item-title>Flight Expense </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="menuItemSelected('Reports')" to="/reporting-summary">
+              <v-list-item-title>Reports </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="menuItemSelected('Manager View')" to="/managerView">
+              <v-list-item-title>Manager View</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-btn icon color="primary" class="mr-2" title="Recently visited" @click="showHistory()">
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+
         <span>{{ username }}</span>
         <v-menu bottom left class="ml-0">
           <template v-slot:activator="{ on, attrs }">
@@ -71,6 +69,13 @@
               </v-list-item-icon>
               <v-list-item-title>My profile</v-list-item-title>
             </v-list-item>
+            <v-list-item to="/administration">
+              <v-list-item-icon>
+                <v-icon>mdi-cogs</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Administration</v-list-item-title>
+            </v-list-item>
+
             <v-divider />
             <v-list-item @click="signOut">
               <v-list-item-icon>
@@ -78,52 +83,69 @@
               </v-list-item-icon>
               <v-list-item-title>Sign out</v-list-item-title>
             </v-list-item>
+            <v-list-item>
+              <v-list-item-icon>
+                <v-icon>mdi-clock</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>{{ appVersion }}</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
-      </div>
-      <div v-else>
-        <router-link to="/sign-in">Sign in</router-link>
       </div>
 
       <!-- <v-app-bar-nav-icon @click.stop="drawerRight = !drawerRight"></v-app-bar-nav-icon> -->
     </v-app-bar>
 
-    <v-main
-      v-bind:style="{
-        'padding-left: 33px !important': !hasSidebar
-      }"
-    >
+    <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
       <!-- Provides the application the proper gutter -->
-      <v-container fluid>
-        <v-row>
-          <v-col>
-            <router-view></router-view>
-          </v-col>
-        </v-row>
+      <v-container fluid class="page-wrapper">
+        <router-view></router-view>
+        <RequestAlert />
       </v-container>
     </v-main>
+
+    <v-overlay v-model="showOverlay">
+      <div class="text-center">
+        <v-progress-circular indeterminate size="64" class="mb-5"></v-progress-circular>
+        <h1 class="title">Loading Travel Authorization</h1>
+      </div>
+    </v-overlay>
   </v-app>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import router from "@/router";
 import store from "@/store";
 import * as config from "@/config";
-import { mapState } from "vuex";
+import RequestAlert from "@/components/RequestAlert.vue";
+import { getInstance } from "@/auth";
+
+const auth = getInstance();
 
 export default {
   name: "App",
-  components: {},
+  components: {
+    RequestAlert,
+  },
   computed: {
-    ...mapState("isAuthenticated"),
+    ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
     username() {
       return store.getters.fullName;
     },
     isAuthenticated() {
+      //return true; // until we get auth process to show sidebar
       return store.getters.isAuthenticated;
-    }
+    },
+    user() {
+      return store.getters.user;
+    },
+    showAppSidebar() {
+      return store.getters.showAppSidebar;
+    },
   },
   data: () => ({
+    appVersion: config.appVersion,
     dialog: false,
     drawer: null,
     drawerRight: null,
@@ -133,37 +155,65 @@ export default {
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
     sections: config.sections,
-    hasSidebar: false, //config.hasSidebar,
-    hasSidebarClosable: config.hasSidebarClosable
-  }),
-  created: async function () {
-    await store.dispatch("checkAuthentication");
-    //this.username = store.getters.fullName
-    //console.log(this.isAuthenticated);
+    hasSidebar: config.hasSidebar,
+    hasSidebarClosable: config.hasSidebarClosable,
+    currentId: 0,
+    menuTitle: "Dashboard",
 
-    if (!this.isAuthenticated) this.hasSidebar = false;
-    else this.hasSidebar = config.hasSidebar;
+    showOverlay: true,
+  }),
+  async mounted() {
+    if (auth.auth0Client) {
+      this.doInitialize();
+      return;
+    }
+
+    this.interval = window.setInterval(() => {
+      if (auth.auth0Client) {
+        window.clearInterval(this.interval);
+        this.doInitialize();
+      }
+    }, 200);
   },
   watch: {
-    isAuthenticated: function (val) {
+    isAuthenticated: function(val) {
       if (!val) this.hasSidebar = false;
-      else this.hasSidebar = config.hasSidebar;
-    }
+      else this.hasSidebar = store.getters.showAppSidebar;
+    },
+    showAppSidebar: function(val) {
+      if (val) {
+        this.currentId = this.$route.params.id;
+      }
+
+      this.hasSidebar = val && this.isAuthenticated;
+    },
   },
   methods: {
-    nav: function (location) {
+    nav: function(location) {
       router.push(location);
-      console.log(location);
     },
-    toggleHeader: function () {
-      this.headerShow = !this.headerShow;
+    signOut: function() {
+      this.$auth.logout();
     },
-    toggleMenu: function () {
-      this.menuShow = !this.menuShow;
+    showHistory() {
+      this.$refs.historySidebar.show();
     },
-    signOut: function () {
-      this.$auth.signOut();
-    }
-  }
+    showError: function(msg) {
+      this.$refs.notifier.showError(msg);
+    },
+    showSuccess: function(msg) {
+      this.$refs.notifier.showSuccess(msg);
+    },
+    showAPIMessages: function(msg) {
+      this.$refs.notifier.showAPIMessages(msg);
+    },
+    menuItemSelected(title) {
+      this.menuTitle = title;
+    },
+    async doInitialize() {
+      //await this.initialize();
+      this.showOverlay = false;
+    },
+  },
 };
 </script>

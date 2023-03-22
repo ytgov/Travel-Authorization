@@ -27,32 +27,32 @@ export default {
     headers: [
       {
         text: "Department/Branch",
-        value: "department"
+        value: "department",
       },
       {
         text: "Purpose",
-        value: "purpose"
+        value: "purpose",
       },
       {
         text: "Departure Date",
-        value: "departureDate"
+        value: "departureDate",
       },
       {
         text: "Return Date",
-        value: "datebacktowork"
+        value: "datebacktowork",
       },
       {
         text: "Status",
-        value: "status"
-      }
-    ]
+        value: "status",
+      },
+    ],
   }),
   created() {
     this.loadForms();
   },
   methods: {
-    loadForms() {
-      secureGet(`${FORM_URL}`).then(resp => {
+    async loadForms() {
+     await  secureGet(`${FORM_URL}`).then((resp) => {
         this.forms = resp.data;
       });
     },
@@ -61,7 +61,7 @@ export default {
     },
     createForm() {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
-    }
-  }
+    },
+  },
 };
 </script>

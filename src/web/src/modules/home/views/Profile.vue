@@ -41,16 +41,16 @@
 
 <script>
 import { mapState } from "vuex";
-import store from "../store";
+import store from "@/store";
 
 export default {
   name: "Profile",
   computed: {
-    ...mapState("profile", ["firstName", "lastName", "username", "email", "roles", "access"])
+    ...mapState("profile", ["firstName", "lastName", "username", "email", "roles", "access"]),
   },
   data: () => ({}),
   async created() {
     await store.dispatch("profile/loadProfile");
-  }
+  },
 };
 </script>
