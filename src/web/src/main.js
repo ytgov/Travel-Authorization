@@ -12,6 +12,9 @@ import { domain, clientId, audience } from "../auth_config.json";
 
 import { Auth0Plugin } from "./auth";
 
+import VueApexCharts from 'vue-apexcharts'
+Vue.use(VueApexCharts);
+
 Vue.use(Auth0Plugin, {
   domain,
   clientId,
@@ -35,6 +38,7 @@ Vue.directive("yk-btn", {
 
 Vue.component("notifier", Notifications);
 Vue.component("map-dialog", MapDialog);
+Vue.component('apexchart', VueApexCharts);
 
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common["Access-Control-Allow-Origin"] = "*";
