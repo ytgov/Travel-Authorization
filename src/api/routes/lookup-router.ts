@@ -25,7 +25,7 @@ lookupRouter.get("/populateEmailList", ReturnValidationErrors, async function (r
 lookupRouter.get("/emailList", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     let emailList = await axios
-      .get(`http://directory-api-dev.ynet.gov.yk.ca/employees?email=` + req.query.email, {
+      .get(`https://api.gov.yk.ca/directory/employees?email=` + req.query.email, {
         headers: {
           "Ocp-Apim-Subscription-Key": AZURE_KEY
         }
@@ -216,20 +216,19 @@ lookupRouter.get("/employees", RequiresAuth, ReturnValidationErrors, async funct
 });
 
 lookupRouter.get("/employee-info", async function (req: Request, res: Response) {
-  
   // console.log(req.query.email)
 
   try {
     let employeeInfo = await axios
-      .get(`https://api.gov.yk.ca/directory/employees?email=`+req.query.email, {
+      .get(`https://api.gov.yk.ca/directory/employees?email=` + req.query.email, {
         headers: {
           "Ocp-Apim-Subscription-Key": AZURE_KEY
         }
       })
       .then((resp: any) => {
         // console.log(resp.data)
-        if(resp.data?.count>0){
-          const employee = resp.data.employees[0]
+        if (resp.data?.count > 0) {
+          const employee = resp.data.employees[0];
           return {
             firstName: employee.first_name,
             lastName: employee.last_name,
@@ -241,11 +240,10 @@ lookupRouter.get("/employee-info", async function (req: Request, res: Response) 
             office: employee.office,
             address: employee.address,
             community: employee.community,
-            postalCode: employee.postal_code,      
+            postalCode: employee.postal_code
           };
         }
         return {};
-        
       });
     res.status(200).json(employeeInfo);
   } catch (error: any) {

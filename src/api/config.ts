@@ -46,10 +46,21 @@ export const AZURE_KEY = process.env.AZURE_KEY || "";
 export const DB_CONFIG = {
   client: "postgres",
   connection: {
-    host: DB_HOST,
-    user: DB_USER,
-    password: DB_PASS,
-    database: DB_NAME,
-    port: parseInt(DB_PORT)
+    host: process.env.DB_HOST || "",
+    user: process.env.DB_USER || "",
+    password: process.env.DB_PASS || "",
+    database: process.env.DB_NAME || "",
+    port: parseInt(process.env.DB_PORT || "1433")
+  }
+};
+
+export const TRAVCOM_DB_CONFIG = {
+  client: "mssql",
+  connection: {
+    host: process.env.TRAVCOM_DB_HOST || "",
+    user: process.env.TRAVCOM_DB_USER || "",
+    password: process.env.TRAVCOM_DB_PASS || "",
+    database: process.env.TRAVCOM_DB_NAME || "",
+    port: parseInt(process.env.TRAVCOM_DB_PORT || "1433")
   }
 };
