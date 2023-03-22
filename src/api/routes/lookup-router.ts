@@ -12,15 +12,15 @@ const db = knex(DB_CONFIG);
 
 const lookupService = new LookupService();
 
-lookupRouter.get("/populateEmailList", ReturnValidationErrors, async function (req: Request, res: Response) {
-  try {
-    lookupService.populateEmailList();
-    res.status(200).json("Success");
-  } catch (error: any) {
-    console.log(error);
-    res.status(500).json("Internal Server Error");
-  }
-});
+// lookupRouter.get("/populateEmailList", ReturnValidationErrors, async function (req: Request, res: Response) {
+//   try {
+//     lookupService.populateEmailList();
+//     res.status(200).json("Success");
+//   } catch (error: any) {
+//     console.log(error);
+//     res.status(500).json("Internal Server Error");
+//   }
+// });
 
 lookupRouter.get("/emailList", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
