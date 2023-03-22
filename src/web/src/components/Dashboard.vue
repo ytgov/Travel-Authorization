@@ -156,7 +156,7 @@ export default {
       },
       {
         text: "Status",
-        value: "formStatus"
+        value: "status"
       }
     ],
     expenseHeaders: [

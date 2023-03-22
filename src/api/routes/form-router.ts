@@ -176,7 +176,7 @@ formRouter.post("/:formId/deny", ReturnValidationErrors, async function (req: Re
         let id = await db("forms")
           .update({
             denialReason: denialReason,
-            formStatus: "Denied"
+            status: "Denied"
           })
           .where("formId", "=", req.params.formId)
           .transacting(trx)
@@ -210,7 +210,7 @@ formRouter.post("/:formId/approve", ReturnValidationErrors, async function (req:
       if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
         let id = await db("forms")
           .update({
-            formStatus: "Approved"
+            status: "Approved"
           })
           .where("formId", "=", req.params.formId)
           .transacting(trx)
@@ -280,7 +280,7 @@ formRouter.post("/:formId/requestChange", ReturnValidationErrors, async function
         let id = await db("forms")
           .update({
             requestChange: req.body.requestChange,
-            formStatus: "Change Requested"
+            status: "Change Requested"
           })
           .where("formId", "=", req.params.formId)
           .transacting(trx)
@@ -316,7 +316,7 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
     if (id) {
       let result = await db("forms")
         .update({
-          formstatus: "deleted"
+          status: "deleted"
         })
         .where("formId", "=", req.params.formId)
         .returning("formId");
@@ -361,7 +361,7 @@ formRouter.post("/:formId/expenses/:type", ReturnValidationErrors, async functio
   let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
-      let form = await db("forms").select("id", "formStatus").where("formId", req.params.formId).transacting(trx);
+      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       await db("expenses")
         .delete()
@@ -389,7 +389,7 @@ formRouter.post("/:formId/report/submit", ReturnValidationErrors, async function
   let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
-      let form = await db("forms").select("id", "formStatus").where("formId", req.params.formId).transacting(trx);
+      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let reportInsert = {
         ...req.body,
@@ -411,7 +411,7 @@ formRouter.post("/:formId/report/save", ReturnValidationErrors, async function (
   let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
-      let form = await db("forms").select("id", "formStatus").where("formId", req.params.formId).transacting(trx);
+      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let reportInsert = {
         ...req.body,
@@ -450,7 +450,7 @@ formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function
   let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
-      let form = await db("forms").select("id", "formStatus").where("formId", req.params.formId).transacting(trx);
+      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let result = {};
       if (form[0]) {
@@ -483,7 +483,7 @@ formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function
   let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
-      let form = await db("forms").select("id", "formStatus").where("formId", req.params.formId).transacting(trx);
+      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let result = {};
       if (form[0]) {

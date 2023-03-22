@@ -146,13 +146,13 @@ export default {
       secureGet(`${MANAGER_URL}/forms/`).then(resp => {
         this.forms = resp.data;
         this.pending = this.forms.filter(form => {
-          if (form.formStatus == "Submitted") return true;
+          if (form.status == "Submitted") return true;
         });
         this.approved = this.forms.filter(form => {
-          if (form.formStatus == "Approved") return true;
+          if (form.status == "Approved") return true;
         });
         this.changeRequests = this.forms.filter(form => {
-          if (form.formStatus == "Change Requested") return true;
+          if (form.status == "Change Requested") return true;
         });
       });
     },
