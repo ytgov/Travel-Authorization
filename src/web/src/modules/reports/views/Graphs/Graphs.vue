@@ -17,9 +17,9 @@
 						<apexchart type="bar" :options="chartOptions" :series="series"></apexchart>
 					</div>
 
-					<div v-else-if="tabs == 2" id="chart" :key="lineId">
+					<!-- <div v-else-if="tabs == 2" id="chart" :key="lineId">
 						<apexchart type="line" :options="chartOptions" :series="series"></apexchart>
-					</div>
+					</div> -->
 
 				</v-col>
 				<v-col cols="4">
@@ -31,7 +31,7 @@
 								<v-tabs v-model="tabs" active-class="primary--text teal lighten-5" @change="selectTab()">
 									<v-tab>Pie</v-tab>
 									<v-tab>Bar</v-tab>
-									<v-tab>Line</v-tab>
+									<!-- <v-tab>Line</v-tab> -->
 								</v-tabs>
 							</template>
 						</v-toolbar>
@@ -95,7 +95,7 @@
 								</v-card>
 
 							</v-tab-item>
-							<v-tab-item>
+							<!-- <v-tab-item>
 
 								<v-checkbox v-if="filtersApplied" v-model="filteredData" label="Use Filtered Data"									
 									class="ml-4"
@@ -123,7 +123,7 @@
 									</v-radio-group>
 								</v-card>
 
-							</v-tab-item>
+							</v-tab-item> -->
 						</v-tabs-items>
 
 					</v-card>
@@ -221,18 +221,6 @@ export default {
 				this.lineChartSelectedDisplayFields = 'Total Trips';
 				this.selectLineOption();
 			}
-
-		},
-
-		selectPieGroup($event, pieGroup){
-
-			console.log($event.includes(pieGroup))
-
-		},
-
-		selectPieShow($event, pieShow){
-
-			console.log($event.includes(pieShow))
 
 		},
 
@@ -356,7 +344,7 @@ export default {
 					},
 					grid: {
 						row: {
-							colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+							colors: ['#f3f3f3', 'transparent'],
 							opacity: 0.5
 						},
 					},
@@ -366,7 +354,6 @@ export default {
 				};
 
 			}
-
 			
 		}	
 		
