@@ -1,5 +1,5 @@
 import knex, { Knex } from "knex";
-import { DB_CONFIG } from "../config";
+import { AZURE_KEY, DB_CONFIG } from "../config";
 import _, { map } from "lodash";
 import axios from "axios";
 import { timeStamp } from "console";
@@ -20,7 +20,7 @@ export class UserService {
   ): Promise<any> {
     let existing = await this.db("user")
       .where({
-        email
+        email,
       })
       .count("email as cnt");
 
@@ -33,7 +33,7 @@ export class UserService {
       last_name,
       roles,
       status,
-      create_date: new Date()
+      create_date: new Date(),
     };
 
     return await this.db("user").insert(user);
@@ -42,7 +42,7 @@ export class UserService {
   async updateByEmail(email: string, item: any) {
     return this.db("user")
       .where({
-        email
+        email,
       })
       .update(item);
   }
@@ -50,7 +50,7 @@ export class UserService {
   async updateById(id: string, item: any) {
     return this.db("user")
       .where({
-        id
+        id,
       })
       .update(item);
   }
@@ -62,7 +62,7 @@ export class UserService {
   async getByEmail(email: string): Promise<any | undefined> {
     return this.db("user")
       .where({
-        email
+        email,
       })
       .first();
   }
@@ -70,7 +70,7 @@ export class UserService {
   async getById(id: string): Promise<any | undefined> {
     return this.db("user")
       .where({
-        id
+        id,
       })
       .first();
   }
@@ -78,7 +78,7 @@ export class UserService {
   async getBySub(sub: string): Promise<any> {
     return this.db("user")
       .where({
-        sub
+        sub,
       })
       .first();
   }
@@ -86,7 +86,7 @@ export class UserService {
   async getAccessFor(email: string): Promise<string[]> {
     return this.db("user")
       .where({
-        email
+        email,
       })
       .select("roles");
   }
@@ -94,10 +94,10 @@ export class UserService {
   async setAccess(email: string, access: string[]) {
     return this.db("user")
       .where({
-        email
+        email,
       })
       .update({
-        roles: access
+        roles: access,
       });
   }
 
@@ -107,10 +107,10 @@ export class UserService {
 
   async saveDepartmentAccess(id: string, department: string) {
     try {
-      await this.db.transaction(async trx => {
+      await this.db.transaction(async (trx) => {
         await this.db("user")
           .update({
-            department: department
+            department: department,
           })
           .where("id", id)
           .transacting(trx);
@@ -134,10 +134,10 @@ export class UserService {
 
   async saveRoleAccess(id: string, roles: string[]) {
     try {
-      await this.db.transaction(async trx => {
+      await this.db.transaction(async (trx) => {
         await this.db("user")
           .update({
-            roles: roles.join()
+            roles: roles.join(),
           })
           .where("id", id)
           .transacting(trx);
@@ -157,7 +157,11 @@ export class UserService {
 
   async getUnit(email: string) {
     let unitSearch = await axios
-      .get(`http://directory-api-dev.ynet.gov.yk.ca/employees`)
+      .get(`https://api.gov.yk.ca/directory/employees`, {
+        headers: {
+          "Ocp-Apim-Subscription-Key": AZURE_KEY,
+        },
+      })
       .then((resp: any) => {
         let match = resp.data.employees.filter((user: any) => {
           return user.email == email;
@@ -174,7 +178,7 @@ export class UserService {
       branch: "",
       unit: "",
       mailcode: "",
-      manager: ""
+      manager: "",
     };
     if (unitSearch) {
       unit = {
@@ -183,7 +187,7 @@ export class UserService {
         branch: unitSearch.branch || "",
         unit: unitSearch.unit || "",
         mailcode: unitSearch.mailcode || "",
-        manager: unitSearch.manager || ""
+        manager: unitSearch.manager || "",
       };
     }
     return unit;

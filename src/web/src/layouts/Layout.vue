@@ -26,8 +26,8 @@
             <v-list-item @click="menuItemSelected('Dashboard')" to="/dashboard">
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
-            <v-list-item @click="menuItemSelected('Forms')" to="/forms">
-              <v-list-item-title>Forms</v-list-item-title>
+            <v-list-item @click="menuItemSelected('My Travel Requests')" to="/my-travel-requests">
+              <v-list-item-title>My Travel Requests</v-list-item-title>
             </v-list-item>
             <v-list-item @click="menuItemSelected('PreApproved')" to="/preapproved">
               <v-list-item-title>PreApproved</v-list-item-title>

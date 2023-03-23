@@ -8,6 +8,8 @@ import preapproved from "./preapproved";
 import traveldesk from "./traveldesk";
 import reports from "./reports";
 
+import travelForm from "@/modules/travelForm/store";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -15,7 +17,7 @@ export default new Vuex.Store({
     loadingClass: "d-none",
     siteHistory: [],
     search: "",
-    showAppSidebar: false
+    showAppSidebar: false,
   },
   mutations: {
     SET_LOADING(state, value) {
@@ -23,13 +25,13 @@ export default new Vuex.Store({
       state.loadingClass = value ? "block" : "d-none";
     },
     ADD_SITEHISTORY(state, value) {
-      let exists = state.siteHistory.filter(h => h.id == value.id).length;
+      let exists = state.siteHistory.filter((h) => h.id == value.id).length;
 
       if (exists == 0) state.siteHistory.unshift(value);
     },
     SET_SEARCH(state, value) {
       state.search = value;
-    }
+    },
   },
   actions: {
     load({ commit }) {
@@ -46,12 +48,12 @@ export default new Vuex.Store({
     },
     setAppSidebar(state, value) {
       state.state.showAppSidebar = value;
-    }
+    },
   },
   getters: {
-    siteHistory: state => state.siteHistory,
-    search: state => state.search,
-    showAppSidebar: state => state.showAppSidebar
+    siteHistory: (state) => state.siteHistory,
+    search: (state) => state.search,
+    showAppSidebar: (state) => state.showAppSidebar,
   },
   modules: {
     auth,
@@ -59,6 +61,7 @@ export default new Vuex.Store({
     alerts,
     preapproved,
     traveldesk,
-    reports
-  }
+    reports,
+    travelForm,
+  },
 });
