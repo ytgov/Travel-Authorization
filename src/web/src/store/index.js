@@ -6,6 +6,7 @@ import profile from "./profile";
 import alerts from "./alerts";
 import preapproved from "./preapproved";
 import traveldesk from "./traveldesk";
+import reports from "./reports";
 
 Vue.use(Vuex);
 
@@ -57,6 +58,7 @@ export default new Vuex.Store({
     profile,
     alerts,
     preapproved,
-    traveldesk
+    traveldesk,
+    reports
   }
 });
