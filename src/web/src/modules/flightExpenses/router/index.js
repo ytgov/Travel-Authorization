@@ -1,7 +1,7 @@
 const routes = [
 	{
 		path: "/flight-expense",
-		component: () => import("@/layouts/BlankLayout"),
+		component: () => import("@/layouts/Layout"),
 		children: [
 			{
 				name: "FlightExpenseHome",

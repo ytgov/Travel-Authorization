@@ -51,13 +51,13 @@ userRouter.get("/unit", async (req: Request, res: Response) => {
 });
 
 userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, res: Response) => {
-  try {    
+  try {
     const users = await db("user")
-      .select('email','first_name','last_name')
-      .where('status','=','Active')      
-      .andWhereLike('roles', '%TdUser%');
+      .select("email", "first_name", "last_name")
+      .where("status", "=", "Active")
+      .andWhereLike("roles", "%TdUser%");
 
-    // console.log(users);    
+    // console.log(users);
     res.status(200).json(users);
   } catch (error: any) {
     console.log(error);

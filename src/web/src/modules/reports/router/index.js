@@ -1,7 +1,7 @@
 const routes = [
 	{
 		path: "/reporting-summary",
-		component: () => import("@/layouts/BlankLayout"),
+		component: () => import("@/layouts/Layout"),
 		children: [
 			{
 				name: "ReportsHome",

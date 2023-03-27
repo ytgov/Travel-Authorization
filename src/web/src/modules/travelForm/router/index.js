@@ -1,42 +1,42 @@
 const routes = [
   {
-    path: "/TravelRequest",
-    component: () => import("@/layouts/BlankLayout"),
+    path: "/my-travel-requests",
+    component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "TravelForm",
-        path: "/TravelRequest/Request/:formId?",
+        name: "FormList",
+        path: "",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/TravelForm.vue")
+        component: () => import("../views/FormList.vue"),
+      },
+      {
+        name: "TravelForm",
+        path: ":formId?",
+        meta: {
+          requiresAuth: true,
+        },
+        component: () => import("../views/TravelForm.vue"),
       },
       {
         name: "TravelFormReview",
-        path: "/Request/:formId?/:manage?",
+        path: "Request/:formId?/:manage?",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/TravelForm.vue")
-      },
-      {
-        name: "TravelFormList",
-        path: "/forms",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/FormList.vue")
+        component: () => import("../views/TravelForm.vue"),
       },
       {
         name: "TravelFormManagerList",
         path: "/managerView",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/TravelForm.vue")
-      }
-    ]
-  }
+        component: () => import("../views/ManagerView.vue"),
+      },
+    ],
+  },
 ];
 
 export default routes;

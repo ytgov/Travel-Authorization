@@ -1,12 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Dashboard from "../components/Dashboard.vue";
+
 import NotFound from "../views/NotFound.vue";
-import Form from "../components/Form";
-import Login from "../views/Login";
-import LoginComplete from "../views/LoginComplete";
-import Profile from "../views/Profile";
-import store from "../store";
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form";
 import AdminDashboard from "../components/Administration/Administration";
 import UserManagement from "../components/Administration/UserManagement/Grid";
@@ -24,142 +19,130 @@ import travelRequestRouter from "../modules/travelForm/router/index.js";
 import flightExpenseRouter from "../modules/flightExpenses/router/index.js";
 import reportsRouter from "../modules/reports/router/index.js";
 
+import authenticationRouter from "../modules/authentication/router";
+import homeRouter from "../modules/home/router";
+
 // import { authGuard } from "../auth/authGuard";
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/",
+    component: () => import("@/views/Default.vue"),
+  },
+  ...homeRouter,
+
+  ...authenticationRouter,
   ...preapprovedRouter,
   ...travelDeskRouter,
   ...travelRequestRouter,
   ...flightExpenseRouter,
   ...reportsRouter,
-  {
-    path: "/sign-in",
-    name: "Login",
-    component: Login
-  },
-  {
-    path: "/",
-    name: "Login",
-    component: Login
-  },
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: Dashboard
-  },
-  {
-    path: "/form",
-    name: "Basic Form",
-    component: Form,
-    meta: {
-      requiresAuth: false
-    }
-  },
-  {
-    path: "/login-complete",
-    name: "LoginComplete",
-    component: LoginComplete
-  },
-  {
-    path: "/profile",
-    name: "Profile",
-    component: Profile,
-    meta: {
-      requiresAuth: false
-    }
-  },
+
   {
     path: "/admin/users/view/:id",
     name: "AdminUserView",
-    component: AdminUserForm
+    component: AdminUserForm,
   },
   {
     path: "/administration/users/edit/:id",
     name: "AdminUserEdit",
-    component: AdminUserForm
+    component: AdminUserForm,
   },
   {
     path: "/administration",
     name: "AdminDashboard",
-    component: AdminDashboard
+    component: AdminDashboard,
   },
   {
     path: "/administration/users",
     name: "User Management",
-    component: UserManagement
-  },
-  {
-    path: "*",
-    name: "Not Found",
-    component: NotFound
+    component: UserManagement,
   },
   {
     path: "/administration/flightEstimate",
     name: "FlightEstimate",
-    component: FlightEstimate
+    component: FlightEstimate,
   },
   {
     path: "/administration/poolCarCost",
     name: "PoolCarCost",
-    component: PoolCarCost
+    component: PoolCarCost,
   },
   {
     path: "/administration/rentalCarEstimates",
     name: "RentalCarEstimates",
-    component: RentalCarEstimates
+    component: RentalCarEstimates,
   },
   {
     path: "/administration/ygRates",
     name: "YGRates",
-    component: YGRates
+    component: YGRates,
   },
   {
     path: "/administration/TravelAgents",
     name: "TravelAgents",
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
     },
-    component: TravelAgents
+    component: TravelAgents,
   },
   {
     path: "/test",
     name: "Test",
-    component: Test
+    component: Test,
   },
   {
     path: "/healthCheck",
     name: "HealthCheck",
-    component: HealthCheck
-  }
+    component: HealthCheck,
+  },
+  {
+    path: "*",
+    name: "Not Found",
+    component: NotFound,
+  },
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
-  routes
+  routes,
 });
+
+import { getInstance } from "@/auth";
+let authService;
 
 router.beforeEach(async (to, from, next) => {
   var requiresAuth = to.meta.requiresAuth || false;
-
-  store.dispatch("setAppSidebar", to.path.startsWith("/sites/"));
 
   if (!requiresAuth) {
     return next();
   }
 
-  await store.dispatch("checkAuthentication");
-  var isAuthenticated = store.getters.isAuthenticated;
-
-  if (requiresAuth && !isAuthenticated) {
-    console.log("You aren't authenticatd, redirecting to sign-in");
-    next("/sign-in");
-    return;
+  if (!authService) {
+    authService = await getInstance();
   }
 
-  return next();
+  const guardAction = () => {
+    if (authService.isAuthenticated) {
+      return next();
+    }
+
+    authService.loginWithRedirect({ appState: { targetUrl: to.fullPath } });
+  };
+
+  // If the Auth0Plugin has loaded already, check the authentication state
+  if (!authService.isLoading) {
+    return guardAction();
+  }
+
+  authService.$watch("isLoading", (isLoading) => {
+    if (isLoading === false) {
+      return guardAction();
+    }
+  });
 });
 
 export default router;

@@ -4,6 +4,8 @@
 
 import Vue from "vue";
 import createAuth0Client from "@auth0/auth0-spa-js";
+import { secureDelete, secureGet, securePut, securePost } from "@/store/jwt";
+import { domain, clientId, audience } from "../../auth_config.json";
 
 /**
  *  Vue.js Instance Definition
@@ -18,9 +20,12 @@ export const getInstance = () => instance;
  */
 
 export const useAuth0 = ({
-  onRedirectCallback = () => window.history.replaceState({}, document.title, window.location.pathname),
+  onRedirectCallback = (appState) => {
+    console.log("APPSTTE", appState);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  },
   redirectUri = window.location.origin,
-  ...pluginOptions
+  ...pluginOptions //eslint-disable-line no-unused-vars
 }) => {
   if (instance) return instance;
 
@@ -31,15 +36,19 @@ export const useAuth0 = ({
         isLoading: true,
         isAuthenticated: false,
         user: {},
-        error: null
+        error: null,
+        options: {},
+        targetUrl: undefined,
       };
     },
     methods: {
       async handleRedirectCallback() {
         this.isLoading = true;
+        console.log("REDIRECT CALLBACK: ", this.redirectUri);
         try {
           await this.auth0Client.handleRedirectCallback();
           this.user = await this.auth0Client.getUser();
+
           this.isAuthenticated = true;
         } catch (error) {
           this.error = error;
@@ -58,21 +67,35 @@ export const useAuth0 = ({
 
       getTokenSilently(o) {
         return this.auth0Client.getTokenSilently(o);
-      }
+      },
+
+      get(url) {
+        return secureGet(url);
+      },
+      put(url, body) {
+        return securePut(url, body);
+      },
+      post(url, body) {
+        return securePost(url, body);
+      },
+      delete(url) {
+        return secureDelete(url);
+      },
     },
 
     async created() {
       this.auth0Client = await createAuth0Client({
-        ...pluginOptions,
-        domain: pluginOptions.domain,
-        client_id: pluginOptions.clientId,
-        audience: pluginOptions.audience,
-        redirect_uri: redirectUri
+        domain,
+        client_id: clientId,
+        audience,
+        redirect_uri: redirectUri,
       });
 
       try {
         if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
           const { appState } = await this.auth0Client.handleRedirectCallback();
+
+          if (appState && appState.targetUrl) this.targetUrl = appState.targetUrl;
 
           onRedirectCallback(appState);
         }
@@ -81,9 +104,12 @@ export const useAuth0 = ({
       } finally {
         this.isAuthenticated = await this.auth0Client.isAuthenticated();
         this.user = await this.auth0Client.getUser();
+        //set the access token in the auth store
+        //await this.getTokenSilently();
+        //store.commit("auth/setToken", token);
         this.isLoading = false;
       }
-    }
+    },
   });
 
   return instance;
@@ -96,5 +122,5 @@ export const useAuth0 = ({
 export const Auth0Plugin = {
   install(Vue, options) {
     Vue.prototype.$auth = useAuth0(options);
-  }
+  },
 };

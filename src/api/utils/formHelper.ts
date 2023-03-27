@@ -53,7 +53,7 @@ export function formToDb(webForm: any) {
     eventname: webForm.eventName,
     summary: webForm.summary,
     supervisoremail: webForm.supervisorEmail,
-    formstatus: webForm.status
+    status: webForm.status
   };
   for (let stop of webForm.stops) {
     dbForm.stops.push({
