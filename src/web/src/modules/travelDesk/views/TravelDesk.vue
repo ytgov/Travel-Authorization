@@ -2,15 +2,16 @@
     <v-card :loading="loadingData" :disabled="loadingData" en class="px-5 pb-15">
         <v-alert v-if="alertMsg" class="mt-5" type="info">{{ alertMsg }}</v-alert>
         <div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
-        
-        <v-toolbar v-if="!loadingData" class="" height="100px" flat>
-            <v-toolbar-title>
-                <b>Travel Desk Requests </b>                
-            </v-toolbar-title>		
-        </v-toolbar>		
-        <v-card>
-            <travel-desk-requests :travelDeskRequests="travelDeskRequests" @updateTable="getTravelDeskRequests()" />
-        </v-card>
+        <div v-else>
+            <v-toolbar  class="" height="100px" flat>
+                <v-toolbar-title>
+                    <b>Travel Desk Requests </b>                
+                </v-toolbar-title>		
+            </v-toolbar>		
+            <v-card>
+                <travel-desk-requests :travelDeskRequests="travelDeskRequests" @updateTable="getTravelDeskRequests()" />
+            </v-card>
+        </div>
         
     </v-card>
 </template>
@@ -18,7 +19,7 @@
 <script>
     import Vue from "vue";
     import TravelDeskRequests from "./Desk/TravelDeskRequests.vue";
-    import {TRAVEL_DESK_URL,  DESTINATION_URL, USERS_URL} from "../../../urls";
+    import {TRAVEL_DESK_URL,  DESTINATION_URL, USERS_URL, PROFILE_URL} from "../../../urls";
     import { secureGet } from "../../../store/jwt";    
 
     export default {
@@ -37,16 +38,30 @@
                 alertMsg: ""
             };
         },
-        mounted() {
-            
-            this.getDestinations();        
+        async mounted() {
+            this.loadingData = true
+            await this.getUserAuth();        
             this.department = this.$store.state.auth.department
             this.admin = Vue.filter("isAdmin")();
+            await this.getDestinations();
+            await this.getTravelDeskUsers();
+            await this.getTravelDeskRequests();
         },
         methods: {
-            getDestinations() {
+
+            async getUserAuth() {                     
+                return secureGet(`${PROFILE_URL}`)
+                    .then(resp => {
+                        this.$store.commit("auth/setUser", resp.data.data);                         
+                    })
+                    .catch(e => {
+                        console.log(e);
+                    });
+            },
+
+            async getDestinations() {
                 this.loadingData = true
-                secureGet(`${DESTINATION_URL}`).then(resp => {
+                return secureGet(`${DESTINATION_URL}`).then(resp => {
                     const destinations = [];
                     resp.data.forEach(v => {
                         destinations.push({
@@ -56,17 +71,15 @@
                             province: v.province
                         });
                     });
-                    this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);
-                    this.getTravelDeskUsers()
+                    this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);                    
                 });
             },
             
-            getTravelDeskUsers() {
+            async getTravelDeskUsers() {
                 this.loadingData = true
-                secureGet(`${USERS_URL}/travel-desk-users`).then(resp => {
+                return secureGet(`${USERS_URL}/travel-desk-users`).then(resp => {
                     // console.log(resp.data)
-                    this.$store.commit("traveldesk/SET_TRAVEL_DESK_USERS", resp.data);
-                    this.getTravelDeskRequests()				
+                    this.$store.commit("traveldesk/SET_TRAVEL_DESK_USERS", resp.data);                    				
                 })
                 .catch(e => {
                     console.log(e.response);
@@ -75,9 +88,9 @@
                 });
             },
 
-            getTravelDeskRequests() {
+            async getTravelDeskRequests() {
                 this.loadingData = true
-                secureGet(`${TRAVEL_DESK_URL}/`)
+                return secureGet(`${TRAVEL_DESK_URL}/`)
                     .then(resp => {
                     this.travelDeskRequests= resp.data;
                     console.log(this.travelDeskRequests)

@@ -7,3 +7,4 @@ export * from "./healthcheck-router";
 export * from "./form-router";
 export * from "./preapproved-router";
 export * from "./traveldesk-router";
+export * from "./travCom-router"
