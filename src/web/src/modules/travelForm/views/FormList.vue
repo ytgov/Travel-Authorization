@@ -21,9 +21,9 @@
   </div>
 </template>
 <script>
-import { FORM_URL } from "@/urls";
+// import { FORM_URL } from "@/urls";
 import { v4 as uuidv4 } from "uuid";
-import { secureGet } from "@/store/jwt";
+// import { secureGet } from "@/store/jwt";
 import { mapActions } from "vuex";
 export default {
   name: "Home",

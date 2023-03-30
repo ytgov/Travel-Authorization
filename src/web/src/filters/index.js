@@ -3,10 +3,10 @@ import store from "../store";
 import {parseTravel} from './parseTravel'
 
 Vue.filter("isAdmin", function () {
-  const userDept = store.state.auth.department;
-  const userRoles = store.state.auth.user.roles;
-  const admin = userRoles.includes("Admin");
-  const patAdmin = userRoles.includes("PatAdmin") && Boolean(userDept);
+  const userDept = store.state.auth?.department;
+  const userRoles = store.state.auth?.user?.roles;
+  const admin = userRoles?.includes("Admin");
+  const patAdmin = userRoles?.includes("PatAdmin") && Boolean(userDept);
   const hasAdminRole = admin || patAdmin;
   return hasAdminRole;
 });

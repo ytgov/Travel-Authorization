@@ -82,7 +82,7 @@
 			};
 		},
 		mounted() {
-			this.department = this.$store.state.auth.department
+			this.department = this.$store.state.auth?.department
 			this.admin = Vue.filter("isAdmin")();
 		},
 		computed: {},

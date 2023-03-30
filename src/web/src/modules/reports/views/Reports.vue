@@ -49,8 +49,8 @@
 import FlightReport from "./FlightReport.vue";
 import Filters from "./Filters/Filters.vue";
 import Graphs from "./Graphs/Graphs.vue";
-// import { LOOKUP_URL } from "../../../urls";
-// import { secureGet } from "../../../store/jwt";
+import { TRAVEL_COM_URL } from "../../../urls";
+import { secureGet } from "../../../store/jwt";
 
 export default {
 	name: "Report",
@@ -68,10 +68,12 @@ export default {
 			filters: {departments: [], locations: []}
 		};
 	},
-	mounted() {	
+	async mounted() {	
 		this.loadingData = true;
 		this.initViews();
+		this.getFlightSegments();
 		this.getFlights();		
+		this.loadingData = false;	
 	},
 	
 	methods: {
@@ -89,7 +91,7 @@ export default {
 			this.getFlights();
 		},
 
-		getFlights() {
+		async getFlights() {
 			
 			const tmpFlightReport = [
 				{
@@ -148,24 +150,42 @@ export default {
 					averageRoundTripFlightCost: ''
 				}
 			]
-
-			// return secureGet(`${FLIGHTS_URL}/flights/`)
-			// 	.then(resp => {						
-			// 		this.flightReport = this.applyFilters(resp.data)
-			//      this.loadingData = false;	
-			// 	})
-			// 	.catch(e => {
-			// 		console.log(e);
-			// 		this.alertMsg = e.response.data
-			// 		this.savingData=false
-			// 	});
-
 			
-
 			this.flightReport = this.applyFilters(tmpFlightReport);
-			this.loadingData = false;			
 
-		},		
+			return secureGet(`${TRAVEL_COM_URL}/ARInvoices`)
+				.then(async (resp) => {						
+					console.log(resp.data)			     	
+					for(const flight of resp.data)
+						await this.getFlightInvoices(flight.InvoiceID)
+				})
+				.catch(e => {
+					console.log(e);
+					this.loadingData = false;
+				});
+		},
+
+		async getFlightInvoices(id) {
+			return secureGet(`${TRAVEL_COM_URL}/ARInvoices/${id}`)
+				.then(resp => {						
+					console.log(resp.data)			     	
+				})
+				.catch(e => {
+					console.log(e);
+					this.loadingData = false;
+				});
+		},
+		
+		async getFlightSegments() {
+			return secureGet(`${TRAVEL_COM_URL}/segments`)
+				.then(resp => {						
+					console.log(resp.data)			     	
+				})
+				.catch(e => {
+					console.log(e);
+					this.loadingData = false;
+				});
+		},
 
 		switchFilterView(display){
 			this.views.filters = !display;

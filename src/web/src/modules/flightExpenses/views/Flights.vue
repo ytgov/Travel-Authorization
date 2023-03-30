@@ -22,7 +22,11 @@
 
 			<template v-slot:[`item.cost`]="{ item }">				
 				${{ item.cost }}
-			</template>			
+			</template>	
+			<template v-slot:[`item.reconciled`]="{ item }">				
+				<v-icon color="success" v-if="item.reconciled == 'yes'">mdi-checkbox-marked</v-icon>
+				<v-icon color="warning" v-else>mdi-close-box</v-icon>
+			</template>		
 		</v-data-table>
 	</div>
 </template>
@@ -90,6 +94,11 @@ export default {
 				{
 					text: "Traveler Last Name",
 					value: "travelerLastName",
+					class: "blue-grey lighten-4"
+				},
+				{
+					text: "Reconciled",
+					value: "reconciled",
 					class: "blue-grey lighten-4"
 				},
 				{

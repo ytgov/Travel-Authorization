@@ -39,7 +39,7 @@
 				</template>
 			</title-card>	
 
-			<title-card class="mt-10" titleWidth="6rem">
+			<title-card class="mt-10" titleWidth="6.5rem">
 				<template #title>
 					<div>Department</div>
 				</template>

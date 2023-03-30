@@ -16,7 +16,7 @@
     <v-tabs-items v-if="!loadingData" v-model="tabs">
       <v-tab-item>
         <v-card flat>
-          <preapproved-requests :travelRequests="travelRequests" @updateTable="getPreapprovedTravel()" />
+          <preapproved-requests :travelRequests="travelRequests" @updateTable="updatePreapprovedTravel()" />
         </v-card>
       </v-tab-item>
       <v-tab-item>
@@ -24,7 +24,7 @@
           <submissions
             :travelSubmissions="travelSubmissions"
             :travelRequests="travelRequests"
-            @updateTable="getPreapprovedTravel()"
+            @updateTable="updatePreapprovedTravel()"
           />
         </v-card>
       </v-tab-item>
@@ -35,7 +35,7 @@
 <script>
 import PreapprovedRequests from "./Requests/PreapprovedRequests.vue";
 import Submissions from "./Submissions/Submissions.vue";
-import { PREAPPROVED_URL, LOOKUP_URL } from "../../../urls";
+import { PREAPPROVED_URL, LOOKUP_URL, PROFILE_URL } from "../../../urls";
 import { secureGet } from "../../../store/jwt";
 
 export default {
@@ -53,65 +53,84 @@ export default {
       alertMsg: ""
     };
   },
-  mounted() {
-    this.getEmployees();
-    //this.getPreapprovedTravel()
+  async mounted() {
+    this.loadingData = true;
+    await this.getUserAuth()
+    await this.getEmployees();
+    await this.getDepartmentBranch();
+    await this.getTravelPurposes();
+    await this.getPreapprovedTravel();
+    await this.getPreapprovedTravelSubmissions();
+    this.determineDepartment();
+    this.loadingData = false;
   },
   methods: {
-    getEmployees() {
+
+    async updatePreapprovedTravel(){
       this.loadingData = true;
-      secureGet(`${LOOKUP_URL}/employees`)
+      await this.getPreapprovedTravel();
+      await this.getPreapprovedTravelSubmissions();
+      this.determineDepartment();
+      this.loadingData = false;
+    },
+
+    async getUserAuth() {      
+      return secureGet(`${PROFILE_URL}`)
         .then(resp => {
-          this.$store.commit("preapproved/SET_EMPLOYEES", resp.data);
-          this.getDepartmentBranch();
+          this.$store.commit("auth/setUser", resp.data.data);          
         })
         .catch(e => {
           console.log(e);
         });
     },
 
-    getDepartmentBranch() {
-      secureGet(`${LOOKUP_URL}/department-branch`)
+    async getEmployees() {      
+      return secureGet(`${LOOKUP_URL}/employees`)
         .then(resp => {
-          this.$store.commit("preapproved/SET_DEPARTMENT_BRANCH", resp.data);
-          this.getTravelPurposes();
+          this.$store.commit("preapproved/SET_EMPLOYEES", resp.data);          
         })
         .catch(e => {
           console.log(e);
         });
     },
 
-    getTravelPurposes(){
-      secureGet(`${LOOKUP_URL}/travelPurpose`)
+    async getDepartmentBranch() {
+      return secureGet(`${LOOKUP_URL}/department-branch`)
+        .then(resp => {
+          this.$store.commit("preapproved/SET_DEPARTMENT_BRANCH", resp.data);          
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+
+    async getTravelPurposes(){
+      return secureGet(`${LOOKUP_URL}/travelPurpose`)
         .then(resp => {          
-          this.$store.commit("preapproved/SET_TRAVEL_PURPOSES", resp.data);
-          this.getPreapprovedTravel();
+          this.$store.commit("preapproved/SET_TRAVEL_PURPOSES", resp.data);          
         })
         .catch(e => {
           console.log(e);
         });
     },
 
-    getPreapprovedTravel() {
-      this.loadingData = true;
-      secureGet(`${PREAPPROVED_URL}/`)
+    async getPreapprovedTravel() {      
+      return secureGet(`${PREAPPROVED_URL}/`)
         .then(resp => {
           this.travelRequests = resp.data.map(x => ({
             ...x,
             isSelectable: x.status != "Approved" && x.status != "Declined"
-          }));
-          this.getPreapprovedTravelSubmissions();
+          }));          
         })
         .catch(e => {
           console.log(e);
         });
     },
 
-    getPreapprovedTravelSubmissions() {
-      secureGet(`${PREAPPROVED_URL}/submissions`)
+    async getPreapprovedTravelSubmissions() {
+      return secureGet(`${PREAPPROVED_URL}/submissions`)
         .then(resp => {
-          this.travelSubmissions = resp.data;
-          this.determineDepartment();
+          this.travelSubmissions = resp.data;          
         })
         .catch(e => {
           console.log(e);
