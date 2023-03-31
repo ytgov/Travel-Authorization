@@ -6,8 +6,8 @@ export async function seedUp() {
   await sqldb("user").update({ roles: "User" }).whereRaw("1=1");
   await sqldb("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" });
 
-  await sqldb("role").delete().whereRaw("1=1");
-  await sqldb("role").insert([
+  await sqldb("roles").delete().whereRaw("1=1");
+  await sqldb("roles").insert([
     {
       name: "Admin"
     },

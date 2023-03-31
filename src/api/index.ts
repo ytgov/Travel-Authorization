@@ -97,7 +97,7 @@ app.use("/api/permissions", checkJwt, loadUser, permRouter);
 app.use("/api/preapproved", checkJwt, loadUser, preapprovedRouter);
 app.use("/api/traveldesk", checkJwt, loadUser, travelDeskRouter);
 
-app.use("/api/travel-com", travComRouter);
+app.use("/api/travCom", checkJwt, loadUser, travComRouter);
 
 app.use("/api/lookup", lookupRouter);
 app.use("/api/healthCheck", healthCheckRouter);

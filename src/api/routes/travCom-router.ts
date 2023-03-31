@@ -19,21 +19,21 @@ travComRouter.get("/ARInvoices/:id", RequiresAuth, async function (req: Request,
 });
 
 travComRouter.get("/ARInvoiceDetails", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoicesDetailsNoHealth").select();
+  const result = await db("dbo.ARInvoiceDetailsNoHealth").select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/ARInvoiceDetails/:id", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoicesDetailsNoHealth").where({ InvoiceID: req.params.id }).select();
+  const result = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: req.params.id }).select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/segments", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("segments").select();
+  const result = await db("dbo.segmentsNoHealth").select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/segments/:id", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("segments").where({ InvoiceID: req.params.id }).select();
+  const result = await db("dbo.segmentsNoHealth").where({ InvoiceID: req.params.id }).select();
   res.status(200).json({ data: result });
 });
