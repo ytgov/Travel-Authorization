@@ -17,6 +17,7 @@ export const USERS_URL = `${config.apiBaseUrl}/api/user`;
 export const PERM_URL = `${config.apiBaseUrl}/api/permissions`;
 export const PREAPPROVED_URL = `${config.apiBaseUrl}/api/preapproved`;
 export const TRAVEL_DESK_URL = `${config.apiBaseUrl}/api/traveldesk`;
-export const TRAVEL_COM_URL = `${config.apiBaseUrl}/api/travel-com`;
+export const TRAVEL_COM_URL = `${config.apiBaseUrl}/api/travCom`;
+export const FLIGHT_RECONCILE_URL = `${config.apiBaseUrl}/api/reconcile`;
 
 export const HEALTH_URL = `${config.apiBaseUrl}/api/healthCheck`;

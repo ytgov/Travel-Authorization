@@ -45,7 +45,10 @@ Vue.filter("beautifyDateTime", function (date) {
 });
 
 Vue.filter("capitalize", function (text) {
-  return text.charAt(0).toUpperCase() + text.slice(1);
+  const texts = text.split(' ')
+  const result = []
+  texts.forEach(txt => result.push(txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()) );
+  return result.join(' ')
 });
 
 Vue.filter("currency", function (currency) {

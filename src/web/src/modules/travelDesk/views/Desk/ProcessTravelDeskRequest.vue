@@ -113,16 +113,25 @@
 								</v-col>											
 							</v-row>
 							<v-row class="mx-0 mb-5 mt-n6" v-if="travelRequest.invoiceNumber">
-								<div class="my-auto ml-4 text-h6 blue--text">
-									Invoice #: {{travelRequest.invoiceNumber}}
-								</div>
-								<v-btn
-									class="ml-5 px-5"
-									color="blue lighten-5"
-									@click="downloadPdf()"
-									:loading="savingData" small>
-									<div class="text-h6 blue--text">Download PNR</div>
-								</v-btn>
+								<title-card class="mt-10 mx-4" titleWidth="4rem" style="width:100%" >
+									<template #title>
+										<div>Invoice</div>
+									</template>
+									<template #body>
+										<v-row class="mx-0 mt-0 mb-2">
+											<div style="font-size:13pt;" class="my-auto ml-4 primary--text">
+												Invoice Number: {{travelRequest.invoiceNumber}}
+											</div>
+											<v-btn
+												class="ml-auto mr-3 px-5"
+												color="secondary"
+												@click="downloadPdf()"
+												:loading="savingData">
+												<div  style="font-size:13pt;">Download PNR</div>
+											</v-btn>
+										</v-row>
+									</template>
+								</title-card>
 							</v-row>
 							<questions-table 
 								:readonly="readonly"
@@ -135,40 +144,72 @@
 
 				<v-card-actions>
 					<v-btn color="grey darken-5" class="px-5" @click="closeDialog">						
-						<div>{{readonly?'Close':'Cancel'}}</div>
+						<div>Close</div>
 					</v-btn>
-					<upload-pnr-modal 
+					<itinerary-modal class="ml-auto mr-3"
+						v-if="travelRequest.invoiceNumber"
+						:invoiceNumber="travelRequest.invoiceNumber"					
+					/>
+					<upload-pnr-modal
+						@saveData="saveNewTravelRequest('save', false, false)"
+						@close="initForm()"
 						:travelAgentsInfo="travelAgentsInfo"
 						:travelRequest="travelRequest"
-						class="ml-auto mr-3"/>
+						:class="travelRequest.invoiceNumber? 'ml-1 mr-2':'ml-auto mr-2'"/>
 					<v-btn
 						v-if="!readonly"
 						class="ml-2 mr-2 px-5"
-						color="green darken-1"
-						@click="saveNewTravelRequest('save')"
+						color="#005A65"
+						@click="saveNewTravelRequest('save', false, false)"
 						:loading="savingData">Save Draft
 					</v-btn>
 					<v-btn
 						v-if="!readonly"
 						class="mr-2 px-5 "
-						color="brown darken-1"
-						@click="saveNewTravelRequest('sendback')"
+						color="secondary"
+						@click="saveNewTravelRequest('sendback', true, false)"
 						:loading="savingData">Send to Traveler
 					</v-btn>
-					<itinerary-modal 
-						v-if="type=='booked'"					
-					/>
+					
 					<v-btn
-						v-if="!readonly"
+						v-if="!readonly && travelRequest.invoiceNumber"
 						class="mr-5 px-5 "
-						color="lime darken-1"
-						@click="saveNewTravelRequest('booked')"
+						color="#005A65"
+						@click="confirmBookingDialog=true;"
 						:loading="savingData">Booking Complete
 					</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>	
-		
+
+
+		<v-dialog v-model="confirmBookingDialog" persistent width="30%">
+			<v-card :loading="loadingData" :disabled="loadingData" en>
+				<v-card-title class="warning">
+					<div class="text-h5">
+						Confirm Booking is Complete
+					</div>					
+				</v-card-title>
+				<v-card-text>
+					<p class="mt-5">
+						Are you sure this booking is Complete?<br/>
+						Once a booking is completed, you can no longer make changes to it.
+					</p>
+				</v-card-text>
+				<v-card-actions>
+					<v-btn color="grey darken-5" class="px-5" @click="confirmBookingDialog=false;">						
+						<div>Cancel</div>
+					</v-btn>
+					<v-btn
+						v-if="!readonly"
+						class="mr-0 ml-auto px-5 "
+						color="#005A65"
+						@click="saveNewTravelRequest('booked', false, true)"
+						:loading="savingData">Confirm
+					</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
 	</div>
 </template>
 
@@ -213,7 +254,8 @@
 		data() {
 			return {					
 				
-				addNewTravelDialog: false,				
+				addNewTravelDialog: false,
+				confirmBookingDialog: false,				
 				readonly: false,
 				internationalTravel: false,
 				travelDeskAgentList: [],				
@@ -256,7 +298,7 @@
 			},
 
 			async initForm() {
-				this.readonly = (this.type=='booked')
+				
 				this.initStates();
 				this.savingData = false;
 				this.loadingData = true;
@@ -264,7 +306,7 @@
 				this.travelRequest = await this.getTravelRequestInfo(taid)
 				this.travelAgentsInfo = await this.getTravelAgentsInfo()
 				this.travelAgentsInfo.push({"agencyID": null, "agencyName": "None", "agencyInfo": ""})
-
+				this.readonly = (this.type=='booked' || this.travelRequest.status=='booked')
 				const agents=this.$store.state.traveldesk.travelDeskUsers;
 				this.travelDeskAgentList=agents.map(agent => agent.first_name+' '+agent.last_name);
 				if(!this.travelRequest.travelDeskOfficer){
@@ -303,8 +345,9 @@
 					});
 			},	
 
-			saveNewTravelRequest(saveType) {
+			saveNewTravelRequest(saveType, close, refresh) {
 				console.log(saveType)
+				console.log(close)
 			// 	console.log(this.travelerDetails)
 
 				if (saveType == 'save' || this.checkFields()) {
@@ -327,8 +370,9 @@
 					securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
 					.then(() => {
 						this.savingData = false;
-						this.addNewTravelDialog = false;
-						this.$emit("updateTable");
+						this.confirmBookingDialog = false;
+						if(close) this.closeDialog();
+						if(refresh) this.initForm()						
 					})
 					.catch(e => {
 						this.savingData = false;

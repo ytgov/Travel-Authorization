@@ -121,7 +121,8 @@
                         description: authorizedTravel.purpose, 
                         startDate: startDate.toISOString(), 
                         endDate:  authorizedTravel.dateBackToWork, 
-                        status: status
+                        status: status,
+                        invoiceNumber: authorizedTravel.travelRequest.invoiceNumber
                     })                
                     
                 }                
