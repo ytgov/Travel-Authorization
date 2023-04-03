@@ -5,7 +5,7 @@
 				<v-btn					
 					size="x-small"					
 					style="min-width:0;"					
-					color="blue lighten-2"					
+					color="secondary"					
 					@click="initForm()"
 					v-bind="attrs"
 					v-on="on">
@@ -79,7 +79,7 @@
 						
 						<v-btn                                     
 							@click="saveDocument()"							
-							color="success"
+							color="#005A65"
 							class="ml-auto mr-1 my-0 px-5"
 							:loading="savingData"
 							>Save 
@@ -121,8 +121,9 @@
 		mounted() {			
 		},
 		methods: {			
-			async initForm(){								
+			initForm(){								
 				this.savingData=true
+				this.$emit('saveData')
 				this.invoiceNumberErr=false
 				this.invoiceNumber=""
 				this.reader = new FileReader()
@@ -181,6 +182,7 @@
 					securePost(`${TRAVEL_DESK_URL}/pnr-document/${requestID}`, bodyFormData, header)
 					.then(() => {
 						this.savingData = false;
+						this.$emit('close')				
 						this.closeModal();
 					})
 					.catch(e => {
@@ -199,7 +201,7 @@
 			},
 			
 
-			closeModal(){				
+			closeModal(){
 				this.uploadPnrDialog=false				
             },
 

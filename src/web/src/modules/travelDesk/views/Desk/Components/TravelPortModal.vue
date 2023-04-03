@@ -91,7 +91,7 @@
 											:disabled="flightOptions.length==0"                                       
 											@click="removeAllFlightOptions()"
 											style="min-width: 0"
-											color="warning"
+											color="secondary"
 											class="ml-auto mr-3 my-5 px-3 py-4"
 											:loading="savingData"
 											small>Remove All Groups
@@ -100,7 +100,7 @@
 											:disabled="flightOptions.length==0"                                      
 											@click="saveAllFlightOptions()"
 											style="min-width: 0"
-											color="success"
+											color="#005A65"
 											class="ml-3 mr-3 my-5 px-3 py-4"
 											:loading="savingData"
 											small>Save Groupings

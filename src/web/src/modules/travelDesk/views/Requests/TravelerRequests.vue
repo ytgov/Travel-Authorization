@@ -42,7 +42,8 @@
 					@updateTable="updateTable()"
 					:authorizedTravel="item"/>
 				<itinerary-modal 
-					v-if="item.status=='Approved' && item.phase == 'Booked'"					
+					v-if="item.status=='Approved' && item.phase == 'Booked' && item.invoiceNumber"
+					:invoiceNumber="item.invoiceNumber"					
 					/>
 			</template>
 		</v-data-table>

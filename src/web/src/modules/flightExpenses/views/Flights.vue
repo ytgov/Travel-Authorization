@@ -15,17 +15,46 @@
 		<v-data-table
 			:headers="headers"
 			:items="flights"
-			:items-per-page="5"
+			:items-per-page="15"
+			dense
 			class="elevation-1 mt-4"
 			v-model="selectedFlights"
+			item-key="invoiceDetailID"
 			:show-select="admin">			
 
+			<template v-slot:[`item.purchaseDate`]="{ item }">
+				{{item.purchaseDate | beautifyDate}}
+			</template>
+
+			<template v-slot:[`item.agent`]="{ item }">
+				{{item.agent | capitalize}}
+			</template>
+
+			<template v-slot:[`item.airline`]="{ item }">
+				{{item.airline | capitalize}}
+			</template>
+
+			<template v-slot:[`item.travelerFirstName`]="{ item }">
+				{{item.travelerFirstName | capitalize}}
+			</template>
+
+			<template v-slot:[`item.travelerLastName`]="{ item }">
+				{{item.travelerLastName | capitalize}}
+			</template>
+
+			<template v-slot:[`item.flightInfo`]="{ item }">
+				<div v-for="flight,inx in item.flightInfo.split(',')" :key="'flight-info-'+inx" style="line-height:1rem;">
+					{{flight}}
+				</div>
+			</template>
 			<template v-slot:[`item.cost`]="{ item }">				
-				${{ item.cost }}
+				$ {{ item.cost | currency}}
 			</template>	
-			<template v-slot:[`item.reconciled`]="{ item }">				
-				<v-icon color="success" v-if="item.reconciled == 'yes'">mdi-checkbox-marked</v-icon>
-				<v-icon color="warning" v-else>mdi-close-box</v-icon>
+			<template v-slot:[`item.reconciled`]="{ item }">
+				<div class="text-center">				
+					<v-icon color="success" v-if="item.reconciled">mdi-checkbox-marked</v-icon>
+					<v-icon color="warning" v-else>mdi-close-box</v-icon>
+				</div>
 			</template>		
 		</v-data-table>
 	</div>
@@ -82,11 +111,6 @@ export default {
 					class: "blue-grey lighten-4"
 				},
 				{
-					text: "Branch",
-					value: "branch",
-					class: "blue-grey lighten-4"
-				},
-				{
 					text: "Traveler First Name",
 					value: "travelerFirstName",
 					class: "blue-grey lighten-4"
@@ -100,15 +124,7 @@ export default {
 					text: "Reconciled",
 					value: "reconciled",
 					class: "blue-grey lighten-4"
-				},
-				{
-					text: "",
-					value: "edit",
-					class: "blue-grey lighten-4",
-					cellClass: "px-0 mx-0",
-					sortable: false,
-					width: "1rem"
-				}
+				},				
 			],
 			admin: false,
 			selectedFlights: []
@@ -132,11 +148,10 @@ export default {
 					airline: flight.airline?flight.airline:'',
 					flightInfo: flight.flightInfo?flight.flightInfo:'',
 					finalDestination: flight.finalDestination?flight.finalDestination:'',					
-					department: flight.dept?flight.dept:'',
-					branch: flight.branch? flight.branch:'',
+					department: flight.dept?flight.dept:'',					
 					travelerFirstName: flight.travelerFirstName? flight.travelerFirstName:'',
 					travelerLastName: flight.travelerLastName? flight.travelerLastName:'',
-					reconciled: flight.reconciled? flight.reconciled:''					
+					reconciled: flight.reconciled? 'Yes':'No'					
 				}
 			})
 			const options = { 
@@ -150,7 +165,7 @@ export default {
 				useTextFile: false,
 				useBom: true,
 				useKeysAsHeaders: false,
-				headers: ['Purchase Date', 'Cost', 'Agent', 'Airline', 'Flight Info', 'Final Destination', 'Department', 'Branch', 'Traveler First Name', 'Traveler last Name', 'Reconciled']
+				headers: ['Purchase Date', 'Cost', 'Agent', 'Airline', 'Flight Info', 'Final Destination', 'Department', 'Traveler First Name', 'Traveler last Name', 'Reconciled']
 			};
 			const csvExporter = new ExportToCsv(options);
 			csvExporter.generateCsv(csvInfo);

@@ -41,7 +41,7 @@
 
 								<v-checkbox v-if="filtersApplied" v-model="filteredData" label="Use Filtered Data"									
 									class="ml-4"
-									value="true"
+									@change="getData()"									
 									hide-details/>
 								<div class="my-3 ml-4">Group By</div>
 
@@ -69,9 +69,10 @@
 							<v-tab-item>
 
 								<v-checkbox v-if="filtersApplied" v-model="filteredData" label="Use Filtered Data"									
-									class="ml-4"
-									value="true"
+									class="ml-4"									
+									@change="getData()"
 									hide-details/>
+
 								<div class="my-3 ml-4">Group By</div>
 
 								<v-card style="padding: 1.5rem;" class="mt-2 mx-4" flat>
@@ -146,9 +147,8 @@ export default {
 		filtersApplied: {
 			type: Boolean
 		},
-		flightReport: {
-			type: []
-		}
+		allFlightReports: {},
+		filteredFlightReport: {}
 	},
 	
 	data() {
@@ -157,7 +157,7 @@ export default {
 			tabs: 0,						
 			series: [],
 			chartOptions: {},
-
+			flightReport: [],
 			filteredData: false,			
 			
 			chartsFilter: {
@@ -184,7 +184,7 @@ export default {
 	},
 	mounted() {	
 		this.initFilters();			
-		this.selectTab();
+		
 	},
 	methods: {
 
@@ -198,7 +198,19 @@ export default {
 
 			this.lineChartSelectedGroupBy = null;
 			this.lineChartSelectedDisplayFields = null;
-			
+
+			this.getData();
+		},
+
+		getData(){
+			this.loadingData = true;
+			if(this.filteredData){
+				this.flightReport = JSON.parse(JSON.stringify(this.filteredFlightReport))
+			}else{
+				this.flightReport = JSON.parse(JSON.stringify(this.allFlightReports))
+			}
+			this.selectTab();
+			Vue.nextTick(()=> this.loadingData =false)
 		},
 
 		selectTab(){	

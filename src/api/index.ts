@@ -17,7 +17,9 @@ import {
   formRouter,
   preapprovedRouter,
   travelDeskRouter,
-  travComRouter
+  travComRouter,
+  reconcileRouter,
+  // tmpTravComRouter,
 } from "./routes";
 import { checkJwt, loadUser } from "./middleware/authz.middleware";
 
@@ -98,6 +100,8 @@ app.use("/api/preapproved", checkJwt, loadUser, preapprovedRouter);
 app.use("/api/traveldesk", checkJwt, loadUser, travelDeskRouter);
 
 app.use("/api/travCom", checkJwt, loadUser, travComRouter);
+app.use("/api/reconcile", checkJwt, loadUser,reconcileRouter);
+// app.use("/api/travel-com", checkJwt, loadUser, tmpTravComRouter);
 
 app.use("/api/lookup", lookupRouter);
 app.use("/api/healthCheck", healthCheckRouter);

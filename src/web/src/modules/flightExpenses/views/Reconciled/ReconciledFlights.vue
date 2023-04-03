@@ -20,18 +20,51 @@
 			</v-btn>
 		
 		</v-row>
+
 		<v-data-table
 			:headers="headers"
 			:items="reconciledFlights"
-			:items-per-page="5"
-			class="elevation-1"
+			:items-per-page="15"
+			dense
+			class="elevation-1 mt-4"
 			v-model="selectedFlights"
-			:show-select="admin">
+			item-key="invoiceDetailID"
+			:show-select="admin">			
 
+			<template v-slot:[`item.purchaseDate`]="{ item }">
+				{{item.purchaseDate | beautifyDate}}
+			</template>
+
+			<template v-slot:[`item.agent`]="{ item }">
+				{{item.agent | capitalize}}
+			</template>
+
+			<template v-slot:[`item.airline`]="{ item }">
+				{{item.airline | capitalize}}
+			</template>
+
+			<template v-slot:[`item.travelerFirstName`]="{ item }">
+				{{item.travelerFirstName | capitalize}}
+			</template>
+
+			<template v-slot:[`item.travelerLastName`]="{ item }">
+				{{item.travelerLastName | capitalize}}
+			</template>
+
+			<template v-slot:[`item.flightInfo`]="{ item }">
+				<div v-for="flight,inx in item.flightInfo.split(',')" :key="'flight-info-'+inx" style="line-height:1rem;">
+					{{flight}}
+				</div>
+			</template>
 			<template v-slot:[`item.cost`]="{ item }">				
-				${{ item.cost }}
+				$ {{ item.cost | currency}}
+			</template>	
+			<template v-slot:[`item.reconciled`]="{ item }">
+				<div class="text-center">				
+					<v-icon color="success" v-if="item.reconciled">mdi-checkbox-marked</v-icon>
+					<v-icon color="warning" v-else>mdi-close-box</v-icon>
+				</div>
 			</template>		
-		
 		</v-data-table>
 
 		<v-dialog v-model="unReconcileDialog" persistent max-width="400px">
@@ -48,7 +81,7 @@
 
 				<v-card-actions>
 					<v-btn color="grey darken-5" @click="unReconcileDialog = false"> Cancel </v-btn>
-					<v-btn class="ml-auto" color="green darken-1" @click="unReconcile"> Continue </v-btn>
+					<v-btn class="ml-auto" :loading="savingData" color="green darken-1" @click="unReconcile"> Continue </v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
@@ -57,16 +90,15 @@
 
 <script>
 import Vue from "vue";
-
+import { FLIGHT_RECONCILE_URL } from "../../../../urls";
+import { securePost } from "../../../../store/jwt";
 import { ExportToCsv } from 'export-to-csv';
 
 export default {
 	
 	name: "ReconciledFlights",
 	props: {
-		reconciledFlights: {
-			type: []
-		}
+		reconciledFlights: {}
 	},
 	data() {
 		return {
@@ -107,11 +139,6 @@ export default {
 					class: "blue-grey lighten-4"
 				},
 				{
-					text: "Branch",
-					value: "branch",
-					class: "blue-grey lighten-4"
-				},
-				{
 					text: "Traveler First Name",
 					value: "travelerFirstName",
 					class: "blue-grey lighten-4"
@@ -130,6 +157,7 @@ export default {
 			],
 			admin: false,
 			unReconcileDialog: false,
+			savingData: false,
 			selectedFlights: []
 		};
 	},
@@ -156,10 +184,9 @@ export default {
 					flightInfo: flight.flightInfo?flight.flightInfo:'',
 					finalDestination: flight.finalDestination?flight.finalDestination:'',					
 					department: flight.dept?flight.dept:'',
-					branch: flight.branch? flight.branch:'',
 					travelerFirstName: flight.travelerFirstName? flight.travelerFirstName:'',
 					travelerLastName: flight.travelerLastName? flight.travelerLastName:'',
-					reconciled: flight.reconciled? flight.reconciled:'',
+					reconciled: flight.reconciled? 'Yes':'No',
 					reconcilePeriod: flight.reconcilePeriod? flight.reconcilePeriod:''					
 				}
 			})
@@ -174,20 +201,42 @@ export default {
 				useTextFile: false,
 				useBom: true,
 				useKeysAsHeaders: false,
-				headers: ['Purchase Date', 'Cost', 'Agent', 'Airline', 'Flight Info', 'Final Destination', 'Department', 'Branch', 'Traveler First Name', 'Traveler last Name', 'Reconciled']
+				headers: ['Purchase Date', 'Cost', 'Agent', 'Airline', 'Flight Info', 'Final Destination', 'Department', 'Traveler First Name', 'Traveler last Name', 'Reconciled']
 			};
 			const csvExporter = new ExportToCsv(options);
 			csvExporter.generateCsv(csvInfo);
 		},
 
 		openUnReconcile() {
+			this.savingData= false;
 			this.unReconcileDialog = true;
 		}, 
 
 		unReconcile() {
-			//TODO: remove period and change to reconcile=no
-			this.unReconcileDialog = false;
-			this.updateTable();
+		
+			this.savingData = true;
+			const body = []
+			for(const flight of this.selectedFlights){
+				const reconcile = {
+					reconcileID: flight.reconcileID,
+					invoiceID: flight.invoiceID, 
+					invoiceDetailID: flight.invoiceDetailID,
+					reconciled: false,
+					reconcilePeriod: null,
+				}
+				body.push(reconcile)
+			}
+
+			securePost(`${FLIGHT_RECONCILE_URL}/`, body)
+			.then(() => {
+				this.savingData = false;
+				this.unReconcileDialog = false;
+				this.updateTable();
+			})
+			.catch(e => {
+				this.savingData = false;
+				console.log(e);
+			});
 		}
 	}
 };

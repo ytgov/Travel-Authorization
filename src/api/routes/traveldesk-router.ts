@@ -74,6 +74,11 @@ travelDeskRouter.get("/authorized-travels/", RequiresAuth, async function (req: 
       form.departureTime = departureTimes[0] ? departureTimes[0].departureTime : "Unknown";
       form.travelRequest = await db("travelDeskTravelRequest").select("*").where('TAID',form.id).first();
 
+      const requestID= form.travelRequest.requestID
+      if(requestID){
+        const invoiceNumber = await db("travelDeskPnrDocuments").select("invoiceNumber").where("requestID", requestID).first();
+        form.travelRequest.invoiceNumber = invoiceNumber?.invoiceNumber? invoiceNumber.invoiceNumber : ''
+      }
     }
     res.status(200).json(forms);
   } catch (error: any) {

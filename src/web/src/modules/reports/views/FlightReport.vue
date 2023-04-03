@@ -1,6 +1,6 @@
 <template>
 	<div class="mx-10 mb-5">
-		<v-row v-if="admin" class="my-0 mx-0">
+		<v-row v-if="admin && !loadingData" class="my-0 mx-0">
 			<v-btn    
 				@click="exportToExcel()"          
 				class="ml-auto"
@@ -11,23 +11,27 @@
 
 			<print-report				
 				:flightReport="flightReport"
-			/>			
-		
+				@close="printClosed()"
+			/>
 		</v-row>
+
 		<v-data-table
 			:headers="headers"
 			:items="flightReport"
-			:items-per-page="5"
+			:items-per-page="15"
 			class="elevation-1 mt-4">
 			<template v-slot:[`item.totalExpenses`]="{ item }">				
-				<span v-if="item.totalExpenses?.length>0">${{ item.totalExpenses }}</span>
+				<span v-if="item.totalExpenses>0">${{ Number(item.totalExpenses).toFixed(2) | currency}}</span>
 			</template>	
 			<template v-slot:[`item.totalFlightCost`]="{ item }">				
-				<span v-if="item.totalFlightCost?.length>0">${{ item.totalFlightCost }}</span>
+				<span v-if="item.totalFlightCost>0">${{ Number(item.totalFlightCost).toFixed(2) | currency}}</span>
+			</template>	
+			<template v-slot:[`item.averageExpensesPerDay`]="{ item }">				
+				<span v-if="item.averageExpensesPerDay>0">${{ Number(item.averageExpensesPerDay).toFixed(2) | currency }}</span>
 			</template>	
 			<template v-slot:[`item.averageRoundTripFlightCost`]="{ item }">				
-				<span v-if="item.averageRoundTripFlightCost?.length>0">${{ item.averageRoundTripFlightCost }}</span>
-			</template>	
+				<span v-if="item.averageRoundTripFlightCost>0">${{ Number(item.averageRoundTripFlightCost).toFixed(2) | currency}}</span>
+			</template>
 		</v-data-table>
 	</div>
 </template>
@@ -97,7 +101,8 @@ export default {
 				}
 			],
 			admin: false,
-			flightReportInfo: []
+			flightReportInfo: [],
+			loadingData: false
 		};
 	},
 	mounted() {
@@ -117,11 +122,11 @@ export default {
 					finalDestinationCity: flight.finalDestinationCity?flight.finalDestinationCity:'',					
 					finalDestinationProvince: flight.finalDestinationProvince?flight.finalDestinationProvince:'',
 					totalTrips: flight.totalTrips?flight.totalTrips:'',
-					totalExpenses: flight.totalExpenses?'$ '+flight.totalExpenses:'',
-					totalFlightCost: flight.totalFlightCost?'$ '+flight.totalFlightCost:'',
+					totalExpenses: flight.totalExpenses?'$ '+Number(flight.totalExpenses).toFixed(2):'',
+					totalFlightCost: flight.totalFlightCost?'$ '+Number(flight.totalFlightCost).toFixed(2):'',
 					averageDurationDays: flight.averageDurationDays?flight.averageDurationDays:'',
-					averageExpensesPerDay: flight.averageExpensesPerDay?'$ '+flight.averageExpensesPerDay:'',
-					averageRoundTripFlightCost: flight.averageRoundTripFlightCost?'$ '+flight.averageRoundTripFlightCost:''					
+					averageExpensesPerDay: flight.averageExpensesPerDay?'$ '+Number(flight.averageExpensesPerDay).toFixed(2):'',
+					averageRoundTripFlightCost: flight.averageRoundTripFlightCost?'$ '+Number(flight.averageRoundTripFlightCost).toFixed(2):''					
 				}
 			})
 			const options = { 
@@ -139,7 +144,12 @@ export default {
 			};
 			const csvExporter = new ExportToCsv(options);
 			csvExporter.generateCsv(csvInfo);
-		}
+		},
+		
+		printClosed(){
+			this.loadingData= true
+			Vue.nextTick(()=>this.loadingData= false)
+		},
 	}
 };
 </script>

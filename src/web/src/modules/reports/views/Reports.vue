@@ -1,47 +1,50 @@
 <template>
 	<v-card :loading="loadingData" :disabled="loadingData" en class="px-5 pb-15">
-		
-		<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
 		<v-alert v-if="alertMsg" class="mt-5" type="warning">{{ alertMsg }}</v-alert>
-		
-		<v-card v-if="!loadingData" class="mt-5" flat>	
 
-			<v-card-title>Travel Summary</v-card-title>		
-			
-			<v-card-actions>							
-				<v-btn					
-					@click="switchFilterView(views.filters)"												
-					elevation="5"			
-					:color="views.filters?'primary':'secondary'">Filters
-				</v-btn>
-				<v-btn
-					@click="switchGraphView(views.graphs)"          
-					class="ml-4"			
-					elevation="5"				
-					:color="views.graphs?'primary':'secondary'">Graph
-				</v-btn>
-			
-			</v-card-actions>
-			
-		</v-card>
+		<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
+		
+		<div v-else>	
+			<v-card class="mt-5" flat>	
 
-		<v-card class="mt-5" v-if="views.graphs" flat>
-			<graphs
-				:filtersApplied="views.filters"
-				:flightReport="flightReport"/>
-		</v-card>
-		
-		<v-card class="mt-5" v-if="views.filters" flat>
-			<filters
-				:flightReport="flightReport"
-				@updateFilters="updateFilters"/>
-		</v-card>
-		
-		<v-card class="mt-5" v-if="!loadingData" flat>
-			<flight-report 
-				:flightReport="flightReport" />
-		</v-card>
-		
+				<v-card-title>Travel Summary</v-card-title>		
+				
+				<v-card-actions>							
+					<v-btn					
+						@click="switchFilterView(views.filters)"												
+						elevation="5"			
+						:color="views.filters?'primary':'secondary'">Filters
+					</v-btn>
+					<v-btn
+						@click="switchGraphView(views.graphs)"          
+						class="ml-4"			
+						elevation="5"				
+						:color="views.graphs?'primary':'secondary'">Graph
+					</v-btn>
+				
+				</v-card-actions>
+				
+			</v-card>
+
+			<v-card class="mt-5" v-if="views.filters" flat>
+				<filters
+					:flightReport="allFlightReports"
+					@updateFilters="updateFilters"/>
+			</v-card>
+
+			<v-card class="mt-5" v-if="views.graphs" flat>
+				<graphs
+					:filtersApplied="views.filters"
+					:filteredFlightReport="flightReport"
+					:allFlightReports="allFlightReports"/>
+			</v-card>
+			
+			<v-card class="mt-5" flat>
+				<flight-report 
+					:flightReport="flightReport" />
+			</v-card>
+		</div>
+
 	</v-card>
 </template>
 
@@ -49,7 +52,7 @@
 import FlightReport from "./FlightReport.vue";
 import Filters from "./Filters/Filters.vue";
 import Graphs from "./Graphs/Graphs.vue";
-import { TRAVEL_COM_URL } from "../../../urls";
+import { TRAVEL_COM_URL, PROFILE_URL } from "../../../urls";
 import { secureGet } from "../../../store/jwt";
 
 export default {
@@ -63,6 +66,7 @@ export default {
 		return {
 			views: {filters: false, graphs: false},
 			flightReport: [],
+			allFlightReports: [],
 			loadingData: false,
 			alertMsg: "",
 			filters: {departments: [], locations: []}
@@ -71,8 +75,8 @@ export default {
 	async mounted() {	
 		this.loadingData = true;
 		this.initViews();
-		this.getFlightSegments();
-		this.getFlights();		
+		await this.getUserAuth();
+		await this.getFlights();		
 		this.loadingData = false;	
 	},
 	
@@ -86,100 +90,27 @@ export default {
 		},
 
 		updateFilters(departments, locations){
-			this.loadingData = true;
 			this.filters = {departments: departments, locations: locations}
-			this.getFlights();
+			this.flightReport = this.applyFilters(this.allFlightReports);
 		},
 
-		async getFlights() {
-			
-			const tmpFlightReport = [
-				{
-					dept: 'Highways and Public Works',
-					finalDestinationCity: 'Calgary',
-					finalDestinationProvince: 'Alberta',
-					totalTrips: '36', 
-					totalExpenses: '46490', 
-					totalFlightCost: '1586.83', 
-					averageDurationDays: '4', 
-					averageExpensesPerDay: '',
-					averageRoundTripFlightCost: ''
-				},
-				{
-					dept: 'Tourism and Culture',
-					finalDestinationCity: 'Calgary',
-					finalDestinationProvince: 'Alberta',
-					totalTrips: '18', 
-					totalExpenses: '56480', 
-					totalFlightCost: '1365.28', 
-					averageDurationDays: '7', 
-					averageExpensesPerDay: '',
-					averageRoundTripFlightCost: ''
-				},
-				{
-					dept: 'Community Services',
-					finalDestinationCity: 'Calgary',
-					finalDestinationProvince: 'Alberta',
-					totalTrips: '6', 
-					totalExpenses: '11276.34', 
-					totalFlightCost: '1378.25', 
-					averageDurationDays: '3.5', 
-					averageExpensesPerDay: '',
-					averageRoundTripFlightCost: ''
-				},
-				{
-					dept: 'Highways and Public Works',
-					finalDestinationCity: 'Vancouver',
-					finalDestinationProvince: 'British Columbia',
-					totalTrips: '47', 
-					totalExpenses: '59482.56', 
-					totalFlightCost: '1647.50', 
-					averageDurationDays: '3', 
-					averageExpensesPerDay: '',
-					averageRoundTripFlightCost: ''
-				},
-				{
-					dept: 'Highways and Public Works',
-					finalDestinationCity: 'Vancouver',
-					finalDestinationProvince: 'British Columbia',
-					totalTrips: '25', 
-					totalExpenses: '68142', 
-					totalFlightCost: '3593.24', 
-					averageDurationDays: '6', 
-					averageExpensesPerDay: '',
-					averageRoundTripFlightCost: ''
-				}
-			]
-			
-			this.flightReport = this.applyFilters(tmpFlightReport);
+		async getUserAuth() {      
+			return secureGet(`${PROFILE_URL}`)
+			.then(resp => {
+				this.$store.commit("auth/setUser", resp.data.data);          
+			})
+			.catch(e => {
+				console.log(e);
+			});
+		},
 
-			return secureGet(`${TRAVEL_COM_URL}/ARInvoices`)
+		async getFlights() {						
+			
+			return secureGet(`${TRAVEL_COM_URL}/statistics`)
 				.then(async (resp) => {						
-					console.log(resp.data)			     	
-					for(const flight of resp.data)
-						await this.getFlightInvoices(flight.InvoiceID)
-				})
-				.catch(e => {
-					console.log(e);
-					this.loadingData = false;
-				});
-		},
-
-		async getFlightInvoices(id) {
-			return secureGet(`${TRAVEL_COM_URL}/ARInvoices/${id}`)
-				.then(resp => {						
-					console.log(resp.data)			     	
-				})
-				.catch(e => {
-					console.log(e);
-					this.loadingData = false;
-				});
-		},
-		
-		async getFlightSegments() {
-			return secureGet(`${TRAVEL_COM_URL}/segments`)
-				.then(resp => {						
-					console.log(resp.data)			     	
+					console.log(resp.data)
+					this.allFlightReports = resp.data
+					this.flightReport = this.applyFilters(this.allFlightReports);
 				})
 				.catch(e => {
 					console.log(e);
@@ -195,15 +126,23 @@ export default {
 			this.views.graphs = !display;
 		},
 
-		applyFilters(flightReport) {			
-
+		applyFilters(allFlightReports) {			
+			let flightReport = JSON.parse(JSON.stringify(allFlightReports))
 			if (this.filters.departments?.length>0){
 				flightReport = flightReport.filter(flight => this.filters.departments.includes(flight.dept));
 			}
 
-			if (this.filters.locations.Canada?.length>0){
-
-				flightReport = flightReport.filter(flight => this.filters.locations.Canada.includes(flight.finalDestinationProvince));
+			if (this.filters.locations.Canada?.length>0 ||
+				this.filters.locations.Yukon?.length>0 ||
+				this.filters.locations.International?.length>0
+			){
+				flightReport = flightReport.filter(flight => { 
+					return (
+						this.filters.locations.Yukon?.includes(flight.finalDestinationCity) ||
+						this.filters.locations.Canada?.includes(flight.finalDestinationProvince) ||
+						this.filters.locations.International?.includes(flight.finalDestinationProvince)
+					)				 
+				});
 			}
 
 			return flightReport;		
