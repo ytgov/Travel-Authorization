@@ -46,8 +46,10 @@ travComRouter.get("/itinerary/:InvoiceNumber", RequiresAuth, async function (req
   const InvoiceNumber = req.params.InvoiceNumber;  
   const invoice = await db("dbo.ARInvoicesNoHealth").where({ InvoiceNumber: InvoiceNumber }).select().first();
   const InvoiceID = invoice.InvoiceID;
-  const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();
-  const segments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
+  const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();  
+  const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
+
+  const segments = unsortedSegments.sort((a: any, b: any) => (a.DepartureInfo >= b.DepartureInfo ? 1 : -1));
 
   const result: {segments: any[]; remarks: string; totalCost: number} = { segments: [], remarks:'', totalCost:0};
   result.remarks = invoice.InvoiceRemarks;
@@ -92,8 +94,10 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
     ctt++;
     if(ctt>1000) break;
 
-    const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();
-    const segments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
+    const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();    
+    const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
+
+    const segments = unsortedSegments.sort((a: any, b: any) => (a.DepartureInfo >= b.DepartureInfo ? 1 : -1));
 
     const detailedSegments: any = {}
     for(const segment of segments){
