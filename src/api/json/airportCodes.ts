@@ -58649,7 +58649,7 @@ export const airports = [
       "name": "Dawson City Airport",
       "continent": "NA",
       "iso_country": "CA",
-      "municipality": "Dawson City",
+      "municipality": "Dawson",
       "iata_code": "YDA"
     },
     {

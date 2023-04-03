@@ -12,7 +12,7 @@
 				</template>
 				<template #body>
 					
-					<v-row>
+					<v-row class="mx-0">
 						<v-col v-for="(locationCategory, categoryInx) in location.categories" :key="categoryInx">
 							
 							<v-checkbox 
@@ -44,7 +44,7 @@
 					<div>Department</div>
 				</template>
 				<template #body>
-					<v-row style="margin: 0; padding: 0;"  v-for="rowInx of [...Array(numberOfDeptRows).keys()]"  :key="rowInx">						
+					<v-row style="" class="mx-3 my-0"  v-for="rowInx of [...Array(numberOfDeptRows).keys()]"  :key="rowInx">						
 
 						<v-col 
 							style="margin: 0; padding: 0;"
@@ -88,15 +88,15 @@ export default {
 	data() {
 		return {
 			location: {
-				categories: ['Yukon Communities', 'Canada', 'International'],
+				categories: ['Yukon', 'Canada', 'International'],
 				subCategories: {
-					'Yukon Communities': ['Beaver Creek', 'Burwash Landing', 'Carmocks', 'Carcross', 'Dawson', 'Whitehorse'],
+					'Yukon': [],
 					'Canada': [],
-					'International': ['England', 'United States of Ameria']
+					'International': []
 				}
 			},
 			selectedCategories: [],
-			selectedSubCategories: {'Yukon Communities': [],
+			selectedSubCategories: {'Yukon': [],
 									'Canada': [],
 									'International': []
 								},			
@@ -118,7 +118,7 @@ export default {
 
 			this.selectedCategories = [];
 			this.selectedSubCategories = {
-				'Yukon Communities': [],
+				'Yukon': [],
 				'Canada': [],
 				'International': []
 			};
@@ -132,10 +132,16 @@ export default {
 		},		
 
 		initLocations() {
-
+			const CanadianProvinces= ['BC','ON','QC','AB','SK','MB','NL','PE','NS','NB','YT','NT','NU'] 
 			const existingProvinces = this.flightReport.map(flight => flight.finalDestinationProvince);
-			this.location.subCategories.Canada = [...new Set(existingProvinces)];			
-			
+			const provinces = [...new Set(existingProvinces)]
+
+			const yukonFlights = this.flightReport.filter(flight => flight.finalDestinationProvince=='YT');
+			const existingYukonCities = yukonFlights.map(flight => flight.finalDestinationCity);
+
+			this.location.subCategories.Yukon = [...new Set(existingYukonCities)]
+			this.location.subCategories.Canada = provinces.filter(prv => CanadianProvinces.includes(prv));
+			this.location.subCategories.International = provinces.filter(prv => !CanadianProvinces.includes(prv));			
 		},	
 
 		selectCategory($event, locationCategory) {			

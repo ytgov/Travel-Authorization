@@ -13,7 +13,7 @@
 				</v-btn>
 			</template>
 			
-			<v-card class="px-10 py-5">
+			<v-card class="px-10 py-5" v-if="!loadingData">
 				<v-row class="mb-3" justify="space-around">
 					<v-col cols="5" />
 					<v-col cols="2">
@@ -24,7 +24,7 @@
 					</v-col>
 					<v-col cols="3" />
 					<v-col cols="2" align="right">
-						<v-btn elevation="5" color="grey" @click="printReportDialog = false">Close</v-btn>
+						<v-btn elevation="5" color="grey" @click="closeModal()">Close</v-btn>
 					</v-col>
 				</v-row>
 
@@ -35,27 +35,48 @@
 							<b>Travel Summary</b>
 						</div>
 					</v-app-bar>
+					<div v-for="page,inx in pages" :key="'pdfpage-'+page+'-'+inx+'-'+id" >
 
-					<v-data-table
-						style="margin: 1rem 0"
-						dense
-						:headers="headers"
-						:items="printRequests"
-						:items-per-page="5"
-						class="elevation-1"
-						hide-default-footer>
-						<template v-slot:[`item.totalExpenses`]="{ item }">				
-							<span v-if="item.totalExpenses?.length>0">${{ item.totalExpenses }}</span>
-						</template>	
-						<template v-slot:[`item.totalFlightCost`]="{ item }">				
-							<span v-if="item.totalFlightCost?.length>0">${{ item.totalFlightCost }}</span>
-						</template>	
-						<template v-slot:[`item.averageRoundTripFlightCost`]="{ item }">				
-							<span v-if="item.averageRoundTripFlightCost?.length>0">${{ item.averageRoundTripFlightCost }}</span>
-						</template>	
-						
-					</v-data-table>
-					
+						<v-data-table
+							style="margin: 1rem 0"
+							dense
+							:headers="headers"
+							:items="printRequests"
+							:items-per-page="15"
+							:page="page"
+							class="elevation-1"
+							hide-default-footer>
+							<template v-slot:[`item.finalDestinationProvince`]="{ item }">
+								<div class="text-center" > {{item.finalDestinationProvince}}</div>
+							</template>
+							<template v-slot:[`item.totalTrips`]="{ item }">
+								<div class="text-center" > {{item.totalTrips}}</div>
+							</template>
+							<template v-slot:[`item.averageDurationDays`]="{ item }">
+								<div class="text-center" > {{item.averageDurationDays}}</div>
+							</template>
+							<template v-slot:[`item.totalExpenses`]="{ item }">				
+								<span v-if="item.totalExpenses>0">${{ Number(item.totalExpenses).toFixed(2) | currency}}</span>
+							</template>	
+							<template v-slot:[`item.totalFlightCost`]="{ item }">				
+								<span v-if="item.totalFlightCost>0">${{ Number(item.totalFlightCost).toFixed(2) | currency}}</span>
+							</template>	
+							<template v-slot:[`item.averageExpensesPerDay`]="{ item }">				
+								<span v-if="item.averageExpensesPerDay>0">${{ Number(item.averageExpensesPerDay).toFixed(2) | currency }}</span>
+							</template>	
+							<template v-slot:[`item.averageRoundTripFlightCost`]="{ item }">				
+								<span v-if="item.averageRoundTripFlightCost>0">${{ Number(item.averageRoundTripFlightCost).toFixed(2) | currency}}</span>
+							</template>	
+							
+						</v-data-table>
+
+						<div style="font-size:7pt; text-align: right; "><i>Page {{page}} of {{pages.length}}</i></div>
+                        <div class="new-page" />
+                    </div>
+                    
+                    <div style="font-size:7pt;" class="form-footer">
+                        <i>Printed on: {{currentDate}}</i>
+                    </div>
 				</div>
 
 				<div class="mt-10" />
@@ -65,7 +86,7 @@
 </template>
 
 <script>
-// import Vue from 'vue'
+	import Vue from 'vue'
 	import { Printd } from "printd";
 
 	export default {
@@ -133,17 +154,27 @@
 				],
 				printReportDialog: false,
 				printRequests: [],				
-				currentDate:""
+				currentDate:"",
+				pages: [],
+				loadingData: false,
 			};
 		},
 		mounted() {},
 		methods: {
 			initPrint() {
-				console.log("Print");
+				this.loadingData= true;
 				this.currentDate = new Date().toDateString()
-				this.totalCost = 0;
-				for (const req of this.flightReport) this.totalCost += req.estimatedCost;
+
 				this.printRequests = JSON.parse(JSON.stringify(this.flightReport));
+
+				for(let index=1; index<((this.printRequests.length/15)+1); index++)
+                    this.pages.push(index)
+				
+				Vue.nextTick(() => this.loadingData= false )
+			},
+			closeModal(){
+				this.$emit('close');
+				this.printReportDialog = false;
 			},
 			print() {
 				const styles = [
@@ -160,6 +191,9 @@
 								.new-page{
 									page-break-before: always;
 									position: relative; top: 8em;
+								}
+								.text-center {
+									text-align: center !important;
 								}
 								
 							}`,
@@ -181,7 +215,8 @@
 				if (pageToPrint) {
 					const pdf = new Printd();
 					pdf.print(pageToPrint, styles);
-					this.printReportDialog = false;
+					this.closeModal()
+					//this.printReportDialog = false;
 				}
 			}
 		}
