@@ -29,8 +29,8 @@ lookupRouter.get("/emailList", ReturnValidationErrors, async function (req: Requ
     let emailList = await axios
       .get(`https://api.gov.yk.ca/directory/employees?email=` + req.query.email, {
         headers: {
-          "Ocp-Apim-Subscription-Key": AZURE_KEY,
-        },
+          "Ocp-Apim-Subscription-Key": AZURE_KEY
+        }
       })
       .then((resp: any) => {
         let list = [];
@@ -72,7 +72,7 @@ lookupRouter.get("/branches", ReturnValidationErrors, async function (req: Reque
       .select("departments.id", "departments.name", "departments.type", "departments.ownedby", "b.name as department")
       .where("departments.type", "=", "branch")
       .innerJoin("departments as b", "departments.ownedby", "b.id");
-    result.map((element) => {
+    result.map(element => {
       element.fullName = `${element.department} - ${element.name}`;
     });
     res.status(200).json(result);
@@ -97,7 +97,7 @@ lookupRouter.get("/department/:id", ReturnValidationErrors, async function (req:
 
 lookupRouter.get("/roles", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    let result = await db("role").select("name");
+    let result = await db("roles").select("name");
     res.status(200).json(result);
   } catch (error: any) {
     console.log(error);
@@ -115,8 +115,8 @@ lookupRouter.get("/departmentList", ReturnValidationErrors, async function (req:
     let depList = await axios
       .get(`https://api.gov.yk.ca/directory/departments`, {
         headers: {
-          "Ocp-Apim-Subscription-Key": AZURE_KEY,
-        },
+          "Ocp-Apim-Subscription-Key": AZURE_KEY
+        }
       })
       .then((resp: any) => {
         for (let slice of resp.data.divisions) {
@@ -153,8 +153,8 @@ lookupRouter.get("/departmentList2", ReturnValidationErrors, async function (req
     axios
       .get(`https://api.gov.yk.ca/directory/divisions`, {
         headers: {
-          "Ocp-Apim-Subscription-Key": AZURE_KEY,
-        },
+          "Ocp-Apim-Subscription-Key": AZURE_KEY
+        }
       })
       .then((resp: any) => {
         let departments = uniq(resp.data.divisions.map((d: any) => d.department));
@@ -228,14 +228,14 @@ lookupRouter.get(
       let depList = await axios
         .get(`https://api.gov.yk.ca/directory/divisions`, {
           headers: {
-            "Ocp-Apim-Subscription-Key": AZURE_KEY,
-          },
+            "Ocp-Apim-Subscription-Key": AZURE_KEY
+          }
         })
         .then((resp: any) => {
           for (let slice of resp.data.divisions) {
             if (cleanList[slice.department] == null)
               cleanList[slice.department] = {
-                branches: [],
+                branches: []
               };
 
             if (slice.branch && !cleanList[slice.department].branches.includes(slice.branch))
@@ -257,8 +257,8 @@ lookupRouter.get("/employees", RequiresAuth, ReturnValidationErrors, async funct
     let depList = await axios
       .get(`https://api.gov.yk.ca/directory/employees`, {
         headers: {
-          "Ocp-Apim-Subscription-Key": AZURE_KEY,
-        },
+          "Ocp-Apim-Subscription-Key": AZURE_KEY
+        }
       })
       .then((resp: any) => {
         for (let slice of resp.data.employees) {
@@ -267,7 +267,7 @@ lookupRouter.get("/employees", RequiresAuth, ReturnValidationErrors, async funct
             lastName: slice.last_name,
             department: slice.department,
             fullName: slice.full_name,
-            email: slice.email,
+            email: slice.email
           });
         }
         return cleanList;
@@ -286,8 +286,8 @@ lookupRouter.get("/employee-info", async function (req: Request, res: Response) 
     let employeeInfo = await axios
       .get(`https://api.gov.yk.ca/directory/employees?email=` + req.query.email, {
         headers: {
-          "Ocp-Apim-Subscription-Key": AZURE_KEY,
-        },
+          "Ocp-Apim-Subscription-Key": AZURE_KEY
+        }
       })
       .then((resp: any) => {
         // console.log(resp.data)
@@ -304,7 +304,7 @@ lookupRouter.get("/employee-info", async function (req: Request, res: Response) 
             office: employee.office,
             address: employee.address,
             community: employee.community,
-            postalCode: employee.postal_code,
+            postalCode: employee.postal_code
           };
         }
         return {};

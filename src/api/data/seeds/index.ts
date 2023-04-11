@@ -5,6 +5,7 @@ export async function seedUp() {
 
   await sqldb("user").update({ roles: "User" }).whereRaw("1=1");
   await sqldb("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" });
+  await sqldb("user").update({ roles: "Admin" }).where({ email: "dpdavids@ynet.gov.yk.ca" });
 
   await sqldb("roles").delete().whereRaw("1=1");
   await sqldb("roles").insert([
@@ -61,8 +62,15 @@ export async function seedUp() {
   ]);
 
   await sqldb("destinations").delete().whereRaw("1=1");
-
   await sqldb("destinations").insert([
+    {
+      province: "YT",
+      city: "Whitehorse"
+    },
+    {
+      province: "BC",
+      city: "Vancouver"
+    },
     {
       province: "AB",
       city: "Airdrie"
@@ -317,10 +325,6 @@ export async function seedUp() {
     },
     {
       province: "BC",
-      city: "North Vancouver"
-    },
-    {
-      province: "BC",
       city: "Tumbler"
     },
     {
@@ -333,19 +337,11 @@ export async function seedUp() {
     },
     {
       province: "BC",
-      city: "Vancouver"
-    },
-    {
-      province: "BC",
       city: "Fernie"
     },
     {
       province: "BC",
       city: "Parksville"
-    },
-    {
-      province: "BC",
-      city: "Vancouver"
     },
     {
       province: "BC",
@@ -1445,10 +1441,6 @@ export async function seedUp() {
     },
     {
       province: "YT",
-      city: "Whitehorse"
-    },
-    {
-      province: "YT",
       city: "Dawson"
     },
     {
@@ -1489,5 +1481,63 @@ export async function seedUp() {
     }
   ]);
 
-  return "Done  ";
+  await sqldb("forms").delete().whereRaw("1=1");
+  await sqldb("forms").insert([
+    {
+      userId: 1,
+      firstName: "John",
+      lastName: "Doe",
+      department: "IT",
+      division: "IT",
+      branch: "IT",
+      unit: "IT",
+      email: "dpdavids@ynet.gov.yk.ca",
+      mailcode: "123",
+      daysOffTravelStatus: 1,
+      dateBackToWork: "2019-01-01",
+      travelDuration: 1,
+      purpose: "IT",
+      travelAdvance: 4,
+      eventName: "An Event",
+      summary: "Summary",
+      benefits: "Benefits",
+      status: "approved",
+      formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306319",
+      supervisorEmail: "dpdavids@ynet.gov.yk.ca",
+      preappId: 1,
+      approved: "",
+      requestChange: "",
+      denialReason: "",
+      oneWayTrip: true,
+      multiStop: true,
+      createdBy: 1
+    }
+  ]);
+
+  // t.increments("id").notNullable().primary();
+  // t.integer("taid").notNullable();
+  // t.integer("locationId");
+  // t.specificType("departureDate", "DATE");
+  // t.time("departureTime");
+  // t.string("transport");
+
+  await sqldb("stops").delete().whereRaw("1=1");
+  await sqldb("stops").insert([
+    {
+      taid: 1,
+      locationId: 1,
+      departureDate: "2023-05-12",
+      departureTime: "12:00:00",
+      transport: "Plane"
+    },
+    {
+      taid: 1,
+      locationId: 2,
+      departureDate: "2019-05-15",
+      departureTime: "12:00:00",
+      transport: "Plane"
+    }
+  ]);
+
+  return "Done";
 }
