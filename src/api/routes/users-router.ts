@@ -57,7 +57,6 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
       .where("status", "=", "Active")
       .andWhereLike("roles", "%TdUser%");
 
-    // console.log(users);
     res.status(200).json(users);
   } catch (error: any) {
     console.log(error);

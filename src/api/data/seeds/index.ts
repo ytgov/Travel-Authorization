@@ -1481,6 +1481,18 @@ export async function seedUp() {
     }
   ]);
 
+  // INSERT INTO public.forms ("userId","firstName","lastName",department,division,branch,unit,email,mailcode,"daysOffTravelStatus","dateBackToWork","travelDuration",purpose,"travelAdvance","eventName",summary,benefits,status,"formId","supervisorEmail","preappId",approved,"requestChange","denialReason","oneWayTrip","multiStop","createdBy") VALUES
+  //  (2,'Max','Parker','Highways and Public Works',NULL,NULL,NULL,'max.parker@yukon.ca',NULL,NULL,'2023-03-18',10,'Conference',1,'Global Biotechnology Summit',NULL,NULL,'Approved','1',NULL,1,NULL,NULL,NULL,false,true,NULL),
+  //  (2,'Max','Parker','Highways and Public Works',NULL,NULL,NULL,'max.parker@yukon.ca',NULL,NULL,'2023-03-20',3,'Conference',1,'Gelobal  IT',NULL,NULL,'Approved','3',NULL,3,NULL,NULL,NULL,false,true,NULL),
+  //  (1,'Hassan','Anvar','Highways and Public Works',NULL,NULL,NULL,'hassan.anvar@pacificintelligent.com',NULL,NULL,'2023-03-22',2,'Conference',1,'Gelobal  IT',NULL,NULL,'Approved','4',NULL,4,NULL,NULL,NULL,false,true,NULL),
+  //  (2,'Jeff','Barnhardt','Highways and Public Works',NULL,NULL,NULL,'jeff.barnhardt@yukon.ca',NULL,NULL,'2023-03-25',5,'Conference',1,'Gelobal IT',NULL,NULL,'Approved','2',NULL,2,NULL,NULL,NULL,false,true,NULL);
+  //  INSERT INTO public.stops (taid,"locationId","departureDate","departureTime",transport) VALUES
+  //  (4,405,'2023-03-22','08:00:00','Plane'),
+  //  (1,436,'2023-03-12','12:00:00','Plane'),
+  //  (1,431,'2023-03-12','16:00:00','Plane'),
+  //  (2,445,'2023-03-20','08:00:00','Plane'),
+  //  (3,585,'2023-03-20','09:00:00','Plane');
+
   await sqldb("forms").delete().whereRaw("1=1");
   await sqldb("forms").insert([
     {
@@ -1491,7 +1503,7 @@ export async function seedUp() {
       division: "IT",
       branch: "IT",
       unit: "IT",
-      email: "dpdavids@ynet.gov.yk.ca",
+      email: "Max.parker@yukon.ca",
       mailcode: "123",
       daysOffTravelStatus: 1,
       dateBackToWork: "2019-01-01",
@@ -1501,10 +1513,68 @@ export async function seedUp() {
       eventName: "An Event",
       summary: "Summary",
       benefits: "Benefits",
-      status: "approved",
+      status: "Approved",
       formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306319",
       supervisorEmail: "dpdavids@ynet.gov.yk.ca",
       preappId: 1,
+      approved: "",
+      requestChange: "",
+      denialReason: "",
+      oneWayTrip: true,
+      multiStop: true,
+      createdBy: 1
+    },
+    {
+      userId: 1,
+      firstName: "Jane",
+      lastName: "Doe",
+      department: "IT",
+      division: "IT",
+      branch: "IT",
+      unit: "IT",
+      email: "Max.parker@yukon.ca",
+      mailcode: "123",
+      daysOffTravelStatus: 1,
+      dateBackToWork: "2019-01-01",
+      travelDuration: 1,
+      purpose: "IT",
+      travelAdvance: 4,
+      eventName: "An Event",
+      summary: "Summary",
+      benefits: "Benefits",
+      status: "Approved",
+      formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306311",
+      supervisorEmail: "dpdavids@ynet.gov.yk.ca",
+      preappId: 2,
+      approved: "",
+      requestChange: "",
+      denialReason: "",
+      oneWayTrip: true,
+      multiStop: true,
+      createdBy: 1
+    },
+    {
+      userId: 1,
+      firstName: "Some Other",
+      lastName: "Guy",
+      department: "IT",
+      division: "IT",
+      branch: "IT",
+      unit: "IT",
+      email: "Max.parker@yukon.ca",
+      mailcode: "123",
+      daysOffTravelStatus: 1,
+      dateBackToWork: "2019-01-01",
+      travelDuration: 1,
+      purpose: "IT",
+      travelAdvance: 4,
+      eventName: "An Event",
+      summary: "Summary",
+      benefits: "Benefits",
+      status: "Approved",
+      formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306312",
+      supervisorEmail: "dpdavids@ynet.gov.yk.ca",
+      preappId: 3,
       approved: "",
       requestChange: "",
       denialReason: "",
@@ -1536,8 +1606,38 @@ export async function seedUp() {
       departureDate: "2019-05-15",
       departureTime: "12:00:00",
       transport: "Plane"
+    },
+    {
+      taid: 2,
+      locationId: 3,
+      departureDate: "2023-05-12",
+      departureTime: "12:00:00",
+      transport: "Plane"
+    },
+    {
+      taid: 2,
+      locationId: 4,
+      departureDate: "2019-05-15",
+      departureTime: "12:00:00",
+      transport: "Plane"
+    },
+    {
+      taid: 3,
+      locationId: 5,
+      departureDate: "2023-05-12",
+      departureTime: "12:00:00",
+      transport: "Plane"
+    },
+    {
+      taid: 3,
+      locationId: 6,
+      departureDate: "2019-05-15",
+      departureTime: "12:00:00",
+      transport: "Plane"
     }
   ]);
+
+  await sqldb("travelDeskTravelRequest").delete().whereRaw("1=1");
 
   return "Done";
 }

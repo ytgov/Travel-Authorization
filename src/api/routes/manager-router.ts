@@ -39,7 +39,8 @@ managerRouter.get("/forms/:formId", ReturnValidationErrors, async function (req:
 managerRouter.get("/forms", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     let user = await userService.getByEmail(req.user.email);
-    let auth = await db("forms").select("*").where("supervisorEmail", "=", user.email);
+    // let auth = await db("forms").select("*").where("supervisorEmail", "=", user.email);
+    let auth = await db("forms").select("*").where("supervisorEmail", "=", "user.email");
 
     for (let index = 0; index < auth.length; index++) {
       auth[index].stops = await db("stops").select("*").where("taid", "=", auth[index].id);
