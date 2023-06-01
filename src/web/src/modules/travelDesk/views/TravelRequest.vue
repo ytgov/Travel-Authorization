@@ -122,7 +122,7 @@
                         startDate: startDate.toISOString(), 
                         endDate:  authorizedTravel.dateBackToWork, 
                         status: status,
-                        invoiceNumber: authorizedTravel.travelRequest.invoiceNumber
+                        invoiceNumber: authorizedTravel.travelRequest?.invoiceNumber
                     })                
                     
                 }                
