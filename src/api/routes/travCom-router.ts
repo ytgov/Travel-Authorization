@@ -12,42 +12,42 @@ const preAuthDB = knex(DB_CONFIG);
 export const travComRouter = express.Router();
 
 travComRouter.get("/ARInvoices", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoices").select();
+  const result = await db("dbo.ARInvoicesNoHealth").select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/ARInvoices/:id", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoices").where({ InvoiceID: req.params.id }).select();
+  const result = await db("dbo.ARInvoicesNoHealth").where({ InvoiceID: req.params.id }).select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/ARInvoiceDetails", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoiceDetails").select();
+  const result = await db("dbo.ARInvoiceDetailsNoHealth").select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/ARInvoiceDetails/:id", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoiceDetails").where({ InvoiceID: req.params.id }).select();
+  const result = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: req.params.id }).select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/segments", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.Segments").select();
+  const result = await db("dbo.segmentsNoHealth").select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/segments/:id", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.Segments").where({ InvoiceID: req.params.id }).select();
+  const result = await db("dbo.segmentsNoHealth").where({ InvoiceID: req.params.id }).select();
   res.status(200).json({ data: result });
 });
 
 travComRouter.get("/itinerary/:InvoiceNumber", RequiresAuth, async function (req: Request, res: Response) {
   
   const InvoiceNumber = req.params.InvoiceNumber;  
-  const invoice = await db("dbo.ARInvoices").where({ InvoiceNumber: InvoiceNumber }).select().first();
+  const invoice = await db("dbo.ARInvoicesNoHealth").where({ InvoiceNumber: InvoiceNumber }).select().first();
   const InvoiceID = invoice.InvoiceID;
-  const details = await db("dbo.ARInvoiceDetails").where({ InvoiceID: InvoiceID }).select();  
-  const unsortedSegments = await db("dbo.Segments").where({ InvoiceID: InvoiceID }).select();
+  const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();  
+  const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
 
   const segments = unsortedSegments.sort((a: any, b: any) => (a.DepartureInfo >= b.DepartureInfo ? 1 : -1));
 
@@ -82,7 +82,7 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
   const startDate = req.params.start+'T00:00:00Z';
   const endDate = req.params.end+'T00:00:00Z';
 
-  const invoices = await db("dbo.ARInvoices")
+  const invoices = await db("dbo.ARInvoicesNoHealth")
     .where('BookingDate', '>=', startDate)
     .where('BookingDate', '<=', endDate).select()
 
@@ -94,8 +94,8 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
     ctt++;
     if(ctt>1000) break;
 
-    const details = await db("dbo.ARInvoiceDetails").where({ InvoiceID: InvoiceID }).select();    
-    const unsortedSegments = await db("dbo.Segments").where({ InvoiceID: InvoiceID }).select();
+    const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();    
+    const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
     if(!unsortedSegments || unsortedSegments.length==0) continue
 
     const segments = unsortedSegments.sort((a: any, b: any) => (a.DepartureInfo >= b.DepartureInfo ? 1 : -1));
@@ -181,9 +181,9 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
   }
   
   //__
-  const invoices = await db("dbo.ARInvoices").select()
-  const allDetails = await db("dbo.ARInvoiceDetails").select();
-  const allSegments = await db("dbo.Segments").select();
+  const invoices = await db("dbo.ARInvoicesNoHealth").select()
+  const allDetails = await db("dbo.ARInvoiceDetailsNoHealth").select();
+  const allSegments = await db("dbo.segmentsNoHealth").select();
   
   const statistics: any = {}
   let invoiceCounter=0;
@@ -203,8 +203,8 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
       }
     }
 
-    // const details = await db("dbo.ARInvoiceDetails").where({ InvoiceID: InvoiceID }).select();
-    // const unsortedSegments = await db("dbo.Segments").where({ InvoiceID: InvoiceID }).select();
+    // const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();
+    // const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
     const details = allDetails.filter(detail => detail.InvoiceID == InvoiceID );
     const unsortedSegments = allSegments.filter(seg => seg.InvoiceID == InvoiceID );
     if(!unsortedSegments || unsortedSegments.length==0) continue
