@@ -1,6 +1,6 @@
 <template>
     <div>
-        <title-card class="mt-5" titleWidth="6.5rem" largeTitle>
+        <title-card class="mt-5" titleWidth="7.5rem" largeTitle>
             <template #title>
                 <div>Segments</div>
             </template>

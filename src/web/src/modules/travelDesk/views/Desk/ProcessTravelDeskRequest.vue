@@ -31,7 +31,7 @@
 								:travelerState="state" 
 								:readonly="readonly"/>
 
-							<title-card class="mt-10" titleWidth="11rem" largeTitle>
+							<title-card class="mt-10" titleWidth="12.5rem" largeTitle>
 								<template #title>
 									<div>Travel Information</div>
 								</template>										
@@ -44,13 +44,13 @@
 											class="my-1 ml-auto"
 										/>
 									</v-row>
-									<title-card class="mt-9 mx-5" titleWidth="8rem">
+									<title-card class="mt-9 mx-5" titleWidth="8.5rem">
 										<template #title>
 											<div>Flight Request</div>
 										</template>										
 										<template #body>
 											<v-row class="m-0 p-0">
-												<v-col cols="9" class="my-0 mx-0 p-0" >
+												<v-col cols="9" class="my-0 mx-0 py-4" >
 													<flight-request-table 
 														:key="flightKey"
 														class="mr-n5 mt-n1"

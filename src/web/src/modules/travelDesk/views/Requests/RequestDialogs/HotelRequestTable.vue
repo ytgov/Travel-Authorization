@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<title-card class="mt-10 mx-5" titleWidth="7.5rem">
+		<title-card class="mt-10 mx-5" titleWidth="8.5rem">
 			<template #title>
 				<div>Hotel Request</div>
 			</template>

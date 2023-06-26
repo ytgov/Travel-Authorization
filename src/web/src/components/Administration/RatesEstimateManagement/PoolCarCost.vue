@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <H1>Pool Car Costs</H1>
-    <Breadcrumbs />
+    <Breadcrumbs class="mb-5"/>
 
     <v-data-table :headers="headers" :items="vehicles" class="elevation-1">
       <template v-slot:top>

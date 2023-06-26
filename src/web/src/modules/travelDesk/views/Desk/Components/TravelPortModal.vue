@@ -26,7 +26,7 @@
 				<v-card-text>
 					<v-row class="mt-5">
 						<v-col cols="3">
-							<title-card class="mt-5" titleWidth="10rem" largeTitle>
+							<title-card class="mt-5" titleWidth="10.5rem" largeTitle>
 								<template #title>
 									<div>Travel Port Text</div>
 								</template>										
@@ -54,7 +54,7 @@
 							</title-card>							
 						</v-col>
 						<v-col cols="9">
-							<title-card class="mt-5" titleWidth="16rem" largeTitle>
+							<title-card class="mt-5" titleWidth="18rem" largeTitle>
 								<template #title>
 									<div>Cost and Group Segments</div>
 								</template>

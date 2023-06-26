@@ -51,7 +51,8 @@ export const DB_CONFIG = {
     password: process.env.DB_PASS || "",
     database: process.env.DB_NAME || "",
     port: parseInt(process.env.DB_PORT || "1433")
-  }
+  },
+  pool: { min: 0, max: 10, idleTimeoutMillis: 1000}
 };
 
 export const TRAVCOM_DB_CONFIG = {

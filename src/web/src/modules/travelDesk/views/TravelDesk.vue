@@ -40,7 +40,7 @@
         },
         async mounted() {
             this.loadingData = true
-            await this.getUserAuth();        
+            // await this.getUserAuth();        
             this.department = this.$store.state.auth.department
             this.admin = Vue.filter("isAdmin")();
             await this.getDestinations();
@@ -93,8 +93,8 @@
                 return secureGet(`${TRAVEL_DESK_URL}/`)
                     .then(resp => {
                     this.travelDeskRequests= resp.data;
-                    console.log(this.travelDeskRequests)
-                    console.log(this.$store.state.auth.user.id)
+                    // console.log(this.travelDeskRequests)
+                    // console.log(this.$store.state.auth.user.id)
                     this.travelDeskRequests.forEach(req =>{
                         req.userTravel = (this.$store.state.auth.fullName == req.travelDeskOfficer)? 1:0
                         req.bookedStatus = req.status =="booked"? 1 : 0                        

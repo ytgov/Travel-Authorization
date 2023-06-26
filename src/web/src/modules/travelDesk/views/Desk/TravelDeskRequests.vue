@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-10 mb-5">
+    <div class="mx-10 mb-5" v-if="tdUser">
 
         <v-row class="my-0 mx-0" :key="update">      
             <print-travel-desk-report
@@ -122,10 +122,12 @@
                 admin: false,
                 department: "",
                 selectedRequests: [],
-                update: 0,				
+                update: 0,
+                tdUser: false,
             };
         },
         mounted() {
+            this.tdUser=Vue.filter("isTdUser")()
         },
         computed: {},
         methods: {
