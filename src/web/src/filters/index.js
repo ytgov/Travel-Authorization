@@ -12,9 +12,16 @@ Vue.filter("isAdmin", function () {
 });
 
 Vue.filter("isSystemAdmin", function () {
-  const userRoles = store.state.auth.user.roles;
-  const admin = userRoles.includes("Admin");
+  const userRoles = store.state.auth?.user?.roles;
+  const admin = userRoles?.includes("Admin");
   return admin;
+});
+
+Vue.filter("isTdUser", function () {  
+  const userRoles = store.state.auth?.user?.roles;
+  const admin = userRoles?.includes("Admin");
+  const TdUser = userRoles?.includes("TdUser");
+  return (admin || TdUser);
 });
 
 Vue.filter("beautifyDate", function (date) {

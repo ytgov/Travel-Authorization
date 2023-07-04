@@ -21,7 +21,7 @@ const routes = [
       },
       {
         name: "TravelForm",
-        path: "/:formId?",
+        path: "/my-travel-requests/:formId?",
         meta: {
           requiresAuth: true
         },

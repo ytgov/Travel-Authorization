@@ -6,6 +6,7 @@ import Vue from "vue";
 import createAuth0Client from "@auth0/auth0-spa-js";
 import { secureDelete, secureGet, securePut, securePost } from "@/store/jwt";
 import { domain, clientId, audience } from "../../auth_config.json";
+import router from "../router";
 
 /**
  *  Vue.js Instance Definition
@@ -66,7 +67,9 @@ export const useAuth0 = ({
       },
 
       getTokenSilently(o) {
-        return this.auth0Client.getTokenSilently(o);
+        // console.log(this.auth0Client)
+        if(!this.auth0Client) router.push('/');
+        return this.auth0Client?.getTokenSilently(o);
       },
 
       get(url) {

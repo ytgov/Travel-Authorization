@@ -187,6 +187,9 @@ export default {
 
       this.hasSidebar = val && this.isAuthenticated;
     },
+    $route: function() {
+      this.getDropdownTitle()
+    }
   },
   methods: {
     nav: function(location) {
@@ -213,7 +216,27 @@ export default {
     async doInitialize() {
       //await this.initialize();
       this.showOverlay = false;
+      this.getDropdownTitle()
     },
+    getDropdownTitle(){
+      const path = this.$route.path
+      const routes = [
+        { name:"Dashboard", to:"/dashboard"},
+        { name:'My Travel Requests', to:"/my-travel-requests"},        
+        { name:'PreApproved', to:"/preapproved"},          
+        { name:'Travel Desk', to:"/travel-desk"},          
+        { name:'Travel Request', to:"/travel-request"},          
+        { name:'Flight Expense', to:"/flight-expense"},          
+        { name:'Reports', to:"/reporting-summary"},          
+        { name:'Manager View', to:"/managerView"},
+      ]
+      for(const route of routes){
+        if(path.includes(route.to)){
+          this.menuTitle=route.name    
+          break
+        }      
+      }
+    }
   },
 };
 </script>

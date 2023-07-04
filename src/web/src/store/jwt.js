@@ -13,9 +13,9 @@ export async function prepareAxios() {
   });
 }
 
-export async function secureGet(url) {
-  let api = await prepareAxios();
-  return api.get(url);
+export async function secureGet(url, timeout) {
+  let api = await prepareAxios();  
+  return api.get(url, {timeout: (timeout? timeout: 0)});
 }
 
 export async function securePut(url, body) {

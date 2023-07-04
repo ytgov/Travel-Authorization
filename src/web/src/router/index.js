@@ -22,6 +22,8 @@ import reportsRouter from "../modules/reports/router/index.js";
 import authenticationRouter from "../modules/authentication/router";
 import homeRouter from "../modules/home/router";
 
+import store from "../store"
+
 // import { authGuard } from "../auth/authGuard";
 
 Vue.use(VueRouter);
@@ -143,6 +145,10 @@ router.beforeEach(async (to, from, next) => {
       return guardAction();
     }
   });
+});
+
+router.afterEach(async () => {
+  return await store.dispatch("auth/checkAuthentication")
 });
 
 export default router;

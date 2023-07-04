@@ -32,20 +32,21 @@
 								:travelerState="state" 
 								:readonly="false"/>
 							
-							<title-card class="mt-10" titleWidth="11rem" largeTitle>
+							<title-card class="mt-10" titleWidth="12.5rem" largeTitle>
 								<template #title>
 									<div>Travel Information</div>
 								</template>
 								<template #body>
 							
-									<title-card class="mt-5 mx-5" titleWidth="8rem">
+									<title-card class="mt-5 mx-5" titleWidth="8.5rem">
 										<template #title>
 											<div>Flight Request</div>
 										</template>
 										<template #body>						
 											<v-row class="mt-0 mx-0">
 												<v-col cols="9" >
-													<flight-request-table 
+													<flight-request-table
+														:requestID="travelerDetails.requestID" 
 														:authorizedTravel="authorizedTravel"
 														:readonly="false"
 														:travelDeskUser="false"

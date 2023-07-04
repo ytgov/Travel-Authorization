@@ -116,7 +116,7 @@ export default {
     async mounted() {
         this.endDate = (new Date()).toISOString().slice(0,10)
         const startDate = new Date();
-        startDate.setDate(startDate.getDate()-60); //2 months
+        startDate.setDate(startDate.getDate()-30); //1 months
         this.startDate = startDate.toISOString().slice(0,10)
         this.alertMsg = ""
         this.reloadData(0, true)
@@ -178,7 +178,7 @@ export default {
         async reloadData(tabs, auth){
             this.dataReady = false
             this.loadingData = true;
-            if(auth) await this.getUserAuth();
+            if(auth) console.log(auth)//await this.getUserAuth();
             await this.getFlights();
             this.extractFlights();
             this.loadingData = false;

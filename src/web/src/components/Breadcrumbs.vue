@@ -25,7 +25,13 @@ export default {
   },
   methods: {
     generateRouterLinks() {
-      this.items = [];
+      this.items = [{
+        text: "Dashboard",
+        to: {
+          path: "/dashboard"
+        },
+        disabled: false
+      }];
       let items = this.$route.path.split("/");
       //items = items.filter(x => x != "");
       items.shift();

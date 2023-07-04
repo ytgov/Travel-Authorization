@@ -1,6 +1,6 @@
 <template>
     <div>
-        <title-card class="mt-5" titleWidth="6rem" largeTitle :border="'1px solid #FFEEDD !important'">
+        <title-card class="mt-5" titleWidth="7rem" largeTitle :border="'1px solid #FFEEDD !important'">
             <template #title>
                 <div class="brown--text">Grouping</div>
             </template>

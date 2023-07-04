@@ -58,7 +58,7 @@ travComRouter.get("/itinerary/:InvoiceNumber", RequiresAuth, async function (req
   for(const segment of segments){
     const depAirport = airports.filter(airport => airport.iata_code==segment.DepartureCityCode)
     const arrAirport = airports.filter(airport => airport.iata_code==segment.ArrivalCityCode)
-    const detail = details.filter((detail: any) => detail.InvoiceDetailID == segment.invoiceDetailID)
+    const detail = details.filter((detail: any) => detail.InvoiceDetailID == segment.InvoiceDetailID)
     
     result.segments.push({
       'flightNumber': segment.AirlineCode + Number(segment.FlightNumber),
@@ -85,7 +85,7 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
   const invoices = await db("dbo.ARInvoicesNoHealth")
     .where('BookingDate', '>=', startDate)
     .where('BookingDate', '<=', endDate).select()
-    
+
   const results: any[] = []
   let ctt=0
   for(const invoice of invoices){  
@@ -96,13 +96,14 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
 
     const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();    
     const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
+    if(!unsortedSegments || unsortedSegments.length==0) continue
 
     const segments = unsortedSegments.sort((a: any, b: any) => (a.DepartureInfo >= b.DepartureInfo ? 1 : -1));
 
     const detailedSegments: any = {}
     for(const segment of segments){
-      if(!detailedSegments[segment.invoiceDetailID]) detailedSegments[segment.invoiceDetailID]=[]
-      detailedSegments[segment.invoiceDetailID].push(segment)
+      if(!detailedSegments[segment.InvoiceDetailID]) detailedSegments[segment.InvoiceDetailID]=[]
+      detailedSegments[segment.InvoiceDetailID].push(segment)
     }
     
     const detail = details.filter((detail: any) => detail.ProductCode == 18)[0]
@@ -152,17 +153,61 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
 
 
 travComRouter.get("/statistics", RequiresAuth, async function (req: Request, res: Response) {
+  const reports = await preAuthDB("StatisticsRecord").select("*");
+  res.status(200).json(reports);
+});
 
-  const invoices = await db("dbo.ARInvoicesNoHealth").select()
+travComRouter.get("/statistics-update-progress", RequiresAuth, async function (req: Request, res: Response) {
+  const progress = await preAuthDB("StatisticsProgress").select("*");
+  res.status(200).json(progress);
+});
+
+travComRouter.get("/update-statistics", RequiresAuth, async function (req: Request, res: Response) {
+
+  //__Progress
+  const statisticsProgress = await preAuthDB("StatisticsProgress").select('*').where("id", 1);
   
-  const results: any[] = []
+  if(statisticsProgress.length==0){
+    await preAuthDB("StatisticsProgress").insert({"id":1, "last_update":new Date(), "progress":0 })
+  }else{    
+    const lastUpdateTime = new Date(statisticsProgress[0].last_update)
+    const updateTime = new Date()
+    updateTime.setMinutes(updateTime.getMinutes()-30); //at least 30 minutes before re-run
+    if(lastUpdateTime>updateTime){
+      return res.status(500).json('Please Wait at least 30 minutes before re-run the updates.');
+    }else{
+      await preAuthDB("StatisticsProgress").update({"last_update":new Date(),"progress":0}).where("id", 1);
+    }
+  }
+  
+  //__
+  const invoices = await db("dbo.ARInvoicesNoHealth").select()
+  const allDetails = await db("dbo.ARInvoiceDetailsNoHealth").select();
+  const allSegments = await db("dbo.segmentsNoHealth").select();
+  
   const statistics: any = {}
-
+  let invoiceCounter=0;
+  console.log(invoices.length)
+  
   for(const invoice of invoices){  
     const InvoiceID = invoice.InvoiceID
- 
-    const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();
-    const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
+    
+    invoiceCounter++;    
+    if(invoiceCounter%300==0){
+      const progress = (100*invoiceCounter/invoices.length) | 0;
+      console.log(invoiceCounter +" => " +String(progress)+" %")
+      try{
+        await preAuthDB("StatisticsProgress").update({"last_update":new Date(),"progress":progress}).where("id", 1);
+      }catch(error: any){
+        console.log(error);
+      }
+    }
+
+    // const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();
+    // const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
+    const details = allDetails.filter(detail => detail.InvoiceID == InvoiceID );
+    const unsortedSegments = allSegments.filter(seg => seg.InvoiceID == InvoiceID );
+    if(!unsortedSegments || unsortedSegments.length==0) continue
 
     const segments = unsortedSegments.sort((a: any, b: any) => (a.DepartureInfo >= b.DepartureInfo ? 1 : -1));
 
@@ -215,6 +260,9 @@ travComRouter.get("/statistics", RequiresAuth, async function (req: Request, res
 
   }
 
+  await preAuthDB("StatisticsRecord").del()
+  await preAuthDB.raw(`ALTER SEQUENCE "StatisticsRecord_id_seq" RESTART WITH 1;`)
+
   const destinations = await preAuthDB("destinations").select("province", "city");
 
   for(const key of Object.keys(statistics)){
@@ -229,11 +277,21 @@ travComRouter.get("/statistics", RequiresAuth, async function (req: Request, res
     record.averageDurationDays = (record.days/record.totalTrips)
     record.averageExpensesPerDay = (record.totalExpenses/record.days)
     record.averageRoundTripFlightCost = (record.roundTripCost/record.totalRoundTrips)
-    
-    results.push(record)
+    try{
+      await preAuthDB("StatisticsRecord").insert(record);
+    }catch(error: any){
+      console.log(error);
+      console.log(record)
+    }    
   }
 
-  res.status(200).json(results);
+  try{
+    await preAuthDB("StatisticsProgress").update({"last_update":new Date(),"progress":100}).where("id", 1);
+  }catch(error: any){
+    console.log(error);
+  }
+
+  res.status(200).json('Done');
 });
 
 function getDays(departureDate: string, lastLegDate: string) {

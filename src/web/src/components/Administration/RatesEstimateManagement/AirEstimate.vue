@@ -2,7 +2,7 @@
   <v-app>
     <v-container fluid>
       <H1>Flight Estimates</H1>
-      <Breadcrumbs />
+      <Breadcrumbs class="mb-5"/>
       <v-card> </v-card>
       <v-row v-for="(flightEstimate, index) in flightEstimates" :key="index">
         <v-col cols="3">

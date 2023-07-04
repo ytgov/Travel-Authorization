@@ -7,9 +7,9 @@
 		<div v-else>	
 			<v-card class="mt-5" flat>	
 
-				<v-card-title>Travel Summary</v-card-title>		
+				<v-card-title class="text-h5 mx-5">Travel Summary</v-card-title>		
 				
-				<v-card-actions>							
+				<v-card-actions class="mx-8">							
 					<v-btn					
 						@click="switchFilterView(views.filters)"												
 						elevation="5"			
@@ -21,6 +21,7 @@
 						elevation="5"				
 						:color="views.graphs?'primary':'secondary'">Graph
 					</v-btn>
+					<update-progress-modal class="ml-auto"/>
 				
 				</v-card-actions>
 				
@@ -34,6 +35,7 @@
 
 			<v-card class="mt-5" v-if="views.graphs" flat>
 				<graphs
+					:updateGraph="updateGraph"
 					:filtersApplied="views.filters"
 					:filteredFlightReport="flightReport"
 					:allFlightReports="allFlightReports"/>
@@ -54,13 +56,15 @@ import Filters from "./Filters/Filters.vue";
 import Graphs from "./Graphs/Graphs.vue";
 import { TRAVEL_COM_URL, PROFILE_URL } from "../../../urls";
 import { secureGet } from "../../../store/jwt";
+import UpdateProgressModal from './Common/UpdateProgressModal.vue';
 
 export default {
 	name: "Report",
 	components: {
 		FlightReport,
 		Filters,
-		Graphs
+		Graphs,
+		UpdateProgressModal
 	},
 	data() {
 		return {
@@ -69,13 +73,14 @@ export default {
 			allFlightReports: [],
 			loadingData: false,
 			alertMsg: "",
+			updateGraph: 0,
 			filters: {departments: [], locations: []}
 		};
 	},
 	async mounted() {	
 		this.loadingData = true;
 		this.initViews();
-		await this.getUserAuth();
+		// await this.getUserAuth();
 		await this.getFlights();		
 		this.loadingData = false;	
 	},
@@ -92,6 +97,7 @@ export default {
 		updateFilters(departments, locations){
 			this.filters = {departments: departments, locations: locations}
 			this.flightReport = this.applyFilters(this.allFlightReports);
+			this.updateGraph++
 		},
 
 		async getUserAuth() {      

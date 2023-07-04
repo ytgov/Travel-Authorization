@@ -55,7 +55,7 @@ export default {
   },
   async mounted() {
     this.loadingData = true;
-    await this.getUserAuth()
+    // await this.getUserAuth()
     await this.getEmployees();
     await this.getDepartmentBranch();
     await this.getTravelPurposes();

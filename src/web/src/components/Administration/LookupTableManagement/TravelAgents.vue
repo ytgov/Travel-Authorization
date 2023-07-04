@@ -1,8 +1,9 @@
 <template>
-    <div>
+    <div class="my-5 mx-10">
+        <breadcrumbs class="mb-1" />
         <v-alert v-if="alertMsg" class="mt-5" type="info">{{ alertMsg }}</v-alert>
         <v-card :loading="savingData" class="px-5 pb-5">
-            <v-row class="mx-0">
+            <v-row class="mx-0 my-1">
                 <new-travel-agent
                     :disabled="!admin"                
                     class="mt-4 mr-5 ml-auto"					
@@ -41,11 +42,13 @@
     import NewTravelAgent from './TravelAgentsComponents/NewTravelAgent.vue'
     import { TRAVEL_DESK_URL } from "../../../urls"
     import { secureGet, securePost, secureDelete } from '../../../store/jwt';
+    import Breadcrumbs from '../../Breadcrumbs.vue';
 
     export default {		
         name: "TravelAgents",
         components: {
-            NewTravelAgent
+            NewTravelAgent,
+                Breadcrumbs
         },        
         data() {
             return {

@@ -40,7 +40,7 @@
         },
         async mounted() {
             this.loadingData=true
-            await this.getUserAuth();            
+            // await this.getUserAuth();            
             this.department = this.$store.state.auth.department
             this.admin = Vue.filter("isAdmin")();            
             await this.getDestinations();            

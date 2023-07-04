@@ -2,7 +2,7 @@
   <v-app>
     <v-container fluid>
       <H1>Rental Car Estimates</H1>
-      <Breadcrumbs />
+      <Breadcrumbs class="mb-5"/>
       <v-data-table :headers="headers" :items="vehicles" class="elevation-1">
         <template v-slot:top>
           <v-toolbar flat>

@@ -6,7 +6,7 @@
 
 		<div v-if="!loadingData">
 
-			<title-card class="mt-10" titleWidth="4.5rem">
+			<title-card class="mt-10" titleWidth="5.5rem">
 				<template #title>
 					<div>Location</div>
 				</template>
@@ -39,7 +39,7 @@
 				</template>
 			</title-card>	
 
-			<title-card class="mt-10" titleWidth="6.5rem">
+			<title-card class="mt-10" titleWidth="7.5rem">
 				<template #title>
 					<div>Department</div>
 				</template>
@@ -123,6 +123,7 @@ export default {
 				'International': []
 			};
 			this.selectedDepartments = [];
+			this.updateFilters();
 		},
 
 		initDepartments() {
