@@ -6,7 +6,7 @@
           <v-col cols="12" md="6" class="pb-0 mb-0">
             <v-text-field
               dense
-              v-model="form.firstName"
+              v-model="request.firstName"
               label="First name"
               required
               outlined
@@ -18,7 +18,7 @@
           <v-col cols="12" md="6" class="pb-0 mb-0">
             <v-text-field
               dense
-              v-model="form.lastName"
+              v-model="request.lastName"
               label="Last name"
               required
               outlined
@@ -30,7 +30,7 @@
 
           <v-col cols="12" md="6" class="pb-0 mb-0">
             <v-text-field
-              v-model="form.email"
+              v-model="request.email"
               dense
               outlined
               background-color="white"
@@ -42,7 +42,7 @@
           </v-col>
           <v-col cols="12" md="6" class="pb-0 mb-0">
             <v-text-field
-              v-model="form.mailcode"
+              v-model="request.mailcode"
               dense
               outlined
               background-color="white"
@@ -55,7 +55,7 @@
 
           <v-col cols="12" md="12" class="pb-0 mb-0">
             <v-combobox
-              v-model="form.supervisorEmail"
+              v-model="request.supervisorEmail"
               dense
               outlined
               background-color="white"
@@ -75,7 +75,7 @@
           <v-col cols="12" md="6" class="pb-0 mb-0">
             <v-select
               :items="departments"
-              v-model="form.department"
+              v-model="request.department"
               return-object
               label="Department"
               dense
@@ -92,11 +92,11 @@
             cols="12"
             md="6"
             class="pb-0 mb-0"
-            v-if="form.department && form.department.divisions && form.department.divisions.length > 0"
+            v-if="request.department && request.department.divisions && request.department.divisions.length > 0"
           >
             <v-select
-              :items="form.department.divisions"
-              v-model="form.division"
+              :items="request.department.divisions"
+              v-model="request.division"
               return-object
               item-text="name"
               label="Division"
@@ -107,11 +107,11 @@
               :disabled="review"
             ></v-select>
           </v-col>
-          <v-col cols="12" md="6" class="pb-0 mb-0" v-if="form.division && form.division.branches.length > 0">
+          <v-col cols="12" md="6" class="pb-0 mb-0" v-if="request.division && request.division.branches.length > 0">
             <v-select
-              :items="form.division.branches"
+              :items="request.division.branches"
               item-text="name"
-              v-model="form.branch"
+              v-model="request.branch"
               return-object
               label="Branch"
               dense
@@ -121,10 +121,10 @@
               :disabled="review"
             ></v-select>
           </v-col>
-          <v-col cols="12" md="6" class="pb-0 mb-0" v-if="form.branch && form.branch.units.length > 0">
+          <v-col cols="12" md="6" class="pb-0 mb-0" v-if="request.branch && request.branch.units.length > 0">
             <v-select
-              :items="form.branch.units"
-              v-model="form.unit"
+              :items="request.branch.units"
+              v-model="request.unit"
               label="Unit"
               dense
               clearable
@@ -157,8 +157,8 @@
 import { mapState } from "vuex";
 
 export default {
-  name: "Form",
-  props: ["form", "review", "continue"],
+  name: "PersonalDetailsForm",
+  props: ["review", "continue"],
   data: () => ({
     myDivisions: [],
     myBranches: [],
@@ -181,7 +181,7 @@ export default {
     numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
   computed: {
-    ...mapState("travelForm", ["departments"]),
+    ...mapState("travelForm", ["departments", "request"]),
   },
   methods: {
     search() {},

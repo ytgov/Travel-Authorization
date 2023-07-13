@@ -5,9 +5,11 @@
         <v-col cols="2">
           <v-text-field
             dense
-            v-model="form.travelDuration"
+            v-model="request.travelDuration"
             label="# of days in trip"
             required
+            background-color="white"
+            outlined
             :disabled="review"
             :rules="numberRules"
           ></v-text-field>
@@ -15,9 +17,11 @@
         <v-col cols="2">
           <v-text-field
             dense
-            v-model="form.daysOffTravelStatus"
+            v-model="request.daysOffTravelStatus"
             label="# of days OFF travel status"
             required
+            background-color="white"
+            outlined
             :disabled="review"
             :rules="numberRules"
           ></v-text-field>
@@ -34,16 +38,18 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 dense
-                v-model="form.dateBackToWork"
+                v-model="request.dateBackToWork"
                 label="Back to work date"
                 prepend-icon="mdi-calendar"
                 readonly
+                background-color="white"
+                outlined
                 v-bind="attrs"
                 v-on="on"
                 :disabled="review"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="form.dateBackToWork" @input="btwMenu = false"></v-date-picker>
+            <v-date-picker v-model="request.dateBackToWork" @input="btwMenu = false"></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
@@ -52,8 +58,12 @@
           <v-select
             :items="purposes"
             label="Purpose"
-            v-model="form.purpose"
+            v-model="request.purpose"
             dense
+            item-value="id"
+            item-text="purpose"
+            background-color="white"
+            outlined
             :disabled="review"
             :rules="requiredRules"
           ></v-select
@@ -61,9 +71,11 @@
         <v-col cols="3">
           <v-text-field
             dense
-            v-model="form.travelAdvance"
+            v-model="request.travelAdvance"
             label="Travel Advance"
             required
+            background-color="white"
+            outlined
             prefix="$"
             :disabled="review"
             :rules="numberRules"
@@ -73,8 +85,10 @@
       <v-row>
         <v-col cols="8">
           <v-text-field
-            v-model="form.eventName"
+            v-model="request.eventName"
             dense
+            background-color="white"
+            outlined
             label="Name of meeting/conference, mission, trade fair or course"
             required
             :disabled="review"
@@ -84,11 +98,13 @@
       <v-row>
         <v-col cols="12">
           <v-textarea
-            v-model="form.summary"
+            v-model="request.summary"
             label="Purpose of attendance"
             :disabled="review"
             :rules="requiredRules"
             dense
+            background-color="white"
+            outlined
             rows="1"
             auto-grow
           >
@@ -98,18 +114,19 @@
       <v-row>
         <v-col cols="12">
           <v-textarea
-            v-model="form.benefits"
+            v-model="request.benefits"
             label="Relevance and anticipated benefits to branch and Government of Yukon"
             :disabled="review"
             :rules="requiredRules"
             dense
+            background-color="white"
+            outlined
             rows="1"
             auto-grow
           >
           </v-textarea>
         </v-col>
       </v-row>
-
 
       <v-row>
         <v-col class="mr-auto pb-0">
@@ -124,35 +141,26 @@
           </v-btn>
         </v-col>
       </v-row>
-
-
     </v-card-text>
   </v-card>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
-  name: "Form",
-  props: ["form", "review", "continue", "back"],
+  name: "TravelDetailsForm",
+  props: ["review", "continue", "back"],
   data: () => ({
     btwMenu: false,
-    purposes: [],
 
     //Rules
-    firstNameRules: [(v) => !!v || "First name is required"],
-    lastNameRules: [(v) => !!v || "Last name is required"],
-    emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) =>
-        /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-          v
-        ) || "E-mail must be valid",
-    ],
-    fromRules: [(v) => !!v || "This field is required"],
-    destinationRules: [(v) => !!v || "This field is required"],
     requiredRules: [(v) => !!v || "This field is required"],
     numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
+  computed: {
+    ...mapState("travelForm", ["purposes", "request"]),
+  },
   methods: {
     continueClick() {
       this.continue();

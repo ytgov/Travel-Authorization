@@ -13,6 +13,8 @@
         v-model="time"
         :label="value"
         prepend-icon="mdi-clock"
+        background-color="white"
+        outlined
         readonly
         v-bind="attrs"
         v-on="on"
@@ -32,20 +34,20 @@ export default {
     value: String,
     review: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       menu: false,
       time: "",
-      requiredRules: [v => !!v || "This field is required"]
+      requiredRules: [(v) => !!v || "This field is required"],
     };
   },
   methods: {
     returnDate() {
       this.$emit("time", this.time);
-    }
-  }
+    },
+  },
 };
 </script>

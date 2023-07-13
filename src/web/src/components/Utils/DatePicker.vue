@@ -14,6 +14,8 @@
         :label="value"
         prepend-icon="mdi-calendar"
         readonly
+        background-color="white"
+        outlined
         v-bind="attrs"
         v-on="on"
         :rules="requiredRules"
@@ -29,20 +31,20 @@ export default {
     value: String,
     review: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       menu: false,
       date: "",
-      requiredRules: [v => !!v || "This field is required"]
+      requiredRules: [(v) => !!v || "This field is required"],
     };
   },
   methods: {
     returnDate() {
       this.$emit("date", this.date);
-    }
-  }
+    },
+  },
 };
 </script>

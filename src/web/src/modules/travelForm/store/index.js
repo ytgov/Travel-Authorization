@@ -1,14 +1,21 @@
-import { FORM_URL, LOOKUP_URL } from "@/urls";
+import { FORM_URL, LOOKUP_URL, DESTINATION_URL } from "@/urls";
 import { secureGet, securePost, securePut } from "@/store/jwt";
 
 const state = {
   myForms: [],
   departments: [],
+  purposes: [],
+  destinations: [],
+  request: {},
 };
 
 const actions = {
-  async initialize() {
+  async initialize(store) {
     console.log("-- Initializing travelForm Store");
+
+    await store.dispatch("loadDepartments");
+    await store.dispatch("loadPurposes");
+    await store.dispatch("loadDestinations");
   },
 
   async loadDepartments({ commit }) {
@@ -18,11 +25,93 @@ const actions = {
     });
   },
 
+  async loadPurposes({ commit }) {
+    return secureGet(`${LOOKUP_URL}/travelPurpose`).then((resp) => {
+      commit("SET_PURPOSE", resp.data);
+      return resp.data;
+    });
+  },
+
+  async loadDestinations({ commit }) {
+    return secureGet(`${DESTINATION_URL}`).then((resp) => {
+      let destinations = [];
+
+      resp.data.forEach((v) => {
+        destinations.push({
+          value: v.id,
+          text: v.city + " (" + v.province + ")",
+        });
+      });
+
+      commit("SET_DESTINATIONS", destinations);
+
+      return destinations;
+    });
+  },
+
   async loadForms({ commit }) {
     return secureGet(`${FORM_URL}`).then((resp) => {
       commit("SET_MYFORMS", resp.data);
     });
   },
+
+  start({commit}) {
+
+    console.log("START CLALED")
+
+    let form =  {
+      //personal info
+      firstName: "",
+      lastName: "",
+      department: "",
+      division: "",
+      branch: "",
+      unit: "",
+      email: "",
+      mailcode: "",
+      supervisorEmail: "",
+      multiStop: false,
+      oneWayTrip: false,
+
+      //stops
+      stops: [
+        {
+          locationId: "",
+          departureDate: "",
+          departureTime: "",
+          transport: "",
+        },
+        {
+          locationId: "",
+          departureDate: "",
+          departureTime: "",
+          transport: "",
+        },
+      ],
+
+      //travel details
+      travelDuration: "1",
+      daysOffTravelStatus: "0",
+      dateBackToWork: "",
+      travelAdvance: 0,
+      purpose: "",
+      eventName: "",
+      summary: "",
+      benefits: "",
+
+      //other info
+      status: "",
+      requestChange: "",
+      denialReason: "",
+    };
+
+    commit("SET_SELECTEDFORM", form);
+
+  },
+
+
+
+
 
   selectForm({ commit }, form) {
     commit("SET_SELECTEDFORM", form);
@@ -69,10 +158,16 @@ const mutations = {
     store.myForms = value;
   },
   SET_SELECTEDFORM(store, value) {
-    store.selectedForm = value;
+    store.request = value;
   },
   SET_DEPARTMENTS(store, value) {
     store.departments = value;
+  },
+  SET_PURPOSE(store, value) {
+    store.purposes = value;
+  },
+  SET_DESTINATIONS(store, value) {
+    store.destinations = value;
   },
 };
 

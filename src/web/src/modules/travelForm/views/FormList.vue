@@ -4,7 +4,7 @@
     <v-card class="mt-5" color="#fff2d5">
       <v-card-text>
         <div style="height: 55px">
-          <v-btn @click="createForm()" color="primary" class="float-right my-0">
+          <v-btn @click="createFormClick()" color="primary" class="float-right my-0">
             + Travel Authorization
           </v-btn>
         </div>
@@ -21,10 +21,8 @@
   </div>
 </template>
 <script>
-// import { FORM_URL } from "@/urls";
-import { v4 as uuidv4 } from "uuid";
-// import { secureGet } from "@/store/jwt";
 import { mapActions } from "vuex";
+
 export default {
   name: "Home",
   data: () => ({
@@ -56,12 +54,16 @@ export default {
     this.loadForms();
   },
   methods: {
-    ...mapActions("travelForm", ["loadForms"]),
+    ...mapActions("travelForm", ["loadForms", "start"]),
+
     openForm(value) {
       this.$router.push(`/my-travel-requests/${value.formId}`);
     },
-    createForm() {
-      this.$router.push(`/my-travel-requests/${uuidv4()}`);
+    
+    async createFormClick() {
+      await this.start();
+
+      this.$router.push(`/my-travel-requests/create`);
     },
   },
 };

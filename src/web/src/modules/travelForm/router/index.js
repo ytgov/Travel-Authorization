@@ -28,6 +28,14 @@ const routes = [
         component: () => import("../views/TravelForm.vue")
       },
       {
+        name: "TravelFormEdit",
+        path: ":formId?",
+        meta: {
+          requiresAuth: true
+        },
+        component: () => import("../views/TravelForm.vue")
+      },
+      {
         name: "TravelFormReview",
         path: "request/:formId?/manage",
         meta: {

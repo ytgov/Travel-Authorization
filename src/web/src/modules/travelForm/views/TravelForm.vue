@@ -4,9 +4,13 @@
 
     <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
 
+
+    {{ request }}
+
+
     <!--   <h3>
       Current Status:
-      {{ form.status }}
+      {{ request.status }}
     </h3> -->
 
     <v-stepper v-model="stepVal" vertical>
@@ -92,6 +96,7 @@
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <v-form ref="form" lazy-validation> </v-form>
+        
 
         <div v-if="review == true">
           <v-btn color="blue" class="mr-5" @click="approveForm()">Approve</v-btn>
@@ -116,7 +121,7 @@
             <v-card-title class="text-h5 grey lighten-2"> Change Required </v-card-title>
 
             <v-card-text>
-              {{ form.requestChange }}
+              {{ request.requestChange }}
             </v-card-text>
 
             <v-card-actions>
@@ -131,7 +136,7 @@
 
             <v-card-text> Please provide a reason for the denial of this form. </v-card-text>
             <v-card-text>
-              <v-textarea v-model="form.denialReason" label="Denial Reason" rows="1" auto-grow></v-textarea>
+              <v-textarea v-model="request.denialReason" label="Denial Reason" rows="1" auto-grow></v-textarea>
             </v-card-text>
 
             <v-card-actions>
@@ -173,7 +178,7 @@
 
             <v-card-text> What changes need to be made to this form? </v-card-text>
             <v-card-text>
-              <v-textarea v-model="form.requestChange" label="Requested Changes" rows="1" auto-grow></v-textarea>
+              <v-textarea v-model="request.requestChange" label="Requested Changes" rows="1" auto-grow></v-textarea>
             </v-card-text>
 
             <v-card-actions>
@@ -206,10 +211,10 @@ import TripReport from "../components/TripReport.vue";
 import PersonalDetailsForm from "../components/PersonalDetailsForm.vue";
 import StopsForm from "../components/StopsForm.vue";
 import TravelDetailsForm from "../components/TravelDetailsForm.vue";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
-  name: "Form",
+  name: "TravelForm",
   components: {
     ExpenseList,
     TripReport,
@@ -221,52 +226,6 @@ export default {
     //Form
     stepVal: 1,
 
-    form: {
-      //personal info
-      firstName: "",
-      lastName: "",
-      department: "",
-      division: "",
-      branch: "",
-      unit: "",
-      email: "",
-      mailcode: "",
-      supervisorEmail: "",
-      multiStop: false,
-      oneWayTrip: false,
-
-      //stops
-      stops: [
-        {
-          locationId: "",
-          departureDate: "",
-          departureTime: "",
-          transport: "",
-        },
-        {
-          locationId: "",
-          departureDate: "",
-          departureTime: "",
-          transport: "",
-        },
-      ],
-
-      //travel details
-      travelDuration: "1",
-      daysOffTravelStatus: "0",
-      dateBackToWork: "",
-      travelAdvance: 0,
-      purpose: "",
-      eventName: "",
-      summary: "",
-      benefits: "",
-
-      //other info
-      status: "",
-      requestChange: "",
-      denialReason: "",
-    },
-
     report: {},
     expensesTotal: 0,
     estimatesTotal: 0,
@@ -276,15 +235,13 @@ export default {
 
     //Dropdowns
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
-    purposes: ["Maintenance", "Conference", "Workshop", "General Travel", "Community Travel"],
+    //purposes: ["Maintenance", "Conference", "Workshop", "General Travel", "Community Travel"],
 
     //Dropdowns that need initialization
-    departments: {},
     divisons: {},
     branches: {},
     units: [],
     emails: [],
-    destinations: [],
 
     //Form functionality variables
 
@@ -331,53 +288,55 @@ export default {
       this.review = true;
     }
 
-    await this.loadDepartments();
+    await this.initialize();
 
     this.$refs.form.resetValidation();
     //this.getCostDifference();
 
     await this.getForm(this.$route.params.formId);
 
-    if (this.form.requestChange && this.review == false && this.form.status == "Change Requested") {
+    if (this.request.requestChange && this.review == false && this.request.status == "Change Requested") {
       this.requestChangeDisplay = true;
     }
     this.$refs.form.resetValidation();
     this.overlay = false;
   },
   computed: {
+    ...mapState("travelForm", ["departments", "purposes", "request"]),
+
     myDepartments: function() {
       return Object.keys(this.departments);
     },
     myDivisions: function() {
-      if (this.departments[this.form.department]) {
-        return Object.keys(this.departments[this.form.department]);
+      if (this.departments[this.request.department]) {
+        return Object.keys(this.departments[this.request.department]);
       }
       return [];
     },
     myBranches: function() {
-      if (this.departments[this.form.department] && this.departments[this.form.department][this.form.division]) {
-        return Object.keys(this.departments[this.form.department][this.form.division]);
+      if (this.departments[this.request.department] && this.departments[this.request.department][this.request.division]) {
+        return Object.keys(this.departments[this.request.department][this.request.division]);
       }
       return [];
     },
     myUnits: function() {
       if (
-        this.departments[this.form.department] &&
-        this.departments[this.form.department][this.form.division] &&
-        this.departments[this.form.department][this.form.division][this.form.branch]
+        this.departments[this.request.department] &&
+        this.departments[this.request.department][this.request.division] &&
+        this.departments[this.request.department][this.request.division][this.request.branch]
       ) {
-        return this.departments[this.form.department][this.form.division][this.form.branch];
+        return this.departments[this.request.department][this.request.division][this.request.branch];
       }
       return [];
     },
   },
   methods: {
-    ...mapActions("travelForm", ["loadDepartments"]),
+    ...mapActions("travelForm", ["initialize"]),
 
     submitForm() {
       this.showError = false;
       if (this.$refs.form.validate()) {
-        let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+        let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
         securePost(`${FORM_URL}/${formId}/submit`, this.form).then((resp) => {
           console.log(resp);
@@ -389,12 +348,12 @@ export default {
     },
     saveForm() {
       console.log("Trying to save", this.form);
-      this.form.status = "Draft";
+      this.request.status = "Draft";
       this.$refs.form.resetValidation();
       this.showError = false;
-      this.form.formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      this.request.formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
-      securePost(`${FORM_URL}/${this.form.formId}/save`, this.form).then((resp) => {
+      securePost(`${FORM_URL}/${this.request.formId}/save`, this.form).then((resp) => {
         console.log(resp);
         this.apiSuccess = "Form saved as a draft";
         this.snackbar = true;
@@ -403,8 +362,8 @@ export default {
     deleteForm() {
       console.log(this.form);
       console.log(this.destinations);
-      // let formId = this.form.formId
-      //   ? this.form.formId
+      // let formId = this.request.formId
+      //   ? this.request.formId
       //   : this.$route.params.formId;
 
       // secureDelete(`${FORM_URL}/${formId}`, this.form).then((resp) => {
@@ -425,17 +384,17 @@ export default {
     async loadUser() {
       await secureGet(`${USERS_URL}/me`).then((resp) => {
         this.user = resp.data.data;
-        this.form.firstName = this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1);
-        this.form.lastName = this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1);
-        this.form.email = this.user.email;
+        this.request.firstName = this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1);
+        this.request.lastName = this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1);
+        this.request.email = this.user.email;
         return resp.data;
       });
       /* await secureGet(`${USERS_URL}/unit`).then((resp) => {
-        this.form.department = resp.data.department;
-        this.form.division = resp.data.division;
-        this.form.branch = resp.data.branch;
-        this.form.unit = resp.data.unit;
-        this.form.mailcode = resp.data.mailcode;
+        this.request.department = resp.data.department;
+        this.request.division = resp.data.division;
+        this.request.branch = resp.data.branch;
+        this.request.unit = resp.data.unit;
+        this.request.mailcode = resp.data.mailcode;
         return resp.data;
       }); */
       return;
@@ -458,9 +417,9 @@ export default {
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
-        new Date(this.form.stops[index].departureDate).getTime() - new Date(this.form.stops[0].departureDate).getTime();
+        new Date(this.request.stops[index].departureDate).getTime() - new Date(this.request.stops[0].departureDate).getTime();
 
-      this.form.travelDuration = (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
+      this.request.travelDuration = (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
     },
     getToday() {
       return new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
@@ -471,23 +430,23 @@ export default {
           console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
-            this.form.stops.forEach((v, key) => {
-              this.form.stops[key].location = this.destinations.find((entry) => entry.value == v.location);
+            this.request.stops.forEach((v, key) => {
+              this.request.stops[key].location = this.destinations.find((entry) => entry.value == v.location);
             });
           } else {
-            this.form.status = "New Form";
+            this.request.status = "New Form";
             await this.loadUser();
-            this.form.dateBackToWork = this.getToday();
-            this.form.stops[0].departureDate = this.getToday();
-            this.form.stops[0].departureTime = "12:00";
-            this.form.stops[1].departureDate = this.getToday();
-            this.form.stops[1].departureTime = "12:00";
+            this.request.dateBackToWork = this.getToday();
+            this.request.stops[0].departureDate = this.getToday();
+            this.request.stops[0].departureTime = "12:00";
+            this.request.stops[1].departureDate = this.getToday();
+            this.request.stops[1].departureTime = "12:00";
           }
         });
       }
     },
     reassignForm() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
       securePost(`${FORM_URL}/${formId}/reassign`, {
         reassign: this.reassignEmail,
@@ -501,7 +460,7 @@ export default {
       this.managePage();
     },
     denyForm() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
       securePost(`${FORM_URL}/${formId}/deny`, this.form).then((resp) => {
         console.log(resp);
@@ -512,7 +471,7 @@ export default {
       this.managePage();
     },
     requestChange() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
       securePost(`${FORM_URL}/${formId}/requestChange`, this.form).then((resp) => {
         console.log(resp);
@@ -523,9 +482,9 @@ export default {
       this.managePage();
     },
     approveForm() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
-      securePost(`${FORM_URL}/${formId}/approve`, this.form).then((resp) => {
+      securePost(`${FORM_URL}/${formId}/approve`, this.request).then((resp) => {
         console.log(resp);
         this.apiSuccess = "Form approved";
         this.snackbar = true;
