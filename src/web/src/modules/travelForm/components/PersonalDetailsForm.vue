@@ -82,6 +82,7 @@
               outlined
               background-color="white"
               item-text="name"
+              item-value="name"
               clearable
               :disabled="review"
               :rules="requiredRules"
@@ -99,6 +100,7 @@
               v-model="request.division"
               return-object
               item-text="name"
+              item-value="name"
               label="Division"
               dense
               outlined
@@ -112,6 +114,7 @@
               :items="request.division.branches"
               item-text="name"
               v-model="request.branch"
+              item-value="name"
               return-object
               label="Branch"
               dense
@@ -125,6 +128,8 @@
             <v-select
               :items="request.branch.units"
               v-model="request.unit"
+              item-value="name"
+              item-text="name"
               label="Unit"
               dense
               clearable
@@ -166,22 +171,22 @@ export default {
     emails: [],
 
     //Rules
-    firstNameRules: [(v) => !!v || "First name is required"],
-    lastNameRules: [(v) => !!v || "Last name is required"],
+    firstNameRules: [v => !!v || "First name is required"],
+    lastNameRules: [v => !!v || "Last name is required"],
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) =>
+      v => !!v || "E-mail is required",
+      v =>
         /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
           v
-        ) || "E-mail must be valid",
+        ) || "E-mail must be valid"
     ],
-    fromRules: [(v) => !!v || "This field is required"],
-    destinationRules: [(v) => !!v || "This field is required"],
-    requiredRules: [(v) => !!v || "This field is required"],
-    numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
+    fromRules: [v => !!v || "This field is required"],
+    destinationRules: [v => !!v || "This field is required"],
+    requiredRules: [v => !!v || "This field is required"],
+    numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
   }),
   computed: {
-    ...mapState("travelForm", ["departments", "request"]),
+    ...mapState("travelForm", ["departments", "request"])
   },
   methods: {
     search() {},
@@ -189,7 +194,7 @@ export default {
     continueClick() {
       let formValid = this.$refs.form.validate();
       if (formValid) this.continue();
-    },
-  },
+    }
+  }
 };
 </script>

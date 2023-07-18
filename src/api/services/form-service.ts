@@ -41,8 +41,6 @@ export class FormService {
 
   async saveForm(userId: number, form: Form): Promise<any | undefined> {
     try {
-      console.log(form);
-
       let stops = form.stops;
       let expenses = form.expenses;
       let estimates = form.estimates;
@@ -54,6 +52,8 @@ export class FormService {
 
       form.userId = userId;
       form.status = "Draft";
+
+      console.log(form);
 
       let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge();
       let id = returnedForm[0].id;
