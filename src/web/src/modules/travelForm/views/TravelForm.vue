@@ -4,9 +4,7 @@
 
     <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
 
-
     {{ request }}
-
 
     <!--   <h3>
       Current Status:
@@ -96,7 +94,6 @@
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <v-form ref="form" lazy-validation> </v-form>
-        
 
         <div v-if="review == true">
           <v-btn color="blue" class="mr-5" @click="approveForm()">Approve</v-btn>
@@ -220,7 +217,7 @@ export default {
     TripReport,
     PersonalDetailsForm,
     StopsForm,
-    TravelDetailsForm,
+    TravelDetailsForm
   },
   data: () => ({
     //Form
@@ -267,19 +264,19 @@ export default {
     overlay: true,
 
     //Rules
-    firstNameRules: [(v) => !!v || "First name is required"],
-    lastNameRules: [(v) => !!v || "Last name is required"],
+    firstNameRules: [v => !!v || "First name is required"],
+    lastNameRules: [v => !!v || "Last name is required"],
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) =>
+      v => !!v || "E-mail is required",
+      v =>
         /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
           v
-        ) || "E-mail must be valid",
+        ) || "E-mail must be valid"
     ],
-    fromRules: [(v) => !!v || "This field is required"],
-    destinationRules: [(v) => !!v || "This field is required"],
-    requiredRules: [(v) => !!v || "This field is required"],
-    numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
+    fromRules: [v => !!v || "This field is required"],
+    destinationRules: [v => !!v || "This field is required"],
+    requiredRules: [v => !!v || "This field is required"],
+    numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
   }),
   async mounted() {
     this.overlay = true;
@@ -314,7 +311,10 @@ export default {
       return [];
     },
     myBranches: function() {
-      if (this.departments[this.request.department] && this.departments[this.request.department][this.request.division]) {
+      if (
+        this.departments[this.request.department] &&
+        this.departments[this.request.department][this.request.division]
+      ) {
         return Object.keys(this.departments[this.request.department][this.request.division]);
       }
       return [];
@@ -328,7 +328,7 @@ export default {
         return this.departments[this.request.department][this.request.division][this.request.branch];
       }
       return [];
-    },
+    }
   },
   methods: {
     ...mapActions("travelForm", ["initialize"]),
@@ -338,7 +338,7 @@ export default {
       if (this.$refs.form.validate()) {
         let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
-        securePost(`${FORM_URL}/${formId}/submit`, this.form).then((resp) => {
+        securePost(`${FORM_URL}/${formId}/submit`, this.form).then(resp => {
           console.log(resp);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
@@ -353,7 +353,7 @@ export default {
       this.showError = false;
       this.request.formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
-      securePost(`${FORM_URL}/${this.request.formId}/save`, this.form).then((resp) => {
+      securePost(`${FORM_URL}/${this.request.formId}/save`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form saved as a draft";
         this.snackbar = true;
@@ -374,7 +374,7 @@ export default {
       // });
     },
     getCostDifference() {
-      secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then((resp) => {
+      secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then(resp => {
         this.expensesTotal = resp.data.expenses;
         this.estimatesTotal = resp.data.estimates;
         this.costDifference = (this.expensesTotal - this.estimatesTotal).toFixed(2);
@@ -382,7 +382,7 @@ export default {
     },
     //secureGets
     async loadUser() {
-      await secureGet(`${USERS_URL}/me`).then((resp) => {
+      await secureGet(`${USERS_URL}/me`).then(resp => {
         this.user = resp.data.data;
         this.request.firstName = this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1);
         this.request.lastName = this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1);
@@ -400,13 +400,13 @@ export default {
       return;
     },
     async loadEmails() {
-      return secureGet(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`).then((resp) => {
+      return secureGet(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`).then(resp => {
         return resp.data;
       });
     },
     async search() {
       if (this.emailSearch.length >= 3) {
-        return secureGet(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`).then((resp) => {
+        return secureGet(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`).then(resp => {
           this.emails = resp.data;
         });
       } else {
@@ -417,7 +417,8 @@ export default {
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
-        new Date(this.request.stops[index].departureDate).getTime() - new Date(this.request.stops[0].departureDate).getTime();
+        new Date(this.request.stops[index].departureDate).getTime() -
+        new Date(this.request.stops[0].departureDate).getTime();
 
       this.request.travelDuration = (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
     },
@@ -426,12 +427,12 @@ export default {
     },
     async getForm(formId) {
       if (formId) {
-        return await secureGet(`${FORM_URL}/${formId}`).then(async (resp) => {
+        return await secureGet(`${FORM_URL}/${formId}`).then(async resp => {
           console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
             this.request.stops.forEach((v, key) => {
-              this.request.stops[key].location = this.destinations.find((entry) => entry.value == v.location);
+              this.request.stops[key].location = this.destinations.find(entry => entry.value == v.location);
             });
           } else {
             this.request.status = "New Form";
@@ -450,8 +451,8 @@ export default {
 
       securePost(`${FORM_URL}/${formId}/reassign`, {
         reassign: this.reassignEmail,
-        form: this.form,
-      }).then((resp) => {
+        form: this.form
+      }).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form reassigned";
         this.snackbar = true;
@@ -462,7 +463,7 @@ export default {
     denyForm() {
       let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
-      securePost(`${FORM_URL}/${formId}/deny`, this.form).then((resp) => {
+      securePost(`${FORM_URL}/${formId}/deny`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form denied";
         this.snackbar = true;
@@ -473,7 +474,7 @@ export default {
     requestChange() {
       let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
-      securePost(`${FORM_URL}/${formId}/requestChange`, this.form).then((resp) => {
+      securePost(`${FORM_URL}/${formId}/requestChange`, this.form).then(resp => {
         console.log(resp);
         this.apiSuccess = "Change requested";
         this.snackbar = true;
@@ -484,7 +485,7 @@ export default {
     approveForm() {
       let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
 
-      securePost(`${FORM_URL}/${formId}/approve`, this.request).then((resp) => {
+      securePost(`${FORM_URL}/${formId}/approve`, this.request).then(resp => {
         console.log(resp);
         this.apiSuccess = "Form approved";
         this.snackbar = true;
@@ -505,7 +506,7 @@ export default {
     },
     reassignPopup() {
       this.reassignDialog = true;
-    },
-  },
+    }
+  }
 };
 </script>
