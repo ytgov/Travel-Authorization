@@ -66,6 +66,7 @@
 
    ```bash
    AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
+   AUTH0_AUDIENCE=testing
 
    DB_HOST="localhost"
    DB_PORT="5432"
