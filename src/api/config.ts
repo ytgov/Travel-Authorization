@@ -29,7 +29,7 @@ export const VUE_APP: any = Object.keys(obj)
   }, {});
 
 export const API_PORT = parseInt(process.env.API_PORT || "3000");
-export const FRONTEND_URL = process.env.FRONTEND_URL || "localhost:8080";
+export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:8080";
 export const AUTH_REDIRECT = process.env.AUTH_REDIRECT || process.env.FRONTEND_URL || "";
 export const AUTH0_DOMAIN = process.env.AUTH0_DOMAIN || "";
 export const AUTH0_AUDIENCE = process.env.AUTH0_AUDIENCE || "";
