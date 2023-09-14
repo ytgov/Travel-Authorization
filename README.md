@@ -91,7 +91,7 @@
 
 4. Log in to the front-end service at http://localhost:8080
 
-## dbpostgres Service (a.k.a database or db)
+### dbpostgres Service (a.k.a database or db)
 
 1. Boot the database using
     ```bash
@@ -111,6 +111,57 @@
     ```
 
 ---
+
+### Set up `dev` command
+
+The `dev` command vastly simplifies development using docker compose. It only requires `ruby`; however, `direnv` and `asdf` will make it easier to use.
+
+It's simply a wrapper around docker compose with the ability to quickly add custom helpers.
+
+All commands are just strings joined together, so it's easy to add new commmands. `dev` prints out each command that it runs, so that you can run the command manually to debug it, or just so you learn some docker compose syntax as you go.
+
+1. (optional) Install `asdf` as seen in https://asdf-vm.com/guide/getting-started.html.
+
+   e.g. for Linux
+
+   ```bash
+   apt install curl git
+
+   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0
+
+   echo '
+   # asdf
+   . "$HOME/.asdf/asdf.sh"
+   . "$HOME/.asdf/completions/asdf.bash"
+   ' >> ~/.bashrc
+   ```
+
+2. Install `ruby` via `asdf` as seen here https://github.com/asdf-vm/asdf-ruby, or using whatever custom Ruby install method works for your platform.
+
+   e.g. for Linux
+
+   ```bash
+   asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
+
+   # install version from .tool-versions file
+   asdf install ruby
+
+   asdf reshim ruby
+   ```
+
+   You will now be able to run the `./bin/dev` command.
+
+3. (optional) Install [direnv](https://direnv.net/) and create an `.envrc` with
+
+   ```bash
+    #!/usr/bin/env bash
+
+    PATH_add bin
+   ```
+
+   and then run `direnv allow`.
+
+   You will now be able to do `dev xxx` instead ov `./bin/dev xxx`.
 
 # Deploying (Production)
 
