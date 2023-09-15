@@ -26,8 +26,6 @@ const state = {
 
 const actions = {
   async initialize(store) {
-    console.log("-- Initializing travelForm Store");
-
     await store.dispatch("loadDepartments");
     await store.dispatch("loadPurposes");
     await store.dispatch("loadDestinations");
@@ -71,9 +69,6 @@ const actions = {
   },
 
   start({commit}) {
-
-    console.log("START CLALED")
-
     let form =  {
       //personal info
       firstName: "",

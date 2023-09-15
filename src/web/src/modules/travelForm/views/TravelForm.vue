@@ -4,8 +4,6 @@
 
     <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
 
-    {{ request }}
-
     <!--   <h3>
       Current Status:
       {{ request.status }}
@@ -429,7 +427,6 @@ export default {
     async getForm(formId) {
       if (formId) {
         return await secureGet(`${FORM_URL}/${formId}`).then(async resp => {
-          console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
             this.request.stops.forEach((v, key) => {
