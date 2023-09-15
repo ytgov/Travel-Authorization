@@ -1,7 +1,7 @@
 <template>
   <v-card class="default">
     <v-card-text>
-      <div>
+      <v-form ref="form">
         <v-row>
           <v-col>
             <v-checkbox
@@ -169,7 +169,7 @@
             <v-btn color="blue" @click="addStop" :disabled="review">Add Stop</v-btn>
           </v-col>
         </v-row>
-      </div>
+      </v-form>
 
       <v-row>
         <v-col class="mr-auto pb-0">
