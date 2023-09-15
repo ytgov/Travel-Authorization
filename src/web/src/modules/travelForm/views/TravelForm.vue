@@ -74,10 +74,7 @@
       <v-stepper-content step="4">
         <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
         <v-btn color="primary" @click="stepVal = 1">
-          Continue
-        </v-btn>
-        <v-btn text>
-          Cancel
+          Review
         </v-btn>
       </v-stepper-content>
     </v-stepper>
