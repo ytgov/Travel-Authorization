@@ -205,6 +205,7 @@ export default {
   data: () => ({
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
     requiredRules: [(v) => !!v || "This field is required"],
+    oneWayTrip: false,
   }),
   computed: {
     ...mapState("travelForm", ["destinations", "request"]),
