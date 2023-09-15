@@ -221,6 +221,7 @@ export default {
   },
   data: () => ({
     //Form
+    form: {},
     stepVal: 1,
 
     report: {},
