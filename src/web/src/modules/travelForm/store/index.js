@@ -6,7 +6,22 @@ const state = {
   departments: [],
   purposes: [],
   destinations: [],
-  request: {},
+  request: {
+    stops: [
+      {
+        locationId: "",
+        departureDate: "",
+        departureTime: "12:00",
+        transport: "",
+      },
+      {
+        locationId: "",
+        departureDate: "",
+        departureTime: "12:00",
+        transport: "",
+      },
+    ],
+  },
 };
 
 const actions = {
