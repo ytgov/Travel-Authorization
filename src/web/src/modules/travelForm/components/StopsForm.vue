@@ -78,7 +78,7 @@
           </v-col>
         </v-row>
 
-        <v-row v-if="!oneWayTrip === true">
+        <v-row v-if="request.oneWayTrip === false">
           <v-col><DatePicker :value="request.stops[1].departureDate" text="Departure Date" :review="review" /> </v-col>
           <v-col> <TimePicker :value="request.stops[1].departureTime" text="Departure Time" :review="review"/></v-col>
           <v-col>
@@ -143,7 +143,7 @@
           </div>
         </div>
 
-        <v-row v-if="!oneWayTrip === true">
+        <v-row v-if="request.oneWayTrip === false">
           <v-col>
             <v-autocomplete
               v-model="request.stops[0].locationId"
@@ -205,7 +205,6 @@ export default {
   data: () => ({
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
     requiredRules: [(v) => !!v || "This field is required"],
-    oneWayTrip: false,
   }),
   computed: {
     ...mapState("travelForm", ["destinations", "request"]),
