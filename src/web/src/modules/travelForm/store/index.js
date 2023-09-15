@@ -6,22 +6,7 @@ const state = {
   departments: [],
   purposes: [],
   destinations: [],
-  request: {
-    stops: [
-      {
-        locationId: "",
-        departureDate: "",
-        departureTime: "12:00",
-        transport: "",
-      },
-      {
-        locationId: "",
-        departureDate: "",
-        departureTime: "12:00",
-        transport: "",
-      },
-    ],
-  },
+  request: {},
 };
 
 const actions = {
@@ -116,13 +101,7 @@ const actions = {
     };
 
     commit("SET_SELECTEDFORM", form);
-
   },
-
-
-
-
-
   selectForm({ commit }, form) {
     commit("SET_SELECTEDFORM", form);
   },
