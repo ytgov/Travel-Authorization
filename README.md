@@ -110,7 +110,12 @@
     docker compose -f docker-compose.db.yml exec dbpostgres psql postgresql://user:itsallgood@localhost:5432/travel
     ```
 
----
+### Troubleshooting
+
+If you are getting a bunch of "Login required" errors in the console, make sure that you have disabled any kind of enhanced traking protection.
+
+Auth0 use third-party cookies for authentication, and they get blocked by all major browsers
+by default.
 
 ### Set up `dev` command
 
