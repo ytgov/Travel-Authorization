@@ -331,11 +331,11 @@ export default {
 
     submitForm() {
       this.showError = false;
+      console.log("this.form:", this.form)
       if (this.$refs.form.validate()) {
-        let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
-
-        securePost(`${FORM_URL}/${formId}/submit`, this.form).then(resp => {
-          console.log(resp);
+        securePost(FORM_URL, this.form).then(({ data }) => {
+          console.log("data:", data)
+          this.$set(this, 'form', data.data);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
           this.requestPage();
