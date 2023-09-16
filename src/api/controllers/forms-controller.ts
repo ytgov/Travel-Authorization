@@ -1,31 +1,25 @@
+import { AuditService, FormService } from "../services";
+
 import BaseController from "./base-controller";
+
+// TODO: push this code back into services where it belongs
+const formService = new FormService();
+const auditService = new AuditService();
 
 export class FormsController extends BaseController {
   create() {
-    console.log("this.request.body", this.request.body)
-    // try {
-    //   await db.transaction(async trx => {
-    //     let user = await userService.getByEmail(req.user.email);
-    //     let form = await formService.getForm(req.params.formId);
-
-    //     if (!form || (form && form.userId === user.id)) {
-    //       const result = await formService.submitForm(user.id, req.body);
-    //       if (result) {
-    //         auditService.log(user.id, form.id, "Submit", "Form submitted successfully.");
-    //         res.status(200).json("Form submitted");
-    //       } else {
-    //         auditService.log(user.id, form?.id, "Submit", "Form did not submit successfully.");
-    //         res.status(422).json("Form submission failed");
-    //       }
-    //     } else {
-    //       auditService.log(user.id, 0, "Submit", "Form does not exist or user lacking permissions on form.");
-    //       res.status(404).json("Form not found");
-    //     }
-    //   });
-    // } catch (error: any) {
-    //   console.log(error);
-    //   res.status(500).json("Form submission failed");
-    // }
+    return formService
+      .submitForm(this.currentUser.id, this.request.body)
+      .then((form) => {
+        // TODO: push the audit logging code back into services where it belongs
+        auditService.log(this.currentUser.id, form.id, "Submit", "Form submitted successfully.");
+        return this.response.status(200).json(form);
+      })
+      .catch((error) => {
+        // TODO: push the audit logging code back into services where it belongs
+        auditService.log(this.currentUser.id, -1, "Submit", "Form did not submit successfully.");
+        return this.response.status(422).json({ message: "Form submission failed" });
+      });
   }
 }
 

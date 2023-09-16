@@ -26,6 +26,16 @@ export class BaseController {
   create() {
     throw new Error('Not Implemented')
   }
+
+  // Internal helpers
+
+  // This should have been loaded in the authorization middleware
+  // Currently assuming that authorization happens before this controller gets called.
+  // Child controllers that are on an non-authorizable route should override this method
+  // and return undefined
+  get currentUser(): { id: number } {
+    return this.request.user
+  }
 }
 
 export default BaseController;

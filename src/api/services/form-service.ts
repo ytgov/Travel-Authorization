@@ -153,37 +153,33 @@ export class FormService {
     }
   }
 
-  async submitForm(userId: number, form: Form): Promise<Boolean> {
-    try {
-      let stops = form.stops;
-      delete form.stops;
+  async submitForm(userId: number, form: Form): Promise<Form> {
+    const stops = form.stops;
+    delete form.stops;
 
-      let expenses = form.expenses;
-      delete form.expenses;
+    const expenses = form.expenses;
+    delete form.expenses;
 
-      let estimates = form.estimates;
-      delete form.estimates;
+    const estimates = form.estimates;
+    delete form.estimates;
 
-      delete form.departureDate;
+    form.userId = userId;
+    form.status = "Submitted";
 
-      // This is where we would check if the form is valid
-      if (true) {
-        form.userId = userId;
-        form.status = "Submitted";
+    const returnedForm = await this.db<Form>("forms")
+      .insert(form, "id")
+      .onConflict("formId") // TODO: what is formId in the forms table?
+      .merge()
+      .returning("*")
+      .first();
 
-        let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge();
-        let id = returnedForm[0].id;
+    if (returnedForm === undefined) throw new Error("Could not create form");
 
-        await this.saveStops(id, stops);
-        await this.saveExpenses(id, expenses);
-        await this.saveEstimates(id, estimates);
-        return true;
-      } else {
-        throw new Error("Form is missing required fields");
-      }
-    } catch (error: any) {
-      console.log(error);
-      return false;
-    }
+    const id = returnedForm?.id;
+    await this.saveStops(id, stops);
+    await this.saveExpenses(id, expenses);
+    await this.saveEstimates(id, estimates);
+
+    return returnedForm;
   }
 }
