@@ -13,7 +13,7 @@ export class FormsController extends BaseController {
       .then((form) => {
         // TODO: push the audit logging code back into services where it belongs
         auditService.log(this.currentUser.id, form.id, "Submit", "Form submitted successfully.");
-        return this.response.status(200).json(form);
+        return this.response.status(201).json({ form });
       })
       .catch((error) => {
         // TODO: push the audit logging code back into services where it belongs
