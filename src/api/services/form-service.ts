@@ -1,7 +1,12 @@
 import knex, { Knex } from "knex";
+import { v4 as uuid } from "uuid";
+import { isEmpty, isNil, map } from "lodash";
+
+import db from "../db/db-client"
 import { DB_CONFIG } from "../config";
-import _, { map } from "lodash";
 import { Form } from "../models/form";
+import { User } from "../models";
+
 export class FormService {
   private db: Knex;
 
@@ -14,7 +19,7 @@ export class FormService {
     try {
       let form: Form = await this.db("forms").select("*").first().where({ formId: formId });
 
-      if (_.isEmpty(form)) {
+      if (isEmpty(form)) {
         return undefined;
       }
 
@@ -153,21 +158,30 @@ export class FormService {
     }
   }
 
-  async submitForm(userId: number, form: Form): Promise<Form> {
-    const stops = form.stops;
-    delete form.stops;
+  static create(attributes: Form, currentUser: User): Promise<Form> {
+    const instance = new this()
+    return instance.create(attributes, currentUser)
+  }
 
-    const expenses = form.expenses;
-    delete form.expenses;
+  async create(attributes: Form, currentUser: User): Promise<Form> {
+    const stops = attributes.stops;
+    delete attributes.stops;
 
-    const estimates = form.estimates;
-    delete form.estimates;
+    const expenses = attributes.expenses;
+    delete attributes.expenses;
 
-    form.userId = userId;
-    form.status = "Submitted";
+    const estimates = attributes.estimates;
+    delete attributes.estimates;
 
-    const returnedForm = await this.db<Form>("forms")
-      .insert(form, "id")
+    attributes.userId = currentUser.id;
+    attributes.status = "Submitted";
+
+    if (isNil(attributes.formId)) {
+      attributes.formId = uuid();
+    }
+
+    const returnedForm = await db<Form>("forms")
+      .insert(attributes, "id")
       .onConflict("formId") // TODO: what is formId in the forms table?
       .merge()
       .returning("*")
@@ -175,10 +189,10 @@ export class FormService {
 
     if (returnedForm === undefined) throw new Error("Could not create form");
 
-    const id = returnedForm?.id;
-    await this.saveStops(id, stops);
-    await this.saveExpenses(id, expenses);
-    await this.saveEstimates(id, estimates);
+    const formId = returnedForm.id;
+    await this.saveStops(formId, stops);
+    await this.saveExpenses(formId, expenses);
+    await this.saveEstimates(formId, estimates);
 
     return returnedForm;
   }

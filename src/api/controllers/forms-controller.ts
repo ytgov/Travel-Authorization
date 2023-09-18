@@ -3,13 +3,12 @@ import { AuditService, FormService } from "../services";
 import BaseController from "./base-controller";
 
 // TODO: push this code back into services where it belongs
-const formService = new FormService();
 const auditService = new AuditService();
 
 export class FormsController extends BaseController {
   create() {
-    return formService
-      .submitForm(this.currentUser.id, this.request.body)
+    return FormService
+      .create(this.request.body, this.currentUser)
       .then((form) => {
         // TODO: push the audit logging code back into services where it belongs
         auditService.log(this.currentUser.id, form.id, "Submit", "Form submitted successfully.");
@@ -18,7 +17,7 @@ export class FormsController extends BaseController {
       .catch((error) => {
         // TODO: push the audit logging code back into services where it belongs
         auditService.log(this.currentUser.id, -1, "Submit", "Form did not submit successfully.");
-        return this.response.status(422).json({ message: "Form submission failed" });
+        return this.response.status(422).json({ message: `Form submission failed: ${error}` });
       });
   }
 }
