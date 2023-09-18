@@ -86,7 +86,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 
-import { FORM_URL } from "@/urls";
+import { FORM_URL, USERS_URL } from "@/urls";
 import { secureGet, securePost } from "@/store/jwt";
 import ExpenseList from "../components/ExpenseList.vue";
 import TripReport from "../components/TripReport.vue";
@@ -128,6 +128,7 @@ export default {
     this.overlay = true;
     await this.start();
     await this.initialize();
+    await this.loadUser();
     this.$refs.form.resetValidation();
     this.overlay = false;
   },
@@ -167,6 +168,24 @@ export default {
         this.estimatesTotal = resp.data.estimates;
         this.costDifference = (this.expensesTotal - this.estimatesTotal).toFixed(2);
       });
+    },
+    async loadUser() {
+      await secureGet(`${USERS_URL}/me`).then(({ data }) => {
+        this.user = data.data;
+        this.request.firstName = this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1);
+        this.request.lastName = this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1);
+        this.request.email = this.user.email;
+        return this.user;
+      });
+      await secureGet(`${USERS_URL}/unit`).then(({ data }) => {
+        this.request.department = data.department;
+        this.request.division = data.division;
+        this.request.branch = data.branch;
+        this.request.unit = data.unit;
+        this.request.mailcode = data.mailcode;
+        return data;
+      });
+      return this.user;
     },
   }
 };
