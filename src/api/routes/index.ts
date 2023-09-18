@@ -21,6 +21,7 @@ const router = Router();
 router.use(checkJwt)
 router.use(loadUser)
 
+// TODO: move all routing logic to this file, and move all route actions into controllers
 router.route("/api/forms").post(FormsController.create)
 
 export default router;
