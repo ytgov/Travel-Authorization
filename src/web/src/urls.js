@@ -1,5 +1,7 @@
 import * as config from "./config";
 
+// TODO: refactor these into apis/xxx-api.js files
+// The base url can be handled by the axios config.
 export const LOGIN_URL = `${config.apiBaseUrl}/api/auth/login`;
 export const AUTH_CHECK_URL = `${config.apiBaseUrl}/api/auth/isAuthenticated`;
 export const PROFILE_URL = `${config.apiBaseUrl}/api/user/me`;
