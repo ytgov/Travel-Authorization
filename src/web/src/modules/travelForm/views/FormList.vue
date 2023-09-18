@@ -8,7 +8,7 @@
             + Travel Authorization
           </v-btn>
         </div>
-        <v-data-table :headers="headers" :items="forms" :items-per-page="20" class="elevation-2" @click:row="openForm">
+        <v-data-table :headers="headers" :items="myForms" :items-per-page="20" class="elevation-2" @click:row="openForm">
           <template v-slot:item.datebacktowork="{ item }">
             <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
           </template>
@@ -21,12 +21,11 @@
   </div>
 </template>
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "Home",
   data: () => ({
-    forms: [],
     headers: [
       {
         text: "Department/Branch",
@@ -50,8 +49,11 @@ export default {
       },
     ],
   }),
-  created() {
+  mounted() {
     this.loadForms();
+  },
+  computed: {
+    ...mapState("travelForm", ["myForms"])
   },
   methods: {
     ...mapActions("travelForm", ["loadForms", "start"]),
@@ -59,7 +61,7 @@ export default {
     openForm(value) {
       this.$router.push(`/my-travel-requests/${value.formId}`);
     },
-    
+
     async createFormClick() {
       await this.start();
 
