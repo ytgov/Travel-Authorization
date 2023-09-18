@@ -1,8 +1,8 @@
-import { securePost } from "@/store/jwt"
+import http from "@/apis/http-client"
 
 export const formsApi = {
   create(attributes) {
-    return securePost("/api/forms", attributes).then(({ data }) => data)
+    return http.post("/api/forms", attributes).then(({ data }) => data)
   },
 }
 
