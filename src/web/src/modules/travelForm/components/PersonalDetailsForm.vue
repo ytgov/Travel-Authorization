@@ -76,7 +76,6 @@
             <v-select
               :items="departments"
               v-model="request.department"
-              return-object
               label="Department"
               dense
               outlined
@@ -90,15 +89,14 @@
           </v-col>
 
           <v-col
+          v-if="request.department && divisions && divisions.length > 0"
             cols="12"
             md="6"
             class="pb-0 mb-0"
-            v-if="request.department && request.department.divisions && request.department.divisions.length > 0"
           >
             <v-select
-              :items="request.department.divisions"
+              :items="divisions"
               v-model="request.division"
-              return-object
               item-text="name"
               item-value="name"
               label="Division"
@@ -109,12 +107,16 @@
               :disabled="review"
             ></v-select>
           </v-col>
-          <v-col cols="12" md="6" class="pb-0 mb-0" v-if="request.division && request.division.branches.length > 0">
+          <v-col
+            v-if="request.division && branches.length > 0"
+            cols="12"
+            md="6"
+            class="pb-0 mb-0"
+          >
             <v-select
-              :items="request.division.branches"
+              :items="branches"
               item-text="name"
               v-model="request.branch"
-              return-object
               label="Branch"
               dense
               clearable
@@ -123,9 +125,14 @@
               :disabled="review"
             ></v-select>
           </v-col>
-          <v-col cols="12" md="6" class="pb-0 mb-0" v-if="request.branch && request.branch.units.length > 0">
+          <v-col
+            v-if="request.branch && units.length > 0"
+            cols="12"
+            md="6"
+            class="pb-0 mb-0"
+          >
             <v-select
-              :items="request.branch.units"
+              :items="units"
               v-model="request.unit"
               item-value="name"
               item-text="name"
@@ -185,7 +192,22 @@ export default {
     numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
   }),
   computed: {
-    ...mapState("travelForm", ["departments", "request"])
+    ...mapState("travelForm", ["departments", "request"]),
+    divisions() {
+      const department = this.departments.find(d => d.name == this.request.department)
+      return department?.divisions || [];
+    },
+    branches() {
+      const division = this.divisions.find(d => d.name == this.request.division)
+      return division?.branches || [];
+    },
+    units() {
+      const branch = this.branches.find(b => b.name == this.request.branch)
+      return branch?.units || [];
+    }
+  },
+  mounted() {
+    console.log(this.departments);
   },
   methods: {
     search() {},
