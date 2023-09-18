@@ -185,6 +185,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
+
 import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls";
 import { secureGet, securePost } from "../../../store/jwt";
 import ExpenseList from "../components/ExpenseList.vue";
@@ -193,7 +195,8 @@ import TripReport from "../components/TripReport.vue";
 import PersonalDetailsForm from "../components/PersonalDetailsForm.vue";
 import StopsForm from "../components/StopsForm.vue";
 import TravelDetailsForm from "../components/TravelDetailsForm.vue";
-import { mapActions, mapState } from "vuex";
+
+import formsApi from "@/apis/forms-api"
 
 export default {
   name: "TravelForm",
@@ -322,9 +325,9 @@ export default {
     submitForm() {
       this.showError = false;
       if (this.$refs.form.validate()) {
-        securePost("/api/forms", this.request).then(({ data }) => {
-          console.log("data:", data)
-          this.$set(this, 'form', data.data);
+        return formsApi.create(this.request).then(({ form }) => {
+          console.log("data:", form)
+          this.$set(this, 'form', form);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
           this.requestPage();
