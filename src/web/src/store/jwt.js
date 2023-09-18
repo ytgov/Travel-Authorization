@@ -1,11 +1,14 @@
 import axios from "axios";
+
 import { getInstance } from "../auth";
+import { apiBaseUrl } from "../config";
 
 export async function prepareAxios() {
   const auth = await getInstance();
   const token = await auth.getTokenSilently();
 
   return axios.create({
+    baseURL: apiBaseUrl,
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json"
@@ -14,7 +17,7 @@ export async function prepareAxios() {
 }
 
 export async function secureGet(url, timeout) {
-  let api = await prepareAxios();  
+  let api = await prepareAxios();
   return api.get(url, {timeout: (timeout? timeout: 0)});
 }
 
