@@ -3,7 +3,7 @@ import { ReturnValidationErrors } from "../middleware";
 import { DB_CONFIG } from "../config";
 import knex from "knex";
 import { UserService, FormService, AuditService } from "../services";
-
+import { v4 as uuid } from "uuid";
 import * as formHelper from "../utils/formHelper";
 import { auth } from "express-openid-connect";
 import { report } from "process";
@@ -142,7 +142,7 @@ formRouter.post("/:formId/submit", ReturnValidationErrors, async function (req: 
       let form = await formService.getForm(req.params.formId);
 
       if (!form || (form && form.userId === user.id)) {
-        const result = await formService.create(req.body, user);
+        const result = await formService.submitForm(user.id, req.body);
         if (result) {
           auditService.log(user.id, form.id, "Submit", "Form submitted successfully.");
           res.status(200).json("Form submitted");

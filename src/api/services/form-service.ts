@@ -158,6 +158,40 @@ export class FormService {
     }
   }
 
+  async submitForm(userId: number, form: Form): Promise<Boolean> {
+    try {
+      let stops = form.stops;
+      delete form.stops;
+
+      let expenses = form.expenses;
+      delete form.expenses;
+
+      let estimates = form.estimates;
+      delete form.estimates;
+
+      delete form.departureDate;
+
+      // This is where we would check if the form is valid
+      if (true) {
+        form.userId = userId;
+        form.status = "Submitted";
+
+        let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge();
+        let id = returnedForm[0].id;
+
+        await this.saveStops(id, stops);
+        await this.saveExpenses(id, expenses);
+        await this.saveEstimates(id, estimates);
+        return true;
+      } else {
+        throw new Error("Form is missing required fields");
+      }
+    } catch (error: any) {
+      console.log(error);
+      return false;
+    }
+  }
+
   static create(attributes: Form, currentUser: User): Promise<Form> {
     const instance = new this()
     return instance.create(attributes, currentUser)
