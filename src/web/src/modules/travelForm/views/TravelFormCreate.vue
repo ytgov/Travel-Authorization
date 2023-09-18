@@ -1,49 +1,10 @@
 <template>
   <div>
-    <h1>Travel Authorization Request</h1>
-
-    <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
-
-    <v-stepper v-model="stepVal" vertical>
-      <v-stepper-step :complete="stepVal > 1" step="1">
-        Enter your personal details
-      </v-stepper-step>
-
-      <v-stepper-content step="1">
-        <personal-details-form :form="form" :review="review" :continue="() => {
-          stepVal = 2;
-        }
-          "></personal-details-form>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="stepVal > 2" step="2">
-        Tell us about the travel
-      </v-stepper-step>
-
-      <v-stepper-content step="2">
-        <stops-form :form="form" :review="review" :continue="() => {
-          stepVal = 3;
-        }
-          " :back="() => {
-    stepVal = 1;
-  }
-    "></stops-form>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="stepVal > 3" step="3">
-        Enter details about the trip and purpose
-      </v-stepper-step>
-
-      <v-stepper-content step="3">
-        <travel-details-form :form="form" :review="review" :continue="() => {
-          stepVal = 4;
-        }
-          " :back="() => {
-    stepVal = 2;
-  }
-    "></travel-details-form>
-      </v-stepper-content>
-    </v-stepper>
+    <div class="text-center">
+      <v-overlay :value="loading">
+        <v-progress-circular indeterminate color="#f3b228" :size="70" :width="7"></v-progress-circular>
+      </v-overlay>
+    </div>
 
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
@@ -54,7 +15,44 @@
     <br />
     <v-tabs-items v-model="tab">
       <v-tab-item>
-        <v-form ref="form" lazy-validation> </v-form>
+        <v-form ref="form" lazy-validation>
+          <template v-if="!loading">
+            <h1>Travel Authorization Request</h1>
+
+            <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
+
+            <v-stepper v-model="stepVal" vertical>
+              <v-stepper-step :complete="stepVal > 1" step="1">
+                Enter your personal details
+              </v-stepper-step>
+
+              <v-stepper-content step="1">
+                <personal-details-form :form="form" :review="review" :continue="() => {
+                  stepVal = 2;
+                }
+                  "></personal-details-form>
+              </v-stepper-content>
+
+              <v-stepper-step :complete="stepVal > 2" step="2">
+                Tell us about the travel
+              </v-stepper-step>
+
+              <v-stepper-content step="2">
+                <stops-form :form="form" :review="review" :continue="() => { stepVal = 3; }"
+                  :back="() => { stepVal = 1; }"></stops-form>
+              </v-stepper-content>
+
+              <v-stepper-step :complete="stepVal > 3" step="3">
+                Enter details about the trip and purpose
+              </v-stepper-step>
+
+              <v-stepper-content step="3">
+                <travel-details-form :form="form" :review="review" :continue="() => { stepVal = 4; }"
+                  :back="() => { stepVal = 2; }"></travel-details-form>
+              </v-stepper-content>
+            </v-stepper>
+          </template>
+        </v-form>
         <div>
           <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit to supervisor </v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm()">Save Draft </v-btn>
@@ -75,11 +73,6 @@
         <TripReport> </TripReport>
       </v-tab-item>
     </v-tabs-items>
-    <div class="text-center">
-      <v-overlay :value="overlay">
-        <v-progress-circular indeterminate color="#f3b228" :size="70" :width="7"></v-progress-circular>
-      </v-overlay>
-    </div>
   </div>
 </template>
 
@@ -122,15 +115,16 @@ export default {
     showError: null,
     snackbar: null,
     apiSuccess: "",
-    overlay: true,
+    loading: true,
   }),
   async mounted() {
-    this.overlay = true;
+    this.loading = true;
     await this.start();
     await this.initialize();
     await this.loadUser();
     this.$refs.form.resetValidation();
-    this.overlay = false;
+
+    this.loading = false;
   },
   computed: {
     ...mapState("travelForm", ["request"]),

@@ -206,9 +206,7 @@ export default {
       return branch?.units || [];
     }
   },
-  mounted() {
-    console.log(this.departments);
-  },
+  mounted() {},
   methods: {
     search() {},
     emailSearch() {},
