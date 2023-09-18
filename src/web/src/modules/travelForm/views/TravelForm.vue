@@ -332,7 +332,7 @@ export default {
     submitForm() {
       this.showError = false;
       if (this.$refs.form.validate()) {
-        securePost(FORM_URL, this.request).then(({ data }) => {
+        securePost("/api/forms", this.request).then(({ data }) => {
           console.log("data:", data)
           this.$set(this, 'form', data.data);
           this.apiSuccess = "Form submitted successfully";

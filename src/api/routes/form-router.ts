@@ -8,7 +8,6 @@ import * as formHelper from "../utils/formHelper";
 import { auth } from "express-openid-connect";
 import { report } from "process";
 import { Form } from "../models/form";
-import FormsController from "../controllers/forms-controller";
 
 const db = knex(DB_CONFIG);
 
@@ -134,12 +133,9 @@ formRouter.post("/:formId/save", ReturnValidationErrors, async function (req: Re
   }
 });
 
-// TODO: rename route to /api/forms
-formRouter.post("/", FormsController.create)
-
 //User to submit their own form
 formRouter.post("/:formId/submit", ReturnValidationErrors, async function (req: Request, res: Response) {
-  console.warn("This method is deprecated, and will be removed in a future version. Please use POST /api/form instead.")
+  console.warn("This method is deprecated, and will be removed in a future version. Please use POST /api/forms instead.")
   try {
     await db.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
