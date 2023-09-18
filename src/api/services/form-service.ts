@@ -180,20 +180,22 @@ export class FormService {
       attributes.formId = uuid();
     }
 
-    const returnedForm = await db<Form>("forms")
+    const form = await db<Form>("forms")
       .insert(attributes, "id")
       .onConflict("formId") // TODO: what is formId in the forms table?
       .merge()
       .returning("*")
-      .first();
+      .then(result => {
+        if (isEmpty(result)) throw new Error("Could not create form");
 
-    if (returnedForm === undefined) throw new Error("Could not create form");
+        return result[0];
+      });
 
-    const formId = returnedForm.id;
+    const formId = form.id;
     await this.saveStops(formId, stops);
     await this.saveExpenses(formId, expenses);
     await this.saveEstimates(formId, estimates);
 
-    return returnedForm;
+    return form;
   }
 }
