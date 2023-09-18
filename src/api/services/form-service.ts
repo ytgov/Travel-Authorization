@@ -176,13 +176,14 @@ export class FormService {
     attributes.userId = currentUser.id;
     attributes.status = "Submitted";
 
+    // Not sure if this is correct, but I can't find any that generates the formId.
     if (isNil(attributes.formId)) {
       attributes.formId = uuid();
     }
 
     const form = await db<Form>("forms")
       .insert(attributes, "id")
-      .onConflict("formId") // TODO: what is formId in the forms table?
+      .onConflict("formId")
       .merge()
       .returning("*")
       .then(result => {
