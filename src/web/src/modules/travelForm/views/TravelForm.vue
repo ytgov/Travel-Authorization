@@ -483,7 +483,7 @@ export default {
       this.$router.push(`/managerView`);
     },
     requestPage() {
-      this.$router.push(`/forms`);
+      this.$router.push(`/travel-request`);
     },
     denyPopup() {
       this.denyDialog = true;
