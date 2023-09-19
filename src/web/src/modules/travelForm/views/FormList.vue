@@ -1,15 +1,27 @@
 <template>
   <div class="user">
     <h1>My Travel</h1>
-    <v-card class="mt-5" color="#fff2d5">
+    <v-card
+      class="mt-5"
+      color="#fff2d5"
+    >
       <v-card-text>
         <div style="height: 55px">
-          <v-btn @click="goToCreateForm" color="primary" class="float-right my-0">
+          <v-btn
+            @click="goToCreateForm"
+            color="primary"
+            class="float-right my-0"
+          >
             + Travel Authorization
           </v-btn>
         </div>
-        <v-data-table :headers="headers" :items="myForms" :items-per-page="20" class="elevation-2"
-          @click:row="goToFormDetails">
+        <v-data-table
+          :headers="headers"
+          :items="myForms"
+          :items-per-page="20"
+          class="elevation-2"
+          @click:row="goToFormDetails"
+        >
           <template v-slot:item.datebacktowork="{ item }">
             <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
           </template>
