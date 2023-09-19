@@ -103,7 +103,7 @@ export default {
       if (isEmpty(branch)) return department
       if (branch === department) return department
 
-      return `${department}/${branch}`
+      return `${department} - ${branch}`
     }
   },
   watch: {
