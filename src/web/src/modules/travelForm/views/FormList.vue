@@ -22,11 +22,11 @@
           class="elevation-2"
           @click:row="goToFormDetails"
         >
-          <template v-slot:item.datebacktowork="{ item }">
-            <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-          </template>
           <template v-slot:item.departureDate="{ item }">
-            <span>{{ new Date(item.departureDate).toDateString() }}</span>
+            <span>{{ formatAsDate(item.departingAt) }}</span>
+          </template>
+          <template v-slot:item.datebacktowork="{ item }">
+            <span>{{ formatAsDate(item.dateBackToWork) }}</span>
           </template>
         </v-data-table>
       </v-card-text>
@@ -76,6 +76,13 @@ export default {
     },
     goToCreateForm() {
       this.$router.push({ name: "travelRequestCreate" })
+    },
+    formatAsDate(value) {
+      const timestamp = Date.parse(value)
+      if (isNaN(timestamp)) return value
+
+      const date = new Date(timestamp)
+      return date.toDateString()
     },
   },
 }
