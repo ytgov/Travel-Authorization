@@ -24,6 +24,9 @@
           class="elevation-2"
           @click:row="goToFormDetails"
         >
+          <template v-slot:item.departmentAndBranch="{ item }">
+            <span>{{ formatDepartmentAndBranch(item) }}</span>
+          </template>
           <template v-slot:item.departureDate="{ item }">
             <span>{{ formatAsDate(item.departingAt) }}</span>
           </template>
@@ -37,14 +40,15 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
+import { isEmpty } from "lodash"
 
 export default {
-  name: "Home",
+  name: "FormList",
   data: () => ({
     headers: [
       {
         text: "Department/Branch",
-        value: "department",
+        value: "departmentAndBranch",
       },
       {
         text: "Purpose",
@@ -94,6 +98,13 @@ export default {
       const date = new Date(timestamp)
       return date.toDateString()
     },
+    formatDepartmentAndBranch(item) {
+      const { department, branch } = item
+      if (isEmpty(branch)) return department
+      if (branch === department) return department
+
+      return `${department}/${branch}`
+    }
   },
   watch: {
     page() {
