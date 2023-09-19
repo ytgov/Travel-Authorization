@@ -2,7 +2,9 @@ import { pick } from "lodash"
 
 import Form from "../models/form"
 
-export class FormSerializer {
+import BaseSerializer from "./base-serializer"
+
+export class FormSerializer extends BaseSerializer {
   static asTable(forms: Form[]) {
     return forms.map((form) => {
       return {
