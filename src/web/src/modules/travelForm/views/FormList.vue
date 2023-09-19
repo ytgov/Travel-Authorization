@@ -4,11 +4,12 @@
     <v-card class="mt-5" color="#fff2d5">
       <v-card-text>
         <div style="height: 55px">
-          <v-btn @click="createFormClick()" color="primary" class="float-right my-0">
+          <v-btn @click="goToCreateForm" color="primary" class="float-right my-0">
             + Travel Authorization
           </v-btn>
         </div>
-        <v-data-table :headers="headers" :items="myForms" :items-per-page="20" class="elevation-2" @click:row="openForm">
+        <v-data-table :headers="headers" :items="myForms" :items-per-page="20" class="elevation-2"
+          @click:row="goToFormDetails">
           <template v-slot:item.datebacktowork="{ item }">
             <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
           </template>
@@ -53,17 +54,15 @@ export default {
     this.loadForms();
   },
   computed: {
-    ...mapState("travelForm", ["myForms"])
+    ...mapState("travelForm", ["myForms"]),
   },
   methods: {
-    ...mapActions("travelForm", ["loadForms", "start"]),
-
-    openForm(value) {
-      this.$router.push(`/my-travel-requests/${value.formId}`);
+    ...mapActions("travelForm", ["loadForms"]),
+    goToFormDetails(form) {
+      this.$router.push({ name: "travelRequestsList", params: form.id });
     },
-
-    async createFormClick() {
-      this.$router.push({ name: "travelRequestCreate"});
+    goToCreateForm() {
+      this.$router.push({ name: "travelRequestCreate" });
     },
   },
 };
