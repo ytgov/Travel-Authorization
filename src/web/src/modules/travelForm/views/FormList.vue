@@ -63,7 +63,7 @@ export default {
     },
 
     async createFormClick() {
-      this.$router.push(`/my-travel-requests/create`);
+      this.$router.push({ name: "travelRequestCreate"});
     },
   },
 };
