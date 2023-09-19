@@ -13,7 +13,8 @@ export interface Form {
   daysOffTravelStatus?: string;
   dateBackToWork?: Date;
   travelDuration?: string;
-  purpose?: string;
+  purpose?: string; // DEPRECATED: remove after 2023-10-19
+  purposeId?: number;
   travelAdvance?: string;
   eventName?: string;
   summary?: string;
