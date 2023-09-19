@@ -13,7 +13,7 @@ export class FormSerializer extends BaseSerializer {
   asTable(forms: Form[]) {
     return forms.map((form) => {
       return {
-        ...pick(form, ["id", "department", "branch", "status"]),
+        ...pick(form, ["id", "department", "branch", "dateBackToWork", "status"]),
         purpose: form.purpose?.purpose,
         departingAt: this.departingAt(form),
       }

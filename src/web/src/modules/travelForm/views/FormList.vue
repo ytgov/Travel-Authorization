@@ -25,7 +25,7 @@
           <template v-slot:item.departureDate="{ item }">
             <span>{{ formatAsDate(item.departingAt) }}</span>
           </template>
-          <template v-slot:item.datebacktowork="{ item }">
+          <template v-slot:item.dateBackToWork="{ item }">
             <span>{{ formatAsDate(item.dateBackToWork) }}</span>
           </template>
         </v-data-table>
@@ -54,7 +54,7 @@ export default {
       },
       {
         text: "Return Date",
-        value: "datebacktowork",
+        value: "dateBackToWork",
       },
       {
         text: "Status",
