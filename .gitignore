@@ -108,5 +108,5 @@ dist
 .tern-port
 
 # Database initialization
-db/
-my-db/
+/db/
+/my-db/
