@@ -4,6 +4,9 @@ export const formsApi = {
   list(params = {}) {
     return http.get("/api/forms", { params }).then(({ data }) => data)
   },
+  get(formId, params = {}) {
+    return http.get(`/api/forms/${formId}`, { params }).then(({ data }) => data)
+  },
   create(attributes) {
     return http.post("/api/forms", attributes).then(({ data }) => data)
   },

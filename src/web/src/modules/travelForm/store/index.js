@@ -54,7 +54,12 @@ const actions = {
       return { forms, pageCount }
     })
   },
-
+  loadForm({ commit }, [formId, ...params]) {
+    return formsApi.get(formId, params).then(({ form }) => {
+      commit("SET_SELECTEDFORM", form)
+      return form
+    })
+  },
   start({ commit }) {
     let form = {
       //personal info
@@ -104,10 +109,6 @@ const actions = {
 
     commit("SET_SELECTEDFORM", form)
   },
-  selectForm({ commit }, form) {
-    commit("SET_SELECTEDFORM", form)
-  },
-
   async getAll() {
     return secureGet(FORM_URL).then((resp) => {
       return resp.data.data
