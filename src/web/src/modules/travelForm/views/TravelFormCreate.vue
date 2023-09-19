@@ -54,7 +54,7 @@
           </template>
         </v-form>
         <div>
-          <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit to supervisor </v-btn>
+          <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit to Supervisor </v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm()">Save Draft </v-btn>
           <v-btn color="secondary" :to="{ name: 'travelRequestsList' }">Back</v-btn>
         </div>
