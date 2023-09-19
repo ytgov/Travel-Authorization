@@ -71,7 +71,8 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadForms"]),
     goToFormDetails(form) {
-      this.$router.push({ name: "travelRequestsList", params: form.id })
+      const formId = form.id
+      this.$router.push({ name: "travelRequestEdit", params: { formId } })
     },
     goToCreateForm() {
       this.$router.push({ name: "travelRequestCreate" })
