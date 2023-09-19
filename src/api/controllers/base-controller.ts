@@ -49,6 +49,23 @@ export class BaseController {
   get params() {
     return this.request.params
   }
+
+  get query() {
+    return this.request.query
+  }
+
+  get pagination() {
+    const page = parseInt(this.query.page?.toString() || "") || 1
+    const perPage = parseInt(this.query.perPage?.toString() || "") || 10
+    const limit = perPage === -1 ? 1000: perPage // restrict max limit to 1000 for safety
+    const offset = (page - 1) * limit
+    return {
+      page,
+      perPage,
+      limit,
+      offset,
+    }
+  }
 }
 
 export default BaseController

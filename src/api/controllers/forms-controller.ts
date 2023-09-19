@@ -12,6 +12,8 @@ export class FormsController extends BaseController {
     return Form.findAll({
       where: { userId: this.currentUser.id },
       include: ["stops", "travelPurpose"],
+      limit: this.pagination.limit,
+      offset: this.pagination.offset,
     }).then((forms) => {
       const serializedForms = FormSerializer.asTable(forms)
       return this.response.json({ forms: serializedForms })

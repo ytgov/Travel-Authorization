@@ -18,7 +18,9 @@
         <v-data-table
           :headers="headers"
           :items="myForms"
-          :items-per-page="20"
+          :items-per-page.sync="perPage"
+          :page.sync="page"
+          :page-count.sync="pageCount"
           class="elevation-2"
           @click:row="goToFormDetails"
         >
@@ -61,15 +63,23 @@ export default {
         value: "status",
       },
     ],
+    perPage: 10,
+    page: 1,
+    pageCount: 1,
   }),
   mounted() {
-    this.loadForms()
+    this.refreshForms()
   },
   computed: {
     ...mapState("travelForm", ["myForms"]),
   },
   methods: {
     ...mapActions("travelForm", ["loadForms"]),
+    refreshForms() {
+      return this.loadForms({ page: this.page, perPage: this.perPage }).then(({ pageCount }) => {
+        this.pageCount = pageCount
+      })
+    },
     goToFormDetails(form) {
       const formId = form.id
       this.$router.push({ name: "travelRequestEdit", params: { formId } })
@@ -83,6 +93,14 @@ export default {
 
       const date = new Date(timestamp)
       return date.toDateString()
+    },
+  },
+  watch: {
+    page() {
+      this.refreshForms()
+    },
+    perPage() {
+      this.refreshForms()
     },
   },
 }

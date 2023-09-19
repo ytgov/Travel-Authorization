@@ -55,11 +55,15 @@ class Form extends BaseModel {
   static async findAll({
     where = {},
     include = [],
+    limit = 10,
+    offset = 0,
   }: {
     where?: {}
     include?: string[]
+    limit?: number
+    offset?: number
   }): Promise<Form[]> {
-    const forms = await db("forms").where(where)
+    const forms = await db("forms").where(where).limit(limit).offset(offset)
 
     if (include.includes("stops")) {
       const formIds = forms.map((form) => form.id)
