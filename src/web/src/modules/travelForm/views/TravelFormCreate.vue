@@ -47,7 +47,7 @@
               </v-stepper-step>
 
               <v-stepper-content step="3">
-                <travel-details-form :form="form" :review="review" :continue="() => { stepVal = 4; }"
+                <travel-details-form :form="form" :review="review" :continue="() => { stepVal = 1; }" continue-title="Review"
                   :back="() => { stepVal = 2; }"></travel-details-form>
               </v-stepper-content>
             </v-stepper>
