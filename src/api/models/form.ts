@@ -41,7 +41,7 @@ export interface FormRecord {
   deleted?: string
 
   // Associations
-  purpose?: TravelPurpose
+  purpose?: string | TravelPurpose // DEPRECATE: purpose string column on forms table, association will remain
 }
 
 interface Form extends FormRecord {}
