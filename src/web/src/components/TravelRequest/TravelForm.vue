@@ -950,14 +950,11 @@ export default {
       let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
 
       securePost(`${FORM_URL}/${formId}/save`, this.form).then(resp => {
-        console.log(resp);
         this.apiSuccess = "Form saved as a draft";
         this.snackbar = true;
       });
     },
     deleteForm() {
-      console.log(this.form);
-      console.log(this.destinations);
       // let formId = this.form.formId
       //   ? this.form.formId
       //   : this.$route.params.formId;

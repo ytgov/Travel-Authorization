@@ -4,8 +4,6 @@
 
     <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
 
-    {{ request }}
-
     <!--   <h3>
       Current Status:
       {{ request.status }}
@@ -69,19 +67,6 @@
           "
         ></travel-details-form>
       </v-stepper-content>
-
-      <v-stepper-step step="4">
-        View setup instructions
-      </v-stepper-step>
-      <v-stepper-content step="4">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="stepVal = 1">
-          Continue
-        </v-btn>
-        <v-btn text>
-          Cancel
-        </v-btn>
-      </v-stepper-content>
     </v-stepper>
 
     <v-tabs v-model="tab">
@@ -103,7 +88,7 @@
           <v-btn color="secondary" @click="managePage()">Back</v-btn>
         </div>
         <div v-else>
-          <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit </v-btn>
+          <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit to supervisor </v-btn>
           <v-btn color="green" class="mr-5" @click="saveForm()">Save Draft </v-btn>
           <v-btn color="red" class="mr-5" @click="deleteForm()">Delete</v-btn>
           <v-btn color="secondary" to="/my-travel-requests">Back</v-btn>
@@ -200,6 +185,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
+
 import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls";
 import { secureGet, securePost } from "../../../store/jwt";
 import ExpenseList from "../components/ExpenseList.vue";
@@ -208,7 +195,8 @@ import TripReport from "../components/TripReport.vue";
 import PersonalDetailsForm from "../components/PersonalDetailsForm.vue";
 import StopsForm from "../components/StopsForm.vue";
 import TravelDetailsForm from "../components/TravelDetailsForm.vue";
-import { mapActions, mapState } from "vuex";
+
+import formsApi from "@/apis/forms-api"
 
 export default {
   name: "TravelForm",
@@ -221,6 +209,7 @@ export default {
   },
   data: () => ({
     //Form
+    form: {},
     stepVal: 1,
 
     report: {},
@@ -336,10 +325,9 @@ export default {
     submitForm() {
       this.showError = false;
       if (this.$refs.form.validate()) {
-        let formId = this.request.formId ? this.request.formId : this.$route.params.formId;
-
-        securePost(`${FORM_URL}/${formId}/submit`, this.form).then(resp => {
-          console.log(resp);
+        return formsApi.create(this.request).then(({ form }) => {
+          console.log("data:", form)
+          this.$set(this, 'form', form);
           this.apiSuccess = "Form submitted successfully";
           this.snackbar = true;
           this.requestPage();
@@ -428,7 +416,6 @@ export default {
     async getForm(formId) {
       if (formId) {
         return await secureGet(`${FORM_URL}/${formId}`).then(async resp => {
-          console.log("forms", resp.data);
           if (resp.data.form != "empty") {
             this.form = resp.data;
             this.request.stops.forEach((v, key) => {
@@ -496,7 +483,7 @@ export default {
       this.$router.push(`/managerView`);
     },
     requestPage() {
-      this.$router.push(`/forms`);
+      this.$router.push(`/my-travel-requests`);
     },
     denyPopup() {
       this.denyDialog = true;

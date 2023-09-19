@@ -137,7 +137,7 @@
 
         <v-col class="col-auto pb-0">
           <v-btn color="primary" @click="continueClick">
-            Continue
+            {{ continueTitle || "Continue" }}
           </v-btn>
         </v-col>
       </v-row>
@@ -150,7 +150,7 @@ import { mapState } from "vuex";
 
 export default {
   name: "TravelDetailsForm",
-  props: ["review", "continue", "back"],
+  props: ["review", "continue", "continueTitle", "back"],
   data: () => ({
     btwMenu: false,
 

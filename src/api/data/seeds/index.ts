@@ -3899,7 +3899,7 @@ export async function seedUp() {
     },
     {
       claim: "Lunch",
-      locaiton: "NWT",
+      location: "NWT",
       amount: 32.25,
       currency: "CAD"
     },

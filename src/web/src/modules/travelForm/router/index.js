@@ -9,39 +9,39 @@ const routes = [
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/ManagerView.vue")
+        component: () => import("../views/ManagerView")
       },
       {
-        name: "FormList",
+        name: "travelRequestsList",
         path: "",
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/FormList.vue")
+        component: () => import("../views/FormList")
       },
       {
-        name: "TravelForm",
-        path: "/my-travel-requests/:formId?",
+        name: "travelRequestCreate",
+        path: "create",
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/TravelForm.vue")
+        component: () => import("../views/TravelFormCreate")
       },
       {
-        name: "TravelFormEdit",
-        path: ":formId?",
+        name: "travelRequestEdit",
+        path: ":formId",
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/TravelForm.vue")
+        component: () => import("../views/TravelFormEdit")
       },
       {
-        name: "TravelFormReview",
+        name: "travelRequestManage",
         path: "request/:formId?/manage",
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/TravelForm.vue")
+        component: () => import("../views/TravelFormManage")
       }
     ]
   }

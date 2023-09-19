@@ -5,19 +5,19 @@ import jwksRsa from "jwks-rsa";
 import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "../config";
 import { UserService } from "../services";
 
-console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}.well-known/jwks.json`);
+console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`);
 
 export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `${AUTH0_DOMAIN}.well-known/jwks.json`
+    jwksUri: `${AUTH0_DOMAIN}/.well-known/jwks.json`
   }),
 
   // Validate the audience and the issuer.
   audience: AUTH0_AUDIENCE,
-  issuer: [AUTH0_DOMAIN],
+  issuer: [`${AUTH0_DOMAIN}/`],
   algorithms: ["RS256"]
 });
 
@@ -39,7 +39,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
   }
 
   await axios
-    .get(`${AUTH0_DOMAIN}userinfo`, {
+    .get(`${AUTH0_DOMAIN}/userinfo`, {
       headers: {
         authorization: token
       }
@@ -77,7 +77,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
             };
           } else {
             u = await db.create(sub, email, first_name, last_name, "User", "Active");
-            
+
             console.log("CREATING USER FOR " + email, u);
             req.user = {
               ...req.user,
