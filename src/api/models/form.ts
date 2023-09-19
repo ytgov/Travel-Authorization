@@ -19,6 +19,9 @@ export interface FormRecord {
   daysOffTravelStatus?: string
   dateBackToWork?: Date
   travelDuration?: string
+  // DEPRECATED: purpose string column on forms table is replace by purposeId column
+  //  and purpose association
+  // purpose?: string
   purposeId?: number
   travelAdvance?: string
   eventName?: string
@@ -41,7 +44,7 @@ export interface FormRecord {
   deleted?: string
 
   // Associations
-  purpose?: string | TravelPurpose // DEPRECATE: purpose string column on forms table, association will remain
+  purpose?: TravelPurpose
 }
 
 interface Form extends FormRecord {}
@@ -49,7 +52,13 @@ interface Form extends FormRecord {}
 class Form extends BaseModel {
   // OPINION: If this is slow, switch to an ORM like Sequelize,
   // it would be a better use of time than optimising this.
-  static async findAll({ where = {}, include = [] }: { where?: {}; include?: string[] }) {
+  static async findAll({
+    where = {},
+    include = [],
+  }: {
+    where?: {}
+    include?: string[]
+  }): Promise<Form[]> {
     const forms = await db("forms").where(where)
 
     if (include.includes("stops")) {
