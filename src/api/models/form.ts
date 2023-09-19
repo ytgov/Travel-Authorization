@@ -87,4 +87,5 @@ class Form extends BaseModel {
   }
 }
 
+export { Form }
 export default Form
