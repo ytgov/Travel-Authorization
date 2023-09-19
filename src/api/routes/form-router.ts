@@ -135,6 +135,7 @@ formRouter.post("/:formId/save", ReturnValidationErrors, async function (req: Re
 
 //User to submit their own form
 formRouter.post("/:formId/submit", ReturnValidationErrors, async function (req: Request, res: Response) {
+  console.warn("This method is deprecated, and will be removed in a future version. Please use POST /api/forms instead.")
   try {
     await db.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
@@ -146,8 +147,8 @@ formRouter.post("/:formId/submit", ReturnValidationErrors, async function (req: 
           auditService.log(user.id, form.id, "Submit", "Form submitted successfully.");
           res.status(200).json("Form submitted");
         } else {
-          auditService.log(user.id, form.id, "Submit", "Form did not submit successfully.");
-          res.status(500).json("Form submission failed");
+          auditService.log(user.id, form?.id, "Submit", "Form did not submit successfully.");
+          res.status(422).json("Form submission failed");
         }
       } else {
         auditService.log(user.id, 0, "Submit", "Form does not exist or user lacking permissions on form.");

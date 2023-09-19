@@ -1,0 +1,152 @@
+#!/usr/bin/env ruby
+
+class DevHelper
+  # Support dashes in command names
+  COMMAND_TO_METHOD = {
+    "ts-node" => :ts_node
+  }
+  METHOD_TO_COMMAND = COMMAND_TO_METHOD.invert
+
+  REPLACE_PROCESS = 'replace_process'
+  WAIT_FOR_PROCESS = 'wait_for_process'
+
+  # External Interface
+  def self.call(*args)
+    new.call(*args)
+  end
+
+  # Core logic
+  def call(*args, **kwargs)
+    command = args[0]
+    method = COMMAND_TO_METHOD.fetch(command, command)
+    if args.length.positive? && respond_to?(method)
+      public_send(method, *args.drop(1), **kwargs)
+    else
+      compose(*args, **kwargs)
+    end
+  end
+
+  def compose(*args, **kwargs)
+    command = compose_command(*args, **kwargs)
+    puts "Running: #{command}" unless kwargs[:slient]
+
+    case kwargs[:execution_mode]
+    when WAIT_FOR_PROCESS
+      `#{command}`
+    else
+      exec(command)
+    end
+  end
+
+  # Primary command wrappers
+  def build(*args, **kwargs)
+    compose(%w[build], *args, **kwargs)
+  end
+
+  def up(*args, **kwargs)
+    compose(*%w[up --remove-orphans], *args, **kwargs)
+  end
+
+  def down(*args, **kwargs)
+    compose(*%w[down --remove-orphans], *args, **kwargs)
+  end
+
+  def logs(*args, **kwargs)
+    compose(*%w[logs -f], *args, **kwargs)
+  end
+
+  def run(*args, **kwargs)
+    compose(*%w[run --rm], *args, **kwargs)
+  end
+
+  def ps(*args, **kwargs)
+    compose(*%w[ps], *args, **kwargs)
+  end
+
+  # Custom helpers
+  def psql(*args, **kwargs)
+    db(*%w[psql "postgresql://user:itsallgood@localhost:5432/travel"], *args, **kwargs)
+  end
+
+  def db(*args, **kwargs)
+    compose(*%w[exec dbpostgres], *args, **kwargs)
+  end
+
+  def ownit(*args, **kwargs)
+    file_or_directory = args[0]
+    raise ScriptError, "Must provide a file or directory path." if file_or_directory.nil?
+
+    if RUBY_PLATFORM =~ /linux/
+      puts "Take ownership of the file or directory? #{file_or_directory}"
+      exec("sudo chown -R #{user_id}:#{group_id} #{file_or_directory}")
+    else
+      raise NotImplementedError, "Not implement for platform #{RUBY_PLATFORM}"
+    end
+  end
+
+  def bash_completions
+    completions = public_methods(false).reject { |word|
+      %i[call].include?(word)
+    }.map { |word|
+      METHOD_TO_COMMAND.fetch(word, word)
+    }
+    puts completions
+  end
+
+  private
+
+  def container_id(container_name, *args, **kwargs)
+    command = compose_command(*%w[ps -q], container_name, *args, **kwargs)
+    puts "Running: #{command}"
+    id_of_container = `#{command}`.chomp
+    puts "Container id is: #{id_of_container}"
+    id_of_container
+  end
+
+  def service_running?(container_name)
+    ps(*%w[-q --status=running], execution_mode: WAIT_FOR_PROCESS, slient: true) != ''
+  end
+
+  def compose_command(*args, **kwargs)
+    # environment = kwargs.fetch(:environment, 'development')
+    "cd #{project_root} && docker compose -f docker-compose.db.yml #{args.join(' ')}"
+  end
+
+  def project_root
+    @project_root ||= File.absolute_path("#{__dir__}/..")
+  end
+
+  def take_over_needed?(file_or_directory)
+    files_owned_by_others = system("find #{file_or_directory} -not -user #{user_id} -print -quit | grep -q .")
+  end
+
+  def user_id
+    raise NotImplementedError, "Not implement for platform #{RUBY_PLATFORM}" unless RUBY_PLATFORM =~ /linux/
+
+    `id -u`.strip
+  end
+
+  def group_id
+    raise NotImplementedError, "Not implement for platform #{RUBY_PLATFORM}" unless RUBY_PLATFORM =~ /linux/
+
+    `id -g`.strip
+  end
+end
+
+# Only execute main function when file is executed
+DevHelper.call(*ARGV) if $PROGRAM_NAME == __FILE__
+
+## Dev completions
+# https://iridakos.com/programming/2018/03/01/bash-programmable-completion-tutorial
+# _dev_completions () {
+#   local dev_command_path="$(which dev)"
+#   local dev_function_names
+#   dev_function_names="$(ruby "$dev_command_path" bash_completions)"
+#   # COMP_WORDS: an array of all the words typed after the name of the program the compspec belongs to
+#   # COMP_CWORD: an index of the COMP_WORDS array pointing to the word the current cursor is at - in other words, the index of the word the cursor was when the tab key was pressed
+#   # COMP_LINE: the current command line
+#   COMPREPLY=($(compgen -W "$dev_function_names" "${COMP_WORDS[$COMP_CWORD]}"))
+# }
+
+# complete -F _dev_completions dev
+# complete -W "allow" direnv

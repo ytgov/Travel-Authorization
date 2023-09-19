@@ -1,7 +1,7 @@
 <template>
   <v-card class="default">
     <v-card-text>
-      <div>
+      <v-form ref="form">
         <v-row>
           <v-col>
             <v-checkbox
@@ -78,7 +78,7 @@
           </v-col>
         </v-row>
 
-        <v-row v-if="!oneWayTrip === true">
+        <v-row v-if="request.oneWayTrip === false">
           <v-col><DatePicker :value="request.stops[1].departureDate" text="Departure Date" :review="review" /> </v-col>
           <v-col> <TimePicker :value="request.stops[1].departureTime" text="Departure Time" :review="review"/></v-col>
           <v-col>
@@ -143,7 +143,7 @@
           </div>
         </div>
 
-        <v-row v-if="!oneWayTrip === true">
+        <v-row v-if="request.oneWayTrip === false">
           <v-col>
             <v-autocomplete
               v-model="request.stops[0].locationId"
@@ -169,7 +169,7 @@
             <v-btn color="blue" @click="addStop" :disabled="review">Add Stop</v-btn>
           </v-col>
         </v-row>
-      </div>
+      </v-form>
 
       <v-row>
         <v-col class="mr-auto pb-0">

@@ -1,7 +1,12 @@
 import knex, { Knex } from "knex";
+import { v4 as uuid } from "uuid";
+import { isEmpty, isNil, map } from "lodash";
+
+import db from "../db/db-client"
 import { DB_CONFIG } from "../config";
-import _, { map } from "lodash";
 import { Form } from "../models/form";
+import { User } from "../models";
+
 export class FormService {
   private db: Knex;
 
@@ -14,7 +19,7 @@ export class FormService {
     try {
       let form: Form = await this.db("forms").select("*").first().where({ formId: formId });
 
-      if (_.isEmpty(form)) {
+      if (isEmpty(form)) {
         return undefined;
       }
 
@@ -185,5 +190,47 @@ export class FormService {
       console.log(error);
       return false;
     }
+  }
+
+  static create(attributes: Form, currentUser: User): Promise<Form> {
+    const instance = new this()
+    return instance.create(attributes, currentUser)
+  }
+
+  async create(attributes: Form, currentUser: User): Promise<Form> {
+    const stops = attributes.stops;
+    delete attributes.stops;
+
+    const expenses = attributes.expenses;
+    delete attributes.expenses;
+
+    const estimates = attributes.estimates;
+    delete attributes.estimates;
+
+    attributes.userId = currentUser.id;
+    attributes.status = "Submitted";
+
+    // Not sure if this is correct, but I can't find any that generates the formId.
+    if (isNil(attributes.formId)) {
+      attributes.formId = uuid();
+    }
+
+    const form = await db<Form>("forms")
+      .insert(attributes, "id")
+      .onConflict("formId")
+      .merge()
+      .returning("*")
+      .then(result => {
+        if (isEmpty(result)) throw new Error("Could not create form");
+
+        return result[0];
+      });
+
+    const formId = form.id;
+    await this.saveStops(formId, stops);
+    await this.saveExpenses(formId, expenses);
+    await this.saveEstimates(formId, estimates);
+
+    return form;
   }
 }
