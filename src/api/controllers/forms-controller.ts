@@ -6,6 +6,10 @@ import BaseController from "./base-controller";
 const auditService = new AuditService();
 
 export class FormsController extends BaseController {
+  index() {
+    return []
+  }
+
   create() {
     return FormService
       .create(this.request.body, this.currentUser)

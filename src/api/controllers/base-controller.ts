@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction, Request, Response } from "express"
 
 // See https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 export class BaseController {
@@ -6,25 +6,34 @@ export class BaseController {
   protected response: Response
   protected next: NextFunction
 
-  constructor(
-    req: Request, res: Response, next: NextFunction
-  ) {
+  constructor(req: Request, res: Response, next: NextFunction) {
     this.request = req
     this.response = res
     this.next = next
   }
 
+  static get index() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const controllerInstance = new this(req, res, next)
+      return controllerInstance.index()
+    }
+  }
+
   // Usage app.post("/api/users", UsersController.create)
   // maps /api/users to UsersController#create()
-  static get create () {
+  static get create() {
     return (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.create()
     }
   }
 
+  index() {
+    throw new Error("Not implemented")
+  }
+
   create() {
-    throw new Error('Not Implemented')
+    throw new Error("Not Implemented")
   }
 
   // Internal helpers
@@ -38,4 +47,4 @@ export class BaseController {
   }
 }
 
-export default BaseController;
+export default BaseController

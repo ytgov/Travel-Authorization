@@ -23,6 +23,6 @@ router.use("/api", checkJwt);
 router.use("/api", loadUser);
 
 // TODO: move all routing logic to this file, and move all route actions into controllers
-router.route("/api/forms").post(FormsController.create);
+router.route("/api/forms").get(FormsController.index).post(FormsController.create)
 
 export default router;
