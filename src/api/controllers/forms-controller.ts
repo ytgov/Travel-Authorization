@@ -2,7 +2,7 @@ import { AuditService, FormService } from "../services"
 
 import BaseController from "./base-controller"
 import Form from "../models/form"
-import FormSerializers from "../serializers/form-serializers"
+import FormSerializer from "../serializers/form-serializer"
 
 // TODO: push this code back into services where it belongs
 const auditService = new AuditService()
@@ -13,7 +13,7 @@ export class FormsController extends BaseController {
       where: { userId: this.currentUser.id },
       include: ["stops", "travelPurpose"],
     }).then((forms) => {
-      const serializedForms = FormSerializers.asTable(forms)
+      const serializedForms = FormSerializer.asTable(forms)
       return this.response.json({ forms: serializedForms })
     })
   }
