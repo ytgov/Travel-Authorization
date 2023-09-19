@@ -45,6 +45,10 @@ export class BaseController {
   get currentUser(): { id: number } {
     return this.request.user
   }
+
+  get params() {
+    return this.request.params
+  }
 }
 
 export default BaseController

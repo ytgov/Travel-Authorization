@@ -1,5 +1,6 @@
-import { FORM_URL, LOOKUP_URL, DESTINATION_URL } from "@/urls";
-import { secureGet, securePost, securePut } from "@/store/jwt";
+import { FORM_URL, LOOKUP_URL, DESTINATION_URL } from "@/urls"
+import { secureGet, securePost, securePut } from "@/store/jwt"
+import formsApi from "@/apis/forms-api"
 
 const state = {
   myForms: [],
@@ -7,54 +8,54 @@ const state = {
   purposes: [],
   destinations: [],
   request: {},
-};
+}
 
 const actions = {
   async initialize(store) {
-    await store.dispatch("loadDepartments");
-    await store.dispatch("loadPurposes");
-    await store.dispatch("loadDestinations");
+    await store.dispatch("loadDepartments")
+    await store.dispatch("loadPurposes")
+    await store.dispatch("loadDestinations")
   },
 
   async loadDepartments({ commit }) {
     return secureGet(`${LOOKUP_URL}/departmentList2`).then((resp) => {
-      commit("SET_DEPARTMENTS", resp.data.data);
-      return resp.data.data;
-    });
+      commit("SET_DEPARTMENTS", resp.data.data)
+      return resp.data.data
+    })
   },
 
   async loadPurposes({ commit }) {
     return secureGet(`${LOOKUP_URL}/travelPurpose`).then((resp) => {
-      commit("SET_PURPOSE", resp.data);
-      return resp.data;
-    });
+      commit("SET_PURPOSE", resp.data)
+      return resp.data
+    })
   },
 
   async loadDestinations({ commit }) {
     return secureGet(`${DESTINATION_URL}`).then((resp) => {
-      let destinations = [];
+      let destinations = []
 
       resp.data.forEach((v) => {
         destinations.push({
           value: v.id,
           text: v.city + " (" + v.province + ")",
-        });
-      });
+        })
+      })
 
-      commit("SET_DESTINATIONS", destinations);
+      commit("SET_DESTINATIONS", destinations)
 
-      return destinations;
-    });
+      return destinations
+    })
   },
 
   async loadForms({ commit }) {
-    return secureGet(`${FORM_URL}`).then((resp) => {
-      commit("SET_MYFORMS", resp.data);
-    });
+    return formsApi.list().then(({ forms }) => {
+      commit("SET_MYFORMS", forms)
+    })
   },
 
-  start({commit}) {
-    let form =  {
+  start({ commit }) {
+    let form = {
       //personal info
       firstName: "",
       lastName: "",
@@ -98,71 +99,71 @@ const actions = {
       status: "",
       requestChange: "",
       denialReason: "",
-    };
+    }
 
-    commit("SET_SELECTEDFORM", form);
+    commit("SET_SELECTEDFORM", form)
   },
   selectForm({ commit }, form) {
-    commit("SET_SELECTEDFORM", form);
+    commit("SET_SELECTEDFORM", form)
   },
 
   async getAll() {
     return secureGet(FORM_URL).then((resp) => {
-      return resp.data.data;
-    });
+      return resp.data.data
+    })
   },
 
   async getById(store, { id }) {
     return secureGet(`${FORM_URL}/${id}`).then((resp) => {
-      return resp.data.data;
-    });
+      return resp.data.data
+    })
   },
 
   async create(store, { body }) {
-    console.log(body);
+    console.log(body)
 
     return securePost(FORM_URL, body).then((resp) => {
-      return resp.data;
-    });
+      return resp.data
+    })
   },
 
   async update(store, { item }) {
-    let id = item.id;
-    console.log(item);
+    let id = item.id
+    console.log(item)
 
     return securePut(`${FORM_URL}/${id}`, item).then((resp) => {
-      return resp.data;
-    });
+      return resp.data
+    })
   },
 
   async delete(store, { id }) {
     return securePost(`${FORM_URL}/${id}`).then((resp) => {
-      return resp.data;
-    });
+      return resp.data
+    })
   },
-};
+}
 
 const mutations = {
   SET_MYFORMS(store, value) {
-    store.myForms = value;
+    store.myForms = value
   },
   SET_SELECTEDFORM(store, value) {
-    store.request = value;
+    store.request = value
   },
   SET_DEPARTMENTS(store, value) {
-    store.departments = value;
+    store.departments = value
   },
   SET_PURPOSE(store, value) {
-    store.purposes = value;
+    store.purposes = value
   },
   SET_DESTINATIONS(store, value) {
-    store.destinations = value;
+    store.destinations = value
   },
-};
+}
 
 export default {
   namespaced: true,
   state,
   actions,
   mutations,
-};
+}
