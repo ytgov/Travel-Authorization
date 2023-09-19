@@ -4,10 +4,10 @@
 
     <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
 
-    <!-- <h3>
+    <h3>
       Current Status:
       {{ request.status }}
-    </h3> -->
+    </h3>
 
     <v-stepper
       v-model="stepVal"
