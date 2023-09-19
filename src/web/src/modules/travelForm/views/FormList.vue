@@ -34,7 +34,7 @@
   </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState } from "vuex"
 
 export default {
   name: "Home",
@@ -63,7 +63,7 @@ export default {
     ],
   }),
   mounted() {
-    this.loadForms();
+    this.loadForms()
   },
   computed: {
     ...mapState("travelForm", ["myForms"]),
@@ -71,11 +71,11 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadForms"]),
     goToFormDetails(form) {
-      this.$router.push({ name: "travelRequestsList", params: form.id });
+      this.$router.push({ name: "travelRequestsList", params: form.id })
     },
     goToCreateForm() {
-      this.$router.push({ name: "travelRequestCreate" });
+      this.$router.push({ name: "travelRequestCreate" })
     },
   },
-};
+}
 </script>
