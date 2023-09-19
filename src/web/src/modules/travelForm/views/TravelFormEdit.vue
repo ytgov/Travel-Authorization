@@ -1,85 +1,10 @@
 <template>
   <div>
-    <h1>Travel Authorization Request</h1>
-
-    <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
-
-    <h3>
-      Current Status:
-      {{ request.status }}
-    </h3>
-
-    <v-stepper
-      v-model="stepVal"
-      vertical
-    >
-      <v-stepper-step
-        :complete="stepVal > 1"
-        step="1"
-      >
-        Enter your personal details
-      </v-stepper-step>
-
-      <v-stepper-content step="1">
-        <personal-details-form
-          :form="form"
-          :review="review"
-          :continue="
-            () => {
-              stepVal = 2
-            }
-          "
-        ></personal-details-form>
-      </v-stepper-content>
-
-      <v-stepper-step
-        :complete="stepVal > 2"
-        step="2"
-      >
-        Tell us about the travel
-      </v-stepper-step>
-
-      <v-stepper-content step="2">
-        <stops-form
-          :form="form"
-          :review="review"
-          :continue="
-            () => {
-              stepVal = 3
-            }
-          "
-          :back="
-            () => {
-              stepVal = 1
-            }
-          "
-        ></stops-form>
-      </v-stepper-content>
-
-      <v-stepper-step
-        :complete="stepVal > 3"
-        step="3"
-      >
-        Enter details about the trip and purpose
-      </v-stepper-step>
-
-      <v-stepper-content step="3">
-        <travel-details-form
-          :form="form"
-          :review="review"
-          :continue="
-            () => {
-              stepVal = 4
-            }
-          "
-          :back="
-            () => {
-              stepVal = 2
-            }
-          "
-        ></travel-details-form>
-      </v-stepper-content>
-    </v-stepper>
+    <div class="text-center">
+      <v-overlay :value="loading">
+        <v-progress-circular indeterminate color="#f3b228" :size="70" :width="7"></v-progress-circular>
+      </v-overlay>
+    </div>
 
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
@@ -90,240 +15,64 @@
     <br />
     <v-tabs-items v-model="tab">
       <v-tab-item>
-        <v-form
-          ref="form"
-          lazy-validation
-        >
-        </v-form>
+        <v-form ref="form" lazy-validation>
+          <template v-if="!loading">
+            <h1>Travel Authorization Request</h1>
 
-        <div v-if="review == true">
-          <v-btn
-            color="blue"
-            class="mr-5"
-            @click="approveForm()"
-            >Approve</v-btn
-          >
-          <v-btn
-            color="green"
-            class="mr-5"
-            @click="requestChangePopup()"
-          >
-            Request Changes
-          </v-btn>
-          <v-btn
-            color="#f3b228"
-            class="mr-5"
-            @click="reassignPopup()"
-          >
-            Reassign
-          </v-btn>
-          <v-btn
-            color="red"
-            class="mr-5"
-            @click="denyPopup()"
-            >Deny</v-btn
-          >
-          <v-btn
-            color="secondary"
-            @click="managePage()"
-            >Back</v-btn
-          >
+            <p>To submit a travel authorization request, you must first complete the following 3 steps:</p>
+
+            <v-stepper v-model="stepVal" vertical>
+              <v-stepper-step :complete="stepVal > 1" step="1">
+                Enter your personal details
+              </v-stepper-step>
+
+              <v-stepper-content step="1">
+                <personal-details-form :form="form" :review="review" :continue="() => {
+                  stepVal = 2;
+                }
+                  "></personal-details-form>
+              </v-stepper-content>
+
+              <v-stepper-step :complete="stepVal > 2" step="2">
+                Tell us about the travel
+              </v-stepper-step>
+
+              <v-stepper-content step="2">
+                <stops-form :form="form" :review="review" :continue="() => { stepVal = 3; }"
+                  :back="() => { stepVal = 1; }"></stops-form>
+              </v-stepper-content>
+
+              <v-stepper-step :complete="stepVal > 3" step="3">
+                Enter details about the trip and purpose
+              </v-stepper-step>
+
+              <v-stepper-content step="3">
+                <travel-details-form :form="form" :review="review" :continue="() => { stepVal = 1; }" continue-title="Review"
+                  :back="() => { stepVal = 2; }"></travel-details-form>
+              </v-stepper-content>
+            </v-stepper>
+          </template>
+        </v-form>
+        <div>
+          <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit to Supervisor </v-btn>
+          <v-btn color="green" class="mr-5" @click="saveForm()">Save Draft </v-btn>
+          <v-btn color="secondary" :to="{ name: 'travelRequestsList' }">Back</v-btn>
         </div>
-        <div v-else>
-          <v-btn
-            color="blue"
-            class="mr-5"
-            @click="submitForm()"
-          >
-            Submit to supervisor
-          </v-btn>
-          <v-btn
-            color="green"
-            class="mr-5"
-            @click="saveForm()"
-            >Save Draft
-          </v-btn>
-          <v-btn
-            color="red"
-            class="mr-5"
-            @click="deleteForm()"
-            >Delete</v-btn
-          >
-          <v-btn
-            color="secondary"
-            to="/my-travel-requests"
-            >Back</v-btn
-          >
-        </div>
-        <v-snackbar
-          v-model="snackbar"
-          right
-          color="success"
-        >
+        <v-snackbar v-model="snackbar" right color="success">
           <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
           {{ apiSuccess }}
         </v-snackbar>
-
-        <v-dialog
-          v-model="requestChangeDisplay"
-          width="80%"
-        >
-          <v-card>
-            <v-card-title class="text-h5 grey lighten-2"> Change Required </v-card-title>
-
-            <v-card-text>
-              {{ request.requestChange }}
-            </v-card-text>
-
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                text
-                @click="requestChangeDisplay = false"
-              >
-                Ok
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
-        <v-dialog
-          v-model="denyDialog"
-          width="80%"
-        >
-          <v-card>
-            <v-card-title class="text-h5 grey lighten-2"> Request Denied </v-card-title>
-
-            <v-card-text> Please provide a reason for the denial of this form. </v-card-text>
-            <v-card-text>
-              <v-textarea
-                v-model="request.denialReason"
-                label="Denial Reason"
-                rows="1"
-                auto-grow
-              ></v-textarea>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                text
-                @click="denyForm()"
-              >
-                Submit
-              </v-btn>
-              <v-btn
-                color="red"
-                text
-                @click="denyDialog = false"
-              >
-                Cancel
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
-        <v-dialog
-          v-model="reassignDialog"
-          width="80%"
-        >
-          <v-card>
-            <v-card-title class="text-h5 grey lighten-2"> Reassign Form </v-card-title>
-
-            <v-card-text> Reassign this form to a new supervisor.</v-card-text>
-            <v-card-text>
-              <v-combobox
-                v-model="reassignEmail"
-                dense
-                label="Supervisor Email"
-                persistent-hint
-                :items="emails"
-                required
-                clearable
-                :disabled="!review"
-                :rules="emailRules"
-              ></v-combobox
-            ></v-card-text>
-
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                text
-                @click="reassignForm()"
-              >
-                Submit
-              </v-btn>
-              <v-btn
-                color="red"
-                text
-                @click="reassignDialog = false"
-              >
-                Cancel
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-
-        <v-dialog
-          v-model="requestChangeDialog"
-          width="80%"
-        >
-          <v-card>
-            <v-card-title class="text-h5 grey lighten-2"> Request Change </v-card-title>
-
-            <v-card-text> What changes need to be made to this form? </v-card-text>
-            <v-card-text>
-              <v-textarea
-                v-model="request.requestChange"
-                label="Requested Changes"
-                rows="1"
-                auto-grow
-              ></v-textarea>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-btn
-                color="blue"
-                text
-                @click="requestChange()"
-              >
-                Submit
-              </v-btn>
-              <v-btn
-                color="red"
-                text
-                @click="requestChangeDialog = false"
-              >
-                Cancel
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
       </v-tab-item>
-      <v-tab-item
-        ><ExpenseList
-          @reloadCost="getCostDifference"
-          title="Estimates"
-      /></v-tab-item>
-      <v-tab-item
-        ><ExpenseList
-          @reloadCost="getCostDifference"
-          title="Expenses"
-      /></v-tab-item>
+      <v-tab-item>
+        <ExpenseList @reloadCost="getCostDifference" title="Estimates" />
+      </v-tab-item>
+      <v-tab-item>
+        <ExpenseList @reloadCost="getCostDifference" title="Expenses" />
+      </v-tab-item>
       <v-tab-item>
         <TripReport> </TripReport>
       </v-tab-item>
     </v-tabs-items>
-    <div class="text-center">
-      <v-overlay :value="overlay">
-        <v-progress-circular
-          indeterminate
-          color="#f3b228"
-          :size="70"
-          :width="7"
-        ></v-progress-circular>
-      </v-overlay>
-    </div>
   </div>
 </template>
 
