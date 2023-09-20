@@ -26,5 +26,6 @@ router.use("/api", loadUser)
 router.get("/api/forms", FormsController.index)
 router.post("/api/forms", FormsController.create)
 router.get("/api/forms/:formId", FormsController.show)
+router.patch("/api/forms/:formId", FormsController.update)
 
 export default router

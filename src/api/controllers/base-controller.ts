@@ -37,6 +37,13 @@ export class BaseController {
     }
   }
 
+  static get update() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const controllerInstance = new this(req, res, next)
+      return controllerInstance.update()
+    }
+  }
+
   index() {
     throw new Error("Not implemented")
   }
@@ -46,6 +53,10 @@ export class BaseController {
   }
 
   show() {
+    throw new Error("Not Implemented")
+  }
+
+  update() {
     throw new Error("Not Implemented")
   }
 
