@@ -192,12 +192,7 @@ export class FormService {
     }
   }
 
-  static create(attributes: Form, currentUser: User): Promise<Form> {
-    const instance = new this()
-    return instance.create(attributes, currentUser)
-  }
-
-  async create(attributes: Form, currentUser: User): Promise<Form> {
+  static async create(attributes: Form, currentUser: User): Promise<Form> {
     const stops = attributes.stops;
     delete attributes.stops;
 
@@ -227,9 +222,10 @@ export class FormService {
       });
 
     const formId = form.id;
-    await this.saveStops(formId, stops);
-    await this.saveExpenses(formId, expenses);
-    await this.saveEstimates(formId, estimates);
+    const instance = new this();
+    await instance.saveStops(formId, stops);
+    await instance.saveExpenses(formId, expenses);
+    await instance.saveEstimates(formId, estimates);
 
     return form;
   }
