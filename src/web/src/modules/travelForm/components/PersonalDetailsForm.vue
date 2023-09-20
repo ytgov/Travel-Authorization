@@ -165,7 +165,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "PersonalDetailsForm",
@@ -206,8 +206,11 @@ export default {
       return branch?.units || [];
     }
   },
-  mounted() {},
+  async mounted() {
+    await this.loadDepartments()
+  },
   methods: {
+    ...mapActions("travelForm", ["loadDepartments"]),
     search() {},
     emailSearch() {},
     continueClick() {
