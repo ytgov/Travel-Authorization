@@ -6,6 +6,7 @@ import db from "../db/db-client"
 import { DB_CONFIG } from "../config"
 import { Form } from "../models/form"
 import { User } from "../models"
+import StopsService from "./stops-service"
 
 export class FormService {
   private db: Knex
@@ -97,7 +98,6 @@ export class FormService {
           stop.locationId = stop.locationId != "" ? stop.locationId : null
           return stop
         })
-        console.log(stops)
         await this.db("stops").insert(stops)
       }
       return true
@@ -240,7 +240,7 @@ export class FormService {
   }
 
   static async update(id: string | number, attributes: Partial<Form>): Promise<Form> {
-    const stops = attributes.stops
+    const stops = attributes.stops || []
     delete attributes.stops
 
     const expenses = attributes.expenses
@@ -259,11 +259,15 @@ export class FormService {
         return updatedRecords[0]
       })
 
-    console.log("form", form)
-
+    // OPINION: It's not worth supporting layered transactions here,
+    // though that would be the standard way of doing things.
+    // If we are using an ORM such as Sequelize, it would then be worth doing.
     const formId = form.id
+    if (!isEmpty(stops)) {
+      await StopsService.bulkReplace(formId, stops)
+    }
+
     const instance = new this()
-    await instance.saveStops(formId, stops)
     await instance.saveExpenses(formId, expenses)
     await instance.saveEstimates(formId, estimates)
 
