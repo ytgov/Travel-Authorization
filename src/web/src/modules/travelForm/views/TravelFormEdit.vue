@@ -155,6 +155,7 @@
 </template>
 
 <script>
+import { upperFirst, isEmpty } from "lodash"
 import { mapActions, mapState } from "vuex"
 
 import { FORM_URL, USERS_URL } from "@/urls"
@@ -242,24 +243,28 @@ export default {
       })
     },
     async loadUser() {
-      await secureGet(`${USERS_URL}/me`).then(({ data }) => {
-        this.user = data.data
-        this.request.firstName =
-          this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1)
-        this.request.lastName =
-          this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1)
-        this.request.email = this.user.email
-        return this.user
-      })
-      await secureGet(`${USERS_URL}/unit`).then(({ data }) => {
-        this.request.department = data.department
-        this.request.division = data.division
-        this.request.branch = data.branch
-        this.request.unit = data.unit
-        this.request.mailcode = data.mailcode
-        return data
-      })
-      return this.user
+      if (
+        isEmpty(this.request.firstName) &&
+        isEmpty(this.request.lastName) &&
+        isEmpty(this.request.email)
+      ) {
+        await secureGet(`${USERS_URL}/me`).then(({ data }) => {
+          const user = data.data
+          this.request.firstName = upperFirst(user.first_name)
+          this.request.lastName = upperFirst(user.last_name)
+          this.request.email = user.email
+        })
+      }
+
+      if (isEmpty(this.request.department) && isEmpty(this.request.mailcode)) {
+        await secureGet(`${USERS_URL}/unit`).then(({ data }) => {
+          this.request.department = data.department
+          this.request.division = data.division
+          this.request.branch = data.branch
+          this.request.unit = data.unit
+          this.request.mailcode = data.mailcode
+        })
+      }
     },
   },
 }
