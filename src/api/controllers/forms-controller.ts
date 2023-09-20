@@ -61,7 +61,7 @@ export class FormsController extends BaseController {
     if (!FormsPolicy.update(form, this.currentUser)) {
       return this.response
         .status(403)
-        .json({ message: "You are not authorized to view this form." })
+        .json({ message: "You are not authorized to update this form." })
     }
 
     return FormService.update(this.params.formId, this.request.body)
