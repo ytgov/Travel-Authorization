@@ -1,6 +1,9 @@
-import { AuditService, FormService } from "../services"
+import { isNil } from "lodash"
 
+import db from "../db/db-client"
 import BaseController from "./base-controller"
+
+import { AuditService, FormService } from "../services"
 import Form from "../models/form"
 import FormSerializer from "../serializers/form-serializer"
 import FormsPolicy from "../policies/FormsPolicy"
@@ -51,8 +54,13 @@ export class FormsController extends BaseController {
   }
 
   async update() {
-    if (!(await FormsPolicy.update(this.params.formId, this.currentUser))) {
-      return this.response.status(403).json({ message: "Forbidden" })
+    const form = await this.loadForm()
+    if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
+
+    if (!FormsPolicy.update(form, this.currentUser)) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to view this form." })
     }
 
     return FormService.update(this.params.formId, this.request.body)
@@ -62,6 +70,10 @@ export class FormsController extends BaseController {
       .catch((error) => {
         return this.response.status(422).json({ message: `Form update failed: ${error}` })
       })
+  }
+
+  private loadForm(): Promise<Form | undefined> {
+    return db<Form>("forms").where("id", this.params.formId).first()
   }
 }
 
