@@ -239,7 +239,34 @@ export class FormService {
     return form
   }
 
-  static update(id: string | number, attributes: Partial<Form>): Promise<Form> {
-    return db<Form>("forms").returning("*").where("id", id).update(attributes)
+  static async update(id: string | number, attributes: Partial<Form>): Promise<Form> {
+    const stops = attributes.stops
+    delete attributes.stops
+
+    const expenses = attributes.expenses
+    delete attributes.expenses
+
+    const estimates = attributes.estimates
+    delete attributes.estimates
+
+    const form = await db<Form>("forms")
+      .where("id", id)
+      .update(attributes)
+      .returning("*")
+      .then((updatedRecords) => {
+        if (isEmpty(updatedRecords)) throw new Error("Could not update form")
+
+        return updatedRecords[0]
+      })
+
+    console.log("form", form)
+
+    const formId = form.id
+    const instance = new this()
+    await instance.saveStops(formId, stops)
+    await instance.saveExpenses(formId, expenses)
+    await instance.saveEstimates(formId, estimates)
+
+    return form
   }
 }
