@@ -87,10 +87,9 @@
               :items="emails"
               required
               clearable
-              v-on:keyup="search"
               :disabled="review"
               :rules="emailRules"
-              @input.native="emailSearch = $event.srcElement.value"
+              @update:search-input="searchEmail"
               :return-object="false"
             ></v-combobox>
           </v-col>
@@ -217,7 +216,7 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
   }),
   computed: {
-    ...mapState("travelForm", ["departments", "request"]),
+    ...mapState("travelForm", ["departments", "request", "emails"]),
     divisions() {
       const department = this.departments.find((d) => d.name == this.request.department)
       return department?.divisions || []
@@ -235,9 +234,10 @@ export default {
     await this.loadDepartments()
   },
   methods: {
-    ...mapActions("travelForm", ["loadDepartments"]),
-    search() {},
-    emailSearch() {},
+    ...mapActions("travelForm", ["loadDepartments", "emailSearch"]),
+    searchEmail(token) {
+      return this.emailSearch(token)
+    },
     continueClick() {
       let formValid = this.$refs.form.validate()
       if (formValid) this.continue()
