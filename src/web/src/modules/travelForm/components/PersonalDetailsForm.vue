@@ -204,11 +204,6 @@ export default {
   name: "PersonalDetailsForm",
   props: ["review", "continue"],
   data: () => ({
-    myDivisions: [],
-    myBranches: [],
-    myUnits: [],
-    emails: [],
-
     //Rules
     firstNameRules: [(v) => !!v || "First name is required"],
     lastNameRules: [(v) => !!v || "Last name is required"],
@@ -219,10 +214,7 @@ export default {
           v
         ) || "E-mail must be valid",
     ],
-    fromRules: [(v) => !!v || "This field is required"],
-    destinationRules: [(v) => !!v || "This field is required"],
     requiredRules: [(v) => !!v || "This field is required"],
-    numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
   computed: {
     ...mapState("travelForm", ["departments", "request"]),
