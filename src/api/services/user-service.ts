@@ -1,6 +1,6 @@
 import knex, { Knex } from "knex";
 import { AZURE_KEY, DB_CONFIG } from "../config";
-import _, { map } from "lodash";
+import _, { isEmpty, map } from "lodash";
 import axios from "axios";
 import { timeStamp } from "console";
 export class UserService {
@@ -157,20 +157,19 @@ export class UserService {
 
   async getUnit(email: string) {
     let unitSearch = await axios
-      .get(`https://api.gov.yk.ca/directory/employees`, {
+      .get(`https://api.gov.yk.ca/directory/employees?email=${email}`, {
         headers: {
           "Ocp-Apim-Subscription-Key": AZURE_KEY,
         },
       })
-      .then((resp: any) => {
-        let match = resp.data.employees.filter((user: any) => {
-          return user.email == email;
-        });
-        return match[0];
+      .then(({ data }) => {
+        if (isEmpty(data.employees)) return undefined
+
+        return data.employees[0]
       })
-      .catch((e: Error) => {
-        console.log(e);
-      });
+      .catch((error) => {
+        console.log(`Could not retrieve employee information for ${email}: ${error}`)
+      })
 
     let unit = {
       department: "",
