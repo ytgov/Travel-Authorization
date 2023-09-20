@@ -178,9 +178,14 @@ export default {
     StopsForm,
     TravelDetailsForm,
   },
+  props: {
+    formId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
     //Form
-    formId: -1,
     form: {},
     stepVal: 1,
 
@@ -199,7 +204,6 @@ export default {
   }),
   async mounted() {
     this.loading = true
-    this.formId = this.$route.params.formId
     await this.loadForm(this.formId)
     await this.loadUser()
     this.$refs.form.resetValidation()
@@ -227,7 +231,7 @@ export default {
       this.request.status = "Draft"
       this.$refs.form.resetValidation()
       this.showError = false
-      this.request.formId = this.request.formId ? this.request.formId : this.$route.params.formId
+      this.request.formId = this.request.formId || parseInt(this.formId)
 
       securePost(`${FORM_URL}/${this.request.formId}/save`, this.form).then((resp) => {
         console.log(resp)

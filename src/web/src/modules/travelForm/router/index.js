@@ -33,7 +33,8 @@ const routes = [
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/TravelFormEdit")
+        component: () => import("../views/TravelFormEdit"),
+        props: true,
       },
       {
         name: "travelRequestManage",
