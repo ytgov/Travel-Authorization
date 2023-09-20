@@ -38,19 +38,20 @@ export class FormsController extends BaseController {
       })
   }
 
-  show() {
-    return Form.findByPk(this.params.formId, { include: ["stops", "purpose"] })
-      .then((form) => {
-        const serializedForm = FormSerializer.asDetailed(form)
-        return this.response.json({ form: serializedForm })
-      })
-      .catch((error) => {
-        if (error.message.includes("not found")) {
-          return this.response.status(404).json({ message: `Form not found: ${error}` })
-        } else {
-          return this.response.status(500).json({ message: `Internal server error: ${error}` })
-        }
-      })
+  async show() {
+    const form = await this.loadForm()
+    if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
+
+    if (!FormsPolicy.update(form, this.currentUser)) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to view this form." })
+    }
+
+    return Form.findByPk(this.params.formId, { include: ["stops", "purpose"] }).then((form) => {
+      const serializedForm = FormSerializer.asDetailed(form)
+      return this.response.json({ form: serializedForm })
+    })
   }
 
   async update() {
