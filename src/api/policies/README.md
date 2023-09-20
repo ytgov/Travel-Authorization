@@ -1,6 +1,6 @@
 # Policies
 
-Polcies match controller methods and control access to controller actions. They should return a bolean result.
+Polcies match controller methods and control access to controller actions. They should return a boolean result. General pattern taken from https://github.com/varvet/pundit.
 
 Each policy accepts a record and the current user. To simplify the testing of policies, policies should remain synchronous.
 

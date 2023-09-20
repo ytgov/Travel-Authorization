@@ -19,7 +19,8 @@ export class FormsController extends BaseController {
       limit: this.pagination.limit,
       offset: this.pagination.offset,
     }).then((forms) => {
-      const serializedForms = FormSerializer.asTable(forms)
+      const scopedForms = FormsPolicy.scope(forms, this.currentUser)
+      const serializedForms = FormSerializer.asTable(scopedForms)
       return this.response.json({ forms: serializedForms })
     })
   }
