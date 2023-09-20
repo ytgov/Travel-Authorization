@@ -58,7 +58,7 @@
           <v-select
             :items="purposes"
             label="Purpose"
-            v-model="request.purpose"
+            v-model="request.purposeId"
             dense
             item-value="id"
             item-text="purpose"
