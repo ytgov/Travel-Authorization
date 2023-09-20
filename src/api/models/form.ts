@@ -1,4 +1,4 @@
-import { groupBy, keyBy } from "lodash"
+import { groupBy, isEmpty, isNil, keyBy } from "lodash"
 
 import db from "../db/db-client"
 import BaseModel from "./base-model"
@@ -59,7 +59,7 @@ class Form extends BaseModel {
     offset = 0,
   }: {
     where?: {}
-    include?: string[]
+    include?: ("stops" | "purpose")[]
     limit?: number
     offset?: number
   }): Promise<Form[]> {
@@ -76,7 +76,7 @@ class Form extends BaseModel {
       })
     }
 
-    if (include.includes("travelPurpose")) {
+    if (include.includes("purpose")) {
       const purposeIds = forms.map((form) => form.purposeId)
       const purposesById = await db("travelPurpose")
         .whereIn("id", purposeIds)
@@ -88,6 +88,30 @@ class Form extends BaseModel {
     }
 
     return forms
+  }
+
+  // OPINION: If this is slow, switch to an ORM like Sequelize,
+  // it would be a better use of time than optimising this.
+  static async findByPk(
+    id: number | string,
+    { include = [] }: { include?: ("stops" | "purpose")[] }
+  ): Promise<Form> {
+    const form = await db("forms").where({ id }).first()
+    if (isNil(form)) throw new Error("Form not found")
+
+    if (include.includes("stops")) {
+      const formId = form.id
+      const stops = await db("stops").where({ taid: formId })
+      form.stops = stops
+    }
+
+    if (include.includes("purpose")) {
+      const purposeId = form.purposeId
+      const purpose = await db("travelPurpose").where({ id: purposeId })
+      form.purpose = purpose
+    }
+
+    return form
   }
 }
 

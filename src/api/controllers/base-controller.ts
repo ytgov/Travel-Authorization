@@ -28,11 +28,22 @@ export class BaseController {
     }
   }
 
+  static get show() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const controllerInstance = new this(req, res, next)
+      return controllerInstance.show()
+    }
+  }
+
   index() {
     throw new Error("Not implemented")
   }
 
   create() {
+    throw new Error("Not Implemented")
+  }
+
+  show() {
     throw new Error("Not Implemented")
   }
 

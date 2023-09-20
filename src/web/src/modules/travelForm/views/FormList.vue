@@ -71,8 +71,8 @@ export default {
     page: 1,
     pageCount: 1,
   }),
-  mounted() {
-    this.refreshForms()
+  async mounted() {
+    await this.refreshForms()
   },
   computed: {
     ...mapState("travelForm", ["myForms"]),

@@ -6,11 +6,6 @@ import BaseSerializer from "./base-serializer"
 
 export class FormSerializer extends BaseSerializer {
   static asTable(forms: Form[]) {
-    const serializer = new this()
-    return serializer.asTable(forms)
-  }
-
-  asTable(forms: Form[]) {
     return forms.map((form) => {
       return {
         ...pick(form, ["id", "department", "branch", "dateBackToWork", "status"]),
@@ -20,7 +15,11 @@ export class FormSerializer extends BaseSerializer {
     })
   }
 
-  private departingAt(form: Form) {
+  static asDetailed(form: Form) {
+    return form
+  }
+
+  private static departingAt(form: Form) {
     const stops = form.stops || []
 
     if (isEmpty(stops)) return "Unknown"

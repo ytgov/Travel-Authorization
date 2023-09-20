@@ -11,7 +11,7 @@ export class FormsController extends BaseController {
   index() {
     return Form.findAll({
       where: { userId: this.currentUser.id },
-      include: ["stops", "travelPurpose"],
+      include: ["stops", "purpose"],
       limit: this.pagination.limit,
       offset: this.pagination.offset,
     }).then((forms) => {
@@ -31,6 +31,21 @@ export class FormsController extends BaseController {
         // TODO: push the audit logging code back into services where it belongs
         auditService.log(this.currentUser.id, -1, "Submit", "Form did not submit successfully.")
         return this.response.status(422).json({ message: `Form submission failed: ${error}` })
+      })
+  }
+
+  show() {
+    return Form.findByPk(this.params.formId, { include: ["stops", "purpose"] })
+      .then((form) => {
+        const serializedForm = FormSerializer.asDetailed(form)
+        return this.response.json({ form: serializedForm })
+      })
+      .catch((error) => {
+        if (error.message.includes("not found")) {
+          return this.response.status(404).json({ message: `Form not found: ${error}` })
+        } else {
+          return this.response.status(500).json({ message: `Internal server error: ${error}` })
+        }
       })
   }
 }

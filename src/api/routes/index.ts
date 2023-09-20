@@ -23,6 +23,8 @@ router.use("/api", checkJwt)
 router.use("/api", loadUser)
 
 // TODO: move all routing logic to this file, and move all route actions into controllers
-router.route("/api/forms").get(FormsController.index).post(FormsController.create)
+router.get("/api/forms", FormsController.index)
+router.post("/api/forms", FormsController.create)
+router.get("/api/forms/:formId", FormsController.show)
 
 export default router
