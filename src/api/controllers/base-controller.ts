@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 
+import User from "../models/user"
+
 // See https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 export class BaseController {
   protected request: Request
@@ -53,7 +55,7 @@ export class BaseController {
   // Currently assuming that authorization happens before this controller gets called.
   // Child controllers that are on an non-authorizable route should override this method
   // and return undefined
-  get currentUser(): { id: number } {
+  get currentUser(): User {
     return this.request.user
   }
 

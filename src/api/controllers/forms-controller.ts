@@ -3,6 +3,7 @@ import { AuditService, FormService } from "../services"
 import BaseController from "./base-controller"
 import Form from "../models/form"
 import FormSerializer from "../serializers/form-serializer"
+import FormsPolicy from "../policies/FormsPolicy"
 
 // TODO: push this code back into services where it belongs
 const auditService = new AuditService()
@@ -46,6 +47,20 @@ export class FormsController extends BaseController {
         } else {
           return this.response.status(500).json({ message: `Internal server error: ${error}` })
         }
+      })
+  }
+
+  async update() {
+    if (!(await FormsPolicy.update(this.params.formId, this.currentUser))) {
+      return this.response.status(403).json({ message: "Forbidden" })
+    }
+
+    return FormService.update(this.params.formId, this.request.body)
+      .then((form) => {
+        this.response.json({ form })
+      })
+      .catch((error) => {
+        return this.response.status(422).json({ message: `Form update failed: ${error}` })
       })
   }
 }
