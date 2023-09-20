@@ -1,9 +1,16 @@
 <template>
-  <v-card elevation="2" class="default">
+  <v-card
+    elevation="2"
+    class="default"
+  >
     <v-card-text>
       <v-form ref="form">
         <v-row>
-          <v-col cols="12" md="6" class="pb-0 mb-0">
+          <v-col
+            cols="12"
+            md="6"
+            class="pb-0 mb-0"
+          >
             <v-text-field
               dense
               v-model="request.firstName"
@@ -15,7 +22,11 @@
               :disabled="review"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="6" class="pb-0 mb-0">
+          <v-col
+            cols="12"
+            md="6"
+            class="pb-0 mb-0"
+          >
             <v-text-field
               dense
               v-model="request.lastName"
@@ -28,7 +39,11 @@
             ></v-text-field>
           </v-col>
 
-          <v-col cols="12" md="6" class="pb-0 mb-0">
+          <v-col
+            cols="12"
+            md="6"
+            class="pb-0 mb-0"
+          >
             <v-text-field
               v-model="request.email"
               dense
@@ -40,7 +55,11 @@
               :disabled="review"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="6" class="pb-0 mb-0">
+          <v-col
+            cols="12"
+            md="6"
+            class="pb-0 mb-0"
+          >
             <v-text-field
               v-model="request.mailcode"
               dense
@@ -53,7 +72,11 @@
             ></v-text-field>
           </v-col>
 
-          <v-col cols="12" md="12" class="pb-0 mb-0">
+          <v-col
+            cols="12"
+            md="12"
+            class="pb-0 mb-0"
+          >
             <v-combobox
               v-model="request.supervisorEmail"
               dense
@@ -72,7 +95,11 @@
             ></v-combobox>
           </v-col>
 
-          <v-col cols="12" md="6" class="pb-0 mb-0">
+          <v-col
+            cols="12"
+            md="6"
+            class="pb-0 mb-0"
+          >
             <v-select
               :items="departments"
               v-model="request.department"
@@ -89,7 +116,7 @@
           </v-col>
 
           <v-col
-          v-if="request.department && divisions && divisions.length > 0"
+            v-if="request.department && divisions && divisions.length > 0"
             cols="12"
             md="6"
             class="pb-0 mb-0"
@@ -149,13 +176,19 @@
 
       <v-row>
         <v-col class="mr-auto pb-0">
-          <v-btn to="/my-travel-requests" color="secondary">
+          <v-btn
+            to="/my-travel-requests"
+            color="secondary"
+          >
             Cancel
           </v-btn>
         </v-col>
 
         <v-col class="col-auto pb-0">
-          <v-btn color="primary" @click="continueClick">
+          <v-btn
+            color="primary"
+            @click="continueClick"
+          >
             Continue
           </v-btn>
         </v-col>
@@ -165,7 +198,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions } from "vuex"
 
 export default {
   name: "PersonalDetailsForm",
@@ -177,34 +210,34 @@ export default {
     emails: [],
 
     //Rules
-    firstNameRules: [v => !!v || "First name is required"],
-    lastNameRules: [v => !!v || "Last name is required"],
+    firstNameRules: [(v) => !!v || "First name is required"],
+    lastNameRules: [(v) => !!v || "Last name is required"],
     emailRules: [
-      v => !!v || "E-mail is required",
-      v =>
+      (v) => !!v || "E-mail is required",
+      (v) =>
         /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
           v
-        ) || "E-mail must be valid"
+        ) || "E-mail must be valid",
     ],
-    fromRules: [v => !!v || "This field is required"],
-    destinationRules: [v => !!v || "This field is required"],
-    requiredRules: [v => !!v || "This field is required"],
-    numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
+    fromRules: [(v) => !!v || "This field is required"],
+    destinationRules: [(v) => !!v || "This field is required"],
+    requiredRules: [(v) => !!v || "This field is required"],
+    numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
   computed: {
     ...mapState("travelForm", ["departments", "request"]),
     divisions() {
-      const department = this.departments.find(d => d.name == this.request.department)
-      return department?.divisions || [];
+      const department = this.departments.find((d) => d.name == this.request.department)
+      return department?.divisions || []
     },
     branches() {
-      const division = this.divisions.find(d => d.name == this.request.division)
-      return division?.branches || [];
+      const division = this.divisions.find((d) => d.name == this.request.division)
+      return division?.branches || []
     },
     units() {
-      const branch = this.branches.find(b => b.name == this.request.branch)
-      return branch?.units || [];
-    }
+      const branch = this.branches.find((b) => b.name == this.request.branch)
+      return branch?.units || []
+    },
   },
   async mounted() {
     await this.loadDepartments()
@@ -214,9 +247,9 @@ export default {
     search() {},
     emailSearch() {},
     continueClick() {
-      let formValid = this.$refs.form.validate();
-      if (formValid) this.continue();
-    }
-  }
-};
+      let formValid = this.$refs.form.validate()
+      if (formValid) this.continue()
+    },
+  },
+}
 </script>
