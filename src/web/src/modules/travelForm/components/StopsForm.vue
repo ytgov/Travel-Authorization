@@ -241,8 +241,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
 import { isArray } from "lodash"
+import { mapState, mapActions } from "vuex"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
@@ -270,7 +270,9 @@ export default {
       return 2
     },
   },
-  mounted() {
+  async mounted() {
+    await this.loadDestinations()
+
     if (!isArray(this.request.stops)) {
       this.request.stops = []
     }
@@ -280,6 +282,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("travelForm", ["loadDestinations"]),
     addStop() {
       this.request.stops.push({
         locationId: "",
