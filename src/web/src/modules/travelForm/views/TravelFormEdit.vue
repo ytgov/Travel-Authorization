@@ -159,14 +159,14 @@ import { mapActions, mapState } from "vuex"
 
 import { FORM_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
-import ExpenseList from "../components/ExpenseList.vue"
-import TripReport from "../components/TripReport.vue"
-
-import PersonalDetailsForm from "../components/PersonalDetailsForm.vue"
-import StopsForm from "../components/StopsForm.vue"
-import TravelDetailsForm from "../components/TravelDetailsForm.vue"
-
 import formsApi from "@/apis/forms-api"
+
+import ExpenseList from "../components/ExpenseList"
+import TripReport from "../components/TripReport"
+
+import PersonalDetailsForm from "../components/PersonalDetailsForm"
+import StopsForm from "../components/StopsForm"
+import TravelDetailsForm from "../components/TravelDetailsForm"
 
 export default {
   name: "TravelFormCreate",
