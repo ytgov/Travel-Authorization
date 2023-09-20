@@ -54,8 +54,8 @@ const actions = {
       return { forms, pageCount }
     })
   },
-  loadForm({ commit }, [formId, ...params]) {
-    return formsApi.get(formId, params).then(({ form }) => {
+  loadForm({ commit }, formId) {
+    return formsApi.get(formId).then(({ form }) => {
       commit("SET_SELECTEDFORM", form)
       return form
     })
