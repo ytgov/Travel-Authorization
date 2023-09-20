@@ -10,6 +10,9 @@ export const formsApi = {
   create(attributes) {
     return http.post("/api/forms", attributes).then(({ data }) => data)
   },
+  update(formId, attributes) {
+    return http.patch(`/api/forms/${formId}`, attributes).then(({ data }) => data)
+  },
 }
 
 export default formsApi

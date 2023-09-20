@@ -179,6 +179,7 @@ export default {
   },
   data: () => ({
     //Form
+    formId: -1,
     form: {},
     stepVal: 1,
 
@@ -197,8 +198,8 @@ export default {
   }),
   async mounted() {
     this.loading = true
-    const formId = this.$route.params.formId
-    await this.loadForm(formId)
+    this.formId = this.$route.params.formId
+    await this.loadForm(this.formId)
     await this.loadUser()
     this.$refs.form.resetValidation()
 
@@ -212,8 +213,7 @@ export default {
     submitForm() {
       this.showError = false
       if (this.$refs.form.validate()) {
-        return formsApi.create(this.request).then(({ form }) => {
-          console.log("data:", form)
+        return formsApi.update(this.formId, this.request).then(({ form }) => {
           this.$set(this, "form", form)
           this.apiSuccess = "Form submitted successfully"
           this.snackbar = true
