@@ -229,4 +229,8 @@ export class FormService {
 
     return form;
   }
+
+  static update(id: string | number, attributes: Partial<Form>): Promise<Form> {
+    return db<Form>("forms").returning("*").where("id", id).update(attributes);
+  }
 }
