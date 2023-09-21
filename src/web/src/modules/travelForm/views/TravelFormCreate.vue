@@ -197,7 +197,6 @@ export default {
   }),
   async mounted() {
     this.loading = true
-    await this.start()
     await this.initialize()
     await this.loadUser()
     this.$refs.form.resetValidation()

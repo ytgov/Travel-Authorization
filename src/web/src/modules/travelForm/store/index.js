@@ -10,11 +10,12 @@ const state = {
   departments: [],
   purposes: [],
   destinations: [],
-  request: {},
+  request: {}, // TODO: make this name match the back-end object name.
 }
 
 const actions = {
   async initialize(store) {
+    await store.dispatch("initializeForm")
     await store.dispatch("loadDepartments")
     await store.dispatch("loadPurposes")
     await store.dispatch("loadDestinations")
@@ -71,7 +72,7 @@ const actions = {
       return form
     })
   },
-  start({ commit }) {
+  initializeForm({ commit }) {
     let form = {
       //personal info
       firstName: "",
