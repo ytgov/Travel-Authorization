@@ -36,7 +36,16 @@
           lazy-validation
         >
           <template v-if="!loading">
-            <h1>Travel Authorization Request</h1>
+            <h1>
+              Travel Authorization Request
+              <v-chip
+                class="ml-2"
+                color="green"
+                text-color="white"
+              >
+                {{ request.status }}
+              </v-chip>
+            </h1>
 
             <p>
               To submit a travel authorization request, you must first complete the following 3
