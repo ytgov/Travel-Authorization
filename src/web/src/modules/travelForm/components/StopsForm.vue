@@ -5,10 +5,11 @@
         <v-row>
           <v-col>
             <v-checkbox
-              v-model="request.multiStop"
+              :value="request.multiStop"
               label="Does this trip involve multiple destinations?"
               :disabled="review"
               dense
+              @change="updateMultiStop"
             >
             </v-checkbox>
           </v-col>
@@ -54,7 +55,7 @@
                 small
                 color="red"
                 @click="removeStop(index)"
-                :disabled="review || index === 0"
+                :disabled="index < miminumStops || review"
               >
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
@@ -63,16 +64,18 @@
           <v-row>
             <v-col
               ><DatePicker
-                :value="stop.departureDate"
+                v-model="stop.departureDate"
                 text="Departure Date"
                 :review="review"
+                :rules="requiredRules"
               />
             </v-col>
             <v-col>
               <TimePicker
-                :value="stop.departureTime"
+                v-model="stop.departureTime"
                 text="Departure Time"
                 :review="review"
+                :rules="requiredRules"
             /></v-col>
             <v-col>
               <v-select
@@ -162,6 +165,11 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["destinations", "request"]),
+    miminumStops() {
+      if (this.request.multiStop) return 2
+
+      return 1
+    },
   },
   async mounted() {
     await this.loadDestinations()
@@ -176,6 +184,13 @@ export default {
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
+    updateMultiStop(value) {
+      if (value && this.request.stops.length < 2) {
+        this.addStop()
+      }
+
+      this.request.multiStop = value
+    },
     addStop() {
       this.request.stops.push({
         locationId: "",
