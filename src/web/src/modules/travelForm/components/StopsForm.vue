@@ -90,7 +90,7 @@
           </v-row>
         </div>
 
-        <v-row v-if="request.oneWayTrip !== true">
+        <v-row v-if="request.oneWayTrip !== true && request.stops.length > 0">
           <v-col>
             <v-autocomplete
               v-model="request.stops[0].locationId"
