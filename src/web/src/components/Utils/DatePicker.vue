@@ -10,8 +10,8 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
         dense
-        v-model="date"
-        :label="value"
+        :value="value"
+        :label="text"
         prepend-icon="mdi-calendar"
         readonly
         background-color="white"
@@ -21,9 +21,14 @@
         :rules="requiredRules"
       ></v-text-field>
     </template>
-    <v-date-picker v-model="date" @input="menu = false" :rules="requiredRules"></v-date-picker>
+    <v-date-picker
+      :value="value"
+      :rules="requiredRules"
+      @input="input"
+    ></v-date-picker>
   </v-menu>
 </template>
+
 <script>
 export default {
   props: {
@@ -37,14 +42,14 @@ export default {
   data() {
     return {
       menu: false,
-      date: "",
       requiredRules: [(v) => !!v || "This field is required"],
-    };
+    }
   },
   methods: {
-    returnDate() {
-      this.$emit("date", this.date);
+    input(value) {
+      this.menu = false
+      this.$emit("input", value)
     },
   },
-};
+}
 </script>
