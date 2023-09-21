@@ -26,9 +26,7 @@ export class FormsSerivce {
     }
 
     const form = await db<Form>("forms")
-      .insert(attributes, "id")
-      .onConflict("formId")
-      .merge()
+      .insert(attributes)
       .returning("*")
       .then((result) => {
         if (isEmpty(result)) throw new Error("Could not create form")
