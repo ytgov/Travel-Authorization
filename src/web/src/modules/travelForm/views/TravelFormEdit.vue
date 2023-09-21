@@ -11,6 +11,17 @@
       </v-overlay>
     </div>
 
+    <!-- TODO: make this top level component or plugin -->
+    <v-snackbar
+      v-model="showSnackbar"
+      right
+      :color="snackbarStatus"
+      :timeout="2000"
+    >
+      <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
+      {{ snackbarMessage }}
+    </v-snackbar>
+
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
       <v-tab>Estimates</v-tab>
@@ -45,7 +56,6 @@
 
               <v-stepper-content step="1">
                 <personal-details-form
-                  :form="form"
                   :review="review"
                   :continue="
                     () => {
@@ -65,7 +75,6 @@
               <v-stepper-content step="2">
                 <stops-form
                   :form-id="formIdAsNumber"
-                  :form="form"
                   :review="review"
                   :continue="
                     () => {
@@ -89,7 +98,6 @@
 
               <v-stepper-content step="3">
                 <travel-details-form
-                  :form="form"
                   :review="review"
                   :continue="
                     () => {
@@ -127,14 +135,6 @@
             >Back</v-btn
           >
         </div>
-        <v-snackbar
-          v-model="snackbar"
-          right
-          color="success"
-        >
-          <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
-          {{ apiSuccess }}
-        </v-snackbar>
       </v-tab-item>
       <v-tab-item>
         <ExpenseList
@@ -160,7 +160,7 @@ import { upperFirst, isEmpty } from "lodash"
 import { mapActions, mapState } from "vuex"
 
 import { FORM_URL, USERS_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+import { secureGet } from "@/store/jwt"
 import formsApi from "@/apis/forms-api"
 
 import ExpenseList from "../components/ExpenseList"
@@ -186,8 +186,6 @@ export default {
     },
   },
   data: () => ({
-    //Form
-    form: {},
     stepVal: 1,
 
     expensesTotal: 0,
@@ -198,9 +196,9 @@ export default {
     tab: null,
     review: false,
 
-    showError: null,
-    snackbar: null,
-    apiSuccess: "",
+    showSnackbar: false,
+    snackbarMessage: "",
+    snackbarStatus: "info",
     loading: true,
   }),
   async mounted() {
@@ -220,28 +218,44 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadForm"]),
     submitForm() {
-      this.showError = false
+      console.log("this.$refs.form.validate():", this.$refs.form.validate())
+      console.log("this.$refs.form:", this.$refs.form)
       if (this.$refs.form.validate()) {
-        return formsApi.update(this.formId, this.request).then(({ form }) => {
-          this.$set(this, "form", form)
-          this.apiSuccess = "Form submitted successfully"
-          this.snackbar = true
-          this.$router.push({ name: "travelRequestsList" })
-        })
+        this.request.status = "Submitted"
+        return formsApi
+          .update(this.formId, this.request)
+          .then(({ form }) => {
+            this.snackbarStatus = "success"
+            this.snackbarMessage = "Form submitted successfully"
+            this.showSnackbar = true
+            this.$router.push({ name: "travelRequestsList" })
+            return form
+          })
+          .catch((error) => {
+            this.snackbarStatus = "error"
+            this.snackbarMessage = error.response.message
+            this.showSnackbar = true
+          })
       }
     },
     saveForm() {
-      console.log("Trying to save", this.form)
-      this.request.status = "Draft"
-      this.$refs.form.resetValidation()
-      this.showError = false
-      this.request.formId = this.request.formId || parseInt(this.formId)
-
-      securePost(`${FORM_URL}/${this.request.formId}/save`, this.form).then((resp) => {
-        console.log(resp)
-        this.apiSuccess = "Form saved as a draft"
-        this.snackbar = true
-      })
+      if (this.$refs.form.validate()) {
+        this.request.status = "Draft"
+        return formsApi
+          .update(this.formId, this.request)
+          .then(({ form }) => {
+            this.snackbarStatus = "success"
+            this.snackbarMessage = "Form saved as a draft"
+            this.showSnackbar = true
+            this.$router.push({ name: "travelRequestsList" })
+            return form
+          })
+          .catch((error) => {
+            this.snackbarStatus = "error"
+            this.snackbarMessage = error.response.message
+            this.showSnackbar = true
+          })
+      }
     },
     getCostDifference() {
       secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then((resp) => {
