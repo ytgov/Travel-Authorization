@@ -158,7 +158,24 @@ export default {
     DatePicker,
     TimePicker,
   },
-  props: ["review", "continue", "back"],
+  props: {
+    formId: {
+      type: Number,
+      required: true,
+    },
+    continue: {
+      type: Function,
+      required: true,
+    },
+    back: {
+      type: Function,
+      required: true,
+    },
+    review: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data: () => ({
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
     requiredRules: [(v) => !!v || "This field is required"],
@@ -193,6 +210,7 @@ export default {
     },
     addStop() {
       this.request.stops.push({
+        taid: this.formId,
         locationId: "",
         departureDate: "",
         departureTime: "12:00",

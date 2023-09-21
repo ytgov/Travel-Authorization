@@ -64,6 +64,7 @@
 
               <v-stepper-content step="2">
                 <stops-form
+                  :form-id="formIdAsNumber"
                   :form="form"
                   :review="review"
                   :continue="
@@ -212,6 +213,9 @@ export default {
   },
   computed: {
     ...mapState("travelForm", ["request"]),
+    formIdAsNumber() {
+      return parseInt(this.formId)
+    },
   },
   methods: {
     ...mapActions("travelForm", ["loadForm"]),
