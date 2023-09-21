@@ -202,7 +202,7 @@ export class FormService {
   }
 
   static async create(attributes: Form, currentUser: User): Promise<Form> {
-    const stops = attributes.stops
+    const stops = attributes.stops || []
     delete attributes.stops
 
     const expenses = attributes.expenses
@@ -229,9 +229,15 @@ export class FormService {
         return result[0]
       })
 
+    // OPINION: It's not worth supporting layered transactions here,
+    // though that would be the standard way of doing things.
+    // If we are using an ORM such as Sequelize, it would then be worth doing.
     const formId = form.id
+    if (!isEmpty(stops)) {
+      await StopsService.bulkSave(formId, stops)
+    }
+
     const instance = new this()
-    await instance.saveStops(formId, stops)
     await instance.saveExpenses(formId, expenses)
     await instance.saveEstimates(formId, estimates)
 
