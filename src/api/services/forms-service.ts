@@ -39,7 +39,10 @@ export class FormsSerivce {
     // If we are using an ORM such as Sequelize, it would then be worth doing.
     const formId = form.id
     if (!isEmpty(stops)) {
-      await StopsService.bulkSave(formId, stops)
+      stops.forEach(async (stop) => {
+        stop.taid = formId
+      })
+      await StopsService.bulkCreate(formId, stops)
     }
 
     const instance = new LegacyFormSerivce()

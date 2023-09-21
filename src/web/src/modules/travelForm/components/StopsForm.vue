@@ -159,10 +159,6 @@ export default {
     TimePicker,
   },
   props: {
-    formId: {
-      type: Number,
-      required: true,
-    },
     continue: {
       type: Function,
       required: true,
@@ -170,6 +166,10 @@ export default {
     back: {
       type: Function,
       required: true,
+    },
+    formId: {
+      type: Number,
+      default: -1,
     },
     review: {
       type: Boolean,
