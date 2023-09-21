@@ -62,7 +62,7 @@
 
 1. In the `src/api` folder.
 
-2. Create a `.env.development` file with this content. I must match the config in `docker-compose.db.yml`
+2. Create a `.env.development` file with this content. It must match the config in `docker-compose.db.yml`
 
    ```bash
    AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
