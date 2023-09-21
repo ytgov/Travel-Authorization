@@ -218,44 +218,52 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadForm"]),
     submitForm() {
-      console.log("this.$refs.form.validate():", this.$refs.form.validate())
-      console.log("this.$refs.form:", this.$refs.form)
-      if (this.$refs.form.validate()) {
-        this.request.status = "Submitted"
-        return formsApi
-          .update(this.formId, this.request)
-          .then(({ form }) => {
-            this.snackbarStatus = "success"
-            this.snackbarMessage = "Form submitted successfully"
-            this.showSnackbar = true
-            this.$router.push({ name: "travelRequestsList" })
-            return form
-          })
-          .catch((error) => {
-            this.snackbarStatus = "error"
-            this.snackbarMessage = error.response.message
-            this.showSnackbar = true
-          })
+      if (!this.$refs.form.validate()) {
+        this.snackbarStatus = "error"
+        this.snackbarMessage = "Form submission can't be sent until the form is complete."
+        this.showSnackbar = true
+        return
       }
+
+      this.request.status = "Submitted"
+      return formsApi
+        .update(this.formId, this.request)
+        .then(({ form }) => {
+          this.snackbarStatus = "success"
+          this.snackbarMessage = "Form submitted successfully"
+          this.showSnackbar = true
+          this.$router.push({ name: "travelRequestsList" })
+          return form
+        })
+        .catch((error) => {
+          this.snackbarStatus = "error"
+          this.snackbarMessage = error.response.message
+          this.showSnackbar = true
+        })
     },
     saveForm() {
-      if (this.$refs.form.validate()) {
-        this.request.status = "Draft"
-        return formsApi
-          .update(this.formId, this.request)
-          .then(({ form }) => {
-            this.snackbarStatus = "success"
-            this.snackbarMessage = "Form saved as a draft"
-            this.showSnackbar = true
-            this.$router.push({ name: "travelRequestsList" })
-            return form
-          })
-          .catch((error) => {
-            this.snackbarStatus = "error"
-            this.snackbarMessage = error.response.message
-            this.showSnackbar = true
-          })
+      if (!this.$refs.form.validate()) {
+        this.snackbarStatus = "error"
+        this.snackbarMessage = "Form submission can't be sent until the form is complete."
+        this.showSnackbar = true
+        return
       }
+
+      this.request.status = "Draft"
+      return formsApi
+        .update(this.formId, this.request)
+        .then(({ form }) => {
+          this.snackbarStatus = "success"
+          this.snackbarMessage = "Form saved as a draft"
+          this.showSnackbar = true
+          this.$router.push({ name: "travelRequestsList" })
+          return form
+        })
+        .catch((error) => {
+          this.snackbarStatus = "error"
+          this.snackbarMessage = error.response.message
+          this.showSnackbar = true
+        })
     },
     getCostDifference() {
       secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then((resp) => {
