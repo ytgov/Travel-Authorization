@@ -34,7 +34,9 @@ export interface FormRecord {
   //  and purpose association
   // purpose?: string
   purposeId?: number
-  travelAdvance?: string
+  // DEPRECATED: travelAdvance column on forms table is replaced by travelAdvanceInCents column
+  // travelAdvance?: number
+  travelAdvanceInCents?: number
   eventName?: string
   summary?: string
   benefits?: string
