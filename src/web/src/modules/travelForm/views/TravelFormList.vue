@@ -43,7 +43,7 @@ import { mapActions, mapState } from "vuex"
 import { isEmpty } from "lodash"
 
 export default {
-  name: "FormList",
+  name: "TravelFormList",
   data: () => ({
     headers: [
       {
@@ -86,10 +86,10 @@ export default {
     },
     goToFormDetails(form) {
       const formId = form.id
-      this.$router.push({ name: "travelRequestEdit", params: { formId } })
+      this.$router.push({ name: "TravelFormEdit", params: { formId } })
     },
     goToCreateForm() {
-      this.$router.push({ name: "travelRequestCreate" })
+      this.$router.push({ name: "TravelFormCreate-DetailsTab" })
     },
     formatAsDate(value) {
       const timestamp = Date.parse(value)

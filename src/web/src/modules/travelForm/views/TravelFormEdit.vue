@@ -142,7 +142,7 @@
           </v-btn>
           <v-btn
             color="secondary"
-            :to="{ name: 'travelRequestsList' }"
+            :to="{ name: 'TravelFormList' }"
             >Back</v-btn
           >
         </div>
@@ -183,7 +183,7 @@ import StopsForm from "../components/StopsForm"
 import TravelDetailsForm from "../components/TravelDetailsForm"
 
 export default {
-  name: "TravelFormCreate",
+  name: "TravelFormEdit",
   components: {
     Breadcrumbs,
     ExpenseList,
@@ -245,7 +245,7 @@ export default {
           this.snackbarStatus = "success"
           this.snackbarMessage = "Form submitted successfully"
           this.showSnackbar = true
-          this.$router.push({ name: "travelRequestsList" })
+          this.$router.push({ name: "TravelFormList" })
           return form
         })
         .catch((error) => {
@@ -269,7 +269,7 @@ export default {
           this.snackbarStatus = "success"
           this.snackbarMessage = "Form saved as a draft"
           this.showSnackbar = true
-          this.$router.push({ name: "travelRequestsList" })
+          this.$router.push({ name: "TravelFormList" })
           return form
         })
         .catch((error) => {
