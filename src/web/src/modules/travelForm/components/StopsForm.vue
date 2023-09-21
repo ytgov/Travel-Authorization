@@ -5,7 +5,7 @@
         <v-row>
           <v-col>
             <v-checkbox
-              :value="request.multiStop"
+              :input-value="request.multiStop"
               label="Does this trip involve multiple destinations?"
               :disabled="review"
               dense
