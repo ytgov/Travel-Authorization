@@ -94,7 +94,7 @@ const actions = {
       travelDuration: "1",
       daysOffTravelStatus: "0",
       dateBackToWork: "",
-      travelAdvance: 0,
+      travelAdvanceInCents: 0,
       purposeId: -1,
       eventName: "",
       summary: "",
