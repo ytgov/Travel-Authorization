@@ -1,7 +1,7 @@
 import BasePolicy from "./base-policy"
 
 import User from "../models/user"
-import Form from "../models/form"
+import Form, { FormStatuses } from "../models/form"
 
 export class FormsPolicy extends BasePolicy {
   static show(record: Form, currentUser: User): boolean {
@@ -12,12 +12,13 @@ export class FormsPolicy extends BasePolicy {
 
   static update(record: Form, currentUser: User): boolean {
     if (currentUser.roles.includes("Admin")) return true
+    if (record.userId !== currentUser.id) return false
 
-    return record.userId === currentUser.id
+    return record.status === FormStatuses.DRAFT
   }
 
   static scope(records: Form[], currentUser: User) {
-    return records.filter(record => this.show(record, currentUser));
+    return records.filter((record) => this.show(record, currentUser))
   }
 }
 

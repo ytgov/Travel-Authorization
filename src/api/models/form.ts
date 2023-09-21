@@ -4,6 +4,17 @@ import db from "../db/db-client"
 import BaseModel from "./base-model"
 import TravelPurpose from "./travel-purpose"
 
+// These are a best guess, database values may not match this list.
+// TODO: normalize database values and make sure all statuses are in this list.
+// If we want validation for this field we should swith to an ORM such as Sequelize.
+export enum FormStatuses {
+  DRAFT = "Draft",
+  SUBMITTED = "Submitted",
+  APPROVED = "Approved",
+  DENIED = "Denied",
+  CHANGE_REQUESTED = "Change Requested",
+}
+
 export interface FormRecord {
   id: number
   formId: string

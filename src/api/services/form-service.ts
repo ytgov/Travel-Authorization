@@ -212,7 +212,6 @@ export class FormService {
     delete attributes.estimates
 
     attributes.userId = currentUser.id
-    attributes.status = "Submitted"
 
     // Not sure if this is correct, but I can't find any that generates the formId.
     if (isNil(attributes.formId)) {
