@@ -11,6 +11,8 @@
       </v-overlay>
     </div>
 
+    <Breadcrumbs />
+
     <v-tabs v-model="tab">
       <v-tab>Travel Form </v-tab>
       <v-tab>Estimates</v-tab>
@@ -156,6 +158,7 @@ import { mapActions, mapState } from "vuex"
 
 import { FORM_URL, USERS_URL } from "@/urls"
 import { secureGet } from "@/store/jwt"
+import Breadcrumbs from "@/components/Breadcrumbs"
 import ExpenseList from "../components/ExpenseList.vue"
 import TripReport from "../components/TripReport.vue"
 
@@ -168,11 +171,12 @@ import formsApi from "@/apis/forms-api"
 export default {
   name: "TravelFormCreate",
   components: {
+    Breadcrumbs,
     ExpenseList,
-    TripReport,
     PersonalDetailsForm,
     StopsForm,
     TravelDetailsForm,
+    TripReport,
   },
   data: () => ({
     //Form

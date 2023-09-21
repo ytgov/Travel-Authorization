@@ -11,6 +11,8 @@
       </v-overlay>
     </div>
 
+    <Breadcrumbs />
+
     <!-- TODO: make this top level component or plugin -->
     <v-snackbar
       v-model="showSnackbar"
@@ -172,6 +174,7 @@ import { FORM_URL, USERS_URL } from "@/urls"
 import { secureGet } from "@/store/jwt"
 import formsApi from "@/apis/forms-api"
 
+import Breadcrumbs from "@/components/Breadcrumbs"
 import ExpenseList from "../components/ExpenseList"
 import TripReport from "../components/TripReport"
 
@@ -182,11 +185,12 @@ import TravelDetailsForm from "../components/TravelDetailsForm"
 export default {
   name: "TravelFormCreate",
   components: {
+    Breadcrumbs,
     ExpenseList,
-    TripReport,
     PersonalDetailsForm,
     StopsForm,
     TravelDetailsForm,
+    TripReport,
   },
   props: {
     formId: {
