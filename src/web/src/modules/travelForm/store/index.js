@@ -88,7 +88,14 @@ const actions = {
       oneWayTrip: false,
 
       //stops
-      stops: [],
+      stops: [
+        {
+          locationId: "",
+          departureDate: "",
+          departureTime: "12:00",
+          transport: "",
+        },
+      ],
 
       //travel details
       travelDuration: "1",
