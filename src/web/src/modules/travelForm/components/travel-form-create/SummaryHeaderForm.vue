@@ -48,7 +48,7 @@
         md="2"
       >
         <DatePicker
-          v-model="finalDestination.departureDate"
+          v-model="initialDestination.departureDate"
           :rules="[required]"
           text="Start Date"
           required
@@ -59,9 +59,9 @@
         md="2"
       >
         <DatePicker
-          v-model="request.dateBackToWork"
-          :min="finalDestination.departureDate"
-          :rules="[required, greaterThanOrEqualToDate(finalDestination.departureDate)]"
+          v-model="finalDestination.departureDate"
+          :min="initialDestination.departureDate"
+          :rules="[required, greaterThanOrEqualToDate(initialDestination.departureDate)]"
           text="End Date"
           required
         />
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { last } from "lodash"
+import { first, last } from "lodash"
 import { mapState, mapActions } from "vuex"
 
 import DatePicker from "@/components/Utils/DatePicker"
@@ -98,8 +98,13 @@ export default {
         this.$set(this.request.stops, this.request.stops.length - 1, newValue)
       },
     },
-    endDateRules() {
-      return [this.required, this.greaterThanOrEqualTo(this.finalDestination.departureDate)]
+    initialDestination: {
+      get() {
+        return first(this.request.stops) || {}
+      },
+      set(newValue) {
+        this.$set(this.request.stops, 0, newValue)
+      },
     },
   },
   async mounted() {
