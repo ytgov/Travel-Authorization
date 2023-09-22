@@ -108,7 +108,7 @@ import { last } from "lodash"
 import { mapState, mapActions } from "vuex"
 
 export default {
-  name: "PurposeFormCardCreate",
+  name: "PurposeFormCard",
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
