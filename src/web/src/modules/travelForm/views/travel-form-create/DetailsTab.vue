@@ -4,7 +4,7 @@
     <PersonalDetailsForm />
 
     <h3>Details</h3>
-    <StopsForm />
+    <StopsFormCreate />
 
     <h3>Approvals</h3>
     <TravelDetailsForm />
@@ -13,14 +13,14 @@
 
 <script>
 import PersonalDetailsForm from "@/modules/travelForm/components/PersonalDetailsForm"
-import StopsForm from "@/modules/travelForm/components/StopsForm"
+import StopsFormCreate from "@/modules/travelForm/components/StopsFormCreate"
 import TravelDetailsForm from "@/modules/travelForm/components/TravelDetailsForm"
 
 export default {
   name: "DetailsTab",
   components: {
     PersonalDetailsForm,
-    StopsForm,
+    StopsFormCreate,
     TravelDetailsForm,
   },
 }

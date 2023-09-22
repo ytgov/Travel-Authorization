@@ -31,7 +31,7 @@
       </v-stepper-step>
 
       <v-stepper-content step="2">
-        <stops-form
+        <StopsFormManage
           :form="form"
           :review="review"
           :continue="
@@ -44,7 +44,7 @@
               stepVal = 1;
             }
           "
-        ></stops-form>
+        ></StopsFormManage>
       </v-stepper-content>
 
       <v-stepper-step :complete="stepVal > 3" step="3">
@@ -193,7 +193,7 @@ import ExpenseList from "../components/ExpenseList.vue";
 import TripReport from "../components/TripReport.vue";
 
 import PersonalDetailsForm from "../components/PersonalDetailsForm.vue";
-import StopsForm from "../components/StopsForm.vue";
+import StopsFormManage from "../components/StopsFormManage.vue";
 import TravelDetailsForm from "../components/TravelDetailsForm.vue";
 
 import formsApi from "@/apis/forms-api"
@@ -204,7 +204,7 @@ export default {
     ExpenseList,
     TripReport,
     PersonalDetailsForm,
-    StopsForm,
+    StopsFormManage,
     TravelDetailsForm
   },
   data: () => ({

@@ -84,7 +84,7 @@
               </v-stepper-step>
 
               <v-stepper-content step="2">
-                <stops-form
+                <StopsFormEdit
                   :form-id="formIdAsNumber"
                   :review="review"
                   :continue="
@@ -97,7 +97,7 @@
                       stepVal = 1
                     }
                   "
-                ></stops-form>
+                ></StopsFormEdit>
               </v-stepper-content>
 
               <v-stepper-step
@@ -179,7 +179,7 @@ import ExpenseList from "../components/ExpenseList"
 import TripReport from "../components/TripReport"
 
 import PersonalDetailsForm from "../components/PersonalDetailsForm"
-import StopsForm from "../components/StopsForm"
+import StopsFormEdit from "../components/StopsFormEdit"
 import TravelDetailsForm from "../components/TravelDetailsForm"
 
 export default {
@@ -188,7 +188,7 @@ export default {
     Breadcrumbs,
     ExpenseList,
     PersonalDetailsForm,
-    StopsForm,
+    StopsFormEdit,
     TravelDetailsForm,
     TripReport,
   },
