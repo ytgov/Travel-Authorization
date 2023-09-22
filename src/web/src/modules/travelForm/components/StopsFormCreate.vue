@@ -37,6 +37,7 @@
                 :items="destinations"
                 :item-text="destinations.text"
                 :item-value="destinations.value"
+                :loading="loadingDestinations"
                 required
                 clearable
                 background-color="white"
@@ -94,6 +95,7 @@
               :items="destinations"
               :item-text="destinations.text"
               :item-value="destinations.value"
+              :loading="loadingDestinations"
               required
               background-color="white"
               outlined
@@ -131,6 +133,7 @@ export default {
     TimePicker,
   },
   data: () => ({
+    loadingDestinations: false,
     transport: ["Rental vehicle", "Personal vehicle", "Fleet vehicle", "Plane"],
     requiredRules: [(v) => !!v || "This field is required"],
   }),
@@ -143,8 +146,10 @@ export default {
     },
   },
   async mounted() {
-    await this.loadDestinations()
-    console.log("this.request.stops:", JSON.stringify(this.request.stops, null, 2))
+    this.loadingDestinations = true
+    await this.loadDestinations().finally(() => {
+      this.loadingDestinations = false
+    })
 
     if (this.request.stops.length < 1) {
       this.addStop()
