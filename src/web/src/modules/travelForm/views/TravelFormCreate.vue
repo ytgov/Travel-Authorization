@@ -65,9 +65,6 @@ import { mapActions, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 
-// TODO: push this into the vuex store
-import formsApi from "@/apis/forms-api"
-
 export default {
   name: "TravelFormCreate",
   components: {
@@ -91,7 +88,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions("travelForm", ["initializeForm"]),
+    ...mapActions("travelForm", ["initializeForm", "create"]),
     submitForm() {
       if (!this.$refs.form.validate()) {
         this.snackbarStatus = "error"
@@ -101,17 +98,11 @@ export default {
       }
 
       this.request.status = "Submitted"
-      return formsApi
-        .update(this.formId, this.request)
-        .then(({ form }) => {
-          this.$router.push({ name: "TravelFormList" })
-          return form
-        })
-        .catch((error) => {
-          this.snackbarStatus = "error"
-          this.snackbarMessage = error.response.message
-          this.showSnackbar = true
-        })
+      return this.create(this.request).catch((error) => {
+        this.snackbarStatus = "error"
+        this.snackbarMessage = error.response.message
+        this.showSnackbar = true
+      })
     },
     saveForm() {
       if (!this.$refs.form.validate()) {
@@ -122,17 +113,11 @@ export default {
       }
 
       this.request.status = "Draft"
-      return formsApi
-        .update(this.formId, this.request)
-        .then(({ form }) => {
-          this.$set(this, 'request', form)
-          return form
-        })
-        .catch((error) => {
-          this.snackbarStatus = "error"
-          this.snackbarMessage = error.response.message
-          this.showSnackbar = true
-        })
+      return this.create(this.request).catch((error) => {
+        this.snackbarStatus = "error"
+        this.snackbarMessage = error.response.message
+        this.showSnackbar = true
+      })
     },
   },
 }

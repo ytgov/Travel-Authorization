@@ -19,7 +19,6 @@
               outlined
               background-color="white"
               :rules="firstNameRules"
-              :disabled="review"
             ></v-text-field>
           </v-col>
           <v-col
@@ -35,7 +34,6 @@
               outlined
               background-color="white"
               :rules="lastNameRules"
-              :disabled="review"
             ></v-text-field>
           </v-col>
 
@@ -52,7 +50,6 @@
               label="Email"
               required
               :rules="emailRules"
-              :disabled="review"
             ></v-text-field>
           </v-col>
           <v-col
@@ -67,7 +64,6 @@
               background-color="white"
               label="Mailcode"
               required
-              :disabled="review"
               :rules="requiredRules"
             ></v-text-field>
           </v-col>
@@ -87,7 +83,6 @@
               :items="emails"
               required
               clearable
-              :disabled="review"
               :rules="emailRules"
               @update:search-input="searchEmail"
               :return-object="false"
@@ -109,8 +104,8 @@
               item-text="name"
               item-value="name"
               clearable
-              :disabled="review"
               :rules="requiredRules"
+              :loading="loadingDepartments"
             ></v-select>
           </v-col>
 
@@ -130,7 +125,6 @@
               outlined
               background-color="white"
               clearable
-              :disabled="review"
             ></v-select>
           </v-col>
           <v-col
@@ -148,7 +142,6 @@
               clearable
               outlined
               background-color="white"
-              :disabled="review"
             ></v-select>
           </v-col>
           <v-col
@@ -167,22 +160,12 @@
               clearable
               outlined
               background-color="white"
-              :disabled="review"
             ></v-select>
           </v-col>
         </v-row>
       </v-form>
 
-      <v-row>
-        <v-col class="mr-auto pb-0">
-          <v-btn
-            to="/my-travel-requests"
-            color="secondary"
-          >
-            Cancel
-          </v-btn>
-        </v-col>
-
+      <!-- <v-row>
         <v-col class="col-auto pb-0">
           <v-btn
             color="primary"
@@ -191,7 +174,7 @@
             Continue
           </v-btn>
         </v-col>
-      </v-row>
+      </v-row> -->
     </v-card-text>
   </v-card>
 </template>
@@ -201,8 +184,9 @@ import { mapState, mapActions } from "vuex"
 
 export default {
   name: "PersonalDetailsForm",
-  props: ["review", "continue"],
   data: () => ({
+    loadingDepartments: false,
+
     //Rules
     firstNameRules: [(v) => !!v || "First name is required"],
     lastNameRules: [(v) => !!v || "Last name is required"],
@@ -231,17 +215,29 @@ export default {
     },
   },
   async mounted() {
-    await this.loadDepartments()
+    this.loadingDepartments = true
+    await this.loadDepartments().finally(() => {
+      this.loadingDepartments = false
+    })
+
+    await this.loadUser()
   },
   methods: {
-    ...mapActions("travelForm", ["loadDepartments", "emailSearch"]),
+    ...mapActions("travelForm", ["loadDepartments", "loadUser", "emailSearch"]),
     searchEmail(token) {
       return this.emailSearch(token)
     },
-    continueClick() {
-      let formValid = this.$refs.form.validate()
-      if (formValid) this.continue()
-    },
+    // continueClick() {
+    //   let formValid = this.$refs.form.validate()
+    //   if (formValid) this.continue()
+    // },
+    // loadUserWrapper() {
+    //   return this.loadUser().catch((error) => {
+    //     this.snackbarStatus = "error"
+    //     this.snackbarMessage = error.response.message
+    //     this.showSnackbar = true
+    //   })
+    // },
   },
 }
 </script>

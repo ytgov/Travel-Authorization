@@ -1,6 +1,6 @@
-import { isString } from "lodash"
+import { cloneDeep, isString, upperFirst } from "lodash"
 
-import { FORM_URL, LOOKUP_URL, DESTINATION_URL } from "@/urls"
+import { FORM_URL, LOOKUP_URL, DESTINATION_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost, securePut } from "@/store/jwt"
 import formsApi from "@/apis/forms-api"
 
@@ -68,7 +68,7 @@ const actions = {
   },
   loadForm({ commit }, formId) {
     return formsApi.get(formId).then(({ form }) => {
-      commit("SET_SELECTEDFORM", form)
+      commit("SET_FORM", form)
       return form
     })
   },
@@ -106,7 +106,28 @@ const actions = {
       denialReason: "",
     }
 
-    commit("SET_SELECTEDFORM", form)
+    commit("SET_FORM", form)
+  },
+  async loadUser({ commit, state }) {
+    return Promise.all([secureGet(`${USERS_URL}/me`), secureGet(`${USERS_URL}/unit`)]).then(
+      ([{ data: userData }, { data: unitData }]) => {
+        const form = cloneDeep(state.request)
+        const user = userData.data
+        form.firstName = upperFirst(user.first_name)
+        form.lastName = upperFirst(user.last_name)
+        form.email = user.email
+
+        form.department = unitData.department
+        form.division = unitData.division
+        form.branch = unitData.branch
+        form.unit = unitData.unit
+        form.mailcode = unitData.mailcode
+
+        commit("SET_FORM", form)
+
+        return user
+      }
+    )
   },
   async getAll() {
     return secureGet(FORM_URL).then((resp) => {
@@ -120,11 +141,10 @@ const actions = {
     })
   },
 
-  async create(store, { body }) {
-    console.log(body)
-
-    return securePost(FORM_URL, body).then((resp) => {
-      return resp.data
+  create({ commit }, attributes) {
+    return formsApi.create(attributes).then(({ form }) => {
+      commit("SET_FORM", form)
+      return form
     })
   },
 
@@ -151,7 +171,7 @@ const mutations = {
   SET_MYFORMS(store, value) {
     store.myForms = value
   },
-  SET_SELECTEDFORM(store, value) {
+  SET_FORM(store, value) {
     store.request = value
   },
   SET_DEPARTMENTS(store, value) {
