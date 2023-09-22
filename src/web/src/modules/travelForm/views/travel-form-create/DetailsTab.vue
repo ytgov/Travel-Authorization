@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import PurposeFormCard from "@/modules/travelForm/components/create/PurposeFormCard"
-import DetailsFormCard from "@/modules/travelForm/components/create/DetailsFormCard"
+import PurposeFormCard from "./details-tab/PurposeFormCard"
+import DetailsFormCard from "./details-tab/DetailsFormCard"
 import TravelDetailsForm from "@/modules/travelForm/components/TravelDetailsForm"
 
 export default {

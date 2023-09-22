@@ -64,7 +64,7 @@
 import { mapActions, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
-import SummaryHeaderForm from "../components/create/SummaryHeaderForm"
+import SummaryHeaderForm from "./travel-form-create/SummaryHeaderForm"
 
 export default {
   name: "TravelFormCreate",
