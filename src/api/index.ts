@@ -19,6 +19,7 @@ import {
   travelDeskRouter,
   travComRouter,
   reconcileRouter,
+  lookupTableRouter
   // tmpTravComRouter,
 } from "./routes";
 import routes from "./routes";
@@ -101,10 +102,12 @@ app.use("/api/preapproved", checkJwt, loadUser, preapprovedRouter);
 app.use("/api/traveldesk", checkJwt, loadUser, travelDeskRouter);
 
 app.use("/api/travCom", checkJwt, loadUser, travComRouter);
-app.use("/api/reconcile", checkJwt, loadUser,reconcileRouter);
+app.use("/api/reconcile", checkJwt, loadUser, reconcileRouter);
 // app.use("/api/travel-com", checkJwt, loadUser, tmpTravComRouter);
 
 app.use("/api/lookup", lookupRouter);
+app.use("/api/lookup-tables", lookupTableRouter);
+
 app.use("/api/healthCheck", healthCheckRouter);
  // TODO: move all routes to the same file, using simplified binding syntax for easier lookups
 app.use(routes)
