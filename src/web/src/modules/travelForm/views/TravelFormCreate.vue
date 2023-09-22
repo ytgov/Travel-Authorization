@@ -12,6 +12,17 @@
 
     <Breadcrumbs />
 
+    <h1>
+      Travel -
+      <v-progress-circular
+        v-if="loadingUser"
+        indeterminate
+      ></v-progress-circular>
+      <template v-else>
+        {{ currentUser.firstName }} {{ currentUser.lastName }}
+      </template>
+    </h1>
+
     <v-tabs>
       <v-tab :to="{ name: 'TravelFormCreate-DetailsTab' }">Details</v-tab>
       <v-tab>Estimates</v-tab>
@@ -62,19 +73,25 @@ export default {
   data() {
     return {
       loading: false,
+      loadingUser: false,
     }
   },
   computed: {
-    ...mapState("travelForm", ["request"]),
+    ...mapState("travelForm", ["request", "currentUser"]),
   },
   async mounted() {
     this.loading = true
     await this.initializeForm().finally(() => {
       this.loading = false
     })
+
+    this.loadingUser = true
+    await this.loadUser().finally(() => {
+      this.loadingUser = false
+    })
   },
   methods: {
-    ...mapActions("travelForm", ["initializeForm", "create"]),
+    ...mapActions("travelForm", ["initializeForm", "create", "loadUser"]),
     submitForm() {
       if (!this.$refs.form.validate()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
