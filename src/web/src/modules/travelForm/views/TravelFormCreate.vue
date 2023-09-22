@@ -12,17 +12,6 @@
 
     <Breadcrumbs />
 
-    <!-- TODO: make this top level component or plugin -->
-    <v-snackbar
-      v-model="showSnackbar"
-      right
-      :color="snackbarStatus"
-      :timeout="2000"
-    >
-      <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
-      {{ snackbarMessage }}
-    </v-snackbar>
-
     <v-tabs>
       <v-tab :to="{ name: 'TravelFormCreate-DetailsTab' }">Details</v-tab>
       <v-tab>Estimates</v-tab>
@@ -91,32 +80,24 @@ export default {
     ...mapActions("travelForm", ["initializeForm", "create"]),
     submitForm() {
       if (!this.$refs.form.validate()) {
-        this.snackbarStatus = "error"
-        this.snackbarMessage = "Form submission can't be sent until the form is complete."
-        this.showSnackbar = true
+        this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
         return
       }
 
       this.request.status = "Submitted"
       return this.create(this.request).catch((error) => {
-        this.snackbarStatus = "error"
-        this.snackbarMessage = error.response.message
-        this.showSnackbar = true
+        this.$snack(error.response.message, { color: "error" })
       })
     },
     saveForm() {
       if (!this.$refs.form.validate()) {
-        this.snackbarStatus = "error"
-        this.snackbarMessage = "Form submission can't be sent until the form is complete."
-        this.showSnackbar = true
+        this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
         return
       }
 
       this.request.status = "Draft"
       return this.create(this.request).catch((error) => {
-        this.snackbarStatus = "error"
-        this.snackbarMessage = error.response.message
-        this.showSnackbar = true
+        this.$snack(error.response.message, { color: "error" })
       })
     },
   },
