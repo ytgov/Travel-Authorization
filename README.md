@@ -173,6 +173,24 @@ All commands are just strings joined together, so it's easy to add new commmands
 
    You will now be able to do `dev xxx` instead ov `./bin/dev xxx`.
 
-# Deploying (Production)
+# Deploying
 
-(Work in progres)
+# Test Production Build Locally
+
+Files:
+
+- [Dockerfile](./Dockerfile)
+- [docker-compose.yml](./docker-compose.yml)
+- Various non-commited `src/api/.env.*` files
+
+1. Create a `.env.development` and `.env.production` file in the `src/api/` directory with the appropriate values.
+
+   - [ ] TODO: investigate if custom environment variables are needed
+
+2. Build and boot the production image via
+
+   ```bash
+   docker compose up --build
+   ```
+
+3. Go to http://localhost:3000/ and check that you can log in and use the application.
