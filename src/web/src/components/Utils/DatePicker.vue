@@ -18,12 +18,13 @@
         outlined
         v-bind="attrs"
         v-on="on"
-        :rules="requiredRules"
+        :rules="rules"
       ></v-text-field>
     </template>
     <v-date-picker
+      v-bind="$attrs"
       :value="value"
-      :rules="requiredRules"
+      :rules="rules"
       @input="input"
     ></v-date-picker>
   </v-menu>
@@ -31,6 +32,7 @@
 
 <script>
 export default {
+  inheritAttrs: false,
   props: {
     text: String,
     value: String,
@@ -38,11 +40,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    rules: {
+      type: Array,
+      default: () => [this.required],
+    },
   },
   data() {
     return {
       menu: false,
-      requiredRules: [(v) => !!v || "This field is required"],
+      required: (v) => !!v || "This field is required",
     }
   },
   methods: {
