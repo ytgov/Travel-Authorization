@@ -5,7 +5,7 @@
   >
     <v-card-title> Purpose </v-card-title>
     <v-card-text>
-      <v-form ref="form">
+      <v-form ref="form" lazy-validation>
         <v-row>
           <v-col
             cols="12"

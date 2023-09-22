@@ -18,10 +18,10 @@
         v-if="loadingUser"
         indeterminate
       ></v-progress-circular>
-      <template v-else>
-        {{ currentUser.firstName }} {{ currentUser.lastName }}
-      </template>
+      <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
     </h1>
+
+    <SummaryHeaderForm />
 
     <v-tabs>
       <v-tab :to="{ name: 'TravelFormCreate-DetailsTab' }">Details</v-tab>
@@ -64,11 +64,13 @@
 import { mapActions, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
+import SummaryHeaderForm from "../components/travel-form-create/SummaryHeaderForm"
 
 export default {
   name: "TravelFormCreate",
   components: {
     Breadcrumbs,
+    SummaryHeaderForm,
   },
   data() {
     return {
