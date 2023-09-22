@@ -18,6 +18,7 @@
               required
               outlined
               background-color="white"
+              :loading="loadingUser"
               :rules="firstNameRules"
             ></v-text-field>
           </v-col>
@@ -33,6 +34,7 @@
               required
               outlined
               background-color="white"
+              :loading="loadingUser"
               :rules="lastNameRules"
             ></v-text-field>
           </v-col>
@@ -49,6 +51,7 @@
               background-color="white"
               label="Email"
               required
+              :loading="loadingUser"
               :rules="emailRules"
             ></v-text-field>
           </v-col>
@@ -64,6 +67,7 @@
               background-color="white"
               label="Mailcode"
               required
+              :loading="loadingUser"
               :rules="requiredRules"
             ></v-text-field>
           </v-col>
@@ -83,6 +87,7 @@
               :items="emails"
               required
               clearable
+              :loading="loadingUser"
               :rules="emailRules"
               @update:search-input="searchEmail"
               :return-object="false"
@@ -164,17 +169,6 @@
           </v-col>
         </v-row>
       </v-form>
-
-      <!-- <v-row>
-        <v-col class="col-auto pb-0">
-          <v-btn
-            color="primary"
-            @click="continueClick"
-          >
-            Continue
-          </v-btn>
-        </v-col>
-      </v-row> -->
     </v-card-text>
   </v-card>
 </template>
@@ -186,6 +180,7 @@ export default {
   name: "PersonalDetailsForm",
   data: () => ({
     loadingDepartments: false,
+    loadingUser: false,
 
     //Rules
     firstNameRules: [(v) => !!v || "First name is required"],
@@ -216,28 +211,26 @@ export default {
   },
   async mounted() {
     this.loadingDepartments = true
-    await this.loadDepartments().finally(() => {
-      this.loadingDepartments = false
-    })
-
-    await this.loadUser()
+    this.loadingUser = true
+    await Promise.all([
+      this.loadDepartments().finally(() => {
+        this.loadingDepartments = false
+      }),
+      this.loadUserWrapper().finally(() => {
+        this.loadingUser = false
+      }),
+    ])
   },
   methods: {
     ...mapActions("travelForm", ["loadDepartments", "loadUser", "emailSearch"]),
     searchEmail(token) {
       return this.emailSearch(token)
     },
-    // continueClick() {
-    //   let formValid = this.$refs.form.validate()
-    //   if (formValid) this.continue()
-    // },
-    // loadUserWrapper() {
-    //   return this.loadUser().catch((error) => {
-    //     this.snackbarStatus = "error"
-    //     this.snackbarMessage = error.response.message
-    //     this.showSnackbar = true
-    //   })
-    // },
+    loadUserWrapper() {
+      return this.loadUser().catch((error) => {
+        this.$snack(error.response.message || error.toString(), { color: "error" })
+      })
+    },
   },
 }
 </script>

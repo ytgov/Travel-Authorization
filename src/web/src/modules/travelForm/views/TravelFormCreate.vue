@@ -62,9 +62,6 @@ export default {
   data() {
     return {
       loading: false,
-      showSnackbar: false,
-      snackbarMessage: "",
-      snackbarStatus: "info",
     }
   },
   computed: {
