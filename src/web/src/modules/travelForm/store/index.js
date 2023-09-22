@@ -1,4 +1,4 @@
-import { cloneDeep, isString, upperFirst } from "lodash"
+import { isString, upperFirst } from "lodash"
 
 import { FORM_URL, LOOKUP_URL, DESTINATION_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost, securePut } from "@/store/jwt"
@@ -11,6 +11,7 @@ const state = {
   purposes: [],
   destinations: [],
   request: {}, // TODO: make this name match the back-end object name.
+  currentUser: {},
 }
 
 const actions = {
@@ -35,14 +36,12 @@ const actions = {
       return resp.data.data
     })
   },
-
   async loadPurposes({ commit }) {
     return secureGet(`${LOOKUP_URL}/travelPurpose`).then((resp) => {
       commit("SET_PURPOSE", resp.data)
       return resp.data
     })
   },
-
   async loadDestinations({ commit }) {
     return secureGet(`${DESTINATION_URL}`).then((resp) => {
       let destinations = []
@@ -59,7 +58,6 @@ const actions = {
       return destinations
     })
   },
-
   async loadForms({ commit }, params) {
     return formsApi.list(params).then(({ forms, pageCount }) => {
       commit("SET_MYFORMS", forms)
@@ -71,6 +69,28 @@ const actions = {
       commit("SET_FORM", form)
       return form
     })
+  },
+  async loadUser({ commit, state }) {
+    return Promise.all([secureGet(`${USERS_URL}/me`), secureGet(`${USERS_URL}/unit`)]).then(
+      ([{ data: userData }, { data: unitData }]) => {
+        const user = userData.data
+        commit("SET_CURRENT_USER", {
+          firstName: upperFirst(user.first_name),
+          lastName: upperFirst(user.last_name),
+          email: user.email,
+          department: unitData.department,
+          division: unitData.division,
+          branch: unitData.branch,
+          unit: unitData.unit,
+          mailcode: unitData.mailcode,
+        })
+        commit("SET_FORM", {
+          ...state.request,
+          ...state.currentUser,
+        })
+        return state.currentUser
+      }
+    )
   },
   initializeForm({ commit }) {
     let form = {
@@ -115,46 +135,22 @@ const actions = {
 
     commit("SET_FORM", form)
   },
-  async loadUser({ commit, state }) {
-    return Promise.all([secureGet(`${USERS_URL}/me`), secureGet(`${USERS_URL}/unit`)]).then(
-      ([{ data: userData }, { data: unitData }]) => {
-        const form = cloneDeep(state.request)
-        const user = userData.data
-        form.firstName = upperFirst(user.first_name)
-        form.lastName = upperFirst(user.last_name)
-        form.email = user.email
-
-        form.department = unitData.department
-        form.division = unitData.division
-        form.branch = unitData.branch
-        form.unit = unitData.unit
-        form.mailcode = unitData.mailcode
-
-        commit("SET_FORM", form)
-
-        return user
-      }
-    )
-  },
   async getAll() {
     return secureGet(FORM_URL).then((resp) => {
       return resp.data.data
     })
   },
-
   async getById(store, { id }) {
     return secureGet(`${FORM_URL}/${id}`).then((resp) => {
       return resp.data.data
     })
   },
-
   create({ commit }, attributes) {
     return formsApi.create(attributes).then(({ form }) => {
       commit("SET_FORM", form)
       return form
     })
   },
-
   async update(store, { item }) {
     let id = item.id
     console.log(item)
@@ -163,7 +159,6 @@ const actions = {
       return resp.data
     })
   },
-
   async delete(store, { id }) {
     return securePost(`${FORM_URL}/${id}`).then((resp) => {
       return resp.data
@@ -172,6 +167,9 @@ const actions = {
 }
 
 const mutations = {
+  SET_CURRENT_USER(store, value) {
+    store.currentUser = value
+  },
   SET_EMAILS(store, value) {
     store.emails = value
   },
