@@ -103,6 +103,8 @@ export default {
     },
   },
   async mounted() {
+    this.$refs.form.resetValidation()
+
     this.loadingPurposes = true
     this.loadingDestinations = true
     await Promise.all([
