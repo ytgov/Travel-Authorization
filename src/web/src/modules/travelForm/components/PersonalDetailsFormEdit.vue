@@ -177,7 +177,7 @@
 import { mapState, mapActions } from "vuex"
 
 export default {
-  name: "PersonalDetailsForm",
+  name: "PersonalDetailsFormEdit",
   data: () => ({
     loadingDepartments: false,
     loadingUser: false,

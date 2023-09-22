@@ -66,14 +66,14 @@
               </v-stepper-step>
 
               <v-stepper-content step="1">
-                <personal-details-form
+                <PersonalDetailsFormEdit
                   :review="review"
                   :continue="
                     () => {
                       stepVal = 2
                     }
                   "
-                ></personal-details-form>
+                ></PersonalDetailsFormEdit>
               </v-stepper-content>
 
               <v-stepper-step
@@ -178,7 +178,7 @@ import Breadcrumbs from "@/components/Breadcrumbs"
 import ExpenseList from "../components/ExpenseList"
 import TripReport from "../components/TripReport"
 
-import PersonalDetailsForm from "../components/PersonalDetailsForm"
+import PersonalDetailsFormEdit from "../components/PersonalDetailsFormEdit"
 import StopsFormEdit from "../components/StopsFormEdit"
 import TravelDetailsForm from "../components/TravelDetailsForm"
 
@@ -187,7 +187,7 @@ export default {
   components: {
     Breadcrumbs,
     ExpenseList,
-    PersonalDetailsForm,
+    PersonalDetailsFormEdit,
     StopsFormEdit,
     TravelDetailsForm,
     TripReport,

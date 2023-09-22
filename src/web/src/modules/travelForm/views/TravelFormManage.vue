@@ -15,7 +15,7 @@
       </v-stepper-step>
 
       <v-stepper-content step="1">
-        <personal-details-form
+        <PersonalDetailsFormManage
           :form="form"
           :review="review"
           :continue="
@@ -23,7 +23,7 @@
               stepVal = 2;
             }
           "
-        ></personal-details-form>
+        ></PersonalDetailsFormManage>
       </v-stepper-content>
 
       <v-stepper-step :complete="stepVal > 2" step="2">
@@ -189,12 +189,12 @@ import { mapActions, mapState } from "vuex";
 
 import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls";
 import { secureGet, securePost } from "../../../store/jwt";
-import ExpenseList from "../components/ExpenseList.vue";
-import TripReport from "../components/TripReport.vue";
+import ExpenseList from "../components/ExpenseList";
+import TripReport from "../components/TripReport";
 
-import PersonalDetailsForm from "../components/PersonalDetailsForm.vue";
-import StopsFormManage from "../components/StopsFormManage.vue";
-import TravelDetailsForm from "../components/TravelDetailsForm.vue";
+import PersonalDetailsFormManage from "../components/PersonalDetailsFormManage";
+import StopsFormManage from "../components/StopsFormManage";
+import TravelDetailsForm from "../components/TravelDetailsForm";
 
 import formsApi from "@/apis/forms-api"
 
@@ -203,7 +203,7 @@ export default {
   components: {
     ExpenseList,
     TripReport,
-    PersonalDetailsForm,
+    PersonalDetailsFormManage,
     StopsFormManage,
     TravelDetailsForm
   },
