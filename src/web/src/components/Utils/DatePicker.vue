@@ -31,6 +31,8 @@
 </template>
 
 <script>
+const required = (v) => !!v || "This field is required"
+
 export default {
   inheritAttrs: false,
   props: {
@@ -42,13 +44,12 @@ export default {
     },
     rules: {
       type: Array,
-      default: () => [this.required],
+      default: () => [required],
     },
   },
   data() {
     return {
       menu: false,
-      required: (v) => !!v || "This field is required",
     }
   },
   methods: {
