@@ -1,9 +1,15 @@
 <template>
-  <div>
-    <PurposeFormCard />
-
-    <h3>Details</h3>
-    <DetailsFormCard />
+  <div class="mt-4">
+    <v-row>
+      <v-col>
+        <PurposeFormCard />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <DetailsFormCard />
+      </v-col>
+    </v-row>
 
     <h3>Approvals</h3>
     <TravelDetailsForm />
