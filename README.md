@@ -2,7 +2,7 @@
 
 ## General Stack
 
-### API
+### API (Back-end)
 
 - [Node](https://nodejs.org/en) + [Express](https://expressjs.com/)
 
@@ -10,15 +10,15 @@
 
 - [Knex](https://knexjs.org/guide/)
 
-### FrontEnd
+### Front-End
 
 - [Vue2](https://v2.vuejs.org/) + [Vuetify](https://vuetifyjs.com/en/getting-started/installation/)
 
 - [Axios](https://github.com/axios/axios)
 
-### DB
+### Database
 
-- Postgres DB - [psql](https://www.postgresql.org/docs/current/app-psql.html) (Switching this to MySQL)
+- Postgres DB - [psql](https://www.postgresql.org/docs/current/app-psql.html)
 
 - [Docker Compose](https://docs.docker.com/compose/compose-file/)
 
@@ -94,11 +94,14 @@
 ### dbpostgres Service (a.k.a database or db)
 
 1. Boot the database using
-    ```bash
-    docker compose -f docker-compose.db.yml up
-    # Or
-    docker-compose -f docker-compose.db.yml up
-    ```
+
+   ```bash
+   dev up
+   # or
+   docker compose -f docker-compose.db.yml up
+   # or
+   docker-compose -f docker-compose.db.yml up
+   ```
 
 2. Once you have the `api` service running, and have logged in to the front-end, you can run the migrations by going to http://localhost:3000/migrate/latest
 
@@ -106,9 +109,11 @@
 
 4. You can access the `psql` command line via
 
-    ```bash
-    docker compose -f docker-compose.db.yml exec dbpostgres psql postgresql://user:itsallgood@localhost:5432/travel
-    ```
+   ```bash
+   dev psql
+   # or
+   docker compose -f docker-compose.db.yml exec dbpostgres psql "postgresql://user:itsallgood@localhost:5432/travel"
+   ```
 
 ### Troubleshooting
 

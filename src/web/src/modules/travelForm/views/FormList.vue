@@ -1,19 +1,37 @@
 <template>
   <div class="user">
     <h1>My Travel</h1>
-    <v-card class="mt-5" color="#fff2d5">
+    <v-card
+      class="mt-5"
+      color="#fff2d5"
+    >
       <v-card-text>
         <div style="height: 55px">
-          <v-btn @click="createFormClick()" color="primary" class="float-right my-0">
+          <v-btn
+            @click="goToCreateForm"
+            color="primary"
+            class="float-right my-0"
+          >
             + Travel Authorization
           </v-btn>
         </div>
-        <v-data-table :headers="headers" :items="myForms" :items-per-page="20" class="elevation-2" @click:row="openForm">
-          <template v-slot:item.datebacktowork="{ item }">
-            <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
+        <v-data-table
+          :headers="headers"
+          :items="myForms"
+          :items-per-page.sync="perPage"
+          :page.sync="page"
+          :page-count.sync="pageCount"
+          class="elevation-2"
+          @click:row="goToFormDetails"
+        >
+          <template v-slot:item.departmentAndBranch="{ item }">
+            <span>{{ formatDepartmentAndBranch(item) }}</span>
           </template>
           <template v-slot:item.departureDate="{ item }">
-            <span>{{ new Date(item.departureDate).toDateString() }}</span>
+            <span>{{ formatAsDate(item.departingAt) }}</span>
+          </template>
+          <template v-slot:item.dateBackToWork="{ item }">
+            <span>{{ formatAsDate(item.dateBackToWork) }}</span>
           </template>
         </v-data-table>
       </v-card-text>
@@ -21,15 +39,16 @@
   </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState } from "vuex"
+import { isEmpty } from "lodash"
 
 export default {
-  name: "Home",
+  name: "FormList",
   data: () => ({
     headers: [
       {
         text: "Department/Branch",
-        value: "department",
+        value: "departmentAndBranch",
       },
       {
         text: "Purpose",
@@ -41,30 +60,59 @@ export default {
       },
       {
         text: "Return Date",
-        value: "datebacktowork",
+        value: "dateBackToWork",
       },
       {
         text: "Status",
         value: "status",
       },
     ],
+    perPage: 10,
+    page: 1,
+    pageCount: 1,
   }),
-  mounted() {
-    this.loadForms();
+  async mounted() {
+    await this.refreshForms()
   },
   computed: {
-    ...mapState("travelForm", ["myForms"])
+    ...mapState("travelForm", ["myForms"]),
   },
   methods: {
-    ...mapActions("travelForm", ["loadForms", "start"]),
-
-    openForm(value) {
-      this.$router.push(`/my-travel-requests/${value.formId}`);
+    ...mapActions("travelForm", ["loadForms"]),
+    refreshForms() {
+      return this.loadForms({ page: this.page, perPage: this.perPage }).then(({ pageCount }) => {
+        this.pageCount = pageCount
+      })
     },
+    goToFormDetails(form) {
+      const formId = form.id
+      this.$router.push({ name: "travelRequestEdit", params: { formId } })
+    },
+    goToCreateForm() {
+      this.$router.push({ name: "travelRequestCreate" })
+    },
+    formatAsDate(value) {
+      const timestamp = Date.parse(value)
+      if (isNaN(timestamp)) return value
 
-    async createFormClick() {
-      this.$router.push({ name: "travelRequestCreate"});
+      const date = new Date(timestamp)
+      return date.toDateString()
+    },
+    formatDepartmentAndBranch(item) {
+      const { department, branch } = item
+      if (isEmpty(branch)) return department
+      if (branch === department) return department
+
+      return `${department} - ${branch}`
+    }
+  },
+  watch: {
+    page() {
+      this.refreshForms()
+    },
+    perPage() {
+      this.refreshForms()
     },
   },
-};
+}
 </script>
