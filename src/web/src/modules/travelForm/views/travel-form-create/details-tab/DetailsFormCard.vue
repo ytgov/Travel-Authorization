@@ -76,6 +76,7 @@
 
         <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
         <OneWayStopsSection v-else-if="tripType === TRIP_TYPES.ONE_WAY" />
+        <MuliDestinationStopsSection v-else-if="tripType === TRIP_TYPES.MULI_DESTINATION" />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
 
         <v-row>
@@ -122,6 +123,7 @@ import { isEmpty } from "lodash"
 import DatePicker from "@/components/Utils/DatePicker"
 import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
 import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
+import MuliDestinationStopsSection from "./details-form-card/MuliDestinationStopsSection"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -139,6 +141,7 @@ export default {
   name: "PurposeFormCard",
   components: {
     DatePicker,
+    MuliDestinationStopsSection,
     OneWayStopsSection,
     RoundTripStopsSection,
   },
