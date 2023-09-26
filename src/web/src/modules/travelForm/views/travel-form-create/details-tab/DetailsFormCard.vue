@@ -9,81 +9,107 @@
         ref="form"
         lazy-validation
       >
-        <!-- Depending on in territory flag we will load a different list of destinations -->
-        <v-checkbox
-          :value="request.allTravelWithinTerritory"
-          label="In Territory"
-          dense
-          required
-          @change="updateAllTravelWithinTerritory"
-        >
-        </v-checkbox>
-        <v-select
-          :value="tripType"
-          :items="tripTypes"
-          :rules="[required]"
-          label="Trip Type"
-          background-color="white"
-          dense
-          outlined
-          required
-          @change="updateTripType"
-        ></v-select>
-        <!-- If accommodation type is other, support text field entry -->
-        <v-select
-          v-model="request.accommodationType"
-          :items="accommodationTypes"
-          :rules="[required]"
-          label="Type of Accommodation"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-select>
-        <v-text-field
-          v-if="request.accommodationType === ACCOMMODATION_TYPES.OTHER"
-          v-model="accommodationTypeOther"
-          :rules="[required]"
-          label="Type of Accommodation - Other:"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-text-field>
+        <v-row>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <!-- Depending on in territory flag we will load a different list of destinations -->
+            <v-checkbox
+              :value="request.allTravelWithinTerritory"
+              label="In Territory?"
+              dense
+              required
+              @change="updateAllTravelWithinTerritory"
+            >
+            </v-checkbox>
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+          >
+            <v-select
+              :value="tripType"
+              :items="tripTypes"
+              :rules="[required]"
+              label="Trip Type"
+              background-color="white"
+              dense
+              outlined
+              required
+              @change="updateTripType"
+            ></v-select>
+          </v-col>
+          <v-col
+            cols="12"
+            md="2"
+          ></v-col>
+          <v-col
+            cols="12"
+            md="2"
+          >
+            <!-- If accommodation type is other, support text field entry -->
+            <v-select
+              v-model="request.accommodationType"
+              :items="accommodationTypes"
+              :rules="[required]"
+              label="Type of Accommodation"
+              background-color="white"
+              dense
+              outlined
+              required
+            ></v-select>
+          </v-col>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <v-text-field
+              v-if="request.accommodationType === ACCOMMODATION_TYPES.OTHER"
+              v-model="accommodationTypeOther"
+              :rules="[required]"
+              label="Type of Accommodation - Other:"
+              background-color="white"
+              dense
+              outlined
+              required
+            ></v-text-field>
+          </v-col>
+        </v-row>
 
         <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
         <div v-else>TODO: add non-round trip stops section</div>
 
-        <v-text-field
-          v-model="request.travelDuration"
-          :rules="[required, isNumber]"
-          label="# Days"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="request.daysOffTravelStatus"
-          :rules="[required, isNumber]"
-          label="Days on non-travel status"
-          background-color="white"
-          dense
-          required
-          outlined
-        ></v-text-field>
-        <DatePicker
-          v-model="request.dateBackToWork"
-          :rules="[required]"
-          text="Expected Date return to work"
-          required
-        />
         <v-row>
-          <v-col
-            cols="12"
-            md="6"
-          >
-            TODO
+          <v-col cols="12" md="1">
+            <v-text-field
+              v-model="request.travelDuration"
+              :rules="[required, isNumber]"
+              label="# Days"
+              background-color="white"
+              dense
+              outlined
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="2">
+            <v-text-field
+              v-model="request.daysOffTravelStatus"
+              :rules="[required, isNumber]"
+              label="Days on non-travel status"
+              background-color="white"
+              dense
+              required
+              outlined
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="2">
+            <DatePicker
+              v-model="request.dateBackToWork"
+              :rules="[required]"
+              text="Expected Date return to work"
+              required
+            />
           </v-col>
         </v-row>
       </v-form>
