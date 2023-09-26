@@ -10,8 +10,8 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
         dense
-        v-model="time"
-        :label="value"
+        :value="value"
+        :label="text"
         prepend-icon="mdi-clock"
         background-color="white"
         outlined
@@ -23,15 +23,21 @@
       >
       </v-text-field>
     </template>
-    <v-time-picker format="24hr" scrollable v-model="time" @input="menu = false" :rules="requiredRules">
+    <v-time-picker
+      format="24hr"
+      scrollable
+      :value="value"
+      :rules="requiredRules"
+      @input="input"
+    >
     </v-time-picker>
   </v-menu>
 </template>
 <script>
 export default {
   props: {
-    text: String,
     value: String,
+    text: String,
     review: {
       type: Boolean,
       default: false,
@@ -40,14 +46,14 @@ export default {
   data() {
     return {
       menu: false,
-      time: "",
       requiredRules: [(v) => !!v || "This field is required"],
-    };
+    }
   },
   methods: {
-    returnDate() {
-      this.$emit("time", this.time);
+    input(value) {
+      this.menu = false
+      this.$emit("input", value)
     },
   },
-};
+}
 </script>

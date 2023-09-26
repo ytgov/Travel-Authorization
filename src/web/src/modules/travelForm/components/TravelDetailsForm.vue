@@ -58,7 +58,7 @@
           <v-select
             :items="purposes"
             label="Purpose"
-            v-model="request.purpose"
+            v-model="request.purposeId"
             dense
             item-value="id"
             item-text="purpose"
@@ -146,7 +146,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "TravelDetailsForm",
@@ -161,7 +161,11 @@ export default {
   computed: {
     ...mapState("travelForm", ["purposes", "request"]),
   },
+  async mounted() {
+    this.loadPurposes();
+  },
   methods: {
+    ...mapActions("travelForm", ["loadPurposes"]),
     continueClick() {
       this.continue();
     },
