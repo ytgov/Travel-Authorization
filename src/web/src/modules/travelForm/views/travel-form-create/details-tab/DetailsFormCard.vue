@@ -164,7 +164,19 @@ export default {
   },
   methods: {
     updateTripType(value) {
-      // TODO: update one of several boolean values on the form object
+      if (value === TRIP_TYPES.ROUND_TRIP) {
+        this.request.oneWayTrip = false
+        this.request.multiStop = false
+      } else if (value === TRIP_TYPES.ONE_WAY) {
+        this.request.oneWayTrip = true
+        this.request.multiStop = false
+      } else if (value === TRIP_TYPES.MULI_DESTINATION) {
+        this.request.multiStop = true
+        this.request.oneWayTrip = false
+      } else {
+        throw new Error("Invalid trip type")
+      }
+
       this.tripType = value
     },
   },
