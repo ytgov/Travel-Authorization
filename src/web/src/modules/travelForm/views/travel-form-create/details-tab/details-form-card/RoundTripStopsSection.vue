@@ -4,7 +4,10 @@
       v-for="(stop, index) in stops"
       :key="`stop-${index}`"
     >
-      <v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
         <v-autocomplete
           v-model="stop.locationId"
           :items="destinations"
@@ -17,7 +20,10 @@
           required
         />
       </v-col>
-      <v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
         <v-autocomplete
           v-model="stop.locationId"
           :items="destinations"
@@ -31,21 +37,31 @@
         />
       </v-col>
       <v-col
-        ><DatePicker
+        cols="12"
+        md="2"
+      >
+        <DatePicker
           v-model="stop.departureDate"
           :rules="[required]"
           text="Date"
           persistent-hint
         />
       </v-col>
-      <v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
         <TimePicker
           v-model="stop.departureTime"
           :rules="[required]"
           text="Time"
           persistent-hint
-      /></v-col>
-      <v-col>
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
         <v-select
           v-model="stop.transport"
           :items="travelMethods"
@@ -56,8 +72,8 @@
           persistent-hint
           required
           outlined
-        ></v-select
-      ></v-col>
+        ></v-select>
+      </v-col>
     </v-row>
   </div>
 </template>

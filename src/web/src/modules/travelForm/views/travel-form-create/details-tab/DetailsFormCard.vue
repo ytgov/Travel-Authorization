@@ -12,7 +12,7 @@
         <v-row>
           <v-col
             cols="12"
-            md="3"
+            md="2"
           >
             <!-- Depending on in territory flag we will load a different list of destinations -->
             <v-checkbox
@@ -40,10 +40,7 @@
               @change="updateTripType"
             ></v-select>
           </v-col>
-          <v-col
-            cols="12"
-            md="2"
-          ></v-col>
+          <v-col></v-col>
           <v-col
             cols="12"
             md="2"
