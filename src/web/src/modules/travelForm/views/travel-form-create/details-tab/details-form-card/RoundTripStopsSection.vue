@@ -81,7 +81,7 @@
           v-model="to.locationId"
           :items="destinations"
           :rules="[required]"
-          label="to"
+          label="To"
           background-color="white"
           dense
           outlined
