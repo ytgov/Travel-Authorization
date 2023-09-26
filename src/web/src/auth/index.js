@@ -4,6 +4,8 @@
 
 import Vue from "vue";
 import createAuth0Client from "@auth0/auth0-spa-js";
+
+import { environment } from "@/config";
 import { secureDelete, secureGet, securePut, securePost } from "@/store/jwt";
 import { domain, clientId, audience } from "../../auth_config.json";
 import router from "../router";
@@ -92,6 +94,7 @@ export const useAuth0 = ({
         client_id: clientId,
         audience,
         redirect_uri: redirectUri,
+        cacheLocation: environment === "development" ? "localstorage" : "memory",
       });
 
       try {
