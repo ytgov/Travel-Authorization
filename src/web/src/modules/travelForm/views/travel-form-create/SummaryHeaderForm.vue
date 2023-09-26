@@ -40,6 +40,7 @@
           outlined
           persistent-hint
           required
+          validate-on-blur
         >
         </v-autocomplete>
       </v-col>
@@ -52,6 +53,7 @@
           :rules="[required]"
           text="Start Date"
           required
+          validate-on-blur
         />
       </v-col>
       <v-col
@@ -67,6 +69,7 @@
           ]"
           text="End Date"
           required
+          validate-on-blur
         />
       </v-col>
     </v-row>
@@ -111,8 +114,6 @@ export default {
     },
   },
   async mounted() {
-    this.$refs.form.resetValidation()
-
     this.loadingPurposes = true
     this.loadingDestinations = true
     await Promise.all([

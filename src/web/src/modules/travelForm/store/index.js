@@ -110,7 +110,7 @@ const actions = {
       //stops
       stops: [
         {
-          locationId: "",
+          locationId: -1,
           departureDate: "",
           departureTime: "12:00",
           transport: "",

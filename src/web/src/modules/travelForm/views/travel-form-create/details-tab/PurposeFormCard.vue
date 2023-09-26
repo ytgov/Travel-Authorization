@@ -59,6 +59,7 @@
                   outlined
                   persistent-hint
                   required
+                  validate-on-blur
                 >
                 </v-autocomplete>
               </v-col>
