@@ -32,7 +32,7 @@
         ></v-select>
         <!-- If accommodation type is other, support text field entry -->
         <v-select
-          v-model="accommodationType"
+          v-model="request.accommodationType"
           :items="accommodationTypes"
           :rules="[required]"
           label="Type of Accommodation"
@@ -42,10 +42,20 @@
           required
         ></v-select>
         <v-text-field
-          v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
+          v-if="request.accommodationType === ACCOMMODATION_TYPES.OTHER"
           v-model="accommodationTypeOther"
           :rules="[required]"
           label="Type of Accommodation - Other:"
+          background-color="white"
+          dense
+          outlined
+          required
+        ></v-text-field>
+
+        <v-text-field
+          v-model="request.travelDuration"
+          :rules="[requred, isNumber]"
+          label="# Days"
           background-color="white"
           dense
           outlined
@@ -92,6 +102,7 @@ export default {
     tripTypes: Object.values(TRIP_TYPES),
     tripType: TRIP_TYPES.ONE_WAY,
     required: (v) => !!v || "This field is required",
+    isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"
   }),
   computed: {
     ...mapState("travelForm", ["request", "destinations"]),
