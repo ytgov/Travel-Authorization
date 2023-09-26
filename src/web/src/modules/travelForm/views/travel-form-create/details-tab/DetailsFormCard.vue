@@ -46,7 +46,7 @@
           >
             <!-- If accommodation type is other, support text field entry -->
             <v-select
-              v-model="request.accommodationType"
+              :value="accommodationType"
               :items="accommodationTypes"
               :rules="[required]"
               label="Type of Accommodation"
@@ -54,6 +54,7 @@
               dense
               outlined
               required
+              @input="updateAccommodationType"
             ></v-select>
           </v-col>
           <v-col
@@ -61,14 +62,15 @@
             md="3"
           >
             <v-text-field
-              v-if="request.accommodationType === ACCOMMODATION_TYPES.OTHER"
-              v-model="accommodationTypeOther"
+              v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
+              :value="accommodationTypeOther"
               :rules="[required]"
               label="Type of Accommodation - Other:"
               background-color="white"
               dense
               outlined
               required
+              @input="updateAccommodationTypeOther"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -137,7 +139,7 @@ const ACCOMMODATION_TYPES = Object.freeze({
 })
 
 export default {
-  name: "PurposeFormCard",
+  name: "DetailsFormCard",
   components: {
     DatePicker,
     MuliDestinationStopsSection,
@@ -146,6 +148,7 @@ export default {
   },
   data: () => ({
     ACCOMMODATION_TYPES,
+    accommodationType: ACCOMMODATION_TYPES.HOTEL,
     accommodationTypeOther: "",
     accommodationTypes: Object.values(ACCOMMODATION_TYPES),
     TRIP_TYPES,
@@ -163,6 +166,19 @@ export default {
     }
   },
   methods: {
+    updateAccommodationType(value) {
+      if (value === ACCOMMODATION_TYPES.OTHER) {
+        this.request.accommodationType = this.accommodationTypeOther
+      } else {
+        this.request.accommodationType = value
+      }
+
+      this.accommodationType = value
+    },
+    updateAccommodationTypeOther(value) {
+      this.request.accommodationType = value
+      this.accommodationTypeOther = value
+    },
     updateTripType(value) {
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.request.oneWayTrip = false
