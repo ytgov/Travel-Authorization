@@ -19,6 +19,7 @@
         v-bind="attrs"
         v-on="on"
         :rules="rules"
+        :validate-on-blur="validateOnBlur"
       ></v-text-field>
     </template>
     <v-date-picker
@@ -45,6 +46,10 @@ export default {
     rules: {
       type: Array,
       default: () => [required],
+    },
+    validateOnBlur: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
