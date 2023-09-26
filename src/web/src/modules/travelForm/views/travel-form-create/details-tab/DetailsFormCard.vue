@@ -75,7 +75,8 @@
         </v-row>
 
         <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
-        <div v-else>TODO: add non-round trip stops section</div>
+        <OneWayStopsSection v-else-if="tripType === TRIP_TYPES.ONE_WAY" />
+        <div v-else>Trip type {{ tripType }} not implemented!</div>
 
         <v-row>
           <v-col cols="12" md="1">
@@ -120,6 +121,7 @@ import { isEmpty } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
+import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -137,6 +139,7 @@ export default {
   name: "PurposeFormCard",
   components: {
     DatePicker,
+    OneWayStopsSection,
     RoundTripStopsSection,
   },
   data: () => ({
@@ -147,7 +150,7 @@ export default {
     accommodationTypes: Object.values(ACCOMMODATION_TYPES),
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
-    tripType: TRIP_TYPES.ROUND_TRIP || TRIP_TYPES.ONE_WAY,
+    tripType: TRIP_TYPES.ONE_WAY,
     required: (v) => !!v || "This field is required",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
