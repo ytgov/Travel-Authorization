@@ -1,15 +1,12 @@
 <template>
   <div>
-    <v-row
-      v-for="(stop, index) in stops"
-      :key="`stop-${index}`"
-    >
+    <v-row>
       <v-col
         cols="12"
         md="2"
       >
         <v-autocomplete
-          v-model="stop.locationId"
+          v-model="from.locationId"
           :items="destinations"
           :rules="[required]"
           label="From"
@@ -25,7 +22,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="stop.locationId"
+          v-model="to.locationId"
           :items="destinations"
           :rules="[required]"
           label="To"
@@ -41,7 +38,7 @@
         md="2"
       >
         <DatePicker
-          v-model="stop.departureDate"
+          v-model="from.departureDate"
           :rules="[required]"
           text="Date"
           persistent-hint
@@ -52,7 +49,7 @@
         md="2"
       >
         <TimePicker
-          v-model="stop.departureTime"
+          v-model="from.departureTime"
           :rules="[required]"
           text="Time"
           persistent-hint
@@ -63,7 +60,79 @@
         md="2"
       >
         <v-select
-          v-model="stop.transport"
+          v-model="from.transport"
+          :items="travelMethods"
+          :rules="[required]"
+          label="Travel Method"
+          background-color="white"
+          dense
+          persistent-hint
+          required
+          outlined
+        ></v-select>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-autocomplete
+          v-model="to.locationId"
+          :items="destinations"
+          :rules="[required]"
+          label="to"
+          background-color="white"
+          dense
+          outlined
+          persistent-hint
+          required
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-autocomplete
+          v-model="from.locationId"
+          :items="destinations"
+          :rules="[required]"
+          label="From"
+          background-color="white"
+          dense
+          outlined
+          persistent-hint
+          required
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <DatePicker
+          v-model="to.departureDate"
+          :rules="[required]"
+          text="Date"
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <TimePicker
+          v-model="to.departureTime"
+          :rules="[required]"
+          text="Time"
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-select
+          v-model="to.transport"
           :items="travelMethods"
           :rules="[required]"
           label="Travel Method"
@@ -80,6 +149,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex"
+import { isArray, isEmpty } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
@@ -98,16 +168,37 @@ export default {
     TimePicker,
   },
   data: () => ({
-    stops: [{}, {}],
     required: (v) => !!v || "This field is required",
     TRAVEL_METHODS,
     travelMethods: Object.values(TRAVEL_METHODS),
   }),
   computed: {
-    ...mapState("travelForm", ["destinations"]),
+    ...mapState("travelForm", ["destinations", "request"]),
+    from() {
+      if (isEmpty(this.request?.stops)) return {}
+
+      return this.request.stops[0]
+    },
+    to() {
+      if (
+        isEmpty(this.request?.stops) ||
+        (isArray(this.request?.stops) && this.request.stops.length < 2)
+      )
+        return {}
+
+      return this.request.stops[1]
+    },
   },
   async mounted() {
     await this.loadDestinations()
+
+    if (isEmpty(this.request.stops)) {
+      this.request.stops = [{}, {}]
+    } else if (this.request.stops.length === 1) {
+      this.request.stops.push({})
+    } else if (this.request.stops.length > 2) {
+      this.request.stops = this.request.stops.slice(0, 2)
+    }
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
