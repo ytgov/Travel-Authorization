@@ -16,11 +16,10 @@
           >
             <!-- Depending on in territory flag we will load a different list of destinations -->
             <v-checkbox
-              :value="request.allTravelWithinTerritory"
+              v-model="request.allTravelWithinTerritory"
               label="In Territory?"
               dense
               required
-              @change="updateAllTravelWithinTerritory"
             >
             </v-checkbox>
           </v-col>
@@ -117,7 +116,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex"
+import { mapState } from "vuex"
 import { isEmpty } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
@@ -146,8 +145,6 @@ export default {
     RoundTripStopsSection,
   },
   data: () => ({
-    loadingPurposes: false,
-    loadingDestinations: false,
     ACCOMMODATION_TYPES,
     accommodationTypeOther: "",
     accommodationTypes: Object.values(ACCOMMODATION_TYPES),
@@ -158,26 +155,14 @@ export default {
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
-    ...mapState("travelForm", ["request", "destinations"]),
+    ...mapState("travelForm", ["request"]),
   },
   async mounted() {
-    this.loadingDestinations = true
-    await Promise.all([
-      this.loadDestinations().finally(() => {
-        this.loadingDestinations = false
-      }),
-    ])
-
     if (isEmpty(this.request.accommodationType)) {
       this.request.accommodationType = ACCOMMODATION_TYPES.HOTEL
     }
   },
   methods: {
-    ...mapActions("travelForm", ["loadDestinations"]),
-    updateAllTravelWithinTerritory(value) {
-      // TODO: trigger load of different destination list
-      this.allTravelWithinTerritory = value
-    },
     updateTripType(value) {
       // TODO: update one of several boolean values on the form object
       this.tripType = value

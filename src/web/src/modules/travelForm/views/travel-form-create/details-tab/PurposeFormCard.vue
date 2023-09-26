@@ -5,7 +5,10 @@
   >
     <v-card-title> Purpose </v-card-title>
     <v-card-text>
-      <v-form ref="form" lazy-validation>
+      <v-form
+        ref="form"
+        lazy-validation
+      >
         <v-row>
           <v-col
             cols="12"
@@ -47,9 +50,7 @@
               >
                 <v-autocomplete
                   v-model="finalDestination.locationId"
-                  :item-text="destinations.text"
-                  :item-value="destinations.value"
-                  :items="destinations"
+                  :items="destinationsByRequestTravelRestriction"
                   :loading="loadingDestinations"
                   :rules="[required]"
                   background-color="white"
@@ -106,7 +107,7 @@
 
 <script>
 import { last } from "lodash"
-import { mapState, mapActions } from "vuex"
+import { mapState, mapActions, mapGetters } from "vuex"
 
 export default {
   name: "PurposeFormCard",
@@ -116,7 +117,8 @@ export default {
     required: (v) => !!v || "This field is required",
   }),
   computed: {
-    ...mapState("travelForm", ["request", "purposes", "destinations"]),
+    ...mapState("travelForm", ["request", "purposes"]),
+    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
     finalDestination: {
       get() {
         return last(this.request.stops) || {}

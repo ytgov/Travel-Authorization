@@ -28,9 +28,7 @@
       >
         <v-autocomplete
           v-model="finalDestination.locationId"
-          :item-text="destinations.text"
-          :item-value="destinations.value"
-          :items="destinations"
+          :items="destinationsByRequestTravelRestriction"
           :loading="loadingDestinations"
           :rules="[required]"
           background-color="white"
@@ -78,7 +76,7 @@
 
 <script>
 import { first, last } from "lodash"
-import { mapState, mapActions } from "vuex"
+import { mapState, mapActions, mapGetters } from "vuex"
 
 import DatePicker from "@/components/Utils/DatePicker"
 
@@ -95,7 +93,8 @@ export default {
       new Date(b) >= new Date(a) || `This field must be greater than or equal to ${b || label}`,
   }),
   computed: {
-    ...mapState("travelForm", ["request", "purposes", "destinations"]),
+    ...mapState("travelForm", ["request", "purposes", "destinationsByRequestTravelRestriction"]),
+    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
     finalDestination: {
       get() {
         return last(this.request.stops) || {}

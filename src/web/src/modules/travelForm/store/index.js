@@ -14,6 +14,16 @@ const state = {
   currentUser: {},
 }
 
+const getters = {
+  destinationsByRequestTravelRestriction(state) {
+    if (state.request.allTravelWithinTerritory !== true) {
+      return state.destinations
+    }
+
+    return state.destinations.filter((d) => d.text.endsWith('(YT)'))
+  }
+}
+
 const actions = {
   async initialize(store) {
     await store.dispatch("initializeForm")
@@ -193,6 +203,7 @@ const mutations = {
 export default {
   namespaced: true,
   state,
+  getters,
   actions,
   mutations,
 }

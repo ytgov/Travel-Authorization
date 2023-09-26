@@ -7,7 +7,7 @@
       >
         <v-autocomplete
           v-model="stop1.locationId"
-          :items="destinations"
+          :items="destinationsByRequestTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -23,7 +23,7 @@
       >
         <v-autocomplete
           v-model="stop2.locationId"
-          :items="destinations"
+          :items="destinationsByRequestTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -79,7 +79,7 @@
       >
         <v-autocomplete
           v-model="stop2.locationId"
-          :items="destinations"
+          :items="destinationsByRequestTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -95,7 +95,7 @@
       >
         <v-autocomplete
           v-model="stop3.locationId"
-          :items="destinations"
+          :items="destinationsByRequestTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -151,7 +151,7 @@
       >
         <v-autocomplete
           v-model="stop3.locationId"
-          :items="destinations"
+          :items="destinationsByRequestTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -167,7 +167,7 @@
       >
         <v-autocomplete
           v-model="stop4.locationId"
-          :items="destinations"
+          :items="destinationsByRequestTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -220,7 +220,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapState, mapGetters } from "vuex"
 import { isArray, isEmpty } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
@@ -245,7 +245,8 @@ export default {
     travelMethods: Object.values(TRAVEL_METHODS),
   }),
   computed: {
-    ...mapState("travelForm", ["destinations", "request"]),
+    ...mapState("travelForm", ["request"]),
+    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
     stop1() {
       if (isEmpty(this.request?.stops)) return {}
 
