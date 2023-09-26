@@ -61,7 +61,10 @@
         <DatePicker
           v-model="finalDestination.departureDate"
           :min="initialDestination.departureDate"
-          :rules="[required, greaterThanOrEqualToDate(initialDestination.departureDate)]"
+          :rules="[
+            required,
+            greaterThanOrEqualToDate(initialDestination.departureDate, 'start date'),
+          ]"
           text="End Date"
           required
         />
@@ -85,8 +88,8 @@ export default {
     loadingPurposes: false,
     loadingDestinations: false,
     required: (v) => !!v || "This field is required",
-    greaterThanOrEqualToDate: (b) => (a) =>
-      new Date(b) >= new Date(a) || `This field must be greater than or equal to ${b}`,
+    greaterThanOrEqualToDate: (b, label) => (a) =>
+      new Date(b) >= new Date(a) || `This field must be greater than or equal to ${b || label}`,
   }),
   computed: {
     ...mapState("travelForm", ["request", "purposes", "destinations"]),
