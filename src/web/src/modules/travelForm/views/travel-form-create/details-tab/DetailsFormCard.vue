@@ -101,7 +101,7 @@
               outlined
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="2">
+          <v-col cols="12" md="3">
             <DatePicker
               v-model="request.dateBackToWork"
               :rules="[required]"
