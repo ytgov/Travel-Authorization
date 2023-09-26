@@ -54,7 +54,7 @@
 
         <v-text-field
           v-model="request.travelDuration"
-          :rules="[requred, isNumber]"
+          :rules="[required, isNumber]"
           label="# Days"
           background-color="white"
           dense
@@ -63,7 +63,7 @@
         ></v-text-field>
         <v-text-field
           v-model="request.daysOffTravelStatus"
-          :rules="[rquired, isNumber]"
+          :rules="[required, isNumber]"
           label="Days on non-travel status"
           background-color="white"
           dense
