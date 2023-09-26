@@ -18,7 +18,6 @@
           @change="updateAllTravelWithinTerritory"
         >
         </v-checkbox>
-        <!-- Depending on trip type we will show a completely different form here -->
         <v-select
           :value="tripType"
           :items="tripTypes"
@@ -51,6 +50,9 @@
           outlined
           required
         ></v-text-field>
+
+        <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
+        <div v-else>TODO: add non-round trip stops section</div>
 
         <v-text-field
           v-model="request.travelDuration"
@@ -91,8 +93,10 @@
 
 <script>
 import { mapState, mapActions } from "vuex"
+import { isEmpty } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
+import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -110,17 +114,17 @@ export default {
   name: "PurposeFormCard",
   components: {
     DatePicker,
+    RoundTripStopsSection,
   },
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
     ACCOMMODATION_TYPES,
-    accommodationType: ACCOMMODATION_TYPES.HOTEL,
     accommodationTypeOther: "",
     accommodationTypes: Object.values(ACCOMMODATION_TYPES),
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
-    tripType: TRIP_TYPES.ONE_WAY,
+    tripType: TRIP_TYPES.ROUND_TRIP || TRIP_TYPES.ONE_WAY,
     required: (v) => !!v || "This field is required",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
@@ -134,6 +138,10 @@ export default {
         this.loadingDestinations = false
       }),
     ])
+
+    if (isEmpty(this.request.accommodationType)) {
+      this.request.accommodationType = ACCOMMODATION_TYPES.HOTEL
+    }
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
