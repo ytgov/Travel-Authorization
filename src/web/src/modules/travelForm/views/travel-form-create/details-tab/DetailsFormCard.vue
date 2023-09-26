@@ -24,9 +24,10 @@
           :items="tripTypes"
           :rules="[required]"
           label="Trip Type"
-          dense
           background-color="white"
+          dense
           outlined
+          required
           @change="updateTripType"
         ></v-select>
         <!-- If accommodation type is other, support text field entry -->
@@ -35,10 +36,21 @@
           :items="accommodationTypes"
           :rules="[required]"
           label="Type of Accommodation"
-          dense
           background-color="white"
+          dense
           outlined
+          required
         ></v-select>
+        <v-text-field
+          v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
+          v-model="accommodationTypeOther"
+          :rules="[required]"
+          label="Type of Accommodation - Other:"
+          background-color="white"
+          dense
+          outlined
+          required
+        ></v-text-field>
         <v-row>
           <v-col
             cols="12"
@@ -55,16 +67,31 @@
 <script>
 import { mapState, mapActions } from "vuex"
 
+const TRIP_TYPES = Object.freeze({
+  ROUND_TRIP: "Round Trip",
+  ONE_WAY: "One Way",
+  MULI_DESTINATION: "Muli-Destination",
+})
+
+const ACCOMMODATION_TYPES = Object.freeze({
+  HOTEL: "Hotel",
+  PRIVATE: "Private",
+  OTHER: "Other:",
+})
+
 export default {
   name: "PurposeFormCard",
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
+    ACCOMMODATION_TYPES,
+    accommodationType: ACCOMMODATION_TYPES.HOTEL,
+    accommodationTypeOther: "",
+    accommodationTypes: Object.values(ACCOMMODATION_TYPES),
+    TRIP_TYPES,
+    tripTypes: Object.values(TRIP_TYPES),
+    tripType: TRIP_TYPES.ONE_WAY,
     required: (v) => !!v || "This field is required",
-    tripTypes: ["Round Trip", "One Way", "Muli-Destination"],
-    tripType: "One Way",
-    accommodationType: "Hotel",
-    accommodationTypes: ["Hotel", "Private", "Other:"],
   }),
   computed: {
     ...mapState("travelForm", ["request", "destinations"]),
