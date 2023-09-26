@@ -61,6 +61,21 @@
           outlined
           required
         ></v-text-field>
+        <v-text-field
+          v-model="request.daysOffTravelStatus"
+          :rules="[rquired, isNumber]"
+          label="Days on non-travel status"
+          background-color="white"
+          dense
+          required
+          outlined
+        ></v-text-field>
+        <DatePicker
+          v-model="request.dateBackToWork"
+          :rules="[required]"
+          text="Expected Date return to work"
+          required
+        />
         <v-row>
           <v-col
             cols="12"
@@ -77,6 +92,8 @@
 <script>
 import { mapState, mapActions } from "vuex"
 
+import DatePicker from "@/components/Utils/DatePicker"
+
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
   ONE_WAY: "One Way",
@@ -91,6 +108,9 @@ const ACCOMMODATION_TYPES = Object.freeze({
 
 export default {
   name: "PurposeFormCard",
+  components: {
+    DatePicker,
+  },
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
@@ -102,7 +122,7 @@ export default {
     tripTypes: Object.values(TRIP_TYPES),
     tripType: TRIP_TYPES.ONE_WAY,
     required: (v) => !!v || "This field is required",
-    isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"
+    isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
     ...mapState("travelForm", ["request", "destinations"]),
