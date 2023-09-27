@@ -80,7 +80,7 @@ export default {
   },
   data() {
     return {
-      loading: false,
+      loading: true,
       loadingUser: false,
       tab: null,
     }

@@ -64,16 +64,15 @@
             cols="12"
             md="3"
           >
-            <v-select
+            <SearchableUserEmailCombobox
               v-model="request.supervisorEmail"
-              :items="supervisors"
               :rules="[required]"
               label="Submit to"
               background-color="white"
               dense
               outlined
               required
-            ></v-select>
+            />
           </v-col>
         </v-row>
       </v-form>
@@ -87,15 +86,19 @@ import { mapActions, mapState } from "vuex"
 
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
+import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+
 export default {
   name: "ApprovalsFormCard",
+  components: {
+    SearchableUserEmailCombobox,
+  },
   data: () => ({
     required: (v) => !!v || "This field is required",
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     estimatedCost: 1230.45, // TODO: figure out what would be required to generate this value
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
-    supervisors: [], // TODO: figure out what would be required to generate this value
   }),
   computed: {
     ...mapState("travelForm", ["request", "currentUser", "loadingCurrentUser"]),
