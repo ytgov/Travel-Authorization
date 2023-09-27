@@ -10,23 +10,25 @@
         <DetailsFormCard />
       </v-col>
     </v-row>
-
-    <h3>Approvals</h3>
-    <TravelDetailsForm />
+    <v-row>
+      <v-col>
+        <ApprovalsFormCard />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
 import PurposeFormCard from "./details-tab/PurposeFormCard"
 import DetailsFormCard from "./details-tab/DetailsFormCard"
-import TravelDetailsForm from "@/modules/travelForm/components/TravelDetailsForm"
+import ApprovalsFormCard from "./details-tab/ApprovalsFormCard"
 
 export default {
   name: "DetailsTab",
   components: {
     PurposeFormCard,
     DetailsFormCard,
-    TravelDetailsForm,
+    ApprovalsFormCard,
   },
 }
 </script>
