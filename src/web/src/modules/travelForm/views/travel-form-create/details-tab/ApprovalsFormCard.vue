@@ -9,37 +9,73 @@
         ref="form"
         lazy-validation
       >
-        <v-text-field
-          :value="estimatedCost"
-          :rules="[required]"
-          label="Estimated Cost"
-          background-color="white"
-          prefix="$"
-          disabled
-          dense
-          outlined
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="travelAdvanceInDollars"
-          :rules="[required, isInteger]"
-          label="Travel Advance"
-          background-color="white"
-          prefix="$"
-          dense
-          outlined
-          required
-        ></v-text-field>
-        <v-select
-          v-model="request.preappId"
-          :items="preApprovedTravelRequests"
-          :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
-          label="Pre-approved Travel Request?"
-          no-data-text="No pre-approvals available"
-          background-color="white"
-          dense
-          outlined
-        ></v-select>
+        <v-row>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <v-text-field
+              :value="estimatedCost"
+              :rules="[required]"
+              label="Estimated Cost"
+              background-color="white"
+              prefix="$"
+              disabled
+              dense
+              outlined
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <v-text-field
+              v-model="travelAdvanceInDollars"
+              :rules="[required, isInteger]"
+              label="Travel Advance"
+              background-color="white"
+              prefix="$"
+              dense
+              outlined
+              required
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            md="6"
+          >
+            <v-select
+              v-model="request.preappId"
+              :items="preApprovedTravelRequests"
+              :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
+              label="Pre-approved Travel Request?"
+              no-data-text="No pre-approvals available"
+              background-color="white"
+              dense
+              outlined
+            ></v-select>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <v-select
+              v-model="request.supervisorEmail"
+              :items="supervisors"
+              :rules="[required]"
+              label="Submit to"
+              background-color="white"
+              dense
+              outlined
+              required
+            ></v-select>
+          </v-col>
+        </v-row>
       </v-form>
     </v-card-text>
   </v-card>
@@ -59,6 +95,9 @@ export default {
     estimatedCost: 1230.45, // TODO: figure out what would be required to generate this value
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
+    supervisors: [],
+    action: "",
+    actions: [],
   }),
   computed: {
     ...mapState("travelForm", ["request", "currentUser", "loadingCurrentUser"]),
