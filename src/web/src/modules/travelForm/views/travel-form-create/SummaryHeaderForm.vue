@@ -51,7 +51,6 @@
           :rules="[required]"
           text="Start Date"
           required
-          validate-on-blur
         />
       </v-col>
       <v-col
@@ -67,7 +66,6 @@
           ]"
           text="End Date"
           required
-          validate-on-blur
         />
       </v-col>
     </v-row>
@@ -90,7 +88,7 @@ export default {
     loadingDestinations: false,
     required: (v) => !!v || "This field is required",
     greaterThanOrEqualToDate: (b, label) => (a) =>
-      new Date(b) >= new Date(a) || `This field must be greater than or equal to ${b || label}`,
+      new Date(a) >= new Date(b) || `This field must be greater than or equal to ${b || label}`,
   }),
   computed: {
     ...mapState("travelForm", ["request", "purposes", "destinationsByRequestTravelRestriction"]),

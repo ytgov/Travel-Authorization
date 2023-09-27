@@ -9,23 +9,21 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
-        dense
-        :value="value"
+        :value="value || ''"
         :label="text"
-        prepend-icon="mdi-calendar"
-        readonly
-        background-color="white"
-        outlined
-        v-bind="attrs"
-        v-on="on"
         :rules="rules"
-        :validate-on-blur="validateOnBlur"
+        background-color="white"
+        prepend-icon="mdi-calendar"
+        dense
+        outlined
+        readonly
+        v-bind="{ ...$attrs, ...attrs }"
+        v-on="on"
       ></v-text-field>
     </template>
     <v-date-picker
       v-bind="$attrs"
       :value="value"
-      :rules="rules"
       @input="input"
     ></v-date-picker>
   </v-menu>
@@ -37,26 +35,16 @@ const required = (v) => !!v || "This field is required"
 export default {
   inheritAttrs: false,
   props: {
-    text: String,
+    text: String, // DEPRECATED: prefer label
     value: String,
-    review: {
-      type: Boolean,
-      default: false,
-    },
     rules: {
       type: Array,
       default: () => [required],
     },
-    validateOnBlur: {
-      type: Boolean,
-      default: false,
-    },
   },
-  data() {
-    return {
-      menu: false,
-    }
-  },
+  data: () => ({
+    menu: false,
+  }),
   methods: {
     input(value) {
       this.menu = false
