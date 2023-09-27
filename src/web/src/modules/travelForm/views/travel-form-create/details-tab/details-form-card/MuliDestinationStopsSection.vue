@@ -340,14 +340,11 @@ export default {
     if (isEmpty(this.request.stops)) {
       this.request.stops = [{}, {}, {}, {}]
     } else if (this.request.stops.length === 1) {
-      this.request.stops.push({})
-      this.request.stops.push({})
-      this.request.stops.push({})
+      this.request.stops.splice(0, 0, {}, {}, {});
     } else if (this.request.stops.length === 2) {
-      this.request.stops.push({})
-      this.request.stops.push({})
+      this.request.stops.splice(1, 0, {}, {});
     } else if (this.request.stops.length === 3) {
-      this.request.stops.push({})
+      this.request.stops.splice(2, 0, {});
     } else if (this.request.stops.length > 4) {
       this.request.stops = this.request.stops.slice(0, 3)
     }
