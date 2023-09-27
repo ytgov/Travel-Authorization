@@ -60,7 +60,7 @@
         md="2"
       >
         <v-select
-          v-model="from.transport"
+          :value="fromTravelMethod"
           :items="travelMethods"
           :rules="[required]"
           label="Travel Method"
@@ -69,7 +69,23 @@
           persistent-hint
           required
           outlined
+          @change="updateFromTravelMethod"
         ></v-select>
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          v-if="fromTravelMethod === TRAVEL_METHODS.OTHER"
+          v-model="from.transport"
+          :rules="[required]"
+          label="Travel Method - Other:"
+          background-color="white"
+          dense
+          outlined
+          required
+        ></v-text-field>
       </v-col>
     </v-row>
   </div>
@@ -83,10 +99,12 @@ import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 
 const TRAVEL_METHODS = Object.freeze({
-  RENTAL_VEHICLE: "Rental vehicle",
-  PERSONAL_VEHICLE: "Personal vehicle",
-  FLEET_VEHICLE: "Fleet vehicle",
-  PLANE: "Plane",
+  AIRCRAFT: "Aircraft",
+  POOL_VEHICLE: "Pool Vehicle",
+  PERSONAL_VEHICLE: "Personal Vehicle",
+  RENTAL_VEHICLE: "Rental Vehicle",
+  BUS: "Bus",
+  OTHER: "Other:",
 })
 
 export default {
@@ -97,6 +115,8 @@ export default {
   },
   data: () => ({
     required: (v) => !!v || "This field is required",
+    fromTravelMethod: TRAVEL_METHODS.AIRCRAFT,
+    TRAVEL_METHODS,
     travelMethods: Object.values(TRAVEL_METHODS),
   }),
   computed: {
@@ -130,6 +150,15 @@ export default {
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
+    updateFromTravelMethod(value) {
+      this.fromTravelMethod = value
+
+      if (value === TRAVEL_METHODS.OTHER) {
+        this.from.transport = ""
+      } else {
+        this.from.transport = value
+      }
+    },
   },
 }
 </script>
