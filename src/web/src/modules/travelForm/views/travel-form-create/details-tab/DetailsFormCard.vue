@@ -81,7 +81,10 @@
         <div v-else>Trip type {{ tripType }} not implemented!</div>
 
         <v-row>
-          <v-col cols="12" md="1">
+          <v-col
+            cols="12"
+            md="1"
+          >
             <v-text-field
               v-model="request.travelDuration"
               :rules="[required, isNumber]"
@@ -92,7 +95,10 @@
               required
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="request.daysOffTravelStatus"
               :rules="[required, isNumber]"
@@ -103,9 +109,13 @@
               outlined
             ></v-text-field>
           </v-col>
-          <v-col cols="12" md="3">
+          <v-col
+            cols="12"
+            md="3"
+          >
             <DatePicker
               v-model="request.dateBackToWork"
+              :min="finalDestination.departureDate"
               :rules="[required]"
               text="Expected Date return to work"
               required
@@ -119,7 +129,7 @@
 
 <script>
 import { mapState } from "vuex"
-import { isEmpty } from "lodash"
+import { isEmpty, last } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
@@ -159,6 +169,9 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["request"]),
+    finalDestination() {
+      return last(this.request.stops) || {}
+    },
   },
   async mounted() {
     if (isEmpty(this.request.accommodationType)) {
