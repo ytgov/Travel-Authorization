@@ -96,7 +96,7 @@ export default {
   data: () => ({
     required: (v) => !!v || "This field is required",
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
-    estimatedCost: 1230.45, // TODO: figure out what would be required to generate this value
+    estimatedCost: 1234567.89, // TODO: figure out what would be required to generate this value
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
   }),
