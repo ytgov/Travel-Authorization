@@ -235,7 +235,8 @@ export default {
     } else if (this.request.stops.length === 1) {
       this.request.stops.push({})
     } else if (this.request.stops.length > 2) {
-      this.request.stops = this.request.stops.slice(0, 2)
+      const elementsToRemove = this.request.stops.length - 2;
+      this.request.stops.splice(1, elementsToRemove);
     }
   },
   methods: {
