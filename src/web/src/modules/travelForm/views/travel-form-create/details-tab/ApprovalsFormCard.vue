@@ -95,9 +95,7 @@ export default {
     estimatedCost: 1230.45, // TODO: figure out what would be required to generate this value
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
-    supervisors: [],
-    action: "",
-    actions: [],
+    supervisors: [], // TODO: figure out what would be required to generate this value
   }),
   computed: {
     ...mapState("travelForm", ["request", "currentUser", "loadingCurrentUser"]),
