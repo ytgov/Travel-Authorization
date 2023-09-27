@@ -186,6 +186,7 @@ import { isArray, isEmpty } from "lodash"
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 
+// TODO: abstract this to a shared helper
 const TRAVEL_METHODS = Object.freeze({
   AIRCRAFT: "Aircraft",
   POOL_VEHICLE: "Pool Vehicle",

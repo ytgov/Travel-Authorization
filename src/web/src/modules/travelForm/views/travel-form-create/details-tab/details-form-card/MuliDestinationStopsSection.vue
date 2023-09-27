@@ -60,7 +60,7 @@
         md="2"
       >
         <v-select
-          v-model="stop1.transport"
+          :value="stop1TravelMethod"
           :items="travelMethods"
           :rules="[required]"
           label="Travel Method"
@@ -69,7 +69,23 @@
           persistent-hint
           required
           outlined
+          @change="updateStop1TravelMethod"
         ></v-select>
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          v-if="stop1TravelMethod === TRAVEL_METHODS.OTHER"
+          v-model="stop1.transport"
+          :rules="[required]"
+          label="Travel Method - Other:"
+          background-color="white"
+          dense
+          outlined
+          required
+        ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
@@ -132,7 +148,7 @@
         md="2"
       >
         <v-select
-          v-model="stop2.transport"
+          :value="stop2TravelMethod"
           :items="travelMethods"
           :rules="[required]"
           label="Travel Method"
@@ -141,7 +157,23 @@
           persistent-hint
           required
           outlined
+          @change="updateStop2TravelMethod"
         ></v-select>
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          v-if="stop2TravelMethod === TRAVEL_METHODS.OTHER"
+          v-model="stop2.transport"
+          :rules="[required]"
+          label="Travel Method - Other:"
+          background-color="white"
+          dense
+          outlined
+          required
+        ></v-text-field>
       </v-col>
     </v-row>
     <v-row>
@@ -204,7 +236,7 @@
         md="2"
       >
         <v-select
-          v-model="stop3.transport"
+          :value="stop3TravelMethod"
           :items="travelMethods"
           :rules="[required]"
           label="Travel Method"
@@ -213,7 +245,23 @@
           persistent-hint
           required
           outlined
+          @change="updateStop3TravelMethod"
         ></v-select>
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          v-if="stop3TravelMethod === TRAVEL_METHODS.OTHER"
+          v-model="stop3.transport"
+          :rules="[required]"
+          label="Travel Method - Other:"
+          background-color="white"
+          dense
+          outlined
+          required
+        ></v-text-field>
       </v-col>
     </v-row>
   </div>
@@ -226,11 +274,14 @@ import { isArray, isEmpty } from "lodash"
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 
+// TODO: abstract this to a shared helper
 const TRAVEL_METHODS = Object.freeze({
-  RENTAL_VEHICLE: "Rental vehicle",
-  PERSONAL_VEHICLE: "Personal vehicle",
-  FLEET_VEHICLE: "Fleet vehicle",
-  PLANE: "Plane",
+  AIRCRAFT: "Aircraft",
+  POOL_VEHICLE: "Pool Vehicle",
+  PERSONAL_VEHICLE: "Personal Vehicle",
+  RENTAL_VEHICLE: "Rental Vehicle",
+  BUS: "Bus",
+  OTHER: "Other:",
 })
 
 export default {
@@ -241,6 +292,9 @@ export default {
   },
   data: () => ({
     required: (v) => !!v || "This field is required",
+    stop1TravelMethod: TRAVEL_METHODS.AIRCRAFT,
+    stop2TravelMethod: TRAVEL_METHODS.AIRCRAFT,
+    stop3TravelMethod: TRAVEL_METHODS.AIRCRAFT,
     TRAVEL_METHODS,
     travelMethods: Object.values(TRAVEL_METHODS),
   }),
@@ -300,6 +354,33 @@ export default {
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
+    updateStop1TravelMethod(value) {
+      this.stop1TravelMethod = value
+
+      if (value === TRAVEL_METHODS.OTHER) {
+        this.stop1.transport = ""
+      } else {
+        this.stop1.transport = value
+      }
+    },
+    updateStop2TravelMethod(value) {
+      this.stop2TravelMethod = value
+
+      if (value === TRAVEL_METHODS.OTHER) {
+        this.stop2.transport = ""
+      } else {
+        this.stop2.transport = value
+      }
+    },
+    updateStop3TravelMethod(value) {
+      this.stop3TravelMethod = value
+
+      if (value === TRAVEL_METHODS.OTHER) {
+        this.stop3.transport = ""
+      } else {
+        this.stop3.transport = value
+      }
+    },
   },
 }
 </script>
