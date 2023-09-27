@@ -1,7 +1,7 @@
 import { Router } from "express"
 
 import { checkJwt, loadUser } from "../middleware/authz.middleware"
-import FormsController from "../controllers/forms-controller"
+import { FormsController, PreApprovedTravelRequestsController } from "../controllers"
 
 export * from "./owner-router"
 export * from "./users-router"
@@ -27,5 +27,6 @@ router.get("/api/forms", FormsController.index)
 router.post("/api/forms", FormsController.create)
 router.get("/api/forms/:formId", FormsController.show)
 router.patch("/api/forms/:formId", FormsController.update)
+router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
 
 export default router
