@@ -12,6 +12,7 @@ const state = {
   destinations: [],
   request: {}, // TODO: make this name match the back-end object name.
   currentUser: {},
+  loadingCurrentUser: false,
 }
 
 const getters = {
@@ -20,8 +21,8 @@ const getters = {
       return state.destinations
     }
 
-    return state.destinations.filter((d) => d.text.endsWith('(YT)'))
-  }
+    return state.destinations.filter((d) => d.text.endsWith("(YT)"))
+  },
 }
 
 const actions = {
@@ -80,9 +81,10 @@ const actions = {
       return form
     })
   },
-  async loadUser({ commit, state }) {
-    return Promise.all([secureGet(`${USERS_URL}/me`), secureGet(`${USERS_URL}/unit`)]).then(
-      ([{ data: userData }, { data: unitData }]) => {
+  async loadCurrentUser({ commit, state }) {
+    state.loadingCurrentUser = true
+    return Promise.all([secureGet(`${USERS_URL}/me`), secureGet(`${USERS_URL}/unit`)])
+      .then(([{ data: userData }, { data: unitData }]) => {
         const user = userData.data
         commit("SET_CURRENT_USER", {
           firstName: upperFirst(user.first_name),
@@ -99,8 +101,13 @@ const actions = {
           ...state.currentUser,
         })
         return state.currentUser
-      }
-    )
+      })
+      .finally(() => {
+        state.loadingCurrentUser = false
+      })
+  },
+  async loadUser({ dispatch }) {
+    return dispatch("loadCurrentUser")
   },
   initializeForm({ commit }) {
     let form = {

@@ -33,13 +33,12 @@
         <v-select
           v-model="request.preappId"
           :items="preApprovedTravelRequests"
-          :loading="loadingPreApprovedTravelRequests"
-          :rules="[required]"
+          :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
           label="Pre-approved Travel Request?"
+          no-data-text="No pre-approvals available"
           background-color="white"
           dense
           outlined
-          required
         ></v-select>
       </v-form>
     </v-card-text>
@@ -47,8 +46,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
 import { isEmpty } from "lodash"
+import { mapActions, mapState } from "vuex"
 
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
@@ -62,7 +61,7 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("travelForm", ["request"]),
+    ...mapState("travelForm", ["request", "currentUser", "loadingCurrentUser"]),
     travelAdvanceInDollars: {
       get() {
         return Math.ceil(this.request.travelAdvanceInCents / 100.0)
@@ -73,22 +72,28 @@ export default {
     },
   },
   async mounted() {
-    await this.loadPreApprovedTravelRequests()
+    await this.loadCurrentUser().then((currentUser) => {
+      return this.loadPreApprovedTravelRequests(currentUser.department)
+    })
   },
   methods: {
-    loadPreApprovedTravelRequests() {
-      if (isEmpty(this.request.department)) {
-        console.warn(
-          "This request doesn't have an associated department ... yet? " +
-            "Consider loading the user before calling this action."
-        )
+    ...mapActions("travelForm", ["loadCurrentUser"]),
+    loadPreApprovedTravelRequests(department) {
+      // Since we can't determine if a pre-approval applies, the user doesn't get any options.
+      if (isEmpty(department)) {
+        this.preApprovedTravelRequests = []
+        return
       }
 
       this.loadingPreApprovedTravelRequests = true
       return preApprovedTravelRequestsApi
-        .list({ where: { department: this.request.department } })
+        .list({ where: { department } })
         .then(({ preApprovedTravelRequests }) => {
-          this.preApprovedTravelRequests = preApprovedTravelRequests
+          const options = preApprovedTravelRequests.map((preApprovedTravelRequest) => ({
+            text: preApprovedTravelRequest.purpose, // TODO: confirm that this is the right label
+            value: preApprovedTravelRequest.id,
+          }))
+          this.preApprovedTravelRequests = options
         })
         .finally(() => {
           this.loadingPreApprovedTravelRequests = false
