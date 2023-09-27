@@ -91,7 +91,7 @@ export default {
           this.preApprovedTravelRequests = preApprovedTravelRequests
         })
         .finally(() => {
-          this.loadingPreApprovedTravelRequests = true
+          this.loadingPreApprovedTravelRequests = false
         })
     },
   },
