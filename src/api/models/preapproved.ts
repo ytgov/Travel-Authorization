@@ -1,3 +1,5 @@
+import { groupBy } from "lodash"
+
 import db from "../db/db-client"
 
 import BaseModel from "./base-model"
@@ -46,9 +48,28 @@ export class Preapproved extends BaseModel {
     this.preTSubID = attributes.preTSubID || null
   }
 
-  static async findAll({ where = {} }: { where?: {} }): Promise<Preapproved[]> {
-    const preApprovedTravelRequests = await db("preapproved").where(where)
-    return preApprovedTravelRequests
+  static async findAll({
+    where = {},
+    include = [],
+  }: {
+    where?: {}
+    include?: "preApprovedTravelers"[]
+  }): Promise<Preapproved[]> {
+    const preApprovedRequests = await db("preapproved").where(where)
+
+    if (include.includes("preApprovedTravelers")) {
+      const preApprovedRequestIds = preApprovedRequests.map((request) => request.preTID)
+      const preApprovedTravelersByPreApprovedRequestId = await db("preapprovedTravelers")
+        .whereIn("preTID", preApprovedRequestIds)
+        .then((traveler) => groupBy(traveler, "preTID"))
+      preApprovedRequests.forEach((request) => {
+        const preApprovedRequestId = request.preTID
+        request.preApprovedTravelers =
+          preApprovedTravelersByPreApprovedRequestId[preApprovedRequestId]
+      })
+    }
+
+    return preApprovedRequests
   }
 }
 
