@@ -69,11 +69,20 @@ const actions = {
       return destinations
     })
   },
-  async loadForms({ commit }, params) {
-    return formsApi.list(params).then(({ forms, totalCount }) => {
-      commit("SET_MYFORMS", forms)
-      return { forms, totalCount }
-    })
+  async loadForms({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
+    const userId =
+      state.currentUser.id || (await dispatch("loadCurrentUser").then((user) => user.id))
+    return formsApi
+      .list({
+        page,
+        perPage,
+        ...otherParams,
+        where: { userId },
+      })
+      .then(({ forms, totalCount }) => {
+        commit("SET_MYFORMS", forms)
+        return { forms, totalCount }
+      })
   },
   loadForm({ commit }, formId) {
     return formsApi.get(formId).then(({ form }) => {
@@ -87,6 +96,7 @@ const actions = {
       .then(([{ data: userData }, { data: unitData }]) => {
         const user = userData.data
         commit("SET_CURRENT_USER", {
+          id: user.id,
           firstName: upperFirst(user.first_name),
           lastName: upperFirst(user.last_name),
           email: user.email,

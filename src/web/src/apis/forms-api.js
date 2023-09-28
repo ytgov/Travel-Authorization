@@ -1,8 +1,10 @@
 import http from "@/apis/http-client"
 
 export const formsApi = {
-  list(params = {}) {
-    return http.get("/api/forms", { params }).then(({ data }) => data)
+  list({ where, page, perPage, ...otherParams } = {}) {
+    return http
+      .get("/api/forms", { params: { where, page, perPage, ...otherParams } })
+      .then(({ data }) => data)
   },
   get(formId, params = {}) {
     return http.get(`/api/forms/${formId}`, { params }).then(({ data }) => data)

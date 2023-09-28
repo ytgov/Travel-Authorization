@@ -14,8 +14,9 @@ const auditService = new AuditService()
 
 export class FormsController extends BaseController {
   index() {
+    const where = this.query.where
     return Form.findAndCountAll({
-      where: { userId: this.currentUser.id },
+      where,
       include: ["stops", "purpose"],
       limit: this.pagination.limit,
       offset: this.pagination.offset,
