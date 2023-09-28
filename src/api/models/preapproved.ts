@@ -3,6 +3,7 @@ import { groupBy } from "lodash"
 import db from "../db/db-client"
 
 import BaseModel from "./base-model"
+import PreapprovedTraveler from "./preapproved-traveler"
 
 export class Preapproved extends BaseModel {
   preTID: number
@@ -21,6 +22,9 @@ export class Preapproved extends BaseModel {
   location: string
   status: string | null
   preTSubID: number | null
+
+  // Associations
+  preApprovedTravelers: PreapprovedTraveler[]
 
   constructor(
     attributes: Pick<
@@ -46,6 +50,9 @@ export class Preapproved extends BaseModel {
     this.location = attributes.location
     this.status = attributes.status || null
     this.preTSubID = attributes.preTSubID || null
+
+    // Associations
+    this.preApprovedTravelers = []
   }
 
   static async findAll({
@@ -59,17 +66,22 @@ export class Preapproved extends BaseModel {
     limit?: number
     offset?: number
   } = {}): Promise<Preapproved[]> {
-    const preApprovedRequests = await db("preapproved").where(where).limit(limit).offset(offset)
+    const preApprovedRequests = await db<Preapproved>("preapproved")
+      .where(where)
+      .limit(limit)
+      .offset(offset)
 
     if (include.includes("preApprovedTravelers")) {
       const preApprovedRequestIds = preApprovedRequests.map((request) => request.preTID)
-      const preApprovedTravelersByPreApprovedRequestId = await db("preapprovedTravelers")
+      const preApprovedTravelersByPreApprovedRequestId = await db<PreapprovedTraveler>(
+        "preapprovedTravelers"
+      )
         .whereIn("preTID", preApprovedRequestIds)
         .then((traveler) => groupBy(traveler, "preTID"))
       preApprovedRequests.forEach((request) => {
         const preApprovedRequestId = request.preTID
         request.preApprovedTravelers =
-          preApprovedTravelersByPreApprovedRequestId[preApprovedRequestId]
+          preApprovedTravelersByPreApprovedRequestId[preApprovedRequestId] || []
       })
     }
 
