@@ -51,11 +51,15 @@ export class Preapproved extends BaseModel {
   static async findAll({
     where = {},
     include = [],
+    limit = 10,
+    offset = 0,
   }: {
     where?: {}
     include?: "preApprovedTravelers"[]
-  }): Promise<Preapproved[]> {
-    const preApprovedRequests = await db("preapproved").where(where)
+    limit?: number
+    offset?: number
+  } = {}): Promise<Preapproved[]> {
+    const preApprovedRequests = await db("preapproved").where(where).limit(limit).offset(offset)
 
     if (include.includes("preApprovedTravelers")) {
       const preApprovedRequestIds = preApprovedRequests.map((request) => request.preTID)

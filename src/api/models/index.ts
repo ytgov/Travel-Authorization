@@ -1,5 +1,6 @@
 export * from "./auth"
 export * from "./form"
+export * from "./preapproved-traveler"
 export * from "./preapproved"
 export * from "./stop"
 export * from "./travel-purpose"
