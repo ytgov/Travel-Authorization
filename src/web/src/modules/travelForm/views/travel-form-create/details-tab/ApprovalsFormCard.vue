@@ -131,7 +131,6 @@ export default {
         .list({ where: { department } })
         .then(({ preApprovedTravelRequests }) => {
           const flatRequests = this.flattenRequests(preApprovedTravelRequests)
-          console.log("flatRequests:", flatRequests)
           const options = flatRequests.map((request) => {
             const text = isEmpty(request.fullName)
               ? `${request.purpose} - ${request.month}`
