@@ -4,7 +4,7 @@ import { PreapprovedTraveler } from "../models"
 
 export class PreApprovedTravelersController extends BaseController {
   index() {
-    const where = this.params.where
+    const where = this.query.where
     return PreapprovedTraveler.findAll({ where, include: ['preApprovedRequest'] }).then((preApprovedTravelers) => {
       return this.response.json({ preApprovedTravelers })
     })
