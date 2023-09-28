@@ -1,7 +1,7 @@
 import { groupBy, isNil, keyBy } from "lodash"
 
 import db from "../db/db-client"
-import BaseModel, { CountResult } from "./base-model"
+import BaseModel from "./base-model"
 import TravelPurpose from "./travel-purpose"
 
 // These are a best guess, database values may not match this list.
@@ -63,11 +63,18 @@ export interface FormRecord {
 interface Form extends FormRecord {}
 
 class Form extends BaseModel {
-  static async count({ where = {} }: { where?: {} }): Promise<CountResult> {
+  static async count({ where = {} }: { where?: {} }): Promise<number> {
     return db("forms")
       .where(where)
       .count({ count: "*" })
-      .then((result) => result[0].count)
+      .then((results) => {
+        const result = results[0]
+        if (result === undefined) return 0
+        if (result.count === undefined) return 0
+        if (typeof result.count === "number") return result.count
+
+        return parseInt(result.count)
+      })
   }
 
   static async findAndCountAll({
@@ -80,7 +87,7 @@ class Form extends BaseModel {
     include?: ("stops" | "purpose")[]
     limit?: number
     offset?: number
-  }): Promise<{ count: CountResult; rows: Form[] }> {
+  }): Promise<{ count: number; rows: Form[] }> {
     const count = await this.count({ where })
     const forms = await this.findAll({ where, include, limit, offset })
     return { count, rows: forms }

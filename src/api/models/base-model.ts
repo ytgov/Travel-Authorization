@@ -1,7 +1,5 @@
-export type CountResult = string | number | undefined
-
 export class BaseModel {
-  static count({ where = {} }: { where?: {} } = {}): Promise<CountResult> {
+  static count({ where = {} }: { where?: {} } = {}): Promise<number> {
     throw new Error("Method not implemented.")
   }
 
@@ -15,7 +13,7 @@ export class BaseModel {
     include?: string[]
     limit?: number
     offset?: number
-  } = {}): Promise<{ count: CountResult; rows: any[] }> {
+  } = {}): Promise<{ count: number; rows: any[] }> {
     throw new Error("Method not implemented.")
   }
 
