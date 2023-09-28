@@ -107,10 +107,18 @@ export default {
         return
       }
 
+      this.loading = true
       this.request.status = "Submitted"
-      return this.create(this.request).catch((error) => {
-        this.$snack(error.response.message, { color: "error" })
-      })
+      return this.create(this.request)
+        .then(() => {
+          this.$router.push({ name: "TravelFormList" })
+        })
+        .catch((error) => {
+          this.$snack(error.response.message, { color: "error" })
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     saveForm() {
       if (!this.$refs.form.validate()) {
@@ -118,10 +126,18 @@ export default {
         return
       }
 
+      this.loading = true
       this.request.status = "Draft"
-      return this.create(this.request).catch((error) => {
-        this.$snack(error.response.message, { color: "error" })
-      })
+      return this.create(this.request)
+        .then(() => {
+          this.$router.push({ name: "TravelFormList" })
+        })
+        .catch((error) => {
+          this.$snack(error.response.message, { color: "error" })
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed

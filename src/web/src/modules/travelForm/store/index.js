@@ -70,9 +70,9 @@ const actions = {
     })
   },
   async loadForms({ commit }, params) {
-    return formsApi.list(params).then(({ forms, pageCount }) => {
+    return formsApi.list(params).then(({ forms, totalCount }) => {
       commit("SET_MYFORMS", forms)
-      return { forms, pageCount }
+      return { forms, totalCount }
     })
   },
   loadForm({ commit }, formId) {

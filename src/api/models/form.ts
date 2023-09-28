@@ -1,7 +1,7 @@
-import { groupBy, isEmpty, isNil, keyBy } from "lodash"
+import { groupBy, isNil, keyBy } from "lodash"
 
 import db from "../db/db-client"
-import BaseModel from "./base-model"
+import BaseModel, { CountResult } from "./base-model"
 import TravelPurpose from "./travel-purpose"
 
 // These are a best guess, database values may not match this list.
@@ -63,6 +63,29 @@ export interface FormRecord {
 interface Form extends FormRecord {}
 
 class Form extends BaseModel {
+  static async count({ where = {} }: { where?: {} }): Promise<CountResult> {
+    return db("forms")
+      .where(where)
+      .count({ count: "*" })
+      .then((result) => result[0].count)
+  }
+
+  static async findAndCountAll({
+    where = {},
+    include = [],
+    limit = 10,
+    offset = 0,
+  }: {
+    where?: {}
+    include?: ("stops" | "purpose")[]
+    limit?: number
+    offset?: number
+  }): Promise<{ count: CountResult; rows: Form[] }> {
+    const count = await this.count({ where })
+    const forms = await this.findAll({ where, include, limit, offset })
+    return { count, rows: forms }
+  }
+
   // OPINION: If this is slow, switch to an ORM like Sequelize,
   // it would be a better use of time than optimising this.
   static async findAll({

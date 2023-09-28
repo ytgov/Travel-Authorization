@@ -20,7 +20,7 @@
           :items="myForms"
           :items-per-page.sync="perPage"
           :page.sync="page"
-          :page-count.sync="pageCount"
+          :server-items-length="totalCount"
           class="elevation-2"
           @click:row="goToFormDetails"
         >
@@ -69,7 +69,7 @@ export default {
     ],
     perPage: 10,
     page: 1,
-    pageCount: 1,
+    totalCount: 1,
   }),
   async mounted() {
     await this.refreshForms()
@@ -80,8 +80,8 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadForms"]),
     refreshForms() {
-      return this.loadForms({ page: this.page, perPage: this.perPage }).then(({ pageCount }) => {
-        this.pageCount = pageCount
+      return this.loadForms({ page: this.page, perPage: this.perPage }).then(({ totalCount }) => {
+        this.totalCount = totalCount
       })
     },
     goToFormDetails(form) {

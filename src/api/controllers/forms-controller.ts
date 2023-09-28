@@ -14,15 +14,15 @@ const auditService = new AuditService()
 
 export class FormsController extends BaseController {
   index() {
-    return Form.findAll({
+    return Form.findAndCountAll({
       where: { userId: this.currentUser.id },
       include: ["stops", "purpose"],
       limit: this.pagination.limit,
       offset: this.pagination.offset,
-    }).then((forms) => {
+    }).then(({ rows: forms, count }) => {
       const scopedForms = FormsPolicy.scope(forms, this.currentUser)
       const serializedForms = FormSerializer.asTable(scopedForms)
-      return this.response.json({ forms: serializedForms })
+      return this.response.json({ forms: serializedForms, totalCount: count })
     })
   }
 
