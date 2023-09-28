@@ -90,7 +90,7 @@ const actions = {
           firstName: upperFirst(user.first_name),
           lastName: upperFirst(user.last_name),
           email: user.email,
-          department: unitData.department,
+          department: user.department || unitData.department,
           division: unitData.division,
           branch: unitData.branch,
           unit: unitData.unit,
