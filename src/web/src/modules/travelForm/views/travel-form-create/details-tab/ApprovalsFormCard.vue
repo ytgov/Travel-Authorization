@@ -112,9 +112,10 @@ export default {
     },
   },
   async mounted() {
-    await this.loadCurrentUser().then((currentUser) => {
-      return this.loadPreApprovedTravelRequests(currentUser.department)
-    })
+    const department = !isEmpty(this.currentUser.department)
+      ? this.currentUser.department
+      : await this.loadCurrentUser().then((user) => user.department)
+    return this.loadPreApprovedTravelRequests(department)
   },
   methods: {
     ...mapActions("travelForm", ["loadCurrentUser"]),
