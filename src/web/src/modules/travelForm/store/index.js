@@ -27,6 +27,9 @@ const getters = {
 
     return state.destinations.filter((d) => d.text.endsWith("(YT)"))
   },
+  currentFormId(state) {
+    return state.currentForm.id
+  },
 }
 
 const actions = {
@@ -121,7 +124,7 @@ const actions = {
         })
         commit("SET_FORM", {
           ...state.request,
-          ...omit(state.currentUser, 'id'),
+          ...omit(state.currentUser, "id"),
         })
         return state.currentUser
       })

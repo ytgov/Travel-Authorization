@@ -118,10 +118,7 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["currentForm", "purposes"]),
-    ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
-    currentFormId() {
-      return this.currentForm.id
-    },
+    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
         return last(this.currentForm.stops) || { formId: this.currentFormId }

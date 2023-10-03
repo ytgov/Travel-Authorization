@@ -211,9 +211,9 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["currentForm"]),
-    ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
     from() {
-      if (isEmpty(this.currentForm?.stops)) return {}
+      if (isEmpty(this.currentForm?.stops)) return this.newStop()
 
       return this.currentForm.stops[0]
     },
@@ -222,7 +222,7 @@ export default {
         isEmpty(this.currentForm?.stops) ||
         (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
       )
-        return {}
+        return this.newStop()
 
       return this.currentForm.stops[1]
     },
@@ -231,16 +231,19 @@ export default {
     await this.loadDestinations()
 
     if (isEmpty(this.currentForm.stops)) {
-      this.currentForm.stops = [{}, {}]
+      this.currentForm.stops = [this.newStop(), this.newStop()]
     } else if (this.currentForm.stops.length === 1) {
-      this.currentForm.stops.push({})
+      this.currentForm.stops.push(this.newStop())
     } else if (this.currentForm.stops.length > 2) {
-      const elementsToRemove = this.currentForm.stops.length - 2;
-      this.currentForm.stops.splice(1, elementsToRemove);
+      const elementsToRemove = this.currentForm.stops.length - 2
+      this.currentForm.stops.splice(1, elementsToRemove)
     }
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
+    newStop() {
+      return { formId: this.currentFormId }
+    },
     updateFromTravelMethod(value) {
       this.fromTravelMethod = value
 
