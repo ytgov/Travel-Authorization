@@ -48,7 +48,7 @@
             md="6"
           >
             <v-select
-              v-model="request.preappId"
+              v-model="currentForm.preappId"
               :items="preApprovedTravelRequests"
               :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
               label="Pre-approved Travel Request?"
@@ -65,7 +65,7 @@
             md="3"
           >
             <SearchableUserEmailCombobox
-              v-model="request.supervisorEmail"
+              v-model="currentForm.supervisorEmail"
               :rules="[required]"
               label="Submit to"
               background-color="white"
@@ -101,13 +101,13 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("travelForm", ["request", "currentUser", "loadingCurrentUser"]),
+    ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
     travelAdvanceInDollars: {
       get() {
-        return Math.ceil(this.request.travelAdvanceInCents / 100.0)
+        return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
       },
       set(value) {
-        this.request.travelAdvanceInCents = Math.ceil(value * 100)
+        this.currentForm.travelAdvanceInCents = Math.ceil(value * 100)
       },
     },
   },
