@@ -8,19 +8,12 @@ import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
 
 export class FormsSerivce {
-  static async create(attributes: Form, currentUser: User): Promise<Form> {
-    const stops = attributes.stops || []
-    delete attributes.stops
-
-    const expenses = attributes.expenses
-    delete attributes.expenses
-
-    const estimates = attributes.estimates
-    delete attributes.estimates
-
+  static async create(
+    { stops = [], expenses, estimates, ...attributes }: Form,
+    currentUser: User
+  ): Promise<Form> {
     attributes.userId = currentUser.id
-
-    // Not sure if this is correct, but I can't find any that generates the formId.
+    // Not sure if this is correct, but I can't find anything that generates the formId elsewhere
     if (isNil(attributes.formId)) {
       attributes.formId = uuid()
     }

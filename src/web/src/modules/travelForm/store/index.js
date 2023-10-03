@@ -27,7 +27,6 @@ const getters = {
 
 const actions = {
   async initialize(store) {
-    await store.dispatch("initializeForm")
     await store.dispatch("loadDepartments")
     await store.dispatch("loadPurposes")
     await store.dispatch("loadDestinations")
@@ -118,49 +117,6 @@ const actions = {
   },
   async loadUser({ dispatch }) {
     return dispatch("loadCurrentUser")
-  },
-  initializeForm({ commit }) {
-    let form = {
-      //personal info
-      firstName: "",
-      lastName: "",
-      department: "",
-      division: "",
-      branch: "",
-      unit: "",
-      email: "",
-      mailcode: "",
-      supervisorEmail: "",
-      multiStop: false,
-      oneWayTrip: false,
-
-      //stops
-      stops: [
-        {
-          locationId: -1,
-          departureDate: "",
-          departureTime: "12:00",
-          transport: "",
-        },
-      ],
-
-      //travel details
-      travelDuration: "1",
-      daysOffTravelStatus: "0",
-      dateBackToWork: "",
-      travelAdvanceInCents: 0,
-      purposeId: -1,
-      eventName: "",
-      summary: "",
-      benefits: "",
-
-      //other info
-      status: "",
-      requestChange: "",
-      denialReason: "",
-    }
-
-    commit("SET_FORM", form)
   },
   async getAll() {
     return secureGet(FORM_URL).then((resp) => {

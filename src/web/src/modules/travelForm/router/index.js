@@ -12,8 +12,9 @@ const routes = [
         component: () => import("../views/TravelFormList")
       },
       {
-        path: "create",
-        component: () => import("../views/TravelFormCreate"),
+        path: ":formId",
+        component: () => import("../views/TravelFormEdit"),
+        props: true,
         children: [
           {
             path: "",
@@ -21,24 +22,15 @@ const routes = [
           },
           {
             path: "details",
-            name: "TravelFormCreate-DetailsTab",
-            component: () => import("../views/travel-form-create/DetailsTab"),
+            name: "TravelFormEdit-DetailsTab",
+            component: () => import("../views/travel-form-edit/DetailsTab"),
           },
           {
             path: "estimate",
-            name: "TravelFormCreate-EstimateTab",
-            component: () => import("../views/travel-form-create/EstimateTab"),
+            name: "TravelFormEdit-EstimateTab",
+            component: () => import("../views/travel-form-edit/EstimateTab"),
           }
         ]
-      },
-      {
-        name: "TravelFormEdit",
-        path: ":formId",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/TravelFormEdit"),
-        props: true,
       },
       {
         name: "TravelFormManagerList",
