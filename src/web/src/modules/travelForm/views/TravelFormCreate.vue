@@ -24,12 +24,12 @@
     <SummaryHeaderForm />
 
     <v-tabs v-model="tab">
+      <v-tab :to="{ name: 'TravelFormCreate-DetailsTab' }">Details</v-tab>
       <v-tab
-        :to="{ name: 'TravelFormCreate-DetailsTab' }"
+        :to="{ name: 'TravelFormCreate-EstimateTab' }"
         @click="resetActiveState"
-        >Details</v-tab
+        >Estimate</v-tab
       >
-      <v-tab>Estimate - TODO</v-tab>
       <v-tab>Request - TODO</v-tab>
       <v-tab>Itinerary - TODO</v-tab>
       <v-tab>Expense - TODO</v-tab>
@@ -142,7 +142,7 @@ export default {
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
     resetActiveState() {
-      this.tab = null
+      this.tab = this.$route.path
     },
   },
 }

@@ -23,6 +23,11 @@ const routes = [
             path: "details",
             name: "TravelFormCreate-DetailsTab",
             component: () => import("../views/travel-form-create/DetailsTab"),
+          },
+          {
+            path: "estimate",
+            name: "TravelFormCreate-EstimateTab",
+            component: () => import("../views/travel-form-create/EstimateTab"),
           }
         ]
       },
