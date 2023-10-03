@@ -121,33 +121,33 @@ export default {
     travelMethods: Object.values(TRAVEL_METHODS),
   }),
   computed: {
-    ...mapState("travelForm", ["request"]),
+    ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
     from() {
-      if (isEmpty(this.request?.stops)) return {}
+      if (isEmpty(this.currentForm?.stops)) return {}
 
-      return this.request.stops[0]
+      return this.currentForm.stops[0]
     },
     to() {
       if (
-        isEmpty(this.request?.stops) ||
-        (isArray(this.request?.stops) && this.request.stops.length < 2)
+        isEmpty(this.currentForm?.stops) ||
+        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
       )
         return {}
 
-      return this.request.stops[1]
+      return this.currentForm.stops[1]
     },
   },
   async mounted() {
     await this.loadDestinations()
 
-    if (isEmpty(this.request.stops)) {
-      this.request.stops = [{}, {}]
-    } else if (this.request.stops.length === 1) {
-      this.request.stops.push({})
-    } else if (this.request.stops.length > 2) {
-      const elementsToRemove = this.request.stops.length - 2;
-      this.request.stops.splice(1, elementsToRemove);
+    if (isEmpty(this.currentForm.stops)) {
+      this.currentForm.stops = [{}, {}]
+    } else if (this.currentForm.stops.length === 1) {
+      this.currentForm.stops.push({})
+    } else if (this.currentForm.stops.length > 2) {
+      const elementsToRemove = this.currentForm.stops.length - 2;
+      this.currentForm.stops.splice(1, elementsToRemove);
     }
   },
   methods: {
