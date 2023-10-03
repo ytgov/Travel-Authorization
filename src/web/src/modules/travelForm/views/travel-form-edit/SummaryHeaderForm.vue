@@ -83,12 +83,6 @@ export default {
   components: {
     DatePicker,
   },
-  props: {
-    formId: {
-      type: Number,
-      required: true,
-    },
-  },
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
@@ -103,9 +97,12 @@ export default {
       "destinationsByCurrentFormTravelRestriction",
     ]),
     ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
+    currentFormId() {
+      return this.currentForm.id
+    },
     finalDestination: {
       get() {
-        return last(this.currentForm.stops) || { formId: this.formId }
+        return last(this.currentForm.stops) || { formId: this.currentFormId }
       },
       set(newValue) {
         this.$set(this.currentForm.stops, this.currentForm.stops.length - 1, newValue)
@@ -113,7 +110,7 @@ export default {
     },
     initialDestination: {
       get() {
-        return first(this.currentForm.stops) || { formId: this.formId }
+        return first(this.currentForm.stops) || { formId: this.currentFormId }
       },
       set(newValue) {
         this.$set(this.currentForm.stops, 0, newValue)

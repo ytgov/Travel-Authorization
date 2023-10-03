@@ -22,7 +22,7 @@
     </h1>
 
     <template v-if="!loadingCurrentForm">
-      <SummaryHeaderForm :form-id="formIdAsNumber" />
+      <SummaryHeaderForm />
     </template>
 
     <v-tabs v-model="tab">
@@ -96,9 +96,6 @@ export default {
       "loadingCurrentForm",
       "loadingCurrentUser",
     ]),
-    formIdAsNumber() {
-      return parseInt(this.formId)
-    },
   },
   mounted() {
     return Promise.all([this.loadAsCurrentForm(this.formId), this.loadCurrentUser()])
