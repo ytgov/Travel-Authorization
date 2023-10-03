@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-overlay :value="loadingForm">
+    <v-overlay :value="loadingCurrentForm">
       <v-progress-circular
         indeterminate
         color="#f3b228"
@@ -15,13 +15,13 @@
     <h1>
       Travel -
       <v-progress-circular
-        v-if="loadingUser"
+        v-if="loadingCurrentUser"
         indeterminate
       ></v-progress-circular>
       <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
     </h1>
 
-    <template v-if="!loadingForm">
+    <template v-if="!loadingCurrentForm">
       <SummaryHeaderForm />
     </template>
 
@@ -41,7 +41,7 @@
       ref="form"
       lazy-validation
     >
-      <template v-if="!loadingForm">
+      <template v-if="!loadingCurrentForm">
         <router-view></router-view>
       </template>
       <div>
@@ -87,47 +87,37 @@ export default {
     },
   },
   data: () => ({
-    loadingForm: true,
-    loadingUser: false,
     tab: null,
   }),
   computed: {
-    ...mapState("travelForm", ["request", "currentUser"]),
+    ...mapState("travelForm", [
+      "currentForm",
+      "currentUser",
+      "loadingCurrentForm",
+      "loadingCurrentUser",
+    ]),
     formIdAsNumber() {
       return parseInt(this.formId)
     },
   },
   async mounted() {
-    this.loadingForm = true
-    this.loadingUser = true
-    return Promise.all([
-      this.loadForm(this.formId).finally(() => {
-        this.loadingForm = false
-      }),
-      this.loadUser().finally(() => {
-        this.loadingUser = false
-      }),
-    ])
+    return Promise.all([this.loadCurrentForm(this.formId), this.loadCurrentUser()])
   },
   methods: {
-    ...mapActions("travelForm", ["loadForm", "create", "loadUser"]),
+    ...mapActions("travelForm", ["loadCurrentForm", "update", "loadCurrentUser"]),
     submitForm() {
       if (!this.$refs.form.validate()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
         return
       }
 
-      this.loadingForm = true
-      this.request.status = "Submitted"
-      return this.create(this.request)
+      this.currentForm.status = "Submitted"
+      return this.update(this.formId, this.currentForm)
         .then(() => {
           this.$router.push({ name: "TravelFormList" })
         })
         .catch((error) => {
           this.$snack(error.response.message, { color: "error" })
-        })
-        .finally(() => {
-          this.loadingForm = false
         })
     },
     saveForm() {
@@ -136,18 +126,10 @@ export default {
         return
       }
 
-      this.loadingForm = true
-      this.request.status = "Draft"
-      return this.create(this.request)
-        .then(() => {
-          this.$router.push({ name: "TravelFormList" })
-        })
-        .catch((error) => {
-          this.$snack(error.response.message, { color: "error" })
-        })
-        .finally(() => {
-          this.loadingForm = false
-        })
+      this.currentForm.status = "Draft"
+      return this.update(this.formId, this.currentForm).catch((error) => {
+        this.$snack(error.response.message, { color: "error" })
+      })
     },
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed

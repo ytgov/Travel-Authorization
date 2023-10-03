@@ -1,7 +1,7 @@
 import { isString, upperFirst } from "lodash"
 
 import { FORM_URL, LOOKUP_URL, DESTINATION_URL, USERS_URL } from "@/urls"
-import { secureGet, securePost, securePut } from "@/store/jwt"
+import { secureGet, securePost } from "@/store/jwt"
 import formsApi from "@/apis/forms-api"
 
 const state = {
@@ -10,10 +10,14 @@ const state = {
   departments: [],
   purposes: [],
   destinations: [],
-  request: {}, // TODO: make this name match the back-end object name.
+  currentForm: {},
   currentUser: {},
-  loadingCurrentUser: false,
+  loadingCurrentUser: true,
+  loadingCurrentForm: true,
 }
+
+// Shim to support refering to form as request for legacy code
+state.request = state.currentForm
 
 const getters = {
   destinationsByRequestTravelRestriction(state) {
@@ -83,13 +87,22 @@ const actions = {
         return { forms, totalCount }
       })
   },
-  loadForm({ commit }, formId) {
-    return formsApi.get(formId).then(({ form }) => {
-      commit("SET_FORM", form)
-      return form
-    })
+  loadCurrentForm({ commit, state }, formId) {
+    state.loadingCurrentForm = true
+    return formsApi
+      .get(formId)
+      .then(({ form }) => {
+        commit("SET_FORM", form)
+        return form
+      })
+      .finally(() => {
+        state.loadingCurrentForm = false
+      })
   },
-  async loadCurrentUser({ commit, state }) {
+  loadForm({ dispatch }, formId) {
+    return dispatch("loadCurrentForm", formId)
+  },
+  loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true
     return Promise.all([secureGet(`${USERS_URL}/me`), secureGet(`${USERS_URL}/unit`)])
       .then(([{ data: userData }, { data: unitData }]) => {
@@ -115,34 +128,44 @@ const actions = {
         state.loadingCurrentUser = false
       })
   },
-  async loadUser({ dispatch }) {
+  loadUser({ dispatch }) {
     return dispatch("loadCurrentUser")
   },
-  async getAll() {
+  getAll() {
     return secureGet(FORM_URL).then((resp) => {
       return resp.data.data
     })
   },
-  async getById(store, { id }) {
+  getById(store, { id }) {
     return secureGet(`${FORM_URL}/${id}`).then((resp) => {
       return resp.data.data
     })
   },
-  create({ commit }, attributes) {
-    return formsApi.create(attributes).then(({ form }) => {
-      commit("SET_FORM", form)
-      return form
-    })
+  create({ commit, state }, attributes) {
+    state.loadingCurrentForm = true
+    return formsApi
+      .create(attributes)
+      .then(({ form }) => {
+        commit("SET_FORM", form)
+        return form
+      })
+      .finally(() => {
+        state.loadingCurrentForm = false
+      })
   },
-  async update(store, { item }) {
-    let id = item.id
-    console.log(item)
-
-    return securePut(`${FORM_URL}/${id}`, item).then((resp) => {
-      return resp.data
-    })
+  update({ commit, state }, [formId, attributes]) {
+    state.loadingCurrentForm = true
+    return formsApi
+      .update(formId, attributes)
+      .then(({ form }) => {
+        commit("SET_FORM", form)
+        return form
+      })
+      .finally(() => {
+        state.loadingCurrentForm = false
+      })
   },
-  async delete(store, { id }) {
+  delete(store, { id }) {
     return securePost(`${FORM_URL}/${id}`).then((resp) => {
       return resp.data
     })
@@ -160,7 +183,9 @@ const mutations = {
     store.myForms = value
   },
   SET_FORM(store, value) {
-    store.request = value
+    store.currentForm = value
+    // propagates to store.request object, for legacy code
+    store.request = store.currentForm
   },
   SET_DEPARTMENTS(store, value) {
     store.departments = value
