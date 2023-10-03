@@ -9,7 +9,7 @@
         md="2"
       >
         <v-select
-          v-model="request.purposeId"
+          v-model="currentForm.purposeId"
           :items="purposes"
           :loading="loadingPurposes"
           :rules="[required]"
@@ -83,6 +83,12 @@ export default {
   components: {
     DatePicker,
   },
+  props: {
+    formId: {
+      type: Number,
+      required: true,
+    },
+  },
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
@@ -91,22 +97,26 @@ export default {
       new Date(a) >= new Date(b) || `This field must be greater than or equal to ${b || label}`,
   }),
   computed: {
-    ...mapState("travelForm", ["request", "purposes", "destinationsByRequestTravelRestriction"]),
+    ...mapState("travelForm", [
+      "currentForm",
+      "purposes",
+      "destinationsByRequestTravelRestriction",
+    ]),
     ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
     finalDestination: {
       get() {
-        return last(this.request.stops) || {}
+        return last(this.currentForm.stops) || { formId: this.formId }
       },
       set(newValue) {
-        this.$set(this.request.stops, this.request.stops.length - 1, newValue)
+        this.$set(this.currentForm.stops, this.currentForm.stops.length - 1, newValue)
       },
     },
     initialDestination: {
       get() {
-        return first(this.request.stops) || {}
+        return first(this.currentForm.stops) || { formId: this.formId }
       },
       set(newValue) {
-        this.$set(this.request.stops, 0, newValue)
+        this.$set(this.currentForm.stops, 0, newValue)
       },
     },
   },

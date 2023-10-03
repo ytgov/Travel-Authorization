@@ -22,13 +22,13 @@
     </h1>
 
     <template v-if="!loadingCurrentForm">
-      <SummaryHeaderForm />
+      <SummaryHeaderForm :form-id="formIdAsNumber" />
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'TravelFormEdit-DetailsTab' }">Details</v-tab>
+      <v-tab :to="{ name: 'TravelFormEdit-DetailsTab', params: { formId } }">Details</v-tab>
       <v-tab
-        :to="{ name: 'TravelFormEdit-EstimateTab' }"
+        :to="{ name: 'TravelFormEdit-EstimateTab', params: { formId } }"
         @click="resetActiveState"
         >Estimate</v-tab
       >
