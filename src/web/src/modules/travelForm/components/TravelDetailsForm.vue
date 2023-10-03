@@ -71,7 +71,7 @@
         <v-col cols="3">
           <v-text-field
             dense
-            v-model="request.travelAdvance"
+            v-model="travelAdvanceInDollars"
             label="Travel Advance"
             required
             background-color="white"
@@ -160,6 +160,14 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["purposes", "request"]),
+    travelAdvanceInDollars: {
+      get() {
+        return Math.ceil(this.request.travelAdvanceInCents / 100.0);
+      },
+      set(value) {
+        this.request.travelAdvanceInCents = Math.ceil(value * 100);
+      },
+    },
   },
   async mounted() {
     this.loadPurposes();

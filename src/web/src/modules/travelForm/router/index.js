@@ -4,20 +4,20 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "TravelFormManagerList",
-        path: "/managerView",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/ManagerView")
-      },
-      {
         name: "travelRequestsList",
         path: "",
         meta: {
           requiresAuth: true
         },
         component: () => import("../views/FormList")
+      },
+      {
+        name: "TravelFormManagerList",
+        path: "/managerView",
+        meta: {
+          requiresAuth: true
+        },
+        component: () => import("../views/ManagerView")
       },
       {
         name: "travelRequestCreate",
