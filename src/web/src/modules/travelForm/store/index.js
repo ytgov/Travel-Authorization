@@ -20,8 +20,8 @@ const state = {
 state.request = state.currentForm
 
 const getters = {
-  destinationsByRequestTravelRestriction(state) {
-    if (state.request.allTravelWithinTerritory !== true) {
+  destinationsByCurrentFormTravelRestriction(state) {
+    if (state.currentForm.allTravelWithinTerritory !== true) {
       return state.destinations
     }
 

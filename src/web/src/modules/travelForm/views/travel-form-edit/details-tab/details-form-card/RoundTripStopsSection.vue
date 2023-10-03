@@ -7,7 +7,7 @@
       >
         <v-autocomplete
           v-model="from.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -23,7 +23,7 @@
       >
         <v-autocomplete
           v-model="to.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -95,7 +95,7 @@
       >
         <v-autocomplete
           v-model="to.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -111,7 +111,7 @@
       >
         <v-autocomplete
           v-model="from.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -211,7 +211,7 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["request"]),
-    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
+    ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
     from() {
       if (isEmpty(this.request?.stops)) return {}
 

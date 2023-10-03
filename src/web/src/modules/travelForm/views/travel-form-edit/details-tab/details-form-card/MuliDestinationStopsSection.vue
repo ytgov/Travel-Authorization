@@ -7,7 +7,7 @@
       >
         <v-autocomplete
           v-model="stop1.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -23,7 +23,7 @@
       >
         <v-autocomplete
           v-model="stop2.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -95,7 +95,7 @@
       >
         <v-autocomplete
           v-model="stop2.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -111,7 +111,7 @@
       >
         <v-autocomplete
           v-model="stop3.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -183,7 +183,7 @@
       >
         <v-autocomplete
           v-model="stop3.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -199,7 +199,7 @@
       >
         <v-autocomplete
           v-model="stop4.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -300,7 +300,7 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["request"]),
-    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
+    ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
     stop1() {
       if (isEmpty(this.request?.stops)) return {}
 

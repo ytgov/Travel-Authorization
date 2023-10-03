@@ -28,7 +28,7 @@
       >
         <v-autocomplete
           v-model="finalDestination.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :loading="loadingDestinations"
           :rules="[required]"
           background-color="white"
@@ -100,9 +100,9 @@ export default {
     ...mapState("travelForm", [
       "currentForm",
       "purposes",
-      "destinationsByRequestTravelRestriction",
+      "destinationsByCurrentFormTravelRestriction",
     ]),
-    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
+    ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
         return last(this.currentForm.stops) || { formId: this.formId }
