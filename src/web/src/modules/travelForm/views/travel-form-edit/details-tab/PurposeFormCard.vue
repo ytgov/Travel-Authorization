@@ -20,7 +20,7 @@
                 md="6"
               >
                 <v-select
-                  v-model="request.purposeId"
+                  v-model="currentForm.purposeId"
                   :items="purposes"
                   :loading="loadingPurposes"
                   :rules="[required]"
@@ -35,7 +35,7 @@
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  v-model="request.eventName"
+                  v-model="currentForm.eventName"
                   :rules="[required]"
                   background-color="white"
                   dense
@@ -86,7 +86,7 @@
                 md="9"
               >
                 <v-textarea
-                  v-model="request.benefits"
+                  v-model="currentForm.benefits"
                   :rules="[required]"
                   auto-grow
                   background-color="white"
@@ -117,14 +117,17 @@ export default {
     required: (v) => !!v || "This field is required",
   }),
   computed: {
-    ...mapState("travelForm", ["request", "purposes"]),
+    ...mapState("travelForm", ["currentForm", "purposes"]),
     ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
+    currentFormId() {
+      return this.currentForm.id
+    },
     finalDestination: {
       get() {
-        return last(this.request.stops) || {}
+        return last(this.currentForm.stops) || { formId: this.currentFormId }
       },
       set(newValue) {
-        this.$set(this.request.stops, this.request.stops.length - 1, newValue)
+        this.$set(this.currentForm.stops, this.currentForm.stops.length - 1, newValue)
       },
     },
   },
