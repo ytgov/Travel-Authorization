@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-overlay :value="loading">
+    <v-overlay :value="loadingForm">
       <v-progress-circular
         indeterminate
         color="#f3b228"
@@ -21,7 +21,9 @@
       <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
     </h1>
 
-    <SummaryHeaderForm :form-id="formIdAsNumber" />
+    <template v-if="!loadingForm">
+      <SummaryHeaderForm />
+    </template>
 
     <v-tabs v-model="tab">
       <v-tab :to="{ name: 'TravelFormEdit-DetailsTab' }">Details</v-tab>
@@ -39,7 +41,7 @@
       ref="form"
       lazy-validation
     >
-      <template v-if="!loading">
+      <template v-if="!loadingForm">
         <router-view></router-view>
       </template>
       <div>
@@ -85,7 +87,7 @@ export default {
     },
   },
   data: () => ({
-    loading: true,
+    loadingForm: true,
     loadingUser: false,
     tab: null,
   }),
@@ -96,11 +98,11 @@ export default {
     },
   },
   async mounted() {
-    this.loading = true
+    this.loadingForm = true
     this.loadingUser = true
     return Promise.all([
       this.loadForm(this.formId).finally(() => {
-        this.loading = false
+        this.loadingForm = false
       }),
       this.loadUser().finally(() => {
         this.loadingUser = false
@@ -115,7 +117,7 @@ export default {
         return
       }
 
-      this.loading = true
+      this.loadingForm = true
       this.request.status = "Submitted"
       return this.create(this.request)
         .then(() => {
@@ -125,7 +127,7 @@ export default {
           this.$snack(error.response.message, { color: "error" })
         })
         .finally(() => {
-          this.loading = false
+          this.loadingForm = false
         })
     },
     saveForm() {
@@ -134,7 +136,7 @@ export default {
         return
       }
 
-      this.loading = true
+      this.loadingForm = true
       this.request.status = "Draft"
       return this.create(this.request)
         .then(() => {
@@ -144,7 +146,7 @@ export default {
           this.$snack(error.response.message, { color: "error" })
         })
         .finally(() => {
-          this.loading = false
+          this.loadingForm = false
         })
     },
     // This will be unnecessary once all tabs are router links
