@@ -4,12 +4,36 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "travelRequestsList",
+        name: "TravelFormList",
         path: "",
         meta: {
           requiresAuth: true
         },
-        component: () => import("../views/FormList")
+        component: () => import("../views/TravelFormList")
+      },
+      {
+        path: "create",
+        component: () => import("../views/TravelFormCreate"),
+        children: [
+          {
+            path: "",
+            redirect: "details",
+          },
+          {
+            path: "details",
+            name: "TravelFormCreate-DetailsTab",
+            component: () => import("../views/travel-form-create/DetailsTab"),
+          }
+        ]
+      },
+      {
+        name: "TravelFormEdit",
+        path: ":formId",
+        meta: {
+          requiresAuth: true
+        },
+        component: () => import("../views/TravelFormEdit"),
+        props: true,
       },
       {
         name: "TravelFormManagerList",
@@ -18,23 +42,6 @@ const routes = [
           requiresAuth: true
         },
         component: () => import("../views/ManagerView")
-      },
-      {
-        name: "travelRequestCreate",
-        path: "create",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/TravelFormCreate")
-      },
-      {
-        name: "travelRequestEdit",
-        path: ":formId",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/TravelFormEdit"),
-        props: true,
       },
       {
         name: "travelRequestManage",

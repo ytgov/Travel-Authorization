@@ -153,7 +153,7 @@ import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 
 export default {
-  name: "StopsForm",
+  name: "StopsFormEdit",
   components: {
     DatePicker,
     TimePicker,

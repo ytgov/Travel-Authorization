@@ -1,0 +1,10 @@
+travelerID,preTID,fullName,department,branch
+1,1,Alice Johnson,Finance,New York
+2,1,Bob Smith,Finance,New York
+3,2,Charlie Brown,Marketing,San Francisco
+4,3,David Williams,Engineering,Boston
+5,3,Emily Davis,Engineering,Boston
+6,3,Frank Green,Engineering,Boston
+7,4,Grace Wilson,HR,Chicago
+8,5,Henry Taylor,IT,Los Angeles
+9,5,Ivy Lee,IT,Los Angeles

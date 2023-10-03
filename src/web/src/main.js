@@ -7,6 +7,7 @@ import "./filters";
 import Notifications from "./components/Notifications";
 import MapDialog from "./components/MapDialog";
 import vuetify from "./plugins/vuetify";
+import SnackPlugin from "./plugins/snack-plugin";
 
 import { Auth0Plugin } from "./auth";
 
@@ -22,6 +23,7 @@ Vue.use(Auth0Plugin, {
     router.push(appState && appState.targetUrl ? appState.targetUrl : window.location.pathname);
   },
 });
+Vue.use(SnackPlugin);
 
 
 Vue.config.productionTip = false;

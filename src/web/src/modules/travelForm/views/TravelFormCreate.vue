@@ -1,263 +1,148 @@
 <template>
   <div>
-    <div class="text-center">
-      <v-overlay :value="loading">
-        <v-progress-circular
-          indeterminate
-          color="#f3b228"
-          :size="70"
-          :width="7"
-        ></v-progress-circular>
-      </v-overlay>
-    </div>
+    <v-overlay :value="loading">
+      <v-progress-circular
+        indeterminate
+        color="#f3b228"
+        :size="70"
+        :width="7"
+        class="text-center"
+      ></v-progress-circular>
+    </v-overlay>
 
     <Breadcrumbs />
 
+    <h1>
+      Travel -
+      <v-progress-circular
+        v-if="loadingUser"
+        indeterminate
+      ></v-progress-circular>
+      <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
+    </h1>
+
+    <SummaryHeaderForm />
+
     <v-tabs v-model="tab">
-      <v-tab>Travel Form </v-tab>
-      <v-tab>Estimates</v-tab>
-      <v-tab>Expenses</v-tab>
-      <v-tab>Trip Report</v-tab>
+      <v-tab
+        :to="{ name: 'TravelFormCreate-DetailsTab' }"
+        @click="resetActiveState"
+        >Details</v-tab
+      >
+      <v-tab>Estimate - TODO</v-tab>
+      <v-tab>Request - TODO</v-tab>
+      <v-tab>Itinerary - TODO</v-tab>
+      <v-tab>Expense - TODO</v-tab>
+      <v-tab>Reporting - TODO</v-tab>
     </v-tabs>
-    <br />
-    <v-tabs-items v-model="tab">
-      <v-tab-item>
-        <v-form
-          ref="form"
-          lazy-validation
+    <v-form
+      ref="form"
+      lazy-validation
+    >
+      <template v-if="!loading">
+        <router-view></router-view>
+      </template>
+      <div>
+        <v-btn
+          color="blue"
+          class="mr-5"
+          @click="submitForm"
         >
-          <template v-if="!loading">
-            <h1>Travel Authorization Request</h1>
-
-            <p>
-              To submit a travel authorization request, you must first complete the following 3
-              steps:
-            </p>
-
-            <v-stepper
-              v-model="stepVal"
-              vertical
-            >
-              <v-stepper-step
-                :complete="stepVal > 1"
-                step="1"
-              >
-                Enter your personal details
-              </v-stepper-step>
-
-              <v-stepper-content step="1">
-                <personal-details-form
-                  :review="review"
-                  :continue="
-                    () => {
-                      stepVal = 2
-                    }
-                  "
-                ></personal-details-form>
-              </v-stepper-content>
-
-              <v-stepper-step
-                :complete="stepVal > 2"
-                step="2"
-              >
-                Tell us about the travel
-              </v-stepper-step>
-
-              <v-stepper-content step="2">
-                <stops-form
-                  :review="review"
-                  :continue="
-                    () => {
-                      stepVal = 3
-                    }
-                  "
-                  :back="
-                    () => {
-                      stepVal = 1
-                    }
-                  "
-                ></stops-form>
-              </v-stepper-content>
-
-              <v-stepper-step
-                :complete="stepVal > 3"
-                step="3"
-              >
-                Enter details about the trip and purpose
-              </v-stepper-step>
-
-              <v-stepper-content step="3">
-                <travel-details-form
-                  :review="review"
-                  :continue="
-                    () => {
-                      stepVal = 1
-                    }
-                  "
-                  continue-title="Review"
-                  :back="
-                    () => {
-                      stepVal = 2
-                    }
-                  "
-                ></travel-details-form>
-              </v-stepper-content>
-            </v-stepper>
-          </template>
-        </v-form>
-        <div>
-          <v-btn
-            color="blue"
-            class="mr-5"
-            @click="submitForm"
-          >
-            Submit to Supervisor
-          </v-btn>
-          <v-btn
-            color="green"
-            class="mr-5"
-            @click="saveForm"
-            >Save Draft
-          </v-btn>
-          <v-btn
-            color="secondary"
-            :to="{ name: 'travelRequestsList' }"
-            >Back</v-btn
-          >
-        </div>
-        <v-snackbar
-          v-model="snackbar"
-          right
-          color="success"
+          Submit to Supervisor
+        </v-btn>
+        <v-btn
+          color="green"
+          class="mr-5"
+          @click="saveForm"
+          >Save Draft
+        </v-btn>
+        <v-btn
+          color="secondary"
+          :to="{ name: 'TravelFormList' }"
+          >Back</v-btn
         >
-          <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
-          {{ apiSuccess }}
-        </v-snackbar>
-      </v-tab-item>
-      <v-tab-item>
-        <ExpenseList
-          @reloadCost="getCostDifference"
-          title="Estimates"
-        />
-      </v-tab-item>
-      <v-tab-item>
-        <ExpenseList
-          @reloadCost="getCostDifference"
-          title="Expenses"
-        />
-      </v-tab-item>
-      <v-tab-item>
-        <TripReport> </TripReport>
-      </v-tab-item>
-    </v-tabs-items>
+      </div>
+    </v-form>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex"
 
-import { FORM_URL, USERS_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
 import Breadcrumbs from "@/components/Breadcrumbs"
-import ExpenseList from "../components/ExpenseList.vue"
-import TripReport from "../components/TripReport.vue"
-
-import PersonalDetailsForm from "../components/PersonalDetailsForm.vue"
-import StopsForm from "../components/StopsForm.vue"
-import TravelDetailsForm from "../components/TravelDetailsForm.vue"
-
-import formsApi from "@/apis/forms-api"
+import SummaryHeaderForm from "./travel-form-create/SummaryHeaderForm"
 
 export default {
   name: "TravelFormCreate",
   components: {
     Breadcrumbs,
-    ExpenseList,
-    PersonalDetailsForm,
-    StopsForm,
-    TravelDetailsForm,
-    TripReport,
+    SummaryHeaderForm,
   },
-  data: () => ({
-    //Form
-    stepVal: 1,
-
-    expensesTotal: 0,
-    estimatesTotal: 0,
-    costDifference: 0,
-
-    //Form functionality variables
-    tab: null,
-    review: false,
-
-    showError: null,
-    snackbar: null,
-    apiSuccess: "",
-    loading: true,
-  }),
-  async mounted() {
-    this.loading = true
-    await this.initialize()
-    await this.loadUser()
-    this.$refs.form.resetValidation()
-
-    this.loading = false
+  data() {
+    return {
+      loading: true,
+      loadingUser: false,
+      tab: null,
+    }
   },
   computed: {
-    ...mapState("travelForm", ["request"]),
+    ...mapState("travelForm", ["request", "currentUser"]),
+  },
+  async mounted() {
+    this.loading = true
+    await this.initializeForm().finally(() => {
+      this.loading = false
+    })
+
+    this.loadingUser = true
+    await this.loadUser().finally(() => {
+      this.loadingUser = false
+    })
   },
   methods: {
-    ...mapActions("travelForm", ["start", "initialize"]),
+    ...mapActions("travelForm", ["initializeForm", "create", "loadUser"]),
     submitForm() {
-      if (this.$refs.form.validate()) {
-        this.request.status = "Submitted"
-        this.showError = false
-        return formsApi.create(this.request).then(({ form }) => {
-          this.apiSuccess = "Form submitted successfully"
-          this.snackbar = true
-          this.$router.push({ name: "travelRequestsList" })
-          return form
-        })
+      if (!this.$refs.form.validate()) {
+        this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
+        return
       }
+
+      this.loading = true
+      this.request.status = "Submitted"
+      return this.create(this.request)
+        .then(() => {
+          this.$router.push({ name: "TravelFormList" })
+        })
+        .catch((error) => {
+          this.$snack(error.response.message, { color: "error" })
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     saveForm() {
-      if (this.$refs.form.validate()) {
-        this.request.status = "Draft"
-        this.showError = false
-        return formsApi.create(this.request).then(({ form }) => {
-          this.apiSuccess = "Form saved as a draft"
-          this.snackbar = true
-          this.$router.push({ name: "travelRequestsList" })
-          return form
-        })
+      if (!this.$refs.form.validate()) {
+        this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
+        return
       }
+
+      this.loading = true
+      this.request.status = "Draft"
+      return this.create(this.request)
+        .then(() => {
+          this.$router.push({ name: "TravelFormList" })
+        })
+        .catch((error) => {
+          this.$snack(error.response.message, { color: "error" })
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
-    getCostDifference() {
-      secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then((resp) => {
-        this.expensesTotal = resp.data.expenses
-        this.estimatesTotal = resp.data.estimates
-        this.costDifference = (this.expensesTotal - this.estimatesTotal).toFixed(2)
-      })
-    },
-    async loadUser() {
-      await secureGet(`${USERS_URL}/me`).then(({ data }) => {
-        this.user = data.data
-        this.request.firstName =
-          this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1)
-        this.request.lastName =
-          this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1)
-        this.request.email = this.user.email
-        return this.user
-      })
-      await secureGet(`${USERS_URL}/unit`).then(({ data }) => {
-        this.request.department = data.department
-        this.request.division = data.division
-        this.request.branch = data.branch
-        this.request.unit = data.unit
-        this.request.mailcode = data.mailcode
-        return data
-      })
-      return this.user
+    // This will be unnecessary once all tabs are router links
+    // This fixes a bug where the active state of the tabs is not reset, because url is not changed
+    resetActiveState() {
+      this.tab = null
     },
   },
 }

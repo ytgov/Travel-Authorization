@@ -18,8 +18,8 @@
               required
               outlined
               background-color="white"
+              :loading="loadingUser"
               :rules="firstNameRules"
-              :disabled="review"
             ></v-text-field>
           </v-col>
           <v-col
@@ -34,8 +34,8 @@
               required
               outlined
               background-color="white"
+              :loading="loadingUser"
               :rules="lastNameRules"
-              :disabled="review"
             ></v-text-field>
           </v-col>
 
@@ -51,8 +51,8 @@
               background-color="white"
               label="Email"
               required
+              :loading="loadingUser"
               :rules="emailRules"
-              :disabled="review"
             ></v-text-field>
           </v-col>
           <v-col
@@ -67,7 +67,7 @@
               background-color="white"
               label="Mailcode"
               required
-              :disabled="review"
+              :loading="loadingUser"
               :rules="requiredRules"
             ></v-text-field>
           </v-col>
@@ -87,7 +87,7 @@
               :items="emails"
               required
               clearable
-              :disabled="review"
+              :loading="loadingUser"
               :rules="emailRules"
               @update:search-input="searchEmail"
               :return-object="false"
@@ -109,8 +109,8 @@
               item-text="name"
               item-value="name"
               clearable
-              :disabled="review"
               :rules="requiredRules"
+              :loading="loadingDepartments"
             ></v-select>
           </v-col>
 
@@ -130,7 +130,6 @@
               outlined
               background-color="white"
               clearable
-              :disabled="review"
             ></v-select>
           </v-col>
           <v-col
@@ -148,7 +147,6 @@
               clearable
               outlined
               background-color="white"
-              :disabled="review"
             ></v-select>
           </v-col>
           <v-col
@@ -167,31 +165,10 @@
               clearable
               outlined
               background-color="white"
-              :disabled="review"
             ></v-select>
           </v-col>
         </v-row>
       </v-form>
-
-      <v-row>
-        <v-col class="mr-auto pb-0">
-          <v-btn
-            to="/my-travel-requests"
-            color="secondary"
-          >
-            Cancel
-          </v-btn>
-        </v-col>
-
-        <v-col class="col-auto pb-0">
-          <v-btn
-            color="primary"
-            @click="continueClick"
-          >
-            Continue
-          </v-btn>
-        </v-col>
-      </v-row>
     </v-card-text>
   </v-card>
 </template>
@@ -200,9 +177,11 @@
 import { mapState, mapActions } from "vuex"
 
 export default {
-  name: "PersonalDetailsForm",
-  props: ["review", "continue"],
+  name: "PersonalDetailsFormEdit",
   data: () => ({
+    loadingDepartments: false,
+    loadingUser: false,
+
     //Rules
     firstNameRules: [(v) => !!v || "First name is required"],
     lastNameRules: [(v) => !!v || "Last name is required"],
@@ -231,16 +210,26 @@ export default {
     },
   },
   async mounted() {
-    await this.loadDepartments()
+    this.loadingDepartments = true
+    this.loadingUser = true
+    await Promise.all([
+      this.loadDepartments().finally(() => {
+        this.loadingDepartments = false
+      }),
+      this.loadUserWrapper().finally(() => {
+        this.loadingUser = false
+      }),
+    ])
   },
   methods: {
-    ...mapActions("travelForm", ["loadDepartments", "emailSearch"]),
+    ...mapActions("travelForm", ["loadDepartments", "loadUser", "emailSearch"]),
     searchEmail(token) {
       return this.emailSearch(token)
     },
-    continueClick() {
-      let formValid = this.$refs.form.validate()
-      if (formValid) this.continue()
+    loadUserWrapper() {
+      return this.loadUser().catch((error) => {
+        this.$snack(error.response.message || error.toString(), { color: "error" })
+      })
     },
   },
 }
