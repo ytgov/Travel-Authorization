@@ -18,6 +18,7 @@
         <v-data-table
           :headers="headers"
           :items="myForms"
+          :loading="loading"
           :items-per-page.sync="perPage"
           :page.sync="page"
           :server-items-length="totalCount"
@@ -70,6 +71,7 @@ export default {
     perPage: 10,
     page: 1,
     totalCount: 1,
+    loading: true,
   }),
   async mounted() {
     await this.refreshForms()
@@ -80,8 +82,11 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadForms"]),
     refreshForms() {
+      this.loading = true
       return this.loadForms({ page: this.page, perPage: this.perPage }).then(({ totalCount }) => {
         this.totalCount = totalCount
+      }).finally(() => {
+        this.loading = false
       })
     },
     goToFormDetails(form) {
