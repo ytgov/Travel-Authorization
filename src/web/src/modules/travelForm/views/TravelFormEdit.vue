@@ -66,14 +66,14 @@
               </v-stepper-step>
 
               <v-stepper-content step="1">
-                <personal-details-form
+                <PersonalDetailsFormEdit
                   :review="review"
                   :continue="
                     () => {
                       stepVal = 2
                     }
                   "
-                ></personal-details-form>
+                ></PersonalDetailsFormEdit>
               </v-stepper-content>
 
               <v-stepper-step
@@ -84,7 +84,7 @@
               </v-stepper-step>
 
               <v-stepper-content step="2">
-                <stops-form
+                <StopsFormEdit
                   :form-id="formIdAsNumber"
                   :review="review"
                   :continue="
@@ -97,7 +97,7 @@
                       stepVal = 1
                     }
                   "
-                ></stops-form>
+                ></StopsFormEdit>
               </v-stepper-content>
 
               <v-stepper-step
@@ -142,7 +142,7 @@
           </v-btn>
           <v-btn
             color="secondary"
-            :to="{ name: 'travelRequestsList' }"
+            :to="{ name: 'TravelFormList' }"
             >Back</v-btn
           >
         </div>
@@ -178,17 +178,17 @@ import Breadcrumbs from "@/components/Breadcrumbs"
 import ExpenseList from "../components/ExpenseList"
 import TripReport from "../components/TripReport"
 
-import PersonalDetailsForm from "../components/PersonalDetailsForm"
-import StopsForm from "../components/StopsForm"
+import PersonalDetailsFormEdit from "../components/PersonalDetailsFormEdit"
+import StopsFormEdit from "../components/StopsFormEdit"
 import TravelDetailsForm from "../components/TravelDetailsForm"
 
 export default {
-  name: "TravelFormCreate",
+  name: "TravelFormEdit",
   components: {
     Breadcrumbs,
     ExpenseList,
-    PersonalDetailsForm,
-    StopsForm,
+    PersonalDetailsFormEdit,
+    StopsFormEdit,
     TravelDetailsForm,
     TripReport,
   },
@@ -245,7 +245,7 @@ export default {
           this.snackbarStatus = "success"
           this.snackbarMessage = "Form submitted successfully"
           this.showSnackbar = true
-          this.$router.push({ name: "travelRequestsList" })
+          this.$router.push({ name: "TravelFormList" })
           return form
         })
         .catch((error) => {
@@ -269,7 +269,7 @@ export default {
           this.snackbarStatus = "success"
           this.snackbarMessage = "Form saved as a draft"
           this.showSnackbar = true
-          this.$router.push({ name: "travelRequestsList" })
+          this.$router.push({ name: "TravelFormList" })
           return form
         })
         .catch((error) => {

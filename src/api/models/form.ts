@@ -1,4 +1,4 @@
-import { groupBy, isEmpty, isNil, keyBy } from "lodash"
+import { groupBy, isNil, keyBy } from "lodash"
 
 import db from "../db/db-client"
 import BaseModel from "./base-model"
@@ -34,7 +34,9 @@ export interface FormRecord {
   //  and purpose association
   // purpose?: string
   purposeId?: number
-  travelAdvance?: string
+  // DEPRECATED: travelAdvance column on forms table is replaced by travelAdvanceInCents column
+  // travelAdvance?: number
+  travelAdvanceInCents?: number
   eventName?: string
   summary?: string
   benefits?: string
@@ -61,6 +63,36 @@ export interface FormRecord {
 interface Form extends FormRecord {}
 
 class Form extends BaseModel {
+  static async count({ where = {} }: { where?: {} }): Promise<number> {
+    return db("forms")
+      .where(where)
+      .count({ count: "*" })
+      .then((results) => {
+        const result = results[0]
+        if (result === undefined) return 0
+        if (result.count === undefined) return 0
+        if (typeof result.count === "number") return result.count
+
+        return parseInt(result.count)
+      })
+  }
+
+  static async findAndCountAll({
+    where = {},
+    include = [],
+    limit = 10,
+    offset = 0,
+  }: {
+    where?: {}
+    include?: ("stops" | "purpose")[]
+    limit?: number
+    offset?: number
+  }): Promise<{ count: number; rows: Form[] }> {
+    const count = await this.count({ where })
+    const forms = await this.findAll({ where, include, limit, offset })
+    return { count, rows: forms }
+  }
+
   // OPINION: If this is slow, switch to an ORM like Sequelize,
   // it would be a better use of time than optimising this.
   static async findAll({
