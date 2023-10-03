@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapState, mapGetters } from "vuex"
 import { isEmpty, last } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
@@ -169,7 +169,7 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["currentForm"]),
-    currentFormId: () => this.currentForm.id,
+    ...mapGetters("travelForm", ["currentFormId"]),
     finalDestination() {
       return last(this.currentForm.stops) || { formId: this.currentFormId }
     },
