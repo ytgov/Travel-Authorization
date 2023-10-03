@@ -87,7 +87,7 @@ const actions = {
         return { forms, totalCount }
       })
   },
-  loadCurrentForm({ commit, state }, formId) {
+  loadAsCurrentForm({ commit, state }, formId) {
     state.loadingCurrentForm = true
     return formsApi
       .get(formId)
@@ -100,7 +100,8 @@ const actions = {
       })
   },
   loadForm({ dispatch }, formId) {
-    return dispatch("loadCurrentForm", formId)
+    console.warn("Deprecated: use loadAsCurrentForm instead.")
+    return dispatch("loadAsCurrentForm", formId)
   },
   loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true
@@ -129,6 +130,7 @@ const actions = {
       })
   },
   loadUser({ dispatch }) {
+    console.warn("Deprecated: use loadCurrentUser instead.")
     return dispatch("loadCurrentUser")
   },
   getAll() {
@@ -153,7 +155,9 @@ const actions = {
         state.loadingCurrentForm = false
       })
   },
-  update({ commit, state }, [formId, attributes]) {
+  updateCurrentForm({ commit, state }) {
+    const formId = state.currentForm.id
+    const attributes = state.currentForm
     state.loadingCurrentForm = true
     return formsApi
       .update(formId, attributes)
@@ -164,6 +168,10 @@ const actions = {
       .finally(() => {
         state.loadingCurrentForm = false
       })
+  },
+  update({ dispatch }) {
+    console.warn("Deprecated: use updateCurrentForm instead.")
+    return dispatch("updateCurrentForm")
   },
   delete(store, { id }) {
     return securePost(`${FORM_URL}/${id}`).then((resp) => {

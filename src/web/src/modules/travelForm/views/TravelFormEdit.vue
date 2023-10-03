@@ -100,11 +100,11 @@ export default {
       return parseInt(this.formId)
     },
   },
-  async mounted() {
-    return Promise.all([this.loadCurrentForm(this.formId), this.loadCurrentUser()])
+  mounted() {
+    return Promise.all([this.loadAsCurrentForm(this.formId), this.loadCurrentUser()])
   },
   methods: {
-    ...mapActions("travelForm", ["loadCurrentForm", "update", "loadCurrentUser"]),
+    ...mapActions("travelForm", ["loadAsCurrentForm", "updateCurrentForm", "loadCurrentUser"]),
     submitForm() {
       if (!this.$refs.form.validate()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
@@ -112,7 +112,7 @@ export default {
       }
 
       this.currentForm.status = "Submitted"
-      return this.update(this.formId, this.currentForm)
+      return this.updateCurrentForm()
         .then(() => {
           this.$router.push({ name: "TravelFormList" })
         })
@@ -127,9 +127,13 @@ export default {
       }
 
       this.currentForm.status = "Draft"
-      return this.update(this.formId, this.currentForm).catch((error) => {
-        this.$snack(error.response.message, { color: "error" })
-      })
+      return this.updateCurrentForm()
+        .then(() => {
+          this.$snack("Form saved as a draft", { color: "success" })
+        })
+        .catch((error) => {
+          this.$snack(error.response.message, { color: "error" })
+        })
     },
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
