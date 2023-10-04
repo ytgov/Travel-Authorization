@@ -147,23 +147,25 @@ export default {
         })
     },
     flattenRequests(preApprovedTravelRequests) {
-      return preApprovedTravelRequests.flatMap(({ preApprovedTravelers, ...otherRequestAttributes }) => {
-        // If there are no travelers, return the request as is
-        if (preApprovedTravelers.length === 0) {
-          return {
-            ...otherRequestAttributes,
-            travelerID: null,
-            fullName: null,
+      return preApprovedTravelRequests.flatMap(
+        ({ preApprovedTravelers, ...otherRequestAttributes }) => {
+          // If there are no travelers, return the request as is
+          if (preApprovedTravelers.length === 0) {
+            return {
+              ...otherRequestAttributes,
+              travelerID: null,
+              fullName: null,
+            }
           }
-        }
 
-        // Otherwise, return an array of requests, one for each traveler
-        return preApprovedTravelers.map((traveler) => ({
-          ...otherRequestAttributes,
-          travelerID: traveler.travelerID,
-          fullName: traveler.fullName,
-        }))
-      })
+          // Otherwise, return an array of requests, one for each traveler
+          return preApprovedTravelers.map((traveler) => ({
+            ...otherRequestAttributes,
+            travelerID: traveler.travelerID,
+            fullName: traveler.fullName,
+          }))
+        }
+      )
     },
   },
 }
