@@ -10,7 +10,7 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
         :value="value || ''"
-        :label="text"
+        :label="label || text"
         :rules="rules"
         background-color="white"
         prepend-icon="mdi-calendar"
@@ -30,13 +30,16 @@
 </template>
 
 <script>
-const required = (v) => !!v || "This field is required"
+import { isEmpty } from 'lodash'
+
+import { required } from '@/utils/validators'
 
 export default {
   inheritAttrs: false,
   props: {
-    text: String, // DEPRECATED: prefer label
     value: String,
+    text: String, // DEPRECATED: prefer label
+    label: String,
     rules: {
       type: Array,
       default: () => [required],
@@ -45,6 +48,11 @@ export default {
   data: () => ({
     menu: false,
   }),
+  mounted() {
+    if (!isEmpty(this.text) && !isEmpty(this.label)) {
+      console.warn("DEPRECATION: text is deprecated, prefer label")
+    }
+  },
   methods: {
     input(value) {
       this.menu = false
