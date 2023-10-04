@@ -21,10 +21,10 @@
 
       <v-card-text>
         <v-container>
-          <v-text-field
-            v-model="estimate.type"
+          <ExpenseTypeSelect
+            v-model="estimate.expenseType"
             label="Expense Type"
-          ></v-text-field>
+          />
           <v-text-field
             v-model="estimate.description"
             label="Description"
@@ -62,18 +62,33 @@
 </template>
 
 <script>
+import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect"
+
+// Must match types in src/api/models/expense.ts
+const EXPENSE_TYPES = Object.freeze({
+  ESTIMATE: "Estimates",
+})
+
 export default {
   name: "EstimateCreateDialog",
+  components: {
+    ExpenseTypeSelect,
+  },
   props: {
     formId: {
       type: Number,
       required: true,
     },
   },
-  data: () => ({
-    estimate: {},
-    showDialog: false,
-  }),
+  data() {
+    return {
+      estimate: {
+        taid: this.formId,
+        type: EXPENSE_TYPES.ESTIMATE,
+      },
+      showDialog: false,
+    }
+  },
   methods: {
     close() {
       this.showDialog = false
@@ -86,7 +101,7 @@ export default {
       // use save event to trigger table reload
       this.$emit("save", this.estimate)
       this.close()
-    }
-  }
+    },
+  },
 }
 </script>

@@ -10,10 +10,10 @@
 
       <v-card-text>
         <v-container>
-          <v-text-field
-            v-model="estimate.type"
+          <ExpenseTypeSelect
+            v-model="estimate.expenseType"
             label="Expense Type"
-          ></v-text-field>
+          />
           <v-text-field
             v-model="estimate.description"
             label="Description"
@@ -51,8 +51,15 @@
 </template>
 
 <script>
+import { cloneDeep } from "lodash"
+
+import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect"
+
 export default {
   name: "EstimateEditDialog",
+  components: {
+    ExpenseTypeSelect,
+  },
   props: {},
   data: () => ({
     estimate: {},
@@ -60,7 +67,7 @@ export default {
   }),
   methods: {
     show(estimate) {
-      this.estimate = estimate
+      this.estimate = cloneDeep(estimate)
       this.showDialog = true
     },
     close() {
