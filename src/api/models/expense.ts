@@ -2,13 +2,19 @@ import db from "../db/db-client"
 
 import BaseModel from "./base-model"
 
+export enum ExpenseTypes {
+  ACCOMODATIONS = "Accomodations",
+  FLIGHTS = "Flights",
+  MEALS_INCIDENTALS = "Meals & Incidentals",
+}
+
 // TODO: replace this with a boolean of isEstimate or
 // move estimates to there own table.
 // It's also possible that this is a single table inheritance model,
 // and there should be two models, one for each "type".
-export enum ExpenseTypes {
+export enum Types {
   ESTIMATE = "Estimates",
-  EXPENSE = "Expenses"
+  EXPENSE = "Expenses",
 }
 
 export class Expense extends BaseModel {
@@ -18,12 +24,19 @@ export class Expense extends BaseModel {
   date: Date | null
   cost: number
   currency: string
-  type: string
+  type: Types
   receiptImage: Buffer | null
   fileSize: number | null
   fileName: string | null
+  expenseType: ExpenseTypes
 
-  constructor(attributes: Pick<Expense, "id" | "taid" | "description" | "cost" | "currency" | "type"> & Partial<Expense>) {
+  constructor(
+    attributes: Pick<
+      Expense,
+      "id" | "taid" | "description" | "cost" | "currency" | "type" | "expenseType"
+    > &
+      Partial<Expense>
+  ) {
     super()
     this.id = attributes.id
     this.taid = attributes.taid
@@ -35,6 +48,7 @@ export class Expense extends BaseModel {
     this.receiptImage = attributes.receiptImage || null
     this.fileSize = attributes.fileSize || null
     this.fileName = attributes.fileName || null
+    this.expenseType = attributes.expenseType
   }
 
   static async findAll({
