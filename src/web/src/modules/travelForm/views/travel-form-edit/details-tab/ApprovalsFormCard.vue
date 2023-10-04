@@ -81,12 +81,17 @@
 </template>
 
 <script>
-import { isEmpty } from "lodash"
+import { isEmpty, sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
 
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+
+// Must match types in src/api/models/expense.ts
+const EXPENSE_TYPES = Object.freeze({
+  ESTIMATE: 'Estimates',
+})
 
 export default {
   name: "ApprovalsFormCard",
@@ -96,12 +101,18 @@ export default {
   data: () => ({
     required: (v) => !!v || "This field is required",
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
-    estimatedCost: 1234567.89, // TODO: figure out what would be required to generate this value
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
     ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
+    estimates () {
+      return this.currentForm.expenses
+        .filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE)
+    },
+    estimatedCost() {
+      return sumBy(this.estimates, 'amount')
+    },
     travelAdvanceInDollars: {
       get() {
         return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
