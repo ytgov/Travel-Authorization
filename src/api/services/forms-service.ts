@@ -45,16 +45,10 @@ export class FormsSerivce {
     return form
   }
 
-  static async update(id: string | number, attributes: Partial<Form>): Promise<Form> {
-    const stops = attributes.stops || []
-    delete attributes.stops
-
-    const expenses = attributes.expenses
-    delete attributes.expenses
-
-    const estimates = attributes.estimates
-    delete attributes.estimates
-
+  static async update(
+    id: string | number,
+    { stops = [], expenses, estimates, ...attributes }: Partial<Form>
+  ): Promise<Form> {
     const form = await db<Form>("forms")
       .where("id", id)
       .update(attributes)
