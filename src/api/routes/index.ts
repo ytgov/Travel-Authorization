@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express"
 
 import { checkJwt, loadUser } from "../middleware/authz.middleware"
 import {
+  ExpensesController,
   FormsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
@@ -27,6 +28,7 @@ router.use("/api", checkJwt)
 router.use("/api", loadUser)
 
 // TODO: move all routing logic to this file, and move all route actions into controllers
+router.get("/api/expenses", ExpensesController.index)
 router.get("/api/forms", FormsController.index)
 router.post("/api/forms", FormsController.create)
 router.get("/api/forms/:formId", FormsController.show)

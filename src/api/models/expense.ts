@@ -1,3 +1,5 @@
+import db from "../db/db-client"
+
 import BaseModel from "./base-model"
 
 // TODO: replace this with a boolean of isEstimate or
@@ -33,6 +35,21 @@ export class Expense extends BaseModel {
     this.receiptImage = attributes.receiptImage || null
     this.fileSize = attributes.fileSize || null
     this.fileName = attributes.fileName || null
+  }
+
+  static async findAll({
+    where = {},
+    include = [],
+    limit = 1000,
+    offset = 0,
+  }: {
+    where?: {}
+    include?: string[]
+    limit?: number
+    offset?: number
+  } = {}): Promise<Expense[]> {
+    const expenses = await db("expenses").where(where).limit(limit).offset(offset)
+    return expenses
   }
 }
 
