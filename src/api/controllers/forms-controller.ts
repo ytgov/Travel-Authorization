@@ -51,10 +51,12 @@ export class FormsController extends BaseController {
         .json({ message: "You are not authorized to view this form." })
     }
 
-    return Form.findByPk(this.params.formId, { include: ["stops", "purpose"] }).then((form) => {
-      const serializedForm = FormSerializer.asDetailed(form)
-      return this.response.json({ form: serializedForm })
-    })
+    return Form.findByPk(this.params.formId, { include: ["expenses", "stops", "purpose"] }).then(
+      (form) => {
+        const serializedForm = FormSerializer.asDetailed(form)
+        return this.response.json({ form: serializedForm })
+      }
+    )
   }
 
   async update() {
