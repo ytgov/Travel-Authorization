@@ -352,7 +352,7 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
     newStop() {
-      return { formId: this.currentFormId }
+      return { taid: this.currentFormId }
     },
     updateStop1TravelMethod(value) {
       this.stop1TravelMethod = value
