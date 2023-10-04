@@ -6,7 +6,7 @@ export class BaseModel {
   static async findAndCountAll({
     where = {},
     include = [],
-    limit = 10,
+    limit = 1000,
     offset = 0,
   }: {
     where?: {}
@@ -20,7 +20,7 @@ export class BaseModel {
   static async findAll({
     where = {},
     include = [],
-    limit = 10,
+    limit = 1000,
     offset = 0,
   }: {
     where?: {}

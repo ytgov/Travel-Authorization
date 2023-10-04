@@ -80,7 +80,7 @@ class Form extends BaseModel {
   static async findAndCountAll({
     where = {},
     include = [],
-    limit = 10,
+    limit = 1000,
     offset = 0,
   }: {
     where?: {}
@@ -98,7 +98,7 @@ class Form extends BaseModel {
   static async findAll({
     where = {},
     include = [],
-    limit = 10,
+    limit = 1000,
     offset = 0,
   }: {
     where?: {}
