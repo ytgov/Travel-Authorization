@@ -6,6 +6,7 @@
     class="elevation-2"
   >
     <template v-slot:top>
+      <EstimateEditDialog ref="editDialog" />
       <EstimateDeleteDialog ref="deleteDialog" />
     </template>
     <template #item.date="{ value }">
@@ -19,6 +20,7 @@
         <v-btn
           v-if="actions.includes('edit')"
           color="secondary"
+          @click="showEditDialog(item)"
           >Edit</v-btn
         >
         <v-btn
@@ -48,7 +50,8 @@
 import { sumBy } from "lodash"
 
 import expensesApi from "@/apis/expenses-api"
-import EstimateDeleteDialog from "./EstimateDeleteDialog.vue"
+import EstimateDeleteDialog from "./EstimateDeleteDialog"
+import EstimateEditDialog from "./EstimateEditDialog"
 
 // Must match types in src/api/models/expense.ts
 const EXPENSE_TYPES = Object.freeze({
@@ -57,7 +60,10 @@ const EXPENSE_TYPES = Object.freeze({
 
 export default {
   name: "EstimatesTable",
-  components: { EstimateDeleteDialog },
+  components: {
+    EstimateDeleteDialog,
+    EstimateEditDialog,
+  },
   props: {
     formId: {
       type: Number,
@@ -165,7 +171,10 @@ export default {
       return formatter.format(amount)
     },
     showDeleteDialog(item) {
-      this.$refs.deleteDialog.show(item.id)
+      this.$refs.deleteDialog.show(item)
+    },
+    showEditDialog(item) {
+      this.$refs.editDialog.show(item)
     },
   },
 }
