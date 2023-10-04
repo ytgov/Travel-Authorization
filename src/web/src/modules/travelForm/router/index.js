@@ -7,9 +7,9 @@ const routes = [
         name: "TravelFormList",
         path: "",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/TravelFormList")
+        component: () => import("../views/TravelFormList"),
       },
       {
         path: ":formId",
@@ -31,27 +31,27 @@ const routes = [
             name: "TravelFormEdit-EstimateTab",
             component: () => import("../views/travel-form-edit/EstimateTab"),
             props: true,
-          }
-        ]
+          },
+        ],
       },
       {
         name: "TravelFormManagerList",
         path: "/managerView",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/ManagerView")
+        component: () => import("../views/ManagerView"),
       },
       {
         name: "travelRequestManage",
         path: "request/:formId?/manage",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/TravelFormManage")
-      }
-    ]
-  }
-];
+        component: () => import("../views/TravelFormManage"),
+      },
+    ],
+  },
+]
 
-export default routes;
+export default routes
