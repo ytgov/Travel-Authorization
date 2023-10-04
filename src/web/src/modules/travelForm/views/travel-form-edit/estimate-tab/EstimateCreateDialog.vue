@@ -23,16 +23,22 @@
         <v-container>
           <ExpenseTypeSelect
             v-model="estimate.expenseType"
+            :rules="[required]"
             label="Expense Type"
+            required
           />
           <v-text-field
             v-model="estimate.description"
+            :rules="[required]"
             label="Description"
+            required
           ></v-text-field>
-          <v-text-field
+          <DatePicker
             v-model="estimate.date"
+            :rules="[required]"
             label="Date"
-          ></v-text-field>
+            required
+          />
           <v-text-field
             v-model="estimate.cost"
             label="Amount"
@@ -62,6 +68,9 @@
 </template>
 
 <script>
+import { required } from "@/utils/validators"
+
+import DatePicker from "@/components/Utils/DatePicker"
 import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect"
 
 // Must match types in src/api/models/expense.ts
@@ -72,6 +81,7 @@ const EXPENSE_TYPES = Object.freeze({
 export default {
   name: "EstimateCreateDialog",
   components: {
+    DatePicker,
     ExpenseTypeSelect,
   },
   props: {
@@ -90,6 +100,7 @@ export default {
     }
   },
   methods: {
+    required,
     close() {
       this.showDialog = false
       this.$nextTick(() => {
