@@ -40,9 +40,22 @@
 <script>
 import { sumBy } from "lodash"
 
+import expensesApi from "@/apis/expenses-api"
+
+// Must match types in src/api/models/expense.ts
+const EXPENSE_TYPES = Object.freeze({
+  ESTIMATE: "Estimates",
+})
+
 export default {
   name: "EstimateTab",
   components: {},
+  props: {
+    formId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
   data: () => ({
     headers: [
       { text: "Expense Type", value: "expenseType" },
@@ -109,6 +122,15 @@ export default {
     totalAmount() {
       return sumBy(this.estimates, "amount")
     },
+  },
+  async mounted() {
+    await expensesApi
+      .list({ where: { taid: this.formId, type: EXPENSE_TYPES.ESTIMATE } })
+      .then(({ expenses: estimates }) => {
+        console.log("estimates:", estimates)
+        // TODO: enable this once endpoint is returning data.
+        // this.estimates = estimates
+      })
   },
   methods: {
     formatDate(date) {

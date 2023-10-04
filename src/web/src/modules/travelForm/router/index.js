@@ -24,11 +24,13 @@ const routes = [
             path: "details",
             name: "TravelFormEdit-DetailsTab",
             component: () => import("../views/travel-form-edit/DetailsTab"),
+            props: true,
           },
           {
             path: "estimate",
             name: "TravelFormEdit-EstimateTab",
             component: () => import("../views/travel-form-edit/EstimateTab"),
+            props: true,
           }
         ]
       },
