@@ -48,7 +48,7 @@ export class FormsSerivce {
 
   static async update(
     id: string | number,
-    { stops = [], expenses = [], estimates = [], ...attributes }: Partial<Form>
+    { stops = [], expenses = [], ...attributes }: Partial<Form>
   ): Promise<Form> {
     const form = await db<Form>("forms")
       .where("id", id)
@@ -70,10 +70,6 @@ export class FormsSerivce {
 
     if (!isEmpty(expenses)) {
       form.expenses = await ExpensesService.bulkReplace(formId, expenses)
-    }
-
-    if (!isEmpty(estimates)) {
-      form.estimates = await ExpensesService.bulkReplace(formId, estimates)
     }
 
     return form
