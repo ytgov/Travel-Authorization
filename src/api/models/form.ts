@@ -150,7 +150,7 @@ class Form extends BaseModel {
 
     if (include.includes("purpose")) {
       const purposeId = form.purposeId
-      const purpose = await db("travelPurpose").where({ id: purposeId })
+      const purpose = await db("travelPurpose").where({ id: purposeId }).first()
       form.purpose = purpose
     }
 
