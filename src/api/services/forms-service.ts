@@ -6,6 +6,7 @@ import db from "../db/db-client"
 import { Form, User } from "../models"
 import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
+import ExpensesService from "./expenses-service"
 
 export class FormsSerivce {
   static async create(
@@ -47,7 +48,7 @@ export class FormsSerivce {
 
   static async update(
     id: string | number,
-    { stops = [], expenses, estimates, ...attributes }: Partial<Form>
+    { stops = [], expenses = [], estimates, ...attributes }: Partial<Form>
   ): Promise<Form> {
     const form = await db<Form>("forms")
       .where("id", id)
@@ -67,8 +68,11 @@ export class FormsSerivce {
       form.stops = await StopsService.bulkReplace(formId, stops)
     }
 
+    if (!isEmpty(expenses)) {
+      form.expenses = await ExpensesService.bulkReplace(formId, expenses)
+    }
+
     const instance = new LegacyFormSerivce()
-    await instance.saveExpenses(formId, expenses)
     await instance.saveEstimates(formId, estimates)
 
     return form
