@@ -1,4 +1,4 @@
-import { Router } from "express"
+import { Router, Request, Response } from "express"
 
 import { checkJwt, loadUser } from "../middleware/authz.middleware"
 import {
@@ -33,5 +33,10 @@ router.get("/api/forms/:formId", FormsController.show)
 router.patch("/api/forms/:formId", FormsController.update)
 router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
+
+// if no other routes match, return a 404
+router.use("/api", (req: Request, res: Response) => {
+  return res.status(404).json({ message: "Not Found" })
+})
 
 export default router
