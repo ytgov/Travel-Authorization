@@ -5,8 +5,8 @@ import BaseModel from "./base-model"
 // It's also possible that this is a single table inheritance model,
 // and there should be two models, one for each "type".
 export enum ExpenseTypes {
-  Estimates = "Estimates",
-  Expenses = "Expenses"
+  ESTIMATE = "Estimates",
+  EXPENSE = "Expenses"
 }
 
 export class Expense extends BaseModel {
