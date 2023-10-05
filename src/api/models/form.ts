@@ -137,7 +137,7 @@ class Form extends BaseModel {
   // it would be a better use of time than optimising this.
   static async findByPk(
     id: number | string,
-    { include = [] }: { include?: ("expenses" | "stops" | "purpose")[] }
+    { include = [] }: { include?: ("expenses" | "stops" | "purpose")[] } = {}
   ): Promise<Form> {
     const form = await db("forms").where({ id }).first()
     if (isNil(form)) throw new Error("Form not found")

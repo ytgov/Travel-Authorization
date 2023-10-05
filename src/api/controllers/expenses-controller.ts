@@ -1,6 +1,8 @@
 import BaseController from "./base-controller"
 
-import { Expense } from "../models"
+import { Expense, Form } from "../models"
+import { ExpensesService } from "../services"
+import { ExpensesPolicy } from "../policies"
 
 export class ExpensesController extends BaseController {
   index() {
@@ -10,6 +12,30 @@ export class ExpensesController extends BaseController {
     }).then((expenses) => {
       return this.response.json({ expenses })
     })
+  }
+
+  async create() {
+    const expense = await this.buildExpense()
+    if (!ExpensesPolicy.create(expense, this.currentUser)) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to create this expense." })
+    }
+
+    return ExpensesService.create(expense)
+      .then((expense) => {
+        return this.response.status(201).json({ expense })
+      })
+      .catch((error) => {
+        return this.response.status(422).json({ message: `Expense creation failed: ${error}` })
+      })
+  }
+
+  private async buildExpense() {
+    const attributes = this.request.body
+    const { taid: formId } = attributes
+    const form = await Form.findByPk(formId)
+    return new Expense({ ...attributes, form })
   }
 }
 

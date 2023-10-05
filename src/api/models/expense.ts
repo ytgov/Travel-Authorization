@@ -1,6 +1,7 @@
 import db from "../db/db-client"
 
 import BaseModel from "./base-model"
+import Form from "./form"
 
 export enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",
@@ -30,6 +31,9 @@ export class Expense extends BaseModel {
   fileName: string | null
   expenseType: ExpenseTypes
 
+  // Assocaitions
+  form?: Form
+
   constructor(
     attributes: Pick<
       Expense,
@@ -49,6 +53,8 @@ export class Expense extends BaseModel {
     this.fileSize = attributes.fileSize || null
     this.fileName = attributes.fileName || null
     this.expenseType = attributes.expenseType
+
+    this.form = attributes.form
   }
 
   static async findAll({
