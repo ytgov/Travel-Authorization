@@ -3,6 +3,7 @@
     :headers="headers"
     :items="estimates"
     :items-per-page="10"
+    :loading="loading"
     class="elevation-2"
   >
     <template v-slot:top>
@@ -85,65 +86,9 @@ export default {
       { text: "Amount", value: "cost" },
       { text: "", value: "actions" },
     ],
-    estimates: [
-      {
-        id: -1,
-        expenseType: "Flights",
-        description: "Departure - Whitehorse - Vancover",
-        date: "2022-06-05T07:00:00.000Z",
-        cost: 350.0,
-        actions: ["edit", "delete"],
-      },
-      {
-        id: -2,
-        expenseType: "Accommodations",
-        description: "Room cost",
-        date: "2022-06-05T07:00:00.000Z",
-        cost: 250.0,
-        actions: ["edit", "delete"],
-      },
-      {
-        id: -3,
-        expenseType: "Meals & Incidentals",
-        description: "Full Day",
-        date: "2022-06-05T07:00:00.000Z",
-        cost: 128.45,
-        actions: ["delete"],
-      },
-      {
-        id: -4,
-        expenseType: "Accommodations",
-        description: "Room cost",
-        date: "2022-06-06T07:00:00.000Z",
-        cost: 250.0,
-        actions: ["edit", "delete"],
-      },
-      {
-        id: -5,
-        expenseType: "Meals & Incidentals",
-        description: "Full Day",
-        date: "2022-06-06T07:00:00.000Z",
-        cost: 128.45,
-        actions: ["delete"],
-      },
-      {
-        id: -6,
-        expenseType: "Flights",
-        description: "Return - Vancover - Whitehorse",
-        date: "2022-06-07T07:00:00.000Z",
-        cost: 350.0,
-        actions: ["edit", "delete"],
-      },
-      {
-        id: -7,
-        expenseType: "Meals & Incidentals",
-        description: "Breakfast/Lunch",
-        date: "2022-06-07T07:00:00.000Z",
-        cost: 46.7,
-        actions: ["delete"],
-      },
-    ],
+    estimates: [],
     totalRowClasses: "text-start font-weight-bold text-uppercase",
+    loading: true,
   }),
   computed: {
     // Will need to be calculated in the back-end if data is multi-page.
@@ -151,23 +96,8 @@ export default {
       return sumBy(this.estimates, "cost")
     },
   },
-  async mounted() {
-    await expensesApi
-      .list({ where: { taid: this.formId, type: TYPES.ESTIMATE } })
-      .then(({ expenses: estimates }) => {
-        estimates.forEach((estimate) => {
-          if (estimate.expenseType === EXPENSE_TYPES.MEALS_INCIDENTALS) {
-            estimate.actions = ["delete"]
-          } else {
-            estimate.actions = ["edit", "delete"]
-          }
-        })
-        console.log("estimates:", estimates)
-        // TODO: enable this once endpoint is returning data.
-        // this.estimates = estimates
-        // this is just for debugging purposes, real code is above
-        this.estimates.splice(0, estimates.length, ...estimates)
-      })
+  mounted() {
+    return this.loadEstimates()
   },
   methods: {
     formatDate(date) {
@@ -185,6 +115,25 @@ export default {
         currency: "CAD",
       })
       return formatter.format(amount)
+    },
+    loadEstimates() {
+      this.loading = true
+      return expensesApi
+        .list({ where: { taid: this.formId, type: TYPES.ESTIMATE } })
+        .then(({ expenses: estimates }) => {
+          estimates.forEach((estimate) => {
+            if (estimate.expenseType === EXPENSE_TYPES.MEALS_INCIDENTALS) {
+              estimate.actions = ["delete"]
+            } else {
+              estimate.actions = ["edit", "delete"]
+            }
+          })
+
+          this.estimates = estimates
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     showDeleteDialog(item) {
       this.$refs.deleteDialog.show(item)

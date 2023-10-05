@@ -1,10 +1,16 @@
 <template>
   <div class="mt-4">
     <div class="d-flex justify-end">
-      <EstimateCreateDialog :form-id="formIdAsNumber" />
+      <EstimateCreateDialog
+        :form-id="formIdAsNumber"
+        @created="refreshEstimates"
+      />
     </div>
 
-    <EstimatesTable :form-id="formIdAsNumber" />
+    <EstimatesTable
+      ref="estimatesTable"
+      :form-id="formIdAsNumber"
+    />
   </div>
 </template>
 
@@ -31,6 +37,10 @@ export default {
     },
   },
   async mounted() {},
-  methods: {},
+  methods: {
+    refreshEstimates() {
+      this.$refs.estimatesTable.loadEstimates()
+    },
+  },
 }
 </script>

@@ -116,11 +116,7 @@ export default {
   },
   data() {
     return {
-      estimate: {
-        taid: this.formId,
-        type: EXPENSE_TYPES.ESTIMATE,
-        currency: "CAD",
-      },
+      estimate: this.newEstimate(),
       showDialog: this.$route.query.showCreate === "true",
       loading: false,
     }
@@ -136,18 +132,25 @@ export default {
   },
   methods: {
     required,
+    newEstimate() {
+      return {
+        taid: this.formId,
+        type: EXPENSE_TYPES.ESTIMATE,
+        currency: "CAD",
+      }
+    },
     close() {
       this.showDialog = false
       this.$nextTick(() => {
-        this.estimate = {}
+        this.estimate = this.newEstimate()
       })
     },
     save() {
       this.loading = true
       return expensesApi
         .create(this.estimate)
-        .then(({ estimate }) => {
-          this.$emit("save", estimate)
+        .then(() => {
+          this.$emit("created")
           this.close()
         })
         .finally(() => {
