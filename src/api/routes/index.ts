@@ -30,6 +30,7 @@ router.use("/api", loadUser)
 // TODO: move all routing logic to this file, and move all route actions into controllers
 router.get("/api/expenses", ExpensesController.index)
 router.post("/api/expenses", ExpensesController.create)
+router.patch("/api/expenses/:expenseId", ExpensesController.update)
 router.get("/api/forms", FormsController.index)
 router.post("/api/forms", FormsController.create)
 router.get("/api/forms/:formId", FormsController.show)

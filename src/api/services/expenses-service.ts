@@ -19,6 +19,23 @@ export class ExpensesService extends BaseService {
     return expense
   }
 
+  static async update(
+    id: string | number,
+    attributes: Partial<Expense>
+  ): Promise<Expense> {
+    const expense = await db<Expense>("expenses")
+      .where("id", id)
+      .update(attributes)
+      .returning("*")
+      .then((updatedRecords) => {
+        if (isEmpty(updatedRecords)) throw new Error("Could not update expense")
+
+        return updatedRecords[0]
+      })
+
+    return expense
+  }
+
   static async bulkCreate(formId: number, expenses: Expense[]): Promise<Expense[]> {
     if (!expenses.every((expense) => expense.taid === formId)) {
       throw new Error("All expenses must belong to the same form.")

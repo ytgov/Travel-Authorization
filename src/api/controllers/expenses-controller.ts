@@ -31,6 +31,23 @@ export class ExpensesController extends BaseController {
       })
   }
 
+  async update() {
+    const expense = await this.buildExpense()
+    if (!ExpensesPolicy.update(expense, this.currentUser)) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to update this expense." })
+    }
+
+    return ExpensesService.update(this.params.expenseId, this.request.body)
+      .then((expense) => {
+        this.response.json({ expense })
+      })
+      .catch((error) => {
+        return this.response.status(422).json({ message: `Form update failed: ${error}` })
+      })
+  }
+
   private async buildExpense() {
     const attributes = this.request.body
     const { taid: formId } = attributes

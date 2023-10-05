@@ -2,9 +2,7 @@ import { isNil } from "lodash"
 
 import BasePolicy from "./base-policy"
 import FormsPolicy from "./forms-policy"
-
 import { Expense, User } from "../models"
-
 
 export class ExpensesPolicy extends BasePolicy {
   static create(record: Expense, currentUser: User): boolean {
@@ -12,6 +10,10 @@ export class ExpensesPolicy extends BasePolicy {
     if (isNil(form)) return false
 
     return FormsPolicy.update(form, currentUser)
+  }
+
+  static update(record: Expense, currentUser: User): boolean {
+    return this.create(record, currentUser)
   }
 }
 
