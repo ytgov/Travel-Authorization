@@ -20,7 +20,7 @@
       </v-card-title>
 
       <v-card-text>
-        <v-container>
+        <v-form ref="form">
           <v-row>
             <v-col>
               <ExpenseTypeSelect
@@ -61,7 +61,7 @@
               />
             </v-col>
           </v-row>
-        </v-container>
+        </v-form>
       </v-card-text>
 
       <v-card-actions>
@@ -143,6 +143,7 @@ export default {
       this.showDialog = false
       this.$nextTick(() => {
         this.estimate = this.newEstimate()
+        this.$refs.form.resetValidation()
       })
     },
     save() {
