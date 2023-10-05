@@ -3,11 +3,10 @@ import { isNil } from "lodash"
 import db from "../db/db-client"
 import BaseController from "./base-controller"
 
-import { AuditService } from "../services"
-import Form from "../models/form"
-import FormSerializer from "../serializers/form-serializer"
-import FormsPolicy from "../policies/FormsPolicy"
-import FormsService from "../services/forms-service"
+import { AuditService, FormsService } from "../services"
+import { Form } from "../models"
+import { FormsSerializer } from "../serializers"
+import { FormsPolicy } from "../policies"
 
 // TODO: push this code back into services where it belongs
 const auditService = new AuditService()
@@ -22,7 +21,7 @@ export class FormsController extends BaseController {
       offset: this.pagination.offset,
     }).then(({ rows: forms, count }) => {
       const scopedForms = FormsPolicy.scope(forms, this.currentUser)
-      const serializedForms = FormSerializer.asTable(scopedForms)
+      const serializedForms = FormsSerializer.asTable(scopedForms)
       return this.response.json({ forms: serializedForms, totalCount: count })
     })
   }
@@ -53,7 +52,7 @@ export class FormsController extends BaseController {
 
     return Form.findByPk(this.params.formId, { include: ["expenses", "stops", "purpose"] }).then(
       (form) => {
-        const serializedForm = FormSerializer.asDetailed(form)
+        const serializedForm = FormsSerializer.asDetailed(form)
         return this.response.json({ form: serializedForm })
       }
     )

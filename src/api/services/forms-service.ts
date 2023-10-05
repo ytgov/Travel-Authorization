@@ -8,7 +8,7 @@ import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"
 
-export class FormsSerivce {
+export class FormsService {
   static async create(
     { stops = [], expenses, estimates, ...attributes }: Form,
     currentUser: User
@@ -76,4 +76,4 @@ export class FormsSerivce {
   }
 }
 
-export default FormsSerivce
+export default FormsService
