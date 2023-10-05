@@ -22,7 +22,8 @@ export class ExpensesController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return ExpensesService.create(this.request.body)
+    const permittedAttributes = this.permittedAttributesFor("create")
+    return ExpensesService.create(permittedAttributes)
       .then((expense) => {
         return this.response.status(201).json({ expense })
       })
@@ -39,7 +40,8 @@ export class ExpensesController extends BaseController {
         .json({ message: "You are not authorized to update this expense." })
     }
 
-    return ExpensesService.update(this.params.expenseId, this.request.body)
+    const permittedAttributes = this.permittedAttributesFor("update")
+    return ExpensesService.update(this.params.expenseId, permittedAttributes)
       .then((expense) => {
         this.response.json({ expense })
       })
@@ -53,6 +55,18 @@ export class ExpensesController extends BaseController {
     const { taid: formId } = attributes
     const form = await Form.findByPk(formId)
     return new Expense({ ...attributes, form })
+  }
+
+  // TODO: refactor this to the base controller somehow ...
+  // Might need to set the policy class per-controller?
+  private permittedAttributesFor(action: "create" | "update"): Partial<Expense> {
+    if (action === "create") {
+      return ExpensesPolicy.permitAttributesForCreate(this.request.body)
+    } else if (action === "update") {
+      return ExpensesPolicy.permitAttributesForUpdate(this.request.body)
+    } else {
+      return {}
+    }
   }
 }
 

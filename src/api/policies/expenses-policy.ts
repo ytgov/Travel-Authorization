@@ -1,4 +1,4 @@
-import { isNil } from "lodash"
+import { isNil, pick } from "lodash"
 
 import BasePolicy from "./base-policy"
 import FormsPolicy from "./forms-policy"
@@ -14,6 +14,14 @@ export class ExpensesPolicy extends BasePolicy {
 
   static update(record: Expense, currentUser: User): boolean {
     return this.create(record, currentUser)
+  }
+
+  static permitAttributesForCreate(record: Partial<Expense>): Partial<Expense> {
+    return pick(record, ["taid", "type", "currency", "description", "date", "cost", "expenseType"])
+  }
+
+  static permitAttributesForUpdate(record: Partial<Expense>): Partial<Expense> {
+    return pick(record, ["description", "date", "cost", "expenseType"])
   }
 }
 

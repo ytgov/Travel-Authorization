@@ -6,7 +6,7 @@ import { Expense } from "../models"
 import BaseService from "./base-service"
 
 export class ExpensesService extends BaseService {
-  static async create(attributes: Expense): Promise<Expense> {
+  static async create(attributes: Partial<Expense>): Promise<Expense> {
     const expense = await db<Expense>("expenses")
       .insert(attributes)
       .returning("*")
