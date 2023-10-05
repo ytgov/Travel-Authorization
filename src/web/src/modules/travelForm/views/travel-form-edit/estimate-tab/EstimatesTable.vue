@@ -12,7 +12,7 @@
     <template #item.date="{ value }">
       {{ formatDate(value) }}
     </template>
-    <template #item.amount="{ value }">
+    <template #item.cost="{ value }">
       {{ formatCurrency(value) }}
     </template>
     <template #item.actions="{ value: actions, item }">
@@ -54,8 +54,15 @@ import EstimateDeleteDialog from "./EstimateDeleteDialog"
 import EstimateEditDialog from "./EstimateEditDialog"
 
 // Must match types in src/api/models/expense.ts
-const EXPENSE_TYPES = Object.freeze({
+const TYPES = Object.freeze({
   ESTIMATE: "Estimates",
+})
+
+// Must match types in src/api/models/expense.ts
+const EXPENSE_TYPES = Object.freeze({
+  ACCOMODATIONS: "Accomodations",
+  FLIGHTS: "Flights",
+  MEALS_INCIDENTALS: "Meals & Incidentals",
 })
 
 export default {
@@ -75,64 +82,64 @@ export default {
       { text: "Expense Type", value: "expenseType" },
       { test: "Description", value: "description" },
       { text: "Date", value: "date" },
-      { text: "Amount", value: "amount" },
+      { text: "Amount", value: "cost" },
       { text: "", value: "actions" },
     ],
     estimates: [
       {
-        id: 1,
+        id: -1,
         expenseType: "Flights",
         description: "Departure - Whitehorse - Vancover",
         date: "2022-06-05T07:00:00.000Z",
-        amount: 350.0,
+        cost: 350.0,
         actions: ["edit", "delete"],
       },
       {
-        id: 2,
+        id: -2,
         expenseType: "Accommodations",
         description: "Room cost",
         date: "2022-06-05T07:00:00.000Z",
-        amount: 250.0,
+        cost: 250.0,
         actions: ["edit", "delete"],
       },
       {
-        id: 3,
+        id: -3,
         expenseType: "Meals & Incidentals",
         description: "Full Day",
         date: "2022-06-05T07:00:00.000Z",
-        amount: 128.45,
+        cost: 128.45,
         actions: ["delete"],
       },
       {
-        id: 4,
+        id: -4,
         expenseType: "Accommodations",
         description: "Room cost",
         date: "2022-06-06T07:00:00.000Z",
-        amount: 250.0,
+        cost: 250.0,
         actions: ["edit", "delete"],
       },
       {
-        id: 5,
+        id: -5,
         expenseType: "Meals & Incidentals",
         description: "Full Day",
         date: "2022-06-06T07:00:00.000Z",
-        amount: 128.45,
+        cost: 128.45,
         actions: ["delete"],
       },
       {
-        id: 6,
+        id: -6,
         expenseType: "Flights",
         description: "Return - Vancover - Whitehorse",
         date: "2022-06-07T07:00:00.000Z",
-        amount: 350.0,
+        cost: 350.0,
         actions: ["edit", "delete"],
       },
       {
-        id: 7,
+        id: -7,
         expenseType: "Meals & Incidentals",
         description: "Breakfast/Lunch",
         date: "2022-06-07T07:00:00.000Z",
-        amount: 46.7,
+        cost: 46.7,
         actions: ["delete"],
       },
     ],
@@ -141,16 +148,25 @@ export default {
   computed: {
     // Will need to be calculated in the back-end if data is multi-page.
     totalAmount() {
-      return sumBy(this.estimates, "amount")
+      return sumBy(this.estimates, "cost")
     },
   },
   async mounted() {
     await expensesApi
-      .list({ where: { taid: this.formId, type: EXPENSE_TYPES.ESTIMATE } })
+      .list({ where: { taid: this.formId, type: TYPES.ESTIMATE } })
       .then(({ expenses: estimates }) => {
+        estimates.forEach((estimate) => {
+          if (estimate.expenseType === EXPENSE_TYPES.MEALS_INCIDENTALS) {
+            estimate.actions = ["delete"]
+          } else {
+            estimate.actions = ["edit", "delete"]
+          }
+        })
         console.log("estimates:", estimates)
         // TODO: enable this once endpoint is returning data.
         // this.estimates = estimates
+        // this is just for debugging purposes, real code is above
+        this.estimates.splice(0, estimates.length, ...estimates)
       })
   },
   methods: {
