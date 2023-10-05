@@ -100,8 +100,17 @@ export default {
         taid: this.formId,
         type: EXPENSE_TYPES.ESTIMATE,
       },
-      showDialog: false,
+      showDialog: this.$route.query.showCreate === "true",
     }
+  },
+  watch: {
+    showDialog(value) {
+      if (value) {
+        this.$router.push({ query: { showCreate: value } })
+      } else {
+        this.$router.push({ query: { showCreate: undefined } })
+      }
+    },
   },
   methods: {
     required,
