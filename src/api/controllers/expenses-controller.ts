@@ -22,7 +22,7 @@ export class ExpensesController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return ExpensesService.create(expense)
+    return ExpensesService.create(this.request.body)
       .then((expense) => {
         return this.response.status(201).json({ expense })
       })

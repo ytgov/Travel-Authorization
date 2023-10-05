@@ -1,7 +1,7 @@
 <template>
   <v-text-field
     :value="localValue"
-    prefix="$"
+    :prefix="prefix"
     @input="updateValue"
     @blur="formatValue"
     @focus="selectAll"
@@ -19,6 +19,10 @@ export default {
     value: {
       type: [Number, String],
       default: 0,
+    },
+    prefix: {
+      type: String,
+      default: "$",
     },
   },
   data() {

@@ -119,6 +119,7 @@ export default {
       estimate: {
         taid: this.formId,
         type: EXPENSE_TYPES.ESTIMATE,
+        currency: "CAD",
       },
       showDialog: this.$route.query.showCreate === "true",
       loading: false,
