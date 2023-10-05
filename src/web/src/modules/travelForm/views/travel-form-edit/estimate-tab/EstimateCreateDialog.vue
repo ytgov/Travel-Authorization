@@ -39,10 +39,12 @@
             label="Date"
             required
           />
-          <v-text-field
+          <CurrencyTextField
             v-model="estimate.cost"
+            :rules="[required]"
             label="Amount"
-          ></v-text-field>
+            required
+          />
         </v-container>
       </v-card-text>
 
@@ -70,6 +72,7 @@
 <script>
 import { required } from "@/utils/validators"
 
+import CurrencyTextField from "@/components/Utils/CurrencyTextField"
 import DatePicker from "@/components/Utils/DatePicker"
 import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect"
 
@@ -81,6 +84,7 @@ const EXPENSE_TYPES = Object.freeze({
 export default {
   name: "EstimateCreateDialog",
   components: {
+    CurrencyTextField,
     DatePicker,
     ExpenseTypeSelect,
   },
