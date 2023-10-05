@@ -8,30 +8,55 @@
         <span class="text-h5">Edit Estimate</span>
       </v-card-title>
 
-      <v-card-text>
-        <v-container>
-          <ExpenseTypeSelect
-            v-model="estimate.expenseType"
-            label="Expense Type"
-          />
-          <v-text-field
-            v-model="estimate.description"
-            label="Description"
-          ></v-text-field>
-          <v-text-field
-            v-model="estimate.date"
-            label="Date"
-          ></v-text-field>
-          <v-text-field
-            v-model="estimate.cost"
-            label="Amount"
-          ></v-text-field>
-        </v-container>
+      <v-card-text :loading="loading">
+        <v-form ref="form">
+          <v-row>
+            <v-col>
+              <ExpenseTypeSelect
+                v-model="estimate.expenseType"
+                :rules="[required]"
+                label="Expense Type"
+                required
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field
+                v-model="estimate.description"
+                :rules="[required]"
+                label="Description"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <DatePicker
+                v-model="estimate.date"
+                :rules="[required]"
+                label="Date"
+                required
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <CurrencyTextField
+                v-model="estimate.cost"
+                :rules="[required]"
+                label="Amount"
+                required
+              />
+            </v-col>
+          </v-row>
+        </v-form>
       </v-card-text>
 
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
+          :loading="loading"
           color="blue darken-1"
           text
           @click="close"
@@ -39,6 +64,7 @@
           Cancel
         </v-btn>
         <v-btn
+          :loading="loading"
           color="blue darken-1"
           text
           @click="save"
@@ -53,19 +79,33 @@
 <script>
 import { cloneDeep } from "lodash"
 
+import { required } from "@/utils/validators"
+
+import CurrencyTextField from "@/components/Utils/CurrencyTextField"
+import DatePicker from "@/components/Utils/DatePicker"
 import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect"
+
+import expensesApi from "@/apis/expenses-api"
 
 export default {
   name: "EstimateEditDialog",
   components: {
+    CurrencyTextField,
+    DatePicker,
     ExpenseTypeSelect,
   },
-  props: {},
   data: () => ({
     estimate: {},
     showDialog: false,
+    loading: false,
   }),
+  computed: {
+    estimateId() {
+      return this.estimate.id
+    },
+  },
   methods: {
+    required,
     show(estimate) {
       this.estimate = cloneDeep(estimate)
       this.showDialog = true
@@ -74,13 +114,20 @@ export default {
       this.showDialog = false
       this.$nextTick(() => {
         this.estimate = {}
+        this.$refs.form.resetValidation()
       })
     },
     save() {
-      // TODO: save to back-end
-      // use save event to trigger table reload
-      this.$emit("save", this.estimate.id)
-      this.close()
+      this.loading = true
+      return expensesApi
+        .update(this.estimateId, this.estimate)
+        .then(({ estimate }) => {
+          this.$emit("saved", estimate)
+          this.close()
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
   },
 }

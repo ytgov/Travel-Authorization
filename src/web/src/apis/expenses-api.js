@@ -9,6 +9,9 @@ export const expensesApi = {
   create(attributes) {
     return http.post("/api/expenses", attributes).then(({ data }) => data)
   },
+  update(expenseId, attributes) {
+    return http.patch(`/api/expenses/${expenseId}`, attributes).then(({ data }) => data)
+  },
 }
 
 export default expensesApi

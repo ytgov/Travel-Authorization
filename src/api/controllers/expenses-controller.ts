@@ -44,7 +44,7 @@ export class ExpensesController extends BaseController {
         this.response.json({ expense })
       })
       .catch((error) => {
-        return this.response.status(422).json({ message: `Form update failed: ${error}` })
+        return this.response.status(422).json({ message: `Expense update failed: ${error}` })
       })
   }
 
