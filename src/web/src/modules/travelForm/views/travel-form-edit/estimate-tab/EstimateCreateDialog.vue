@@ -14,7 +14,7 @@
         Add Estimate
       </v-btn>
     </template>
-    <v-card>
+    <v-card :loading="loading">
       <v-card-title>
         <span class="text-h5">Create Estimate</span>
       </v-card-title>
@@ -67,6 +67,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
+          :loading="loading"
           color="blue darken-1"
           text
           @click="close"
@@ -74,6 +75,7 @@
           Cancel
         </v-btn>
         <v-btn
+          :loading="loading"
           color="blue darken-1"
           text
           @click="save"
@@ -91,6 +93,8 @@ import { required } from "@/utils/validators"
 import CurrencyTextField from "@/components/Utils/CurrencyTextField"
 import DatePicker from "@/components/Utils/DatePicker"
 import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect"
+
+import expensesApi from "@/apis/expenses-api"
 
 // Must match types in src/api/models/expense.ts
 const EXPENSE_TYPES = Object.freeze({
@@ -117,6 +121,7 @@ export default {
         type: EXPENSE_TYPES.ESTIMATE,
       },
       showDialog: this.$route.query.showCreate === "true",
+      loading: false,
     }
   },
   watch: {
@@ -137,10 +142,16 @@ export default {
       })
     },
     save() {
-      // TODO: save to back-end
-      // use save event to trigger table reload
-      this.$emit("save", this.estimate)
-      this.close()
+      this.loading = true
+      return expensesApi
+        .create(this.estimate)
+        .then(({ estimate }) => {
+          this.$emit("save", estimate)
+          this.close()
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
   },
 }
