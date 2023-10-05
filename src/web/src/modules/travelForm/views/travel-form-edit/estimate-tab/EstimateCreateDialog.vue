@@ -21,30 +21,46 @@
 
       <v-card-text>
         <v-container>
-          <ExpenseTypeSelect
-            v-model="estimate.expenseType"
-            :rules="[required]"
-            label="Expense Type"
-            required
-          />
-          <v-text-field
-            v-model="estimate.description"
-            :rules="[required]"
-            label="Description"
-            required
-          ></v-text-field>
-          <DatePicker
-            v-model="estimate.date"
-            :rules="[required]"
-            label="Date"
-            required
-          />
-          <CurrencyTextField
-            v-model="estimate.cost"
-            :rules="[required]"
-            label="Amount"
-            required
-          />
+          <v-row>
+            <v-col>
+              <ExpenseTypeSelect
+                v-model="estimate.expenseType"
+                :rules="[required]"
+                label="Expense Type"
+                required
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-text-field
+                v-model="estimate.description"
+                :rules="[required]"
+                label="Description"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <DatePicker
+                v-model="estimate.date"
+                :rules="[required]"
+                label="Date"
+                required
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <CurrencyTextField
+                v-model="estimate.cost"
+                :rules="[required]"
+                label="Amount"
+                required
+              />
+            </v-col>
+          </v-row>
         </v-container>
       </v-card-text>
 
