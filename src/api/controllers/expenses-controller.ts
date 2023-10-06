@@ -16,13 +16,14 @@ export class ExpensesController extends BaseController {
 
   async create() {
     const expense = await this.buildExpense()
-    if (!ExpensesPolicy.create(expense, this.currentUser)) {
+    const policy = this.buildPolicy(expense)
+    if (!policy.create()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    const permittedAttributes = this.permittedAttributesFor("create")
+    const permittedAttributes = policy.permitAttributesForCreate()
     return ExpensesService.create(permittedAttributes)
       .then((expense) => {
         return this.response.status(201).json({ expense })
@@ -34,13 +35,14 @@ export class ExpensesController extends BaseController {
 
   async update() {
     const expense = await this.buildExpense()
-    if (!ExpensesPolicy.update(expense, this.currentUser)) {
+    const policy = this.buildPolicy(expense)
+    if (!policy.update()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to update this expense." })
     }
 
-    const permittedAttributes = this.permittedAttributesFor("update")
+    const permittedAttributes = policy.permitAttributesForUpdate()
     return ExpensesService.update(this.params.expenseId, permittedAttributes)
       .then((expense) => {
         this.response.json({ expense })
@@ -50,23 +52,15 @@ export class ExpensesController extends BaseController {
       })
   }
 
+  private buildPolicy(record: Expense): ExpensesPolicy {
+    return new ExpensesPolicy(this.currentUser, record)
+  }
+
   private async buildExpense() {
     const attributes = this.request.body
     const { taid: formId } = attributes
     const form = await Form.findByPk(formId)
     return new Expense({ ...attributes, form })
-  }
-
-  // TODO: refactor this to the base controller somehow ...
-  // Might need to set the policy class per-controller?
-  private permittedAttributesFor(action: "create" | "update"): Partial<Expense> {
-    if (action === "create") {
-      return ExpensesPolicy.permitAttributesForCreate(this.request.body)
-    } else if (action === "update") {
-      return ExpensesPolicy.permitAttributesForUpdate(this.request.body)
-    } else {
-      return {}
-    }
   }
 }
 

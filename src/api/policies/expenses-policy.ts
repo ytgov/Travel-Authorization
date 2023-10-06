@@ -1,27 +1,27 @@
-import { isNil, pick } from "lodash"
+import { isNil } from "lodash"
 
 import BasePolicy from "./base-policy"
 import FormsPolicy from "./forms-policy"
-import { Expense, User } from "../models"
+import { Expense } from "../models"
 
-export class ExpensesPolicy extends BasePolicy {
-  static create(record: Expense, currentUser: User): boolean {
-    const form = record.form
+export class ExpensesPolicy extends BasePolicy<Expense> {
+  create(): boolean {
+    const form = this.record.form
     if (isNil(form)) return false
 
-    return FormsPolicy.update(form, currentUser)
+    return FormsPolicy.update(form, this.user)
   }
 
-  static update(record: Expense, currentUser: User): boolean {
-    return this.create(record, currentUser)
+  update(): boolean {
+    return this.create()
   }
 
-  static permitAttributesForCreate(record: Partial<Expense>): Partial<Expense> {
-    return pick(record, ["taid", "type", "currency", "description", "date", "cost", "expenseType"])
+  permittedAttributes(): string[] {
+    return ["description", "date", "cost", "expenseType"]
   }
 
-  static permitAttributesForUpdate(record: Partial<Expense>): Partial<Expense> {
-    return pick(record, ["description", "date", "cost", "expenseType"])
+  permittedAttributesForCreate(): string[] {
+    return ["taid", "type", "currency", ...this.permittedAttributes()]
   }
 }
 
