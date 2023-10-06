@@ -98,6 +98,7 @@ export default {
   mounted() {
     return this.loadEstimates().then(() => {
       this.showEditDialogForRouteQuery()
+      this.showDeleteDialogForRouteQuery()
     })
   },
   methods: {
@@ -147,6 +148,15 @@ export default {
 
       this.showEditDialog(estimate)
     },
+    showDeleteDialogForRouteQuery() {
+      const estimateId = parseInt(this.$route.query.showDelete)
+      if (isNaN(estimateId)) return
+
+      const estimate = this.estimates.find((estimate) => estimate.id === estimateId)
+      if (!estimate) return
+
+      this.showDeleteDialog(estimate)
+    }
   },
 }
 </script>

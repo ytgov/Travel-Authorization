@@ -43,6 +43,17 @@ export default {
       return this.estimate.id
     },
   },
+  watch: {
+    showDialog(value) {
+      if (value) {
+        if (this.$route.query.showDelete === this.estimate.id.toString()) return
+
+        this.$router.push({ query: { showDelete: this.estimate.id } })
+      } else {
+        this.$router.push({ query: { showDelete: undefined } })
+      }
+    },
+  },
   methods: {
     show(estimate) {
       this.estimate = estimate
