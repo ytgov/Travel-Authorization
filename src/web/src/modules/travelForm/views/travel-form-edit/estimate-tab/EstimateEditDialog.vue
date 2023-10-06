@@ -57,16 +57,14 @@
         <v-spacer></v-spacer>
         <v-btn
           :loading="loading"
-          color="blue darken-1"
-          text
+          color="error"
           @click="close"
         >
           Cancel
         </v-btn>
         <v-btn
           :loading="loading"
-          color="blue darken-1"
-          text
+          color="primary"
           @click="updateAndClose"
         >
           Save
