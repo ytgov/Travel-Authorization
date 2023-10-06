@@ -111,7 +111,7 @@ export default {
         .filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE)
     },
     estimatedCost() {
-      return sumBy(this.estimates, 'amount')
+      return sumBy(this.estimates, 'cost')
     },
     travelAdvanceInDollars: {
       get() {
