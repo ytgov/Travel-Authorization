@@ -22,34 +22,34 @@ export class BasePolicy<Model> {
   }
 
   permitAttributes(): Partial<Model> {
-    return pick(this.record, this.permitedAttributes())
+    return pick(this.record, this.permittedAttributes())
   }
 
   permitAttributesForCreate() {
-    if (this.hasOwnProperty("permitedAttributesForCreate")) {
-      return pick(this.record, this.permitedAttributesForCreate())
+    if (this.hasOwnProperty("permittedAttributesForCreate")) {
+      return pick(this.record, this.permittedAttributesForCreate())
     } else {
-      return pick(this.record, this.permitedAttributes())
+      return pick(this.record, this.permittedAttributes())
     }
   }
 
   permitAttributesForUpdate() {
-    if (this.hasOwnProperty("permitedAttributesForUpdate")) {
-      return pick(this.record, this.permitedAttributesForUpdate())
+    if (this.hasOwnProperty("permittedAttributesForUpdate")) {
+      return pick(this.record, this.permittedAttributesForUpdate())
     } else {
-      return pick(this.record, this.permitedAttributes())
+      return pick(this.record, this.permittedAttributes())
     }
   }
 
-  permitedAttributes(): string[] {
+  permittedAttributes(): string[] {
     throw new Error("Not Implemented")
   }
 
-  permitedAttributesForCreate(): string[] {
+  permittedAttributesForCreate(): string[] {
     throw new Error("Not Implemented")
   }
 
-  permitedAttributesForUpdate(): string[] {
+  permittedAttributesForUpdate(): string[] {
     throw new Error("Not Implemented")
   }
 }
