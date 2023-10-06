@@ -11,7 +11,10 @@
         ref="editDialog"
         @saved="refresh"
       />
-      <EstimateDeleteDialog ref="deleteDialog" />
+      <EstimateDeleteDialog
+        ref="deleteDialog"
+        @deleted="refresh"
+      />
     </template>
     <template #item.date="{ value }">
       {{ formatDate(value) }}

@@ -72,7 +72,7 @@ export class ExpensesController extends BaseController {
 
     return ExpensesService.destroy(this.params.expenseId)
       .then(() => {
-        return this.response.status(204)
+        return this.response.status(204).end()
       })
       .catch((error) => {
         return this.response.status(422).json({ message: `Expense deletion failed: ${error}` })
