@@ -70,6 +70,9 @@ export default {
           this.$emit("deleted")
           this.close()
         })
+        .catch((error) => {
+          this.$snack(error.response?.data?.message || error.message, { color: "error" })
+        })
         .finally(() => {
           this.loading = false
         })
