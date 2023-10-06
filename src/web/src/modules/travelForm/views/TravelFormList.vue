@@ -105,7 +105,7 @@ export default {
           return this.goToFormDetails(form)
         })
         .catch((error) => {
-          this.$snack(error.response.message, { color: "error" })
+          this.$snack(error.message, { color: "error" })
         })
         .finally(() => {
           this.loadingCreatingForm = false

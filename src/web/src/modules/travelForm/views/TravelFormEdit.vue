@@ -114,7 +114,7 @@ export default {
           this.$router.push({ name: "TravelFormList" })
         })
         .catch((error) => {
-          this.$snack(error.response.message, { color: "error" })
+          this.$snack(error.message, { color: "error" })
         })
     },
     saveForm() {
@@ -129,7 +129,7 @@ export default {
           this.$snack("Form saved as a draft", { color: "success" })
         })
         .catch((error) => {
-          this.$snack(error.response?.data?.message || error.message, { color: "error" })
+          this.$snack(error.message, { color: "error" })
         })
     },
     // This will be unnecessary once all tabs are router links

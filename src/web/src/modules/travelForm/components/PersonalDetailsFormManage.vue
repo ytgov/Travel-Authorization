@@ -228,7 +228,7 @@ export default {
     },
     loadUserWrapper() {
       return this.loadUser().catch((error) => {
-        this.$snack(error.response.message || error.toString(), { color: "error" })
+        this.$snack(error.message, { color: "error" })
       })
     },
   },

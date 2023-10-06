@@ -101,7 +101,7 @@ export default {
           this.close()
         })
         .catch((error) => {
-          this.$snack(error.response?.data?.message || error.message, { color: "error" })
+          this.$snack(error.message, { color: "error" })
         })
         .finally(() => {
           this.loading = false
