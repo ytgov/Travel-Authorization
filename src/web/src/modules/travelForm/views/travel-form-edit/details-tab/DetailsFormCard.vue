@@ -135,7 +135,7 @@ export default {
   data: () => ({
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
-    tripType: TRIP_TYPES.ONE_WAY,
+    tripType: "",
     required: (v) => !!v || "This field is required",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
@@ -145,6 +145,15 @@ export default {
     finalDestination() {
       return last(this.currentForm.stops) || { taid: this.currentFormId }
     },
+  },
+  mounted() {
+    if (this.currentForm.oneWayTrip) {
+      this.tripType = TRIP_TYPES.ONE_WAY
+    } else if (this.currentForm.multiStop) {
+      this.tripType = TRIP_TYPES.MULI_DESTINATION
+    } else {
+      this.tripType = TRIP_TYPES.ROUND_TRIP
+    }
   },
   methods: {
     updateTripType(value) {
