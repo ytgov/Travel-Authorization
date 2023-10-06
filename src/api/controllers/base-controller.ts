@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express"
 
 import User from "../models/user"
 
+export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | "destroy"
+
 // See https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 export class BaseController {
   protected request: Request
