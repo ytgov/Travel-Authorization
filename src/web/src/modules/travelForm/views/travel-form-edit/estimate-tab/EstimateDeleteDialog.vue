@@ -5,9 +5,34 @@
   >
     <v-card>
       <!-- TODO: add estimate description? to this dialog -->
-      <v-card-title class="text-h5"
-        >Are you sure you want to delete this estimate?</v-card-title
-      >
+      <v-card-title class="text-h5">
+        Are you sure you want to delete the following estimate?
+        <v-container
+          class="text-body-1"
+          v-if="hasEstimate"
+        >
+          <v-row no-gutters>
+            <v-col class="text-center">
+              {{ estimate.expenseType }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col class="text-center">
+              {{ estimate.description }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col class="text-center">
+              {{ formatDate(estimate.date) }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col class="text-center">
+              {{ formatCurrency(estimate.cost) }}
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-title>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
@@ -29,7 +54,9 @@
 </template>
 
 <script>
-import expensesApi from '@/apis/expenses-api'
+import { isEmpty } from "lodash"
+
+import expensesApi from "@/apis/expenses-api"
 
 export default {
   name: "EstimateDeleteDialog",
@@ -41,6 +68,9 @@ export default {
   computed: {
     estimateId() {
       return this.estimate.id
+    },
+    hasEstimate() {
+      return !isEmpty(this.estimate)
     },
   },
   watch: {
@@ -76,6 +106,22 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    formatDate(date) {
+      const parsedDate = new Date(date)
+      const formatter = new Intl.DateTimeFormat("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+      return formatter.format(parsedDate).replace(/ /g, "-")
+    },
+    formatCurrency(amount) {
+      const formatter = new Intl.NumberFormat("en-CA", {
+        style: "currency",
+        currency: "CAD",
+      })
+      return formatter.format(amount)
     },
   },
 }
