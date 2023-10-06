@@ -57,35 +57,17 @@
       </v-col>
       <v-col
         cols="12"
-        md="2"
+        md="4"
       >
-        <v-select
-          :value="stop1TravelMethod"
-          :items="travelMethods"
+        <TravelMethodSelect
+          v-model="stop1.transport"
           :rules="[required]"
-          label="Travel Method"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
-          @change="updateStop1TravelMethod"
-        ></v-select>
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-text-field
-          v-if="stop1TravelMethod === TRAVEL_METHODS.OTHER"
-          v-model="stop1.transport"
-          :rules="[required]"
-          label="Travel Method - Other:"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-text-field>
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -145,35 +127,17 @@
       </v-col>
       <v-col
         cols="12"
-        md="2"
+        md="4"
       >
-        <v-select
-          :value="stop2TravelMethod"
-          :items="travelMethods"
+        <TravelMethodSelect
+          v-model="stop2.transport"
           :rules="[required]"
-          label="Travel Method"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
-          @change="updateStop2TravelMethod"
-        ></v-select>
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-text-field
-          v-if="stop2TravelMethod === TRAVEL_METHODS.OTHER"
-          v-model="stop2.transport"
-          :rules="[required]"
-          label="Travel Method - Other:"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-text-field>
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -233,35 +197,17 @@
       </v-col>
       <v-col
         cols="12"
-        md="2"
+        md="4"
       >
-        <v-select
-          :value="stop3TravelMethod"
-          :items="travelMethods"
+        <TravelMethodSelect
+          v-model="stop3.transport"
           :rules="[required]"
-          label="Travel Method"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
-          @change="updateStop3TravelMethod"
-        ></v-select>
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-text-field
-          v-if="stop3TravelMethod === TRAVEL_METHODS.OTHER"
-          v-model="stop3.transport"
-          :rules="[required]"
-          label="Travel Method - Other:"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-text-field>
+        />
       </v-col>
     </v-row>
   </div>
@@ -271,33 +217,19 @@
 import { mapActions, mapState, mapGetters } from "vuex"
 import { isArray, isEmpty } from "lodash"
 
+import { required } from "@/utils/validators"
+
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
-
-// TODO: abstract this to a shared helper
-const TRAVEL_METHODS = Object.freeze({
-  AIRCRAFT: "Aircraft",
-  POOL_VEHICLE: "Pool Vehicle",
-  PERSONAL_VEHICLE: "Personal Vehicle",
-  RENTAL_VEHICLE: "Rental Vehicle",
-  BUS: "Bus",
-  OTHER: "Other:",
-})
+import TravelMethodSelect from "@/modules/travelForm/components/TravelMethodSelect"
 
 export default {
   name: "MuliDestinationStopsSection",
   components: {
     DatePicker,
     TimePicker,
+    TravelMethodSelect,
   },
-  data: () => ({
-    required: (v) => !!v || "This field is required",
-    stop1TravelMethod: TRAVEL_METHODS.AIRCRAFT,
-    stop2TravelMethod: TRAVEL_METHODS.AIRCRAFT,
-    stop3TravelMethod: TRAVEL_METHODS.AIRCRAFT,
-    TRAVEL_METHODS,
-    travelMethods: Object.values(TRAVEL_METHODS),
-  }),
   computed: {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
@@ -351,35 +283,9 @@ export default {
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
+    required,
     newStop() {
       return { taid: this.currentFormId }
-    },
-    updateStop1TravelMethod(value) {
-      this.stop1TravelMethod = value
-
-      if (value === TRAVEL_METHODS.OTHER) {
-        this.stop1.transport = ""
-      } else {
-        this.stop1.transport = value
-      }
-    },
-    updateStop2TravelMethod(value) {
-      this.stop2TravelMethod = value
-
-      if (value === TRAVEL_METHODS.OTHER) {
-        this.stop2.transport = ""
-      } else {
-        this.stop2.transport = value
-      }
-    },
-    updateStop3TravelMethod(value) {
-      this.stop3TravelMethod = value
-
-      if (value === TRAVEL_METHODS.OTHER) {
-        this.stop3.transport = ""
-      } else {
-        this.stop3.transport = value
-      }
     },
   },
 }

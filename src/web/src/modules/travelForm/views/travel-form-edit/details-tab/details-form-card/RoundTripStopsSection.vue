@@ -57,35 +57,17 @@
       </v-col>
       <v-col
         cols="12"
-        md="2"
+        md="4"
       >
-        <v-select
-          :value="fromTravelMethod"
-          :items="travelMethods"
+        <TravelMethodSelect
+          v-model="from.transport"
           :rules="[required]"
-          label="Travel Method"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
-          @change="updateFromTravelMethod"
-        ></v-select>
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-text-field
-          v-if="fromTravelMethod === TRAVEL_METHODS.OTHER"
-          v-model="from.transport"
-          :rules="[required]"
-          label="Travel Method - Other:"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-text-field>
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -145,35 +127,17 @@
       </v-col>
       <v-col
         cols="12"
-        md="2"
+        md="4"
       >
-        <v-select
-          :value="toTravelMethod"
-          :items="travelMethods"
+        <TravelMethodSelect
+          v-model="to.transport"
           :rules="[required]"
-          label="Travel Method"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
-          @change="updateToTravelMethod"
-        ></v-select>
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-text-field
-          v-if="toTravelMethod === TRAVEL_METHODS.OTHER"
-          v-model="to.transport"
-          :rules="[required]"
-          label="Travel Method - Other:"
-          background-color="white"
-          dense
-          outlined
-          required
-        ></v-text-field>
+        />
       </v-col>
     </v-row>
   </div>
@@ -183,32 +147,19 @@
 import { mapActions, mapState, mapGetters } from "vuex"
 import { isArray, isEmpty } from "lodash"
 
+import { required } from "@/utils/validators"
+
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
-
-// TODO: abstract this to a shared helper
-const TRAVEL_METHODS = Object.freeze({
-  AIRCRAFT: "Aircraft",
-  POOL_VEHICLE: "Pool Vehicle",
-  PERSONAL_VEHICLE: "Personal Vehicle",
-  RENTAL_VEHICLE: "Rental Vehicle",
-  BUS: "Bus",
-  OTHER: "Other:",
-})
+import TravelMethodSelect from "@/modules/travelForm/components/TravelMethodSelect"
 
 export default {
   name: "RoundTripStopsSection",
   components: {
     DatePicker,
     TimePicker,
+    TravelMethodSelect,
   },
-  data: () => ({
-    required: (v) => !!v || "This field is required",
-    TRAVEL_METHODS,
-    toTravelMethod: TRAVEL_METHODS.AIRCRAFT,
-    fromTravelMethod: TRAVEL_METHODS.AIRCRAFT,
-    travelMethods: Object.values(TRAVEL_METHODS),
-  }),
   computed: {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
@@ -241,26 +192,9 @@ export default {
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
+    required,
     newStop() {
       return { taid: this.currentFormId }
-    },
-    updateFromTravelMethod(value) {
-      this.fromTravelMethod = value
-
-      if (value === TRAVEL_METHODS.OTHER) {
-        this.from.transport = ""
-      } else {
-        this.from.transport = value
-      }
-    },
-    updateToTravelMethod(value) {
-      this.toTravelMethod = value
-
-      if (value === TRAVEL_METHODS.OTHER) {
-        this.to.transport = ""
-      } else {
-        this.to.transport = value
-      }
     },
   },
 }
