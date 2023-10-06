@@ -47,7 +47,7 @@ export class BaseController {
   }
 
   index() {
-    throw new Error("Not implemented")
+    throw new Error("Not Implemented")
   }
 
   create() {

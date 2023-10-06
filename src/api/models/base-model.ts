@@ -1,6 +1,6 @@
 export class BaseModel {
   static count({ where = {} }: { where?: {} } = {}): Promise<number> {
-    throw new Error("Method not implemented.")
+    throw new Error("Not Implemented")
   }
 
   static async findAndCountAll({
@@ -14,7 +14,7 @@ export class BaseModel {
     limit?: number
     offset?: number
   } = {}): Promise<{ count: number; rows: any[] }> {
-    throw new Error("Method not implemented.")
+    throw new Error("Not Implemented")
   }
 
   static async findAll({
@@ -28,7 +28,7 @@ export class BaseModel {
     limit?: number
     offset?: number
   } = {}): Promise<any[]> {
-    throw new Error("Not implemented.")
+    throw new Error("Not Implemented")
   }
 
   static async findByPk(
