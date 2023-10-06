@@ -17,6 +17,10 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
     return this.create()
   }
 
+  destroy(): boolean {
+    return this.create()
+  }
+
   permittedAttributes(): string[] {
     return ["description", "date", "cost", "expenseType"]
   }

@@ -46,6 +46,13 @@ export class BaseController {
     }
   }
 
+  static get destroy() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const controllerInstance = new this(req, res, next)
+      return controllerInstance.destroy()
+    }
+  }
+
   index() {
     throw new Error("Not Implemented")
   }
@@ -59,6 +66,10 @@ export class BaseController {
   }
 
   update() {
+    throw new Error("Not Implemented")
+  }
+
+  destroy() {
     throw new Error("Not Implemented")
   }
 

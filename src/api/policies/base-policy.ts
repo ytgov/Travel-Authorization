@@ -1,8 +1,8 @@
-import { isNil, pick, upperFirst } from "lodash"
+import { pick } from "lodash"
 
 import { User } from "../models"
 
-export type Actions = "create" | "update"
+export type Actions = "show" | "create" | "update" | "destroy"
 
 export class BasePolicy<Model> {
   protected user: User
@@ -13,6 +13,10 @@ export class BasePolicy<Model> {
     this.record = record
   }
 
+  show(): boolean {
+    return false
+  }
+
   create(): boolean {
     return false
   }
@@ -20,6 +24,12 @@ export class BasePolicy<Model> {
   update(): boolean {
     return false
   }
+
+  destroy(): boolean {
+    return false
+  }
+
+  // TODO: add scope method to base policy, see forms-policy.ts
 
   permitAttributes(record: Partial<Model>): Partial<Model> {
     return pick(record, this.permittedAttributes())

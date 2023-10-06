@@ -51,10 +51,30 @@ export class ExpensesController extends BaseController {
     const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
     return ExpensesService.update(this.params.expenseId, permittedAttributes)
       .then((expense) => {
-        this.response.json({ expense })
+        return this.response.json({ expense })
       })
       .catch((error) => {
         return this.response.status(422).json({ message: `Expense update failed: ${error}` })
+      })
+  }
+
+  async destroy() {
+    const expense = await this.loadExpense()
+    if (isNil(expense)) return this.response.status(404).json({ message: "Expense not found." })
+
+    const policy = this.buildPolicy(expense)
+    if (!policy.destroy()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to delete this expense." })
+    }
+
+    return ExpensesService.destroy(this.params.expenseId)
+      .then(() => {
+        return this.response.status(204)
+      })
+      .catch((error) => {
+        return this.response.status(422).json({ message: `Expense deletion failed: ${error}` })
       })
   }
 

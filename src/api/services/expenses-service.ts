@@ -19,6 +19,8 @@ export class ExpensesService extends BaseService {
     return expense
   }
 
+  // CONSIDER: When the update action is this simple, it might make more sense to make
+  // an "active record" style model method, and use that directly instead.
   static async update(
     id: string | number,
     attributes: Partial<Expense>
@@ -34,6 +36,16 @@ export class ExpensesService extends BaseService {
       })
 
     return expense
+  }
+
+  static destroy(id: string | number): Promise<void> {
+    return db<Expense>("expenses")
+      .where("id", id)
+      .delete().then(rowsDeleted => {
+        if (rowsDeleted === 0) throw new Error("Could not delete expense")
+
+        return
+      })
   }
 
   static async bulkCreate(formId: number, expenses: Expense[]): Promise<Expense[]> {
