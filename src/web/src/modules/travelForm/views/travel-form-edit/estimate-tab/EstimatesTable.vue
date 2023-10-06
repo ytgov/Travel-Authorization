@@ -93,14 +93,8 @@ export default {
     },
   },
   mounted() {
-    return this.loadEstimates().then((estimates) => {
-      const estimateId = parseInt(this.$route.query.showEdit)
-      if (isNaN(estimateId)) return
-
-      const estimate = estimates.find((estimate) => estimate.id === estimateId)
-      if (!estimate) return
-
-      this.showEditDialog(estimate)
+    return this.loadEstimates().then(() => {
+      this.showEditDialogForRouteQuery()
     })
   },
   methods: {
@@ -140,6 +134,15 @@ export default {
     },
     showEditDialog(item) {
       this.$refs.editDialog.show(item)
+    },
+    showEditDialogForRouteQuery() {
+      const estimateId = parseInt(this.$route.query.showEdit)
+      if (isNaN(estimateId)) return
+
+      const estimate = this.estimates.find((estimate) => estimate.id === estimateId)
+      if (!estimate) return
+
+      this.showEditDialog(estimate)
     },
   },
 }
