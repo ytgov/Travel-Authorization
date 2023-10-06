@@ -3,8 +3,9 @@ import { isNil } from "lodash"
 import BaseController from "./base-controller"
 
 import { Expense, Form } from "../models"
-import { ExpensesService } from "../services"
 import { ExpensesPolicy } from "../policies"
+import { ExpensesSerializer } from "../serializers"
+import { ExpensesService } from "../services"
 
 export class ExpensesController extends BaseController {
   index() {
@@ -12,7 +13,8 @@ export class ExpensesController extends BaseController {
     return Expense.findAll({
       where,
     }).then((expenses) => {
-      return this.response.json({ expenses })
+      const serializedExpenses = ExpensesSerializer.asTable(expenses)
+      return this.response.json({ expenses: serializedExpenses })
     })
   }
 

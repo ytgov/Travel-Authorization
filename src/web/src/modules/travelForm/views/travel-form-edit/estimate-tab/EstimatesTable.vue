@@ -59,13 +59,6 @@ const TYPES = Object.freeze({
   ESTIMATE: "Estimates",
 })
 
-// Must match types in src/api/models/expense.ts
-const EXPENSE_TYPES = Object.freeze({
-  ACCOMODATIONS: "Accomodations",
-  FLIGHTS: "Flights",
-  MEALS_INCIDENTALS: "Meals & Incidentals",
-})
-
 export default {
   name: "EstimatesTable",
   components: {
@@ -121,14 +114,6 @@ export default {
       return expensesApi
         .list({ where: { taid: this.formId, type: TYPES.ESTIMATE } })
         .then(({ expenses: estimates }) => {
-          estimates.forEach((estimate) => {
-            if (estimate.expenseType === EXPENSE_TYPES.MEALS_INCIDENTALS) {
-              estimate.actions = ["delete"]
-            } else {
-              estimate.actions = ["edit", "delete"]
-            }
-          })
-
           this.estimates = estimates
         })
         .finally(() => {
