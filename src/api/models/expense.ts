@@ -1,3 +1,5 @@
+import { isNil } from "lodash"
+
 import db from "../db/db-client"
 
 import BaseModel from "./base-model"
@@ -70,6 +72,22 @@ export class Expense extends BaseModel {
   } = {}): Promise<Expense[]> {
     const expenses = await db("expenses").where(where).limit(limit).offset(offset)
     return expenses
+  }
+
+  static async findByPk(
+    id: number | string,
+    { include = [] }: { include?: "form"[] } = {}
+  ): Promise<Expense> {
+    const expense = await db("expenses").where({ id }).first()
+    if (isNil(expense)) throw new Error("Expense not found")
+
+    const formId = expense.taid
+    if (include.includes("form")) {
+      const form = await db("forms").where({ id: formId }).first()
+      expense.form = form
+    }
+
+    return expense
   }
 }
 

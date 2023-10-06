@@ -1,3 +1,5 @@
+import { isNil } from "lodash"
+
 import BaseController from "./base-controller"
 
 import { Expense, Form } from "../models"
@@ -34,7 +36,9 @@ export class ExpensesController extends BaseController {
   }
 
   async update() {
-    const expense = await this.buildExpense()
+    const expense = await this.loadExpense()
+    if (isNil(expense)) return this.response.status(404).json({ message: "Expense not found." })
+
     const policy = this.buildPolicy(expense)
     if (!policy.update()) {
       return this.response
@@ -52,15 +56,19 @@ export class ExpensesController extends BaseController {
       })
   }
 
-  private buildPolicy(record: Expense): ExpensesPolicy {
-    return new ExpensesPolicy(this.currentUser, record)
-  }
-
   private async buildExpense() {
     const attributes = this.request.body
     const { taid: formId } = attributes
     const form = await Form.findByPk(formId)
     return new Expense({ ...attributes, form })
+  }
+
+  private loadExpense(): Promise<Expense | undefined> {
+    return Expense.findByPk(this.params.expenseId, { include: ["form"] })
+  }
+
+  private buildPolicy(record: Expense): ExpensesPolicy {
+    return new ExpensesPolicy(this.currentUser, record)
   }
 }
 

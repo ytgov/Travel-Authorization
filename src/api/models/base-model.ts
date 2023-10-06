@@ -30,6 +30,13 @@ export class BaseModel {
   } = {}): Promise<any[]> {
     throw new Error("Not implemented.")
   }
+
+  static async findByPk(
+    id: number | string,
+    { include = [] }: { include?: string[] } = {}
+  ): Promise<any> {
+    throw new Error("Not implemented")
+  }
 }
 
 export default BaseModel
