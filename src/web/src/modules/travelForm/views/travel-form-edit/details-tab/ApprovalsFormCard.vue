@@ -15,11 +15,10 @@
             md="3"
           >
             <v-text-field
-              :value="estimatedCost"
+              :value="formatCurrency(estimatedCost)"
               :rules="[required]"
               label="Estimated Cost"
               background-color="white"
-              prefix="$"
               disabled
               dense
               outlined
@@ -177,6 +176,13 @@ export default {
           }))
         }
       )
+    },
+    formatCurrency(amount) {
+      const formatter = new Intl.NumberFormat("en-CA", {
+        style: "currency",
+        currency: "CAD",
+      })
+      return formatter.format(amount)
     },
   },
 }
