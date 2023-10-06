@@ -3,13 +3,16 @@
     v-model="showDialog"
     max-width="500px"
   >
-    <v-card>
-      <v-card-title>
-        <span class="text-h5">Edit Estimate</span>
-      </v-card-title>
+    <v-form
+      ref="form"
+      @submit.prevent="updateAndClose"
+    >
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">Edit Estimate</span>
+        </v-card-title>
 
-      <v-card-text :loading="loading">
-        <v-form ref="form">
+        <v-card-text :loading="loading">
           <v-row>
             <v-col>
               <ExpenseTypeSelect
@@ -50,27 +53,27 @@
               />
             </v-col>
           </v-row>
-        </v-form>
-      </v-card-text>
+        </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          :loading="loading"
-          color="error"
-          @click="close"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          :loading="loading"
-          color="primary"
-          @click="updateAndClose"
-        >
-          Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            :loading="loading"
+            color="error"
+            @click="close"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            :loading="loading"
+            type="submit"
+            color="primary"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-form>
   </v-dialog>
 </template>
 

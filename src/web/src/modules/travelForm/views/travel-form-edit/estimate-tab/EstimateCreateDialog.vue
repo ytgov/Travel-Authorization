@@ -14,13 +14,16 @@
         Add Estimate
       </v-btn>
     </template>
-    <v-card :loading="loading">
-      <v-card-title>
-        <span class="text-h5">Create Estimate</span>
-      </v-card-title>
+    <v-form
+      ref="form"
+      @submit.prevent="createAndClose"
+    >
+      <v-card :loading="loading">
+        <v-card-title>
+          <span class="text-h5">Create Estimate</span>
+        </v-card-title>
 
-      <v-card-text>
-        <v-form ref="form">
+        <v-card-text>
           <v-row>
             <v-col>
               <ExpenseTypeSelect
@@ -61,27 +64,27 @@
               />
             </v-col>
           </v-row>
-        </v-form>
-      </v-card-text>
+        </v-card-text>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          :loading="loading"
-          color="error"
-          @click="close"
-        >
-          Cancel
-        </v-btn>
-        <v-btn
-          :loading="loading"
-          color="primary"
-          @click="createAndClose"
-        >
-          Save
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            :loading="loading"
+            color="error"
+            @click="close"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            :loading="loading"
+            color="primary"
+            type="submit"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-form>
   </v-dialog>
 </template>
 
