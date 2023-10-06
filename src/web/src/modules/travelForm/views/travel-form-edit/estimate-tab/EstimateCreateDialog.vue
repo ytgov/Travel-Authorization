@@ -78,7 +78,7 @@
           :loading="loading"
           color="blue darken-1"
           text
-          @click="save"
+          @click="createAndClose"
         >
           Save
         </v-btn>
@@ -146,7 +146,7 @@ export default {
         this.$refs.form.resetValidation()
       })
     },
-    save() {
+    createAndClose() {
       this.loading = true
       return expensesApi
         .create(this.estimate)
