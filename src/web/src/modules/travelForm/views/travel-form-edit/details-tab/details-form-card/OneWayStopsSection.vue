@@ -68,6 +68,14 @@
           required
           outlined
         />
+        <AccommodationTypeSelect
+          v-model="from.accommodationType"
+          :rules="[required]"
+          background-color="white"
+          dense
+          outlined
+          required
+        />
       </v-col>
     </v-row>
   </div>
@@ -79,6 +87,7 @@ import { isArray, isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
+import AccommodationTypeSelect from "@/modules/travelForm/components/AccommodationTypeSelect"
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 import TravelMethodSelect from "@/modules/travelForm/components/TravelMethodSelect"
@@ -86,6 +95,7 @@ import TravelMethodSelect from "@/modules/travelForm/components/TravelMethodSele
 export default {
   name: "OneWayStopsSection",
   components: {
+    AccommodationTypeSelect,
     DatePicker,
     TimePicker,
     TravelMethodSelect,

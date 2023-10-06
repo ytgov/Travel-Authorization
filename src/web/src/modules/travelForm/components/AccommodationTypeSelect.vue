@@ -1,30 +1,21 @@
 <template>
-  <v-row>
-    <v-col
-      cols="12"
-      md="6"
-    >
-      <v-select
-        :value="accommodationType"
-        :items="accommodationTypes"
-        :label="label"
-        v-bind="$attrs"
-        @input="updateAccommodationType"
-      ></v-select>
-    </v-col>
-    <v-col
-      cols="12"
-      md="6"
-    >
-      <v-text-field
-        v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
-        :value="accommodationTypeOther"
-        :label="`${label} - Other:`"
-        v-bind="$attrs"
-        @input="updateAccommodationTypeOther"
-      ></v-text-field>
-    </v-col>
-  </v-row>
+  <div class="d-inlin-flex d-md-flex">
+    <v-select
+      :value="accommodationType"
+      :items="accommodationTypes"
+      :label="label"
+      class="mr-md-4"
+      v-bind="$attrs"
+      @input="updateAccommodationType"
+    ></v-select>
+    <v-text-field
+      v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
+      :value="accommodationTypeOther"
+      :label="`${label} - Other:`"
+      v-bind="$attrs"
+      @input="updateAccommodationTypeOther"
+    ></v-text-field>
+  </div>
 </template>
 
 <script>

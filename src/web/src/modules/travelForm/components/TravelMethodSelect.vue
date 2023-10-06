@@ -1,30 +1,21 @@
 <template>
-  <v-row>
-    <v-col
-      cols="12"
-      md="6"
-    >
-      <v-select
-        :value="travelMethod"
-        :items="travelMethods"
-        :label="label"
-        v-bind="$attrs"
-        @change="updateFromTravelMethod"
-      ></v-select>
-    </v-col>
-    <v-col
-      cols="12"
-      md="6"
-    >
-      <v-text-field
-        v-if="travelMethod === TRAVEL_METHODS.OTHER"
-        v-model="travelMethodOther"
-        :label="`${label} - Other:`"
-        v-bind="$attrs"
-        @change="updateFromTravelMethodOther"
-      ></v-text-field>
-    </v-col>
-  </v-row>
+  <div class="d-inlin-flex d-md-flex">
+    <v-select
+      :value="travelMethod"
+      :items="travelMethods"
+      :label="label"
+      class="mr-md-4"
+      v-bind="$attrs"
+      @change="updateFromTravelMethod"
+    ></v-select>
+    <v-text-field
+      v-if="travelMethod === TRAVEL_METHODS.OTHER"
+      v-model="travelMethodOther"
+      :label="`${label} - Other:`"
+      v-bind="$attrs"
+      @change="updateFromTravelMethodOther"
+    ></v-text-field>
+  </div>
 </template>
 
 <script>

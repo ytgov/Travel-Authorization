@@ -39,20 +39,6 @@
               @change="updateTripType"
             ></v-select>
           </v-col>
-          <v-col></v-col>
-          <v-col
-            cols="12"
-            md="5"
-          >
-            <AccommodationTypeSelect
-              v-model="currentForm.accommodationType"
-              :rules="[required]"
-              background-color="white"
-              dense
-              outlined
-              required
-            />
-          </v-col>
         </v-row>
 
         <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
@@ -111,7 +97,6 @@
 import { mapState, mapGetters } from "vuex"
 import { last } from "lodash"
 
-import AccommodationTypeSelect from "@/modules/travelForm/components/AccommodationTypeSelect"
 import DatePicker from "@/components/Utils/DatePicker"
 import MuliDestinationStopsSection from "./details-form-card/MuliDestinationStopsSection"
 import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
@@ -126,7 +111,6 @@ const TRIP_TYPES = Object.freeze({
 export default {
   name: "DetailsFormCard",
   components: {
-    AccommodationTypeSelect,
     DatePicker,
     MuliDestinationStopsSection,
     OneWayStopsSection,
