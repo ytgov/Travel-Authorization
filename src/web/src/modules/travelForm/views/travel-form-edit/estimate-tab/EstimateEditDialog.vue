@@ -104,6 +104,17 @@ export default {
       return this.estimate.id
     },
   },
+  watch: {
+    showDialog(value) {
+      if (value) {
+        if (this.$route.query.showEdit === this.estimate.id.toString()) return
+
+        this.$router.push({ query: { showEdit: this.estimate.id } })
+      } else {
+        this.$router.push({ query: { showEdit: undefined } })
+      }
+    },
+  },
   methods: {
     required,
     show(estimate) {

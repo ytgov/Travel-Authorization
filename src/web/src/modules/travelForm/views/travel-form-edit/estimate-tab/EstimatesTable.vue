@@ -93,7 +93,15 @@ export default {
     },
   },
   mounted() {
-    return this.loadEstimates()
+    return this.loadEstimates().then((estimates) => {
+      const estimateId = parseInt(this.$route.query.showEdit)
+      if (isNaN(estimateId)) return
+
+      const estimate = estimates.find((estimate) => estimate.id === estimateId)
+      if (!estimate) return
+
+      this.showEditDialog(estimate)
+    })
   },
   methods: {
     formatDate(date) {
@@ -118,6 +126,7 @@ export default {
         .list({ where: { taid: this.formId, type: TYPES.ESTIMATE } })
         .then(({ expenses: estimates }) => {
           this.estimates = estimates
+          return estimates
         })
         .finally(() => {
           this.loading = false
