@@ -10,11 +10,11 @@ export class FormsPolicy extends BasePolicy<Form> {
     return record.userId === currentUser.id
   }
 
-  static update(record: Form, currentUser: User): boolean {
-    if (currentUser.roles.includes("Admin")) return true
-    if (record.userId !== currentUser.id) return false
+  update(): boolean {
+    if (this.user.roles.includes("Admin")) return true
+    if (this.record.userId !== this.user.id) return false
 
-    return record.status === FormStatuses.DRAFT
+    return this.record.status === FormStatuses.DRAFT
   }
 
   static scope(records: Form[], currentUser: User) {

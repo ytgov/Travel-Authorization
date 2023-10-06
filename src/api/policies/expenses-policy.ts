@@ -9,7 +9,8 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
     const form = this.record.form
     if (isNil(form)) return false
 
-    return FormsPolicy.update(form, this.user)
+    const formPolicy = new FormsPolicy(this.user, form)
+    return formPolicy.update()
   }
 
   update(): boolean {

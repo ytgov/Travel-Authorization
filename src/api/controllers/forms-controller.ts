@@ -1,6 +1,5 @@
 import { isNil } from "lodash"
 
-import db from "../db/db-client"
 import BaseController from "./base-controller"
 
 import { AuditService, FormsService } from "../services"
@@ -62,7 +61,8 @@ export class FormsController extends BaseController {
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
-    if (!FormsPolicy.update(form, this.currentUser)) {
+    const policy = this.buildPolicy(form)
+    if (!policy.update()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to update this form." })
@@ -78,7 +78,11 @@ export class FormsController extends BaseController {
   }
 
   private loadForm(): Promise<Form | undefined> {
-    return db<Form>("forms").where("id", this.params.formId).first()
+    return Form.findByPk(this.params.formId)
+  }
+
+  private buildPolicy(record: Form): FormsPolicy {
+    return new FormsPolicy(this.currentUser, record)
   }
 }
 
