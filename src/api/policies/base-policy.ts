@@ -36,7 +36,7 @@ export class BasePolicy<Model> {
   }
 
   permitAttributesForCreate(record: Partial<Model>): Partial<Model> {
-    if (this.hasOwnProperty("permittedAttributesForCreate")) {
+    if (this.permittedAttributesForCreate !== BasePolicy.prototype.permittedAttributesForCreate) {
       return pick(record, this.permittedAttributesForCreate())
     } else {
       return pick(record, this.permittedAttributes())
@@ -44,7 +44,7 @@ export class BasePolicy<Model> {
   }
 
   permitAttributesForUpdate(record: Partial<Model>): Partial<Model> {
-    if (this.hasOwnProperty("permittedAttributesForUpdate")) {
+    if (this.permittedAttributesForUpdate !== BasePolicy.prototype.permittedAttributesForUpdate) {
       return pick(record, this.permittedAttributesForUpdate())
     } else {
       return pick(record, this.permittedAttributes())
