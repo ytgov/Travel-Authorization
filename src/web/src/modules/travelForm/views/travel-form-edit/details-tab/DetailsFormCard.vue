@@ -42,36 +42,16 @@
           <v-col></v-col>
           <v-col
             cols="12"
-            md="2"
+            md="5"
           >
-            <!-- If accommodation type is other, support text field entry -->
-            <v-select
-              :value="accommodationType"
-              :items="accommodationTypes"
+            <AccommodationTypeSelect
+              v-model="currentForm.accommodationType"
               :rules="[required]"
-              label="Type of Accommodation"
               background-color="white"
               dense
               outlined
               required
-              @input="updateAccommodationType"
-            ></v-select>
-          </v-col>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <v-text-field
-              v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
-              :value="accommodationTypeOther"
-              :rules="[required]"
-              label="Type of Accommodation - Other:"
-              background-color="white"
-              dense
-              outlined
-              required
-              @input="updateAccommodationTypeOther"
-            ></v-text-field>
+            />
           </v-col>
         </v-row>
 
@@ -129,12 +109,13 @@
 
 <script>
 import { mapState, mapGetters } from "vuex"
-import { isEmpty, last } from "lodash"
+import { last } from "lodash"
 
+import AccommodationTypeSelect from "@/modules/travelForm/components/AccommodationTypeSelect"
 import DatePicker from "@/components/Utils/DatePicker"
-import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
-import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
 import MuliDestinationStopsSection from "./details-form-card/MuliDestinationStopsSection"
+import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
+import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -142,25 +123,16 @@ const TRIP_TYPES = Object.freeze({
   MULI_DESTINATION: "Muli-Destination",
 })
 
-const ACCOMMODATION_TYPES = Object.freeze({
-  HOTEL: "Hotel",
-  PRIVATE: "Private",
-  OTHER: "Other:",
-})
-
 export default {
   name: "DetailsFormCard",
   components: {
+    AccommodationTypeSelect,
     DatePicker,
     MuliDestinationStopsSection,
     OneWayStopsSection,
     RoundTripStopsSection,
   },
   data: () => ({
-    ACCOMMODATION_TYPES,
-    accommodationType: ACCOMMODATION_TYPES.HOTEL,
-    accommodationTypeOther: "",
-    accommodationTypes: Object.values(ACCOMMODATION_TYPES),
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
     tripType: TRIP_TYPES.ONE_WAY,
@@ -174,25 +146,7 @@ export default {
       return last(this.currentForm.stops) || { taid: this.currentFormId }
     },
   },
-  async mounted() {
-    if (isEmpty(this.currentForm.accommodationType)) {
-      this.currentForm.accommodationType = ACCOMMODATION_TYPES.HOTEL
-    }
-  },
   methods: {
-    updateAccommodationType(value) {
-      if (value === ACCOMMODATION_TYPES.OTHER) {
-        this.currentForm.accommodationType = this.accommodationTypeOther
-      } else {
-        this.currentForm.accommodationType = value
-      }
-
-      this.accommodationType = value
-    },
-    updateAccommodationTypeOther(value) {
-      this.currentForm.accommodationType = value
-      this.accommodationTypeOther = value
-    },
     updateTripType(value) {
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentForm.oneWayTrip = false
