@@ -12,6 +12,9 @@ export const expensesApi = {
   update(expenseId, attributes) {
     return http.patch(`/api/expenses/${expenseId}`, attributes).then(({ data }) => data)
   },
+  delete(expenseId) {
+    return http.delete(`/api/expenses/${expenseId}`).then(({ data }) => data)
+  },
 }
 
 export default expensesApi

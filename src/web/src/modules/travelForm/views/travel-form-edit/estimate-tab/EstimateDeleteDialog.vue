@@ -11,14 +11,14 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
-          color="blue darken-1"
-          text
+          color="secondary"
+          :loading="loading"
           @click="close"
           >Cancel</v-btn
         >
         <v-btn
-          color="blue darken-1"
-          text
+          color="error"
+          :loading="loading"
           @click="deleteAndClose"
           >OK</v-btn
         >
@@ -29,12 +29,20 @@
 </template>
 
 <script>
+import expensesApi from '@/apis/expenses-api'
+
 export default {
   name: "EstimateDeleteDialog",
   data: () => ({
     estimate: {},
     showDialog: false,
+    loading: false,
   }),
+  computed: {
+    estimateId() {
+      return this.estimate.id
+    },
+  },
   methods: {
     show(estimate) {
       this.estimate = estimate
@@ -44,10 +52,16 @@ export default {
       this.showDialog = false
     },
     deleteAndClose() {
-      // TODO: delete from back-end
-      // use delete event to trigger table reload
-      this.$emit("delete", this.estimate.id)
-      this.close()
+      this.loading = true
+      return expensesApi
+        .delete(this.estimateId)
+        .then(() => {
+          this.$emit("deleted")
+          this.close()
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
   },
 }
