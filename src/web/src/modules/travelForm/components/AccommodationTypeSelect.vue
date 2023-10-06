@@ -7,7 +7,7 @@
       <v-select
         :value="accommodationType"
         :items="accommodationTypes"
-        label="Type of Accommodation"
+        :label="label"
         v-bind="$attrs"
         @input="updateAccommodationType"
       ></v-select>
@@ -19,7 +19,7 @@
       <v-text-field
         v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
         :value="accommodationTypeOther"
-        label="Type of Accommodation - Other:"
+        :label="`${label} - Other:`"
         v-bind="$attrs"
         @input="updateAccommodationTypeOther"
       ></v-text-field>
@@ -41,6 +41,10 @@ export default {
     value: {
       type: String,
       default: ACCOMMODATION_TYPES.HOTEL,
+    },
+    label: {
+      type: String,
+      default: "Type of Accommodation",
     },
   },
   data() {
