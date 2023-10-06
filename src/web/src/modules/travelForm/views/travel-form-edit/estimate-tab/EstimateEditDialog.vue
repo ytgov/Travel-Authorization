@@ -121,8 +121,8 @@ export default {
       this.loading = true
       return expensesApi
         .update(this.estimateId, this.estimate)
-        .then(({ estimate }) => {
-          this.$emit("saved", estimate)
+        .then(() => {
+          this.$emit("saved")
           this.close()
         })
         .finally(() => {

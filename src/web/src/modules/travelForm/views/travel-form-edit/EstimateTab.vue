@@ -39,7 +39,7 @@ export default {
   async mounted() {},
   methods: {
     refreshEstimates() {
-      this.$refs.estimatesTable.loadEstimates()
+      this.$refs.estimatesTable.refresh()
     },
   },
 }

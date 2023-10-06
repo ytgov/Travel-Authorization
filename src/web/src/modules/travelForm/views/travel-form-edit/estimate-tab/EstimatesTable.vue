@@ -7,7 +7,10 @@
     class="elevation-2"
   >
     <template v-slot:top>
-      <EstimateEditDialog ref="editDialog" />
+      <EstimateEditDialog
+        ref="editDialog"
+        @saved="refresh"
+      />
       <EstimateDeleteDialog ref="deleteDialog" />
     </template>
     <template #item.date="{ value }">
@@ -119,6 +122,9 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    refresh() {
+      return this.loadEstimates()
     },
     showDeleteDialog(item) {
       this.$refs.deleteDialog.show(item)
