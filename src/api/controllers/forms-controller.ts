@@ -43,7 +43,8 @@ export class FormsController extends BaseController {
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
-    if (!FormsPolicy.show(form, this.currentUser)) {
+    const policy = this.buildPolicy(form)
+    if (!policy.show()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to view this form." })

@@ -4,10 +4,10 @@ import User from "../models/user"
 import Form, { FormStatuses } from "../models/form"
 
 export class FormsPolicy extends BasePolicy<Form> {
-  static show(record: Form, currentUser: User): boolean {
-    if (currentUser.roles.includes("Admin")) return true
+  show(): boolean {
+    if (this.user.roles.includes("Admin")) return true
 
-    return record.userId === currentUser.id
+    return this.record.userId === this.user.id
   }
 
   update(): boolean {
@@ -18,7 +18,10 @@ export class FormsPolicy extends BasePolicy<Form> {
   }
 
   static scope(records: Form[], currentUser: User) {
-    return records.filter((record) => this.show(record, currentUser))
+    return records.filter((record) => {
+      const policy = new this(currentUser, record)
+      return policy.show()
+    })
   }
 }
 
