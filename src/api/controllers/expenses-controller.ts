@@ -27,7 +27,7 @@ export class ExpensesController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    const permittedAttributes = policy.permitAttributesForCreate()
+    const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
     return ExpensesService.create(permittedAttributes)
       .then((expense) => {
         return this.response.status(201).json({ expense })
@@ -48,7 +48,7 @@ export class ExpensesController extends BaseController {
         .json({ message: "You are not authorized to update this expense." })
     }
 
-    const permittedAttributes = policy.permitAttributesForUpdate()
+    const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
     return ExpensesService.update(this.params.expenseId, permittedAttributes)
       .then((expense) => {
         this.response.json({ expense })

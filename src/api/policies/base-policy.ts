@@ -21,23 +21,23 @@ export class BasePolicy<Model> {
     return false
   }
 
-  permitAttributes(): Partial<Model> {
-    return pick(this.record, this.permittedAttributes())
+  permitAttributes(record: Partial<Model>): Partial<Model> {
+    return pick(record, this.permittedAttributes())
   }
 
-  permitAttributesForCreate() {
+  permitAttributesForCreate(record: Partial<Model>): Partial<Model> {
     if (this.hasOwnProperty("permittedAttributesForCreate")) {
-      return pick(this.record, this.permittedAttributesForCreate())
+      return pick(record, this.permittedAttributesForCreate())
     } else {
-      return pick(this.record, this.permittedAttributes())
+      return pick(record, this.permittedAttributes())
     }
   }
 
-  permitAttributesForUpdate() {
+  permitAttributesForUpdate(record: Partial<Model>): Partial<Model> {
     if (this.hasOwnProperty("permittedAttributesForUpdate")) {
-      return pick(this.record, this.permittedAttributesForUpdate())
+      return pick(record, this.permittedAttributesForUpdate())
     } else {
-      return pick(this.record, this.permittedAttributes())
+      return pick(record, this.permittedAttributes())
     }
   }
 
