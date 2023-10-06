@@ -2,7 +2,7 @@ import { isNil } from "lodash"
 
 import db from "../db/db-client"
 
-import BaseModel from "./base-model"
+import BaseModel, { type OrderParam } from "./base-model"
 import Form from "./form"
 
 export enum ExpenseTypes {
@@ -62,15 +62,20 @@ export class Expense extends BaseModel {
   static async findAll({
     where = {},
     include = [],
+    order = [],
     limit = 1000,
     offset = 0,
   }: {
     where?: {}
     include?: string[]
+    order?: OrderParam[]
     limit?: number
     offset?: number
   } = {}): Promise<Expense[]> {
-    const expenses = await db("expenses").where(where).limit(limit).offset(offset)
+    const query = db("expenses").where(where)
+    this.applyOrder(query, order)
+    query.limit(limit).offset(offset)
+    const expenses = await query
     return expenses
   }
 

@@ -12,6 +12,7 @@ export class ExpensesController extends BaseController {
     const where = this.query.where
     return Expense.findAll({
       where,
+      order: ['date']
     }).then((expenses) => {
       const serializedExpenses = ExpensesSerializer.asTable(expenses)
       return this.response.json({ expenses: serializedExpenses })
