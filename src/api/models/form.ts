@@ -149,7 +149,12 @@ class Form extends BaseModel {
     }
 
     if (include.includes("stops")) {
-      const stops = await db("stops").where({ taid: formId })
+      const stops = await db("stops")
+        .where({ taid: formId })
+        .orderBy([
+          { column: "departureDate", order: "asc" },
+          { column: "departureTime", order: "asc" },
+        ])
       form.stops = stops
     }
 
