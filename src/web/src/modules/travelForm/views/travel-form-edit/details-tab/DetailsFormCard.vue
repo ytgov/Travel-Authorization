@@ -39,40 +39,6 @@
               @change="updateTripType"
             ></v-select>
           </v-col>
-          <v-col></v-col>
-          <v-col
-            cols="12"
-            md="2"
-          >
-            <!-- If accommodation type is other, support text field entry -->
-            <v-select
-              :value="accommodationType"
-              :items="accommodationTypes"
-              :rules="[required]"
-              label="Type of Accommodation"
-              background-color="white"
-              dense
-              outlined
-              required
-              @input="updateAccommodationType"
-            ></v-select>
-          </v-col>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <v-text-field
-              v-if="accommodationType === ACCOMMODATION_TYPES.OTHER"
-              :value="accommodationTypeOther"
-              :rules="[required]"
-              label="Type of Accommodation - Other:"
-              background-color="white"
-              dense
-              outlined
-              required
-              @input="updateAccommodationTypeOther"
-            ></v-text-field>
-          </v-col>
         </v-row>
 
         <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
@@ -101,7 +67,7 @@
           >
             <v-text-field
               v-model="currentForm.daysOffTravelStatus"
-              :rules="[required, isNumber]"
+              :rules="[isNumber]"
               label="Days on non-travel status"
               background-color="white"
               dense
@@ -129,23 +95,17 @@
 
 <script>
 import { mapState, mapGetters } from "vuex"
-import { isEmpty, last } from "lodash"
+import { last } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
-import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
-import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
 import MuliDestinationStopsSection from "./details-form-card/MuliDestinationStopsSection"
+import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
+import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
   ONE_WAY: "One Way",
   MULI_DESTINATION: "Muli-Destination",
-})
-
-const ACCOMMODATION_TYPES = Object.freeze({
-  HOTEL: "Hotel",
-  PRIVATE: "Private",
-  OTHER: "Other:",
 })
 
 export default {
@@ -157,13 +117,9 @@ export default {
     RoundTripStopsSection,
   },
   data: () => ({
-    ACCOMMODATION_TYPES,
-    accommodationType: ACCOMMODATION_TYPES.HOTEL,
-    accommodationTypeOther: "",
-    accommodationTypes: Object.values(ACCOMMODATION_TYPES),
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
-    tripType: TRIP_TYPES.ONE_WAY,
+    tripType: "",
     required: (v) => !!v || "This field is required",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
@@ -174,25 +130,16 @@ export default {
       return last(this.currentForm.stops) || { taid: this.currentFormId }
     },
   },
-  async mounted() {
-    if (isEmpty(this.currentForm.accommodationType)) {
-      this.currentForm.accommodationType = ACCOMMODATION_TYPES.HOTEL
+  mounted() {
+    if (this.currentForm.oneWayTrip) {
+      this.tripType = TRIP_TYPES.ONE_WAY
+    } else if (this.currentForm.multiStop) {
+      this.tripType = TRIP_TYPES.MULI_DESTINATION
+    } else {
+      this.tripType = TRIP_TYPES.ROUND_TRIP
     }
   },
   methods: {
-    updateAccommodationType(value) {
-      if (value === ACCOMMODATION_TYPES.OTHER) {
-        this.currentForm.accommodationType = this.accommodationTypeOther
-      } else {
-        this.currentForm.accommodationType = value
-      }
-
-      this.accommodationType = value
-    },
-    updateAccommodationTypeOther(value) {
-      this.currentForm.accommodationType = value
-      this.accommodationTypeOther = value
-    },
     updateTripType(value) {
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentForm.oneWayTrip = false
@@ -208,6 +155,10 @@ export default {
       }
 
       this.tripType = value
+
+      this.$nextTick(() => {
+        this.$refs.form.resetValidation()
+      })
     },
   },
 }
