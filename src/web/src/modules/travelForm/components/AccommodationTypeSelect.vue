@@ -19,7 +19,9 @@
 </template>
 
 <script>
-const ACCOMMODATION_TYPES = Object.freeze({
+import { isNil } from "lodash"
+
+export const ACCOMMODATION_TYPES = Object.freeze({
   HOTEL: "Hotel",
   PRIVATE: "Private",
   OTHER: "Other:",
@@ -47,7 +49,7 @@ export default {
     }
   },
   mounted() {
-    if (this.accommodationTypes.includes(this.value)) {
+    if (isNil(this.value) || this.accommodationTypes.includes(this.value)) {
       this.accommodationType = this.value
     } else {
       this.accommodationType = ACCOMMODATION_TYPES.OTHER
