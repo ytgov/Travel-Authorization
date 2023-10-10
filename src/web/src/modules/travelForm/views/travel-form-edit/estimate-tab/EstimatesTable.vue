@@ -3,7 +3,7 @@
     :headers="headers"
     :items="estimates"
     :items-per-page="10"
-    :loading="loading"
+    :loading="loadingEstimates"
     class="elevation-2"
   >
     <template v-slot:top>
@@ -55,15 +55,10 @@
 
 <script>
 import { sumBy } from "lodash"
+import { mapActions, mapState } from "vuex"
 
-import expensesApi from "@/apis/expenses-api"
 import EstimateDeleteDialog from "./EstimateDeleteDialog"
 import EstimateEditDialog from "./EstimateEditDialog"
-
-// Must match types in src/api/models/expense.ts
-const TYPES = Object.freeze({
-  ESTIMATE: "Estimates",
-})
 
 export default {
   name: "EstimatesTable",
@@ -85,23 +80,23 @@ export default {
       { text: "Amount", value: "cost" },
       { text: "", value: "actions" },
     ],
-    estimates: [],
     totalRowClasses: "text-start font-weight-bold text-uppercase",
-    loading: true,
   }),
   computed: {
+    ...mapState("travelForm", ["estimates", "loadingEstimates"]),
     // Will need to be calculated in the back-end if data is multi-page.
     totalAmount() {
       return sumBy(this.estimates, "cost")
     },
   },
   mounted() {
-    return this.loadEstimates().then(() => {
+    return this.loadEstimates({ formId: this.formId }).then(() => {
       this.showEditDialogForRouteQuery()
       this.showDeleteDialogForRouteQuery()
     })
   },
   methods: {
+    ...mapActions("travelForm", ["loadEstimates"]),
     formatDate(date) {
       const parsedDate = new Date(date)
       const formatter = new Intl.DateTimeFormat("en-GB", {
@@ -118,20 +113,8 @@ export default {
       })
       return formatter.format(amount)
     },
-    loadEstimates() {
-      this.loading = true
-      return expensesApi
-        .list({ where: { taid: this.formId, type: TYPES.ESTIMATE } })
-        .then(({ expenses: estimates }) => {
-          this.estimates = estimates
-          return estimates
-        })
-        .finally(() => {
-          this.loading = false
-        })
-    },
     refresh() {
-      return this.loadEstimates()
+      return this.loadEstimates({ formId: this.formId })
     },
     showDeleteDialog(item) {
       this.$refs.deleteDialog.show(item)
@@ -156,7 +139,7 @@ export default {
       if (!estimate) return
 
       this.showDeleteDialog(estimate)
-    }
+    },
   },
 }
 </script>
