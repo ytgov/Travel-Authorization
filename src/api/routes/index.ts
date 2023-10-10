@@ -6,6 +6,7 @@ import {
   FormsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
+  forms,
 } from "../controllers"
 
 export * from "./owner-router"
@@ -36,6 +37,7 @@ router.get("/api/forms", FormsController.index)
 router.post("/api/forms", FormsController.create)
 router.get("/api/forms/:formId", FormsController.show)
 router.patch("/api/forms/:formId", FormsController.update)
+router.post("/api/forms/:formId/estimates/generate", forms.estimates.GenerateController.create)
 router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
 
