@@ -155,6 +155,10 @@ export default {
       }
 
       this.tripType = value
+
+      this.$nextTick(() => {
+        this.$refs.form.resetValidation()
+      })
     },
   },
 }
