@@ -148,11 +148,13 @@
         />
         <AccommodationTypeSelect
           v-model="to.accommodationType"
-          :rules="[required]"
           background-color="white"
+          hint="Optional, set only if neccessary"
+          placeholder="N/A"
+          clearable
           dense
           outlined
-          required
+          persistent-hint
         />
       </v-col>
     </v-row>
