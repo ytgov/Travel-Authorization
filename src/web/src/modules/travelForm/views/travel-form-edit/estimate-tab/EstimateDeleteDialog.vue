@@ -6,8 +6,9 @@
     <v-card>
       <v-card-title class="text-h5">
         Are you sure you want to delete the following estimate?
+      </v-card-title>
+      <v-card-text>
         <v-container
-          class="text-body-1"
           v-if="hasEstimate"
         >
           <v-row no-gutters>
@@ -31,7 +32,7 @@
             </v-col>
           </v-row>
         </v-container>
-      </v-card-title>
+      </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn
