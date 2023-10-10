@@ -67,7 +67,7 @@
           >
             <v-text-field
               v-model="currentForm.daysOffTravelStatus"
-              :rules="[required, isNumber]"
+              :rules="[isNumber]"
               label="Days on non-travel status"
               background-color="white"
               dense
