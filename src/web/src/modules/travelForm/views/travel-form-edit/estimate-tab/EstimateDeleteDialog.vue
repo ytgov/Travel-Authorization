@@ -4,7 +4,6 @@
     max-width="500px"
   >
     <v-card>
-      <!-- TODO: add estimate description? to this dialog -->
       <v-card-title class="text-h5">
         Are you sure you want to delete the following estimate?
         <v-container
