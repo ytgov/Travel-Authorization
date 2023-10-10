@@ -80,7 +80,7 @@ class Form extends BaseModel {
   static async findAndCountAll({
     where = {},
     include = [],
-    limit = 10,
+    limit = 1000,
     offset = 0,
   }: {
     where?: {}
@@ -98,7 +98,7 @@ class Form extends BaseModel {
   static async findAll({
     where = {},
     include = [],
-    limit = 10,
+    limit = 1000,
     offset = 0,
   }: {
     where?: {}
@@ -137,20 +137,25 @@ class Form extends BaseModel {
   // it would be a better use of time than optimising this.
   static async findByPk(
     id: number | string,
-    { include = [] }: { include?: ("stops" | "purpose")[] }
+    { include = [] }: { include?: ("expenses" | "stops" | "purpose")[] } = {}
   ): Promise<Form> {
     const form = await db("forms").where({ id }).first()
     if (isNil(form)) throw new Error("Form not found")
 
+    const formId = form.id
+    if (include.includes("expenses")) {
+      const expenses = await db("expenses").where({ taid: formId })
+      form.expenses = expenses
+    }
+
     if (include.includes("stops")) {
-      const formId = form.id
       const stops = await db("stops").where({ taid: formId })
       form.stops = stops
     }
 
     if (include.includes("purpose")) {
       const purposeId = form.purposeId
-      const purpose = await db("travelPurpose").where({ id: purposeId })
+      const purpose = await db("travelPurpose").where({ id: purposeId }).first()
       form.purpose = purpose
     }
 

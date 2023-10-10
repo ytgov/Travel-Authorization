@@ -6,21 +6,15 @@ import db from "../db/db-client"
 import { Form, User } from "../models"
 import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
+import ExpensesService from "./expenses-service"
 
-export class FormsSerivce {
-  static async create(attributes: Form, currentUser: User): Promise<Form> {
-    const stops = attributes.stops || []
-    delete attributes.stops
-
-    const expenses = attributes.expenses
-    delete attributes.expenses
-
-    const estimates = attributes.estimates
-    delete attributes.estimates
-
+export class FormsService {
+  static async create(
+    { stops = [], expenses, estimates, ...attributes }: Form,
+    currentUser: User
+  ): Promise<Form> {
     attributes.userId = currentUser.id
-
-    // Not sure if this is correct, but I can't find any that generates the formId.
+    // Not sure if this is correct, but I can't find anything that generates the formId elsewhere
     if (isNil(attributes.formId)) {
       attributes.formId = uuid()
     }
@@ -52,16 +46,10 @@ export class FormsSerivce {
     return form
   }
 
-  static async update(id: string | number, attributes: Partial<Form>): Promise<Form> {
-    const stops = attributes.stops || []
-    delete attributes.stops
-
-    const expenses = attributes.expenses
-    delete attributes.expenses
-
-    const estimates = attributes.estimates
-    delete attributes.estimates
-
+  static async update(
+    id: string | number,
+    { stops = [], expenses = [], ...attributes }: Partial<Form>
+  ): Promise<Form> {
     const form = await db<Form>("forms")
       .where("id", id)
       .update(attributes)
@@ -77,15 +65,15 @@ export class FormsSerivce {
     // If we are using an ORM such as Sequelize, it would then be worth doing.
     const formId = form.id
     if (!isEmpty(stops)) {
-      await StopsService.bulkReplace(formId, stops)
+      form.stops = await StopsService.bulkReplace(formId, stops)
     }
 
-    const instance = new LegacyFormSerivce()
-    await instance.saveExpenses(formId, expenses)
-    await instance.saveEstimates(formId, estimates)
+    if (!isEmpty(expenses)) {
+      form.expenses = await ExpensesService.bulkReplace(formId, expenses)
+    }
 
     return form
   }
 }
 
-export default FormsSerivce
+export default FormsService

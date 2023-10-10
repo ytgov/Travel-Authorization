@@ -4,7 +4,7 @@ import Form from "../models/form"
 
 import BaseSerializer from "./base-serializer"
 
-export class FormSerializer extends BaseSerializer {
+export class FormsSerializer extends BaseSerializer {
   static asTable(forms: Form[]) {
     return forms.map((form) => {
       return {
@@ -35,4 +35,4 @@ export class FormSerializer extends BaseSerializer {
   }
 }
 
-export default FormSerializer
+export default FormsSerializer

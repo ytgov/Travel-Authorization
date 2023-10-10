@@ -16,7 +16,7 @@
           >
             <!-- Depending on in territory flag we will load a different list of destinations -->
             <v-checkbox
-              v-model="request.allTravelWithinTerritory"
+              v-model="currentForm.allTravelWithinTerritory"
               label="In Territory?"
               dense
               required
@@ -86,7 +86,7 @@
             md="1"
           >
             <v-text-field
-              v-model="request.travelDuration"
+              v-model="currentForm.travelDuration"
               :rules="[required, isNumber]"
               label="# Days"
               background-color="white"
@@ -100,7 +100,7 @@
             md="2"
           >
             <v-text-field
-              v-model="request.daysOffTravelStatus"
+              v-model="currentForm.daysOffTravelStatus"
               :rules="[required, isNumber]"
               label="Days on non-travel status"
               background-color="white"
@@ -114,7 +114,7 @@
             md="3"
           >
             <DatePicker
-              v-model="request.dateBackToWork"
+              v-model="currentForm.dateBackToWork"
               :min="finalDestination.departureDate"
               :rules="[required]"
               text="Expected Date return to work"
@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapState, mapGetters } from "vuex"
 import { isEmpty, last } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
@@ -168,40 +168,41 @@ export default {
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
-    ...mapState("travelForm", ["request"]),
+    ...mapState("travelForm", ["currentForm"]),
+    ...mapGetters("travelForm", ["currentFormId"]),
     finalDestination() {
-      return last(this.request.stops) || {}
+      return last(this.currentForm.stops) || { taid: this.currentFormId }
     },
   },
   async mounted() {
-    if (isEmpty(this.request.accommodationType)) {
-      this.request.accommodationType = ACCOMMODATION_TYPES.HOTEL
+    if (isEmpty(this.currentForm.accommodationType)) {
+      this.currentForm.accommodationType = ACCOMMODATION_TYPES.HOTEL
     }
   },
   methods: {
     updateAccommodationType(value) {
       if (value === ACCOMMODATION_TYPES.OTHER) {
-        this.request.accommodationType = this.accommodationTypeOther
+        this.currentForm.accommodationType = this.accommodationTypeOther
       } else {
-        this.request.accommodationType = value
+        this.currentForm.accommodationType = value
       }
 
       this.accommodationType = value
     },
     updateAccommodationTypeOther(value) {
-      this.request.accommodationType = value
+      this.currentForm.accommodationType = value
       this.accommodationTypeOther = value
     },
     updateTripType(value) {
       if (value === TRIP_TYPES.ROUND_TRIP) {
-        this.request.oneWayTrip = false
-        this.request.multiStop = false
+        this.currentForm.oneWayTrip = false
+        this.currentForm.multiStop = false
       } else if (value === TRIP_TYPES.ONE_WAY) {
-        this.request.oneWayTrip = true
-        this.request.multiStop = false
+        this.currentForm.oneWayTrip = true
+        this.currentForm.multiStop = false
       } else if (value === TRIP_TYPES.MULI_DESTINATION) {
-        this.request.multiStop = true
-        this.request.oneWayTrip = false
+        this.currentForm.multiStop = true
+        this.currentForm.oneWayTrip = false
       } else {
         throw new Error("Invalid trip type")
       }

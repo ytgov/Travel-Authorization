@@ -7,13 +7,14 @@ const routes = [
         name: "TravelFormList",
         path: "",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/TravelFormList")
+        component: () => import("../views/TravelFormList"),
       },
       {
-        path: "create",
-        component: () => import("../views/TravelFormCreate"),
+        path: ":formId",
+        component: () => import("../views/TravelFormEdit"),
+        props: true,
         children: [
           {
             path: "",
@@ -21,38 +22,36 @@ const routes = [
           },
           {
             path: "details",
-            name: "TravelFormCreate-DetailsTab",
-            component: () => import("../views/travel-form-create/DetailsTab"),
-          }
-        ]
-      },
-      {
-        name: "TravelFormEdit",
-        path: ":formId",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/TravelFormEdit"),
-        props: true,
+            name: "TravelFormEdit-DetailsTab",
+            component: () => import("../views/travel-form-edit/DetailsTab"),
+            props: true,
+          },
+          {
+            path: "estimate",
+            name: "TravelFormEdit-EstimateTab",
+            component: () => import("../views/travel-form-edit/EstimateTab"),
+            props: true,
+          },
+        ],
       },
       {
         name: "TravelFormManagerList",
         path: "/managerView",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/ManagerView")
+        component: () => import("../views/ManagerView"),
       },
       {
         name: "travelRequestManage",
         path: "request/:formId?/manage",
         meta: {
-          requiresAuth: true
+          requiresAuth: true,
         },
-        component: () => import("../views/TravelFormManage")
-      }
-    ]
-  }
-];
+        component: () => import("../views/TravelFormManage"),
+      },
+    ],
+  },
+]
 
-export default routes;
+export default routes

@@ -9,7 +9,7 @@
         md="2"
       >
         <v-select
-          v-model="request.purposeId"
+          v-model="currentForm.purposeId"
           :items="purposes"
           :loading="loadingPurposes"
           :rules="[required]"
@@ -28,7 +28,7 @@
       >
         <v-autocomplete
           v-model="finalDestination.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :loading="loadingDestinations"
           :rules="[required]"
           background-color="white"
@@ -91,22 +91,26 @@ export default {
       new Date(a) >= new Date(b) || `This field must be greater than or equal to ${b || label}`,
   }),
   computed: {
-    ...mapState("travelForm", ["request", "purposes", "destinationsByRequestTravelRestriction"]),
-    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
+    ...mapState("travelForm", [
+      "currentForm",
+      "purposes",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
+    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
-        return last(this.request.stops) || {}
+        return last(this.currentForm.stops) || { taid: this.currentFormId }
       },
       set(newValue) {
-        this.$set(this.request.stops, this.request.stops.length - 1, newValue)
+        this.$set(this.currentForm.stops, this.currentForm.stops.length - 1, newValue)
       },
     },
     initialDestination: {
       get() {
-        return first(this.request.stops) || {}
+        return first(this.currentForm.stops) || { taid: this.currentFormId }
       },
       set(newValue) {
-        this.$set(this.request.stops, 0, newValue)
+        this.$set(this.currentForm.stops, 0, newValue)
       },
     },
   },

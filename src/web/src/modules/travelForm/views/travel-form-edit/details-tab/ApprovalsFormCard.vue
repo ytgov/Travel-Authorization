@@ -15,11 +15,10 @@
             md="3"
           >
             <v-text-field
-              :value="estimatedCost"
+              :value="formatCurrency(estimatedCost)"
               :rules="[required]"
               label="Estimated Cost"
               background-color="white"
-              prefix="$"
               disabled
               dense
               outlined
@@ -48,7 +47,7 @@
             md="6"
           >
             <v-select
-              v-model="request.preappId"
+              v-model="currentForm.preappId"
               :items="preApprovedTravelRequests"
               :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
               label="Pre-approved Travel Request?"
@@ -65,7 +64,7 @@
             md="3"
           >
             <SearchableUserEmailCombobox
-              v-model="request.supervisorEmail"
+              v-model="currentForm.supervisorEmail"
               :rules="[required]"
               label="Submit to"
               background-color="white"
@@ -81,12 +80,17 @@
 </template>
 
 <script>
-import { isEmpty } from "lodash"
+import { isEmpty, sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
 
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+
+// Must match types in src/api/models/expense.ts
+const EXPENSE_TYPES = Object.freeze({
+  ESTIMATE: 'Estimates',
+})
 
 export default {
   name: "ApprovalsFormCard",
@@ -96,18 +100,24 @@ export default {
   data: () => ({
     required: (v) => !!v || "This field is required",
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
-    estimatedCost: 1234567.89, // TODO: figure out what would be required to generate this value
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("travelForm", ["request", "currentUser", "loadingCurrentUser"]),
+    ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
+    estimates () {
+      return this.currentForm.expenses
+        .filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE)
+    },
+    estimatedCost() {
+      return sumBy(this.estimates, 'cost')
+    },
     travelAdvanceInDollars: {
       get() {
-        return Math.ceil(this.request.travelAdvanceInCents / 100.0)
+        return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
       },
       set(value) {
-        this.request.travelAdvanceInCents = Math.ceil(value * 100)
+        this.currentForm.travelAdvanceInCents = Math.ceil(value * 100)
       },
     },
   },
@@ -147,23 +157,32 @@ export default {
         })
     },
     flattenRequests(preApprovedTravelRequests) {
-      return preApprovedTravelRequests.flatMap(({ preApprovedTravelers, ...otherRequestAttributes }) => {
-        // If there are no travelers, return the request as is
-        if (preApprovedTravelers.length === 0) {
-          return {
-            ...otherRequestAttributes,
-            travelerID: null,
-            fullName: null,
+      return preApprovedTravelRequests.flatMap(
+        ({ preApprovedTravelers, ...otherRequestAttributes }) => {
+          // If there are no travelers, return the request as is
+          if (preApprovedTravelers.length === 0) {
+            return {
+              ...otherRequestAttributes,
+              travelerID: null,
+              fullName: null,
+            }
           }
-        }
 
-        // Otherwise, return an array of requests, one for each traveler
-        return preApprovedTravelers.map((traveler) => ({
-          ...otherRequestAttributes,
-          travelerID: traveler.travelerID,
-          fullName: traveler.fullName,
-        }))
+          // Otherwise, return an array of requests, one for each traveler
+          return preApprovedTravelers.map((traveler) => ({
+            ...otherRequestAttributes,
+            travelerID: traveler.travelerID,
+            fullName: traveler.fullName,
+          }))
+        }
+      )
+    },
+    formatCurrency(amount) {
+      const formatter = new Intl.NumberFormat("en-CA", {
+        style: "currency",
+        currency: "CAD",
       })
+      return formatter.format(amount)
     },
   },
 }

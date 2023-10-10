@@ -1,5 +1,6 @@
 export * from "./audit-service"
 export * from "./distance-matrix-service"
+export * from "./expenses-service"
 export * from "./form-service"
 export * from "./forms-service"
 export * from "./lookup-service"

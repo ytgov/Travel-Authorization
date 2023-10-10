@@ -7,7 +7,7 @@
       >
         <v-autocomplete
           v-model="stop1.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -23,7 +23,7 @@
       >
         <v-autocomplete
           v-model="stop2.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -95,7 +95,7 @@
       >
         <v-autocomplete
           v-model="stop2.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -111,7 +111,7 @@
       >
         <v-autocomplete
           v-model="stop3.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -183,7 +183,7 @@
       >
         <v-autocomplete
           v-model="stop3.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -199,7 +199,7 @@
       >
         <v-autocomplete
           v-model="stop4.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -299,58 +299,61 @@ export default {
     travelMethods: Object.values(TRAVEL_METHODS),
   }),
   computed: {
-    ...mapState("travelForm", ["request"]),
-    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
+    ...mapState("travelForm", ["currentForm"]),
+    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
     stop1() {
-      if (isEmpty(this.request?.stops)) return {}
+      if (isEmpty(this.currentForm?.stops)) return this.newStop()
 
-      return this.request.stops[0]
+      return this.currentForm.stops[0]
     },
     stop2() {
       if (
-        isEmpty(this.request?.stops) ||
-        (isArray(this.request?.stops) && this.request.stops.length < 2)
+        isEmpty(this.currentForm?.stops) ||
+        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
       )
-        return {}
+        return this.newStop()
 
-      return this.request.stops[1]
+      return this.currentForm.stops[1]
     },
     stop3() {
       if (
-        isEmpty(this.request?.stops) ||
-        (isArray(this.request?.stops) && this.request.stops.length < 3)
+        isEmpty(this.currentForm?.stops) ||
+        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 3)
       )
-        return {}
+        return this.newStop()
 
-      return this.request.stops[2]
+      return this.currentForm.stops[2]
     },
     stop4() {
       if (
-        isEmpty(this.request?.stops) ||
-        (isArray(this.request?.stops) && this.request.stops.length < 4)
+        isEmpty(this.currentForm?.stops) ||
+        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 4)
       )
-        return {}
+        return this.newStop()
 
-      return this.request.stops[3]
+      return this.currentForm.stops[3]
     },
   },
   async mounted() {
     await this.loadDestinations()
 
-    if (isEmpty(this.request.stops)) {
-      this.request.stops = [{}, {}, {}, {}]
-    } else if (this.request.stops.length === 1) {
-      this.request.stops.splice(0, 0, {}, {}, {});
-    } else if (this.request.stops.length === 2) {
-      this.request.stops.splice(1, 0, {}, {});
-    } else if (this.request.stops.length === 3) {
-      this.request.stops.splice(2, 0, {});
-    } else if (this.request.stops.length > 4) {
-      this.request.stops = this.request.stops.slice(0, 3)
+    if (isEmpty(this.currentForm.stops)) {
+      this.currentForm.stops = [this.newStop(), this.newStop(), this.newStop(), this.newStop()]
+    } else if (this.currentForm.stops.length === 1) {
+      this.currentForm.stops.splice(0, 0, this.newStop(), this.newStop(), this.newStop())
+    } else if (this.currentForm.stops.length === 2) {
+      this.currentForm.stops.splice(1, 0, this.newStop(), this.newStop())
+    } else if (this.currentForm.stops.length === 3) {
+      this.currentForm.stops.splice(2, 0, this.newStop())
+    } else if (this.currentForm.stops.length > 4) {
+      this.currentForm.stops = this.currentForm.stops.slice(0, 3)
     }
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
+    newStop() {
+      return { taid: this.currentFormId }
+    },
     updateStop1TravelMethod(value) {
       this.stop1TravelMethod = value
 

@@ -110,3 +110,6 @@ dist
 # Database initialization
 /db/
 /my-db/
+
+# LibreOffice
+/Design/.~lock.*

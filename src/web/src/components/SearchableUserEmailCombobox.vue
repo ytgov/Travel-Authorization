@@ -30,7 +30,6 @@ export default {
   props: {
     value: {
       type: String,
-      required: true,
     },
     rules: {
       type: Array,

@@ -1,7 +1,8 @@
-import { Router } from "express"
+import { Router, Request, Response } from "express"
 
 import { checkJwt, loadUser } from "../middleware/authz.middleware"
 import {
+  ExpensesController,
   FormsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
@@ -27,11 +28,20 @@ router.use("/api", checkJwt)
 router.use("/api", loadUser)
 
 // TODO: move all routing logic to this file, and move all route actions into controllers
+router.get("/api/expenses", ExpensesController.index)
+router.post("/api/expenses", ExpensesController.create)
+router.patch("/api/expenses/:expenseId", ExpensesController.update)
+router.delete("/api/expenses/:expenseId", ExpensesController.destroy)
 router.get("/api/forms", FormsController.index)
 router.post("/api/forms", FormsController.create)
 router.get("/api/forms/:formId", FormsController.show)
 router.patch("/api/forms/:formId", FormsController.update)
 router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
+
+// if no other routes match, return a 404
+router.use("/api", (req: Request, res: Response) => {
+  return res.status(404).json({ message: "Not Found" })
+})
 
 export default router
