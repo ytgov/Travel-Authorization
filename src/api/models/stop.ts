@@ -1,4 +1,5 @@
 import BaseModel from "./base-model"
+import Destination from "./destination"
 
 export class Stop extends BaseModel {
   id: number
@@ -9,6 +10,9 @@ export class Stop extends BaseModel {
   transport: string | null
   accommodationType: string | null
 
+  // Associations
+  destination?: Destination // through locationId
+
   constructor(attributes: Pick<Stop, "id" | "taid"> & Partial<Stop>) {
     super()
     this.id = attributes.id
@@ -18,6 +22,8 @@ export class Stop extends BaseModel {
     this.departureTime = attributes.departureTime || null
     this.transport = attributes.transport || null
     this.accommodationType = attributes.accommodationType || null
+
+    this.destination = attributes.destination
   }
 }
 

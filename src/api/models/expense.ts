@@ -33,7 +33,7 @@ export class Expense extends BaseModel {
   fileName: string | null
   expenseType: ExpenseTypes
 
-  // Assocaitions
+  // Associations
   form?: Form
 
   constructor(
