@@ -52,6 +52,10 @@ export class FormsController extends BaseController {
 
     return Form.findByPk(this.params.formId, { include: ["expenses", "stops", "purpose"] }).then(
       (form) => {
+        if (isNil(form)) {
+          return this.response.status(404).json({ message: "Form not found." })
+        }
+
         const serializedForm = FormsSerializer.asDetailed(form)
         return this.response.json({ form: serializedForm })
       }
@@ -78,7 +82,7 @@ export class FormsController extends BaseController {
       })
   }
 
-  private loadForm(): Promise<Form | undefined> {
+  private loadForm(): Promise<Form | null> {
     return Form.findByPk(this.params.formId)
   }
 
