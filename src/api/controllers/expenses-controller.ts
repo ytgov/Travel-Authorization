@@ -86,7 +86,7 @@ export class ExpensesController extends BaseController {
     return new Expense({ ...attributes, form })
   }
 
-  private loadExpense(): Promise<Expense | undefined> {
+  private loadExpense(): Promise<Expense | null> {
     return Expense.findByPk(this.params.expenseId, { include: ["form"] })
   }
 
