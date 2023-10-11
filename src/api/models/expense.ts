@@ -5,6 +5,7 @@ import {
   BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
+  ForeignKey,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -32,7 +33,7 @@ export enum Types {
 
 export class Expense extends Model<InferAttributes<Expense>, InferCreationAttributes<Expense>> {
   declare id: CreationOptional<number>
-  declare taid: number
+  declare taid: ForeignKey<Form["id"]>
   declare description: string
   declare date: Date | null
   declare cost: number
@@ -57,7 +58,7 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   }
 
   static establishAssociations() {
-    this.belongsTo(Form)
+    this.belongsTo(Form, { foreignKey: "taid" })
   }
 }
 
