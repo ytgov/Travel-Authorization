@@ -16,9 +16,10 @@ import sequelize from "../db/db-client"
 
 import Form from "./form"
 
+// Keep in sync with src/web/src/modules/travelForm/components/ExpenseTypeSelect.vue
 export enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",
-  FLIGHTS = "Flights",
+  TRANSPORTATION = "Transportation",
   MEALS_INCIDENTALS = "Meals & Incidentals",
 }
 
