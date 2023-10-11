@@ -2,9 +2,11 @@ import db from "../db/db-client"
 
 import Stop from "./stop"
 import Expense from "./expense"
+import Form from "./form"
 
 Stop.establishAssociations()
 Expense.establishAssociations()
+Form.establishAssociations()
 
 export * from "./auth"
 export * from "./destination"

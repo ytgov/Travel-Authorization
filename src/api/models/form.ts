@@ -1,4 +1,14 @@
-import { DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize"
+import {
+  Association,
+  BelongsToCreateAssociationMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  NonAttribute,
+} from "sequelize"
 
 import sequelize from "../db/db-client"
 import TravelPurpose from "./travel-purpose"
@@ -15,39 +25,55 @@ export enum FormStatuses {
 }
 
 export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<Form>> {
-  declare id: number;
-  declare userId: number;
-  declare firstName: string | null;
-  declare lastName: string | null;
-  declare department: string | null;
-  declare division: string | null;
-  declare branch: string | null;
-  declare unit: string | null;
-  declare email: string | null;
-  declare mailcode: string | null;
-  declare daysOffTravelStatus: number | null;
-  declare dateBackToWork: Date | null;
-  declare travelDuration: number | null;
-  declare purpose: string | null;
-  declare travelAdvance: number | null;
-  declare eventName: string | null;
-  declare summary: string | null;
-  declare benefits: string | null;
-  declare status: string | null;
-  declare formId: string;
-  declare supervisorEmail: string | null;
-  declare preappId: number | null;
-  declare approved: string | null;
-  declare requestChange: string | null;
-  declare denialReason: string | null;
-  declare oneWayTrip: boolean | null;
-  declare multiStop: boolean | null;
-  declare createdBy: number | null;
-  declare purposeId: number | null;
-  declare travelAdvanceInCents: number | null;
-  declare allTravelWithinTerritory: boolean | null;
+  declare id: number
+  declare userId: number
+  declare firstName: string | null
+  declare lastName: string | null
+  declare department: string | null
+  declare division: string | null
+  declare branch: string | null
+  declare unit: string | null
+  declare email: string | null
+  declare mailcode: string | null
+  declare daysOffTravelStatus: number | null
+  declare dateBackToWork: Date | null
+  declare travelDuration: number | null
+  declare purpose: string | null
+  declare travelAdvance: number | null
+  declare eventName: string | null
+  declare summary: string | null
+  declare benefits: string | null
+  declare status: FormStatuses | null
+  declare formId: string
+  declare supervisorEmail: string | null
+  declare preappId: number | null
+  declare approved: string | null
+  declare requestChange: string | null
+  declare denialReason: string | null
+  declare oneWayTrip: boolean | null
+  declare multiStop: boolean | null
+  declare createdBy: number | null
+  declare purposeId: number | null
+  declare travelAdvanceInCents: number | null
+  declare allTravelWithinTerritory: boolean | null
 
   // associations stops, purpose, expenses
+  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
+  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
+  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
+  declare getTravelPurpose: BelongsToGetAssociationMixin<TravelPurpose>
+  declare setTravelPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
+  declare createTravelPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
+
+  declare travelPurpose?: NonAttribute<TravelPurpose>
+
+  declare static associations: {
+    travelPurpose: Association<Form, TravelPurpose>
+  }
+
+  static establishAssociations() {
+    this.belongsTo(TravelPurpose)
+  }
 }
 
 Form.init(
@@ -175,8 +201,8 @@ Form.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'travelPurpose',
-        key: 'id',
+        model: "travelPurpose",
+        key: "id",
       },
     },
     travelAdvanceInCents: {
@@ -190,8 +216,8 @@ Form.init(
   },
   {
     sequelize,
-    tableName: 'forms',
-    modelName: 'Form',
+    tableName: "forms",
+    modelName: "Form",
     timestamps: false,
   }
 )
