@@ -1,7 +1,8 @@
 import BaseController from "../../base-controller"
 
-import { Expense, Form } from "../../../models"
+import { Expense, ExpenseTypes, Types as ExpenseVariants } from "../../../models"
 import { ExpensesPolicy } from "../../../policies"
+import { EstimatesSerivce } from "../../../services"
 
 export class GenerateController extends BaseController {
   async create() {
@@ -13,20 +14,31 @@ export class GenerateController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return this.response.status(201).json({
-      message: "TODO: generate estimates",
+    return EstimatesSerivce.bulkGenerate(this.formId).then((estimates) => {
+      return this.response.status(201).json({
+        estimates,
+        message: "Generated estimates",
+      })
     })
   }
 
   private async buildExpense() {
-    const attributes = this.request.body
-    const { taid: formId } = attributes
-    const form = await Form.findByPk(formId)
-    return new Expense({ ...attributes, form })
+    return Expense.build({
+      taid: this.formId,
+      type: ExpenseVariants.ESTIMATE,
+      description: "NOT RELEVANT",
+      cost: 0,
+      currency: "CAD",
+      expenseType: ExpenseTypes.TRANSPORTATION,
+    })
   }
 
   private buildPolicy(record: Expense): ExpensesPolicy {
     return new ExpensesPolicy(this.currentUser, record)
+  }
+
+  private get formId() {
+    return parseInt(this.params.formId.toString())
   }
 }
 
