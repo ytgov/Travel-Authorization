@@ -1,16 +1,44 @@
-import BaseModel from "./base-model"
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "sequelize"
 
-export class Destination extends BaseModel {
-  id: number
-  province: string
-  city: string
+import sequelize from "../db/db-client"
 
-  constructor(attributes: Pick<Destination, "id" | "province" | "city"> & Partial<Destination>) {
-    super()
-    this.id = attributes.id
-    this.province = attributes.province
-    this.city = attributes.city
-  }
+export class Destination extends Model<
+  InferAttributes<Destination>,
+  InferCreationAttributes<Destination>
+> {
+  declare id: CreationOptional<number>
+  declare province: string
+  declare city: string
 }
 
+Destination.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    province: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    city: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    modelName: "Destination",
+    tableName: "destinations",
+    timestamps: false,
+  }
+)
 export default Destination
