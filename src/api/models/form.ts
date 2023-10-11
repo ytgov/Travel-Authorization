@@ -1,6 +1,6 @@
 import { groupBy, isNil, keyBy } from "lodash"
 
-import db from "../db/db-client"
+import db from "../db/db-client-legacy"
 import BaseModel from "./base-model"
 import TravelPurpose from "./travel-purpose"
 

@@ -1,6 +1,6 @@
 import { isNil } from "lodash"
 
-import db from "../db/db-client"
+import db from "../db/db-client-legacy"
 
 import BaseModel, { type OrderParam } from "./base-model"
 import Form from "./form"

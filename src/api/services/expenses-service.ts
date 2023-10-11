@@ -1,6 +1,6 @@
 import { isEmpty, isNil } from "lodash"
 
-import db from "../db/db-client"
+import db from "../db/db-client-legacy"
 
 import { Expense } from "../models"
 import BaseService from "./base-service"
