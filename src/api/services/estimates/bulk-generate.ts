@@ -1,9 +1,9 @@
 import { chunk, isNil } from "lodash"
 
-import db from "../db/db-client-legacy"
+import db from "../../db/db-client-legacy"
 
-import { Destination, Expense, ExpenseTypes, Types as ExpenseVariants, Stop } from "../models"
-import BaseService from "./base-service"
+import { Destination, Expense, ExpenseTypes, Types as ExpenseVariants, Stop } from "../../models"
+import BaseService from "../base-service"
 
 // Keep in sync with src/web/src/modules/travelForm/components/TravelMethodSelect.vue
 // Until both are using a shared location
@@ -16,9 +16,21 @@ const TRAVEL_METHODS = Object.freeze({
   OTHER: "Other:",
 })
 
-export class EstimatesSerivce extends BaseService {
-  static async bulkGenerate(formId: number): Promise<Expense[]> {
-    const stops = await Stop.findAll({ where: { taid: formId }, include: ["location"] })
+export class BulkGenerate extends BaseService {
+  private formId: number
+
+  constructor(formId: number) {
+    super()
+    this.formId = formId
+  }
+
+  static async perform(formId: number): Promise<Expense[]> {
+    const instance = new this(formId)
+    return instance.perform()
+  }
+
+  async perform(): Promise<Expense[]> {
+    const stops = await Stop.findAll({ where: { taid: this.formId }, include: ["location"] })
 
     // expense types are:
     // travel method
@@ -26,13 +38,13 @@ export class EstimatesSerivce extends BaseService {
     // meals and incidentals
     const estimates: Expense[] = []
 
-    const travelMethodEstimates = this.buildTravelMethodExpenses(formId, stops)
+    const travelMethodEstimates = this.buildTravelMethodExpenses(this.formId, stops)
     estimates.concat(travelMethodEstimates)
 
     return db("estimates").insert(estimates).returning("*")
   }
 
-  private static buildTravelMethodExpenses(formId: number, stops: Stop[]): Expense[] {
+  private buildTravelMethodExpenses(formId: number, stops: Stop[]): Expense[] {
     const estimates: Expense[] = []
     const tripSegments = chunk(stops, 2)
     tripSegments.forEach(([fromStop, toStop]) => {
@@ -68,7 +80,7 @@ export class EstimatesSerivce extends BaseService {
     return estimates
   }
 
-  private static determineCost(
+  private determineCost(
     travelMethod: string,
     fromDestination: Destination,
     toDestination: Destination
@@ -89,4 +101,4 @@ export class EstimatesSerivce extends BaseService {
   }
 }
 
-export default EstimatesSerivce
+export default BulkGenerate

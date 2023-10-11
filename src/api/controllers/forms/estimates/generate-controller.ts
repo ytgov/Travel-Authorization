@@ -2,7 +2,7 @@ import BaseController from "../../base-controller"
 
 import { Expense, ExpenseTypes, Types as ExpenseVariants } from "../../../models"
 import { ExpensesPolicy } from "../../../policies"
-import { EstimatesSerivce } from "../../../services"
+import { BulkGenerate } from "../../../services/estimates"
 
 export class GenerateController extends BaseController {
   async create() {
@@ -14,7 +14,7 @@ export class GenerateController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return EstimatesSerivce.bulkGenerate(this.formId).then((estimates) => {
+    return BulkGenerate.perform(this.formId).then((estimates) => {
       return this.response.status(201).json({
         estimates,
         message: "Generated estimates",
