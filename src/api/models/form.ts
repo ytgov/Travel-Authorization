@@ -38,7 +38,7 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare daysOffTravelStatus: number | null
   declare dateBackToWork: Date | null
   declare travelDuration: number | null
-  declare purpose: string | null
+  // declare purpose: string | null - deprecated but still in the database.
   declare travelAdvance: number | null
   declare eventName: string | null
   declare summary: string | null
@@ -61,14 +61,14 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getTravelPurpose: BelongsToGetAssociationMixin<TravelPurpose>
-  declare setTravelPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
-  declare createTravelPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
+  declare getPurpose: BelongsToGetAssociationMixin<TravelPurpose>
+  declare setPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
+  declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
 
-  declare travelPurpose?: NonAttribute<TravelPurpose>
+  declare purpose?: NonAttribute<TravelPurpose>
 
   declare static associations: {
-    travelPurpose: Association<Form, TravelPurpose>
+    purpose: Association<Form, TravelPurpose>
   }
 
   static establishAssociations() {
@@ -136,10 +136,11 @@ Form.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    purpose: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
+    // Deprecated but still in the database.
+    // purpose: {
+    //   type: DataTypes.STRING(255),
+    //   allowNull: true,
+    // },
     travelAdvance: {
       type: DataTypes.INTEGER,
       allowNull: true,
