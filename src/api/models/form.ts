@@ -1,7 +1,6 @@
-import { groupBy, isNil, keyBy } from "lodash"
+import { DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize"
 
-import db from "../db/db-client-legacy"
-import BaseModel from "./base-model"
+import sequelize from "../db/db-client"
 import TravelPurpose from "./travel-purpose"
 
 // These are a best guess, database values may not match this list.
@@ -15,158 +14,186 @@ export enum FormStatuses {
   CHANGE_REQUESTED = "Change Requested",
 }
 
-export interface FormRecord {
-  id: number
-  formId: string
-  userId: number
-  firstName?: string
-  lastName?: string
-  department?: string
-  division?: string
-  branch?: string
-  unit?: string
-  email?: string
-  mailcode?: string
-  daysOffTravelStatus?: string
-  dateBackToWork?: Date
-  travelDuration?: string
-  // DEPRECATED: purpose string column on forms table is replace by purposeId column
-  //  and purpose association
-  // purpose?: string
-  purposeId?: number
-  // DEPRECATED: travelAdvance column on forms table is replaced by travelAdvanceInCents column
-  // travelAdvance?: number
-  travelAdvanceInCents?: number
-  eventName?: string
-  summary?: string
-  benefits?: string
-  supervisorEmail?: string
-  status?: string
-  departureDate?: Date
-  stops?: any[]
-  expenses?: any[]
-  estimates?: any[]
-  requestChange?: string
-  denialReason?: string
-  oneWayTrip?: string
-  multiStop?: string
-  createdBy?: string
-  createdDate?: Date
-  deletedBy?: string
-  deletedDate?: Date
-  deleted?: string
+export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<Form>> {
+  declare id: number;
+  declare userId: number;
+  declare firstName: string | null;
+  declare lastName: string | null;
+  declare department: string | null;
+  declare division: string | null;
+  declare branch: string | null;
+  declare unit: string | null;
+  declare email: string | null;
+  declare mailcode: string | null;
+  declare daysOffTravelStatus: number | null;
+  declare dateBackToWork: Date | null;
+  declare travelDuration: number | null;
+  declare purpose: string | null;
+  declare travelAdvance: number | null;
+  declare eventName: string | null;
+  declare summary: string | null;
+  declare benefits: string | null;
+  declare status: string | null;
+  declare formId: string;
+  declare supervisorEmail: string | null;
+  declare preappId: number | null;
+  declare approved: string | null;
+  declare requestChange: string | null;
+  declare denialReason: string | null;
+  declare oneWayTrip: boolean | null;
+  declare multiStop: boolean | null;
+  declare createdBy: number | null;
+  declare purposeId: number | null;
+  declare travelAdvanceInCents: number | null;
+  declare allTravelWithinTerritory: boolean | null;
 
-  // Associations
-  purpose?: TravelPurpose
+  // associations stops, purpose, expenses
 }
 
-interface Form extends FormRecord {}
-
-class Form extends BaseModel {
-  static async count({ where = {} }: { where?: {} }): Promise<number> {
-    return db("forms")
-      .where(where)
-      .count({ count: "*" })
-      .then((results) => {
-        const result = results[0]
-        if (result === undefined) return 0
-        if (result.count === undefined) return 0
-        if (typeof result.count === "number") return result.count
-
-        return parseInt(result.count)
-      })
+Form.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    firstName: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    department: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    division: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    branch: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    unit: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    email: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    mailcode: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    daysOffTravelStatus: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    dateBackToWork: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    travelDuration: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    purpose: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    travelAdvance: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    eventName: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    summary: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    benefits: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    status: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    formId: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      unique: true,
+    },
+    supervisorEmail: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    preappId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    approved: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    requestChange: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    denialReason: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    oneWayTrip: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    multiStop: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    purposeId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'travelPurpose',
+        key: 'id',
+      },
+    },
+    travelAdvanceInCents: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    allTravelWithinTerritory: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+  },
+  {
+    sequelize,
+    tableName: 'forms',
+    modelName: 'Form',
+    timestamps: false,
   }
+)
 
-  static async findAndCountAll({
-    where = {},
-    include = [],
-    limit = 1000,
-    offset = 0,
-  }: {
-    where?: {}
-    include?: ("stops" | "purpose")[]
-    limit?: number
-    offset?: number
-  }): Promise<{ count: number; rows: Form[] }> {
-    const count = await this.count({ where })
-    const forms = await this.findAll({ where, include, limit, offset })
-    return { count, rows: forms }
-  }
-
-  // OPINION: If this is slow, switch to an ORM like Sequelize,
-  // it would be a better use of time than optimising this.
-  static async findAll({
-    where = {},
-    include = [],
-    limit = 1000,
-    offset = 0,
-  }: {
-    where?: {}
-    include?: ("stops" | "purpose")[]
-    limit?: number
-    offset?: number
-  }): Promise<Form[]> {
-    const forms = await db("forms").where(where).limit(limit).offset(offset)
-
-    if (include.includes("stops")) {
-      const formIds = forms.map((form) => form.id)
-      const stopsByFormId = await db("stops")
-        .whereIn("taid", formIds)
-        .then((stops) => groupBy(stops, "taid"))
-      forms.forEach((form) => {
-        const formId = form.id
-        form.stops = stopsByFormId[formId]
-      })
-    }
-
-    if (include.includes("purpose")) {
-      const purposeIds = forms.map((form) => form.purposeId)
-      const purposesById = await db("travelPurpose")
-        .whereIn("id", purposeIds)
-        .then((purposes) => keyBy(purposes, "id"))
-      forms.forEach((form) => {
-        const purposeId = form.purposeId
-        form.purpose = purposesById[purposeId]
-      })
-    }
-
-    return forms
-  }
-
-  // OPINION: If this is slow, switch to an ORM like Sequelize,
-  // it would be a better use of time than optimising this.
-  static async findByPk(
-    id: number | string,
-    { include = [] }: { include?: ("expenses" | "stops" | "purpose")[] } = {}
-  ): Promise<Form> {
-    const form = await db("forms").where({ id }).first()
-    if (isNil(form)) throw new Error("Form not found")
-
-    const formId = form.id
-    if (include.includes("expenses")) {
-      const expenses = await db("expenses").where({ taid: formId })
-      form.expenses = expenses
-    }
-
-    if (include.includes("stops")) {
-      const stops = await db("stops")
-        .where({ taid: formId })
-        .orderBy([
-          { column: "departureDate", order: "asc" },
-          { column: "departureTime", order: "asc" },
-        ])
-      form.stops = stops
-    }
-
-    if (include.includes("purpose")) {
-      const purposeId = form.purposeId
-      const purpose = await db("travelPurpose").where({ id: purposeId }).first()
-      form.purpose = purpose
-    }
-
-    return form
-  }
-}
-
-export { Form }
 export default Form

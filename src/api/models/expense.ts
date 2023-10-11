@@ -1,8 +1,18 @@
-import { isNil } from "lodash"
+import {
+  Association,
+  BelongsToCreateAssociationMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  NonAttribute,
+} from "sequelize"
 
-import db from "../db/db-client-legacy"
+import sequelize from "../db/db-client"
 
-import BaseModel, { type OrderParam } from "./base-model"
 import Form from "./form"
 
 export enum ExpenseTypes {
@@ -20,80 +30,100 @@ export enum Types {
   EXPENSE = "Expenses",
 }
 
-export class Expense extends BaseModel {
-  id: number
-  taid: number
-  description: string
-  date: Date | null
-  cost: number
-  currency: string
-  type: Types
-  receiptImage: Buffer | null
-  fileSize: number | null
-  fileName: string | null
-  expenseType: ExpenseTypes
+export class Expense extends Model<InferAttributes<Expense>, InferCreationAttributes<Expense>> {
+  declare id: CreationOptional<number>
+  declare taid: number
+  declare description: string
+  declare date: Date | null
+  declare cost: number
+  declare currency: string
+  declare type: Types
+  declare receiptImage: Buffer | null
+  declare fileSize: number | null
+  declare fileName: string | null
+  declare expenseType: ExpenseTypes
 
-  // Associations
-  form?: Form
+  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
+  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
+  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
+  declare getForm: BelongsToGetAssociationMixin<Form>
+  declare setForm: BelongsToSetAssociationMixin<Form, Form["id"]>
+  declare createForm: BelongsToCreateAssociationMixin<Form>
 
-  constructor(
-    attributes: Pick<
-      Expense,
-      "id" | "taid" | "description" | "cost" | "currency" | "type" | "expenseType"
-    > &
-      Partial<Expense>
-  ) {
-    super()
-    this.id = attributes.id
-    this.taid = attributes.taid
-    this.description = attributes.description
-    this.date = attributes.date || null
-    this.cost = attributes.cost
-    this.currency = attributes.currency
-    this.type = attributes.type
-    this.receiptImage = attributes.receiptImage || null
-    this.fileSize = attributes.fileSize || null
-    this.fileName = attributes.fileName || null
-    this.expenseType = attributes.expenseType
+  declare destination?: NonAttribute<Form>
 
-    this.form = attributes.form
+  declare static associations: {
+    destination: Association<Expense, Form>
   }
 
-  static async findAll({
-    where = {},
-    include = [],
-    order = [],
-    limit = 1000,
-    offset = 0,
-  }: {
-    where?: {}
-    include?: string[]
-    order?: OrderParam[]
-    limit?: number
-    offset?: number
-  } = {}): Promise<Expense[]> {
-    const query = db("expenses").where(where)
-    this.applyOrder(query, order)
-    query.limit(limit).offset(offset)
-    const expenses = await query
-    return expenses
-  }
-
-  static async findByPk(
-    id: number | string,
-    { include = [] }: { include?: "form"[] } = {}
-  ): Promise<Expense> {
-    const expense = await db("expenses").where({ id }).first()
-    if (isNil(expense)) throw new Error("Expense not found")
-
-    const formId = expense.taid
-    if (include.includes("form")) {
-      const form = await db("forms").where({ id: formId }).first()
-      expense.form = form
-    }
-
-    return expense
+  static establishAssociations() {
+    this.belongsTo(Form)
   }
 }
+
+Expense.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    taid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "forms",
+        key: "id",
+      },
+    },
+    description: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    cost: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    currency: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    receiptImage: {
+      type: DataTypes.BLOB,
+      allowNull: true,
+      field: "receiptImage",
+    },
+    fileSize: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: "fileSize",
+    },
+    fileName: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      field: "fileName",
+    },
+    expenseType: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      field: "expenseType",
+    },
+  },
+  {
+    sequelize,
+    modelName: "Expense",
+    tableName: "expenses",
+    timestamps: false,
+  }
+)
 
 export default Expense
