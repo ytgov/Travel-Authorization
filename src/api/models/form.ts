@@ -21,7 +21,7 @@ import {
 } from "sequelize"
 
 import sequelize from "../db/db-client"
-import Expense from "./expense"
+import Expense, { Types as ExpenseVariants } from "./expense"
 import Stop from "./stop"
 import TravelPurpose from "./travel-purpose"
 
@@ -116,6 +116,10 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
       foreignKey: "taid",
       as: "stops",
     })
+  }
+
+  get estimates(): NonAttribute<Expense[] | undefined> {
+    return this.expenses?.filter(expense => expense.type === ExpenseVariants.ESTIMATE)
   }
 }
 
