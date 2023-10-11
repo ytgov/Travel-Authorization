@@ -12,7 +12,7 @@ const auditService = new AuditService()
 
 export class FormsController extends BaseController {
   index() {
-    const where = this.query.where
+    const where = this.query.where as any // TODO: figure out typing for "where" parameter
     return Form.findAndCountAll({
       where,
       include: ["stops", "purpose"],

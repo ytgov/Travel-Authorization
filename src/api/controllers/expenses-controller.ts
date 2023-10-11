@@ -9,7 +9,7 @@ import { ExpensesService } from "../services"
 
 export class ExpensesController extends BaseController {
   index() {
-    const where = this.query.where
+    const where = this.query.where as any // TODO: figure out typing for "where" parameter
     return Expense.findAll({
       where,
       order: ['date']
