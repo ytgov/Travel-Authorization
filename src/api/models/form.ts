@@ -4,6 +4,16 @@ import {
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -11,6 +21,8 @@ import {
 } from "sequelize"
 
 import sequelize from "../db/db-client"
+import Expense from "./expense"
+import Stop from "./stop"
 import TravelPurpose from "./travel-purpose"
 
 // These are a best guess, database values may not match this list.
@@ -65,14 +77,45 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare setPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
 
+  declare getExpenses: HasManyGetAssociationsMixin<Expense>
+  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["taid"]>
+  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["taid"]>
+  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["taid"]>
+  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["taid"]>
+  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["taid"]>
+  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["taid"]>
+  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["taid"]>
+  declare countExpenses: HasManyCountAssociationsMixin
+  declare createExpense: HasManyCreateAssociationMixin<Expense>
+
+  declare getStops: HasManyGetAssociationsMixin<Stop>
+  declare setStops: HasManySetAssociationsMixin<Stop, Stop["taid"]>
+  declare hasStop: HasManyHasAssociationMixin<Stop, Stop["taid"]>
+  declare hasStops: HasManyHasAssociationsMixin<Stop, Stop["taid"]>
+  declare addStop: HasManyAddAssociationMixin<Stop, Stop["taid"]>
+  declare addStops: HasManyAddAssociationsMixin<Stop, Stop["taid"]>
+  declare removeStop: HasManyRemoveAssociationMixin<Stop, Stop["taid"]>
+  declare removeStops: HasManyRemoveAssociationsMixin<Stop, Stop["taid"]>
+  declare countStops: HasManyCountAssociationsMixin
+  declare createStop: HasManyCreateAssociationMixin<Stop>
+
+  declare expenses?: NonAttribute<Expense[]>
   declare purpose?: NonAttribute<TravelPurpose>
+  declare stops?: NonAttribute<Stop[]>
 
   declare static associations: {
+    expenses: Association<Form, Expense>
     purpose: Association<Form, TravelPurpose>
+    stops: Association<Form, Stop>
   }
 
   static establishAssociations() {
     this.belongsTo(TravelPurpose)
+    this.hasMany(Stop, {
+      sourceKey: "id",
+      foreignKey: "taid",
+      as: "stops",
+    })
   }
 }
 
