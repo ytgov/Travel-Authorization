@@ -29,14 +29,14 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getDestination: BelongsToGetAssociationMixin<Destination>
-  declare setDestination: BelongsToSetAssociationMixin<Destination, Destination["id"]>
-  declare createDestination: BelongsToCreateAssociationMixin<Destination>
+  declare getLocation: BelongsToGetAssociationMixin<Destination>
+  declare setLocation: BelongsToSetAssociationMixin<Destination, Destination["id"]>
+  declare createLocation: BelongsToCreateAssociationMixin<Destination>
 
-  declare destination?: NonAttribute<Destination>
+  declare location?: NonAttribute<Destination>
 
   declare static associations: {
-    destination: Association<Stop, Destination>
+    location: Association<Stop, Destination>
   }
 
   static establishAssociations() {
