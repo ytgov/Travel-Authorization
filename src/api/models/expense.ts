@@ -50,10 +50,10 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   declare setForm: BelongsToSetAssociationMixin<Form, Form["id"]>
   declare createForm: BelongsToCreateAssociationMixin<Form>
 
-  declare destination?: NonAttribute<Form>
+  declare form?: NonAttribute<Form>
 
   declare static associations: {
-    destination: Association<Expense, Form>
+    form: Association<Expense, Form>
   }
 
   static establishAssociations() {
