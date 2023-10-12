@@ -200,14 +200,12 @@ export class BulkGenerate extends BaseService {
     toLocation: Destination
     toDepartureAt: Date
   }): CreationAttributes<Expense> {
-    const toCity = toLocation.city
-    const description = `${fromAccommodationType} in ${toCity}`
+    const numberOfNights = this.calculateNumberOfNights(fromDepartureAt, toDepartureAt)
 
-    const cost = this.determineAccommodationCost(
-      fromAccommodationType,
-      fromDepartureAt,
-      toDepartureAt
-    )
+    const toCity = toLocation.city
+    const description = `${fromAccommodationType} for ${numberOfNights} nights in ${toCity}`
+
+    const cost = this.determineAccommodationCost(fromAccommodationType, numberOfNights)
 
     return {
       type: ExpenseVariants.ESTIMATE,
@@ -285,13 +283,7 @@ export class BulkGenerate extends BaseService {
     return kilometers * DISTANCE_ALLOWANCE_PER_KILOMETER
   }
 
-  private determineAccommodationCost(
-    accommodationType: string,
-    fromDepartureAt: Date,
-    toDepartureAt: Date
-  ): number {
-    const numberOfNights = this.calculateNumberOfNights(fromDepartureAt, toDepartureAt)
-
+  private determineAccommodationCost(accommodationType: string, numberOfNights: number): number {
     switch (accommodationType) {
       case ACCOMMODATION_TYPES.HOTEL:
         return numberOfNights * HOTEL_ALLOWANCE_PER_NIGHT
