@@ -14,12 +14,18 @@ export class GenerateController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return BulkGenerate.perform(this.formId).then((estimates) => {
-      return this.response.status(201).json({
-        estimates,
-        message: "Generated estimates",
+    return BulkGenerate.perform(this.formId)
+      .then((estimates) => {
+        return this.response.status(201).json({
+          estimates,
+          message: "Generated estimates",
+        })
       })
-    })
+      .catch((error) => {
+        return this.response.status(422).json({
+          message: `Failed to generate estimate: ${error}`,
+        })
+      })
   }
 
   private async buildExpense() {
