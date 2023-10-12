@@ -94,13 +94,13 @@ export class BulkGenerate extends BaseService {
       // travel method
       // accommodations
       // meals and incidentals
-      const travelMethodEstimate = await this.buildTravelMethodExpenses({
+      const travelMethodEstimate = await this.buildTravelMethodEstimate({
         fromDepartureDate,
         fromLocation,
         fromTransport,
         toLocation,
       })
-      const accommodationEstimate = this.buildAccommodationExpenses({
+      const accommodationEstimate = this.buildAccommodationEstimate({
         fromAccommodationType,
         fromDepartureDate,
         toLocation,
@@ -114,7 +114,7 @@ export class BulkGenerate extends BaseService {
     return Expense.bulkCreate(estimates)
   }
 
-  private async buildTravelMethodExpenses({
+  private async buildTravelMethodEstimate({
     fromDepartureDate,
     fromLocation,
     fromTransport,
@@ -142,7 +142,7 @@ export class BulkGenerate extends BaseService {
     }
   }
 
-  private buildAccommodationExpenses({
+  private buildAccommodationEstimate({
     fromAccommodationType,
     fromDepartureDate,
     toLocation,
