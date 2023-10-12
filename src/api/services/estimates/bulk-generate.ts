@@ -72,8 +72,8 @@ export class BulkGenerate extends BaseService {
     const tripSegments = await this.buildTripSegments({ form, stops })
 
     const estimates: CreationAttributes<Expense>[] = []
+    let index = 0
     for (const [fromStop, toStop] of tripSegments) {
-      const fromAccommodationType = fromStop.accommodationType
       const fromDepartureAt = fromStop.departureAt
       const fromLocation = fromStop.location
       const fromTransport = fromStop.transport
@@ -89,9 +89,6 @@ export class BulkGenerate extends BaseService {
       if (isNil(fromDepartureAt)) {
         throw new Error(`Missing departure date on Stop#${fromStop.id}`)
       }
-      if (isNil(fromAccommodationType)) {
-        throw new Error(`Missing accommodation type on Stop#${fromStop.id}`)
-      }
       if (isNil(toLocation)) {
         throw new Error(`Missing location on Stop#${toStop.id}`)
       }
@@ -105,21 +102,33 @@ export class BulkGenerate extends BaseService {
         fromTransport,
         toLocation,
       })
-      const accommodationEstimate = this.buildAccommodationEstimate({
-        fromAccommodationType,
-        fromDepartureAt,
-        toLocation,
-        toDepartureAt,
-      })
+      estimates.push(travelMethodEstimate)
+
+      const accommodationType = toStop.accommodationType
+      const nextSegment = tripSegments[index + 1]
+      if (!isNil(accommodationType) && !isNil(nextSegment)) {
+        const [nextFromStop, _] = nextSegment
+        const accommodationDepartureAt = nextFromStop.departureAt
+        if (isNil(accommodationDepartureAt)) {
+          throw new Error(`Missing departure date on Stop#${nextFromStop.id}`)
+        }
+
+        const accommodationEstimate = this.buildAccommodationEstimate({
+          location: toLocation,
+          accommodationType,
+          arrivalAt: fromDepartureAt,
+          departureAt: accommodationDepartureAt,
+        })
+        estimates.push(accommodationEstimate)
+      }
+
       const mealsAndIncidentalsEstimate = await this.buildMealsAndIncidentalsEstimate({
         fromDepartureAt,
         toLocation,
         toDepartureAt,
       })
-
-      estimates.push(travelMethodEstimate)
-      estimates.push(accommodationEstimate)
       estimates.push(mealsAndIncidentalsEstimate)
+      index += 1
     }
 
     return Expense.bulkCreate(estimates)
@@ -190,22 +199,22 @@ export class BulkGenerate extends BaseService {
   }
 
   private buildAccommodationEstimate({
-    fromAccommodationType,
-    fromDepartureAt,
-    toLocation,
-    toDepartureAt,
+    location,
+    accommodationType,
+    arrivalAt,
+    departureAt,
   }: {
-    fromAccommodationType: string
-    fromDepartureAt: Date
-    toLocation: Destination
-    toDepartureAt: Date
+    location: Destination
+    accommodationType: string
+    arrivalAt: Date
+    departureAt: Date
   }): CreationAttributes<Expense> {
-    const numberOfNights = this.calculateNumberOfNights(fromDepartureAt, toDepartureAt)
+    const numberOfNights = this.calculateNumberOfNights(arrivalAt, departureAt)
 
-    const toCity = toLocation.city
-    const description = `${fromAccommodationType} for ${numberOfNights} nights in ${toCity}`
+    const toCity = location.city
+    const description = `${accommodationType} for ${numberOfNights} nights in ${toCity}`
 
-    const cost = this.determineAccommodationCost(fromAccommodationType, numberOfNights)
+    const cost = this.determineAccommodationCost(accommodationType, numberOfNights)
 
     return {
       type: ExpenseVariants.ESTIMATE,
@@ -214,7 +223,7 @@ export class BulkGenerate extends BaseService {
       expenseType: ExpenseTypes.ACCOMODATIONS,
       description,
       cost,
-      date: fromDepartureAt,
+      date: arrivalAt,
     }
   }
 
@@ -295,7 +304,7 @@ export class BulkGenerate extends BaseService {
   }
 
   private calculateNumberOfNights(checkInAt: Date, checkOutAt: Date): number {
-    const differenceInMs = checkInAt.getTime() - checkOutAt.getTime()
+    const differenceInMs = checkOutAt.getTime() - checkInAt.getTime()
     const differenceInDaysAsFloat = differenceInMs / (1000 * 3600 * 24)
     const differenceInDays = Math.floor(differenceInDaysAsFloat)
 
