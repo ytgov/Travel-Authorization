@@ -1,4 +1,4 @@
-import { isNil, min } from "lodash"
+import { isNil, max, min } from "lodash"
 import { CreationAttributes } from "sequelize"
 
 import {
@@ -302,12 +302,12 @@ export class BulkGenerate extends BaseService {
     }
   }
 
-  private calculateNumberOfNights(checkInDate: Date, checkOutDate: Date): number {
-    const differenceInMs = checkInDate.getTime() - checkOutDate.getTime()
+  private calculateNumberOfNights(checkInAt: Date, checkOutAt: Date): number {
+    const differenceInMs = checkInAt.getTime() - checkOutAt.getTime()
     const differenceInDaysAsFloat = differenceInMs / (1000 * 3600 * 24)
     const differenceInDays = Math.floor(differenceInDaysAsFloat)
 
-    return differenceInDays
+    return max([0, differenceInDays]) as number
   }
 
   private buildMealsAndIncidentalsDescription(): string {
