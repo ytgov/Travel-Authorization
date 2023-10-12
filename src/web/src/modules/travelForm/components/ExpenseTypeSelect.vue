@@ -30,7 +30,7 @@ export default {
   mounted() {
     this.loading = true
     // TODO: fetch expense types from backend,
-    // unit then, keep in sync with src/api/models/expense.ts
+    // until then, keep in sync with src/api/models/expense.ts
     this.expenseTypes = ["Transportation", "Accommodations", "Meals & Incidentals"]
     this.loading = false
   },

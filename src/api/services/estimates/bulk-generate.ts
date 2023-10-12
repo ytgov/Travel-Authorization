@@ -22,9 +22,19 @@ const TRAVEL_METHODS = Object.freeze({
   OTHER: "Other:",
 })
 
+// Keep in sync with src/web/src/modules/travelForm/components/AccommodationTypeSelect.vue
+// Until both are using a shared location
+export const ACCOMMODATION_TYPES = Object.freeze({
+  HOTEL: "Hotel",
+  PRIVATE: "Private",
+  OTHER: "Other:",
+})
+
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
 const DISTANCE_ALLOWANCE_PER_KILOMETER = 0.605
+const HOTEL_ALLOWANCE_PER_NIGHT = 250
+const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
 export class BulkGenerate extends BaseService {
   private formId: number
@@ -51,71 +61,119 @@ export class BulkGenerate extends BaseService {
       include: ["location"],
     })
 
-    // expense types are:
-    // travel method
-    // accommodations
-    // meals and incidentals
     const estimates: CreationAttributes<Expense>[] = []
+    const tripSegments = chunk(stops, 2)
+    for (const [fromStop, toStop] of tripSegments) {
+      const fromAccommodationType = fromStop.accommodationType
+      const fromDepartureDate = fromStop.departureDate
+      const fromLocation = fromStop.location
+      const fromTransport = fromStop.transport
+      const toLocation = toStop.location
+      const toDepartureDate = toStop.departureDate
 
-    const travelMethodEstimates = await this.buildTravelMethodExpenses(this.formId, stops)
-    const accommodationEstimates = await this.buildAccommodationExpenses(this.formId, stops)
-    estimates.concat(travelMethodEstimates)
-    estimates.concat(accommodationEstimates)
+      if (isNil(fromLocation)) {
+        throw new Error(`Missing location on Stop#${fromStop.id}`)
+      }
+      if (isNil(fromTransport)) {
+        throw new Error(`Missing transport on Stop#${fromStop.id}`)
+      }
+      if (isNil(fromDepartureDate)) {
+        throw new Error(`Missing departure date on Stop#${fromStop.id}`)
+      }
+      if (isNil(fromAccommodationType)) {
+        throw new Error(`Missing accommodation type on Stop#${fromStop.id}`)
+      }
+      if (isNil(toLocation)) {
+        throw new Error(`Missing location on Stop#${toStop.id}`)
+      }
+      if (isNil(toDepartureDate)) {
+        throw new Error(`Missing departure date on Stop#${toStop.id}`)
+      }
+
+      // expense types are:
+      // travel method
+      // accommodations
+      // meals and incidentals
+      const travelMethodEstimate = await this.buildTravelMethodExpenses({
+        fromDepartureDate,
+        fromLocation,
+        fromTransport,
+        toLocation,
+      })
+      const accommodationEstimate = this.buildAccommodationExpenses({
+        fromAccommodationType,
+        fromDepartureDate,
+        toLocation,
+        toDepartureDate,
+      })
+
+      estimates.push(travelMethodEstimate)
+      estimates.push(accommodationEstimate)
+    }
 
     return Expense.bulkCreate(estimates)
   }
 
-  private async buildTravelMethodExpenses(
-    formId: number,
-    stops: Stop[]
-  ): Promise<CreationAttributes<Expense>[]> {
-    const estimates: CreationAttributes<Expense>[] = []
-    const tripSegments = chunk(stops, 2)
+  private async buildTravelMethodExpenses({
+    fromDepartureDate,
+    fromLocation,
+    fromTransport,
+    toLocation,
+  }: {
+    fromDepartureDate: Date
+    fromLocation: Destination
+    fromTransport: string
+    toLocation: Destination
+  }): Promise<CreationAttributes<Expense>> {
+    const fromCity = fromLocation.city
+    const toCity = toLocation.city
+    const description = `${fromTransport} from ${fromCity} to ${toCity}`
 
-    for (const [fromStop, toStop] of tripSegments) {
-      const fromLocation = fromStop.location
-      const toLocation = toStop.location
-      const toTransport = toStop.transport
+    const cost = await this.determineTravelMethodCost(fromTransport, fromCity, toCity)
 
-      if (isNil(fromLocation) || isNil(toLocation)) {
-        throw new Error("missing location on stop")
-      } else if (isNil(toTransport)) {
-        throw new Error("missing transport on stop")
-      }
-
-      const fromCity = fromLocation.city
-      const toCity = toLocation.city
-      const description = `${toTransport} from ${fromCity} to ${toCity}`
-
-      const cost = await this.determineCost(toTransport, fromCity, toCity)
-
-      const estimate: CreationAttributes<Expense> = {
-        type: ExpenseVariants.ESTIMATE,
-        taid: formId,
-        currency: "CAD",
-        expenseType: ExpenseTypes.TRANSPORTATION,
-        description,
-        cost,
-        date: fromStop.departureDate,
-      }
-
-      estimates.push(estimate)
+    return {
+      type: ExpenseVariants.ESTIMATE,
+      taid: this.formId,
+      currency: "CAD",
+      expenseType: ExpenseTypes.TRANSPORTATION,
+      description,
+      cost,
+      date: fromDepartureDate,
     }
-
-    return estimates
   }
 
-  private async buildAccommodationExpenses(formId: number, stops: Stop[]): Promise<CreationAttributes<Expense>[]> {
-    const estimates: CreationAttributes<Expense>[] = []
-    const tripSegments = chunk(stops, 2)
+  private buildAccommodationExpenses({
+    fromAccommodationType,
+    fromDepartureDate,
+    toLocation,
+    toDepartureDate,
+  }: {
+    fromAccommodationType: string
+    fromDepartureDate: Date
+    toLocation: Destination
+    toDepartureDate: Date
+  }): CreationAttributes<Expense> {
+    const toCity = toLocation.city
+    const description = `${fromAccommodationType} in ${toCity}`
 
-    for (const [fromStop, toStop] of tripSegments) {
-      // estimates.push(estimate)
+    const cost = this.determineAccommodationCost(
+      fromAccommodationType,
+      fromDepartureDate,
+      toDepartureDate
+    )
+
+    return {
+      type: ExpenseVariants.ESTIMATE,
+      taid: this.formId,
+      currency: "CAD",
+      expenseType: ExpenseTypes.ACCOMODATIONS,
+      description,
+      cost,
+      date: fromDepartureDate,
     }
-    return estimates
   }
 
-  private async determineCost(
+  private async determineTravelMethodCost(
     travelMethod: string,
     fromCity: string,
     toCity: string
@@ -153,6 +211,31 @@ export class BulkGenerate extends BaseService {
 
     const { kilometers } = distanceMatrix
     return kilometers * DISTANCE_ALLOWANCE_PER_KILOMETER
+  }
+
+  private determineAccommodationCost(
+    accommodationType: string,
+    fromDepartureDate: Date,
+    toDepartureDate: Date
+  ): number {
+    const numberOfNights = this.calculateNumberOfNights(fromDepartureDate, toDepartureDate)
+
+    switch (accommodationType) {
+      case ACCOMMODATION_TYPES.HOTEL:
+        return numberOfNights * HOTEL_ALLOWANCE_PER_NIGHT
+      case ACCOMMODATION_TYPES.PRIVATE:
+        return numberOfNights * PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT
+      default:
+        return 0
+    }
+  }
+
+  private calculateNumberOfNights(checkInDate: Date, checkOutDate: Date): number {
+    const differenceInMs = checkInDate.getTime() - checkOutDate.getTime()
+    const differenceInDaysAsFloat = differenceInMs / (1000 * 3600 * 24)
+    const differenceInDays = Math.floor(differenceInDaysAsFloat)
+
+    return differenceInDays
   }
 }
 
