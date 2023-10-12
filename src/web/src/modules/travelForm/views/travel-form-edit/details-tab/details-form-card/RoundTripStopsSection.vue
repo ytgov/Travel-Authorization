@@ -148,6 +148,7 @@
         />
         <AccommodationTypeSelect
           v-model="originStop.accommodationType"
+          :default-value="null"
           background-color="white"
           hint="Optional, set only if neccessary"
           placeholder="N/A"

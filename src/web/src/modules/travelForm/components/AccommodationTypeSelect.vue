@@ -35,8 +35,8 @@ export default {
   props: {
     value: {
       type: String,
-      default: ACCOMMODATION_TYPES.HOTEL,
     },
+    defaultValue: ACCOMMODATION_TYPES.HOTEL,
     label: {
       type: String,
       default: "Type of Accommodation",
@@ -51,7 +51,9 @@ export default {
     }
   },
   mounted() {
-    if (isNil(this.value) || this.accommodationTypes.includes(this.value)) {
+    if (isNil(this.value)) {
+      this.accommodationType = this.defaultValue
+    } else if (this.accommodationTypes.includes(this.value)) {
       this.accommodationType = this.value
     } else {
       this.accommodationType = ACCOMMODATION_TYPES.OTHER
