@@ -10,6 +10,7 @@ Form.establishAssociations()
 
 export * from "./auth"
 export * from "./destination"
+export * from "./distance-matrix"
 export * from "./expense"
 export * from "./form"
 export * from "./preapproved-traveler"
