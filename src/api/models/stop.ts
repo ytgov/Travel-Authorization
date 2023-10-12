@@ -32,13 +32,19 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
+  declare getForm: BelongsToGetAssociationMixin<Form>
+  declare setForm: BelongsToSetAssociationMixin<Form, Form["id"]>
+  declare createForm: BelongsToCreateAssociationMixin<Form>
+
   declare getLocation: BelongsToGetAssociationMixin<Destination>
   declare setLocation: BelongsToSetAssociationMixin<Destination, Destination["id"]>
   declare createLocation: BelongsToCreateAssociationMixin<Destination>
 
+  declare form?: NonAttribute<Form>
   declare location?: NonAttribute<Destination>
 
   declare static associations: {
+    form: Association<Stop, Form>
     location: Association<Stop, Destination>
   }
 
@@ -46,6 +52,10 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
     this.belongsTo(Destination, {
       as: "location",
       foreignKey: "locationId",
+    })
+    this.belongsTo(Form, {
+      as: "form",
+      foreignKey: "taid",
     })
   }
 
