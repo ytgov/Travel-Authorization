@@ -40,7 +40,10 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   }
 
   static establishAssociations() {
-    this.belongsTo(Destination)
+    this.belongsTo(Destination, {
+      as: 'location',
+      foreignKey: 'locationId',
+    })
   }
 }
 
@@ -56,7 +59,7 @@ Stop.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "forms",
+        model: "forms", // using table name here, instead of Model class
         key: "id",
       },
     },
@@ -65,7 +68,7 @@ Stop.init(
       allowNull: true,
       field: "locationId",
       references: {
-        model: "destinations",
+        model: "destinations", // using table name here, instead of Model class
         key: "id",
       },
     },
