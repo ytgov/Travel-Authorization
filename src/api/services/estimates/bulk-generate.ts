@@ -1,4 +1,4 @@
-import { chunk, isNil } from "lodash"
+import { chunk, isNil, min } from "lodash"
 
 import db from "../../db/db-client-legacy"
 
@@ -16,12 +16,17 @@ const TRAVEL_METHODS = Object.freeze({
   OTHER: "Other:",
 })
 
+const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
+const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
+
 export class BulkGenerate extends BaseService {
   private formId: number
+  private aircraftAllowanceRemaining: number
 
   constructor(formId: number) {
     super()
     this.formId = formId
+    this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
   static async perform(formId: number): Promise<Expense[]> {
@@ -94,8 +99,9 @@ export class BulkGenerate extends BaseService {
   ): number {
     switch (travelMethod) {
       case TRAVEL_METHODS.AIRCRAFT:
-        // TODO: up to a maximum of 1000 across all stops
-        return 350
+        const allowance = min([this.aircraftAllowanceRemaining, AIRCRAFT_ALLOWANCE_PER_SEGMENT]) as number
+        this.aircraftAllowanceRemaining -= allowance
+        return allowance
       case TRAVEL_METHODS.PERSONAL_VEHICLE:
         // TODO: calculate using distance matrix
         return 123456789
