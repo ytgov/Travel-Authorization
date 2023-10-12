@@ -1,3 +1,4 @@
+import { isNil } from "lodash"
 import {
   Association,
   BelongsToCreateAssociationMixin,
@@ -16,6 +17,8 @@ import sequelize from "../db/db-client"
 
 import Destination from "./destination"
 import Form from "./form"
+
+const BEGINNING_OF_DAY = "00:00:00"
 
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
   declare id: CreationOptional<number>
@@ -41,9 +44,18 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
 
   static establishAssociations() {
     this.belongsTo(Destination, {
-      as: 'location',
-      foreignKey: 'locationId',
+      as: "location",
+      foreignKey: "locationId",
     })
+  }
+
+  get departureAt(): NonAttribute<Date | null> {
+    const departureDate = this.departureDate
+    if (isNil(departureDate)) return null
+
+    const timePart = this.departureTime || BEGINNING_OF_DAY
+    const departureDateTime = new Date(`${departureDate}T${timePart}`)
+    return departureDateTime
   }
 }
 
