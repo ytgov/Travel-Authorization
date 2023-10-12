@@ -20,7 +20,7 @@ import Form from "./form"
 export enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",
   TRANSPORTATION = "Transportation",
-  MEALS_INCIDENTALS = "Meals & Incidentals",
+  MEALS_AND_INCIDENTALS = "Meals & Incidentals",
 }
 
 // TODO: replace this with a boolean of isEstimate or
