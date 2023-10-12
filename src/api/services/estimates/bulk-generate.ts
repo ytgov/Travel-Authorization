@@ -30,7 +30,14 @@ export class BulkGenerate extends BaseService {
   }
 
   async perform(): Promise<Expense[]> {
-    const stops = await Stop.findAll({ where: { taid: this.formId }, include: ["location"] })
+    const stops = await Stop.findAll({
+      where: { taid: this.formId },
+      order: [
+        ["departureDate", "ASC"],
+        ["departureTime", "ASC"],
+      ],
+      include: ["location"],
+    })
 
     // expense types are:
     // travel method
