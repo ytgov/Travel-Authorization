@@ -19,8 +19,13 @@
         <v-card-title class="text-h5"> Generate Estimates? </v-card-title>
 
         <v-card-text>
-          By proceeding, initial cost estimates will be pre-populated for this travel request.
-          You'll have the opportunity to review and modify them afterward.
+          <p>
+            By proceeding, initial cost estimates will be pre-populated for this travel request.
+            You'll have the opportunity to review and modify them afterward.
+          </p>
+          <p>
+            <em>This might take a some time...</em>
+          </p>
         </v-card-text>
 
         <v-card-actions>
