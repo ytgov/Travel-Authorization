@@ -249,10 +249,12 @@ Form.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    // TODO: set default to false in the database
     oneWayTrip: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    // TODO: set default to false in the database
     multiStop: {
       type: DataTypes.BOOLEAN,
       allowNull: true,

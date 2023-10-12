@@ -69,7 +69,6 @@ export class BulkGenerate extends BaseService {
       ],
       include: ["location"],
     })
-
     const tripSegments = await this.buildTripSegments({ form, stops })
 
     const estimates: CreationAttributes<Expense>[] = []
@@ -138,7 +137,7 @@ export class BulkGenerate extends BaseService {
       throw new Error("Must have at least 2 stops to build a trip segment")
     }
 
-    const isRoundTrip = form.oneWayTrip === false && form.multiStop === false
+    const isRoundTrip = form.oneWayTrip !== true && form.multiStop !== true
     if (isRoundTrip) {
       return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
         const isLastStop = index === stops.length - 1
