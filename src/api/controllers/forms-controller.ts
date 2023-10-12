@@ -40,6 +40,11 @@ export class FormsController extends BaseController {
   }
 
   async show() {
+    // TODO: make missing route params auto-404?
+    if (isNil(this.params.formId)) {
+      return this.response.status(404).json({ message: "Form not found." })
+    }
+
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
@@ -63,6 +68,11 @@ export class FormsController extends BaseController {
   }
 
   async update() {
+    // TODO: make missing route params auto-404?
+    if (isNil(this.params.formId)) {
+      return this.response.status(404).json({ message: "Form not found." })
+    }
+
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
