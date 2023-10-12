@@ -110,16 +110,19 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   }
 
   static establishAssociations() {
-    this.belongsTo(TravelPurpose)
+    this.belongsTo(TravelPurpose, {
+      as: "purpose",
+      foreignKey: "purposeId",
+    })
     this.hasMany(Stop, {
+      as: "stops",
       sourceKey: "id",
       foreignKey: "taid",
-      as: "stops",
     })
   }
 
   get estimates(): NonAttribute<Expense[] | undefined> {
-    return this.expenses?.filter(expense => expense.type === ExpenseVariants.ESTIMATE)
+    return this.expenses?.filter((expense) => expense.type === ExpenseVariants.ESTIMATE)
   }
 }
 
@@ -135,7 +138,15 @@ Form.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "users",
+        model: "users", // using table name here, instead of Model class
+        key: "id",
+      },
+    },
+    purposeId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "travelPurpose", // using table name here, instead of Model class
         key: "id",
       },
     },
@@ -244,14 +255,6 @@ Form.init(
     createdBy: {
       type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    purposeId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: "travelPurpose",
-        key: "id",
-      },
     },
     travelAdvanceInCents: {
       type: DataTypes.INTEGER,
