@@ -119,7 +119,7 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
       sourceKey: "id",
       foreignKey: "taid",
     })
-    this.hasMany(Stop, {
+    this.hasMany(Expense, {
       as: "expenses",
       sourceKey: "id",
       foreignKey: "taid",
