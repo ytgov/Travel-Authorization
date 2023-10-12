@@ -1,4 +1,4 @@
-import { chunk, isNil, min } from "lodash"
+import { isNil, min } from "lodash"
 import { CreationAttributes } from "sequelize"
 
 import {
@@ -8,6 +8,7 @@ import {
   Expense,
   ExpenseTypes,
   Types as ExpenseVariants,
+  Form,
   LocationTypes,
   PerDiem,
   Stop,
@@ -55,6 +56,11 @@ export class BulkGenerate extends BaseService {
   }
 
   async perform(): Promise<Expense[]> {
+    const form = await Form.findByPk(this.formId)
+    if (isNil(form)) {
+      throw new Error(`Form not found for id=${this.formId}`)
+    }
+
     const stops = await Stop.findAll({
       where: { taid: this.formId },
       order: [
@@ -64,8 +70,9 @@ export class BulkGenerate extends BaseService {
       include: ["location"],
     })
 
+    const tripSegments = await this.buildTripSegments({ form, stops })
+
     const estimates: CreationAttributes<Expense>[] = []
-    const tripSegments = chunk(stops, 2)
     for (const [fromStop, toStop] of tripSegments) {
       const fromAccommodationType = fromStop.accommodationType
       const fromDepartureAt = fromStop.departureAt
@@ -117,6 +124,42 @@ export class BulkGenerate extends BaseService {
     }
 
     return Expense.bulkCreate(estimates)
+  }
+
+  // TODO: investigate having a tripSegments model in the database
+  private async buildTripSegments({
+    form,
+    stops,
+  }: {
+    form: Form
+    stops: Stop[]
+  }): Promise<[Stop, Stop][]> {
+    if (stops.length < 2) {
+      throw new Error("Must have at least 2 stops to build a trip segment")
+    }
+
+    const isRoundTrip = form.oneWayTrip === false && form.multiStop === false
+    if (isRoundTrip) {
+      return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
+        const isLastStop = index === stops.length - 1
+        if (isLastStop) {
+          tripSegments.push([stop, stops[0]])
+        } else {
+          tripSegments.push([stop, stops[index + 1]])
+        }
+        return tripSegments
+      }, [])
+    }
+
+    return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
+      const isLastStop = index === stops.length - 1
+      if (isLastStop) {
+        // noop
+      } else {
+        tripSegments.push([stop, stops[index + 1]])
+      }
+      return tripSegments
+    }, [])
   }
 
   private async buildTravelMethodEstimate({
