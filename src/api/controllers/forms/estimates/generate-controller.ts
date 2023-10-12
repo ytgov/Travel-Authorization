@@ -1,6 +1,6 @@
 import BaseController from "../../base-controller"
 
-import { Expense, ExpenseTypes, Types as ExpenseVariants } from "../../../models"
+import { Expense, Form } from "../../../models"
 import { ExpensesPolicy } from "../../../policies"
 import { BulkGenerate } from "../../../services/estimates"
 
@@ -23,14 +23,9 @@ export class GenerateController extends BaseController {
   }
 
   private async buildExpense() {
-    return Expense.build({
-      taid: this.formId,
-      type: ExpenseVariants.ESTIMATE,
-      description: "NOT RELEVANT",
-      cost: 0,
-      currency: "CAD",
-      expenseType: ExpenseTypes.TRANSPORTATION,
-    })
+    const expense = Expense.build()
+    expense.form = (await Form.findByPk(this.formId)) || undefined
+    return expense
   }
 
   private buildPolicy(record: Expense): ExpensesPolicy {
