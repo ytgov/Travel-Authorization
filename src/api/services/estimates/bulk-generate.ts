@@ -1,8 +1,14 @@
 import { chunk, isNil, min } from "lodash"
+import { CreationAttributes } from "sequelize"
 
-import db from "../../db/db-client-legacy"
-
-import { Destination, Expense, ExpenseTypes, Types as ExpenseVariants, Stop } from "../../models"
+import {
+  Destination,
+  DistanceMatrix,
+  Expense,
+  ExpenseTypes,
+  Types as ExpenseVariants,
+  Stop,
+} from "../../models"
 import BaseService from "../base-service"
 
 // Keep in sync with src/web/src/modules/travelForm/components/TravelMethodSelect.vue
@@ -18,6 +24,7 @@ const TRAVEL_METHODS = Object.freeze({
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
+const DISTANCE_ALLOWANCE_PER_KILOMETER = 0.605
 
 export class BulkGenerate extends BaseService {
   private formId: number
@@ -48,18 +55,24 @@ export class BulkGenerate extends BaseService {
     // travel method
     // accommodations
     // meals and incidentals
-    const estimates: Expense[] = []
+    const estimates: CreationAttributes<Expense>[] = []
 
-    const travelMethodEstimates = this.buildTravelMethodExpenses(this.formId, stops)
+    const travelMethodEstimates = await this.buildTravelMethodExpenses(this.formId, stops)
+    const accommodationEstimates = await this.buildAccommodationExpenses(this.formId, stops)
     estimates.concat(travelMethodEstimates)
+    estimates.concat(accommodationEstimates)
 
-    return db("estimates").insert(estimates).returning("*")
+    return Expense.bulkCreate(estimates)
   }
 
-  private buildTravelMethodExpenses(formId: number, stops: Stop[]): Expense[] {
-    const estimates: Expense[] = []
+  private async buildTravelMethodExpenses(
+    formId: number,
+    stops: Stop[]
+  ): Promise<CreationAttributes<Expense>[]> {
+    const estimates: CreationAttributes<Expense>[] = []
     const tripSegments = chunk(stops, 2)
-    tripSegments.forEach(([fromStop, toStop]) => {
+
+    for (const [fromStop, toStop] of tripSegments) {
       const fromLocation = fromStop.location
       const toLocation = toStop.location
       const toTransport = toStop.transport
@@ -74,9 +87,9 @@ export class BulkGenerate extends BaseService {
       const toCity = toLocation.city
       const description = `${toTransport} from ${fromCity} to ${toCity}`
 
-      const cost = this.determineCost(toTransport, fromLocation, toLocation)
+      const cost = await this.determineCost(toTransport, fromCity, toCity)
 
-      const estimate = Expense.build({
+      const estimate: CreationAttributes<Expense> = {
         type: ExpenseVariants.ESTIMATE,
         taid: formId,
         currency: "CAD",
@@ -84,33 +97,62 @@ export class BulkGenerate extends BaseService {
         description,
         cost,
         date: fromStop.departureDate,
-      })
+      }
 
       estimates.push(estimate)
-    })
+    }
 
     return estimates
   }
 
-  private determineCost(
+  private async buildAccommodationExpenses(formId: number, stops: Stop[]): Promise<CreationAttributes<Expense>[]> {
+    const estimates: CreationAttributes<Expense>[] = []
+    const tripSegments = chunk(stops, 2)
+
+    for (const [fromStop, toStop] of tripSegments) {
+      // estimates.push(estimate)
+    }
+    return estimates
+  }
+
+  private async determineCost(
     travelMethod: string,
-    fromDestination: Destination,
-    toDestination: Destination
-  ): number {
+    fromCity: string,
+    toCity: string
+  ): Promise<number> {
     switch (travelMethod) {
       case TRAVEL_METHODS.AIRCRAFT:
-        const allowance = min([this.aircraftAllowanceRemaining, AIRCRAFT_ALLOWANCE_PER_SEGMENT]) as number
-        this.aircraftAllowanceRemaining -= allowance
-        return allowance
+        return this.determineAicraftAllowance()
       case TRAVEL_METHODS.PERSONAL_VEHICLE:
-        // TODO: calculate using distance matrix
-        return 123456789
+        return this.determinePersonalVehicleAllowance(fromCity, toCity)
       case TRAVEL_METHODS.POOL_VEHICLE:
       case TRAVEL_METHODS.RENTAL_VEHICLE:
         return 0
       default:
         return 0
     }
+  }
+
+  private determineAicraftAllowance(): number {
+    const allowance = min([
+      this.aircraftAllowanceRemaining,
+      AIRCRAFT_ALLOWANCE_PER_SEGMENT,
+    ]) as number
+    this.aircraftAllowanceRemaining -= allowance
+    return allowance
+  }
+
+  private async determinePersonalVehicleAllowance(
+    fromCity: string,
+    toCity: string
+  ): Promise<number> {
+    const distanceMatrix = await DistanceMatrix.findOne({
+      where: { origin: fromCity, destination: toCity },
+    })
+    if (isNil(distanceMatrix) || isNil(distanceMatrix.kilometers)) return 0
+
+    const { kilometers } = distanceMatrix
+    return kilometers * DISTANCE_ALLOWANCE_PER_KILOMETER
   }
 }
 
