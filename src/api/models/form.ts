@@ -119,6 +119,11 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
       sourceKey: "id",
       foreignKey: "taid",
     })
+    this.hasMany(Stop, {
+      as: "expenses",
+      sourceKey: "id",
+      foreignKey: "taid",
+    })
   }
 
   get estimates(): NonAttribute<Expense[] | undefined> {

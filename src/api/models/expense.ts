@@ -59,7 +59,10 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   }
 
   static establishAssociations() {
-    this.belongsTo(Form, { foreignKey: "taid" })
+    this.belongsTo(Form, {
+      as: "form",
+      foreignKey: "taid",
+    })
   }
 }
 
@@ -75,7 +78,7 @@ Expense.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "forms",
+        model: "forms", // using table name here, instead of Model class
         key: "id",
       },
     },
