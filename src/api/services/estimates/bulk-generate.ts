@@ -2,11 +2,14 @@ import { chunk, isNil, min } from "lodash"
 import { CreationAttributes } from "sequelize"
 
 import {
+  ClaimTypes,
   Destination,
   DistanceMatrix,
   Expense,
   ExpenseTypes,
   Types as ExpenseVariants,
+  LocationTypes,
+  PerDiem,
   Stop,
 } from "../../models"
 import BaseService from "../base-service"
@@ -65,11 +68,11 @@ export class BulkGenerate extends BaseService {
     const tripSegments = chunk(stops, 2)
     for (const [fromStop, toStop] of tripSegments) {
       const fromAccommodationType = fromStop.accommodationType
-      const fromDepartureDate = fromStop.departureDate
+      const fromDepartureAt = fromStop.departureAt
       const fromLocation = fromStop.location
       const fromTransport = fromStop.transport
       const toLocation = toStop.location
-      const toDepartureDate = toStop.departureDate
+      const toDepartureAt = toStop.departureAt
 
       if (isNil(fromLocation)) {
         throw new Error(`Missing location on Stop#${fromStop.id}`)
@@ -77,7 +80,7 @@ export class BulkGenerate extends BaseService {
       if (isNil(fromTransport)) {
         throw new Error(`Missing transport on Stop#${fromStop.id}`)
       }
-      if (isNil(fromDepartureDate)) {
+      if (isNil(fromDepartureAt)) {
         throw new Error(`Missing departure date on Stop#${fromStop.id}`)
       }
       if (isNil(fromAccommodationType)) {
@@ -86,41 +89,43 @@ export class BulkGenerate extends BaseService {
       if (isNil(toLocation)) {
         throw new Error(`Missing location on Stop#${toStop.id}`)
       }
-      if (isNil(toDepartureDate)) {
+      if (isNil(toDepartureAt)) {
         throw new Error(`Missing departure date on Stop#${toStop.id}`)
       }
 
-      // expense types are:
-      // travel method
-      // accommodations
-      // meals and incidentals
       const travelMethodEstimate = await this.buildTravelMethodEstimate({
-        fromDepartureDate,
+        fromDepartureAt,
         fromLocation,
         fromTransport,
         toLocation,
       })
       const accommodationEstimate = this.buildAccommodationEstimate({
         fromAccommodationType,
-        fromDepartureDate,
+        fromDepartureAt,
         toLocation,
-        toDepartureDate,
+        toDepartureAt,
+      })
+      const mealsAndIncidentalsEstimate = await this.buildMealsAndIncidentalsEstimate({
+        fromDepartureAt,
+        toLocation,
+        toDepartureAt,
       })
 
       estimates.push(travelMethodEstimate)
       estimates.push(accommodationEstimate)
+      estimates.push(mealsAndIncidentalsEstimate)
     }
 
     return Expense.bulkCreate(estimates)
   }
 
   private async buildTravelMethodEstimate({
-    fromDepartureDate,
+    fromDepartureAt,
     fromLocation,
     fromTransport,
     toLocation,
   }: {
-    fromDepartureDate: Date
+    fromDepartureAt: Date
     fromLocation: Destination
     fromTransport: string
     toLocation: Destination
@@ -138,28 +143,28 @@ export class BulkGenerate extends BaseService {
       expenseType: ExpenseTypes.TRANSPORTATION,
       description,
       cost,
-      date: fromDepartureDate,
+      date: fromDepartureAt,
     }
   }
 
   private buildAccommodationEstimate({
     fromAccommodationType,
-    fromDepartureDate,
+    fromDepartureAt,
     toLocation,
-    toDepartureDate,
+    toDepartureAt,
   }: {
     fromAccommodationType: string
-    fromDepartureDate: Date
+    fromDepartureAt: Date
     toLocation: Destination
-    toDepartureDate: Date
+    toDepartureAt: Date
   }): CreationAttributes<Expense> {
     const toCity = toLocation.city
     const description = `${fromAccommodationType} in ${toCity}`
 
     const cost = this.determineAccommodationCost(
       fromAccommodationType,
-      fromDepartureDate,
-      toDepartureDate
+      fromDepartureAt,
+      toDepartureAt
     )
 
     return {
@@ -169,7 +174,32 @@ export class BulkGenerate extends BaseService {
       expenseType: ExpenseTypes.ACCOMODATIONS,
       description,
       cost,
-      date: fromDepartureDate,
+      date: fromDepartureAt,
+    }
+  }
+
+  private async buildMealsAndIncidentalsEstimate({
+    fromDepartureAt,
+    toLocation,
+    toDepartureAt,
+  }: {
+    fromDepartureAt: Date
+    toLocation: Destination
+    toDepartureAt: Date
+  }): Promise<CreationAttributes<Expense>> {
+    const toProvince = toLocation.province
+    const description = this.buildMealsAndIncidentalsDescription()
+
+    const cost = await this.determinePerDiemCost(toProvince, fromDepartureAt, toDepartureAt)
+
+    return {
+      type: ExpenseVariants.ESTIMATE,
+      taid: this.formId,
+      currency: "CAD",
+      expenseType: ExpenseTypes.MEALS_AND_INCIDENTALS,
+      description,
+      cost,
+      date: fromDepartureAt,
     }
   }
 
@@ -215,10 +245,10 @@ export class BulkGenerate extends BaseService {
 
   private determineAccommodationCost(
     accommodationType: string,
-    fromDepartureDate: Date,
-    toDepartureDate: Date
+    fromDepartureAt: Date,
+    toDepartureAt: Date
   ): number {
-    const numberOfNights = this.calculateNumberOfNights(fromDepartureDate, toDepartureDate)
+    const numberOfNights = this.calculateNumberOfNights(fromDepartureAt, toDepartureAt)
 
     switch (accommodationType) {
       case ACCOMMODATION_TYPES.HOTEL:
@@ -236,6 +266,38 @@ export class BulkGenerate extends BaseService {
     const differenceInDays = Math.floor(differenceInDaysAsFloat)
 
     return differenceInDays
+  }
+
+  private buildMealsAndIncidentalsDescription(): string {
+    // TODO: figure out how to count meals
+    return "Full Day" // or Breakfast/Lunch or Breakfast
+  }
+
+  private async determinePerDiemCost(
+    toProvince: string,
+    fromDepartureAt: Date,
+    toDepartureAt: Date
+  ): Promise<number> {
+    const claim = this.determineClaimType(fromDepartureAt, toDepartureAt)
+
+    // TODO: add in the rest of these computations
+    switch (toProvince) {
+      case "YT":
+        const perDiem = await PerDiem.findOne({
+          where: { claim, location: LocationTypes.YUKON },
+        })
+        if (isNil(perDiem) || isNil(perDiem.amount)) return 0
+
+        const { amount } = perDiem
+        return amount
+      default:
+        return 0
+    }
+  }
+
+  private determineClaimType(fromDepartureAt: Date, toDepartureAt: Date): ClaimTypes {
+    // TODO: figure out how to compute claim type
+    return ClaimTypes.MAXIMUM_DAILY
   }
 }
 
