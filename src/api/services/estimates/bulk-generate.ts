@@ -2,37 +2,20 @@ import { clone, isNil, max, min, times } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
 import {
+  AccommodationTypes,
   ClaimTypes,
   Destination,
   DistanceMatrix,
   Expense,
   ExpenseTypes,
-  Types as ExpenseVariants,
   Form,
   LocationTypes,
   PerDiem,
   Stop,
+  TravelMethods,
 } from "../../models"
+import { Types as ExpenseVariants } from "../../models/expense"
 import BaseService from "../base-service"
-
-// Keep in sync with src/web/src/modules/travelForm/components/TravelMethodSelect.vue
-// Until both are using a shared location
-const TRAVEL_METHODS = Object.freeze({
-  AIRCRAFT: "Aircraft",
-  POOL_VEHICLE: "Pool Vehicle",
-  PERSONAL_VEHICLE: "Personal Vehicle",
-  RENTAL_VEHICLE: "Rental Vehicle",
-  BUS: "Bus",
-  OTHER: "Other:",
-})
-
-// Keep in sync with src/web/src/modules/travelForm/components/AccommodationTypeSelect.vue
-// Until both are using a shared location
-export const ACCOMMODATION_TYPES = Object.freeze({
-  HOTEL: "Hotel",
-  PRIVATE: "Private",
-  OTHER: "Other:",
-})
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
@@ -285,12 +268,12 @@ export class BulkGenerate extends BaseService {
     toCity: string
   ): Promise<number> {
     switch (travelMethod) {
-      case TRAVEL_METHODS.AIRCRAFT:
+      case TravelMethods.AIRCRAFT:
         return this.determineAicraftAllowance()
-      case TRAVEL_METHODS.PERSONAL_VEHICLE:
+      case TravelMethods.PERSONAL_VEHICLE:
         return this.determinePersonalVehicleAllowance(fromCity, toCity)
-      case TRAVEL_METHODS.POOL_VEHICLE:
-      case TRAVEL_METHODS.RENTAL_VEHICLE:
+      case TravelMethods.POOL_VEHICLE:
+      case TravelMethods.RENTAL_VEHICLE:
         return 0
       default:
         return 0
@@ -321,10 +304,10 @@ export class BulkGenerate extends BaseService {
 
   private determineAccommodationCost(accommodationType: string): number {
     switch (accommodationType) {
-      case ACCOMMODATION_TYPES.HOTEL:
+      case AccommodationTypes.HOTEL:
         return 1 * HOTEL_ALLOWANCE_PER_NIGHT
       // TODO: determine if Private Accommodation is part of the max daily per-diem
-      case ACCOMMODATION_TYPES.PRIVATE:
+      case AccommodationTypes.PRIVATE:
         return 1 * PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT
       default:
         return 0

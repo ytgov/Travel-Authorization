@@ -20,6 +20,27 @@ import Form from "./form"
 
 const BEGINNING_OF_DAY = "00:00:00"
 
+// Keep in sync with src/web/src/modules/travelForm/components/TravelMethodSelect.vue
+// Until both are using a shared location
+export enum TravelMethods {
+  AIRCRAFT = "Aircraft",
+  POOL_VEHICLE = "Pool Vehicle",
+  PERSONAL_VEHICLE = "Personal Vehicle",
+  RENTAL_VEHICLE = "Rental Vehicle",
+  BUS = "Bus",
+  // TODO: replace other type with specific values
+  // OTHER = "Other:"
+}
+
+// Keep in sync with src/web/src/modules/travelForm/components/AccommodationTypeSelect.vue
+// Until both are using a shared location
+export enum AccommodationTypes {
+  HOTEL = "Hotel",
+  PRIVATE = "Private",
+  // TODO: replace other type with specific values
+  // OTHER = "Other:",
+}
+
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
   declare id: CreationOptional<number>
   declare taid: ForeignKey<Form["id"]>
