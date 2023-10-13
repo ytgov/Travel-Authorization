@@ -1,4 +1,4 @@
-import db from '../db/db-client'
+import db from '../db/db-client-legacy'
 
 import Stop from "../models/stop"
 import BaseService from "./base-service"

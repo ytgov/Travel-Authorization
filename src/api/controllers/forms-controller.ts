@@ -1,20 +1,18 @@
 import { isNil } from "lodash"
 
-import db from "../db/db-client"
 import BaseController from "./base-controller"
 
-import { AuditService } from "../services"
-import Form from "../models/form"
-import FormSerializer from "../serializers/form-serializer"
-import FormsPolicy from "../policies/FormsPolicy"
-import FormsService from "../services/forms-service"
+import { AuditService, FormsService } from "../services"
+import { Form } from "../models"
+import { FormsSerializer } from "../serializers"
+import { FormsPolicy } from "../policies"
 
 // TODO: push this code back into services where it belongs
 const auditService = new AuditService()
 
 export class FormsController extends BaseController {
   index() {
-    const where = this.query.where
+    const where = this.query.where as any // TODO: figure out typing for "where" parameter
     return Form.findAndCountAll({
       where,
       include: ["stops", "purpose"],
@@ -22,7 +20,7 @@ export class FormsController extends BaseController {
       offset: this.pagination.offset,
     }).then(({ rows: forms, count }) => {
       const scopedForms = FormsPolicy.scope(forms, this.currentUser)
-      const serializedForms = FormSerializer.asTable(scopedForms)
+      const serializedForms = FormsSerializer.asTable(scopedForms)
       return this.response.json({ forms: serializedForms, totalCount: count })
     })
   }
@@ -42,26 +40,44 @@ export class FormsController extends BaseController {
   }
 
   async show() {
+    // TODO: make missing route params auto-404?
+    if (isNil(this.params.formId)) {
+      return this.response.status(404).json({ message: "Form not found." })
+    }
+
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
-    if (!FormsPolicy.show(form, this.currentUser)) {
+    const policy = this.buildPolicy(form)
+    if (!policy.show()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to view this form." })
     }
 
-    return Form.findByPk(this.params.formId, { include: ["stops", "purpose"] }).then((form) => {
-      const serializedForm = FormSerializer.asDetailed(form)
-      return this.response.json({ form: serializedForm })
-    })
+    return Form.findByPk(this.params.formId, { include: ["expenses", "stops", "purpose"] }).then(
+      (form) => {
+        if (isNil(form)) {
+          return this.response.status(404).json({ message: "Form not found." })
+        }
+
+        const serializedForm = FormsSerializer.asDetailed(form)
+        return this.response.json({ form: serializedForm })
+      }
+    )
   }
 
   async update() {
+    // TODO: make missing route params auto-404?
+    if (isNil(this.params.formId)) {
+      return this.response.status(404).json({ message: "Form not found." })
+    }
+
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
-    if (!FormsPolicy.update(form, this.currentUser)) {
+    const policy = this.buildPolicy(form)
+    if (!policy.update()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to update this form." })
@@ -76,8 +92,12 @@ export class FormsController extends BaseController {
       })
   }
 
-  private loadForm(): Promise<Form | undefined> {
-    return db<Form>("forms").where("id", this.params.formId).first()
+  private loadForm(): Promise<Form | null> {
+    return Form.findByPk(this.params.formId)
+  }
+
+  private buildPolicy(record: Form): FormsPolicy {
+    return new FormsPolicy(this.currentUser, record)
   }
 }
 

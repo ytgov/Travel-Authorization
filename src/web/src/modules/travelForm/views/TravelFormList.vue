@@ -8,9 +8,11 @@
       <v-card-text>
         <div style="height: 55px">
           <v-btn
-            @click="goToCreateForm"
+            @click="createAndGoToFormDetails"
             color="primary"
             class="float-right my-0"
+            :loading="loadingCreatingForm"
+            :disabled="loadingCreatingForm"
           >
             + Travel Authorization
           </v-btn>
@@ -18,6 +20,7 @@
         <v-data-table
           :headers="headers"
           :items="myForms"
+          :loading="loadingForms"
           :items-per-page.sync="perPage"
           :page.sync="page"
           :server-items-length="totalCount"
@@ -70,6 +73,8 @@ export default {
     perPage: 10,
     page: 1,
     totalCount: 1,
+    loadingForms: true,
+    loadingCreatingForm: false,
   }),
   async mounted() {
     await this.refreshForms()
@@ -78,18 +83,33 @@ export default {
     ...mapState("travelForm", ["myForms"]),
   },
   methods: {
-    ...mapActions("travelForm", ["loadForms"]),
+    ...mapActions("travelForm", ["loadForms", "create"]),
     refreshForms() {
-      return this.loadForms({ page: this.page, perPage: this.perPage }).then(({ totalCount }) => {
-        this.totalCount = totalCount
-      })
+      this.loadingForms = true
+      return this.loadForms({ page: this.page, perPage: this.perPage })
+        .then(({ totalCount }) => {
+          this.totalCount = totalCount
+        })
+        .finally(() => {
+          this.loadingForms = false
+        })
     },
     goToFormDetails(form) {
       const formId = form.id
-      this.$router.push({ name: "TravelFormEdit", params: { formId } })
+      this.$router.push({ name: "TravelFormEdit-DetailsTab", params: { formId } })
     },
-    goToCreateForm() {
-      this.$router.push({ name: "TravelFormCreate-DetailsTab" })
+    createAndGoToFormDetails() {
+      this.loadingCreatingForm = true
+      return this.create({ status: "Draft" })
+        .then((form) => {
+          return this.goToFormDetails(form)
+        })
+        .catch((error) => {
+          this.$snack(error.message, { color: "error" })
+        })
+        .finally(() => {
+          this.loadingCreatingForm = false
+        })
     },
     formatAsDate(value) {
       const timestamp = Date.parse(value)
@@ -104,7 +124,7 @@ export default {
       if (branch === department) return department
 
       return `${department} - ${branch}`
-    }
+    },
   },
   watch: {
     page() {

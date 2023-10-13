@@ -7,7 +7,7 @@
       >
         <v-autocomplete
           v-model="from.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -23,7 +23,7 @@
       >
         <v-autocomplete
           v-model="to.locationId"
-          :items="destinationsByRequestTravelRestriction"
+          :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -57,35 +57,25 @@
       </v-col>
       <v-col
         cols="12"
-        md="2"
+        md="4"
       >
-        <v-select
-          :value="fromTravelMethod"
-          :items="travelMethods"
+        <TravelMethodSelect
+          v-model="from.transport"
           :rules="[required]"
-          label="Travel Method"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
-          @change="updateFromTravelMethod"
-        ></v-select>
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-text-field
-          v-if="fromTravelMethod === TRAVEL_METHODS.OTHER"
-          v-model="from.transport"
+        />
+        <AccommodationTypeSelect
+          v-model="from.accommodationType"
           :rules="[required]"
-          label="Travel Method - Other:"
           background-color="white"
           dense
           outlined
           required
-        ></v-text-field>
+        />
       </v-col>
     </v-row>
   </div>
@@ -95,70 +85,63 @@
 import { mapActions, mapState, mapGetters } from "vuex"
 import { isArray, isEmpty } from "lodash"
 
+import { required } from "@/utils/validators"
+
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
-
-// TODO: abstract this to a shared helper
-const TRAVEL_METHODS = Object.freeze({
-  AIRCRAFT: "Aircraft",
-  POOL_VEHICLE: "Pool Vehicle",
-  PERSONAL_VEHICLE: "Personal Vehicle",
-  RENTAL_VEHICLE: "Rental Vehicle",
-  BUS: "Bus",
-  OTHER: "Other:",
-})
+import AccommodationTypeSelect, {
+  ACCOMMODATION_TYPES,
+} from "@/modules/travelForm/components/AccommodationTypeSelect"
+import TravelMethodSelect, {
+  TRAVEL_METHODS,
+} from "@/modules/travelForm/components/TravelMethodSelect"
 
 export default {
   name: "OneWayStopsSection",
   components: {
+    AccommodationTypeSelect,
     DatePicker,
     TimePicker,
+    TravelMethodSelect,
   },
-  data: () => ({
-    required: (v) => !!v || "This field is required",
-    fromTravelMethod: TRAVEL_METHODS.AIRCRAFT,
-    TRAVEL_METHODS,
-    travelMethods: Object.values(TRAVEL_METHODS),
-  }),
   computed: {
-    ...mapState("travelForm", ["request"]),
-    ...mapGetters("travelForm", ["destinationsByRequestTravelRestriction"]),
+    ...mapState("travelForm", ["currentForm"]),
+    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
     from() {
-      if (isEmpty(this.request?.stops)) return {}
+      if (isEmpty(this.currentForm?.stops)) return this.newStop()
 
-      return this.request.stops[0]
+      return this.currentForm.stops[0]
     },
     to() {
       if (
-        isEmpty(this.request?.stops) ||
-        (isArray(this.request?.stops) && this.request.stops.length < 2)
+        isEmpty(this.currentForm?.stops) ||
+        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
       )
-        return {}
+        return this.newStop()
 
-      return this.request.stops[1]
+      return this.currentForm.stops[1]
     },
   },
   async mounted() {
     await this.loadDestinations()
 
-    if (isEmpty(this.request.stops)) {
-      this.request.stops = [{}, {}]
-    } else if (this.request.stops.length === 1) {
-      this.request.stops.push({})
-    } else if (this.request.stops.length > 2) {
-      const elementsToRemove = this.request.stops.length - 2;
-      this.request.stops.splice(1, elementsToRemove);
+    if (isEmpty(this.currentForm.stops)) {
+      this.currentForm.stops = [this.newStop(), this.newStop()]
+    } else if (this.currentForm.stops.length === 1) {
+      this.currentForm.stops.push(this.newStop())
+    } else if (this.currentForm.stops.length > 2) {
+      const elementsToRemove = this.currentForm.stops.length - 2
+      this.currentForm.stops.splice(1, elementsToRemove)
     }
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
-    updateFromTravelMethod(value) {
-      this.fromTravelMethod = value
-
-      if (value === TRAVEL_METHODS.OTHER) {
-        this.from.transport = ""
-      } else {
-        this.from.transport = value
+    required,
+    newStop() {
+      return {
+        taid: this.currentFormId,
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
       }
     },
   },

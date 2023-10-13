@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express"
 
 import User from "../models/user"
 
+export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | "destroy"
+
 // See https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions
 export class BaseController {
   protected request: Request
@@ -44,8 +46,15 @@ export class BaseController {
     }
   }
 
+  static get destroy() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const controllerInstance = new this(req, res, next)
+      return controllerInstance.destroy()
+    }
+  }
+
   index() {
-    throw new Error("Not implemented")
+    throw new Error("Not Implemented")
   }
 
   create() {
@@ -57,6 +66,10 @@ export class BaseController {
   }
 
   update() {
+    throw new Error("Not Implemented")
+  }
+
+  destroy() {
     throw new Error("Not Implemented")
   }
 

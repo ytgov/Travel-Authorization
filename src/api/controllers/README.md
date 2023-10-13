@@ -15,3 +15,64 @@ Controllers are advantageous because they provide a suite of helper methods to a
 
 Controllers should implement the BaseController, and provide instance methods.
 The `BaseController` provides the magic that lets those methods map to an appropriate route.
+
+## Namespacing
+
+If you need an action that generates estimates for a given form, a POST route `/api/forms/:formId/estimates/generate` is the best way to avoid future conflicts and refactors. To implement this you need to "namespace/modularize" the controller. Generally speaking, it is more flexible to keep all routes as CRUD actions, and nest controllers as needed, than it is to add custom routes to a given controller.
+
+e.g. `forms.estimates.GenerateController.create` is preferred to `FormsController#generateEstimates` because once you start using non-CRUD actions, your controllers will quickly expand beyond human readability and comprehension.
+
+This is how you would create a namespaced controller:
+
+```bash
+src/
+|-- api/
+|   |-- controllers/
+|       |-- forms/
+|           |-- estimates/
+|               |-- generate-controller.ts
+|       |-- index.ts
+```
+
+```typescript
+// src/api/controllers/forms/estimates/generate-controller.ts
+import BaseController from "../../base-controller"
+
+export class GenerateController extends BaseController {
+  static create() {
+    // Logic for generating estimates here...
+  }
+}
+```
+
+```typescript
+// src/api/controllers/forms/estimates/index.ts
+export * from "./generate-controller"
+
+export default undefined
+```
+
+```typescript
+// src/api/controllers/forms/index.ts
+import * as estimates from "./estimates"
+
+export { estimates }
+```
+
+```typescript
+// src/api/controllers/index.ts
+import * as forms from "./forms"
+
+export { forms }
+```
+
+```typescript
+// src/api/routes/index.ts
+import { Router } from "express"
+
+import { forms } from "../controllers"
+
+const router = Router()
+
+router.post("/api/forms/:formId/estimates/generate", forms.estimates.GenerateController.create)
+```

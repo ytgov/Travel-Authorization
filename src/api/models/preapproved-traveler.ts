@@ -1,6 +1,6 @@
 import { keyBy } from "lodash"
 
-import db from "../db/db-client"
+import db from "../db/db-client-legacy"
 
 import BaseModel from "./base-model"
 import Preapproved from "./preapproved"
@@ -30,7 +30,7 @@ export class PreapprovedTraveler extends BaseModel {
   static async findAll({
     where = {},
     include = [],
-    limit = 10,
+    limit = 1000,
     offset = 0,
   }: {
     where?: {}
