@@ -207,9 +207,9 @@ export default {
     await this.loadDestinations()
 
     if (isEmpty(this.currentForm.stops)) {
-      this.currentForm.stops = [this.newStop(), this.newStop()]
+      this.currentForm.stops = [this.newStop(), this.newStop({ accommodationType: null })]
     } else if (this.currentForm.stops.length === 1) {
-      this.currentForm.stops.push(this.newStop())
+      this.currentForm.stops.push(this.newStop({ accommodationType: null }))
     } else if (this.currentForm.stops.length > 2) {
       const elementsToRemove = this.currentForm.stops.length - 2
       this.currentForm.stops.splice(1, elementsToRemove)
@@ -218,11 +218,12 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
     required,
-    newStop() {
+    newStop(attributes) {
       return {
         taid: this.currentFormId,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
+        ...attributes,
       }
     },
   },
