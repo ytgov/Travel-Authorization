@@ -29,8 +29,9 @@ export default {
   }),
   mounted() {
     this.loading = true
-    // TODO: fetch expense types from backend
-    this.expenseTypes = ["Flights", "Accommodations", "Meals & Incidentals"]
+    // TODO: fetch expense types from backend,
+    // until then, keep in sync with src/api/models/expense.ts
+    this.expenseTypes = ["Transportation", "Accommodations", "Meals & Incidentals"]
     this.loading = false
   },
   methods: {

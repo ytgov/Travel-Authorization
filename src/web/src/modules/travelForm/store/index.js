@@ -2,18 +2,21 @@ import { isString, upperFirst, omit } from "lodash"
 
 import { FORM_URL, LOOKUP_URL, DESTINATION_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
+import expensesApi, { TYPES as EXPENSE_VARIANT } from "@/apis/expenses-api"
 import formsApi from "@/apis/forms-api"
 
 const state = {
-  emails: [],
-  myForms: [],
   departments: [],
-  purposes: [],
   destinations: [],
+  emails: [],
+  estimates: [],
+  myForms: [],
+  purposes: [],
   currentForm: {},
   currentUser: {},
   loadingCurrentUser: true,
   loadingCurrentForm: true,
+  loadingEstimates: true,
 }
 
 // Shim to support refering to form as request for legacy code
@@ -52,6 +55,18 @@ const actions = {
       commit("SET_DEPARTMENTS", resp.data.data)
       return resp.data.data
     })
+  },
+  loadEstimates({ commit, state }, { formId }) {
+    state.loadingEstimates = true
+    return expensesApi
+      .list({ where: { taid: formId, type: EXPENSE_VARIANT.ESTIMATE } })
+      .then(({ expenses: estimates }) => {
+        commit("SET_ESTIMATES", estimates)
+        return estimates
+      })
+      .finally(() => {
+        state.loadingEstimates = false
+      })
   },
   async loadPurposes({ commit }) {
     return secureGet(`${LOOKUP_URL}/travelPurpose`).then((resp) => {
@@ -206,6 +221,9 @@ const mutations = {
   },
   SET_DESTINATIONS(store, value) {
     store.destinations = value
+  },
+  SET_ESTIMATES(store, value) {
+    store.estimates = value
   },
 }
 

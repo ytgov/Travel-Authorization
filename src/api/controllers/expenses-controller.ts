@@ -9,10 +9,10 @@ import { ExpensesService } from "../services"
 
 export class ExpensesController extends BaseController {
   index() {
-    const where = this.query.where
+    const where = this.query.where as any // TODO: figure out typing for "where" parameter
     return Expense.findAll({
       where,
-      order: ['date']
+      order: ["date"],
     }).then((expenses) => {
       const serializedExpenses = ExpensesSerializer.asTable(expenses)
       return this.response.json({ expenses: serializedExpenses })
@@ -82,11 +82,12 @@ export class ExpensesController extends BaseController {
   private async buildExpense() {
     const attributes = this.request.body
     const { taid: formId } = attributes
-    const form = await Form.findByPk(formId)
-    return new Expense({ ...attributes, form })
+    const expense = Expense.build(attributes)
+    expense.form = (await Form.findByPk(formId)) || undefined
+    return expense
   }
 
-  private loadExpense(): Promise<Expense | undefined> {
+  private loadExpense(): Promise<Expense | null> {
     return Expense.findByPk(this.params.expenseId, { include: ["form"] })
   }
 

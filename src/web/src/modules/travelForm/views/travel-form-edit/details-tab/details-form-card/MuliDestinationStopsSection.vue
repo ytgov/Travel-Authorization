@@ -243,10 +243,14 @@ import { isArray, isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
-import AccommodationTypeSelect from "@/modules/travelForm/components/AccommodationTypeSelect"
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
-import TravelMethodSelect from "@/modules/travelForm/components/TravelMethodSelect"
+import AccommodationTypeSelect, {
+  ACCOMMODATION_TYPES,
+} from "@/modules/travelForm/components/AccommodationTypeSelect"
+import TravelMethodSelect, {
+  TRAVEL_METHODS,
+} from "@/modules/travelForm/components/TravelMethodSelect"
 
 export default {
   name: "MuliDestinationStopsSection",
@@ -311,7 +315,11 @@ export default {
     ...mapActions("travelForm", ["loadDestinations"]),
     required,
     newStop() {
-      return { taid: this.currentFormId }
+      return {
+        taid: this.currentFormId,
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+      }
     },
   },
 }

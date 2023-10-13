@@ -2,7 +2,6 @@ import knex, { Knex } from "knex"
 import { isEmpty, map } from "lodash"
 
 import { DB_CONFIG } from "../config"
-import { Form } from "../models/form"
 
 export class FormService {
   private db: Knex
@@ -13,8 +12,11 @@ export class FormService {
 
   //returns form
   async getForm(formId: string): Promise<any | undefined> {
+    console.warn(
+      "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
+    )
     try {
-      let form: Form = await this.db("forms").select("*").first().where({ formId: formId })
+      let form: any = await this.db("forms").select("*").first().where({ formId: formId })
 
       if (isEmpty(form)) {
         return undefined
@@ -41,7 +43,10 @@ export class FormService {
     }
   }
 
-  async saveForm(userId: number, form: Form): Promise<any | undefined> {
+  async saveForm(userId: number, form: any): Promise<any | undefined> {
+    console.warn(
+      "This method is deprecated, and will be removed in a future version. Please use FormsService#update instead."
+    )
     try {
       let stops = form.stops
       let expenses = form.expenses
@@ -163,7 +168,10 @@ export class FormService {
     }
   }
 
-  async submitForm(userId: number, form: Form): Promise<Boolean> {
+  async submitForm(userId: number, form: any): Promise<Boolean> {
+    console.warn(
+      "This method is deprecated, and will be removed in a future version. Please use FormsService#create instead."
+    )
     try {
       let stops = form.stops
       delete form.stops

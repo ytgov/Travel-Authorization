@@ -20,7 +20,7 @@
 
 <script>
 // TODO: load from back-end?
-const TRAVEL_METHODS = Object.freeze({
+export const TRAVEL_METHODS = Object.freeze({
   AIRCRAFT: "Aircraft",
   POOL_VEHICLE: "Pool Vehicle",
   PERSONAL_VEHICLE: "Personal Vehicle",

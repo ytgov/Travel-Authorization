@@ -1,5 +1,10 @@
 import http from "@/apis/http-client"
 
+// Must match types in src/api/models/expense.ts
+export const TYPES = Object.freeze({
+  ESTIMATE: "Estimates",
+})
+
 export const expensesApi = {
   list({ where, page, perPage, ...otherParams } = {}) {
     return http

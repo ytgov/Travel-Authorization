@@ -25,7 +25,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="3"
           >
             <v-select
               :value="tripType"

@@ -14,6 +14,7 @@
             cols="12"
             md="3"
           >
+            <!-- TODO: add tooltip with link to estimate tab explaining where this data comes from -->
             <v-text-field
               :value="formatCurrency(estimatedCost)"
               :rules="[required]"
@@ -89,7 +90,7 @@ import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobo
 
 // Must match types in src/api/models/expense.ts
 const EXPENSE_TYPES = Object.freeze({
-  ESTIMATE: 'Estimates',
+  ESTIMATE: "Estimates",
 })
 
 export default {
@@ -105,12 +106,11 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
-    estimates () {
-      return this.currentForm.expenses
-        .filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE)
+    estimates() {
+      return this.currentForm.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE) || []
     },
     estimatedCost() {
-      return sumBy(this.estimates, 'cost')
+      return sumBy(this.estimates, "cost")
     },
     travelAdvanceInDollars: {
       get() {

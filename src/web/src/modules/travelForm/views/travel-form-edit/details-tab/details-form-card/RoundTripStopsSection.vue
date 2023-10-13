@@ -6,7 +6,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="from.locationId"
+          v-model="originStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
@@ -22,7 +22,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="to.locationId"
+          v-model="destinationStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
@@ -38,7 +38,7 @@
         md="2"
       >
         <DatePicker
-          v-model="from.departureDate"
+          v-model="originStop.departureDate"
           :rules="[required]"
           text="Date"
           persistent-hint
@@ -49,7 +49,7 @@
         md="2"
       >
         <TimePicker
-          v-model="from.departureTime"
+          v-model="originStop.departureTime"
           :rules="[required]"
           text="Time"
           persistent-hint
@@ -60,7 +60,7 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="from.transport"
+          v-model="originStop.transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -69,7 +69,7 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="from.accommodationType"
+          v-model="destinationStop.accommodationType"
           :rules="[required]"
           background-color="white"
           dense
@@ -84,7 +84,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="to.locationId"
+          v-model="destinationStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
@@ -100,7 +100,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="from.locationId"
+          v-model="originStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
@@ -116,7 +116,7 @@
         md="2"
       >
         <DatePicker
-          v-model="to.departureDate"
+          v-model="destinationStop.departureDate"
           :rules="[required]"
           text="Date"
           persistent-hint
@@ -127,7 +127,7 @@
         md="2"
       >
         <TimePicker
-          v-model="to.departureTime"
+          v-model="destinationStop.departureTime"
           :rules="[required]"
           text="Time"
           persistent-hint
@@ -138,7 +138,7 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="to.transport"
+          v-model="destinationStop.transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -147,7 +147,8 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="to.accommodationType"
+          v-model="originStop.accommodationType"
+          :default-value="null"
           background-color="white"
           hint="Optional, set only if neccessary"
           placeholder="N/A"
@@ -167,10 +168,14 @@ import { isArray, isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
-import AccommodationTypeSelect from "@/modules/travelForm/components/AccommodationTypeSelect"
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
-import TravelMethodSelect from "@/modules/travelForm/components/TravelMethodSelect"
+import AccommodationTypeSelect, {
+  ACCOMMODATION_TYPES,
+} from "@/modules/travelForm/components/AccommodationTypeSelect"
+import TravelMethodSelect, {
+  TRAVEL_METHODS,
+} from "@/modules/travelForm/components/TravelMethodSelect"
 
 export default {
   name: "RoundTripStopsSection",
@@ -183,12 +188,12 @@ export default {
   computed: {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
-    from() {
+    originStop() {
       if (isEmpty(this.currentForm?.stops)) return this.newStop()
 
       return this.currentForm.stops[0]
     },
-    to() {
+    destinationStop() {
       if (
         isEmpty(this.currentForm?.stops) ||
         (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
@@ -202,9 +207,9 @@ export default {
     await this.loadDestinations()
 
     if (isEmpty(this.currentForm.stops)) {
-      this.currentForm.stops = [this.newStop(), this.newStop()]
+      this.currentForm.stops = [this.newStop(), this.newStop({ accommodationType: null })]
     } else if (this.currentForm.stops.length === 1) {
-      this.currentForm.stops.push(this.newStop())
+      this.currentForm.stops.push(this.newStop({ accommodationType: null }))
     } else if (this.currentForm.stops.length > 2) {
       const elementsToRemove = this.currentForm.stops.length - 2
       this.currentForm.stops.splice(1, elementsToRemove)
@@ -213,8 +218,13 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
     required,
-    newStop() {
-      return { taid: this.currentFormId }
+    newStop(attributes) {
+      return {
+        taid: this.currentFormId,
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...attributes,
+      }
     },
   },
 }

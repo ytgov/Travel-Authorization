@@ -1,4 +1,4 @@
-import { isEmpty, minBy, pick } from "lodash"
+import { isEmpty, isNil, minBy, pick } from "lodash"
 
 import Form from "../models/form"
 
@@ -21,13 +21,13 @@ export class FormsSerializer extends BaseSerializer {
 
   private static departingAt(form: Form) {
     const stops = form.stops || []
-
     if (isEmpty(stops)) return "Unknown"
 
     const firstStop = minBy(stops, ({ departureDate, departureTime }) => {
       const departingAtString = `${departureDate}T${departureTime}`
       return new Date(departingAtString)
     })
+    if (isNil(firstStop)) return "Unknown"
 
     const { departureDate, departureTime } = firstStop
     const departingAtString = `${departureDate}T${departureTime}`

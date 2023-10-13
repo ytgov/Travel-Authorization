@@ -1,6 +1,6 @@
 import { groupBy } from "lodash"
 
-import db from "../db/db-client"
+import db from "../db/db-client-legacy"
 
 import BaseModel from "./base-model"
 import PreapprovedTraveler from "./preapproved-traveler"

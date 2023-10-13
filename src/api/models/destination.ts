@@ -1,22 +1,23 @@
 import {
-  Model,
+  CreationOptional,
   DataTypes,
   InferAttributes,
   InferCreationAttributes,
-  CreationOptional,
+  Model,
 } from "sequelize"
 
 import sequelize from "../db/db-client"
 
-export class TravelPurpose extends Model<
-  InferAttributes<TravelPurpose>,
-  InferCreationAttributes<TravelPurpose>
+export class Destination extends Model<
+  InferAttributes<Destination>,
+  InferCreationAttributes<Destination>
 > {
   declare id: CreationOptional<number>
-  declare purpose: string
+  declare province: string
+  declare city: string
 }
 
-TravelPurpose.init(
+Destination.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -24,17 +25,20 @@ TravelPurpose.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    purpose: {
+    province: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    city: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
   },
   {
     sequelize,
-    tableName: "travelPurpose",
-    modelName: "TravelPurpose",
+    modelName: "Destination",
+    tableName: "destinations",
     timestamps: false,
   }
 )
-
-export default TravelPurpose
+export default Destination

@@ -12,7 +12,7 @@ const auditService = new AuditService()
 
 export class FormsController extends BaseController {
   index() {
-    const where = this.query.where
+    const where = this.query.where as any // TODO: figure out typing for "where" parameter
     return Form.findAndCountAll({
       where,
       include: ["stops", "purpose"],
@@ -40,6 +40,11 @@ export class FormsController extends BaseController {
   }
 
   async show() {
+    // TODO: make missing route params auto-404?
+    if (isNil(this.params.formId)) {
+      return this.response.status(404).json({ message: "Form not found." })
+    }
+
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
@@ -52,6 +57,10 @@ export class FormsController extends BaseController {
 
     return Form.findByPk(this.params.formId, { include: ["expenses", "stops", "purpose"] }).then(
       (form) => {
+        if (isNil(form)) {
+          return this.response.status(404).json({ message: "Form not found." })
+        }
+
         const serializedForm = FormsSerializer.asDetailed(form)
         return this.response.json({ form: serializedForm })
       }
@@ -59,6 +68,11 @@ export class FormsController extends BaseController {
   }
 
   async update() {
+    // TODO: make missing route params auto-404?
+    if (isNil(this.params.formId)) {
+      return this.response.status(404).json({ message: "Form not found." })
+    }
+
     const form = await this.loadForm()
     if (isNil(form)) return this.response.status(404).json({ message: "Form not found." })
 
@@ -78,7 +92,7 @@ export class FormsController extends BaseController {
       })
   }
 
-  private loadForm(): Promise<Form | undefined> {
+  private loadForm(): Promise<Form | null> {
     return Form.findByPk(this.params.formId)
   }
 
