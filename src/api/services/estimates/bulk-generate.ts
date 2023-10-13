@@ -61,7 +61,6 @@ export class BulkGenerate extends BaseService {
       const fromLocation = fromStop.location
       const fromTransport = fromStop.transport
       const toLocation = toStop.location
-      const toDepartureAt = toStop.departureAt
 
       if (isNil(fromLocation)) {
         throw new Error(`Missing location on Stop#${fromStop.id}`)
@@ -74,9 +73,6 @@ export class BulkGenerate extends BaseService {
       }
       if (isNil(toLocation)) {
         throw new Error(`Missing location on Stop#${toStop.id}`)
-      }
-      if (isNil(toDepartureAt)) {
-        throw new Error(`Missing departure date on Stop#${toStop.id}`)
       }
 
       const travelMethodEstimate = await this.buildTravelMethodEstimate({
