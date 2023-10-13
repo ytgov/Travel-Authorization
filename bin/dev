@@ -72,6 +72,10 @@ class DevHelper
     compose(*%w[exec dbpostgres], *args, **kwargs)
   end
 
+  def ts_node(*args, **kwargs)
+    exec("cd #{project_root}/src/api && npm run ts-node")
+  end
+
   def ownit(*args, **kwargs)
     file_or_directory = args[0]
     raise ScriptError, "Must provide a file or directory path." if file_or_directory.nil?
