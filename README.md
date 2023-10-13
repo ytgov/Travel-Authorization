@@ -126,7 +126,36 @@ If you are getting a bunch of "Login required" errors in the console, make sure 
 Auth0 use third-party cookies for authentication, and they get blocked by all major browsers
 by default.
 
-### Set up `dev` command
+## Migrations
+
+You can generate migrations via the api service code. Currently uses [knex Migration CLI](https://knexjs.org/guide/migrations.html#migration-cli) using `dev knex ...` on `cd api && npm run knex ...`.
+
+### Create a New Migration
+```bash
+dev knex migrate:make migration_name
+```
+
+This will generate a migration of the form:
+- `api/src/data/migrations/20231013235256_migration_name.ts`
+
+FUTURE: Implement dash cased migration names and/or switch to `umzug/Sequelize`
+
+### Running Migrations
+
+```bash
+dev knex migrate:latest
+dev knex migrate:up
+```
+
+### Rolling Migrations Backwards
+
+```bash
+dev knex migrate:rollback
+dev knex migrate:rollback --all
+dev knex migrate:down
+```
+
+## Set up `dev` command
 
 The `dev` command vastly simplifies development using docker compose. It only requires `ruby`; however, `direnv` and `asdf` will make it easier to use.
 

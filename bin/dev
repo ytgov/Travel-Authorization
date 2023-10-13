@@ -81,7 +81,11 @@ class DevHelper
   end
 
   def ts_node(*args, **kwargs)
-    exec("cd #{project_root}/api && npm run ts-node")
+    exec("cd #{project_root}/api && npm run ts-node #{args.join(' ')}")
+  end
+
+  def knex(*args, **kwargs)
+    exec("cd #{project_root}/api && npm run knex #{args.join(' ')}")
   end
 
   def ownit(*args, **kwargs)
