@@ -107,7 +107,7 @@ export default {
   computed: {
     ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
     estimates() {
-      return this.currentForm.expenses.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE)
+      return this.currentForm.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE) || []
     },
     estimatedCost() {
       return sumBy(this.estimates, "cost")
