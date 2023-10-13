@@ -8,9 +8,7 @@
         Are you sure you want to delete the following estimate?
       </v-card-title>
       <v-card-text>
-        <v-container
-          v-if="hasEstimate"
-        >
+        <v-container v-if="hasEstimate">
           <v-row no-gutters>
             <v-col class="text-center">
               {{ estimate.expenseType }}
@@ -55,6 +53,7 @@
 
 <script>
 import { isEmpty } from "lodash"
+import { DateTime } from "luxon"
 
 import expensesApi from "@/apis/expenses-api"
 
@@ -108,13 +107,7 @@ export default {
         })
     },
     formatDate(date) {
-      const parsedDate = new Date(date)
-      const formatter = new Intl.DateTimeFormat("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-      return formatter.format(parsedDate).replace(/ /g, "-")
+      return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
     },
     formatCurrency(amount) {
       const formatter = new Intl.NumberFormat("en-CA", {

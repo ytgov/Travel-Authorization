@@ -56,6 +56,7 @@
 <script>
 import { sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
+import { DateTime } from "luxon"
 
 import EstimateDeleteDialog from "./EstimateDeleteDialog"
 import EstimateEditDialog from "./EstimateEditDialog"
@@ -98,13 +99,7 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadEstimates"]),
     formatDate(date) {
-      const parsedDate = new Date(date)
-      const formatter = new Intl.DateTimeFormat("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-      return formatter.format(parsedDate).replace(/ /g, "-")
+      return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
     },
     formatCurrency(amount) {
       const formatter = new Intl.NumberFormat("en-CA", {
