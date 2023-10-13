@@ -13,9 +13,9 @@ import {
   PerDiem,
   Stop,
   TravelMethods,
-} from "../../models"
-import { Types as ExpenseVariants } from "../../models/expense"
-import BaseService from "../base-service"
+} from "@/models"
+import { Types as ExpenseVariants } from "@/models/expense"
+import BaseService from "@/services/base-service"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350

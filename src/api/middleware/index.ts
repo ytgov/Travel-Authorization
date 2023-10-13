@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
-import { DB_HOST } from "../config";
+import { DB_HOST } from "@/config";
 
 export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {

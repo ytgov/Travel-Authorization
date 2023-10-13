@@ -80,8 +80,8 @@ export { estimates }
 The usages of this would be
 
 ```typescript
-import { BulkGenerate } from "../../../services/estimates"
-// OR import { estimates } from "../../../services"
+import { BulkGenerate } from "@/services/estimates"
+// OR import { estimates } from "@/services"
 
 export class GenerateController extends BaseController {
   async create() {

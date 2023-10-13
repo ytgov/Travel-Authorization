@@ -2,10 +2,10 @@ import { isNil } from "lodash"
 
 import BaseController from "./base-controller"
 
-import { Expense, Form } from "../models"
-import { ExpensesPolicy } from "../policies"
-import { ExpensesSerializer } from "../serializers"
-import { ExpensesService } from "../services"
+import { Expense, Form } from "@/models"
+import { ExpensesPolicy } from "@/policies"
+import { ExpensesSerializer } from "@/serializers"
+import { ExpensesService } from "@/services"
 
 export class ExpensesController extends BaseController {
   index() {

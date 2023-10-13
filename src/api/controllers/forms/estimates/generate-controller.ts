@@ -1,8 +1,8 @@
-import BaseController from "../../base-controller"
+import BaseController from "@/controllers/base-controller"
 
-import { Expense, Form } from "../../../models"
-import { ExpensesPolicy } from "../../../policies"
-import { BulkGenerate } from "../../../services/estimates"
+import { Expense, Form } from "@/models"
+import { ExpensesPolicy } from "@/policies"
+import { BulkGenerate } from "@/services/estimates"
 
 export class GenerateController extends BaseController {
   async create() {

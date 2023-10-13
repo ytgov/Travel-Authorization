@@ -2,7 +2,7 @@ import { isNil } from "lodash"
 
 import BasePolicy from "./base-policy"
 import FormsPolicy from "./forms-policy"
-import { Expense } from "../models"
+import { Expense } from "@/models"
 
 export class ExpensesPolicy extends BasePolicy<Expense> {
   create(): boolean {

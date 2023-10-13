@@ -1,5 +1,5 @@
 import * as knex from "knex";
-import { DB_CONFIG } from "../config";
+import { DB_CONFIG } from "@/config";
 
 export * from "./migrator";
 /*

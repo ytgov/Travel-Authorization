@@ -36,7 +36,7 @@ src/
 
 ```typescript
 // src/api/controllers/forms/estimates/generate-controller.ts
-import BaseController from "../../base-controller"
+import BaseController from "@/base-controller"
 
 export class GenerateController extends BaseController {
   static create() {
@@ -70,7 +70,7 @@ export { forms }
 // src/api/routes/index.ts
 import { Router } from "express"
 
-import { forms } from "../controllers"
+import { forms } from "@/controllers"
 
 const router = Router()
 

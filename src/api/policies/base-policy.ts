@@ -1,6 +1,6 @@
 import { pick } from "lodash"
 
-import { User } from "../models"
+import { User } from "@/models"
 
 export type Actions = "show" | "create" | "update" | "destroy"
 

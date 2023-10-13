@@ -1,6 +1,6 @@
 import knex from "knex"
 
-import { DB_CONFIG, NODE_ENV } from "../config"
+import { DB_CONFIG, NODE_ENV } from "@/config"
 
 export const db = knex(DB_CONFIG)
 

@@ -1,8 +1,8 @@
 import { isEmpty, isNil } from "lodash"
 
-import db from "../db/db-client-legacy"
+import db from "@/db/db-client-legacy"
 
-import { Expense } from "../models"
+import { Expense } from "@/models"
 import BaseService from "./base-service"
 
 export class ExpensesService extends BaseService {

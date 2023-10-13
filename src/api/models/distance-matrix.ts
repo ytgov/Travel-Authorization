@@ -6,7 +6,7 @@ import {
   Model,
 } from "sequelize"
 
-import sequelize from "../db/db-client"
+import sequelize from "@/db/db-client"
 
 export class DistanceMatrix extends Model<
   InferAttributes<DistanceMatrix>,

@@ -1,7 +1,6 @@
 import BasePolicy from "./base-policy"
 
-import User from "../models/user"
-import Form, { FormStatuses } from "../models/form"
+import { User, Form, FormStatuses } from "@/models"
 
 export class FormsPolicy extends BasePolicy<Form> {
   show(): boolean {

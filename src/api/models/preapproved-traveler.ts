@@ -1,6 +1,6 @@
 import { keyBy } from "lodash"
 
-import db from "../db/db-client-legacy"
+import db from "@/db/db-client-legacy"
 
 import BaseModel from "./base-model"
 import Preapproved from "./preapproved"

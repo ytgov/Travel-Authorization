@@ -1,6 +1,6 @@
 import { isEmpty, isNil, minBy, pick } from "lodash"
 
-import Form from "../models/form"
+import Form from "@/models/form"
 
 import BaseSerializer from "./base-serializer"
 
