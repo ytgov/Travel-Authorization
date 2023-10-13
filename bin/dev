@@ -65,11 +65,11 @@ class DevHelper
 
   # Custom helpers
   def up_api(*args, **kwargs)
-    exec("cd #{project_root}/src/api && npm run start")
+    exec("cd #{project_root}/api && npm run start")
   end
 
   def up_web(*args, **kwargs)
-    exec("cd #{project_root}/src/web && npm run start")
+    exec("cd #{project_root}/web && npm run start")
   end
 
   def psql(*args, **kwargs)
@@ -81,7 +81,7 @@ class DevHelper
   end
 
   def ts_node(*args, **kwargs)
-    exec("cd #{project_root}/src/api && npm run ts-node")
+    exec("cd #{project_root}/api && npm run ts-node")
   end
 
   def ownit(*args, **kwargs)

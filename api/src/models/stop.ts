@@ -20,7 +20,7 @@ import Form from "./form"
 
 const BEGINNING_OF_DAY = "00:00:00"
 
-// Keep in sync with src/web/src/modules/travelForm/components/TravelMethodSelect.vue
+// Keep in sync with web/src/modules/travelForm/components/TravelMethodSelect.vue
 // Until both are using a shared location
 export enum TravelMethods {
   AIRCRAFT = "Aircraft",
@@ -32,7 +32,7 @@ export enum TravelMethods {
   // OTHER = "Other:"
 }
 
-// Keep in sync with src/web/src/modules/travelForm/components/AccommodationTypeSelect.vue
+// Keep in sync with web/src/modules/travelForm/components/AccommodationTypeSelect.vue
 // Until both are using a shared location
 export enum AccommodationTypes {
   HOTEL = "Hotel",

@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start": "ts-node-dev -r tsconfig-paths/register index.ts",
+    "start": "ts-node-dev -r tsconfig-paths/register src/index.ts",
     "ts-node": "ts-node -r tsconfig-paths/register"
   },
   "author": "Michael Johnson",

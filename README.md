@@ -60,7 +60,7 @@
 
 ### API Service (a.k.a back-end)
 
-1. In the `src/api` folder.
+1. In the `api` folder.
 
 2. Create a `.env.development` file with this content. It must match the config in `docker-compose.db.yml`
 
@@ -85,7 +85,7 @@
 
 ### Web Service (a.k.a. front-end)
 
-1. In the `src/web` folder.
+1. In the `web` folder.
 
 2. Install the project using `npm install`
 
@@ -185,9 +185,9 @@ Files:
 
 - [Dockerfile](./Dockerfile)
 - [docker-compose.yml](./docker-compose.yml)
-- Various non-commited `src/api/.env.*` files
+- Various non-commited `api/.env.*` files
 
-1. Create a `.env.development` and `.env.production` file in the `src/api/` directory with the appropriate values.
+1. Create a `.env.development` and `.env.production` file in the `api/` directory with the appropriate values.
 
    - [ ] TODO: investigate if custom environment variables are needed
 
@@ -198,7 +198,7 @@ Files:
 4. Build and boot the production image via
 
    ```bash
-   docker compose up --build
+   HOST_PORT=3000 docker compose up --build
    ```
 
-5. Go to http://localhost:8088/ and check that you can log in and use the application.
+5. Go to http://localhost:3000/ and check that you can log in and use the application.

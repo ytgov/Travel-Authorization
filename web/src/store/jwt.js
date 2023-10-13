@@ -3,7 +3,7 @@ import axios from "axios";
 import { getInstance } from "../auth";
 import { apiBaseUrl } from "../config";
 
-// TODO: deprecate this file in favor of src/web/src/apis/http-client.js
+// TODO: deprecate this file in favor of web/src/apis/http-client.js
 export async function prepareAxios() {
   const auth = await getInstance();
   const token = await auth.getTokenSilently();
