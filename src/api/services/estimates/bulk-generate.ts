@@ -1,5 +1,5 @@
 import { clone, isNil, max, min, times } from "lodash"
-import { CreationAttributes } from "sequelize"
+import { CreationAttributes, Op } from "sequelize"
 
 import {
   ClaimTypes,
@@ -261,9 +261,9 @@ export class BulkGenerate extends BaseService {
       }
 
       const province = location.province
-      const description = this.buildMealsAndIncidentalsDescription(stayedAt, departureAt)
-
-      const cost = await this.determinePerDiemCost(province, arrivalAt, departureAt)
+      const claims = this.determineClaimTypes(stayedAt, departureAt)
+      const description = claims.join("/")
+      const cost = await this.determinePerDiemCost(province, claims)
 
       estimates.push({
         type: ExpenseVariants.ESTIMATE,
@@ -323,6 +323,7 @@ export class BulkGenerate extends BaseService {
     switch (accommodationType) {
       case ACCOMMODATION_TYPES.HOTEL:
         return 1 * HOTEL_ALLOWANCE_PER_NIGHT
+      // TODO: determine if Private Accommodation is part of the max daily per-diem
       case ACCOMMODATION_TYPES.PRIVATE:
         return 1 * PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT
       default:
@@ -340,7 +341,8 @@ export class BulkGenerate extends BaseService {
 
   // Assuming a meal every 4 hours
   // e.g 0, 4, 8 so any 8 hour period is a "full day"
-  private buildMealsAndIncidentalsDescription(stayedAt: Date, departureAt: Date): string {
+  // Assuming you can only claim the max daily after 12 hours
+  private determineClaimTypes(stayedAt: Date, departureAt: Date): ClaimTypes[] {
     let leftAtEndOfDay = clone(stayedAt)
     leftAtEndOfDay.setHours(23, 59, 59, 999)
     const leftAt = min([leftAtEndOfDay, departureAt]) as Date
@@ -348,41 +350,32 @@ export class BulkGenerate extends BaseService {
     const startAtHour = stayedAt.getHours()
     const hoursBetweenDates = this.calculateHoursBetweenDates(stayedAt, leftAt)
 
-    if (hoursBetweenDates >= 8) {
-      return "Full Day"
+    if (hoursBetweenDates >= 12) {
+      return [ClaimTypes.MAXIMUM_DAILY]
+    } else if (hoursBetweenDates >= 8) {
+      return [ClaimTypes.BREAKFAST, ClaimTypes.LUNCH, ClaimTypes.DINNER]
     } else if (startAtHour < 11 && hoursBetweenDates >= 4) {
-      return "Breakfast/Lunch"
+      return [ClaimTypes.BREAKFAST, ClaimTypes.LUNCH]
     } else if (startAtHour < 11) {
-      return "Breakfast"
+      return [ClaimTypes.BREAKFAST]
     } else if (startAtHour < 16 && hoursBetweenDates >= 4) {
-      return "Lunch/Dinner"
+      return [ClaimTypes.LUNCH, ClaimTypes.DINNER]
     } else if (startAtHour < 16) {
-      return "Lunch"
+      return [ClaimTypes.LUNCH]
     } else {
-      return "Dinner"
+      return [ClaimTypes.DINNER]
     }
   }
 
-  private async determinePerDiemCost(
-    toProvince: string,
-    fromDepartureAt: Date,
-    toDepartureAt: Date
-  ): Promise<number> {
-    const claim = this.determineClaimType(fromDepartureAt, toDepartureAt)
+  private async determinePerDiemCost(province: string, claims: ClaimTypes[]): Promise<number> {
+    const location = this.determineLocationFromProvince(province)
 
-    // TODO: add in the rest of these computations
-    switch (toProvince) {
-      case "YT":
-        const perDiem = await PerDiem.findOne({
-          where: { claim, location: LocationTypes.YUKON },
-        })
-        if (isNil(perDiem) || isNil(perDiem.amount)) return 0
-
-        const { amount } = perDiem
-        return amount
-      default:
-        return 0
-    }
+    return PerDiem.sum("amount", {
+      where: {
+        claim: { [Op.in]: claims },
+        location,
+      },
+    })
   }
 
   private calculateHoursBetweenDates(startDate: Date, endDate: Date): number {
@@ -391,9 +384,19 @@ export class BulkGenerate extends BaseService {
     return differenceInMilliseconds / millisecondsPerHour
   }
 
-  private determineClaimType(fromDepartureAt: Date, toDepartureAt: Date): ClaimTypes {
-    // TODO: figure out how to compute claim type
-    return ClaimTypes.MAXIMUM_DAILY
+  private determineLocationFromProvince(province: string): LocationTypes {
+    switch (province) {
+      case "YT":
+        return LocationTypes.YUKON
+      case "NT":
+        return LocationTypes.NWT
+      case "NU":
+        return LocationTypes.NUNAVUT
+      // TODO: Handle Alaska and the US in the future
+      // I don't see any destination data for this yet, so leaving for now.
+      default:
+        return LocationTypes.CANADA
+    }
   }
 }
 
