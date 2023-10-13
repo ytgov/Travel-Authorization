@@ -25,8 +25,8 @@ e.g. `forms.estimates.GenerateController.create` is preferred to `FormsControlle
 This is how you would create a namespaced controller:
 
 ```bash
-src/
-|-- api/
+api/
+|-- src/
 |   |-- controllers/
 |       |-- forms/
 |           |-- estimates/
@@ -35,7 +35,7 @@ src/
 ```
 
 ```typescript
-// src/api/controllers/forms/estimates/generate-controller.ts
+// api/src/controllers/forms/estimates/generate-controller.ts
 import BaseController from "@/base-controller"
 
 export class GenerateController extends BaseController {
@@ -46,28 +46,28 @@ export class GenerateController extends BaseController {
 ```
 
 ```typescript
-// src/api/controllers/forms/estimates/index.ts
+// api/src/controllers/forms/estimates/index.ts
 export * from "./generate-controller"
 
 export default undefined
 ```
 
 ```typescript
-// src/api/controllers/forms/index.ts
+// api/src/controllers/forms/index.ts
 import * as estimates from "./estimates"
 
 export { estimates }
 ```
 
 ```typescript
-// src/api/controllers/index.ts
+// api/src/controllers/index.ts
 import * as forms from "./forms"
 
 export { forms }
 ```
 
 ```typescript
-// src/api/routes/index.ts
+// api/src/routes/index.ts
 import { Router } from "express"
 
 import { forms } from "@/controllers"

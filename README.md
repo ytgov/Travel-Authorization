@@ -60,7 +60,7 @@
 
 ### API Service (a.k.a back-end)
 
-1. In the `src/api` folder.
+1. In the `api` folder.
 
 2. Create a `.env.development` file with this content. It must match the config in `docker-compose.db.yml`
 
@@ -185,9 +185,9 @@ Files:
 
 - [Dockerfile](./Dockerfile)
 - [docker-compose.yml](./docker-compose.yml)
-- Various non-commited `src/api/.env.*` files
+- Various non-commited `api/.env.*` files
 
-1. Create a `.env.development` and `.env.production` file in the `src/api/` directory with the appropriate values.
+1. Create a `.env.development` and `.env.production` file in the `api/` directory with the appropriate values.
 
    - [ ] TODO: investigate if custom environment variables are needed
 
