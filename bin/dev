@@ -69,7 +69,7 @@ class DevHelper
   end
 
   def up_web(*args, **kwargs)
-    exec("cd #{project_root}/src/web && npm run start")
+    exec("cd #{project_root}/web && npm run start")
   end
 
   def psql(*args, **kwargs)

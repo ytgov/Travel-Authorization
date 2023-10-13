@@ -85,7 +85,7 @@
 
 ### Web Service (a.k.a. front-end)
 
-1. In the `src/web` folder.
+1. In the `web` folder.
 
 2. Install the project using `npm install`
 
