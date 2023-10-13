@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "express-jwt";
 import axios from "axios";
 import jwksRsa from "jwks-rsa";
-import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "../config";
-import { UserService } from "../services";
+import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config";
+import { UserService } from "@/services";
 
 console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`);
 

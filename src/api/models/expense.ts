@@ -12,7 +12,7 @@ import {
   NonAttribute,
 } from "sequelize"
 
-import sequelize from "../db/db-client"
+import sequelize from "@/db/db-client"
 
 import Form from "./form"
 

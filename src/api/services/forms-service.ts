@@ -1,9 +1,9 @@
 import { isNil, isEmpty } from "lodash"
 import { v4 as uuid } from "uuid"
 
-import db from "../db/db-client-legacy"
+import db from "@/db/db-client-legacy"
 
-import { Form, User } from "../models"
+import { Form, User } from "@/models"
 import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"

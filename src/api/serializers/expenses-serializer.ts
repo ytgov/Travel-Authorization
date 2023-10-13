@@ -1,6 +1,6 @@
 import { pick } from "lodash"
 
-import { Expense, ExpenseTypes } from "../models"
+import { Expense, ExpenseTypes } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 

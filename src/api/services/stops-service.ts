@@ -1,6 +1,6 @@
-import db from '../db/db-client-legacy'
+import db from '@/db/db-client-legacy'
 
-import Stop from "../models/stop"
+import Stop from "@/models/stop"
 import BaseService from "./base-service"
 
 export class StopsService extends BaseService {

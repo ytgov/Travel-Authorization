@@ -1,13 +1,13 @@
 import { Router, Request, Response } from "express"
 
-import { checkJwt, loadUser } from "../middleware/authz.middleware"
+import { checkJwt, loadUser } from "@/middleware/authz.middleware"
 import {
   ExpensesController,
   FormsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
   forms,
-} from "../controllers"
+} from "@/controllers"
 
 export * from "./owner-router"
 export * from "./users-router"

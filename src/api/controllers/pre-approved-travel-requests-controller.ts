@@ -1,6 +1,6 @@
 import BaseController from "./base-controller"
 
-import { Preapproved } from "../models"
+import { Preapproved } from "@/models"
 
 export class PreApprovedTravelRequestsController extends BaseController {
   index() {

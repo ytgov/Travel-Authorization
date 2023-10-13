@@ -1,4 +1,4 @@
-import db from "../db/db-client"
+import db from "@/db/db-client"
 
 import Stop from "./stop"
 import Expense from "./expense"

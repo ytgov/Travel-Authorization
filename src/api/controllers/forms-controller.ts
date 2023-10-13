@@ -2,10 +2,10 @@ import { isNil } from "lodash"
 
 import BaseController from "./base-controller"
 
-import { AuditService, FormsService } from "../services"
-import { Form } from "../models"
-import { FormsSerializer } from "../serializers"
-import { FormsPolicy } from "../policies"
+import { AuditService, FormsService } from "@/services"
+import { Form } from "@/models"
+import { FormsSerializer } from "@/serializers"
+import { FormsPolicy } from "@/policies"
 
 // TODO: push this code back into services where it belongs
 const auditService = new AuditService()

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 
-import User from "../models/user"
+import User from "@/models/user"
 
 export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | "destroy"
 

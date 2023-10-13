@@ -20,7 +20,7 @@ import {
   NonAttribute,
 } from "sequelize"
 
-import sequelize from "../db/db-client"
+import sequelize from "@/db/db-client"
 import Expense, { Types as ExpenseVariants } from "./expense"
 import Stop from "./stop"
 import TravelPurpose from "./travel-purpose"

@@ -1,6 +1,6 @@
 import { Sequelize, Options } from "sequelize"
 
-import { DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, NODE_ENV } from "../config"
+import { DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, NODE_ENV } from "@/config"
 
 if (DB_NAME === undefined) throw new Error("database name is unset.")
 if (DB_USER === undefined) throw new Error("database username is unset.")
