@@ -64,6 +64,14 @@ class DevHelper
   end
 
   # Custom helpers
+  def up_api(*args, **kwargs)
+    exec("cd #{project_root}/src/api && npm run start")
+  end
+
+  def up_web(*args, **kwargs)
+    exec("cd #{project_root}/src/web && npm run start")
+  end
+
   def psql(*args, **kwargs)
     db(*%w[psql "postgresql://user:itsallgood@localhost:5432/travel"], *args, **kwargs)
   end

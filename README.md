@@ -79,6 +79,8 @@
 
 4. Start the application via `npm start`
 
+   > If you have the `dev` command you can also boot via `dev up_api` from the root directory.
+
 5. Access the api, by logging in to the front-end, then going to http://localhost:3000
 
 ### Web Service (a.k.a. front-end)
@@ -88,6 +90,8 @@
 2. Install the project using `npm install`
 
 3. Start the application via `npm start`
+
+   > If you have the `dev` command you can also boot via `dev up_web` from the root directory.
 
 4. Log in to the front-end service at http://localhost:8080
 
@@ -187,10 +191,14 @@ Files:
 
    - [ ] TODO: investigate if custom environment variables are needed
 
-2. Build and boot the production image via
+2. Duplicate the `.env.production` file to `.env` in the top level directory.
+
+3. TODO: figutre out the relevant environment variables to support login
+
+4. Build and boot the production image via
 
    ```bash
    docker compose up --build
    ```
 
-3. Go to http://localhost:3000/ and check that you can log in and use the application.
+5. Go to http://localhost:8088/ and check that you can log in and use the application.
