@@ -198,7 +198,7 @@ Files:
 4. Build and boot the production image via
 
    ```bash
-   docker compose up --build
+   HOST_PORT=3000 docker compose up --build
    ```
 
-5. Go to http://localhost:8088/ and check that you can log in and use the application.
+5. Go to http://localhost:3000/ and check that you can log in and use the application.
