@@ -1,21 +1,22 @@
+import path from "path";
 import * as dotenv from "dotenv"
 
-let path
+let dotEnvPath
 switch (process.env.NODE_ENV) {
   case "test":
-    path = `.env.test`
+    dotEnvPath = path.resolve(__dirname, "../.env.test")
     break
   case "production":
-    path = `.env.production`
+    dotEnvPath = path.resolve(__dirname, "../.env.production")
     break
   default:
-    path = `.env.development`
+    dotEnvPath = path.resolve(__dirname, "../.env.development")
 }
 dotenv.config({
-  path: path,
+  path: dotEnvPath,
 })
 
-console.log("Loading env: ", path)
+console.log("Loading env: ", dotEnvPath)
 
 let obj = process.env
 let pattern = "VUE_APP_"
