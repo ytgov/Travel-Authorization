@@ -45,6 +45,8 @@
 
 4. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
 
+5. Stop the api and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
+
 ### API Service (a.k.a back-end)
 
 1. Boot only the api service using:
