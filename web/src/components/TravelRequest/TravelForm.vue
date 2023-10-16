@@ -763,8 +763,10 @@
 </template>
 
 <script>
-import { DESTINATION_URL, FORM_URL, LOOKUP_URL, USERS_URL } from "../../urls";
+import { FORM_URL, LOOKUP_URL, USERS_URL } from "../../urls";
 import { secureGet, securePost } from "@/store/jwt";
+import locationsApi from "@/apis/locations-api"
+
 import ExpenseList from "./ExpenseList.vue";
 import TripReport from "./TripReport.vue";
 
@@ -1003,16 +1005,14 @@ export default {
       });
     },
     async getDestinations() {
-      return secureGet(`${DESTINATION_URL}`).then(resp => {
-        let destinations = [];
-        resp.data.forEach(v => {
-          destinations.push({
-            value: v.id,
-            text: v.city + " (" + v.province + ")"
-          });
-        });
-        return destinations;
-      });
+      return locationsApi.list().then(({ locations }) => {
+        return locations.map(({ id, city, province }) => {
+          return {
+            value: id,
+            text: `${city} (${province})`,
+          }
+        })
+      })
     },
 
     //Helpers
