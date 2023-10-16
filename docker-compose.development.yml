@@ -1,0 +1,41 @@
+version: "3"
+
+x-default-environment: &default-environment
+  NODE_ENV: development
+  # TODO: move environment variables from .env.development to this location
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: development.Dockerfile
+    env_file:
+      - ./api/.env.development
+    environment:
+      <<: *default-environment
+    tty: true # allows attaching debugger, equivalent of docker exec -t
+    # stdin_open: true # equivalent of docker exec -i
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/usr/src/api
+    depends_on:
+      - db
+
+  db:
+    image: "postgres:14.4"
+    environment:
+      <<: *default-environment
+      # TODO: Move these variables to x-default-environment
+      # see https://github.com/icefoganalytics/elcc-data-management/blob/23a601685aa2c03217964d72f5290399bfcbb719/docker-compose.development.yaml#L9
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "itsallgood"
+      POSTGRES_DB: "travel"
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

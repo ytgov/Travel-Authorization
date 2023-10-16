@@ -39,4 +39,7 @@ WORKDIR /home/node/app
 ENV NODE_ENV=development
 #RUN npm install --platform=linux --arch=x64 sharp@0.29.1
 RUN npm run build
-CMD [ "node", "./dist/index.js" ]
+
+RUN chmod +x ./bin/boot-app.sh
+
+CMD ["/home/node/app/bin/boot-app.sh"]
