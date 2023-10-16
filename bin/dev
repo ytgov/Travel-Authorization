@@ -64,10 +64,6 @@ class DevHelper
   end
 
   # Custom helpers
-  def up_api(*args, **kwargs)
-    exec("cd #{project_root}/api && npm run start")
-  end
-
   def up_web(*args, **kwargs)
     exec("cd #{project_root}/web && npm run start")
   end
@@ -80,12 +76,35 @@ class DevHelper
     compose(*%w[exec db], *args, **kwargs)
   end
 
+  def debug
+    api_container_id = container_id('api')
+    puts 'Waiting for breakpoint to trigger...'
+    puts "'ctrl-c' to exit."
+    command = "docker attach --detach-keys ctrl-c #{api_container_id}"
+    puts "Running: #{command}"
+    exec(command)
+    exit 0
+  end
+
+  def npm(*args, **kwargs)
+    run(*%w[api npm], *args, **kwargs)
+  end
+
   def ts_node(*args, **kwargs)
-    exec("cd #{project_root}/api && npm run ts-node #{args.join(' ')}")
+    run(*%w[api npm run ts-node], *args, **kwargs)
   end
 
   def knex(*args, **kwargs)
-    exec("cd #{project_root}/api && npm run knex #{args.join(' ')}")
+    if RUBY_PLATFORM =~ /linux/
+      run(*%w[api npm run knex], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
+
+      file_or_directory = "#{project_root}/api/src/data/migrations"
+      exit(0) unless take_over_needed?(file_or_directory)
+
+      ownit file_or_directory
+    else
+      run(*%w[api npm run knex], *args, **kwargs)
+    end
   end
 
   def ownit(*args, **kwargs)
