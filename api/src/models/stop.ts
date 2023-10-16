@@ -15,7 +15,7 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import Destination from "./destination"
+import Location from "./location"
 import Form from "./form"
 
 const BEGINNING_OF_DAY = "00:00:00"
@@ -44,7 +44,7 @@ export enum AccommodationTypes {
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
   declare id: CreationOptional<number>
   declare taid: ForeignKey<Form["id"]>
-  declare locationId: ForeignKey<Destination["id"]>
+  declare locationId: ForeignKey<Location["id"]>
   declare departureDate: Date | null
   declare departureTime: string | null
   declare transport: string | null
@@ -57,20 +57,20 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   declare setForm: BelongsToSetAssociationMixin<Form, Form["id"]>
   declare createForm: BelongsToCreateAssociationMixin<Form>
 
-  declare getLocation: BelongsToGetAssociationMixin<Destination>
-  declare setLocation: BelongsToSetAssociationMixin<Destination, Destination["id"]>
-  declare createLocation: BelongsToCreateAssociationMixin<Destination>
+  declare getLocation: BelongsToGetAssociationMixin<Location>
+  declare setLocation: BelongsToSetAssociationMixin<Location, Location["id"]>
+  declare createLocation: BelongsToCreateAssociationMixin<Location>
 
   declare form?: NonAttribute<Form>
-  declare location?: NonAttribute<Destination>
+  declare location?: NonAttribute<Location>
 
   declare static associations: {
     form: Association<Stop, Form>
-    location: Association<Stop, Destination>
+    location: Association<Stop, Location>
   }
 
   static establishAssociations() {
-    this.belongsTo(Destination, {
+    this.belongsTo(Location, {
       as: "location",
       foreignKey: "locationId",
     })
