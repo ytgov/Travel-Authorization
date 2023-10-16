@@ -9,10 +9,10 @@ Expense.establishAssociations()
 Form.establishAssociations()
 
 export * from "./auth"
-export * from "./destination"
 export * from "./distance-matrix"
 export * from "./expense"
 export * from "./form"
+export * from "./location"
 export * from "./per-diem"
 export * from "./preapproved-traveler"
 export * from "./preapproved"

@@ -4,7 +4,7 @@ import { CreationAttributes, Op } from "sequelize"
 import {
   AccommodationTypes,
   ClaimTypes,
-  Destination,
+  Location,
   DistanceMatrix,
   Expense,
   ExpenseTypes,
@@ -164,9 +164,9 @@ export class BulkGenerate extends BaseService {
     toLocation,
   }: {
     fromDepartureAt: Date
-    fromLocation: Destination
+    fromLocation: Location
     fromTransport: string
-    toLocation: Destination
+    toLocation: Location
   }): Promise<CreationAttributes<Expense>> {
     const fromCity = fromLocation.city
     const toCity = toLocation.city
@@ -191,7 +191,7 @@ export class BulkGenerate extends BaseService {
     arrivalAt,
     departureAt,
   }: {
-    location: Destination
+    location: Location
     accommodationType: string
     arrivalAt: Date
     departureAt: Date
@@ -222,7 +222,7 @@ export class BulkGenerate extends BaseService {
     arrivalAt,
     departureAt,
   }: {
-    location: Destination
+    location: Location
     arrivalAt: Date
     departureAt: Date
   }): Promise<CreationAttributes<Expense>[]> {

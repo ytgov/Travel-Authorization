@@ -8,9 +8,9 @@ import {
 
 import sequelize from "@/db/db-client"
 
-export class Destination extends Model<
-  InferAttributes<Destination>,
-  InferCreationAttributes<Destination>
+export class Location extends Model<
+  InferAttributes<Location>,
+  InferCreationAttributes<Location>
 > {
   declare id: CreationOptional<number>
   declare province: string
@@ -19,7 +19,7 @@ export class Destination extends Model<
   declare updatedAt: CreationOptional<Date>
 }
 
-Destination.init(
+Location.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -48,9 +48,9 @@ Destination.init(
   },
   {
     sequelize,
-    modelName: "Destination",
+    modelName: "Location",
     tableName: "locations",
     timestamps: true,
   }
 )
-export default Destination
+export default Location
