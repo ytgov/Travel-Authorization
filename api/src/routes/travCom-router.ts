@@ -42,11 +42,11 @@ travComRouter.get("/segments/:id", RequiresAuth, async function (req: Request, r
 });
 
 travComRouter.get("/itinerary/:InvoiceNumber", RequiresAuth, async function (req: Request, res: Response) {
-  
-  const InvoiceNumber = req.params.InvoiceNumber;  
+
+  const InvoiceNumber = req.params.InvoiceNumber;
   const invoice = await db("dbo.ARInvoicesNoHealth").where({ InvoiceNumber: InvoiceNumber }).select().first();
   const InvoiceID = invoice.InvoiceID;
-  const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();  
+  const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();
   const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
 
   const segments = unsortedSegments.sort((a: any, b: any) => (a.DepartureInfo >= b.DepartureInfo ? 1 : -1));
@@ -59,7 +59,7 @@ travComRouter.get("/itinerary/:InvoiceNumber", RequiresAuth, async function (req
     const depAirport = airports.filter(airport => airport.iata_code==segment.DepartureCityCode)
     const arrAirport = airports.filter(airport => airport.iata_code==segment.ArrivalCityCode)
     const detail = details.filter((detail: any) => detail.InvoiceDetailID == segment.InvoiceDetailID)
-    
+
     result.segments.push({
       'flightNumber': segment.AirlineCode + Number(segment.FlightNumber),
       'departDate': segment.DepartureInfo,
@@ -88,13 +88,13 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
 
   const results: any[] = []
   let ctt=0
-  for(const invoice of invoices){  
+  for(const invoice of invoices){
     const InvoiceID = invoice.InvoiceID
     //TODO Only 1000 records
     ctt++;
     if(ctt>1000) break;
 
-    const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();    
+    const details = await db("dbo.ARInvoiceDetailsNoHealth").where({ InvoiceID: InvoiceID }).select();
     const unsortedSegments = await db("dbo.segmentsNoHealth").where({ InvoiceID: InvoiceID }).select();
     if(!unsortedSegments || unsortedSegments.length==0) continue
 
@@ -105,7 +105,7 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
       if(!detailedSegments[segment.InvoiceDetailID]) detailedSegments[segment.InvoiceDetailID]=[]
       detailedSegments[segment.InvoiceDetailID].push(segment)
     }
-    
+
     const detail = details.filter((detail: any) => detail.ProductCode == 18)[0]
     const agent = detail? detail.VendorName : ''
 
@@ -116,7 +116,7 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
       const flightInfo: string[] =[]
       let lastLegCity=''
 
-      for(const segment of detailedSegments[invoiceDetailID]){        
+      for(const segment of detailedSegments[invoiceDetailID]){
         const arrAirport = airports.filter(airport => airport.iata_code==segment.ArrivalCityCode)
         lastLegCity = (arrAirport[0]?.municipality? arrAirport[0].municipality:'')
         const flight = segment.AirlineCode + Number(segment.FlightNumber) +' '+lastLegCity
@@ -126,19 +126,19 @@ travComRouter.get("/flights/:start/:end", RequiresAuth, async function (req: Req
       const flightReconcile = await preAuthDB("flightReconciliation").select("reconciled").where("invoiceDetailID", invoiceDetailID).first();
 
       const name = invoiceDetail.PassengerName.split('/').join(',').split(' ').join(',').split(',')
-      
+
       const result = {
         invoiceDetailID: invoiceDetailID,
         invoiceID: InvoiceID,
-        cost: invoiceDetail.SellingFare, 
-        agent: agent, 
-        purchaseDate: invoice.BookingDate, 
-        airline: invoiceDetail.VendorName, 
-        flightInfo: flightInfo.join(','), 
-        finalDestination: lastLegCity, 
-        dept: invoice.Department, 
-        travelerFirstName: name[1], 
-        travelerLastName: name[0], 
+        cost: invoiceDetail.SellingFare,
+        agent: agent,
+        purchaseDate: invoice.BookingDate,
+        airline: invoiceDetail.VendorName,
+        flightInfo: flightInfo.join(','),
+        finalDestination: lastLegCity,
+        dept: invoice.Department,
+        travelerFirstName: name[1],
+        travelerLastName: name[0],
         reconciled: flightReconcile? flightReconcile.reconciled :false,
         reconcileID: flightReconcile? flightReconcile.reconcileID : null,
         reconcilePeriod: flightReconcile? flightReconcile.reconcilePeriod : null
@@ -166,10 +166,10 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
 
   //__Progress
   const statisticsProgress = await preAuthDB("StatisticsProgress").select('*').where("id", 1);
-  
+
   if(statisticsProgress.length==0){
     await preAuthDB("StatisticsProgress").insert({"id":1, "last_update":new Date(), "progress":0 })
-  }else{    
+  }else{
     const lastUpdateTime = new Date(statisticsProgress[0].last_update)
     const updateTime = new Date()
     updateTime.setMinutes(updateTime.getMinutes()-30); //at least 30 minutes before re-run
@@ -179,20 +179,20 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
       await preAuthDB("StatisticsProgress").update({"last_update":new Date(),"progress":0}).where("id", 1);
     }
   }
-  
+
   //__
   const invoices = await db("dbo.ARInvoicesNoHealth").select()
   const allDetails = await db("dbo.ARInvoiceDetailsNoHealth").select();
   const allSegments = await db("dbo.segmentsNoHealth").select();
-  
+
   const statistics: any = {}
   let invoiceCounter=0;
   console.log(invoices.length)
-  
-  for(const invoice of invoices){  
+
+  for(const invoice of invoices){
     const InvoiceID = invoice.InvoiceID
-    
-    invoiceCounter++;    
+
+    invoiceCounter++;
     if(invoiceCounter%300==0){
       const progress = (100*invoiceCounter/invoices.length) | 0;
       console.log(invoiceCounter +" => " +String(progress)+" %")
@@ -228,9 +228,9 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
       dept: invoice.Department,
       totalFlightCost: totalFlightCost,
       totalExpenses: totalExpenses,
-      finalDestinationCity: lastLegCity,       
+      finalDestinationCity: lastLegCity,
       returnFlight: departureCity==lastLegCity,
-      days: getDays(departureDate, lastLegDate) 
+      days: getDays(departureDate, lastLegDate)
     };
 
 
@@ -239,10 +239,10 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     if(!statistics[inx]) statistics[inx] = {}
     statistics[inx].dept=result.dept
     statistics[inx].arrAirport=result.finalDestinationCity
-    
+
     if(!statistics[inx].totalExpenses) statistics[inx].totalExpenses = 0
     statistics[inx].totalExpenses += totalExpenses
-    
+
     if(!statistics[inx].totalFlightCost) statistics[inx].totalFlightCost = 0
     statistics[inx].totalFlightCost += totalFlightCost
 
@@ -263,15 +263,15 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
   await preAuthDB("StatisticsRecord").del()
   await preAuthDB.raw(`ALTER SEQUENCE "StatisticsRecord_id_seq" RESTART WITH 1;`)
 
-  const destinations = await preAuthDB("destinations").select("province", "city");
+  const locations = await preAuthDB("locations").select("province", "city");
 
   for(const key of Object.keys(statistics)){
     const record = statistics[key]
-    
+
     const arrAirport = airports.filter(airport => airport.iata_code==record.arrAirport)
     record.finalDestinationCity = (arrAirport[0]?.municipality? arrAirport[0].municipality:'')
-    
-    const destination = destinations.filter((dest: any) => dest.city.toLowerCase().trim()==record.finalDestinationCity.toLowerCase().trim())
+
+    const destination = locations.filter((dest: any) => dest.city.toLowerCase().trim()==record.finalDestinationCity.toLowerCase().trim())
     record.finalDestinationProvince = destination[0]? destination[0].province : (arrAirport[0]? arrAirport[0].iso_country:'')
 
     record.averageDurationDays = (record.days/record.totalTrips)
@@ -282,7 +282,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     }catch(error: any){
       console.log(error);
       console.log(record)
-    }    
+    }
   }
 
   try{

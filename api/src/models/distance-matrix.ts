@@ -26,13 +26,13 @@ DistanceMatrix.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    // TODO: convert this column to a foreign key to the "destinations" table,
+    // TODO: convert this column to a foreign key to the "locations" table,
     // or use an external api to get this data.
     origin: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    // TODO: convert this column to a foreign key to the "destinations" table,
+    // TODO: convert this column to a foreign key to the "locations" table,
     // or use an external api to get this data.
     destination: {
       type: DataTypes.STRING(255),

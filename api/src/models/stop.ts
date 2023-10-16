@@ -111,7 +111,7 @@ Stop.init(
       allowNull: true,
       field: "locationId",
       references: {
-        model: "destinations", // using table name here, instead of Model class
+        model: "locations", // using table name here, instead of Model class
         key: "id",
       },
     },
