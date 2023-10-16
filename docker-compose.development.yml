@@ -25,6 +25,9 @@ services:
   db:
     image: "postgres:14.4"
     environment:
+      <<: *default-environment
+      # TODO: Move these variables to x-default-environment
+      # see https://github.com/icefoganalytics/elcc-data-management/blob/23a601685aa2c03217964d72f5290399bfcbb719/docker-compose.development.yaml#L9
       POSTGRES_USER: "user"
       POSTGRES_PASSWORD: "itsallgood"
       POSTGRES_DB: "travel"
