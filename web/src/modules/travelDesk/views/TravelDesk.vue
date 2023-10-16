@@ -5,14 +5,14 @@
         <div v-else>
             <v-toolbar  class="" height="100px" flat>
                 <v-toolbar-title>
-                    <b>Travel Desk Requests </b>                
-                </v-toolbar-title>		
-            </v-toolbar>		
+                    <b>Travel Desk Requests </b>
+                </v-toolbar-title>
+            </v-toolbar>
             <v-card>
                 <travel-desk-requests :travelDeskRequests="travelDeskRequests" @updateTable="getTravelDeskRequests()" />
             </v-card>
         </div>
-        
+
     </v-card>
 </template>
 
@@ -20,7 +20,7 @@
     import Vue from "vue";
     import TravelDeskRequests from "./Desk/TravelDeskRequests.vue";
     import {TRAVEL_DESK_URL,  DESTINATION_URL, USERS_URL, PROFILE_URL} from "../../../urls";
-    import { secureGet } from "../../../store/jwt";    
+    import { secureGet } from "../../../store/jwt";
 
     export default {
 
@@ -40,7 +40,7 @@
         },
         async mounted() {
             this.loadingData = true
-            // await this.getUserAuth();        
+            // await this.getUserAuth();
             this.department = this.$store.state.auth.department
             this.admin = Vue.filter("isAdmin")();
             await this.getDestinations();
@@ -49,10 +49,10 @@
         },
         methods: {
 
-            async getUserAuth() {                     
+            async getUserAuth() {
                 return secureGet(`${PROFILE_URL}`)
                     .then(resp => {
-                        this.$store.commit("auth/setUser", resp.data.data);                         
+                        this.$store.commit("auth/setUser", resp.data.data);
                     })
                     .catch(e => {
                         console.log(e);
@@ -71,15 +71,15 @@
                             province: v.province
                         });
                     });
-                    this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);                    
+                    this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);
                 });
             },
-            
+
             async getTravelDeskUsers() {
                 this.loadingData = true
                 return secureGet(`${USERS_URL}/travel-desk-users`).then(resp => {
                     // console.log(resp.data)
-                    this.$store.commit("traveldesk/SET_TRAVEL_DESK_USERS", resp.data);                    				
+                    this.$store.commit("traveldesk/SET_TRAVEL_DESK_USERS", resp.data);
                 })
                 .catch(e => {
                     console.log(e.response);
@@ -97,10 +97,10 @@
                     // console.log(this.$store.state.auth.user.id)
                     this.travelDeskRequests.forEach(req =>{
                         req.userTravel = (this.$store.state.auth.fullName == req.travelDeskOfficer)? 1:0
-                        req.bookedStatus = req.status =="booked"? 1 : 0                        
+                        req.bookedStatus = req.status =="booked"? 1 : 0
                         req.startDate = this.getStartDate(req.form.dateBackToWork, req.form.travelDuration);
                     })
-                    this.loadingData = false                    
+                    this.loadingData = false
                 })
                 .catch(e => {
                     console.log(e);
