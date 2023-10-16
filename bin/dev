@@ -64,12 +64,47 @@ class DevHelper
   end
 
   # Custom helpers
+  def up_web(*args, **kwargs)
+    exec("cd #{project_root}/web && npm run start")
+  end
+
   def psql(*args, **kwargs)
     db(*%w[psql "postgresql://user:itsallgood@localhost:5432/travel"], *args, **kwargs)
   end
 
   def db(*args, **kwargs)
-    compose(*%w[exec dbpostgres], *args, **kwargs)
+    compose(*%w[exec db], *args, **kwargs)
+  end
+
+  def debug
+    api_container_id = container_id('api')
+    puts 'Waiting for breakpoint to trigger...'
+    puts "'ctrl-c' to exit."
+    command = "docker attach --detach-keys ctrl-c #{api_container_id}"
+    puts "Running: #{command}"
+    exec(command)
+    exit 0
+  end
+
+  def npm(*args, **kwargs)
+    run(*%w[api npm], *args, **kwargs)
+  end
+
+  def ts_node(*args, **kwargs)
+    run(*%w[api npm run ts-node], *args, **kwargs)
+  end
+
+  def knex(*args, **kwargs)
+    if RUBY_PLATFORM =~ /linux/
+      run(*%w[api npm run knex], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
+
+      file_or_directory = "#{project_root}/api/src/data/migrations"
+      exit(0) unless take_over_needed?(file_or_directory)
+
+      ownit file_or_directory
+    else
+      run(*%w[api npm run knex], *args, **kwargs)
+    end
   end
 
   def ownit(*args, **kwargs)
@@ -108,8 +143,8 @@ class DevHelper
   end
 
   def compose_command(*args, **kwargs)
-    # environment = kwargs.fetch(:environment, 'development')
-    "cd #{project_root} && docker compose -f docker-compose.db.yml #{args.join(' ')}"
+    environment = kwargs.fetch(:environment, 'development')
+    "cd #{project_root} && docker compose -f docker-compose.#{environment}.yml #{args.join(' ')}"
   end
 
   def project_root

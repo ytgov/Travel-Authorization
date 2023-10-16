@@ -26,6 +26,49 @@
 
 ## Development
 
+1. In the `api` folder.
+
+2. Create a `.env.development` file with this content. It must match the config in `docker-compose.db.yml`
+
+   ```bash
+   AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
+   AUTH0_AUDIENCE=testing
+
+   DB_HOST="localhost"
+   DB_PORT="5432"
+   DB_USER="user"
+   DB_PASS="itsallgood"
+   DB_NAME="travel"
+   ```
+
+3. Go back to the top level directory.
+
+4. [Set up the `dev`](./README.md#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
+
+5. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
+
+6. The seeds do not, yet, run automatically. You must run them via logging in to the front-end, then going to http://localhost:3000/migrate/seed.
+
+6. Stop the api and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
+
+### API Service (a.k.a back-end)
+
+1. Boot only the api service using:
+
+   ```bash
+   dev up api
+
+   # or
+
+   docker compose -f docker-compose.development.yml up api
+   ```
+
+2. Access the api by logging in to the front-end, then going to http://localhost:3000
+
+### Web Service (a.k.a. front-end)
+
+> This has not yet been dockerized, you must install Node and some other stuff.
+
 1. Install `asdf` as seen in https://asdf-vm.com/guide/getting-started.html.
 
    e.g. for Linux
@@ -58,61 +101,40 @@
    node -v
    ```
 
-### API Service (a.k.a back-end)
+3. In the `web` folder.
 
-1. In the `src/api` folder.
+4. Install the web dependecies using `npm install`
 
-2. Create a `.env.development` file with this content. It must match the config in `docker-compose.db.yml`
+5. Start the web service via `npm start`
 
-   ```bash
-   AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
-   AUTH0_AUDIENCE=testing
+   > If you have the `dev` command you can also boot via `dev up_web` from the root directory.
 
-   DB_HOST="localhost"
-   DB_PORT="5432"
-   DB_USER="user"
-   DB_PASS="itsallgood"
-   DB_NAME="travel"
-   ```
+6. Log in to the front-end service at http://localhost:8080
 
-3. Install the project using `npm install`
+### DB Service (a.k.a database service)
 
-4. Start the application via `npm start`
-
-5. Access the api, by logging in to the front-end, then going to http://localhost:3000
-
-### Web Service (a.k.a. front-end)
-
-1. In the `src/web` folder.
-
-2. Install the project using `npm install`
-
-3. Start the application via `npm start`
-
-4. Log in to the front-end service at http://localhost:8080
-
-### dbpostgres Service (a.k.a database or db)
-
-1. Boot the database using
+1. Boot only the db service using:
 
    ```bash
-   dev up
+   dev up db
+
    # or
-   docker compose -f docker-compose.db.yml up
-   # or
-   docker-compose -f docker-compose.db.yml up
+
+   docker compose -f docker-compose.development.yml up db
    ```
 
-2. Once you have the `api` service running, and have logged in to the front-end, you can run the migrations by going to http://localhost:3000/migrate/latest
+   > Migrations run automatically, seeds do not, yet.
 
-3. You can run the seeds by going to http://localhost:3000/seed
+2. You can run the seeds by going to http://localhost:3000/migrate/seed
 
-4. You can access the `psql` command line via
+3. You can access the `psql` command line via
 
    ```bash
    dev psql
+
    # or
-   docker compose -f docker-compose.db.yml exec dbpostgres psql "postgresql://user:itsallgood@localhost:5432/travel"
+
+   docker compose -f docker-compose.development.yml exec db psql "postgresql://user:itsallgood@localhost:5432/travel"
    ```
 
 ### Troubleshooting
@@ -122,7 +144,38 @@ If you are getting a bunch of "Login required" errors in the console, make sure 
 Auth0 use third-party cookies for authentication, and they get blocked by all major browsers
 by default.
 
-### Set up `dev` command
+## Migrations
+
+You can generate migrations via the api service code. Currently uses [knex Migration CLI](https://knexjs.org/guide/migrations.html#migration-cli) using `dev knex ...` or `cd api && npm run knex ...`.
+
+### Create a New Migration
+
+```bash
+dev knex migrate:make migration_name
+```
+
+This will generate a migration of the form:
+
+- `api/src/data/migrations/20231013235256_migration_name.ts`
+
+FUTURE: Implement dash cased migration names and/or switch to `umzug/Sequelize`
+
+### Running Migrations
+
+```bash
+dev knex migrate:latest
+dev knex migrate:up
+```
+
+### Rolling Migrations Backwards
+
+```bash
+dev knex migrate:rollback
+dev knex migrate:rollback --all
+dev knex migrate:down
+```
+
+## Set up `dev` command
 
 The `dev` command vastly simplifies development using docker compose. It only requires `ruby`; however, `direnv` and `asdf` will make it easier to use.
 
@@ -175,22 +228,42 @@ All commands are just strings joined together, so it's easy to add new commmands
 
 # Deploying
 
-# Test Production Build Locally
+## Test Production Build Locally
 
 Files:
 
 - [Dockerfile](./Dockerfile)
 - [docker-compose.yml](./docker-compose.yml)
-- Various non-commited `src/api/.env.*` files
+- Various non-commited `api/.env.*` files
 
-1. Create a `.env.development` and `.env.production` file in the `src/api/` directory with the appropriate values.
+1. Create a `.env.development` and `.env.production` file in the `api/` directory with the appropriate values.
 
    - [ ] TODO: investigate if custom environment variables are needed
 
-2. Build and boot the production image via
+   This file must have the same variables as are used in the `docker-compose.yml` file.
 
    ```bash
-   docker compose up --build
+   DB_HOST="db"
+   DB_PORT="5432"
+   DB_USER="user"
+   DB_PASS="itsallgood"
+   DB_NAME="travel"
    ```
 
-3. Go to http://localhost:3000/ and check that you can log in and use the application.
+   > TODO: keep all environment variables in a shared location.
+
+2. Duplicate the `.env.production` file to `.env` in the top level directory.
+
+3. TODO: figutre out the relevant environment variables to support login
+
+4. Build and boot the production image via
+
+   ```bash
+   HOST_PORT=3000 docker compose up --build
+   ```
+
+5. Go to http://localhost:3000/ and log in.
+
+6. Run the seeds via http://localhost:3000/migrate/seed.
+
+7. Navigate around the app and do some stuff and see if it works.

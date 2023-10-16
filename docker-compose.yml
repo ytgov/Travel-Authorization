@@ -1,25 +1,27 @@
 version: "3"
 services:
-  dbpostgres:
-    # ports:
-    #   - "5432:5432"
-    container_name: auth_db
+  db:
     image: "postgres:14.4"
     restart: always
-    volumes:
-      - ./db/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: "postgres"
+      POSTGRES_USER: "user"
       POSTGRES_PASSWORD: "itsallgood"
-      POSTGRES_DB: "postgres"
+      POSTGRES_DB: "travel"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
   web:
     build: .
     restart: unless-stopped
-    depends_on:
-      - dbpostgres
-    environment:
-      - "NODE_ENV=development"
     env_file:
       - .env
+    environment:
+      - "NODE_ENV=development"
+    depends_on:
+      - db
     ports:
       - "${HOST_PORT:-8088}:3000"
+
+volumes:
+  db_data:
