@@ -26,6 +26,41 @@
 
 ## Development
 
+1. In the `api` folder.
+
+2. Create a `.env.development` file with this content. It must match the config in `docker-compose.db.yml`
+
+   ```bash
+   AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
+   AUTH0_AUDIENCE=testing
+
+   DB_HOST="localhost"
+   DB_PORT="5432"
+   DB_USER="user"
+   DB_PASS="itsallgood"
+   DB_NAME="travel"
+   ```
+
+3. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
+
+### API Service (a.k.a back-end)
+
+1. Boot only the api service using:
+
+   ```bash
+   dev up api
+
+   # or
+
+   docker compose -f docker-compose.development.yml up api
+   ```
+
+2. Access the api by logging in to the front-end, then going to http://localhost:3000
+
+### Web Service (a.k.a. front-end)
+
+> This has not yet been dockerized, you must install Node and some other stuff.
+
 1. Install `asdf` as seen in https://asdf-vm.com/guide/getting-started.html.
 
    e.g. for Linux
@@ -58,65 +93,40 @@
    node -v
    ```
 
-### API Service (a.k.a back-end)
+3. In the `web` folder.
 
-1. In the `api` folder.
+4. Install the web dependecies using `npm install`
 
-2. Create a `.env.development` file with this content. It must match the config in `docker-compose.db.yml`
-
-   ```bash
-   AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
-   AUTH0_AUDIENCE=testing
-
-   DB_HOST="localhost"
-   DB_PORT="5432"
-   DB_USER="user"
-   DB_PASS="itsallgood"
-   DB_NAME="travel"
-   ```
-
-3. Install the project using `npm install`
-
-4. Start the application via `npm start`
-
-   > If you have the `dev` command you can also boot via `dev up_api` from the root directory.
-
-5. Access the api, by logging in to the front-end, then going to http://localhost:3000
-
-### Web Service (a.k.a. front-end)
-
-1. In the `web` folder.
-
-2. Install the project using `npm install`
-
-3. Start the application via `npm start`
+5. Start the web service via `npm start`
 
    > If you have the `dev` command you can also boot via `dev up_web` from the root directory.
 
-4. Log in to the front-end service at http://localhost:8080
+6. Log in to the front-end service at http://localhost:8080
 
-### dbpostgres Service (a.k.a database or db)
+### DB Service (a.k.a database service)
 
-1. Boot the database using
+1. Boot only the db service using:
 
    ```bash
-   dev up
+   dev up db
+
    # or
-   docker compose -f docker-compose.db.yml up
-   # or
-   docker-compose -f docker-compose.db.yml up
+
+   docker compose -f docker-compose.development.yml up db
    ```
 
-2. Once you have the `api` service running, and have logged in to the front-end, you can run the migrations by going to http://localhost:3000/migrate/latest
+   > Migrations run automatically, seeds do not, yet.
 
-3. You can run the seeds by going to http://localhost:3000/seed
+2. You can run the seeds by going to http://localhost:3000/seed
 
-4. You can access the `psql` command line via
+3. You can access the `psql` command line via
 
    ```bash
    dev psql
+
    # or
-   docker compose -f docker-compose.db.yml exec dbpostgres psql "postgresql://user:itsallgood@localhost:5432/travel"
+
+   docker compose -f docker-compose.development.yml exec db psql "postgresql://user:itsallgood@localhost:5432/travel"
    ```
 
 ### Troubleshooting
@@ -128,14 +138,16 @@ by default.
 
 ## Migrations
 
-You can generate migrations via the api service code. Currently uses [knex Migration CLI](https://knexjs.org/guide/migrations.html#migration-cli) using `dev knex ...` on `cd api && npm run knex ...`.
+You can generate migrations via the api service code. Currently uses [knex Migration CLI](https://knexjs.org/guide/migrations.html#migration-cli) using `dev knex ...` or `cd api && npm run knex ...`.
 
 ### Create a New Migration
+
 ```bash
 dev knex migrate:make migration_name
 ```
 
 This will generate a migration of the form:
+
 - `api/src/data/migrations/20231013235256_migration_name.ts`
 
 FUTURE: Implement dash cased migration names and/or switch to `umzug/Sequelize`
@@ -208,7 +220,7 @@ All commands are just strings joined together, so it's easy to add new commmands
 
 # Deploying
 
-# Test Production Build Locally
+## Test Production Build Locally
 
 Files:
 

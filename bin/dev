@@ -77,7 +77,7 @@ class DevHelper
   end
 
   def db(*args, **kwargs)
-    compose(*%w[exec dbpostgres], *args, **kwargs)
+    compose(*%w[exec db], *args, **kwargs)
   end
 
   def ts_node(*args, **kwargs)
@@ -124,8 +124,8 @@ class DevHelper
   end
 
   def compose_command(*args, **kwargs)
-    # environment = kwargs.fetch(:environment, 'development')
-    "cd #{project_root} && docker compose -f docker-compose.db.yml #{args.join(' ')}"
+    environment = kwargs.fetch(:environment, 'development')
+    "cd #{project_root} && docker compose -f docker-compose.#{environment}.yml #{args.join(' ')}"
   end
 
   def project_root
