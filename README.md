@@ -240,6 +240,18 @@ Files:
 
    - [ ] TODO: investigate if custom environment variables are needed
 
+   This file must have the same variables as are used in the `docker-compose.yml` file.
+
+   ```bash
+   DB_HOST="db"
+   DB_PORT="5432"
+   DB_USER="user"
+   DB_PASS="itsallgood"
+   DB_NAME="travel"
+   ```
+
+   > TODO: keep all environment variables in a shared location.
+
 2. Duplicate the `.env.production` file to `.env` in the top level directory.
 
 3. TODO: figutre out the relevant environment variables to support login
@@ -250,4 +262,8 @@ Files:
    HOST_PORT=3000 docker compose up --build
    ```
 
-5. Go to http://localhost:3000/ and check that you can log in and use the application.
+5. Go to http://localhost:3000/ and log in.
+
+6. Run the seeds via http://localhost:3000/migrate/seed.
+
+7. Navigate around the app and do some stuff and see if it works.
