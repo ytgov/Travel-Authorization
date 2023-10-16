@@ -1,9 +1,10 @@
 import { isString, upperFirst, omit } from "lodash"
 
-import { FORM_URL, LOOKUP_URL, DESTINATION_URL, USERS_URL } from "@/urls"
+import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
 import expensesApi, { TYPES as EXPENSE_VARIANT } from "@/apis/expenses-api"
 import formsApi from "@/apis/forms-api"
+import locationsApi from "@/apis/locations-api"
 
 const state = {
   departments: [],
@@ -75,19 +76,17 @@ const actions = {
     })
   },
   async loadDestinations({ commit }) {
-    return secureGet(`${DESTINATION_URL}`).then((resp) => {
-      let destinations = []
-
-      resp.data.forEach((v) => {
-        destinations.push({
-          value: v.id,
-          text: v.city + " (" + v.province + ")",
-        })
+    return locationsApi.list().then(({ locations }) => {
+      const formattedLocations = locations.map(({ id, city, province }) => {
+        return {
+          value: id,
+          text: `${city} (${province})`,
+        }
       })
 
-      commit("SET_DESTINATIONS", destinations)
+      commit("SET_DESTINATIONS", formattedLocations)
 
-      return destinations
+      return formattedLocations
     })
   },
   async loadForms({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
