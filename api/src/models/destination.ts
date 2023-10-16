@@ -15,6 +15,8 @@ export class Destination extends Model<
   declare id: CreationOptional<number>
   declare province: string
   declare city: string
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 }
 
 Destination.init(
@@ -33,12 +35,23 @@ Destination.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     modelName: "Destination",
-    tableName: "destinations",
-    timestamps: false,
+    tableName: "locations",
+    underscored: true,
+    timestamps: true,
   }
 )
 export default Destination
