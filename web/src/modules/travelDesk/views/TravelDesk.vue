@@ -19,8 +19,9 @@
 <script>
     import Vue from "vue";
     import TravelDeskRequests from "./Desk/TravelDeskRequests.vue";
-    import {TRAVEL_DESK_URL,  DESTINATION_URL, USERS_URL, PROFILE_URL} from "../../../urls";
+    import {TRAVEL_DESK_URL,  USERS_URL, PROFILE_URL} from "../../../urls";
     import { secureGet } from "../../../store/jwt";
+    import locationsApi from "@/apis/locations-api"
 
     export default {
 
@@ -61,18 +62,18 @@
 
             async getDestinations() {
                 this.loadingData = true
-                return secureGet(`${DESTINATION_URL}`).then(resp => {
-                    const destinations = [];
-                    resp.data.forEach(v => {
-                        destinations.push({
-                            value: v.id,
-                            text: v.city + " (" + v.province + ")",
-                            city: v.city,
-                            province: v.province
-                        });
-                    });
-                    this.$store.commit("traveldesk/SET_DESTINATIONS", destinations);
-                });
+                return locationsApi.list().then(({ locations }) => {
+                    const formattedLocations = locations.map(({ id, city, province }) => {
+                        return {
+                            value: id,
+                            text: `${city} (${province})`,
+                            city,
+                            province,
+                        }
+                    })
+                    this.$store.commit("traveldesk/SET_DESTINATIONS", formattedLocations)
+                    return formattedLocations
+                })
             },
 
             async getTravelDeskUsers() {
