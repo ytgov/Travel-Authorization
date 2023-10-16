@@ -46,16 +46,6 @@ lookupRouter.get("/emailList", ReturnValidationErrors, async function (req: Requ
   }
 });
 
-lookupRouter.get("/destination", ReturnValidationErrors, async function (req: Request, res: Response) {
-  try {
-    let result = await db("locations").select("id", "province", "city");
-    res.status(200).json(result);
-  } catch (error: any) {
-    console.log(error);
-    res.status(500).json("Internal Server Error");
-  }
-});
-
 lookupRouter.get("/departments", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     let result = await db("departments").select("id", "name", "type", "ownedby").where("type", "=", "department");
