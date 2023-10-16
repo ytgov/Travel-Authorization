@@ -62,8 +62,8 @@ export async function seedUp() {
     }
   ]);
 
-  await sqldb("destinations").delete().whereRaw("1=1");
-  await sqldb("destinations").insert([
+  await sqldb("locations").delete().whereRaw("1=1");
+  await sqldb("locations").insert([
     {
       province: "YT",
       city: "Whitehorse"

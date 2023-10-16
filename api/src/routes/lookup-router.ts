@@ -46,16 +46,6 @@ lookupRouter.get("/emailList", ReturnValidationErrors, async function (req: Requ
   }
 });
 
-lookupRouter.get("/destination", ReturnValidationErrors, async function (req: Request, res: Response) {
-  try {
-    let result = await db("destinations").select("id", "province", "city");
-    res.status(200).json(result);
-  } catch (error: any) {
-    console.log(error);
-    res.status(500).json("Internal Server Error");
-  }
-});
-
 lookupRouter.get("/departments", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     let result = await db("departments").select("id", "name", "type", "ownedby").where("type", "=", "department");
@@ -227,7 +217,7 @@ lookupRouter.get(
     try {
       let departments = await db("YgDepartments").select("*");
       const updateRequired = timeToUpdate(departments[0]);
-      
+
       if(!departments[0] || updateRequired){
         await updateYgDepartments();
         departments = await db("YgDepartments").select("*");
@@ -242,7 +232,7 @@ lookupRouter.get(
         if (slice.branch && !cleanList[slice.department].branches.includes(slice.branch))
           cleanList[slice.department].branches.push(slice.branch);
       }
-          
+
       res.status(200).json(cleanList);
     } catch (error: any) {
       console.log(error);
@@ -261,7 +251,7 @@ lookupRouter.get("/employees", RequiresAuth, ReturnValidationErrors, async funct
       await updateYgEmployees()
       employees = await db("YgEmployees").select("*");
     }
-    
+
     for (const employee of employees) {
       cleanList.push({
         firstName: employee.first_name,
@@ -270,7 +260,7 @@ lookupRouter.get("/employees", RequiresAuth, ReturnValidationErrors, async funct
         fullName: employee.full_name,
         email: employee.email
       });
-    }        
+    }
     res.status(200).json(cleanList);
   } catch (error: any) {
     console.log(error);
@@ -314,7 +304,7 @@ lookupRouter.get("/employee-info", async function (req: Request, res: Response) 
   }
 });
 
-function timeToUpdate(item: any){  
+function timeToUpdate(item: any){
   const updateTime = new Date()
   //updateTime.setMinutes(updateTime.getMinutes()-1); //Update Time is 24 hours after last update
   updateTime.setDate(updateTime.getDate()-1); //Update Time is 24 hours after last update
@@ -334,29 +324,29 @@ async function updateYgEmployees(){
         timeout: 10000
       })
       .then(async (resp: any) => {
-        if(resp?.data?.employees)          
+        if(resp?.data?.employees)
           await db.transaction(async trx => {
             console.log("_____START_Updating_Employees_____")
             await db("YgEmployees").del()
             await db.raw(`ALTER SEQUENCE "YgEmployees_id_seq" RESTART WITH 1;`)
 
-            const employees = resp.data.employees                      
-            for(const employee of employees){            
+            const employees = resp.data.employees
+            for(const employee of employees){
               employee.update_date = today;
             }
-            
+
             for(let ctt=0; ctt<employees.length; ctt=ctt+70)
               await db("YgEmployees").insert(employees.slice(ctt,ctt+70));
-                        
+
             console.log("_____FINISH______")
           });
       }).catch(async () => {
         console.log("_____err_____________")
         await db("YgEmployees").update({update_date: today})
       });
-    
+
   } catch (error: any) {
-    console.log(error);    
+    console.log(error);
   }
 }
 
@@ -372,21 +362,21 @@ async function updateYgDepartments(){
         timeout: 5000
       })
       .then(async (resp: any) => {
-        if(resp?.data?.divisions)          
+        if(resp?.data?.divisions)
           await db.transaction(async trx => {
             console.log("_____START_Updating_Departments______")
             await db("YgDepartments").del()
             await db.raw(`ALTER SEQUENCE "YgDepartments_id_seq" RESTART WITH 1;`)
-                        
-            const departments = resp.data.divisions                       
-            
-            for(const department of departments){              
+
+            const departments = resp.data.divisions
+
+            for(const department of departments){
               department.update_date = today;
             }
-            
+
             for(let ctt=0; ctt<departments.length; ctt=ctt+70)
               await db("YgDepartments").insert(departments.slice(ctt,ctt+70));
-                        
+
             console.log("_____FINISH______")
           });
       }).catch(async () => {
@@ -395,6 +385,6 @@ async function updateYgDepartments(){
       });
 
   } catch (error: any) {
-    console.log(error);    
+    console.log(error);
   }
 }
