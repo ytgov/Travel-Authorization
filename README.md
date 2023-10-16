@@ -41,11 +41,15 @@
    DB_NAME="travel"
    ```
 
-3. [Set up the `dev`](./README.md#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
+3. Go back to the top level directory.
 
-4. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
+4. [Set up the `dev`](./README.md#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
 
-5. Stop the api and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
+5. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
+
+6. The seeds do not, yet, run automatically. You must run them via logging in to the front-end, then going to http://localhost:3000/migrate/seed.
+
+6. Stop the api and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
 
 ### API Service (a.k.a back-end)
 
@@ -121,7 +125,7 @@
 
    > Migrations run automatically, seeds do not, yet.
 
-2. You can run the seeds by going to http://localhost:3000/seed
+2. You can run the seeds by going to http://localhost:3000/migrate/seed
 
 3. You can access the `psql` command line via
 
