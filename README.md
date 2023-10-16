@@ -41,7 +41,9 @@
    DB_NAME="travel"
    ```
 
-3. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
+3. [Set up the `dev`](./README.md#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
+
+4. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
 
 ### API Service (a.k.a back-end)
 
