@@ -32,6 +32,7 @@ export async function seedUp() {
     },
   ])
 
+  await Form.destroy({ where: {} })
   await dbLegacy("travelPurpose").delete().whereRaw("1=1")
   await dbLegacy("travelPurpose").insert([
     {
@@ -1506,7 +1507,6 @@ export async function seedUp() {
   if (isNull(travelPurposeInfoTech)) {
     throw new Error("Could not find IT travel purpose.")
   }
-  await Form.destroy({ where: {}, truncate: true })
   await Form.bulkCreate([
     {
       userId: 1,
