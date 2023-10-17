@@ -62,7 +62,6 @@ export class TravelAuthorization extends Model<InferAttributes<TravelAuthorizati
   declare daysOffTravelStatus: number | null
   declare dateBackToWork: Date | null
   declare travelDuration: number | null
-  // declare purpose: string | null - deprecated but still in the database.
   declare travelAdvance: number | null
   declare eventName: string | null
   declare summary: string | null
@@ -217,11 +216,6 @@ TravelAuthorization.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    // Deprecated but still in the database.
-    // purpose: {
-    //   type: DataTypes.STRING(255),
-    //   allowNull: true,
-    // },
     travelAdvance: {
       type: DataTypes.INTEGER,
       allowNull: true,
