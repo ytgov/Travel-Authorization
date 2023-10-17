@@ -120,7 +120,7 @@ export class TravelAuthorization extends Model<InferAttributes<TravelAuthorizati
   static establishAssociations() {
     this.belongsTo(TravelPurpose, {
       as: "purpose",
-      foreignKey: "purposeId",
+      foreignKey: "purpose_id",
     })
     this.hasMany(Stop, {
       as: "stops",
@@ -279,6 +279,7 @@ TravelAuthorization.init(
     sequelize,
     tableName: "travel_authorizations",
     modelName: "TravelAuthorization",
+    underscored: true,
     timestamps: false,
   }
 )
