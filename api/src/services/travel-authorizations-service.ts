@@ -6,7 +6,7 @@ import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"
 
-export class FormsService {
+export class TravelAuthorizationsService {
   static async create(
     { stops = [], expenses, estimates, ...attributes }: TravelAuthorization,
     currentUser: User
@@ -17,56 +17,56 @@ export class FormsService {
       attributes.formId = uuid()
     }
 
-    const form = await TravelAuthorization.create(attributes).catch((error) => {
-      throw new Error(`Could not create form: ${error}`)
+    const travelAuthorization = await TravelAuthorization.create(attributes).catch((error) => {
+      throw new Error(`Could not create TravelAuthorization: ${error}`)
     })
 
     // OPINION: It's not worth supporting layered transactions here,
     // though that would be the standard way of doing things.
     // If we are using an ORM such as Sequelize, it would then be worth doing.
-    const formId = form.id
+    const travelAuthorizationId = travelAuthorization.id
     if (!isEmpty(stops)) {
       stops.forEach(async (stop) => {
-        stop.taid = formId
+        stop.taid = travelAuthorizationId
       })
-      await StopsService.bulkCreate(formId, stops)
+      await StopsService.bulkCreate(travelAuthorizationId, stops)
     }
 
     const instance = new LegacyFormSerivce()
-    await instance.saveExpenses(formId, expenses)
-    await instance.saveEstimates(formId, estimates)
+    await instance.saveExpenses(travelAuthorizationId, expenses)
+    await instance.saveEstimates(travelAuthorizationId, estimates)
 
-    return form
+    return travelAuthorization
   }
 
   static async update(
     id: string | number,
     { stops = [], expenses = [], ...attributes }: Partial<TravelAuthorization>
   ): Promise<TravelAuthorization> {
-    // TODO: change the function signature, so that you can pass in a form instance.
-    const form = await TravelAuthorization.findByPk(id)
-    if (isNull(form)) {
-      throw new Error(`Could not find form with id: ${id}`)
+    // TODO: change the function signature, so that you can pass in a travelAuthorization instance.
+    const travelAuthorization = await TravelAuthorization.findByPk(id)
+    if (isNull(travelAuthorization)) {
+      throw new Error(`Could not find TravelAuthorization with id: ${id}`)
     }
 
-    form.update(attributes).catch((error) => {
-      throw new Error(`Could not update form: ${error}`)
+    travelAuthorization.update(attributes).catch((error) => {
+      throw new Error(`Could not update TravelAuthorization: ${error}`)
     })
 
     // OPINION: It's not worth supporting layered transactions here,
     // though that would be the standard way of doing things.
     // If we are using an ORM such as Sequelize, it would then be worth doing.
-    const formId = form.id
+    const travelAuthorizationId = travelAuthorization.id
     if (!isEmpty(stops)) {
-      form.stops = await StopsService.bulkReplace(formId, stops)
+      travelAuthorization.stops = await StopsService.bulkReplace(travelAuthorizationId, stops)
     }
 
     if (!isEmpty(expenses)) {
-      form.expenses = await ExpensesService.bulkReplace(formId, expenses)
+      travelAuthorization.expenses = await ExpensesService.bulkReplace(travelAuthorizationId, expenses)
     }
 
-    return form
+    return travelAuthorization
   }
 }
 
-export default FormsService
+export default TravelAuthorizationsService

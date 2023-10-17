@@ -2,7 +2,7 @@ import { isNil } from "lodash"
 
 import BaseController from "./base-controller"
 
-import { AuditService, FormsService } from "@/services"
+import { AuditService, TravelAuthorizationsService } from "@/services"
 import { TravelAuthorization } from "@/models"
 import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
@@ -26,7 +26,7 @@ export class FormsController extends BaseController {
   }
 
   create() {
-    return FormsService.create(this.request.body, this.currentUser)
+    return TravelAuthorizationsService.create(this.request.body, this.currentUser)
       .then((form) => {
         // TODO: push the audit logging code back into services where it belongs
         auditService.log(this.currentUser.id, form.id, "Submit", "Form submitted successfully.")
@@ -83,7 +83,7 @@ export class FormsController extends BaseController {
         .json({ message: "You are not authorized to update this form." })
     }
 
-    return FormsService.update(this.params.formId, this.request.body)
+    return TravelAuthorizationsService.update(this.params.formId, this.request.body)
       .then((form) => {
         this.response.json({ form })
       })
