@@ -26,7 +26,7 @@ export class FormsController extends BaseController {
   }
 
   private loadForm(): Promise<Form> {
-    return db("forms").where({ id: this.params.formId }).first()
+    return Form.findByPk(this.params.formId)
   }
 }
 ```
