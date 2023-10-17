@@ -49,6 +49,8 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   declare fileSize: number | null
   declare fileName: string | null
   declare expenseType: ExpenseTypes
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
@@ -123,13 +125,23 @@ Expense.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     modelName: "Expense",
     tableName: "expenses",
     underscored: true,
-    timestamps: false,
+    timestamps: true,
   }
 )
 
