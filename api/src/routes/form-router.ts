@@ -57,33 +57,6 @@ formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: R
   }
 })
 
-formRouter.get("/recent", ReturnValidationErrors, async function (req: Request, res: Response) {
-  let user = await userService.getByEmail(req.user.email)
-  try {
-    await dbLegacy.transaction(async (trx) => {
-      let form = await dbLegacy("forms")
-        .select("*")
-        .andWhere("userId", "=", user.id)
-        .limit(1)
-        .transacting(trx)
-
-      // let stopString = stops.map(stop => {}).concat();
-
-      // let departureDate = await dbLegacy("stops").min("departureDate").where("taid", "=", form[0].id);
-      // departureDate = departureDate[0].min;
-
-      // res.status(200).json({
-      //   form: form[0],
-      //   expenses: expenses,
-      //   stops: stops
-      // });
-    })
-  } catch (error: any) {
-    console.log(error)
-    res.status(500).json("Error retrieving form")
-  }
-})
-
 formRouter.get(
   "/upcomingTrips",
   ReturnValidationErrors,
