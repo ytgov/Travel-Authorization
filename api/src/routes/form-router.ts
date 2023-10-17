@@ -4,7 +4,6 @@ import { ReturnValidationErrors } from "../middleware";
 
 import { UserService, FormService, AuditService } from "@/services";
 import { Expense } from "@/models"
-import { Types as ExpenseVariants } from "@/models/expense"
 
 import db from "@/db/db-client-legacy";
 import sequelize from "@/db/db-client";
@@ -462,14 +461,14 @@ formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function
         const estimatesFloat = await Expense.sum("cost", {
           where: {
             taid: form[0].id,
-            type: ExpenseVariants.ESTIMATE,
+            type: Expense.Types.ESTIMATE,
           },
         }).then((result) => result.toFixed(2))
 
         const expensesFloat = await Expense.sum("cost", {
           where: {
             taid: form[0].id,
-            type: ExpenseVariants.EXPENSE,
+            type: Expense.Types.EXPENSE,
           },
         }).then((result) => result.toFixed(2))
 

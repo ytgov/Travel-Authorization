@@ -17,7 +17,8 @@ import sequelize from "@/db/db-client"
 import Form from "./form"
 
 // Keep in sync with web/src/modules/travelForm/components/ExpenseTypeSelect.vue
-export enum ExpenseTypes {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",
   TRANSPORTATION = "Transportation",
   MEALS_AND_INCIDENTALS = "Meals & Incidentals",
@@ -27,12 +28,16 @@ export enum ExpenseTypes {
 // move estimates to there own table.
 // It's also possible that this is a single table inheritance model,
 // and there should be two models, one for each "type".
-export enum Types {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum Types {
   ESTIMATE = "Estimates",
   EXPENSE = "Expenses",
 }
 
 export class Expense extends Model<InferAttributes<Expense>, InferCreationAttributes<Expense>> {
+  static Types = Types
+  static ExpenseTypes = ExpenseTypes
+
   declare id: CreationOptional<number>
   declare taid: ForeignKey<Form["id"]>
   declare description: string
