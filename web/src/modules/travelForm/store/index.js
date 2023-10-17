@@ -57,10 +57,10 @@ const actions = {
       return resp.data.data
     })
   },
-  loadEstimates({ commit, state }, { formId }) {
+  loadEstimates({ commit, state }, { travelAuthorizationId }) {
     state.loadingEstimates = true
     return expensesApi
-      .list({ where: { formId, type: expensesApi.TYPES.ESTIMATE } })
+      .list({ where: { travelAuthorizationId, type: expensesApi.TYPES.ESTIMATE } })
       .then(({ expenses: estimates }) => {
         commit("SET_ESTIMATES", estimates)
         return estimates

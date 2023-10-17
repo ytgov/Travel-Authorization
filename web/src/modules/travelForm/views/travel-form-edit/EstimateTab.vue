@@ -51,7 +51,7 @@ export default {
     },
   },
   async mounted() {
-    await this.loadEstimates({ formId: this.formId })
+    await this.loadEstimates({ travelAuthorizationId: this.formId })
   },
   methods: {
     ...mapActions("travelForm", ["loadEstimates"]),
