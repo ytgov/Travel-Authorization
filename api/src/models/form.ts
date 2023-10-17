@@ -274,7 +274,7 @@ Form.init(
   },
   {
     sequelize,
-    tableName: "forms",
+    tableName: "travel_authorizations",
     modelName: "Form",
     timestamps: false,
   }

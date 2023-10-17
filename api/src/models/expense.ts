@@ -85,7 +85,7 @@ Expense.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "forms", // using table name here, instead of Model class
+        model: "travel_authorizations", // using table name here, instead of Model class
         key: "id",
       },
     },
