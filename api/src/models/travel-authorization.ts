@@ -91,13 +91,13 @@ export class TravelAuthorization extends Model<
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
 
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
-  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["formId"]>
-  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["formId"]>
-  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["formId"]>
-  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["formId"]>
-  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["formId"]>
-  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["formId"]>
-  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["formId"]>
+  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
+  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["travelAuthorizationId"]>
+  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
+  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["travelAuthorizationId"]>
+  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
+  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["travelAuthorizationId"]>
+  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
   declare countExpenses: HasManyCountAssociationsMixin
   declare createExpense: HasManyCreateAssociationMixin<Expense>
 
@@ -125,7 +125,7 @@ export class TravelAuthorization extends Model<
   static establishAssociations() {
     this.belongsTo(TravelPurpose, {
       as: "purpose",
-      foreignKey: "purpose_id",
+      foreignKey: "purposeId",
     })
     this.hasMany(Stop, {
       as: "stops",
@@ -135,7 +135,7 @@ export class TravelAuthorization extends Model<
     this.hasMany(Expense, {
       as: "expenses",
       sourceKey: "id",
-      foreignKey: "formId",
+      foreignKey: "travelAuthorizationId",
     })
   }
 

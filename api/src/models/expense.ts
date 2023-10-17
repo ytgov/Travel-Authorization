@@ -39,7 +39,7 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   static ExpenseTypes = ExpenseTypes
 
   declare id: CreationOptional<number>
-  declare formId: ForeignKey<TravelAuthorization["id"]>
+  declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare description: string
   declare date: Date | null
   declare cost: number
@@ -68,7 +68,7 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   static establishAssociations() {
     this.belongsTo(TravelAuthorization, {
       as: "travelAuthorization",
-      foreignKey: "formId",
+      foreignKey: "travelAuthorizationId",
     })
   }
 }
@@ -81,7 +81,7 @@ Expense.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    formId: {
+    travelAuthorizationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {

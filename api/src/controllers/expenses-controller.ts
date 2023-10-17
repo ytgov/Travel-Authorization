@@ -1,4 +1,5 @@
 import { isNil } from "lodash"
+import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
@@ -9,7 +10,7 @@ import { ExpensesService } from "@/services"
 
 export class ExpensesController extends BaseController {
   index() {
-    const where = this.query.where as any // TODO: figure out typing for "where" parameter
+    const where = this.query.where as WhereOptions<Expense>
     return Expense.findAll({
       where,
       order: ["date"],
@@ -81,14 +82,14 @@ export class ExpensesController extends BaseController {
 
   private async buildExpense() {
     const attributes = this.request.body
-    const { formId } = attributes
+    const { travelAuthorizationId } = attributes
     const expense = Expense.build(attributes)
-    expense.travelAuthorization = (await TravelAuthorization.findByPk(formId)) || undefined
+    expense.travelAuthorization = (await TravelAuthorization.findByPk(travelAuthorizationId)) || undefined
     return expense
   }
 
   private loadExpense(): Promise<Expense | null> {
-    return Expense.findByPk(this.params.expenseId, { include: ["form"] })
+    return Expense.findByPk(this.params.expenseId, { include: ["travelAuthorization"] })
   }
 
   private buildPolicy(record: Expense): ExpensesPolicy {

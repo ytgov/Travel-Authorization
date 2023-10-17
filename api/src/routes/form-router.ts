@@ -386,14 +386,16 @@ formRouter.get(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
-      if (isNull(form)) {
+      const travelAuthorization = await TravelAuthorization.findOne({
+        where: { slug: req.params.formId },
+      })
+      if (isNull(travelAuthorization)) {
         return res.status(404).json({ message: "Form not found" })
       }
 
       const expenses = Expense.findAll({
         where: {
-          formId: form.id,
+          travelAuthorizationId: travelAuthorization.id,
           type: req.params.type,
         },
       })
@@ -412,21 +414,23 @@ formRouter.post(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
-      if (isNull(form)) {
+      const travelAuthorization = await TravelAuthorization.findOne({
+        where: { slug: req.params.formId },
+      })
+      if (isNull(travelAuthorization)) {
         return res.status(404).json({ message: "Form not found" })
       }
 
       await db.transaction(async () => {
         await Expense.destroy({
           where: {
-            formId: form.id,
+            travelAuthorizationId: travelAuthorization.id,
             type: req.params.type,
           },
         })
         for (let index = 0; index < req.body.length; index++) {
           const expense = {
-            formId: form.id,
+            travelAuthorizationId: travelAuthorization.id,
             ...req.body[index],
             type: req.params.type,
           }
@@ -525,21 +529,23 @@ formRouter.get(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
-      if (isNull(form)) {
+      const travelAuthorization = await TravelAuthorization.findOne({
+        where: { slug: req.params.formId },
+      })
+      if (isNull(travelAuthorization)) {
         return res.status(404).json({ message: "Form not found" })
       }
 
       const estimatesFloat = await Expense.sum("cost", {
         where: {
-          formId: form.id,
+          travelAuthorizationId: travelAuthorization.id,
           type: Expense.Types.ESTIMATE,
         },
       }).then((result) => result.toFixed(2))
 
       const expensesFloat = await Expense.sum("cost", {
         where: {
-          formId: form.id,
+          travelAuthorizationId: travelAuthorization.id,
           type: Expense.Types.EXPENSE,
         },
       }).then((result) => result.toFixed(2))

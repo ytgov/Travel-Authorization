@@ -174,7 +174,7 @@ export class BulkGenerate extends BaseService {
 
     return {
       type: Expense.Types.ESTIMATE,
-      formId: this.travelAuthorizationId,
+      travelAuthorizationId: this.travelAuthorizationId,
       currency: "CAD",
       expenseType: Expense.ExpenseTypes.TRANSPORTATION,
       description,
@@ -205,7 +205,7 @@ export class BulkGenerate extends BaseService {
       const cost = this.determineAccommodationCost(accommodationType)
       return {
         type: Expense.Types.ESTIMATE,
-        formId: this.travelAuthorizationId,
+        travelAuthorizationId: this.travelAuthorizationId,
         currency: "CAD",
         expenseType: Expense.ExpenseTypes.ACCOMODATIONS,
         description,
@@ -244,7 +244,7 @@ export class BulkGenerate extends BaseService {
 
       estimates.push({
         type: Expense.Types.ESTIMATE,
-        formId: this.travelAuthorizationId,
+        travelAuthorizationId: this.travelAuthorizationId,
         currency: "CAD",
         expenseType: Expense.ExpenseTypes.MEALS_AND_INCIDENTALS,
         description,
