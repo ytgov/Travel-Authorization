@@ -14,7 +14,7 @@ export class GenerateController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return BulkGenerate.perform(this.formId)
+    return BulkGenerate.perform(this.travelAuthorizationId)
       .then((estimates) => {
         return this.response.status(201).json({
           estimates,
@@ -30,7 +30,7 @@ export class GenerateController extends BaseController {
 
   private async buildExpense() {
     const expense = Expense.build()
-    expense.travelAuthorization = (await TravelAuthorization.findByPk(this.formId)) || undefined
+    expense.travelAuthorization = (await TravelAuthorization.findByPk(this.travelAuthorizationId)) || undefined
     return expense
   }
 
@@ -38,8 +38,8 @@ export class GenerateController extends BaseController {
     return new ExpensesPolicy(this.currentUser, record)
   }
 
-  private get formId() {
-    return parseInt(this.params.formId.toString())
+  private get travelAuthorizationId() {
+    return parseInt(this.params.travelAuthorizationId.toString())
   }
 }
 

@@ -5,8 +5,8 @@ export * from "./pre-approved-travel-requests-controller"
 export * from "./pre-approved-travelers-controller"
 
 // Namespaced controllers
-import * as forms from "./forms"
+import * as TravelAuthorizations from "./travel-authorizations"
 
-export { forms }
+export { TravelAuthorizations }
 
 export default undefined
