@@ -1,7 +1,8 @@
-import { isEmpty, map } from "lodash"
+import { isNull, map } from "lodash"
 
 import dbLegacy from "@/db/db-client-legacy"
-import { Expense } from "@/models"
+
+import { Expense, Form } from "@/models"
 import ExpensesService from "./expenses-service"
 
 export class FormService {
@@ -11,9 +12,9 @@ export class FormService {
       "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
     )
     try {
-      let form: any = await dbLegacy("forms").select("*").first().where({ formId: formId })
+      const form: any = await Form.findOne({ where: { formId: formId } })
 
-      if (isEmpty(form)) {
+      if (isNull(form)) {
         return undefined
       }
 
@@ -57,8 +58,10 @@ export class FormService {
 
       console.log(form)
 
-      let returnedForm = await dbLegacy("forms").insert(form, "id").onConflict("formId").merge()
-      let id = returnedForm[0].id
+      const [returnedForm, _] = await Form.upsert(form, {
+        conflictFields: ["formId"],
+      })
+      const id = returnedForm.id
 
       await this.saveStops(id, stops)
       await this.saveExpenses(id, expenses)
@@ -167,8 +170,10 @@ export class FormService {
         form.userId = userId
         form.status = "Submitted"
 
-        let returnedForm = await dbLegacy("forms").insert(form, "id").onConflict("formId").merge()
-        let id = returnedForm[0].id
+        const [returnedForm, _] = await Form.upsert(form, {
+          conflictFields: ["formId"],
+        })
+        const id = returnedForm.id
 
         await this.saveStops(id, stops)
         await this.saveExpenses(id, expenses)
