@@ -4,7 +4,7 @@ import BaseController from "./base-controller"
 
 import { AuditService, FormsService } from "@/services"
 import { TravelAuthorization } from "@/models"
-import { FormsSerializer } from "@/serializers"
+import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
 
 // TODO: push this code back into services where it belongs
@@ -20,7 +20,7 @@ export class FormsController extends BaseController {
       offset: this.pagination.offset,
     }).then(({ rows: travelAuthorizations, count }) => {
       const scopedTravelAuthorizations = TravelAuthorizationsPolicy.scope(travelAuthorizations, this.currentUser)
-      const serializedTravelAuthorizations = FormsSerializer.asTable(scopedTravelAuthorizations)
+      const serializedTravelAuthorizations = TravelAuthorizationsSerializer.asTable(scopedTravelAuthorizations)
       return this.response.json({ forms: serializedTravelAuthorizations, totalCount: count })
     })
   }
@@ -61,7 +61,7 @@ export class FormsController extends BaseController {
           return this.response.status(404).json({ message: "Form not found." })
         }
 
-        const serializedForm = FormsSerializer.asDetailed(form)
+        const serializedForm = TravelAuthorizationsSerializer.asDetailed(form)
         return this.response.json({ form: serializedForm })
       }
     )
