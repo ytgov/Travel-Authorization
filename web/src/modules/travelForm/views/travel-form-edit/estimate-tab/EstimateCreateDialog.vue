@@ -142,18 +142,18 @@ export default {
     },
     close() {
       this.showDialog = false
-      this.$nextTick(() => {
-        this.estimate = this.newEstimate()
-        this.$refs.form.resetValidation()
-      })
+      this.estimate = this.newEstimate()
+      this.$refs.form.resetValidation()
     },
     createAndClose() {
       this.loading = true
       return expensesApi
         .create(this.estimate)
         .then(() => {
-          this.$emit("created")
           this.close()
+          this.$nextTick(() => {
+            this.$emit("created")
+          })
         })
         .catch((error) => {
           this.$snack(error.message, { color: "error" })
