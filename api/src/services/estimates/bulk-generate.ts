@@ -7,14 +7,12 @@ import {
   Location,
   DistanceMatrix,
   Expense,
-  ExpenseTypes,
   Form,
   LocationTypes,
   PerDiem,
   Stop,
   TravelMethods,
 } from "@/models"
-import { Types as ExpenseVariants } from "@/models/expense"
 import BaseService from "@/services/base-service"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
@@ -175,10 +173,10 @@ export class BulkGenerate extends BaseService {
     const cost = await this.determineTravelMethodCost(fromTransport, fromCity, toCity)
 
     return {
-      type: ExpenseVariants.ESTIMATE,
-      taid: this.formId,
+      type: Expense.Types.ESTIMATE,
+      formId: this.formId,
       currency: "CAD",
-      expenseType: ExpenseTypes.TRANSPORTATION,
+      expenseType: Expense.ExpenseTypes.TRANSPORTATION,
       description,
       cost,
       date: fromDepartureAt,
@@ -206,10 +204,10 @@ export class BulkGenerate extends BaseService {
 
       const cost = this.determineAccommodationCost(accommodationType)
       return {
-        type: ExpenseVariants.ESTIMATE,
-        taid: this.formId,
+        type: Expense.Types.ESTIMATE,
+        formId: this.formId,
         currency: "CAD",
-        expenseType: ExpenseTypes.ACCOMODATIONS,
+        expenseType: Expense.ExpenseTypes.ACCOMODATIONS,
         description,
         cost,
         date: stayedAt,
@@ -245,10 +243,10 @@ export class BulkGenerate extends BaseService {
       const cost = await this.determinePerDiemCost(province, claims)
 
       estimates.push({
-        type: ExpenseVariants.ESTIMATE,
-        taid: this.formId,
+        type: Expense.Types.ESTIMATE,
+        formId: this.formId,
         currency: "CAD",
-        expenseType: ExpenseTypes.MEALS_AND_INCIDENTALS,
+        expenseType: Expense.ExpenseTypes.MEALS_AND_INCIDENTALS,
         description,
         cost,
         date: stayedAt,

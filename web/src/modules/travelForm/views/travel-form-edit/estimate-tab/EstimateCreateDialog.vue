@@ -97,11 +97,6 @@ import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect
 
 import expensesApi from "@/apis/expenses-api"
 
-// Must match types in src/api/models/expense.ts
-const EXPENSE_TYPES = Object.freeze({
-  ESTIMATE: "Estimates",
-})
-
 export default {
   name: "EstimateCreateDialog",
   components: {
@@ -135,25 +130,25 @@ export default {
     required,
     newEstimate() {
       return {
-        taid: this.formId,
-        type: EXPENSE_TYPES.ESTIMATE,
+        formId: this.formId,
+        type: expensesApi.TYPES.ESTIMATE,
         currency: "CAD",
       }
     },
     close() {
       this.showDialog = false
-      this.$nextTick(() => {
-        this.estimate = this.newEstimate()
-        this.$refs.form.resetValidation()
-      })
+      this.estimate = this.newEstimate()
+      this.$refs.form.resetValidation()
     },
     createAndClose() {
       this.loading = true
       return expensesApi
         .create(this.estimate)
         .then(() => {
-          this.$emit("created")
           this.close()
+          this.$nextTick(() => {
+            this.$emit("created")
+          })
         })
         .catch((error) => {
           this.$snack(error.message, { color: "error" })

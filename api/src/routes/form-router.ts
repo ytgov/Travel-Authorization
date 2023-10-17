@@ -1,16 +1,14 @@
 import express, { Request, Response } from "express";
+
 import { ReturnValidationErrors } from "../middleware";
-import { DB_CONFIG } from "../config";
-import knex from "knex";
-import { UserService, FormService, AuditService } from "../services";
-import { v4 as uuid } from "uuid";
-import * as formHelper from "../utils/formHelper";
-import { auth } from "express-openid-connect";
-import { report } from "process";
-import { Form } from "../models/form";
 
-const db = knex(DB_CONFIG);
+import { UserService, FormService, AuditService } from "@/services";
+import { Expense } from "@/models"
 
+import dbLegacy from "@/db/db-client-legacy";
+import db from "@/db/db-client";
+
+// TODO: Check if parser/builtins hack patch code is still needed
 const { setTypeParser, builtins } = require("pg").types;
 
 const typesToReset = [builtins.DATE, builtins.TIME, builtins.TIMETZ, builtins.TIMESTAMP, builtins.TIMESTAMPTZ];
@@ -32,12 +30,12 @@ const auditService = new AuditService();
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     let user = await userService.getByEmail(req.user.email);
-    let form = await db("forms").select("*").where("userId", "=", user.id);
+    let form = await dbLegacy("forms").select("*").where("userId", "=", user.id);
 
     for (let index = 0; index < form.length; index++) {
-      form[index].stops = await db("stops").select("*").where("taid", "=", form[index].id);
-      let departureDate = await db("stops").min("departureDate").where("taid", "=", form[index].id);
-      let departureTime = await db("stops").select("departureTime").where("departureDate", "=", departureDate[0].min);
+      form[index].stops = await dbLegacy("stops").select("*").where("taid", "=", form[index].id);
+      let departureDate = await dbLegacy("stops").min("departureDate").where("taid", "=", form[index].id);
+      let departureTime = await dbLegacy("stops").select("departureTime").where("departureDate", "=", departureDate[0].min);
 
       form[index].departureDate = departureDate[0].min ? departureDate[0].min : "Unknown";
       form[index].departureTime = departureTime[0] ? departureTime[0].departureTime : "Unknown";
@@ -52,12 +50,12 @@ formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: R
 formRouter.get("/recent", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("*").andWhere("userId", "=", user.id).limit(1).transacting(trx);
+    await dbLegacy.transaction(async trx => {
+      let form = await dbLegacy("forms").select("*").andWhere("userId", "=", user.id).limit(1).transacting(trx);
 
       // let stopString = stops.map(stop => {}).concat();
 
-      // let departureDate = await db("stops").min("departureDate").where("taid", "=", form[0].id);
+      // let departureDate = await dbLegacy("stops").min("departureDate").where("taid", "=", form[0].id);
       // departureDate = departureDate[0].min;
 
       // res.status(200).json({
@@ -76,8 +74,8 @@ formRouter.get("/upcomingTrips", ReturnValidationErrors, async function (req: Re
   //let user = await userService.getByEmail(req.user.email);
   let user = await userService.getByEmail("Max.parker@yukon.ca");
   try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("*");
+    await dbLegacy.transaction(async trx => {
+      let form = await dbLegacy("forms").select("*");
 
       res.status(200).json(await formService.getForm(form[0].id));
     });
@@ -137,7 +135,7 @@ formRouter.post("/:formId/save", ReturnValidationErrors, async function (req: Re
 formRouter.post("/:formId/submit", ReturnValidationErrors, async function (req: Request, res: Response) {
   console.warn("This method is deprecated, and will be removed in a future version. Please use POST /api/forms instead.")
   try {
-    await db.transaction(async trx => {
+    await dbLegacy.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
       let form = await formService.getForm(req.params.formId);
 
@@ -166,15 +164,15 @@ formRouter.post("/:formId/deny", ReturnValidationErrors, async function (req: Re
   console.log("Saving Form");
 
   try {
-    await db.transaction(async trx => {
+    await dbLegacy.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
 
-      let supervisorEmail = await db("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
+      let supervisorEmail = await dbLegacy("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
 
       if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
         let denialReason = req.body.denialReason;
 
-        let id = await db("forms")
+        let id = await dbLegacy("forms")
           .update({
             denialReason: denialReason,
             status: "Denied"
@@ -203,13 +201,13 @@ formRouter.post("/:formId/approve", ReturnValidationErrors, async function (req:
   console.log("Saving Form");
 
   try {
-    await db.transaction(async trx => {
+    await dbLegacy.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
 
-      let supervisorEmail = await db("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
+      let supervisorEmail = await dbLegacy("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
 
       if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
-        let id = await db("forms")
+        let id = await dbLegacy("forms")
           .update({
             status: "Approved"
           })
@@ -238,15 +236,15 @@ formRouter.post("/:formId/reassign", ReturnValidationErrors, async function (req
   console.log("Reassigning Form");
 
   try {
-    await db.transaction(async trx => {
+    await dbLegacy.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
 
-      let supervisorEmail = await db("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
+      let supervisorEmail = await dbLegacy("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
 
       if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
         let reassign = req.body.reassign;
 
-        let id = await db("forms")
+        let id = await dbLegacy("forms")
           .update({
             supervisorEmail: reassign
           })
@@ -272,13 +270,13 @@ formRouter.post("/:formId/requestChange", ReturnValidationErrors, async function
   console.log("Request Form Changes");
 
   try {
-    await db.transaction(async trx => {
+    await dbLegacy.transaction(async trx => {
       let user = await userService.getByEmail(req.user.email);
 
-      let supervisorEmail = await db("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
+      let supervisorEmail = await dbLegacy("forms").select("email").where("formId", "=", req.params.formId).transacting(trx);
 
       if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
-        let id = await db("forms")
+        let id = await dbLegacy("forms")
           .update({
             requestChange: req.body.requestChange,
             status: "Change Requested"
@@ -308,14 +306,14 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
   try {
     let user = await userService.getByEmail(req.user.email);
 
-    let id = await db("forms")
+    let id = await dbLegacy("forms")
       .select("id")
       .where("formId", "=", req.params.formId)
       .andWhere("email", "=", user.email)
       .orWhere("supervisorEmail", "=", user.email);
 
     if (id) {
-      let result = await db("forms")
+      let result = await dbLegacy("forms")
         .update({
           status: "deleted"
         })
@@ -338,17 +336,19 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
   }
 });
 
+// TODO: deprecate this in favor of the /api/expenses
 formRouter.get("/:formId/expenses/:type", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("id").where("formId", req.params.formId).transacting(trx);
+    await dbLegacy.transaction(async trx => {
+      let form = await dbLegacy("forms").select("id").where("formId", req.params.formId).transacting(trx);
 
-      let expenses = await db("expenses")
-        .select("*")
-        .where("type", "=", req.params.type)
-        .andWhere("taid", "=", form[0].id)
-        .transacting(trx);
+      const expenses = Expense.findAll({
+        where: {
+          formId: form[0].id,
+          type: req.params.type,
+        },
+      })
 
       res.status(200).json(expenses);
     });
@@ -358,26 +358,30 @@ formRouter.get("/:formId/expenses/:type", ReturnValidationErrors, async function
   }
 });
 
+// TODO: deprecate this in favor of the /api/expenses
 formRouter.post("/:formId/expenses/:type", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
+    await dbLegacy.transaction(async trx => {
+      let form = await dbLegacy("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
-      await db("expenses")
-        .delete()
-        .where("taid", "=", form[0].id)
-        .andWhere("type", "=", req.params.type)
-        .transacting(trx);
+      db.transaction(async () => {
+        await Expense.destroy({
+          where: {
+            formId: form[0].id,
+            type: req.params.type,
+          },
+        })
+        for (let index = 0; index < req.body.length; index++) {
+          const expense = {
+            formId: form[0].id,
+            ...req.body[index],
+            type: req.params.type
+          };
+          await Expense.create(expense)
+        }
+      })
 
-      for (let index = 0; index < req.body.length; index++) {
-        let expense = {
-          taid: form[0].id,
-          ...req.body[index],
-          type: req.params.type
-        };
-        await db("expenses").insert(expense).transacting(trx);
-      }
       res.status(200).json("Updated expenses successful");
     });
   } catch (error: any) {
@@ -389,8 +393,8 @@ formRouter.post("/:formId/expenses/:type", ReturnValidationErrors, async functio
 formRouter.post("/:formId/report/submit", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
+    await dbLegacy.transaction(async trx => {
+      let form = await dbLegacy("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let reportInsert = {
         ...req.body,
@@ -398,7 +402,7 @@ formRouter.post("/:formId/report/submit", ReturnValidationErrors, async function
         taid: form[0].id
       };
 
-      let id = await db("tripReports").insert(reportInsert, "id").onConflict("taid").merge();
+      let id = await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge();
 
       res.status(200).json("Updated report successful");
     });
@@ -411,8 +415,8 @@ formRouter.post("/:formId/report/submit", ReturnValidationErrors, async function
 formRouter.post("/:formId/report/save", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
+    await dbLegacy.transaction(async trx => {
+      let form = await dbLegacy("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let reportInsert = {
         ...req.body,
@@ -420,7 +424,7 @@ formRouter.post("/:formId/report/save", ReturnValidationErrors, async function (
         taid: form[0].id
       };
 
-      let id = await db("tripReports").insert(reportInsert, "id").onConflict("taid").merge();
+      let id = await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge();
 
       res.status(200).json("Updated report successful");
     });
@@ -433,11 +437,11 @@ formRouter.post("/:formId/report/save", ReturnValidationErrors, async function (
 formRouter.get("/:formId/report", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
-    let form = await db("forms").select("id").where("formId", req.params.formId);
+    let form = await dbLegacy("forms").select("id").where("formId", req.params.formId);
 
     let report = {};
     if (form[0]) {
-      report = await db("tripReports").select("*").where("taid", "=", form[0].id).first();
+      report = await dbLegacy("tripReports").select("*").where("taid", "=", form[0].id).first();
     }
 
     res.status(200).json(report);
@@ -447,25 +451,27 @@ formRouter.get("/:formId/report", ReturnValidationErrors, async function (req: R
   }
 });
 
+// TODO: rewrite as RESTful endpoint
 formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function (req: Request, res: Response) {
-  let user = await userService.getByEmail(req.user.email);
   try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
+    await dbLegacy.transaction(async trx => {
+      let form = await dbLegacy("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let result = {};
       if (form[0]) {
-        let estimates = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Estimates");
-        let estimatesFloat = (parseFloat(estimates[0].sum) || 0).toFixed(2);
+        const estimatesFloat = await Expense.sum("cost", {
+          where: {
+            formId: form[0].id,
+            type: Expense.Types.ESTIMATE,
+          },
+        }).then((result) => result.toFixed(2))
 
-        let expenses = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Expenses");
-        let expensesFloat = (parseFloat(expenses[0].sum) || 0).toFixed(2);
+        const expensesFloat = await Expense.sum("cost", {
+          where: {
+            formId: form[0].id,
+            type: Expense.Types.EXPENSE,
+          },
+        }).then((result) => result.toFixed(2))
 
         result = {
           estimates: estimatesFloat,
@@ -476,56 +482,6 @@ formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function
     });
   } catch (error: any) {
     console.log(error);
-    res.status(500).json("Update failed");
+    res.status(500).json("Lookup failed");
   }
 });
-
-formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function (req: Request, res: Response) {
-  let user = await userService.getByEmail(req.user.email);
-  try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
-
-      let result = {};
-      if (form[0]) {
-        let estimates = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Estimates");
-        let estimatesFloat = (parseFloat(estimates[0].sum) || 0).toFixed(2);
-
-        let expenses = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Expenses");
-        let expensesFloat = (parseFloat(expenses[0].sum) || 0).toFixed(2);
-
-        result = {
-          estimates: estimatesFloat,
-          expenses: expensesFloat
-        };
-      }
-      res.status(200).json(result);
-    });
-  } catch (error: any) {
-    console.log(error);
-    res.status(500).json("Update failed");
-  }
-});
-
-formRouter.get(
-  "/:formId/:expenseId/uploadReceipt",
-  ReturnValidationErrors,
-  async function (req: Request, res: Response) {
-    try {
-      let user = await userService.getByEmail(req.user.email);
-      let receiptUpload = await db("expenses")
-        .insert("receiptUpload")
-        .where("expenses.id", req.params.expenseId)
-        .andWhere("forms.taid", req.params.formId);
-    } catch (error: any) {
-      console.log(error);
-      res.status(500).json("Internal Server Error");
-    }
-  }
-);
