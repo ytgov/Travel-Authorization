@@ -17,7 +17,7 @@ managerRouter.get(
     try {
       const user = await userService.getByEmail(req.user.email)
       const form = await TravelAuthorization.findOne({
-        where: { formId: req.params.formId, supervisorEmail: user.email },
+        where: { slug: req.params.formId, supervisorEmail: user.email },
       })
 
       if (isNull(form)) {

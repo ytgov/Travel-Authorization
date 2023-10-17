@@ -47,7 +47,7 @@ export class TravelAuthorization extends Model<InferAttributes<TravelAuthorizati
   static Statuses = Statuses
 
   declare id: CreationOptional<number>
-  declare formId: string
+  declare slug: string
   declare preappId: ForeignKey<Preapproved["preTID"]>
   declare purposeId: ForeignKey<TravelPurpose["id"]>
   declare userId: ForeignKey<User["id"]>
@@ -147,7 +147,7 @@ TravelAuthorization.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    formId: {
+    slug: {
       type: DataTypes.STRING(255),
       allowNull: false,
       unique: true,

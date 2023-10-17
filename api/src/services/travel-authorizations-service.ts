@@ -13,8 +13,8 @@ export class TravelAuthorizationsService {
   ): Promise<TravelAuthorization> {
     attributes.userId = currentUser.id
     // Not sure if this is correct, but I can't find anything that generates the formId elsewhere
-    if (isNil(attributes.formId)) {
-      attributes.formId = uuid()
+    if (isNil(attributes.slug)) {
+      attributes.slug = uuid()
     }
 
     const travelAuthorization = await TravelAuthorization.create(attributes).catch((error) => {

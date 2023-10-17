@@ -187,7 +187,7 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+        const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
         }
@@ -228,7 +228,7 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+        const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
         }
@@ -268,7 +268,7 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+        const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
         }
@@ -312,7 +312,7 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+        const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
         }
@@ -354,7 +354,7 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
 
     const form = await TravelAuthorization.findOne({
       where: {
-        formId: req.params.formId,
+        slug: req.params.formId,
         [Op.or]: [{ email: user.email }, { supervisorEmail: user.email }],
       },
     })
@@ -386,7 +386,7 @@ formRouter.get(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
       if (isNull(form)) {
         return res.status(404).json({ message: "Form not found" })
       }
@@ -412,7 +412,7 @@ formRouter.post(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
       if (isNull(form)) {
         return res.status(404).json({ message: "Form not found" })
       }
@@ -448,7 +448,7 @@ formRouter.post(
   async function (req: Request, res: Response) {
     try {
       await dbLegacy.transaction(async (trx) => {
-        const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+        const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
         }
@@ -477,7 +477,7 @@ formRouter.post(
     let user = await userService.getByEmail(req.user.email)
     try {
       await dbLegacy.transaction(async (trx) => {
-        const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+        const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
         }
@@ -504,7 +504,7 @@ formRouter.get(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
       if (isNull(form)) {
         return res.status(404).json({ message: "Form not found" })
       }
@@ -525,7 +525,7 @@ formRouter.get(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const form = await TravelAuthorization.findOne({ where: { formId: req.params.formId } })
+      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
       if (isNull(form)) {
         return res.status(404).json({ message: "Form not found" })
       }

@@ -12,7 +12,7 @@ export class FormService {
       "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
     )
     try {
-      const form: any = await TravelAuthorization.findOne({ where: { formId: formId } })
+      const form: any = await TravelAuthorization.findOne({ where: { slug: formId } })
 
       if (isNull(form)) {
         return undefined
@@ -59,7 +59,7 @@ export class FormService {
       console.log(form)
 
       const [returnedForm, _] = await TravelAuthorization.upsert(form, {
-        conflictFields: ["formId"],
+        conflictFields: ["slug"],
       })
       const id = returnedForm.id
 
@@ -171,7 +171,7 @@ export class FormService {
         form.status = "Submitted"
 
         const [returnedForm, _] = await TravelAuthorization.upsert(form, {
-          conflictFields: ["formId"],
+          conflictFields: ["slug"],
         })
         const id = returnedForm.id
 
