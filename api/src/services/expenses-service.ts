@@ -1,51 +1,31 @@
-import { isEmpty, isNil } from "lodash"
+import { isNull } from "lodash"
 
-import db from "@/db/db-client-legacy"
+import db from "@/db/db-client"
 
 import { Expense } from "@/models"
 import BaseService from "./base-service"
 
 export class ExpensesService extends BaseService {
   static async create(attributes: Partial<Expense>): Promise<Expense> {
-    const expense = await db<Expense>("expenses")
-      .insert(attributes)
-      .returning("*")
-      .then((result) => {
-        if (isEmpty(result)) throw new Error("Could not create expense")
-
-        return result[0]
-      })
-
-    return expense
+    // TODO: figure out typing for 'attributes' parameter
+    return Expense.create(attributes as any)
   }
 
   // CONSIDER: When the update action is this simple, it might make more sense to make
   // an "active record" style model method, and use that directly instead.
-  static async update(
-    id: string | number,
-    attributes: Partial<Expense>
-  ): Promise<Expense> {
-    const expense = await db<Expense>("expenses")
-      .where("id", id)
-      .update(attributes)
-      .returning("*")
-      .then((updatedRecords) => {
-        if (isEmpty(updatedRecords)) throw new Error("Could not update expense")
+  static async update(id: string | number, attributes: Partial<Expense>): Promise<Expense> {
+    const expense = await Expense.findByPk(id)
+    if (isNull(expense)) throw new Error("Could not find expense")
 
-        return updatedRecords[0]
-      })
-
-    return expense
+    return expense.update(attributes)
   }
 
   static destroy(id: string | number): Promise<void> {
-    return db<Expense>("expenses")
-      .where("id", id)
-      .delete().then(rowsDeleted => {
-        if (rowsDeleted === 0) throw new Error("Could not delete expense")
+    return Expense.destroy({ where: { id } }).then((rowsDeleted) => {
+      if (rowsDeleted === 0) throw new Error("Could not delete expense")
 
-        return
-      })
+      return
+    })
   }
 
   static async bulkCreate(formId: number, expenses: Expense[]): Promise<Expense[]> {
@@ -53,7 +33,7 @@ export class ExpensesService extends BaseService {
       throw new Error("All expenses must belong to the same form.")
     }
 
-    return db("expenses").insert(expenses).returning("*")
+    return Expense.bulkCreate(expenses)
   }
 
   static async bulkReplace(formId: number, expenses: Expense[]): Promise<Expense[]> {
@@ -61,9 +41,9 @@ export class ExpensesService extends BaseService {
       throw new Error("All expenses must belong to the same form.")
     }
 
-    return db.transaction(async (transaction) => {
-      await transaction("expenses").where("taid", formId).delete()
-      return transaction("expenses").insert(expenses).returning("*")
+    return db.transaction(async () => {
+      await Expense.destroy({ where: { taid: formId } })
+      return Expense.bulkCreate(expenses)
     })
   }
 }
