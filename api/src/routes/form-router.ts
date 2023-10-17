@@ -1,15 +1,13 @@
 import express, { Request, Response } from "express";
-import { ReturnValidationErrors } from "../middleware";
-import { DB_CONFIG } from "../config";
-import knex from "knex";
-import { UserService, FormService, AuditService } from "../services";
-import { v4 as uuid } from "uuid";
-import * as formHelper from "../utils/formHelper";
-import { auth } from "express-openid-connect";
-import { report } from "process";
-import { Form } from "../models/form";
 
-const db = knex(DB_CONFIG);
+import { ReturnValidationErrors } from "../middleware";
+
+import { UserService, FormService, AuditService } from "@/services";
+import { Expense } from "@/models"
+import { Types as ExpenseVariants } from "@/models/expense"
+
+import db from "@/db/db-client-legacy";
+import sequelize from "@/db/db-client";
 
 const { setTypeParser, builtins } = require("pg").types;
 
@@ -338,17 +336,19 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
   }
 });
 
+// TODO: deprecate this in favor of the /api/expenses
 formRouter.get("/:formId/expenses/:type", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
       let form = await db("forms").select("id").where("formId", req.params.formId).transacting(trx);
 
-      let expenses = await db("expenses")
-        .select("*")
-        .where("type", "=", req.params.type)
-        .andWhere("taid", "=", form[0].id)
-        .transacting(trx);
+      const expenses = Expense.findAll({
+        where: {
+          taid: form[0].id,
+          type: req.params.type,
+        },
+      })
 
       res.status(200).json(expenses);
     });
@@ -358,26 +358,30 @@ formRouter.get("/:formId/expenses/:type", ReturnValidationErrors, async function
   }
 });
 
+// TODO: deprecate this in favor of the /api/expenses
 formRouter.post("/:formId/expenses/:type", ReturnValidationErrors, async function (req: Request, res: Response) {
   let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
       let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
-      await db("expenses")
-        .delete()
-        .where("taid", "=", form[0].id)
-        .andWhere("type", "=", req.params.type)
-        .transacting(trx);
+      sequelize.transaction(async () => {
+        await Expense.destroy({
+          where: {
+            taid: form[0].id,
+            type: req.params.type,
+          },
+        })
+        for (let index = 0; index < req.body.length; index++) {
+          const expense = {
+            taid: form[0].id,
+            ...req.body[index],
+            type: req.params.type
+          };
+          await Expense.create(expense)
+        }
+      })
 
-      for (let index = 0; index < req.body.length; index++) {
-        let expense = {
-          taid: form[0].id,
-          ...req.body[index],
-          type: req.params.type
-        };
-        await db("expenses").insert(expense).transacting(trx);
-      }
       res.status(200).json("Updated expenses successful");
     });
   } catch (error: any) {
@@ -447,25 +451,27 @@ formRouter.get("/:formId/report", ReturnValidationErrors, async function (req: R
   }
 });
 
+// TODO: rewrite as RESTful endpoint
 formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function (req: Request, res: Response) {
-  let user = await userService.getByEmail(req.user.email);
   try {
     await db.transaction(async trx => {
       let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
 
       let result = {};
       if (form[0]) {
-        let estimates = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Estimates");
-        let estimatesFloat = (parseFloat(estimates[0].sum) || 0).toFixed(2);
+        const estimatesFloat = await Expense.sum("cost", {
+          where: {
+            taid: form[0].id,
+            type: ExpenseVariants.ESTIMATE,
+          },
+        }).then((result) => result.toFixed(2))
 
-        let expenses = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Expenses");
-        let expensesFloat = (parseFloat(expenses[0].sum) || 0).toFixed(2);
+        const expensesFloat = await Expense.sum("cost", {
+          where: {
+            taid: form[0].id,
+            type: ExpenseVariants.EXPENSE,
+          },
+        }).then((result) => result.toFixed(2))
 
         result = {
           estimates: estimatesFloat,
@@ -476,56 +482,6 @@ formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function
     });
   } catch (error: any) {
     console.log(error);
-    res.status(500).json("Update failed");
+    res.status(500).json("Lookup failed");
   }
 });
-
-formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function (req: Request, res: Response) {
-  let user = await userService.getByEmail(req.user.email);
-  try {
-    await db.transaction(async trx => {
-      let form = await db("forms").select("id", "status").where("formId", req.params.formId).transacting(trx);
-
-      let result = {};
-      if (form[0]) {
-        let estimates = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Estimates");
-        let estimatesFloat = (parseFloat(estimates[0].sum) || 0).toFixed(2);
-
-        let expenses = await db("expenses")
-          .sum("cost")
-          .where("taid", "=", form[0].id)
-          .andWhere("type", "=", "Expenses");
-        let expensesFloat = (parseFloat(expenses[0].sum) || 0).toFixed(2);
-
-        result = {
-          estimates: estimatesFloat,
-          expenses: expensesFloat
-        };
-      }
-      res.status(200).json(result);
-    });
-  } catch (error: any) {
-    console.log(error);
-    res.status(500).json("Update failed");
-  }
-});
-
-formRouter.get(
-  "/:formId/:expenseId/uploadReceipt",
-  ReturnValidationErrors,
-  async function (req: Request, res: Response) {
-    try {
-      let user = await userService.getByEmail(req.user.email);
-      let receiptUpload = await db("expenses")
-        .insert("receiptUpload")
-        .where("expenses.id", req.params.expenseId)
-        .andWhere("forms.taid", req.params.formId);
-    } catch (error: any) {
-      console.log(error);
-      res.status(500).json("Internal Server Error");
-    }
-  }
-);
