@@ -1,25 +1,26 @@
 import { Express, Request, Response } from "express";
-import { sqldb } from "./index";
 import { join } from "path";
+
+import dbLegacy from "@/db/db-client-legacy"
 import { seedUp } from "./seeds";
 
 export async function migrateUp() {
   console.log("-------- MIGRATE UP ---------");
-  return await sqldb.migrate.up({
+  return await dbLegacy.migrate.up({
     directory: join(__dirname, "migrations")
   });
 }
 
 export async function migrateDown() {
   console.log("-------- MIGRATE DOWN ---------");
-  return await sqldb.migrate.down({
+  return await dbLegacy.migrate.down({
     directory: join(__dirname, "migrations")
   });
 }
 
 export async function migrateLatest() {
   console.log("-------- MIGRATE LATEST ---------");
-  return await sqldb.migrate.latest({
+  return await dbLegacy.migrate.latest({
     directory: join(__dirname, "migrations")
   });
 }

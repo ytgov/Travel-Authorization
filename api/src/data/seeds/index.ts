@@ -1,15 +1,15 @@
-import { sqldb } from "..";
+import dbLegacy from "@/db/db-client-legacy"
 
 export async function seedUp() {
   console.log("Seeding");
 
-  await sqldb("user").update({ roles: "User" }).whereRaw("1=1");
-  await sqldb("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" });
-  await sqldb("user").update({ roles: "Admin" }).where({ email: "dpdavids@ynet.gov.yk.ca" });
-  await sqldb("user").update({ roles: "Admin" }).where({ email: "hassan.anvar@pacificintelligent.com" });
+  await dbLegacy("user").update({ roles: "User" }).whereRaw("1=1");
+  await dbLegacy("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" });
+  await dbLegacy("user").update({ roles: "Admin" }).where({ email: "dpdavids@ynet.gov.yk.ca" });
+  await dbLegacy("user").update({ roles: "Admin" }).where({ email: "hassan.anvar@pacificintelligent.com" });
 
-  await sqldb("roles").delete().whereRaw("1=1");
-  await sqldb("roles").insert([
+  await dbLegacy("roles").delete().whereRaw("1=1");
+  await dbLegacy("roles").insert([
     {
       name: "Admin"
     },
@@ -27,8 +27,8 @@ export async function seedUp() {
     }
   ]);
 
-  await sqldb("travelPurpose").delete().whereRaw("1=1");
-  await sqldb("travelPurpose").insert([
+  await dbLegacy("travelPurpose").delete().whereRaw("1=1");
+  await dbLegacy("travelPurpose").insert([
     {
       purpose: "Maintenance"
     },
@@ -46,8 +46,8 @@ export async function seedUp() {
     }
   ]);
 
-  await sqldb("transportMethod").delete().whereRaw("1=1");
-  await sqldb("transportMethod").insert([
+  await dbLegacy("transportMethod").delete().whereRaw("1=1");
+  await dbLegacy("transportMethod").insert([
     {
       method: "Rental vehicle"
     },
@@ -62,8 +62,8 @@ export async function seedUp() {
     }
   ]);
 
-  await sqldb("locations").delete().whereRaw("1=1");
-  await sqldb("locations").insert([
+  await dbLegacy("locations").delete().whereRaw("1=1");
+  await dbLegacy("locations").insert([
     {
       province: "YT",
       city: "Whitehorse"
@@ -1494,8 +1494,8 @@ export async function seedUp() {
   //  (2,445,'2023-03-20','08:00:00','Plane'),
   //  (3,585,'2023-03-20','09:00:00','Plane');
 
-  await sqldb("forms").delete().whereRaw("1=1");
-  await sqldb("forms").insert([
+  await dbLegacy("forms").delete().whereRaw("1=1");
+  await dbLegacy("forms").insert([
     {
       userId: 1,
       firstName: "John",
@@ -1592,8 +1592,8 @@ export async function seedUp() {
   // t.time("departureTime");
   // t.string("transport");
 
-  await sqldb("stops").delete().whereRaw("1=1");
-  await sqldb("stops").insert([
+  await dbLegacy("stops").delete().whereRaw("1=1");
+  await dbLegacy("stops").insert([
     {
       taid: 1,
       locationId: 1,
@@ -1638,8 +1638,8 @@ export async function seedUp() {
     }
   ]);
 
-  await sqldb("distanceMatrix").delete().whereRaw("1=1");
-  await sqldb("distanceMatrix").insert([
+  await dbLegacy("distanceMatrix").delete().whereRaw("1=1");
+  await dbLegacy("distanceMatrix").insert([
     {
       origin: "Beaver Creek",
       destination: "Braeburn",
@@ -3817,8 +3817,8 @@ export async function seedUp() {
     }
   ]);
 
-  await sqldb("perDiems").delete().whereRaw("1=1");
-  await sqldb("perDiems").insert([
+  await dbLegacy("perDiems").delete().whereRaw("1=1");
+  await dbLegacy("perDiems").insert([
     {
       claim: "Maximum Daily",
       location: "Yukon",
@@ -3977,7 +3977,7 @@ export async function seedUp() {
     }
   ]);
 
-  await sqldb("travelDeskTravelRequest").delete().whereRaw("1=1");
+  await dbLegacy("travelDeskTravelRequest").delete().whereRaw("1=1");
 
   return "Done";
 }
