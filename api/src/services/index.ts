@@ -8,9 +8,9 @@ export * from "./stops-service"
 export * from "./user-service"
 
 // Namespaced services
-import * as estimates from "./estimates"
+import * as Estimates from "./estimates"
 
-export { estimates }
+export { Estimates }
 
 // TODO: move these to their own files, or deprecate and remove them completely
 export interface QueryStatement {
