@@ -2,7 +2,7 @@ import BasePolicy from "./base-policy"
 
 import { User, TravelAuthorization } from "@/models"
 
-export class FormsPolicy extends BasePolicy<TravelAuthorization> {
+export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> {
   show(): boolean {
     if (this.user.roles.includes("Admin")) return true
 
@@ -24,4 +24,4 @@ export class FormsPolicy extends BasePolicy<TravelAuthorization> {
   }
 }
 
-export default FormsPolicy
+export default TravelAuthorizationsPolicy

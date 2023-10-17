@@ -5,7 +5,7 @@ import BaseController from "./base-controller"
 import { AuditService, FormsService } from "@/services"
 import { TravelAuthorization } from "@/models"
 import { FormsSerializer } from "@/serializers"
-import { FormsPolicy } from "@/policies"
+import { TravelAuthorizationsPolicy } from "@/policies"
 
 // TODO: push this code back into services where it belongs
 const auditService = new AuditService()
@@ -18,10 +18,10 @@ export class FormsController extends BaseController {
       include: ["stops", "purpose"],
       limit: this.pagination.limit,
       offset: this.pagination.offset,
-    }).then(({ rows: forms, count }) => {
-      const scopedForms = FormsPolicy.scope(forms, this.currentUser)
-      const serializedForms = FormsSerializer.asTable(scopedForms)
-      return this.response.json({ forms: serializedForms, totalCount: count })
+    }).then(({ rows: travelAuthorizations, count }) => {
+      const scopedTravelAuthorizations = TravelAuthorizationsPolicy.scope(travelAuthorizations, this.currentUser)
+      const serializedTravelAuthorizations = FormsSerializer.asTable(scopedTravelAuthorizations)
+      return this.response.json({ forms: serializedTravelAuthorizations, totalCount: count })
     })
   }
 
@@ -96,8 +96,8 @@ export class FormsController extends BaseController {
     return TravelAuthorization.findByPk(this.params.formId)
   }
 
-  private buildPolicy(record: TravelAuthorization): FormsPolicy {
-    return new FormsPolicy(this.currentUser, record)
+  private buildPolicy(record: TravelAuthorization): TravelAuthorizationsPolicy {
+    return new TravelAuthorizationsPolicy(this.currentUser, record)
   }
 }
 
