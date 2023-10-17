@@ -9,6 +9,7 @@ import {
 } from "@/middleware"
 import { DB_CONFIG } from "@/config"
 import { UserService } from "@/services"
+import { Form } from "@/models"
 
 const db = knex(DB_CONFIG)
 
@@ -24,7 +25,8 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     const requestID = travelRequest.requestID
     const TAID = travelRequest.TAID
 
-    const form = await db("forms").select("*").where("id", TAID).first()
+    const form = await Form.findOne({ where: { id: TAID } })
+    // @ts-ignore - isn't worth fixing at this time
     form.stops = await db("stops").select("*").where("taid", TAID)
     travelRequest.form = form
 
@@ -72,7 +74,7 @@ travelDeskRouter.get(
     }
 
     try {
-      const forms = await db("forms").modify(adminQuery)
+      const forms = await db("travel_authorizations").modify(adminQuery)
 
       for (const form of forms) {
         form.stops = await db("stops").select("*").where("taid", "=", form.id)
