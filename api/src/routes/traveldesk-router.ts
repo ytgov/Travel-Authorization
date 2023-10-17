@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express"
 import knex from "knex"
+import { WhereOptions } from "sequelize"
 
 import {
   RequiresAuth,
@@ -66,15 +67,17 @@ travelDeskRouter.get(
   "/authorized-travels/",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    const adminQuery = function (queryBuilder: any) {
-      if (req?.user?.roles?.indexOf("Admin") >= 0) queryBuilder.select("*")
-      else if (req?.user?.roles?.indexOf("DeptAdmin") >= 0)
-        queryBuilder.where("department", req.user.department).select("*")
-      else queryBuilder.where("userId", req.user.id).select("*")
+    const adminScoping: WhereOptions<Form> = {}
+    if (req?.user?.roles?.includes("Admin")) {
+      // No additional conditions for Admin, selects all records
+    } else if (req?.user?.roles?.includes("DeptAdmin")) {
+      adminScoping.department = req.user.department
+    } else {
+      adminScoping.userId = req.user.id
     }
 
     try {
-      const forms = await db("travel_authorizations").modify(adminQuery)
+      const forms = await Form.findAll({ where: adminScoping })
 
       for (const form of forms) {
         form.stops = await db("stops").select("*").where("taid", "=", form.id)
@@ -83,19 +86,24 @@ travelDeskRouter.get(
           .select("departureTime")
           .where("departureDate", "=", departureDates[0].min)
 
+        // @ts-ignore - isn't worth fixing at this time
         form.departureDate = departureDates[0].min ? departureDates[0].min : "Unknown"
+        // @ts-ignore - isn't worth fixing at this time
         form.departureTime = departureTimes[0] ? departureTimes[0].departureTime : "Unknown"
+        // @ts-ignore - isn't worth fixing at this time
         form.travelRequest = await db("travelDeskTravelRequest")
           .select("*")
           .where("TAID", form.id)
           .first()
 
+        // @ts-ignore - isn't worth fixing at this time
         const requestID = form.travelRequest?.requestID
         if (requestID) {
           const invoiceNumber = await db("travelDeskPnrDocuments")
             .select("invoiceNumber")
             .where("requestID", requestID)
             .first()
+          // @ts-ignore - isn't worth fixing at this time
           form.travelRequest.invoiceNumber = invoiceNumber?.invoiceNumber
             ? invoiceNumber.invoiceNumber
             : ""
