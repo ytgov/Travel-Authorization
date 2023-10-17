@@ -1,23 +1,23 @@
 import { isNil, isEmpty, isNull } from "lodash"
 import { v4 as uuid } from "uuid"
 
-import { Form, User } from "@/models"
+import { TravelAuthorization, User } from "@/models"
 import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"
 
 export class FormsService {
   static async create(
-    { stops = [], expenses, estimates, ...attributes }: Form,
+    { stops = [], expenses, estimates, ...attributes }: TravelAuthorization,
     currentUser: User
-  ): Promise<Form> {
+  ): Promise<TravelAuthorization> {
     attributes.userId = currentUser.id
     // Not sure if this is correct, but I can't find anything that generates the formId elsewhere
     if (isNil(attributes.formId)) {
       attributes.formId = uuid()
     }
 
-    const form = await Form.create(attributes).catch((error) => {
+    const form = await TravelAuthorization.create(attributes).catch((error) => {
       throw new Error(`Could not create form: ${error}`)
     })
 
@@ -41,10 +41,10 @@ export class FormsService {
 
   static async update(
     id: string | number,
-    { stops = [], expenses = [], ...attributes }: Partial<Form>
-  ): Promise<Form> {
+    { stops = [], expenses = [], ...attributes }: Partial<TravelAuthorization>
+  ): Promise<TravelAuthorization> {
     // TODO: change the function signature, so that you can pass in a form instance.
-    const form = await Form.findByPk(id)
+    const form = await TravelAuthorization.findByPk(id)
     if (isNull(form)) {
       throw new Error(`Could not find form with id: ${id}`)
     }

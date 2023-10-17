@@ -10,7 +10,7 @@ import {
 } from "@/middleware"
 import { DB_CONFIG } from "@/config"
 import { UserService } from "@/services"
-import { Form } from "@/models"
+import { TravelAuthorization } from "@/models"
 
 const db = knex(DB_CONFIG)
 
@@ -26,7 +26,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     const requestID = travelRequest.requestID
     const TAID = travelRequest.TAID
 
-    const form = await Form.findOne({ where: { id: TAID } })
+    const form = await TravelAuthorization.findOne({ where: { id: TAID } })
     // @ts-ignore - isn't worth fixing at this time
     form.stops = await db("stops").select("*").where("taid", TAID)
     travelRequest.form = form
@@ -67,7 +67,7 @@ travelDeskRouter.get(
   "/authorized-travels/",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    const adminScoping: WhereOptions<Form> = {}
+    const adminScoping: WhereOptions<TravelAuthorization> = {}
     if (req?.user?.roles?.includes("Admin")) {
       // No additional conditions for Admin, selects all records
     } else if (req?.user?.roles?.includes("DeptAdmin")) {
@@ -77,7 +77,7 @@ travelDeskRouter.get(
     }
 
     try {
-      const forms = await Form.findAll({ where: adminScoping })
+      const forms = await TravelAuthorization.findAll({ where: adminScoping })
 
       for (const form of forms) {
         form.stops = await db("stops").select("*").where("taid", "=", form.id)

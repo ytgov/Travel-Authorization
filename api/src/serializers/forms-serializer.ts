@@ -1,11 +1,11 @@
 import { isEmpty, isNil, minBy, pick } from "lodash"
 
-import Form from "@/models/form"
+import { TravelAuthorization } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 
 export class FormsSerializer extends BaseSerializer {
-  static asTable(forms: Form[]) {
+  static asTable(forms: TravelAuthorization[]) {
     return forms.map((form) => {
       return {
         ...pick(form, ["id", "department", "branch", "dateBackToWork", "status"]),
@@ -15,11 +15,11 @@ export class FormsSerializer extends BaseSerializer {
     })
   }
 
-  static asDetailed(form: Form) {
+  static asDetailed(form: TravelAuthorization) {
     return form
   }
 
-  private static departingAt(form: Form) {
+  private static departingAt(form: TravelAuthorization) {
     const stops = form.stops || []
     if (isEmpty(stops)) return "Unknown"
 

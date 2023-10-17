@@ -1,6 +1,6 @@
 import BaseController from "@/controllers/base-controller"
 
-import { Expense, Form } from "@/models"
+import { Expense, TravelAuthorization } from "@/models"
 import { ExpensesPolicy } from "@/policies"
 import { BulkGenerate } from "@/services/estimates"
 
@@ -30,7 +30,7 @@ export class GenerateController extends BaseController {
 
   private async buildExpense() {
     const expense = Expense.build()
-    expense.form = (await Form.findByPk(this.formId)) || undefined
+    expense.travelAuthorization = (await TravelAuthorization.findByPk(this.formId)) || undefined
     return expense
   }
 

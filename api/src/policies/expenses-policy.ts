@@ -6,7 +6,7 @@ import { Expense } from "@/models"
 
 export class ExpensesPolicy extends BasePolicy<Expense> {
   create(): boolean {
-    const form = this.record.form
+    const form = this.record.travelAuthorization
     if (isNil(form)) return false
 
     const formPolicy = new FormsPolicy(this.user, form)

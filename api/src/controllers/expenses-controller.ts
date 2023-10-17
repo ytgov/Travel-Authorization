@@ -2,7 +2,7 @@ import { isNil } from "lodash"
 
 import BaseController from "./base-controller"
 
-import { Expense, Form } from "@/models"
+import { Expense, TravelAuthorization } from "@/models"
 import { ExpensesPolicy } from "@/policies"
 import { ExpensesSerializer } from "@/serializers"
 import { ExpensesService } from "@/services"
@@ -83,7 +83,7 @@ export class ExpensesController extends BaseController {
     const attributes = this.request.body
     const { formId } = attributes
     const expense = Expense.build(attributes)
-    expense.form = (await Form.findByPk(formId)) || undefined
+    expense.travelAuthorization = (await TravelAuthorization.findByPk(formId)) || undefined
     return expense
   }
 

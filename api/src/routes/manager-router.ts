@@ -3,7 +3,7 @@ import express, { Request, Response } from "express"
 
 import { ReturnValidationErrors } from "@/middleware"
 import { UserService } from "@/services"
-import { Form } from "@/models"
+import { TravelAuthorization } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
@@ -16,7 +16,7 @@ managerRouter.get(
   async function (req: Request, res: Response) {
     try {
       const user = await userService.getByEmail(req.user.email)
-      const form = await Form.findOne({
+      const form = await TravelAuthorization.findOne({
         where: { formId: req.params.formId, supervisorEmail: user.email },
       })
 
@@ -37,7 +37,7 @@ managerRouter.get(
 managerRouter.get("/forms", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     let user = await userService.getByEmail(req.user.email)
-    const forms = await Form.findAll({
+    const forms = await TravelAuthorization.findAll({
       where: { supervisorEmail: user.email },
     })
 

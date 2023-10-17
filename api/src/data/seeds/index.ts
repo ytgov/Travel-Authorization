@@ -1,6 +1,6 @@
 import dbLegacy from "@/db/db-client-legacy"
 
-import { Form, TravelPurpose } from "@/models"
+import { TravelAuthorization, TravelPurpose } from "@/models"
 import { isNull } from "lodash"
 
 export async function seedUp() {
@@ -32,7 +32,7 @@ export async function seedUp() {
     },
   ])
 
-  await Form.destroy({ where: {} })
+  await TravelAuthorization.destroy({ where: {} })
   await dbLegacy("travelPurpose").delete().whereRaw("1=1")
   await dbLegacy("travelPurpose").insert([
     {
@@ -1507,7 +1507,7 @@ export async function seedUp() {
   if (isNull(travelPurposeInfoTech)) {
     throw new Error("Could not find IT travel purpose.")
   }
-  await Form.bulkCreate([
+  await TravelAuthorization.bulkCreate([
     {
       userId: 1,
       firstName: "John",
@@ -1526,7 +1526,7 @@ export async function seedUp() {
       eventName: "An Event",
       summary: "Summary",
       benefits: "Benefits",
-      status: Form.Statuses.APPROVED,
+      status: TravelAuthorization.Statuses.APPROVED,
       formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306319",
       supervisorEmail: "dpdavids@ynet.gov.yk.ca",
       preappId: 1,
@@ -1555,7 +1555,7 @@ export async function seedUp() {
       eventName: "An Event",
       summary: "Summary",
       benefits: "Benefits",
-      status: Form.Statuses.APPROVED,
+      status: TravelAuthorization.Statuses.APPROVED,
       formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306311",
       supervisorEmail: "dpdavids@ynet.gov.yk.ca",
       preappId: 2,
@@ -1584,7 +1584,7 @@ export async function seedUp() {
       eventName: "An Event",
       summary: "Summary",
       benefits: "Benefits",
-      status: Form.Statuses.APPROVED,
+      status: TravelAuthorization.Statuses.APPROVED,
       formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306312",
       supervisorEmail: "dpdavids@ynet.gov.yk.ca",
       preappId: 3,

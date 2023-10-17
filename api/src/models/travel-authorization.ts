@@ -43,7 +43,7 @@ enum Statuses {
   CHANGE_REQUESTED = "Change Requested",
 }
 
-export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<Form>> {
+export class TravelAuthorization extends Model<InferAttributes<TravelAuthorization>, InferCreationAttributes<TravelAuthorization>> {
   static Statuses = Statuses
 
   declare id: CreationOptional<number>
@@ -113,9 +113,9 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare stops?: NonAttribute<Stop[]>
 
   declare static associations: {
-    expenses: Association<Form, Expense>
-    purpose: Association<Form, TravelPurpose>
-    stops: Association<Form, Stop>
+    expenses: Association<TravelAuthorization, Expense>
+    purpose: Association<TravelAuthorization, TravelPurpose>
+    stops: Association<TravelAuthorization, Stop>
   }
 
   static establishAssociations() {
@@ -140,7 +140,7 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   }
 }
 
-Form.init(
+TravelAuthorization.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -284,9 +284,9 @@ Form.init(
   {
     sequelize,
     tableName: "travel_authorizations",
-    modelName: "Form",
+    modelName: "TravelAuthorization",
     timestamps: false,
   }
 )
 
-export default Form
+export default TravelAuthorization

@@ -3,7 +3,7 @@ import { isNil } from "lodash"
 import BaseController from "./base-controller"
 
 import { AuditService, FormsService } from "@/services"
-import { Form } from "@/models"
+import { TravelAuthorization } from "@/models"
 import { FormsSerializer } from "@/serializers"
 import { FormsPolicy } from "@/policies"
 
@@ -13,7 +13,7 @@ const auditService = new AuditService()
 export class FormsController extends BaseController {
   index() {
     const where = this.query.where as any // TODO: figure out typing for "where" parameter
-    return Form.findAndCountAll({
+    return TravelAuthorization.findAndCountAll({
       where,
       include: ["stops", "purpose"],
       limit: this.pagination.limit,
@@ -55,7 +55,7 @@ export class FormsController extends BaseController {
         .json({ message: "You are not authorized to view this form." })
     }
 
-    return Form.findByPk(this.params.formId, { include: ["expenses", "stops", "purpose"] }).then(
+    return TravelAuthorization.findByPk(this.params.formId, { include: ["expenses", "stops", "purpose"] }).then(
       (form) => {
         if (isNil(form)) {
           return this.response.status(404).json({ message: "Form not found." })
@@ -92,11 +92,11 @@ export class FormsController extends BaseController {
       })
   }
 
-  private loadForm(): Promise<Form | null> {
-    return Form.findByPk(this.params.formId)
+  private loadForm(): Promise<TravelAuthorization | null> {
+    return TravelAuthorization.findByPk(this.params.formId)
   }
 
-  private buildPolicy(record: Form): FormsPolicy {
+  private buildPolicy(record: TravelAuthorization): FormsPolicy {
     return new FormsPolicy(this.currentUser, record)
   }
 }

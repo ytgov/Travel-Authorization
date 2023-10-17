@@ -2,7 +2,7 @@ import { isNull, map } from "lodash"
 
 import dbLegacy from "@/db/db-client-legacy"
 
-import { Expense, Form } from "@/models"
+import { Expense, TravelAuthorization } from "@/models"
 import ExpensesService from "./expenses-service"
 
 export class FormService {
@@ -12,7 +12,7 @@ export class FormService {
       "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
     )
     try {
-      const form: any = await Form.findOne({ where: { formId: formId } })
+      const form: any = await TravelAuthorization.findOne({ where: { formId: formId } })
 
       if (isNull(form)) {
         return undefined
@@ -58,7 +58,7 @@ export class FormService {
 
       console.log(form)
 
-      const [returnedForm, _] = await Form.upsert(form, {
+      const [returnedForm, _] = await TravelAuthorization.upsert(form, {
         conflictFields: ["formId"],
       })
       const id = returnedForm.id
@@ -170,7 +170,7 @@ export class FormService {
         form.userId = userId
         form.status = "Submitted"
 
-        const [returnedForm, _] = await Form.upsert(form, {
+        const [returnedForm, _] = await TravelAuthorization.upsert(form, {
           conflictFields: ["formId"],
         })
         const id = returnedForm.id

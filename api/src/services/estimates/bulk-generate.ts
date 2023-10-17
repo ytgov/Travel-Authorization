@@ -4,13 +4,13 @@ import { CreationAttributes, Op } from "sequelize"
 import {
   AccommodationTypes,
   ClaimTypes,
-  Location,
   DistanceMatrix,
   Expense,
-  Form,
+  Location,
   LocationTypes,
   PerDiem,
   Stop,
+  TravelAuthorization,
   TravelMethods,
 } from "@/models"
 import BaseService from "@/services/base-service"
@@ -37,9 +37,9 @@ export class BulkGenerate extends BaseService {
   }
 
   async perform(): Promise<Expense[]> {
-    const form = await Form.findByPk(this.formId)
+    const form = await TravelAuthorization.findByPk(this.formId)
     if (isNil(form)) {
-      throw new Error(`Form not found for id=${this.formId}`)
+      throw new Error(`TravelAuthorization not found for id=${this.formId}`)
     }
 
     const stops = await Stop.findAll({
@@ -124,7 +124,7 @@ export class BulkGenerate extends BaseService {
     form,
     stops,
   }: {
-    form: Form
+    form: TravelAuthorization
     stops: Stop[]
   }): Promise<[Stop, Stop][]> {
     if (stops.length < 2) {
