@@ -1,55 +1,55 @@
-import express, { Request, Response } from "express";
-import { ReturnValidationErrors } from "../middleware";
-import { DB_CONFIG } from "../config";
-import knex from "knex";
-import { UserService } from "../services";
-import { v4 as uuid } from "uuid";
-import * as formHelper from "../utils/formHelper";
-import { auth } from "express-openid-connect";
+import { isNull } from "lodash"
+import express, { Request, Response } from "express"
 
-const db = knex(DB_CONFIG);
+import { ReturnValidationErrors } from "@/middleware"
+import { UserService } from "@/services"
+import { TravelAuthorization } from "@/models"
 
-export const managerRouter = express.Router();
-const userService = new UserService();
+import dbLegacy from "@/db/db-client-legacy"
 
-managerRouter.get("/forms/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
-  try {
-    let user = await userService.getByEmail(req.user.email);
-    let auth = await db("forms")
-      .select("*")
-      .where("supervisorEmail", "=", user.email)
-      .andWhere("formid", "=", req.params.formId)
-      .first();
+export const managerRouter = express.Router()
+const userService = new UserService()
 
-    if (auth) {
-      auth.stops = await db("stops").select("*").where("taid", "=", auth.id);
+managerRouter.get(
+  "/forms/:formId",
+  ReturnValidationErrors,
+  async function (req: Request, res: Response) {
+    try {
+      const user = await userService.getByEmail(req.user.email)
+      const form = await TravelAuthorization.findOne({
+        where: { slug: req.params.formId, supervisorEmail: user.email },
+      })
 
-      res.status(200).json(auth);
-    } else {
-      res.status(404).json("Form not found");
+      if (isNull(form)) {
+        return res.status(404).json("Form not found")
+      }
+
+      form.stops = await dbLegacy("stops").select("*").where("taid", "=", form.id)
+
+      res.status(200).json(form)
+    } catch (error: any) {
+      console.log(error)
+      res.status(500).json("Internal Server Error")
     }
-
-    res.status(200).json(auth);
-  } catch (error: any) {
-    console.log(error);
-    res.status(500).json("Internal Server Error");
   }
-});
+)
 
 managerRouter.get("/forms", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    let user = await userService.getByEmail(req.user.email);
-    // let auth = await db("forms").select("*").where("supervisorEmail", "=", user.email);
-    let auth = await db("forms").select("*").where("supervisorEmail", "=", "user.email");
+    let user = await userService.getByEmail(req.user.email)
+    const forms = await TravelAuthorization.findAll({
+      where: { supervisorEmail: user.email },
+    })
 
-    for (let index = 0; index < auth.length; index++) {
-      auth[index].stops = await db("stops").select("*").where("taid", "=", auth[index].id);
-      let departureDate = await db("stops").min("departureDate").where("taid", "=", auth[index].id);
-      auth[index].departureDate = departureDate[0].min;
+    for (let index = 0; index < forms.length; index++) {
+      forms[index].stops = await dbLegacy("stops").select("*").where("taid", "=", forms[index].id)
+      let departureDate = await dbLegacy("stops").min("departureDate").where("taid", "=", forms[index].id)
+      // @ts-ignore - isn't worth fixing at this time
+      forms[index].departureDate = departureDate[0].min
     }
-    res.status(200).json(auth);
+    res.status(200).json(forms)
   } catch (error: any) {
-    console.log(error);
-    res.status(500).json("Internal Server Error");
+    console.log(error)
+    res.status(500).json("Internal Server Error")
   }
-});
+})

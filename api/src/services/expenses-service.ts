@@ -28,21 +28,21 @@ export class ExpensesService extends BaseService {
     })
   }
 
-  static async bulkCreate(formId: number, expenses: Expense[]): Promise<Expense[]> {
-    if (!expenses.every((expense) => expense.formId === formId)) {
+  static async bulkCreate(travelAuthorizationId: number, expenses: Expense[]): Promise<Expense[]> {
+    if (!expenses.every((expense) => expense.travelAuthorizationId === travelAuthorizationId)) {
       throw new Error("All expenses must belong to the same form.")
     }
 
     return Expense.bulkCreate(expenses)
   }
 
-  static async bulkReplace(formId: number, expenses: Expense[]): Promise<Expense[]> {
-    if (!expenses.every((expense) => expense.formId === formId)) {
+  static async bulkReplace(travelAuthorizationId: number, expenses: Expense[]): Promise<Expense[]> {
+    if (!expenses.every((expense) => expense.travelAuthorizationId === travelAuthorizationId)) {
       throw new Error("All expenses must belong to the same form.")
     }
 
     return db.transaction(async () => {
-      await Expense.destroy({ where: { formId } })
+      await Expense.destroy({ where: { travelAuthorizationId } })
       return Expense.bulkCreate(expenses)
     })
   }

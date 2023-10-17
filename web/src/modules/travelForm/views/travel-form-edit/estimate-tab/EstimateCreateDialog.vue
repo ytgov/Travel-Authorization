@@ -130,7 +130,7 @@ export default {
     required,
     newEstimate() {
       return {
-        formId: this.formId,
+        travelAuthorizationId: this.formId,
         type: expensesApi.TYPES.ESTIMATE,
         currency: "CAD",
       }

@@ -1,19 +1,20 @@
-import { isEmpty, map } from "lodash"
+import { isNull, map } from "lodash"
 
 import dbLegacy from "@/db/db-client-legacy"
-import { Expense } from "@/models"
+
+import { Expense, TravelAuthorization } from "@/models"
 import ExpensesService from "./expenses-service"
 
 export class FormService {
   //returns form
-  async getForm(formId: string): Promise<any | undefined> {
+  async getForm(slug: string): Promise<any | undefined> {
     console.warn(
       "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
     )
     try {
-      let form: any = await dbLegacy("forms").select("*").first().where({ formId: formId })
+      const form: any = await TravelAuthorization.findOne({ where: { slug } })
 
-      if (isEmpty(form)) {
+      if (isNull(form)) {
         return undefined
       }
 
@@ -57,8 +58,10 @@ export class FormService {
 
       console.log(form)
 
-      let returnedForm = await dbLegacy("forms").insert(form, "id").onConflict("formId").merge()
-      let id = returnedForm[0].id
+      const [returnedForm, _] = await TravelAuthorization.upsert(form, {
+        conflictFields: ["slug"],
+      })
+      const id = returnedForm.id
 
       await this.saveStops(id, stops)
       await this.saveExpenses(id, expenses)
@@ -75,7 +78,7 @@ export class FormService {
     try {
       let stops = await dbLegacy("stops")
         .select("*")
-        .where({ taid: taid })
+        .where({ taid })
         .orderBy("departureDate", "asc")
       return stops
     } catch (error: any) {
@@ -86,7 +89,7 @@ export class FormService {
 
   async saveStops(taid: number, stops: any): Promise<Boolean> {
     try {
-      await dbLegacy("stops").delete().where({ taid: taid })
+      await dbLegacy("stops").delete().where({ taid })
 
       if (stops) {
         stops = map(stops, (stop) => {
@@ -103,11 +106,11 @@ export class FormService {
     }
   }
 
-  async getExpenses(formId: number): Promise<any[] | undefined> {
+  async getExpenses(travelAuthorizationId: number): Promise<any[] | undefined> {
     try {
       return Expense.findAll({
         where: {
-          formId,
+          travelAuthorizationId,
           type: Expense.Types.EXPENSE,
         },
       })
@@ -117,9 +120,9 @@ export class FormService {
     }
   }
 
-  async saveExpenses(formId: number, expenses: any): Promise<Boolean> {
+  async saveExpenses(travelAuthorizationId: number, expenses: any): Promise<Boolean> {
     try {
-      await ExpensesService.bulkReplace(formId, expenses)
+      await ExpensesService.bulkReplace(travelAuthorizationId, expenses)
       return true
     } catch (error: any) {
       console.log(error)
@@ -127,11 +130,11 @@ export class FormService {
     }
   }
 
-  async getEstimates(formId: number): Promise<any[] | undefined> {
+  async getEstimates(travelAuthorizationId: number): Promise<any[] | undefined> {
     try {
       return Expense.findAll({
         where: {
-          formId,
+          travelAuthorizationId,
           type: Expense.Types.ESTIMATE,
         },
       })
@@ -141,9 +144,9 @@ export class FormService {
     }
   }
 
-  async saveEstimates(formId: number, estimates: any): Promise<Boolean> {
+  async saveEstimates(travelAuthorizationId: number, estimates: any): Promise<Boolean> {
     console.warn("DEPRECATED: use saveEstimates instead.")
-    return this.saveExpenses(formId, estimates)
+    return this.saveExpenses(travelAuthorizationId, estimates)
   }
 
   async submitForm(userId: number, form: any): Promise<Boolean> {
@@ -167,8 +170,10 @@ export class FormService {
         form.userId = userId
         form.status = "Submitted"
 
-        let returnedForm = await dbLegacy("forms").insert(form, "id").onConflict("formId").merge()
-        let id = returnedForm[0].id
+        const [returnedForm, _] = await TravelAuthorization.upsert(form, {
+          conflictFields: ["slug"],
+        })
+        const id = returnedForm.id
 
         await this.saveStops(id, stops)
         await this.saveExpenses(id, expenses)

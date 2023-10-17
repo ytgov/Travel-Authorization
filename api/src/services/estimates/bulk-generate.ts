@@ -4,13 +4,13 @@ import { CreationAttributes, Op } from "sequelize"
 import {
   AccommodationTypes,
   ClaimTypes,
-  Location,
   DistanceMatrix,
   Expense,
-  Form,
+  Location,
   LocationTypes,
   PerDiem,
   Stop,
+  TravelAuthorization,
   TravelMethods,
 } from "@/models"
 import BaseService from "@/services/base-service"
@@ -22,35 +22,35 @@ const HOTEL_ALLOWANCE_PER_NIGHT = 250
 const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
 export class BulkGenerate extends BaseService {
-  private formId: number
+  private travelAuthorizationId: number
   private aircraftAllowanceRemaining: number
 
-  constructor(formId: number) {
+  constructor(travelAuthorizationId: number) {
     super()
-    this.formId = formId
+    this.travelAuthorizationId = travelAuthorizationId
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
-  static async perform(formId: number): Promise<Expense[]> {
-    const instance = new this(formId)
+  static async perform(travelAuthorizationId: number): Promise<Expense[]> {
+    const instance = new this(travelAuthorizationId)
     return instance.perform()
   }
 
   async perform(): Promise<Expense[]> {
-    const form = await Form.findByPk(this.formId)
-    if (isNil(form)) {
-      throw new Error(`Form not found for id=${this.formId}`)
+    const travelAuthorization = await TravelAuthorization.findByPk(this.travelAuthorizationId)
+    if (isNil(travelAuthorization)) {
+      throw new Error(`TravelAuthorization not found for id=${this.travelAuthorizationId}`)
     }
 
     const stops = await Stop.findAll({
-      where: { taid: this.formId },
+      where: { taid: this.travelAuthorizationId },
       order: [
         ["departureDate", "ASC"],
         ["departureTime", "ASC"],
       ],
       include: ["location"],
     })
-    const tripSegments = await this.buildTripSegments({ form, stops })
+    const tripSegments = await this.buildTripSegments({ travelAuthorization, stops })
 
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
@@ -121,17 +121,17 @@ export class BulkGenerate extends BaseService {
 
   // TODO: investigate having a tripSegments model in the database
   private async buildTripSegments({
-    form,
+    travelAuthorization,
     stops,
   }: {
-    form: Form
+    travelAuthorization: TravelAuthorization
     stops: Stop[]
   }): Promise<[Stop, Stop][]> {
     if (stops.length < 2) {
       throw new Error("Must have at least 2 stops to build a trip segment")
     }
 
-    const isRoundTrip = form.oneWayTrip !== true && form.multiStop !== true
+    const isRoundTrip = travelAuthorization.oneWayTrip !== true && travelAuthorization.multiStop !== true
     if (isRoundTrip) {
       return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
         const isLastStop = index === stops.length - 1
@@ -174,7 +174,7 @@ export class BulkGenerate extends BaseService {
 
     return {
       type: Expense.Types.ESTIMATE,
-      formId: this.formId,
+      travelAuthorizationId: this.travelAuthorizationId,
       currency: "CAD",
       expenseType: Expense.ExpenseTypes.TRANSPORTATION,
       description,
@@ -205,7 +205,7 @@ export class BulkGenerate extends BaseService {
       const cost = this.determineAccommodationCost(accommodationType)
       return {
         type: Expense.Types.ESTIMATE,
-        formId: this.formId,
+        travelAuthorizationId: this.travelAuthorizationId,
         currency: "CAD",
         expenseType: Expense.ExpenseTypes.ACCOMODATIONS,
         description,
@@ -244,7 +244,7 @@ export class BulkGenerate extends BaseService {
 
       estimates.push({
         type: Expense.Types.ESTIMATE,
-        formId: this.formId,
+        travelAuthorizationId: this.travelAuthorizationId,
         currency: "CAD",
         expenseType: Expense.ExpenseTypes.MEALS_AND_INCIDENTALS,
         description,

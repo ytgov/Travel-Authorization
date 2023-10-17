@@ -3,7 +3,9 @@ import {
   BelongsToCreateAssociationMixin,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
+  ForeignKey,
   HasManyAddAssociationMixin,
   HasManyAddAssociationsMixin,
   HasManyCountAssociationsMixin,
@@ -21,14 +23,19 @@ import {
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
+
 import Expense from "./expense"
+import Preapproved from "./preapproved"
 import Stop from "./stop"
 import TravelPurpose from "./travel-purpose"
+import User from "./user"
 
 // These are a best guess, database values may not match this list.
 // TODO: normalize database values and make sure all statuses are in this list.
 // If we want validation for this field we should swith to an ORM such as Sequelize.
-export enum FormStatuses {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum Statuses {
+  DELETED = "deleted", // TODO: normalize this state, or replace with more standard `deleted_at` field
   DRAFT = "Draft",
   SUBMITTED = "Submitted",
   APPROVED = "Approved",
@@ -36,9 +43,17 @@ export enum FormStatuses {
   CHANGE_REQUESTED = "Change Requested",
 }
 
-export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<Form>> {
-  declare id: number
-  declare userId: number
+export class TravelAuthorization extends Model<
+  InferAttributes<TravelAuthorization>,
+  InferCreationAttributes<TravelAuthorization>
+> {
+  static Statuses = Statuses
+
+  declare id: CreationOptional<number>
+  declare slug: string
+  declare preappId: ForeignKey<Preapproved["preTID"]>
+  declare purposeId: ForeignKey<TravelPurpose["id"]>
+  declare userId: ForeignKey<User["id"]>
   declare firstName: string | null
   declare lastName: string | null
   declare department: string | null
@@ -50,24 +65,22 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare daysOffTravelStatus: number | null
   declare dateBackToWork: Date | null
   declare travelDuration: number | null
-  // declare purpose: string | null - deprecated but still in the database.
   declare travelAdvance: number | null
   declare eventName: string | null
   declare summary: string | null
   declare benefits: string | null
-  declare status: FormStatuses | null
-  declare formId: string
+  declare status: Statuses | null
   declare supervisorEmail: string | null
-  declare preappId: number | null
   declare approved: string | null
   declare requestChange: string | null
   declare denialReason: string | null
   declare oneWayTrip: boolean | null
   declare multiStop: boolean | null
   declare createdBy: number | null
-  declare purposeId: number | null
   declare travelAdvanceInCents: number | null
   declare allTravelWithinTerritory: boolean | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   // associations stops, purpose, expenses
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
@@ -78,13 +91,13 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
 
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
-  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["formId"]>
-  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["formId"]>
-  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["formId"]>
-  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["formId"]>
-  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["formId"]>
-  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["formId"]>
-  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["formId"]>
+  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
+  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["travelAuthorizationId"]>
+  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
+  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["travelAuthorizationId"]>
+  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
+  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["travelAuthorizationId"]>
+  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
   declare countExpenses: HasManyCountAssociationsMixin
   declare createExpense: HasManyCreateAssociationMixin<Expense>
 
@@ -104,9 +117,9 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare stops?: NonAttribute<Stop[]>
 
   declare static associations: {
-    expenses: Association<Form, Expense>
-    purpose: Association<Form, TravelPurpose>
-    stops: Association<Form, Stop>
+    expenses: Association<TravelAuthorization, Expense>
+    purpose: Association<TravelAuthorization, TravelPurpose>
+    stops: Association<TravelAuthorization, Stop>
   }
 
   static establishAssociations() {
@@ -122,7 +135,7 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
     this.hasMany(Expense, {
       as: "expenses",
       sourceKey: "id",
-      foreignKey: "formId",
+      foreignKey: "travelAuthorizationId",
     })
   }
 
@@ -131,7 +144,7 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   }
 }
 
-Form.init(
+TravelAuthorization.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -139,19 +152,28 @@ Form.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
+    slug: {
+      type: DataTypes.STRING(255),
       allowNull: false,
-      references: {
-        model: "users", // using table name here, instead of Model class
-        key: "id",
-      },
+      unique: true,
+    },
+    preappId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     purposeId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: "travelPurpose", // using table name here, instead of Model class
+        key: "id",
+      },
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users", // using table name here, instead of Model class
         key: "id",
       },
     },
@@ -199,11 +221,6 @@ Form.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    // Deprecated but still in the database.
-    // purpose: {
-    //   type: DataTypes.STRING(255),
-    //   allowNull: true,
-    // },
     travelAdvance: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -224,17 +241,8 @@ Form.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    formId: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: true,
-    },
     supervisorEmail: {
       type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    preappId: {
-      type: DataTypes.INTEGER,
       allowNull: true,
     },
     approved: {
@@ -271,13 +279,24 @@ Form.init(
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
-    tableName: "forms",
-    modelName: "Form",
-    timestamps: false,
+    tableName: "travel_authorizations",
+    modelName: "TravelAuthorization",
+    underscored: true,
+    timestamps: true,
   }
 )
 
-export default Form
+export default TravelAuthorization

@@ -2,16 +2,16 @@ import db from "@/db/db-client"
 
 import Stop from "./stop"
 import Expense from "./expense"
-import Form from "./form"
+import TravelAuthorization from "./travel-authorization"
 
 Stop.establishAssociations()
 Expense.establishAssociations()
-Form.establishAssociations()
+TravelAuthorization.establishAssociations()
 
 export * from "./auth"
 export * from "./distance-matrix"
 export * from "./expense"
-export * from "./form"
+export * from "./travel-authorization"
 export * from "./location"
 export * from "./per-diem"
 export * from "./preapproved-traveler"

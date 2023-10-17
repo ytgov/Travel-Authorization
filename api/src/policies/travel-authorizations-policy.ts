@@ -1,8 +1,8 @@
 import BasePolicy from "./base-policy"
 
-import { User, Form, FormStatuses } from "@/models"
+import { User, TravelAuthorization } from "@/models"
 
-export class FormsPolicy extends BasePolicy<Form> {
+export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> {
   show(): boolean {
     if (this.user.roles.includes("Admin")) return true
 
@@ -13,10 +13,10 @@ export class FormsPolicy extends BasePolicy<Form> {
     if (this.user.roles.includes("Admin")) return true
     if (this.record.userId !== this.user.id) return false
 
-    return this.record.status === FormStatuses.DRAFT
+    return this.record.status === TravelAuthorization.Statuses.DRAFT
   }
 
-  static scope(records: Form[], currentUser: User) {
+  static scope(records: TravelAuthorization[], currentUser: User) {
     return records.filter((record) => {
       const policy = new this(currentUser, record)
       return policy.show()
@@ -24,4 +24,4 @@ export class FormsPolicy extends BasePolicy<Form> {
   }
 }
 
-export default FormsPolicy
+export default TravelAuthorizationsPolicy

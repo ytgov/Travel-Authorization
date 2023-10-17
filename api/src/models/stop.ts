@@ -16,7 +16,7 @@ import {
 import sequelize from "@/db/db-client"
 
 import Location from "./location"
-import Form from "./form"
+import TravelAuthorization from "./travel-authorization"
 
 const BEGINNING_OF_DAY = "00:00:00"
 
@@ -43,7 +43,7 @@ export enum AccommodationTypes {
 
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
   declare id: CreationOptional<number>
-  declare taid: ForeignKey<Form["id"]>
+  declare taid: ForeignKey<TravelAuthorization["id"]>
   declare locationId: ForeignKey<Location["id"]>
   declare departureDate: Date | null
   declare departureTime: string | null
@@ -53,19 +53,19 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getForm: BelongsToGetAssociationMixin<Form>
-  declare setForm: BelongsToSetAssociationMixin<Form, Form["id"]>
-  declare createForm: BelongsToCreateAssociationMixin<Form>
+  declare getTravelAuthorization: BelongsToGetAssociationMixin<TravelAuthorization>
+  declare setTravelAuthorization: BelongsToSetAssociationMixin<TravelAuthorization, TravelAuthorization["id"]>
+  declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
   declare getLocation: BelongsToGetAssociationMixin<Location>
   declare setLocation: BelongsToSetAssociationMixin<Location, Location["id"]>
   declare createLocation: BelongsToCreateAssociationMixin<Location>
 
-  declare form?: NonAttribute<Form>
+  declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare location?: NonAttribute<Location>
 
   declare static associations: {
-    form: Association<Stop, Form>
+    travelAuthorization: Association<Stop, TravelAuthorization>
     location: Association<Stop, Location>
   }
 
@@ -74,8 +74,8 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
       as: "location",
       foreignKey: "locationId",
     })
-    this.belongsTo(Form, {
-      as: "form",
+    this.belongsTo(TravelAuthorization, {
+      as: "travelAuthorization",
       foreignKey: "taid",
     })
   }
@@ -102,7 +102,7 @@ Stop.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "forms", // using table name here, instead of Model class
+        model: "travel_authorizations", // using table name here, instead of Model class
         key: "id",
       },
     },
