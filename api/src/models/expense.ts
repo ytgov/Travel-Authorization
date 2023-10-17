@@ -105,28 +105,25 @@ Expense.init(
     receiptImage: {
       type: DataTypes.BLOB,
       allowNull: true,
-      field: "receiptImage",
     },
     fileSize: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "fileSize",
     },
     fileName: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "fileName",
     },
     expenseType: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: "expenseType",
     },
   },
   {
     sequelize,
     modelName: "Expense",
     tableName: "expenses",
+    underscored: true,
     timestamps: false,
   }
 )
