@@ -78,13 +78,13 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
 
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
-  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["taid"]>
-  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["taid"]>
-  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["taid"]>
-  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["taid"]>
-  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["taid"]>
-  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["taid"]>
-  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["taid"]>
+  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["formId"]>
+  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["formId"]>
+  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["formId"]>
+  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["formId"]>
+  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["formId"]>
+  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["formId"]>
+  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["formId"]>
   declare countExpenses: HasManyCountAssociationsMixin
   declare createExpense: HasManyCreateAssociationMixin<Expense>
 
@@ -122,7 +122,7 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
     this.hasMany(Expense, {
       as: "expenses",
       sourceKey: "id",
-      foreignKey: "taid",
+      foreignKey: "formId",
     })
   }
 

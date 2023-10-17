@@ -29,7 +29,7 @@ export class ExpensesService extends BaseService {
   }
 
   static async bulkCreate(formId: number, expenses: Expense[]): Promise<Expense[]> {
-    if (!expenses.every((expense) => expense.taid === formId)) {
+    if (!expenses.every((expense) => expense.formId === formId)) {
       throw new Error("All expenses must belong to the same form.")
     }
 
@@ -37,12 +37,12 @@ export class ExpensesService extends BaseService {
   }
 
   static async bulkReplace(formId: number, expenses: Expense[]): Promise<Expense[]> {
-    if (!expenses.every((expense) => expense.taid === formId)) {
+    if (!expenses.every((expense) => expense.formId === formId)) {
       throw new Error("All expenses must belong to the same form.")
     }
 
     return db.transaction(async () => {
-      await Expense.destroy({ where: { taid: formId } })
+      await Expense.destroy({ where: { formId } })
       return Expense.bulkCreate(expenses)
     })
   }

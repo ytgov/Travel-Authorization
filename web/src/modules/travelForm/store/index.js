@@ -60,7 +60,7 @@ const actions = {
   loadEstimates({ commit, state }, { formId }) {
     state.loadingEstimates = true
     return expensesApi
-      .list({ where: { taid: formId, type: EXPENSE_VARIANT.ESTIMATE } })
+      .list({ where: { formId, type: EXPENSE_VARIANT.ESTIMATE } })
       .then(({ expenses: estimates }) => {
         commit("SET_ESTIMATES", estimates)
         return estimates

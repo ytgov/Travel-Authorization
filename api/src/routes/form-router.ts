@@ -345,7 +345,7 @@ formRouter.get("/:formId/expenses/:type", ReturnValidationErrors, async function
 
       const expenses = Expense.findAll({
         where: {
-          taid: form[0].id,
+          formId: form[0].id,
           type: req.params.type,
         },
       })
@@ -368,13 +368,13 @@ formRouter.post("/:formId/expenses/:type", ReturnValidationErrors, async functio
       db.transaction(async () => {
         await Expense.destroy({
           where: {
-            taid: form[0].id,
+            formId: form[0].id,
             type: req.params.type,
           },
         })
         for (let index = 0; index < req.body.length; index++) {
           const expense = {
-            taid: form[0].id,
+            formId: form[0].id,
             ...req.body[index],
             type: req.params.type
           };
@@ -461,14 +461,14 @@ formRouter.get("/:formId/costDifference", ReturnValidationErrors, async function
       if (form[0]) {
         const estimatesFloat = await Expense.sum("cost", {
           where: {
-            taid: form[0].id,
+            formId: form[0].id,
             type: Expense.Types.ESTIMATE,
           },
         }).then((result) => result.toFixed(2))
 
         const expensesFloat = await Expense.sum("cost", {
           where: {
-            taid: form[0].id,
+            formId: form[0].id,
             type: Expense.Types.EXPENSE,
           },
         }).then((result) => result.toFixed(2))

@@ -103,11 +103,11 @@ export class FormService {
     }
   }
 
-  async getExpenses(taid: number): Promise<any[] | undefined> {
+  async getExpenses(formId: number): Promise<any[] | undefined> {
     try {
       return Expense.findAll({
         where: {
-          taid: taid,
+          formId,
           type: Expense.Types.EXPENSE,
         },
       })
@@ -117,9 +117,9 @@ export class FormService {
     }
   }
 
-  async saveExpenses(taid: number, expenses: any): Promise<Boolean> {
+  async saveExpenses(formId: number, expenses: any): Promise<Boolean> {
     try {
-      await ExpensesService.bulkReplace(taid, expenses)
+      await ExpensesService.bulkReplace(formId, expenses)
       return true
     } catch (error: any) {
       console.log(error)
@@ -127,11 +127,11 @@ export class FormService {
     }
   }
 
-  async getEstimates(taid: number): Promise<any[] | undefined> {
+  async getEstimates(formId: number): Promise<any[] | undefined> {
     try {
       return Expense.findAll({
         where: {
-          taid: taid,
+          formId,
           type: Expense.Types.ESTIMATE,
         },
       })
@@ -141,9 +141,9 @@ export class FormService {
     }
   }
 
-  async saveEstimates(taid: number, estimates: any): Promise<Boolean> {
+  async saveEstimates(formId: number, estimates: any): Promise<Boolean> {
     console.warn("DEPRECATED: use saveEstimates instead.")
-    return this.saveExpenses(taid, estimates)
+    return this.saveExpenses(formId, estimates)
   }
 
   async submitForm(userId: number, form: any): Promise<Boolean> {

@@ -26,7 +26,7 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
   }
 
   permittedAttributesForCreate(): string[] {
-    return ["taid", "type", "currency", ...this.permittedAttributes()]
+    return ["formId", "type", "currency", ...this.permittedAttributes()]
   }
 }
 
