@@ -3,10 +3,10 @@ import { Router, Request, Response } from "express"
 import { checkJwt, loadUser } from "@/middleware/authz.middleware"
 import {
   ExpensesController,
-  FormsController,
   LocationsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
+  TravelAuthorizationsController,
   forms,
 } from "@/controllers"
 
@@ -34,11 +34,11 @@ router.get("/api/expenses", ExpensesController.index)
 router.post("/api/expenses", ExpensesController.create)
 router.patch("/api/expenses/:expenseId", ExpensesController.update)
 router.delete("/api/expenses/:expenseId", ExpensesController.destroy)
-router.get("/api/forms", FormsController.index)
-router.post("/api/forms", FormsController.create)
-router.get("/api/forms/:formId", FormsController.show)
-router.patch("/api/forms/:formId", FormsController.update)
-router.post("/api/forms/:formId/estimates/generate", forms.estimates.GenerateController.create)
+router.get("/api/travel-authorizations", TravelAuthorizationsController.index)
+router.post("/api/travel-authorizations", TravelAuthorizationsController.create)
+router.get("/api/travel-authorizations/:travelAuthorizationId", TravelAuthorizationsController.show)
+router.patch("/api/travel-authorizations/:travelAuthorizationId", TravelAuthorizationsController.update)
+router.post("/api/forms/:travelAuthorizationId/estimates/generate", forms.estimates.GenerateController.create)
 router.get("/api/locations", LocationsController.index)
 router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)

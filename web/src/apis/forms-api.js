@@ -3,17 +3,21 @@ import http from "@/apis/http-client"
 export const formsApi = {
   list({ where, page, perPage, ...otherParams } = {}) {
     return http
-      .get("/api/forms", { params: { where, page, perPage, ...otherParams } })
+      .get("/api/travel-authorizations", { params: { where, page, perPage, ...otherParams } })
       .then(({ data }) => data)
   },
-  get(formId, params = {}) {
-    return http.get(`/api/forms/${formId}`, { params }).then(({ data }) => data)
+  get(travelAuthorizationId, params = {}) {
+    return http
+      .get(`/api/travel-authorizations/${travelAuthorizationId}`, { params })
+      .then(({ data }) => data)
   },
   create(attributes) {
-    return http.post("/api/forms", attributes).then(({ data }) => data)
+    return http.post("/api/travel-authorizations", attributes).then(({ data }) => data)
   },
-  update(formId, attributes) {
-    return http.patch(`/api/forms/${formId}`, attributes).then(({ data }) => data)
+  update(travelAuthorizationId, attributes) {
+    return http
+      .patch(`/api/travel-authorizations/${travelAuthorizationId}`, attributes)
+      .then(({ data }) => data)
   },
 }
 

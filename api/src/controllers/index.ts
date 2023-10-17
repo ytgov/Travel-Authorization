@@ -1,5 +1,5 @@
 export * from "./expenses-controller"
-export * from "./forms-controller"
+export * from "./travel-authorizations-controller"
 export * from "./locations-controller"
 export * from "./pre-approved-travel-requests-controller"
 export * from "./pre-approved-travelers-controller"
