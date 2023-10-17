@@ -43,7 +43,10 @@ enum Statuses {
   CHANGE_REQUESTED = "Change Requested",
 }
 
-export class TravelAuthorization extends Model<InferAttributes<TravelAuthorization>, InferCreationAttributes<TravelAuthorization>> {
+export class TravelAuthorization extends Model<
+  InferAttributes<TravelAuthorization>,
+  InferCreationAttributes<TravelAuthorization>
+> {
   static Statuses = Statuses
 
   declare id: CreationOptional<number>
@@ -76,6 +79,8 @@ export class TravelAuthorization extends Model<InferAttributes<TravelAuthorizati
   declare createdBy: number | null
   declare travelAdvanceInCents: number | null
   declare allTravelWithinTerritory: boolean | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   // associations stops, purpose, expenses
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
@@ -274,13 +279,23 @@ TravelAuthorization.init(
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     tableName: "travel_authorizations",
     modelName: "TravelAuthorization",
     underscored: true,
-    timestamps: false,
+    timestamps: true,
   }
 )
 
