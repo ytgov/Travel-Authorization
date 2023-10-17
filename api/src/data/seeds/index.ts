@@ -1,5 +1,8 @@
 import dbLegacy from "@/db/db-client-legacy"
 
+import { Form, TravelPurpose } from "@/models"
+import { isNull } from "lodash"
+
 export async function seedUp() {
   console.log("Seeding")
 
@@ -45,6 +48,9 @@ export async function seedUp() {
     },
     {
       purpose: "Community Travel",
+    },
+    {
+      purpose: "IT",
     },
   ])
 
@@ -1496,8 +1502,12 @@ export async function seedUp() {
   //  (2,445,'2023-03-20','08:00:00','Plane'),
   //  (3,585,'2023-03-20','09:00:00','Plane');
 
-  await dbLegacy("forms").delete().whereRaw("1=1")
-  await dbLegacy("forms").insert([
+  const travelPurposeInfoTech = await TravelPurpose.findOne({ where: { purpose: "IT" } })
+  if (isNull(travelPurposeInfoTech)) {
+    throw new Error("Could not find IT travel purpose.")
+  }
+  await Form.destroy({ where: {}, truncate: true })
+  await Form.bulkCreate([
     {
       userId: 1,
       firstName: "John",
@@ -1509,14 +1519,14 @@ export async function seedUp() {
       email: "Max.parker@yukon.ca",
       mailcode: "123",
       daysOffTravelStatus: 1,
-      dateBackToWork: "2019-01-01",
+      dateBackToWork: new Date("2019-01-01"),
       travelDuration: 1,
-      purpose: "IT",
+      purposeId: travelPurposeInfoTech.id,
       travelAdvance: 4,
       eventName: "An Event",
       summary: "Summary",
       benefits: "Benefits",
-      status: "Approved",
+      status: Form.Statuses.APPROVED,
       formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306319",
       supervisorEmail: "dpdavids@ynet.gov.yk.ca",
       preappId: 1,
@@ -1538,14 +1548,14 @@ export async function seedUp() {
       email: "Max.parker@yukon.ca",
       mailcode: "123",
       daysOffTravelStatus: 1,
-      dateBackToWork: "2019-01-01",
+      dateBackToWork: new Date("2019-01-01"),
       travelDuration: 1,
-      purpose: "IT",
+      purposeId: travelPurposeInfoTech.id,
       travelAdvance: 4,
       eventName: "An Event",
       summary: "Summary",
       benefits: "Benefits",
-      status: "Approved",
+      status: Form.Statuses.APPROVED,
       formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306311",
       supervisorEmail: "dpdavids@ynet.gov.yk.ca",
       preappId: 2,
@@ -1567,14 +1577,14 @@ export async function seedUp() {
       email: "Max.parker@yukon.ca",
       mailcode: "123",
       daysOffTravelStatus: 1,
-      dateBackToWork: "2019-01-01",
+      dateBackToWork: new Date("2019-01-01"),
       travelDuration: 1,
-      purpose: "IT",
+      purposeId: travelPurposeInfoTech.id,
       travelAdvance: 4,
       eventName: "An Event",
       summary: "Summary",
       benefits: "Benefits",
-      status: "Approved",
+      status: Form.Statuses.APPROVED,
       formId: "2c2db7f4-5711-40c8-bd54-a6b7ad306312",
       supervisorEmail: "dpdavids@ynet.gov.yk.ca",
       preappId: 3,
