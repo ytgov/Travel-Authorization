@@ -1,6 +1,6 @@
 import BasePolicy from "./base-policy"
 
-import { User, Form, FormStatuses } from "@/models"
+import { User, Form } from "@/models"
 
 export class FormsPolicy extends BasePolicy<Form> {
   show(): boolean {
@@ -13,7 +13,7 @@ export class FormsPolicy extends BasePolicy<Form> {
     if (this.user.roles.includes("Admin")) return true
     if (this.record.userId !== this.user.id) return false
 
-    return this.record.status === FormStatuses.DRAFT
+    return this.record.status === Form.Statuses.DRAFT
   }
 
   static scope(records: Form[], currentUser: User) {

@@ -28,7 +28,8 @@ import TravelPurpose from "./travel-purpose"
 // These are a best guess, database values may not match this list.
 // TODO: normalize database values and make sure all statuses are in this list.
 // If we want validation for this field we should swith to an ORM such as Sequelize.
-export enum FormStatuses {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum Statuses {
   DRAFT = "Draft",
   SUBMITTED = "Submitted",
   APPROVED = "Approved",
@@ -37,6 +38,8 @@ export enum FormStatuses {
 }
 
 export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<Form>> {
+  static Statuses = Statuses
+
   declare id: number
   declare userId: number
   declare firstName: string | null
@@ -55,7 +58,7 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare eventName: string | null
   declare summary: string | null
   declare benefits: string | null
-  declare status: FormStatuses | null
+  declare status: Statuses | null
   declare formId: string
   declare supervisorEmail: string | null
   declare preappId: number | null
