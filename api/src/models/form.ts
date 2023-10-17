@@ -3,7 +3,9 @@ import {
   BelongsToCreateAssociationMixin,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
+  ForeignKey,
   HasManyAddAssociationMixin,
   HasManyAddAssociationsMixin,
   HasManyCountAssociationsMixin,
@@ -21,9 +23,12 @@ import {
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
+
 import Expense from "./expense"
+import Preapproved from "./preapproved"
 import Stop from "./stop"
 import TravelPurpose from "./travel-purpose"
+import User from "./user"
 
 // These are a best guess, database values may not match this list.
 // TODO: normalize database values and make sure all statuses are in this list.
@@ -40,8 +45,11 @@ enum Statuses {
 export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<Form>> {
   static Statuses = Statuses
 
-  declare id: number
-  declare userId: number
+  declare id: CreationOptional<number>
+  declare formId: string
+  declare preappId: ForeignKey<Preapproved["preTID"]>
+  declare purposeId: ForeignKey<TravelPurpose["id"]>
+  declare userId: ForeignKey<User["id"]>
   declare firstName: string | null
   declare lastName: string | null
   declare department: string | null
@@ -59,16 +67,13 @@ export class Form extends Model<InferAttributes<Form>, InferCreationAttributes<F
   declare summary: string | null
   declare benefits: string | null
   declare status: Statuses | null
-  declare formId: string
   declare supervisorEmail: string | null
-  declare preappId: number | null
   declare approved: string | null
   declare requestChange: string | null
   declare denialReason: string | null
   declare oneWayTrip: boolean | null
   declare multiStop: boolean | null
   declare createdBy: number | null
-  declare purposeId: number | null
   declare travelAdvanceInCents: number | null
   declare allTravelWithinTerritory: boolean | null
 
@@ -142,19 +147,28 @@ Form.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
+    formId: {
+      type: DataTypes.STRING(255),
       allowNull: false,
-      references: {
-        model: "users", // using table name here, instead of Model class
-        key: "id",
-      },
+      unique: true,
+    },
+    preappId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     purposeId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: "travelPurpose", // using table name here, instead of Model class
+        key: "id",
+      },
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users", // using table name here, instead of Model class
         key: "id",
       },
     },
@@ -227,17 +241,8 @@ Form.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    formId: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-      unique: true,
-    },
     supervisorEmail: {
       type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    preappId: {
-      type: DataTypes.INTEGER,
       allowNull: true,
     },
     approved: {
