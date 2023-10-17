@@ -1,7 +1,5 @@
-import { isNil, isEmpty } from "lodash"
+import { isNil, isEmpty, isNull } from "lodash"
 import { v4 as uuid } from "uuid"
-
-import db from "@/db/db-client-legacy"
 
 import { Form, User } from "@/models"
 import StopsService from "./stops-service"
@@ -19,14 +17,9 @@ export class FormsService {
       attributes.formId = uuid()
     }
 
-    const form = await db<Form>("forms")
-      .insert(attributes)
-      .returning("*")
-      .then((result) => {
-        if (isEmpty(result)) throw new Error("Could not create form")
-
-        return result[0]
-      })
+    const form = await Form.create(attributes).catch((error) => {
+      throw new Error(`Could not create form: ${error}`)
+    })
 
     // OPINION: It's not worth supporting layered transactions here,
     // though that would be the standard way of doing things.
@@ -50,15 +43,15 @@ export class FormsService {
     id: string | number,
     { stops = [], expenses = [], ...attributes }: Partial<Form>
   ): Promise<Form> {
-    const form = await db<Form>("forms")
-      .where("id", id)
-      .update(attributes)
-      .returning("*")
-      .then((updatedRecords) => {
-        if (isEmpty(updatedRecords)) throw new Error("Could not update form")
+    // TODO: change the function signature, so that you can pass in a form instance.
+    const form = await Form.findByPk(id)
+    if (isNull(form)) {
+      throw new Error(`Could not find form with id: ${id}`)
+    }
 
-        return updatedRecords[0]
-      })
+    form.update(attributes).catch((error) => {
+      throw new Error(`Could not update form: ${error}`)
+    })
 
     // OPINION: It's not worth supporting layered transactions here,
     // though that would be the standard way of doing things.
