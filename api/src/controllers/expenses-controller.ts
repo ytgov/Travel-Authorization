@@ -81,7 +81,7 @@ export class ExpensesController extends BaseController {
 
   private async buildExpense() {
     const attributes = this.request.body
-    const { taid: formId } = attributes
+    const { formId } = attributes
     const expense = Expense.build(attributes)
     expense.form = (await Form.findByPk(formId)) || undefined
     return expense
