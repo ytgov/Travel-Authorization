@@ -3,7 +3,7 @@ import { isString, upperFirst, omit } from "lodash"
 import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
 import expensesApi from "@/apis/expenses-api"
-import formsApi from "@/apis/forms-api"
+import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
 import locationsApi from "@/apis/locations-api"
 
 const state = {
@@ -92,23 +92,23 @@ const actions = {
   async loadForms({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
     const userId =
       state.currentUser.id || (await dispatch("loadCurrentUser").then((user) => user.id))
-    return formsApi
+    return travelAuthorizationsApi
       .list({
         page,
         perPage,
         ...otherParams,
         where: { userId },
       })
-      .then(({ forms, totalCount }) => {
+      .then(({ travelAuthorizations: forms, totalCount }) => {
         commit("SET_MYFORMS", forms)
         return { forms, totalCount }
       })
   },
   loadAsCurrentForm({ commit, state }, formId) {
     state.loadingCurrentForm = true
-    return formsApi
+    return travelAuthorizationsApi
       .get(formId)
-      .then(({ form }) => {
+      .then(({ travelAuthorization: form }) => {
         commit("SET_FORM", form)
         return form
       })
@@ -162,9 +162,9 @@ const actions = {
   },
   create({ commit, state }, attributes) {
     state.loadingCurrentForm = true
-    return formsApi
+    return travelAuthorizationsApi
       .create(attributes)
-      .then(({ form }) => {
+      .then(({ travelAuthorization: form }) => {
         commit("SET_FORM", form)
         return form
       })
@@ -176,9 +176,9 @@ const actions = {
     const formId = state.currentForm.id
     const attributes = state.currentForm
     state.loadingCurrentForm = true
-    return formsApi
+    return travelAuthorizationsApi
       .update(formId, attributes)
-      .then(({ form }) => {
+      .then(({ travelAuthorization: form }) => {
         commit("SET_FORM", form)
         return form
       })

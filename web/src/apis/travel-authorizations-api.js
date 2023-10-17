@@ -1,6 +1,6 @@
 import http from "@/apis/http-client"
 
-export const formsApi = {
+export const travelAuthorizationsApi = {
   list({ where, page, perPage, ...otherParams } = {}) {
     return http
       .get("/api/travel-authorizations", { params: { where, page, perPage, ...otherParams } })
@@ -21,4 +21,4 @@ export const formsApi = {
   },
 }
 
-export default formsApi
+export default travelAuthorizationsApi

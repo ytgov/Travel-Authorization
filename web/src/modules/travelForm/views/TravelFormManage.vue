@@ -196,7 +196,7 @@ import PersonalDetailsFormManage from "../components/PersonalDetailsFormManage";
 import StopsFormManage from "../components/StopsFormManage";
 import TravelDetailsForm from "../components/TravelDetailsForm";
 
-import formsApi from "@/apis/forms-api"
+import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
 
 export default {
   name: "TravelForm",
@@ -325,7 +325,7 @@ export default {
     submitForm() {
       this.showError = false;
       if (this.$refs.form.validate()) {
-        return formsApi.create(this.request).then(({ form }) => {
+        return travelAuthorizationsApi.create(this.request).then(({ travelAuthorization: form }) => {
           console.log("data:", form)
           this.$set(this, 'form', form);
           this.apiSuccess = "Form submitted successfully";
