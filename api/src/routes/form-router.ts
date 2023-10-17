@@ -8,6 +8,7 @@ import { Expense } from "@/models"
 import dbLegacy from "@/db/db-client-legacy";
 import db from "@/db/db-client";
 
+// TODO: Check if parser/builtins hack patch code is still needed
 const { setTypeParser, builtins } = require("pg").types;
 
 const typesToReset = [builtins.DATE, builtins.TIME, builtins.TIMETZ, builtins.TIMESTAMP, builtins.TIMESTAMPTZ];
