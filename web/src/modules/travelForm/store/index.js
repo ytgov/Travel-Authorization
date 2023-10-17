@@ -2,7 +2,7 @@ import { isString, upperFirst, omit } from "lodash"
 
 import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
-import expensesApi, { TYPES as EXPENSE_VARIANT } from "@/apis/expenses-api"
+import expensesApi from "@/apis/expenses-api"
 import formsApi from "@/apis/forms-api"
 import locationsApi from "@/apis/locations-api"
 
@@ -60,7 +60,7 @@ const actions = {
   loadEstimates({ commit, state }, { formId }) {
     state.loadingEstimates = true
     return expensesApi
-      .list({ where: { formId, type: EXPENSE_VARIANT.ESTIMATE } })
+      .list({ where: { formId, type: expensesApi.TYPES.ESTIMATE } })
       .then(({ expenses: estimates }) => {
         commit("SET_ESTIMATES", estimates)
         return estimates

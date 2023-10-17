@@ -84,14 +84,10 @@
 import { isEmpty, sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
 
+import { TYPES } from "@/apis/expenses-api"
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-
-// Must match types in src/api/models/expense.ts
-const EXPENSE_TYPES = Object.freeze({
-  ESTIMATE: "Estimates",
-})
 
 export default {
   name: "ApprovalsFormCard",
@@ -106,8 +102,9 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
+    // TODO: Make this a getter in the store
     estimates() {
-      return this.currentForm.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE) || []
+      return this.currentForm.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
     },
     estimatedCost() {
       return sumBy(this.estimates, "cost")

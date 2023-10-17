@@ -30,8 +30,8 @@ enum ExpenseTypes {
 // and there should be two models, one for each "type".
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum Types {
-  ESTIMATE = "Estimates",
-  EXPENSE = "Expenses",
+  ESTIMATE = "Estimate",
+  EXPENSE = "Expense",
 }
 
 export class Expense extends Model<InferAttributes<Expense>, InferCreationAttributes<Expense>> {
