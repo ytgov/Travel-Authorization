@@ -39,7 +39,7 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   static ExpenseTypes = ExpenseTypes
 
   declare id: CreationOptional<number>
-  declare taid: ForeignKey<Form["id"]>
+  declare formId: ForeignKey<Form["id"]>
   declare description: string
   declare date: Date | null
   declare cost: number
@@ -66,7 +66,7 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   static establishAssociations() {
     this.belongsTo(Form, {
       as: "form",
-      foreignKey: "taid",
+      foreignKey: "formId",
     })
   }
 }
@@ -79,7 +79,7 @@ Expense.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    taid: {
+    formId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
