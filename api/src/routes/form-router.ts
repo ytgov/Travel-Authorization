@@ -1,7 +1,8 @@
 import { isNull } from "lodash"
+import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
-import { ReturnValidationErrors } from "../middleware"
+import { ReturnValidationErrors } from "@/middleware"
 
 import { UserService, FormService, AuditService } from "@/services"
 import { Expense, Form } from "@/models"
@@ -351,31 +352,29 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
   try {
     let user = await userService.getByEmail(req.user.email)
 
-    let id = await dbLegacy("forms")
-      .select("id")
-      .where("formId", "=", req.params.formId)
-      .andWhere("email", "=", user.email)
-      .orWhere("supervisorEmail", "=", user.email)
+    const form = await Form.findOne({
+      where: {
+        formId: req.params.formId,
+        [Op.or]: [{ email: user.email }, { supervisorEmail: user.email }],
+      },
+    })
 
-    if (id) {
-      let result = await dbLegacy("forms")
-        .update({
-          status: "deleted",
-        })
-        .where("formId", "=", req.params.formId)
-        .returning("formId")
-
-      if (result) {
-        res.status(200).json("Delete successful")
-        console.log("Delete successful", req.params.id)
-
-        auditService.insertAudit(user.id, id[0].id, "Delete", "Deteled form")
-      } else {
-        res.status(500).json("Delete failed")
-      }
-    } else {
-      res.status(401).json("Unauthorized")
+    if (isNull(form)) {
+      return res.status(403).json("Unauthorized")
     }
+
+    return form
+      .update({
+        status: Form.Statuses.DELETED,
+      })
+      .then(() => {
+        console.log("Delete successful", req.params.id)
+        auditService.insertAudit(user.id, form.id, "Delete", "Deteled form")
+        res.status(200).json("Delete successful")
+      })
+      .catch(() => {
+        res.status(422).json("Delete failed")
+      })
   } catch (error: any) {
     res.status(500).json("Delete failed")
   }
@@ -386,23 +385,20 @@ formRouter.get(
   "/:formId/expenses/:type",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    let user = await userService.getByEmail(req.user.email)
     try {
-      await dbLegacy.transaction(async (trx) => {
-        let form = await dbLegacy("forms")
-          .select("id")
-          .where("formId", req.params.formId)
-          .transacting(trx)
+      const form = await Form.findOne({ where: { formId: req.params.formId } })
+      if (isNull(form)) {
+        return res.status(404).json({ message: "Form not found" })
+      }
 
-        const expenses = Expense.findAll({
-          where: {
-            formId: form[0].id,
-            type: req.params.type,
-          },
-        })
-
-        res.status(200).json(expenses)
+      const expenses = Expense.findAll({
+        where: {
+          formId: form.id,
+          type: req.params.type,
+        },
       })
+
+      res.status(200).json(expenses)
     } catch (error: any) {
       console.log(error)
       res.status(500).json("Update failed")
@@ -415,33 +411,30 @@ formRouter.post(
   "/:formId/expenses/:type",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    let user = await userService.getByEmail(req.user.email)
     try {
-      await dbLegacy.transaction(async (trx) => {
-        let form = await dbLegacy("forms")
-          .select("id", "status")
-          .where("formId", req.params.formId)
-          .transacting(trx)
+      const form = await Form.findOne({ where: { formId: req.params.formId } })
+      if (isNull(form)) {
+        return res.status(404).json({ message: "Form not found" })
+      }
 
-        db.transaction(async () => {
-          await Expense.destroy({
-            where: {
-              formId: form[0].id,
-              type: req.params.type,
-            },
-          })
-          for (let index = 0; index < req.body.length; index++) {
-            const expense = {
-              formId: form[0].id,
-              ...req.body[index],
-              type: req.params.type,
-            }
-            await Expense.create(expense)
-          }
+      await db.transaction(async () => {
+        await Expense.destroy({
+          where: {
+            formId: form.id,
+            type: req.params.type,
+          },
         })
-
-        res.status(200).json("Updated expenses successful")
+        for (let index = 0; index < req.body.length; index++) {
+          const expense = {
+            formId: form.id,
+            ...req.body[index],
+            type: req.params.type,
+          }
+          await Expense.create(expense)
+        }
       })
+
+      res.status(200).json("Updated expenses successful")
     } catch (error: any) {
       console.log(error)
       res.status(500).json("Update failed")
@@ -453,18 +446,17 @@ formRouter.post(
   "/:formId/report/submit",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    let user = await userService.getByEmail(req.user.email)
     try {
       await dbLegacy.transaction(async (trx) => {
-        let form = await dbLegacy("forms")
-          .select("id", "status")
-          .where("formId", req.params.formId)
-          .transacting(trx)
+        const form = await Form.findOne({ where: { formId: req.params.formId } })
+        if (isNull(form)) {
+          return res.status(404).json({ message: "Form not found" })
+        }
 
         let reportInsert = {
           ...req.body,
           reportStatus: "Submitted",
-          taid: form[0].id,
+          taid: form.id,
         }
 
         let id = await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge()
@@ -485,15 +477,15 @@ formRouter.post(
     let user = await userService.getByEmail(req.user.email)
     try {
       await dbLegacy.transaction(async (trx) => {
-        let form = await dbLegacy("forms")
-          .select("id", "status")
-          .where("formId", req.params.formId)
-          .transacting(trx)
+        const form = await Form.findOne({ where: { formId: req.params.formId } })
+        if (isNull(form)) {
+          return res.status(404).json({ message: "Form not found" })
+        }
 
         let reportInsert = {
           ...req.body,
           reportStatus: "Submitted",
-          taid: form[0].id,
+          taid: form.id,
         }
 
         let id = await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge()
@@ -511,14 +503,13 @@ formRouter.get(
   "/:formId/report",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    let user = await userService.getByEmail(req.user.email)
     try {
-      let form = await dbLegacy("forms").select("id").where("formId", req.params.formId)
-
-      let report = {}
-      if (form[0]) {
-        report = await dbLegacy("tripReports").select("*").where("taid", "=", form[0].id).first()
+      const form = await Form.findOne({ where: { formId: req.params.formId } })
+      if (isNull(form)) {
+        return res.status(404).json({ message: "Form not found" })
       }
+
+      const report = await dbLegacy("tripReports").select("*").where("taid", "=", form.id).first()
 
       res.status(200).json(report)
     } catch (error: any) {
@@ -534,35 +525,30 @@ formRouter.get(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      await dbLegacy.transaction(async (trx) => {
-        let form = await dbLegacy("forms")
-          .select("id", "status")
-          .where("formId", req.params.formId)
-          .transacting(trx)
+      const form = await Form.findOne({ where: { formId: req.params.formId } })
+      if (isNull(form)) {
+        return res.status(404).json({ message: "Form not found" })
+      }
 
-        let result = {}
-        if (form[0]) {
-          const estimatesFloat = await Expense.sum("cost", {
-            where: {
-              formId: form[0].id,
-              type: Expense.Types.ESTIMATE,
-            },
-          }).then((result) => result.toFixed(2))
+      const estimatesFloat = await Expense.sum("cost", {
+        where: {
+          formId: form.id,
+          type: Expense.Types.ESTIMATE,
+        },
+      }).then((result) => result.toFixed(2))
 
-          const expensesFloat = await Expense.sum("cost", {
-            where: {
-              formId: form[0].id,
-              type: Expense.Types.EXPENSE,
-            },
-          }).then((result) => result.toFixed(2))
+      const expensesFloat = await Expense.sum("cost", {
+        where: {
+          formId: form.id,
+          type: Expense.Types.EXPENSE,
+        },
+      }).then((result) => result.toFixed(2))
 
-          result = {
-            estimates: estimatesFloat,
-            expenses: expensesFloat,
-          }
-        }
-        res.status(200).json(result)
-      })
+      const result = {
+        estimates: estimatesFloat,
+        expenses: expensesFloat,
+      }
+      res.status(200).json(result)
     } catch (error: any) {
       console.log(error)
       res.status(500).json("Lookup failed")

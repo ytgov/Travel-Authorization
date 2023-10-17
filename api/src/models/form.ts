@@ -35,6 +35,7 @@ import User from "./user"
 // If we want validation for this field we should swith to an ORM such as Sequelize.
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum Statuses {
+  DELETED = "deleted", // TODO: normalize this state, or replace with more standard `deleted_at` field
   DRAFT = "Draft",
   SUBMITTED = "Submitted",
   APPROVED = "Approved",
