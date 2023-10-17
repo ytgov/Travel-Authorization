@@ -1,9 +1,10 @@
+import { isNull } from "lodash"
 import express, { Request, Response } from "express"
 
 import { ReturnValidationErrors } from "../middleware"
 
 import { UserService, FormService, AuditService } from "@/services"
-import { Expense } from "@/models"
+import { Expense, Form } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
@@ -34,23 +35,26 @@ const auditService = new AuditService()
 
 // Get all forms for a user
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
+  console.warn("DEPRECATED: prefer /api/forms instead")
   try {
     let user = await userService.getByEmail(req.user.email)
-    let form = await dbLegacy("forms").select("*").where("userId", "=", user.id)
+    const forms = await Form.findAll({ where: { userId: user.id } })
 
-    for (let index = 0; index < form.length; index++) {
-      form[index].stops = await dbLegacy("stops").select("*").where("taid", "=", form[index].id)
+    for (let index = 0; index < forms.length; index++) {
+      forms[index].stops = await dbLegacy("stops").select("*").where("taid", "=", forms[index].id)
       let departureDate = await dbLegacy("stops")
         .min("departureDate")
-        .where("taid", "=", form[index].id)
+        .where("taid", "=", forms[index].id)
       let departureTime = await dbLegacy("stops")
         .select("departureTime")
         .where("departureDate", "=", departureDate[0].min)
 
-      form[index].departureDate = departureDate[0].min ? departureDate[0].min : "Unknown"
-      form[index].departureTime = departureTime[0] ? departureTime[0].departureTime : "Unknown"
+      // @ts-ignore - this code is deprecated so not worth fixing the type issues
+      forms[index].departureDate = departureDate[0].min ? departureDate[0].min : "Unknown"
+      // @ts-ignore - this code is deprecated so not worth fixing the type issues
+      forms[index].departureTime = departureTime[0] ? departureTime[0].departureTime : "Unknown"
     }
-    res.status(200).json(form)
+    res.status(200).json(forms)
   } catch (error: any) {
     console.log(error)
     res.status(500).json("Internal Server Error")
@@ -64,11 +68,12 @@ formRouter.get(
     //let user = await userService.getByEmail(req.user.email);
     let user = await userService.getByEmail("Max.parker@yukon.ca")
     try {
-      await dbLegacy.transaction(async (trx) => {
-        let form = await dbLegacy("forms").select("*")
+      const form = await Form.findOne()
+      if (isNull(form)) {
+        return res.status(404).json({ message: "No upcoming trips found" })
+      }
 
-        res.status(200).json(await formService.getForm(form[0].id))
-      })
+      res.status(200).json(await formService.getForm(form.id.toString()))
     } catch (error: any) {
       console.log(error)
       res.status(500).json("Error retrieving form")
@@ -181,24 +186,21 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        let supervisorEmail = await dbLegacy("forms")
-          .select("email")
-          .where("formId", "=", req.params.formId)
-          .transacting(trx)
+        const form = await Form.findOne({ where: { formId: req.params.formId } })
+        if (isNull(form)) {
+          return res.status(404).json({ message: "Form not found" })
+        }
 
-        if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
+        const supervisorEmail = form.email
+        if (supervisorEmail?.toLowerCase() === user.email.toLowerCase()) {
           let denialReason = req.body.denialReason
 
-          let id = await dbLegacy("forms")
-            .update({
-              denialReason: denialReason,
-              status: "Denied",
-            })
-            .where("formId", "=", req.params.formId)
-            .transacting(trx)
-            .returning("id")
+          await form.update({
+            denialReason: denialReason,
+            status: Form.Statuses.DENIED,
+          })
 
-          auditService.insertAudit(user.id, id[0].id, "Reassign", "Successfully denied form")
+          auditService.insertAudit(user.id, form.id, "Reassign", "Successfully denied form")
 
           res.status(200).json({
             formId: req.body.formId,
@@ -225,27 +227,25 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        let supervisorEmail = await dbLegacy("forms")
-          .select("email")
-          .where("formId", "=", req.params.formId)
-          .transacting(trx)
+        const form = await Form.findOne({ where: { formId: req.params.formId } })
+        if (isNull(form)) {
+          return res.status(404).json({ message: "Form not found" })
+        }
 
-        if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
-          let id = await dbLegacy("forms")
-            .update({
-              status: "Approved",
-            })
-            .where("formId", "=", req.params.formId)
-            .transacting(trx)
-            .returning("id")
+        const supervisorEmail = form.email
 
-          auditService.insertAudit(user.id, id[0].id, "Reassign", "Successfully approved form")
+        if (supervisorEmail?.toLowerCase() == user.email.toLowerCase()) {
+          await form.update({
+            status: Form.Statuses.APPROVED,
+          })
+
+          auditService.insertAudit(user.id, form.id, "Reassign", "Successfully approved form")
 
           res.status(200).json({
             formId: req.body.formId,
           })
         } else {
-          res.status(401).json("Must be assigned supervisor to approve request")
+          res.status(403).json("Must be assigned supervisor to approve request")
         }
       })
     } catch (error: any) {
@@ -267,25 +267,23 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        let supervisorEmail = await dbLegacy("forms")
-          .select("email")
-          .where("formId", "=", req.params.formId)
-          .transacting(trx)
+        const form = await Form.findOne({ where: { formId: req.params.formId } })
+        if (isNull(form)) {
+          return res.status(404).json({ message: "Form not found" })
+        }
 
-        if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
+        const supervisorEmail = form.email
+
+        if (supervisorEmail?.toLowerCase() == user.email.toLowerCase()) {
           let reassign = req.body.reassign
 
-          let id = await dbLegacy("forms")
-            .update({
-              supervisorEmail: reassign,
-            })
-            .where("formId", "=", req.params.formId)
-            .transacting(trx)
-            .returning("id")
+          await form.update({
+            supervisorEmail: reassign,
+          })
 
           auditService.insertAudit(
             user.id,
-            id[0].id,
+            form.id,
             "Reassign",
             "Successfully reassigned form to " + reassign
           )
@@ -293,7 +291,7 @@ formRouter.post(
             formId: req.body.formId,
           })
         } else {
-          res.status(401).json("Must be supervisor to approve request")
+          res.status(403).json("Must be supervisor to approve request")
         }
       })
     } catch (error: any) {
@@ -313,24 +311,22 @@ formRouter.post(
       await dbLegacy.transaction(async (trx) => {
         let user = await userService.getByEmail(req.user.email)
 
-        let supervisorEmail = await dbLegacy("forms")
-          .select("email")
-          .where("formId", "=", req.params.formId)
-          .transacting(trx)
+        const form = await Form.findOne({ where: { formId: req.params.formId } })
+        if (isNull(form)) {
+          return res.status(404).json({ message: "Form not found" })
+        }
 
-        if (supervisorEmail[0].email.toLowerCase() == user.email.toLowerCase()) {
-          let id = await dbLegacy("forms")
-            .update({
-              requestChange: req.body.requestChange,
-              status: "Change Requested",
-            })
-            .where("formId", "=", req.params.formId)
-            .transacting(trx)
-            .returning("id")
+        const supervisorEmail = form.email
+
+        if (supervisorEmail?.toLowerCase() == user.email.toLowerCase()) {
+          await form.update({
+            requestChange: req.body.requestChange,
+            status: Form.Statuses.CHANGE_REQUESTED,
+          })
 
           auditService.insertAudit(
             user.id,
-            id[0].id,
+            form.id,
             "Reassign",
             "Successfully requested changes to form"
           )
@@ -339,7 +335,7 @@ formRouter.post(
             formId: req.body.formId,
           })
         } else {
-          res.status(401).json("Must be supervisor to approve request")
+          res.status(403).json("Must be supervisor to approve request")
         }
       })
     } catch (error: any) {
