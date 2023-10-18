@@ -42,7 +42,9 @@ export class TravelAuthorizationsService {
     { stops = [], expenses = [], ...attributes }: Partial<TravelAuthorization>
   ): Promise<TravelAuthorization> {
     // TODO: change the function signature, so that you can pass in a travelAuthorization instance.
-    const travelAuthorization = await TravelAuthorization.findByPk(id)
+    const travelAuthorization = await TravelAuthorization.findByPk(id, {
+      include: ["expenses", "stops", "purpose"],
+    })
     if (isNull(travelAuthorization)) {
       throw new Error(`Could not find TravelAuthorization with id: ${id}`)
     }
