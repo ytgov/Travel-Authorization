@@ -50,8 +50,6 @@ Location.init(
     sequelize,
     modelName: "Location",
     tableName: "locations",
-    underscored: true,
-    timestamps: true,
   }
 )
 export default Location

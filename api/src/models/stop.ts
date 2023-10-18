@@ -22,7 +22,8 @@ const BEGINNING_OF_DAY = "00:00:00"
 
 // Keep in sync with web/src/modules/travelForm/components/TravelMethodSelect.vue
 // Until both are using a shared location
-export enum TravelMethods {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum TravelMethods {
   AIRCRAFT = "Aircraft",
   POOL_VEHICLE = "Pool Vehicle",
   PERSONAL_VEHICLE = "Personal Vehicle",
@@ -34,7 +35,8 @@ export enum TravelMethods {
 
 // Keep in sync with web/src/modules/travelForm/components/AccommodationTypeSelect.vue
 // Until both are using a shared location
-export enum AccommodationTypes {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum AccommodationTypes {
   HOTEL = "Hotel",
   PRIVATE = "Private",
   // TODO: replace other type with specific values
@@ -42,19 +44,27 @@ export enum AccommodationTypes {
 }
 
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
+  static TravelMethods = TravelMethods
+  static AccommodationTypes = AccommodationTypes
+
   declare id: CreationOptional<number>
-  declare taid: ForeignKey<TravelAuthorization["id"]>
+  declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare locationId: ForeignKey<Location["id"]>
   declare departureDate: Date | null
   declare departureTime: string | null
   declare transport: string | null
   declare accommodationType: string | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
   declare getTravelAuthorization: BelongsToGetAssociationMixin<TravelAuthorization>
-  declare setTravelAuthorization: BelongsToSetAssociationMixin<TravelAuthorization, TravelAuthorization["id"]>
+  declare setTravelAuthorization: BelongsToSetAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
   declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
   declare getLocation: BelongsToGetAssociationMixin<Location>
@@ -76,7 +86,7 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
     })
     this.belongsTo(TravelAuthorization, {
       as: "travelAuthorization",
-      foreignKey: "taid",
+      foreignKey: "travelAuthorizationId",
     })
   }
 
@@ -98,7 +108,7 @@ Stop.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    taid: {
+    travelAuthorizationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -109,7 +119,6 @@ Stop.init(
     locationId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "locationId",
       references: {
         model: "locations", // using table name here, instead of Model class
         key: "id",
@@ -118,12 +127,10 @@ Stop.init(
     departureDate: {
       type: DataTypes.DATEONLY,
       allowNull: true,
-      field: "departureDate",
     },
     departureTime: {
       type: DataTypes.TIME,
       allowNull: true,
-      field: "departureTime",
     },
     transport: {
       type: DataTypes.STRING(255),
@@ -132,14 +139,22 @@ Stop.init(
     accommodationType: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "accommodationType",
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
     sequelize,
     modelName: "Stop",
     tableName: "stops",
-    timestamps: false,
   }
 )
 

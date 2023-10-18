@@ -15,10 +15,6 @@ export class TravelAuthorizationsSerializer extends BaseSerializer {
     })
   }
 
-  static asDetailed(travelAuthorization: TravelAuthorization) {
-    return travelAuthorization
-  }
-
   private static departingAt(travelAuthorization: TravelAuthorization) {
     const stops = travelAuthorization.stops || []
     if (isEmpty(stops)) return "Unknown"

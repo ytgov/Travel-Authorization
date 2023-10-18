@@ -6,6 +6,8 @@ import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"
 
+import db from "@/db/db-client"
+
 export class TravelAuthorizationsService {
   static async create(
     { stops = [], expenses, estimates, ...attributes }: TravelAuthorization,
@@ -17,26 +19,22 @@ export class TravelAuthorizationsService {
       attributes.slug = uuid()
     }
 
-    const travelAuthorization = await TravelAuthorization.create(attributes).catch((error) => {
-      throw new Error(`Could not create TravelAuthorization: ${error}`)
-    })
-
-    // OPINION: It's not worth supporting layered transactions here,
-    // though that would be the standard way of doing things.
-    // If we are using an ORM such as Sequelize, it would then be worth doing.
-    const travelAuthorizationId = travelAuthorization.id
-    if (!isEmpty(stops)) {
-      stops.forEach(async (stop) => {
-        stop.taid = travelAuthorizationId
+    return db.transaction(async () => {
+      const travelAuthorization = await TravelAuthorization.create(attributes).catch((error) => {
+        throw new Error(`Could not create TravelAuthorization: ${error}`)
       })
-      await StopsService.bulkCreate(travelAuthorizationId, stops)
-    }
 
-    const instance = new LegacyFormSerivce()
-    await instance.saveExpenses(travelAuthorizationId, expenses)
-    await instance.saveEstimates(travelAuthorizationId, estimates)
+      const travelAuthorizationId = travelAuthorization.id
+      if (!isEmpty(stops)) {
+        await StopsService.bulkCreate(travelAuthorizationId, stops)
+      }
 
-    return travelAuthorization
+      const instance = new LegacyFormSerivce()
+      await instance.saveExpenses(travelAuthorizationId, expenses)
+      await instance.saveEstimates(travelAuthorizationId, estimates)
+
+      return travelAuthorization
+    })
   }
 
   static async update(
@@ -44,7 +42,9 @@ export class TravelAuthorizationsService {
     { stops = [], expenses = [], ...attributes }: Partial<TravelAuthorization>
   ): Promise<TravelAuthorization> {
     // TODO: change the function signature, so that you can pass in a travelAuthorization instance.
-    const travelAuthorization = await TravelAuthorization.findByPk(id)
+    const travelAuthorization = await TravelAuthorization.findByPk(id, {
+      include: ["expenses", "stops", "purpose"],
+    })
     if (isNull(travelAuthorization)) {
       throw new Error(`Could not find TravelAuthorization with id: ${id}`)
     }
@@ -62,7 +62,10 @@ export class TravelAuthorizationsService {
     }
 
     if (!isEmpty(expenses)) {
-      travelAuthorization.expenses = await ExpensesService.bulkReplace(travelAuthorizationId, expenses)
+      travelAuthorization.expenses = await ExpensesService.bulkReplace(
+        travelAuthorizationId,
+        expenses
+      )
     }
 
     return travelAuthorization

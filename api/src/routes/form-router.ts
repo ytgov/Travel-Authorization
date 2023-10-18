@@ -1,4 +1,4 @@
-import { isNull } from "lodash"
+import { isNull, minBy } from "lodash"
 import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
@@ -39,22 +39,24 @@ formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: R
   console.warn("DEPRECATED: prefer /api/forms instead")
   try {
     let user = await userService.getByEmail(req.user.email)
-    const forms = await TravelAuthorization.findAll({ where: { userId: user.id } })
+    const forms = await TravelAuthorization.findAll({
+      where: { userId: user.id },
+      include: ["stops"],
+    })
 
-    for (let index = 0; index < forms.length; index++) {
-      forms[index].stops = await dbLegacy("stops").select("*").where("taid", "=", forms[index].id)
-      let departureDate = await dbLegacy("stops")
-        .min("departureDate")
-        .where("taid", "=", forms[index].id)
-      let departureTime = await dbLegacy("stops")
-        .select("departureTime")
-        .where("departureDate", "=", departureDate[0].min)
+    forms.forEach((form) => {
+      const stops = form.stops
+      const earliestStop = minBy(stops, (stop) => {
+        return `${stop.departureDate} ${stop.departureTime}`
+      })
+      const { departureDate, departureTime } = earliestStop || {}
 
       // @ts-ignore - this code is deprecated so not worth fixing the type issues
-      forms[index].departureDate = departureDate[0].min ? departureDate[0].min : "Unknown"
+      form.departureDate = departureDate || "Unknown"
       // @ts-ignore - this code is deprecated so not worth fixing the type issues
-      forms[index].departureTime = departureTime[0] ? departureTime[0].departureTime : "Unknown"
-    }
+      form.departureTime = departureTime || "Unknown"
+    })
+
     res.status(200).json(forms)
   } catch (error: any) {
     console.log(error)

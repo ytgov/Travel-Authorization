@@ -140,8 +140,6 @@ Expense.init(
     sequelize,
     modelName: "Expense",
     tableName: "expenses",
-    underscored: true,
-    timestamps: true,
   }
 )
 

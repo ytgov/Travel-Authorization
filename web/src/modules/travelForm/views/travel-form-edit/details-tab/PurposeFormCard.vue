@@ -121,7 +121,7 @@ export default {
     ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
-        return last(this.currentForm.stops) || { taid: this.currentFormId }
+        return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
       },
       set(newValue) {
         this.$set(this.currentForm.stops, this.currentForm.stops.length - 1, newValue)

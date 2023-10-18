@@ -83,9 +83,7 @@ export class TravelAuthorizationsController extends BaseController {
         return this.response.status(404).json({ message: "TravelAuthorization not found." })
       }
 
-      const serializedTravelAuthorization =
-        TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
-      return this.response.json({ travelAuthorization: serializedTravelAuthorization })
+      return this.response.json({ travelAuthorization })
     })
   }
 

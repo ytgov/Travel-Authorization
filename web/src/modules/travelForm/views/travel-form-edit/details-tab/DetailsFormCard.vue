@@ -127,7 +127,7 @@ export default {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId"]),
     finalDestination() {
-      return last(this.currentForm.stops) || { taid: this.currentFormId }
+      return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
     },
   },
   mounted() {

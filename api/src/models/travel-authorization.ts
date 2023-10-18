@@ -102,13 +102,13 @@ export class TravelAuthorization extends Model<
   declare createExpense: HasManyCreateAssociationMixin<Expense>
 
   declare getStops: HasManyGetAssociationsMixin<Stop>
-  declare setStops: HasManySetAssociationsMixin<Stop, Stop["taid"]>
-  declare hasStop: HasManyHasAssociationMixin<Stop, Stop["taid"]>
-  declare hasStops: HasManyHasAssociationsMixin<Stop, Stop["taid"]>
-  declare addStop: HasManyAddAssociationMixin<Stop, Stop["taid"]>
-  declare addStops: HasManyAddAssociationsMixin<Stop, Stop["taid"]>
-  declare removeStop: HasManyRemoveAssociationMixin<Stop, Stop["taid"]>
-  declare removeStops: HasManyRemoveAssociationsMixin<Stop, Stop["taid"]>
+  declare setStops: HasManySetAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
+  declare hasStop: HasManyHasAssociationMixin<Stop, Stop["travelAuthorizationId"]>
+  declare hasStops: HasManyHasAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
+  declare addStop: HasManyAddAssociationMixin<Stop, Stop["travelAuthorizationId"]>
+  declare addStops: HasManyAddAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
+  declare removeStop: HasManyRemoveAssociationMixin<Stop, Stop["travelAuthorizationId"]>
+  declare removeStops: HasManyRemoveAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
   declare countStops: HasManyCountAssociationsMixin
   declare createStop: HasManyCreateAssociationMixin<Stop>
 
@@ -130,7 +130,7 @@ export class TravelAuthorization extends Model<
     this.hasMany(Stop, {
       as: "stops",
       sourceKey: "id",
-      foreignKey: "taid",
+      foreignKey: "travelAuthorizationId",
     })
     this.hasMany(Expense, {
       as: "expenses",
@@ -294,8 +294,6 @@ TravelAuthorization.init(
     sequelize,
     tableName: "travel_authorizations",
     modelName: "TravelAuthorization",
-    underscored: true,
-    timestamps: true,
   }
 )
 

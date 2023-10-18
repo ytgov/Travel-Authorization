@@ -14,11 +14,6 @@ const DEFAULT_CONFIG = {
   },
 }
 
-console.log("api/src/config.d/knexfile.ts - MIGRATION CONFIG: ", {
-  ...DEFAULT_CONFIG,
-  ...DB_CONFIG,
-})
-
 const config: { [key: string]: Knex.Config } = {
   development: {
     ...DEFAULT_CONFIG,

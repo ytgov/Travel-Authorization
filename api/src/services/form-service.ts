@@ -1,10 +1,10 @@
-import { isNull, map } from "lodash"
-
-import dbLegacy from "@/db/db-client-legacy"
+import { isNull, minBy } from "lodash"
 
 import { Expense, TravelAuthorization } from "@/models"
 import ExpensesService from "./expenses-service"
+import StopsService from "./stops-service"
 
+// DEPRECATED: superseded by the TravelAuthorizationsService
 export class FormService {
   //returns form
   async getForm(slug: string): Promise<any | undefined> {
@@ -12,25 +12,26 @@ export class FormService {
       "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
     )
     try {
-      const form: any = await TravelAuthorization.findOne({ where: { slug } })
+      const form = await TravelAuthorization.findOne({
+        where: { slug },
+        include: ["stops"],
+      })
 
       if (isNull(form)) {
         return undefined
       }
 
-      let expenses = await this.getExpenses(form.id)
-      let estimates = await this.getEstimates(form.id)
-      let stops = await this.getStops(form.id)
-      let departureDate = await dbLegacy("stops")
-        .select("departureDate")
-        .first()
-        .where({ taid: form.id })
-        .orderBy("departureDate", "asc")
+      const expenses = await this.getExpenses(form.id)
+      const estimates = await this.getEstimates(form.id)
 
-      form.stops = stops
+      // @ts-ignore - not worth fixing as code is deprecated
       form.estimates = estimates
       form.expenses = expenses
-      form.departureDate = departureDate
+
+      const { stops } = form
+      const earliestStop = minBy(stops, "departureDate")
+      // @ts-ignore - not worth fixing as code is deprecated
+      form.departureDate = earliestStop?.departureDate
 
       return form
     } catch (error: any) {
@@ -63,42 +64,10 @@ export class FormService {
       })
       const id = returnedForm.id
 
-      await this.saveStops(id, stops)
+      await StopsService.bulkReplace(id, stops)
       await this.saveExpenses(id, expenses)
       await this.saveEstimates(id, estimates)
 
-      return true
-    } catch (error: any) {
-      console.log(error)
-      return false
-    }
-  }
-
-  async getStops(taid: number): Promise<any[] | undefined> {
-    try {
-      let stops = await dbLegacy("stops")
-        .select("*")
-        .where({ taid })
-        .orderBy("departureDate", "asc")
-      return stops
-    } catch (error: any) {
-      console.log(error)
-      return undefined
-    }
-  }
-
-  async saveStops(taid: number, stops: any): Promise<Boolean> {
-    try {
-      await dbLegacy("stops").delete().where({ taid })
-
-      if (stops) {
-        stops = map(stops, (stop) => {
-          stop.taid = taid
-          stop.locationId = stop.locationId != "" ? stop.locationId : null
-          return stop
-        })
-        await dbLegacy("stops").insert(stops)
-      }
       return true
     } catch (error: any) {
       console.log(error)
@@ -175,7 +144,7 @@ export class FormService {
         })
         const id = returnedForm.id
 
-        await this.saveStops(id, stops)
+        await StopsService.bulkReplace(id, stops)
         await this.saveExpenses(id, expenses)
         await this.saveEstimates(id, estimates)
         return true

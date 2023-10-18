@@ -1,3 +1,4 @@
+import { minBy } from "lodash"
 import express, { Request, Response } from "express"
 import knex from "knex"
 import { WhereOptions } from "sequelize"
@@ -26,9 +27,10 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     const requestID = travelRequest.requestID
     const TAID = travelRequest.TAID
 
-    const form = await TravelAuthorization.findOne({ where: { id: TAID } })
-    // @ts-ignore - isn't worth fixing at this time
-    form.stops = await db("stops").select("*").where("taid", TAID)
+    const form = await TravelAuthorization.findOne({
+      where: { id: TAID },
+      include: ["stops"],
+    })
     travelRequest.form = form
 
     const flightRequests = await db("travelDeskFlightRequest")
@@ -77,19 +79,21 @@ travelDeskRouter.get(
     }
 
     try {
-      const forms = await TravelAuthorization.findAll({ where: adminScoping })
+      const forms = await TravelAuthorization.findAll({
+        where: adminScoping,
+        include: ["stops"],
+      })
 
       for (const form of forms) {
-        form.stops = await db("stops").select("*").where("taid", "=", form.id)
-        const departureDates = await db("stops").min("departureDate").where("taid", "=", form.id)
-        const departureTimes = await db("stops")
-          .select("departureTime")
-          .where("departureDate", "=", departureDates[0].min)
+        const stops = form.stops
+        const earliestStop = minBy(stops, (stop) => {
+          return `${stop.departureDate} ${stop.departureTime}`
+        })
+        // @ts-ignore - this code is deprecated so not worth fixing the type issues
+        form.departureDate = earliestStop?.departureDate || "Unknown"
+        // @ts-ignore - this code is deprecated so not worth fixing the type issues
+        form.departureTime = earliestStop?.departureTime || "Unknown"
 
-        // @ts-ignore - isn't worth fixing at this time
-        form.departureDate = departureDates[0].min ? departureDates[0].min : "Unknown"
-        // @ts-ignore - isn't worth fixing at this time
-        form.departureTime = departureTimes[0] ? departureTimes[0].departureTime : "Unknown"
         // @ts-ignore - isn't worth fixing at this time
         form.travelRequest = await db("travelDeskTravelRequest")
           .select("*")

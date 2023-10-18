@@ -1,7 +1,8 @@
-import dbLegacy from "@/db/db-client-legacy"
-
-import { TravelAuthorization, TravelPurpose } from "@/models"
 import { isNull } from "lodash"
+
+import { Stop, TravelAuthorization, TravelPurpose } from "@/models"
+
+import dbLegacy from "@/db/db-client-legacy"
 
 export async function seedUp() {
   console.log("Seeding")
@@ -1599,53 +1600,53 @@ export async function seedUp() {
     ])
 
   // t.increments("id").notNullable().primary();
-  // t.integer("taid").notNullable();
+  // t.integer("travelAuthorizationId").notNullable();
   // t.integer("locationId");
   // t.specificType("departureDate", "DATE");
   // t.time("departureTime");
   // t.string("transport");
 
-  await dbLegacy("stops").delete().whereRaw("1=1")
-  await dbLegacy("stops").insert([
+  await Stop.destroy({ where: {} })
+  await Stop.bulkCreate([
     {
-      taid: travelAuthorization1.id,
+      travelAuthorizationId: travelAuthorization1.id,
       locationId: 1,
-      departureDate: "2023-05-12",
+      departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization1.id,
+      travelAuthorizationId: travelAuthorization1.id,
       locationId: 2,
-      departureDate: "2019-05-15",
+      departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization2.id,
+      travelAuthorizationId: travelAuthorization2.id,
       locationId: 3,
-      departureDate: "2023-05-12",
+      departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization2.id,
+      travelAuthorizationId: travelAuthorization2.id,
       locationId: 4,
-      departureDate: "2019-05-15",
+      departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization3.id,
+      travelAuthorizationId: travelAuthorization3.id,
       locationId: 5,
-      departureDate: "2023-05-12",
+      departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization3.id,
+      travelAuthorizationId: travelAuthorization3.id,
       locationId: 6,
-      departureDate: "2019-05-15",
+      departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
