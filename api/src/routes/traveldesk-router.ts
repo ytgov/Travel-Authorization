@@ -57,7 +57,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
 
     const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
       attributes: ["invoiceNumber"],
-      where: { requestID },
+      where: { travelDeskTravelRequestId: requestID },
     })
     travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
   }
@@ -105,7 +105,7 @@ travelDeskRouter.get(
         if (requestID) {
           const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
             attributes: ["invoiceNumber"],
-            where: { requestID },
+            where: { travelDeskTravelRequestId: requestID },
           })
 
           // @ts-ignore - isn't worth fixing at this time
@@ -444,7 +444,7 @@ travelDeskRouter.get(
 
       const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
         attributes: ["invoiceNumber"],
-        where: { requestID },
+        where: { travelDeskTravelRequestId: requestID },
       })
       travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
     }
@@ -675,7 +675,7 @@ travelDeskRouter.post(
       await dbLegacy.transaction(async (trx) => {
         // TODO: re-add to transaction once travelDeskTravelRequest is in Sequelize
         await TravelDeskPassengerNameRecordDocument.upsert({
-          requestID,
+          travelDeskTravelRequestId: requestID,
           invoiceNumber: data.invoiceNumber,
           pnrDocument: file,
         })
@@ -705,7 +705,7 @@ travelDeskRouter.get(
     try {
       const requestID = req.params.requestID
       const doc = await TravelDeskPassengerNameRecordDocument.findOne({
-        where: { requestID },
+        where: { travelDeskTravelRequestId: requestID },
       })
 
       if (isNull(doc)) {

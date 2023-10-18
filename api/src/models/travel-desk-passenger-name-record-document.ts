@@ -21,7 +21,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   InferCreationAttributes<TravelDeskPassengerNameRecordDocument>
 > {
   declare id: CreationOptional<number>
-  declare requestID: ForeignKey<TravelDeskTravelRequest["requestID"]>
+  declare travelDeskTravelRequestId: ForeignKey<TravelDeskTravelRequest["requestID"]>
   declare pnrDocument: Buffer | null
   declare invoiceNumber: string | null
 
@@ -45,7 +45,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
     // TODO: enable this once TravelDeskTravelRequest model is set up
     // this.belongsTo(TravelDeskTravelRequest, {
     //   as: "travelDeskTravelRequest",
-    //   foreignKey: "requestID",
+    //   foreignKey: "travelDeskTravelRequestId",
     // })
   }
 }
@@ -58,12 +58,12 @@ TravelDeskPassengerNameRecordDocument.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    requestID: {
+    travelDeskTravelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "travelDeskTravelRequest", // using table name here, instead of Model class
-        key: "requestID",
+        model: "travelDeskTravelRequest", // using real table name here
+        key: "travel_desk_travel_request_id", // using real key name here
       },
       onDelete: "CASCADE",
     },
@@ -80,7 +80,6 @@ TravelDeskPassengerNameRecordDocument.init(
     sequelize,
     modelName: "TravelDeskPassengerNameRecordDocument",
     tableName: "travel_desk_passenger_name_record_documents",
-    underscored: false,
     timestamps: false,
   }
 )
