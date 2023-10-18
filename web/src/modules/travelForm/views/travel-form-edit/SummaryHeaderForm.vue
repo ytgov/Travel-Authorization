@@ -1,24 +1,72 @@
 <template>
-  <v-form ref="form" lazy-validation>
+  <v-form
+    ref="form"
+    lazy-validation
+  >
     <v-row dense>
-      <v-col cols="12" md="2">
-        <v-select v-model="currentForm.purposeId" :items="purposes" :loading="loadingPurposes" :rules="[required]"
-          background-color="white" dense item-text="purpose" item-value="id" label="Purpose" outlined required></v-select>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-select
+          v-model="currentForm.purposeId"
+          :items="purposes"
+          :loading="loadingPurposes"
+          :rules="[required]"
+          background-color="white"
+          dense
+          item-text="purpose"
+          item-value="id"
+          label="Purpose"
+          outlined
+          required
+        ></v-select>
       </v-col>
-      <v-col cols="12" md="2">
-        <v-autocomplete v-model="finalDestination.locationId" :items="destinationsByCurrentFormTravelRestriction"
-          :loading="loadingDestinations" :rules="[required]" background-color="white" clearable dense
-          label="Final Destination" outlined persistent-hint required validate-on-blur>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-autocomplete
+          v-model="finalDestination.locationId"
+          :items="destinationsByCurrentFormTravelRestriction"
+          :loading="loadingDestinations"
+          :rules="[required]"
+          background-color="white"
+          clearable
+          dense
+          label="Final Destination"
+          outlined
+          persistent-hint
+          required
+          validate-on-blur
+        >
         </v-autocomplete>
       </v-col>
-      <v-col cols="12" md="2">
-        <DatePicker v-model="initialDestination.departureDate" :rules="[required]" text="Start Date" required />
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <DatePicker
+          v-model="initialDestination.departureDate"
+          :rules="[required]"
+          text="Start Date"
+          required
+        />
       </v-col>
-      <v-col cols="12" md="2">
-        <DatePicker v-model="finalDestination.departureDate" :min="initialDestination.departureDate" :rules="[
-          required,
-          greaterThanOrEqualToDate(initialDestination.departureDate, 'start date'),
-        ]" text="End Date" required />
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <DatePicker
+          v-model="finalDestination.departureDate"
+          :min="initialDestination.departureDate"
+          :rules="[
+            required,
+            greaterThanOrEqualToDate(initialDestination.departureDate, 'start date'),
+          ]"
+          text="End Date"
+          required
+        />
       </v-col>
     </v-row>
   </v-form>
