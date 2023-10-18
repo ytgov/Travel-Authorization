@@ -42,10 +42,11 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   }
 
   static establishAssociations() {
-    this.belongsTo(TravelDeskTravelRequest, {
-      as: "travelDeskTravelRequest",
-      foreignKey: "requestID",
-    })
+    // TODO: enable this once TravelDeskTravelRequest model is set up
+    // this.belongsTo(TravelDeskTravelRequest, {
+    //   as: "travelDeskTravelRequest",
+    //   foreignKey: "requestID",
+    // })
   }
 }
 
