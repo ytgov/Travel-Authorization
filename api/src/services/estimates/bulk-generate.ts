@@ -41,7 +41,7 @@ export class BulkGenerate extends BaseService {
     }
 
     const stops = await Stop.findAll({
-      where: { taid: this.travelAuthorizationId },
+      where: { travelAuthorizationId: this.travelAuthorizationId },
       order: [
         ["departureDate", "ASC"],
         ["departureTime", "ASC"],

@@ -6,7 +6,7 @@ import BaseService from "./base-service"
 export class StopsService extends BaseService {
   // Probably should include validation around oneWayTrip/MultiStop parameters?
   static async bulkCreate(travelAuthorizationId: number, stops: Stop[]): Promise<Stop[]> {
-    if (!stops.every((stop) => stop.taid === travelAuthorizationId)) {
+    if (!stops.every((stop) => stop.travelAuthorizationId === travelAuthorizationId)) {
       throw new Error("All stops must belong to the same form.")
     }
 
@@ -14,12 +14,12 @@ export class StopsService extends BaseService {
   }
 
   static async bulkReplace(travelAuthorizationId: number, stops: Stop[]): Promise<Stop[]> {
-    if (!stops.every((stop) => stop.taid === travelAuthorizationId)) {
+    if (!stops.every((stop) => stop.travelAuthorizationId === travelAuthorizationId)) {
       throw new Error("All stops must belong to the same form.")
     }
 
     return db.transaction(async () => {
-      await Stop.destroy({ where: { taid: travelAuthorizationId } })
+      await Stop.destroy({ where: { travelAuthorizationId } })
       return Stop.bulkCreate(stops)
     })
   }

@@ -220,7 +220,7 @@ export default {
     required,
     newStop(attributes) {
       return {
-        taid: this.currentFormId,
+        travelAuthorizationId: this.currentFormId,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
         ...attributes,

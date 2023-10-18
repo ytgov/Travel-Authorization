@@ -4,140 +4,70 @@
       <v-form ref="form">
         <v-row>
           <v-col>
-            <v-checkbox
-              :input-value="request.multiStop"
-              label="Does this trip involve multiple destinations?"
-              :disabled="review"
-              dense
-              @change="updateMultiStop"
-            >
+            <v-checkbox :input-value="request.multiStop" label="Does this trip involve multiple destinations?"
+              :disabled="review" dense @change="updateMultiStop">
             </v-checkbox>
           </v-col>
           <v-col>
-            <v-checkbox
-              v-model="request.oneWayTrip"
-              label="Is this trip one way?"
-              :disabled="review"
-              dense
-            >
+            <v-checkbox v-model="request.oneWayTrip" label="Is this trip one way?" :disabled="review" dense>
             </v-checkbox>
           </v-col>
         </v-row>
         <v-divider class="mb-5"></v-divider>
 
-        <div
-          v-for="(stop, index) in request.stops"
-          :key="index"
-        >
+        <div v-for="(stop, index) in request.stops" :key="index">
           <v-row>
             <v-col>
-              <v-autocomplete
-                v-model="stop.locationId"
-                dense
-                label="Destination"
-                persistent-hint
-                :items="destinations"
-                :item-text="destinations.text"
-                :item-value="destinations.value"
-                required
-                clearable
-                background-color="white"
-                outlined
-                :disabled="review"
-                :rules="requiredRules"
-              >
+              <v-autocomplete v-model="stop.locationId" dense label="Destination" persistent-hint :items="destinations"
+                :item-text="destinations.text" :item-value="destinations.value" required clearable
+                background-color="white" outlined :disabled="review" :rules="requiredRules">
               </v-autocomplete>
             </v-col>
             <v-col>
-              <v-btn
-                class="ma-2"
-                dense
-                small
-                color="red"
-                @click="removeStop(index)"
-                :disabled="index < miminumStops || review"
-              >
+              <v-btn class="ma-2" dense small color="red" @click="removeStop(index)"
+                :disabled="index < miminumStops || review">
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-              ><DatePicker
-                v-model="stop.departureDate"
-                text="Departure Date"
-                :review="review"
-                :rules="requiredRules"
-              />
+            <v-col>
+              <DatePicker v-model="stop.departureDate" text="Departure Date" :review="review" :rules="requiredRules" />
             </v-col>
             <v-col>
-              <TimePicker
-                v-model="stop.departureTime"
-                text="Departure Time"
-                :review="review"
-                :rules="requiredRules"
-            /></v-col>
+              <TimePicker v-model="stop.departureTime" text="Departure Time" :review="review" :rules="requiredRules" />
+            </v-col>
             <v-col>
-              <v-select
-                :items="transport"
-                label="Method of transport"
-                v-model="stop.transport"
-                dense
-                :disabled="review"
-                :rules="requiredRules"
-              ></v-select
-            ></v-col>
+              <v-select :items="transport" label="Method of transport" v-model="stop.transport" dense :disabled="review"
+                :rules="requiredRules"></v-select></v-col>
           </v-row>
         </div>
 
         <v-row v-if="request.oneWayTrip !== true && request.stops.length > 0">
           <v-col>
-            <v-autocomplete
-              v-model="request.stops[0].locationId"
-              dense
-              label="Final Destination"
-              persistent-hint
-              :items="destinations"
-              :item-text="destinations.text"
-              :item-value="destinations.value"
-              required
-              background-color="white"
-              outlined
-              clearable
-              :disabled="review"
-              :rules="requiredRules"
-            >
+            <v-autocomplete v-model="request.stops[0].locationId" dense label="Final Destination" persistent-hint
+              :items="destinations" :item-text="destinations.text" :item-value="destinations.value" required
+              background-color="white" outlined clearable :disabled="review" :rules="requiredRules">
             </v-autocomplete>
           </v-col>
         </v-row>
 
         <v-row>
           <v-col>
-            <v-btn
-              color="blue"
-              @click="addStop"
-              :disabled="review"
-              >Add Stop</v-btn
-            >
+            <v-btn color="blue" @click="addStop" :disabled="review">Add Stop</v-btn>
           </v-col>
         </v-row>
       </v-form>
 
       <v-row>
         <v-col class="mr-auto pb-0">
-          <v-btn
-            color="secondary"
-            @click="backClick"
-          >
+          <v-btn color="secondary" @click="backClick">
             Back
           </v-btn>
         </v-col>
 
         <v-col class="col-auto pb-0">
-          <v-btn
-            color="primary"
-            @click="continueClick"
-          >
+          <v-btn color="primary" @click="continueClick">
             Continue
           </v-btn>
         </v-col>
@@ -210,7 +140,7 @@ export default {
     },
     addStop() {
       this.request.stops.push({
-        taid: this.formId,
+        travelAuthorizationId: this.formId,
         locationId: "",
         departureDate: "",
         departureTime: "12:00",

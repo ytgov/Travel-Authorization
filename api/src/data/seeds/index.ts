@@ -1600,7 +1600,7 @@ export async function seedUp() {
     ])
 
   // t.increments("id").notNullable().primary();
-  // t.integer("taid").notNullable();
+  // t.integer("travelAuthorizationId").notNullable();
   // t.integer("locationId");
   // t.specificType("departureDate", "DATE");
   // t.time("departureTime");
@@ -1609,42 +1609,42 @@ export async function seedUp() {
   await Stop.destroy({ where: {} })
   await Stop.bulkCreate([
     {
-      taid: travelAuthorization1.id,
+      travelAuthorizationId: travelAuthorization1.id,
       locationId: 1,
       departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization1.id,
+      travelAuthorizationId: travelAuthorization1.id,
       locationId: 2,
       departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization2.id,
+      travelAuthorizationId: travelAuthorization2.id,
       locationId: 3,
       departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization2.id,
+      travelAuthorizationId: travelAuthorization2.id,
       locationId: 4,
       departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization3.id,
+      travelAuthorizationId: travelAuthorization3.id,
       locationId: 5,
       departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
-      taid: travelAuthorization3.id,
+      travelAuthorizationId: travelAuthorization3.id,
       locationId: 6,
       departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",

@@ -48,7 +48,7 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   static AccommodationTypes = AccommodationTypes
 
   declare id: CreationOptional<number>
-  declare taid: ForeignKey<TravelAuthorization["id"]>
+  declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare locationId: ForeignKey<Location["id"]>
   declare departureDate: Date | null
   declare departureTime: string | null
@@ -81,7 +81,7 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
     })
     this.belongsTo(TravelAuthorization, {
       as: "travelAuthorization",
-      foreignKey: "taid",
+      foreignKey: "travelAuthorizationId",
     })
   }
 
@@ -103,10 +103,9 @@ Stop.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    taid: {
+    travelAuthorizationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "ta_id",
       references: {
         model: "travel_authorizations", // using table name here, instead of Model class
         key: "id",
