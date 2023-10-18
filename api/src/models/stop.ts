@@ -112,16 +112,16 @@ Stop.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "travel_authorizations", // using table name here, instead of Model class
-        key: "id",
+        model: "travel_authorizations", // using real table name here
+        key: "id", // using real column name here
       },
     },
     locationId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "locations", // using table name here, instead of Model class
-        key: "id",
+        model: "locations", // using real table name here
+        key: "id", // using real column name here
       },
     },
     departureDate: {
