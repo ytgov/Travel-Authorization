@@ -12,7 +12,6 @@ import {
   userRouter,
   managerRouter,
   lookupRouter,
-  permRouter,
   healthCheckRouter,
   formRouter,
   preapprovedRouter,
@@ -97,7 +96,6 @@ app.use(fileupload());
 app.use("/api/form", checkJwt, loadUser, formRouter);
 app.use("/api/user", checkJwt, loadUser, userRouter);
 app.use("/api/manager", checkJwt, loadUser, managerRouter);
-app.use("/api/permissions", checkJwt, loadUser, permRouter);
 app.use("/api/preapproved", checkJwt, loadUser, preapprovedRouter);
 app.use("/api/traveldesk", checkJwt, loadUser, travelDeskRouter);
 
