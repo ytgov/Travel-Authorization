@@ -17,6 +17,8 @@ export const SEQUELIZE_CONFIG: Options = {
   port: DB_PORT,
   schema: "public",
   logging: NODE_ENV === "development" ? console.log : false,
+  // Non-standard tables must now declare their customizations
+  // Prefer to migrating the tables rather to customize them.
   define: {
     underscored: true,
     timestamps: true,
