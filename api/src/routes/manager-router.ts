@@ -1,11 +1,9 @@
-import { isNull } from "lodash"
+import { isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
 
 import { ReturnValidationErrors } from "@/middleware"
 import { UserService } from "@/services"
 import { TravelAuthorization } from "@/models"
-
-import dbLegacy from "@/db/db-client-legacy"
 
 export const managerRouter = express.Router()
 const userService = new UserService()
@@ -18,13 +16,12 @@ managerRouter.get(
       const user = await userService.getByEmail(req.user.email)
       const form = await TravelAuthorization.findOne({
         where: { slug: req.params.formId, supervisorEmail: user.email },
+        include: ["stops"],
       })
 
       if (isNull(form)) {
         return res.status(404).json("Form not found")
       }
-
-      form.stops = await dbLegacy("stops").select("*").where("taid", "=", form.id)
 
       res.status(200).json(form)
     } catch (error: any) {
@@ -39,14 +36,17 @@ managerRouter.get("/forms", ReturnValidationErrors, async function (req: Request
     let user = await userService.getByEmail(req.user.email)
     const forms = await TravelAuthorization.findAll({
       where: { supervisorEmail: user.email },
+      include: ["stops"],
     })
 
-    for (let index = 0; index < forms.length; index++) {
-      forms[index].stops = await dbLegacy("stops").select("*").where("taid", "=", forms[index].id)
-      let departureDate = await dbLegacy("stops").min("departureDate").where("taid", "=", forms[index].id)
+    forms.forEach((form) => {
+      const stops = form.stops
+      const earliestStop = minBy(stops, "departureDate")
+
       // @ts-ignore - isn't worth fixing at this time
-      forms[index].departureDate = departureDate[0].min
-    }
+      form.departureDate = earliestStop?.departureDate
+    })
+
     res.status(200).json(forms)
   } catch (error: any) {
     console.log(error)

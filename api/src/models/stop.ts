@@ -101,6 +101,7 @@ Stop.init(
     taid: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      field: "ta_id",
       references: {
         model: "travel_authorizations", // using table name here, instead of Model class
         key: "id",
@@ -109,7 +110,6 @@ Stop.init(
     locationId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "locationId",
       references: {
         model: "locations", // using table name here, instead of Model class
         key: "id",
@@ -118,12 +118,10 @@ Stop.init(
     departureDate: {
       type: DataTypes.DATEONLY,
       allowNull: true,
-      field: "departureDate",
     },
     departureTime: {
       type: DataTypes.TIME,
       allowNull: true,
-      field: "departureTime",
     },
     transport: {
       type: DataTypes.STRING(255),
@@ -132,13 +130,13 @@ Stop.init(
     accommodationType: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "accommodationType",
     },
   },
   {
     sequelize,
     modelName: "Stop",
     tableName: "stops",
+    underscored: true,
     timestamps: false,
   }
 )
