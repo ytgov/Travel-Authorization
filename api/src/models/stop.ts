@@ -54,12 +54,17 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   declare departureTime: string | null
   declare transport: string | null
   declare accommodationType: string | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
   declare getTravelAuthorization: BelongsToGetAssociationMixin<TravelAuthorization>
-  declare setTravelAuthorization: BelongsToSetAssociationMixin<TravelAuthorization, TravelAuthorization["id"]>
+  declare setTravelAuthorization: BelongsToSetAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
   declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
   declare getLocation: BelongsToGetAssociationMixin<Location>
@@ -135,13 +140,23 @@ Stop.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     modelName: "Stop",
     tableName: "stops",
     underscored: true,
-    timestamps: false,
+    timestamps: true,
   }
 )
 
