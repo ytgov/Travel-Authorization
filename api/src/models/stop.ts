@@ -155,8 +155,6 @@ Stop.init(
     sequelize,
     modelName: "Stop",
     tableName: "stops",
-    underscored: true,
-    timestamps: true,
   }
 )
 

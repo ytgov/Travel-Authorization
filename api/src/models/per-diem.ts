@@ -69,6 +69,7 @@ PerDiem.init(
     sequelize,
     modelName: "PerDiem",
     tableName: "perDiems",
+    underscored: false,
     timestamps: false,
   }
 )

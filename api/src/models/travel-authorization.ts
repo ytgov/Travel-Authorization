@@ -294,8 +294,6 @@ TravelAuthorization.init(
     sequelize,
     tableName: "travel_authorizations",
     modelName: "TravelAuthorization",
-    underscored: true,
-    timestamps: true,
   }
 )
 

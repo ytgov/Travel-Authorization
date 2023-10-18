@@ -47,6 +47,7 @@ DistanceMatrix.init(
     sequelize,
     modelName: "DistanceMatrix",
     tableName: "distanceMatrix",
+    underscored: false,
     timestamps: false,
   }
 )
