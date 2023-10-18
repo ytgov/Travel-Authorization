@@ -4,6 +4,7 @@ import { DB_CONFIG } from "@/config"
 
 const DEFAULT_CONFIG = {
   migrations: {
+    schemaName: "public",
     tableName: "knex_migrations",
     // TODO: enable once https://github.com/knex/knex/pull/5422 gets merged
     // getNewMigrationName: (name) => {
