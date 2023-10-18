@@ -24,6 +24,8 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   declare travelDeskTravelRequestId: ForeignKey<TravelDeskTravelRequest["requestID"]>
   declare pnrDocument: Buffer | null
   declare invoiceNumber: string | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
   declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<
@@ -75,12 +77,21 @@ TravelDeskPassengerNameRecordDocument.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     modelName: "TravelDeskPassengerNameRecordDocument",
     tableName: "travel_desk_passenger_name_record_documents",
-    timestamps: false,
   }
 )
 
