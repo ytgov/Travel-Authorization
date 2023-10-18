@@ -22,7 +22,8 @@ const BEGINNING_OF_DAY = "00:00:00"
 
 // Keep in sync with web/src/modules/travelForm/components/TravelMethodSelect.vue
 // Until both are using a shared location
-export enum TravelMethods {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum TravelMethods {
   AIRCRAFT = "Aircraft",
   POOL_VEHICLE = "Pool Vehicle",
   PERSONAL_VEHICLE = "Personal Vehicle",
@@ -34,7 +35,8 @@ export enum TravelMethods {
 
 // Keep in sync with web/src/modules/travelForm/components/AccommodationTypeSelect.vue
 // Until both are using a shared location
-export enum AccommodationTypes {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum AccommodationTypes {
   HOTEL = "Hotel",
   PRIVATE = "Private",
   // TODO: replace other type with specific values
@@ -42,6 +44,9 @@ export enum AccommodationTypes {
 }
 
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
+  static TravelMethods = TravelMethods
+  static AccommodationTypes = AccommodationTypes
+
   declare id: CreationOptional<number>
   declare taid: ForeignKey<TravelAuthorization["id"]>
   declare locationId: ForeignKey<Location["id"]>

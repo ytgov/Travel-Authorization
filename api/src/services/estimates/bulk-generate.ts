@@ -2,7 +2,6 @@ import { clone, isNil, max, min, times } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
 import {
-  AccommodationTypes,
   ClaimTypes,
   DistanceMatrix,
   Expense,
@@ -11,7 +10,6 @@ import {
   PerDiem,
   Stop,
   TravelAuthorization,
-  TravelMethods,
 } from "@/models"
 import BaseService from "@/services/base-service"
 
@@ -262,12 +260,12 @@ export class BulkGenerate extends BaseService {
     toCity: string
   ): Promise<number> {
     switch (travelMethod) {
-      case TravelMethods.AIRCRAFT:
+      case Stop.TravelMethods.AIRCRAFT:
         return this.determineAicraftAllowance()
-      case TravelMethods.PERSONAL_VEHICLE:
+      case Stop.TravelMethods.PERSONAL_VEHICLE:
         return this.determinePersonalVehicleAllowance(fromCity, toCity)
-      case TravelMethods.POOL_VEHICLE:
-      case TravelMethods.RENTAL_VEHICLE:
+      case Stop.TravelMethods.POOL_VEHICLE:
+      case Stop.TravelMethods.RENTAL_VEHICLE:
         return 0
       default:
         return 0
@@ -298,10 +296,10 @@ export class BulkGenerate extends BaseService {
 
   private determineAccommodationCost(accommodationType: string): number {
     switch (accommodationType) {
-      case AccommodationTypes.HOTEL:
+      case Stop.AccommodationTypes.HOTEL:
         return 1 * HOTEL_ALLOWANCE_PER_NIGHT
       // TODO: determine if Private Accommodation is part of the max daily per-diem
-      case AccommodationTypes.PRIVATE:
+      case Stop.AccommodationTypes.PRIVATE:
         return 1 * PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT
       default:
         return 0
