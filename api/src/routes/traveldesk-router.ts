@@ -1,4 +1,4 @@
-import { minBy } from "lodash"
+import { isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
 import knex from "knex"
 import { WhereOptions } from "sequelize"
@@ -11,7 +11,7 @@ import {
 } from "@/middleware"
 import { DB_CONFIG } from "@/config"
 import { UserService } from "@/services"
-import { TravelAuthorization } from "@/models"
+import { TravelAuthorization, TravelDeskPnrDocument } from "@/models"
 
 const db = knex(DB_CONFIG)
 
@@ -55,11 +55,11 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     }
     travelRequest.questions = questions
 
-    const invoiceNumber = await db("travelDeskPnrDocuments")
-      .select("invoiceNumber")
-      .where("requestID", requestID)
-      .first()
-    travelRequest.invoiceNumber = invoiceNumber?.invoiceNumber ? invoiceNumber.invoiceNumber : ""
+    const travelDeskPnrDocument = await TravelDeskPnrDocument.findOne({
+      attributes: ["invoiceNumber"],
+      where: { requestID },
+    })
+    travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
   }
 
   res.status(200).json(travelRequests)
@@ -103,14 +103,13 @@ travelDeskRouter.get(
         // @ts-ignore - isn't worth fixing at this time
         const requestID = form.travelRequest?.requestID
         if (requestID) {
-          const invoiceNumber = await db("travelDeskPnrDocuments")
-            .select("invoiceNumber")
-            .where("requestID", requestID)
-            .first()
+          const travelDeskPnrDocument = await TravelDeskPnrDocument.findOne({
+            attributes: ["invoiceNumber"],
+            where: { requestID },
+          })
+
           // @ts-ignore - isn't worth fixing at this time
-          form.travelRequest.invoiceNumber = invoiceNumber?.invoiceNumber
-            ? invoiceNumber.invoiceNumber
-            : ""
+          form.travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
         }
       }
       res.status(200).json(forms)
@@ -432,11 +431,11 @@ travelDeskRouter.get(
       }
       travelRequest.questions = questions
 
-      const invoiceNumber = await db("travelDeskPnrDocuments")
-        .select("invoiceNumber")
-        .where("requestID", requestID)
-        .first()
-      travelRequest.invoiceNumber = invoiceNumber?.invoiceNumber ? invoiceNumber.invoiceNumber : ""
+      const travelDeskPnrDocument = await TravelDeskPnrDocument.findOne({
+        attributes: ["invoiceNumber"],
+        where: { requestID },
+      })
+      travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
     }
 
     res.status(200).json(travelRequest)
@@ -651,30 +650,17 @@ travelDeskRouter.post(
   RequiresRoleTdUser,
   async function (req: Request, res: Response) {
     const file = req.body.file
-    const requestID = req.params.requestID
+    const requestID = parseInt(req.params.requestID)
     const data = JSON.parse(req.body.data)
 
     try {
       await db.transaction(async (trx) => {
-        const pnrDoc = await db("travelDeskPnrDocuments")
-          .select("documentID")
-          .where("requestID", requestID)
-          .first()
-        if (pnrDoc) {
-          await db("travelDeskPnrDocuments")
-            .update({
-              invoiceNumber: data.invoiceNumber,
-              pnrDocument: file,
-            })
-            .where("requestID", requestID)
-        } else {
-          const newDocument = {
-            requestID: requestID,
-            invoiceNumber: data.invoiceNumber,
-            pnrDocument: file,
-          }
-          await db("travelDeskPnrDocuments").insert(newDocument, "documentID")
-        }
+        // TODO: re-add to transaction once travelDeskTravelRequest is in Sequelize
+        await TravelDeskPnrDocument.upsert({
+          requestID,
+          invoiceNumber: data.invoiceNumber,
+          pnrDocument: file,
+        })
 
         if (data.agencyID) {
           await db("travelDeskTravelRequest")
@@ -700,10 +686,14 @@ travelDeskRouter.get(
   async function (req, res) {
     try {
       const requestID = req.params.requestID
-      const doc = await db("travelDeskPnrDocuments")
-        .select("pnrDocument")
-        .where("requestID", requestID)
-        .first()
+      const doc = await TravelDeskPnrDocument.findOne({
+        where: { requestID },
+      })
+
+      if (isNull(doc)) {
+        return res.status(404).json({ message: "No PNR Document found" })
+      }
+
       res.status(200).send(doc.pnrDocument)
     } catch (error: any) {
       console.log(error)
