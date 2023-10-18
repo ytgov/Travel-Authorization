@@ -9,7 +9,7 @@ import {
   RequiresRoleTdUserOrAdmin,
 } from "@/middleware"
 import { UserService } from "@/services"
-import { TravelAuthorization, TravelDeskPnrDocument } from "@/models"
+import { TravelAuthorization, TravelDeskPassengerNameRecordDocument } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
@@ -55,7 +55,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     }
     travelRequest.questions = questions
 
-    const travelDeskPnrDocument = await TravelDeskPnrDocument.findOne({
+    const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
       attributes: ["invoiceNumber"],
       where: { requestID },
     })
@@ -103,7 +103,7 @@ travelDeskRouter.get(
         // @ts-ignore - isn't worth fixing at this time
         const requestID = form.travelRequest?.requestID
         if (requestID) {
-          const travelDeskPnrDocument = await TravelDeskPnrDocument.findOne({
+          const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
             attributes: ["invoiceNumber"],
             where: { requestID },
           })
@@ -442,7 +442,7 @@ travelDeskRouter.get(
       }
       travelRequest.questions = questions
 
-      const travelDeskPnrDocument = await TravelDeskPnrDocument.findOne({
+      const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
         attributes: ["invoiceNumber"],
         where: { requestID },
       })
@@ -674,7 +674,7 @@ travelDeskRouter.post(
     try {
       await dbLegacy.transaction(async (trx) => {
         // TODO: re-add to transaction once travelDeskTravelRequest is in Sequelize
-        await TravelDeskPnrDocument.upsert({
+        await TravelDeskPassengerNameRecordDocument.upsert({
           requestID,
           invoiceNumber: data.invoiceNumber,
           pnrDocument: file,
@@ -704,7 +704,7 @@ travelDeskRouter.get(
   async function (req, res) {
     try {
       const requestID = req.params.requestID
-      const doc = await TravelDeskPnrDocument.findOne({
+      const doc = await TravelDeskPassengerNameRecordDocument.findOne({
         where: { requestID },
       })
 

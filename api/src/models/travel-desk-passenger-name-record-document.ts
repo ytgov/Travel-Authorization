@@ -16,9 +16,9 @@ import { TravelDeskTravelRequest } from "./travel-desk-travel-request"
 
 import sequelize from "@/db/db-client"
 
-export class TravelDeskPnrDocument extends Model<
-  InferAttributes<TravelDeskPnrDocument>,
-  InferCreationAttributes<TravelDeskPnrDocument>
+export class TravelDeskPassengerNameRecordDocument extends Model<
+  InferAttributes<TravelDeskPassengerNameRecordDocument>,
+  InferCreationAttributes<TravelDeskPassengerNameRecordDocument>
 > {
   declare documentID: CreationOptional<number>
   declare requestID: ForeignKey<TravelDeskTravelRequest["requestID"]>
@@ -35,7 +35,10 @@ export class TravelDeskPnrDocument extends Model<
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
 
   declare static associations: {
-    travelDeskTravelRequest: Association<TravelDeskPnrDocument, TravelDeskTravelRequest>
+    travelDeskTravelRequest: Association<
+      TravelDeskPassengerNameRecordDocument,
+      TravelDeskTravelRequest
+    >
   }
 
   static establishAssociations() {
@@ -46,7 +49,7 @@ export class TravelDeskPnrDocument extends Model<
   }
 }
 
-TravelDeskPnrDocument.init(
+TravelDeskPassengerNameRecordDocument.init(
   {
     documentID: {
       type: DataTypes.INTEGER,
@@ -74,11 +77,11 @@ TravelDeskPnrDocument.init(
   },
   {
     sequelize,
-    modelName: "TravelDeskPnrDocument",
-    tableName: "travelDeskPnrDocuments",
+    modelName: "TravelDeskPassengerNameRecordDocument",
+    tableName: "travel_desk_passenger_name_record_documents",
     underscored: false,
     timestamps: false,
   }
 )
 
-export default TravelDeskPnrDocument
+export default TravelDeskPassengerNameRecordDocument
