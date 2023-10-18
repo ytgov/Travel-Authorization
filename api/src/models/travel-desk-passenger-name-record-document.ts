@@ -20,7 +20,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   InferAttributes<TravelDeskPassengerNameRecordDocument>,
   InferCreationAttributes<TravelDeskPassengerNameRecordDocument>
 > {
-  declare documentID: CreationOptional<number>
+  declare id: CreationOptional<number>
   declare requestID: ForeignKey<TravelDeskTravelRequest["requestID"]>
   declare pnrDocument: Buffer | null
   declare invoiceNumber: string | null
@@ -52,7 +52,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
 
 TravelDeskPassengerNameRecordDocument.init(
   {
-    documentID: {
+    id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
