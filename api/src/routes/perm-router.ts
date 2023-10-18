@@ -1,11 +1,9 @@
 import express, { Request, Response } from "express"
-import knex from "knex"
 
 import { ReturnValidationErrors } from "@/middleware"
-import { DB_CONFIG } from "@/config"
 import { UserService } from "@/services"
 
-const db = knex(DB_CONFIG)
+import dbLegacy from "@/db/db-client-legacy"
 
 export const permRouter = express.Router()
 const userService = new UserService()
@@ -22,7 +20,7 @@ permRouter.get("/", ReturnValidationErrors, async function (req: Request, res: R
 
 permRouter.post("/", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    await db.transaction(async (trx) => {
+    await dbLegacy.transaction(async (trx) => {
       let user = await userService.getByEmail(req.user.email)
       let stops = req.body.stops
       let authInsert = {
@@ -39,7 +37,7 @@ permRouter.post("/", ReturnValidationErrors, async function (req: Request, res: 
         approved: false,
       }
 
-      let id = await db("auth").insert(authInsert, "taid").transacting(trx).returning("taid")
+      let id = await dbLegacy("auth").insert(authInsert, "taid").transacting(trx).returning("taid")
 
       for (let index = 0; index < stops.length; index++) {
         let stop = {
@@ -48,7 +46,7 @@ permRouter.post("/", ReturnValidationErrors, async function (req: Request, res: 
           arrivaldate: stops[index].arrivaldate,
           departuredate: stops[index].departuredate,
         }
-        await db("stops").insert(stop).transacting(trx)
+        await dbLegacy("stops").insert(stop).transacting(trx)
       }
     })
   } catch (error: any) {
@@ -59,7 +57,7 @@ permRouter.post("/", ReturnValidationErrors, async function (req: Request, res: 
 
 permRouter.delete("/:id", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    let result = await db("Forms").where("id", "=", req.params.id).del()
+    let result = await dbLegacy("Forms").where("id", "=", req.params.id).del()
     if (result) {
       res.status(200).json("Delete successful")
       console.log("Delete successful", req.params.id)
@@ -73,7 +71,7 @@ permRouter.delete("/:id", ReturnValidationErrors, async function (req: Request, 
 
 permRouter.put("/:id", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    await db("Forms").where("id", "=", req.params.id).update(req.body)
+    await dbLegacy("Forms").where("id", "=", req.params.id).update(req.body)
     console.log("Entry updated", req.body)
     res.status(200).json("Updated successful")
   } catch (error: any) {
