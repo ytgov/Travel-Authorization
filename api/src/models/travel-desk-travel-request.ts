@@ -113,8 +113,6 @@ TravelDeskTravelRequest.init(
       allowNull: false,
     },
     travelAuthorizationId: {
-      // TODO: remove field customization once columns all other columns are underscored
-      field: "travel_authorization_id",
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
@@ -125,8 +123,6 @@ TravelDeskTravelRequest.init(
       onDelete: "CASCADE",
     },
     travelDeskTravelAgentId: {
-      // TODO: remove field customization once columns all other columns are underscored
-      field: "travel_desk_travel_agent_id",
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
@@ -228,7 +224,6 @@ TravelDeskTravelRequest.init(
     sequelize,
     modelName: "TravelDeskTravelRequest",
     tableName: "travel_desk_travel_requests",
-    underscored: false,
     timestamps: false,
   }
 )
