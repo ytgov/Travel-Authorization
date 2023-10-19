@@ -45,8 +45,9 @@ export class TravelDeskTravelRequest extends Model<
   declare travelEmail: string | null
   declare additionalInformation: string | null
   declare status: string
-  declare submitDate: Date | null
   declare travelDeskOfficer: string | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   // Associations
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
@@ -211,20 +212,25 @@ TravelDeskTravelRequest.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    submitDate: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
     travelDeskOfficer: {
       type: DataTypes.STRING(255),
       allowNull: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
     sequelize,
     modelName: "TravelDeskTravelRequest",
     tableName: "travel_desk_travel_requests",
-    timestamps: false,
   }
 )
 
