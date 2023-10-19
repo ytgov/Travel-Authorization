@@ -35,7 +35,7 @@
       :items-per-page="15"
       v-model="selectedRequests"
       show-select
-      item-key="requestID"
+      item-key="id"
       class="elevation-1 mt-4"
     >
       <template v-slot:[`item.submitDate`]="{ item }">
