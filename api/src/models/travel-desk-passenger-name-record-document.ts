@@ -12,7 +12,7 @@ import {
   NonAttribute,
 } from "sequelize"
 
-import { TravelDeskTravelRequest } from "./travel-desk-travel-request"
+import TravelDeskTravelRequest from "./travel-desk-travel-request"
 
 import sequelize from "@/db/db-client"
 
@@ -21,7 +21,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   InferCreationAttributes<TravelDeskPassengerNameRecordDocument>
 > {
   declare id: CreationOptional<number>
-  declare travelDeskTravelRequestId: ForeignKey<TravelDeskTravelRequest["requestID"]>
+  declare travelDeskTravelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare pnrDocument: Buffer | null
   declare invoiceNumber: string | null
   declare createdAt: CreationOptional<Date>
@@ -30,7 +30,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
   declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<
     TravelDeskTravelRequest,
-    TravelDeskTravelRequest["requestID"]
+    TravelDeskTravelRequest["id"]
   >
   declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
 
@@ -44,11 +44,11 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   }
 
   static establishAssociations() {
-    // TODO: enable this once TravelDeskTravelRequest model is set up
-    // this.belongsTo(TravelDeskTravelRequest, {
-    //   as: "travelDeskTravelRequest",
-    //   foreignKey: "travelDeskTravelRequestId",
-    // })
+    this.belongsTo(TravelDeskTravelRequest, {
+      as: "travelDeskTravelRequest",
+      targetKey: "id",
+      foreignKey: "travelDeskTravelRequestId",
+    })
   }
 }
 
@@ -63,9 +63,10 @@ TravelDeskPassengerNameRecordDocument.init(
     travelDeskTravelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: true,
       references: {
-        model: "travelDeskTravelRequest", // using real table name here
-        key: "requestID", // using real column name here
+        model: "travel_desk_travel_requests", // using real table name here
+        key: "id", // using real column name here
       },
       onDelete: "CASCADE",
     },

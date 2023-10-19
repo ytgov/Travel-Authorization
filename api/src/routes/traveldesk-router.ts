@@ -1,6 +1,6 @@
 import { isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
-import { WhereOptions } from "sequelize"
+import { Op, WhereOptions } from "sequelize"
 
 import {
   RequiresAuth,
@@ -8,58 +8,77 @@ import {
   RequiresRoleTdUser,
   RequiresRoleTdUserOrAdmin,
 } from "@/middleware"
-import { UserService } from "@/services"
-import { TravelAuthorization, TravelDeskPassengerNameRecordDocument } from "@/models"
+import {
+  TravelAuthorization,
+  TravelDeskPassengerNameRecordDocument,
+  TravelDeskTravelRequest,
+} from "@/models"
 
+import db from "@/db/db-client"
 import dbLegacy from "@/db/db-client-legacy"
 
 export const travelDeskRouter = express.Router()
-const userService = new UserService()
 
 travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Response) {
-  const travelRequests = await dbLegacy("travelDeskTravelRequest").select("*").whereNot({
-    status: "draft",
+  const travelRequests = await TravelDeskTravelRequest.findAll({
+    where: {
+      status: {
+        [Op.ne]: "draft",
+      },
+    },
+    include: [
+      {
+        association: "travelAuthorization",
+        include: ["stops"],
+      },
+      {
+        association: "travelDeskPassengerNameRecordDocument",
+        attributes: ["invoiceNumber"],
+      },
+    ],
   })
 
   for (const travelRequest of travelRequests) {
-    const requestID = travelRequest.requestID
-    const TAID = travelRequest.TAID
+    const traveRequestId = travelRequest.id
 
-    const form = await TravelAuthorization.findOne({
-      where: { id: TAID },
-      include: ["stops"],
-    })
-    travelRequest.form = form
+    // @ts-ignore - not worth fixing at this time, belongs in a serializer
+    travelRequest.form = travelRequest.travelAuthorization
+    delete travelRequest.travelAuthorization
 
     const flightRequests = await dbLegacy("travelDeskFlightRequest")
       .select("*")
-      .where("requestID", requestID)
+      .where("requestID", traveRequestId)
+    // @ts-ignore - not worth fixing at this time, belongs in a serializer
     travelRequest.flightRequests = flightRequests
 
     const rentalCars = await dbLegacy("travelDeskRentalCar")
       .select("*")
-      .where("requestID", requestID)
+      .where("requestID", traveRequestId)
+    // @ts-ignore - not worth fixing at this time, belongs in a serializer
     travelRequest.rentalCars = rentalCars
 
-    const hotels = await dbLegacy("travelDeskHotel").select("*").where("requestID", requestID)
+    const hotels = await dbLegacy("travelDeskHotel").select("*").where("requestID", traveRequestId)
+    // @ts-ignore - not worth fixing at this time, belongs in a serializer
     travelRequest.hotels = hotels
 
     const otherTransportations = await dbLegacy("travelDeskOtherTransportation")
       .select("*")
-      .where("requestID", requestID)
+      .where("requestID", traveRequestId)
+    // @ts-ignore - not worth fixing at this time, belongs in a serializer
     travelRequest.otherTransportation = otherTransportations
 
-    const questions = await dbLegacy("travelDeskQuestion").select("*").where("requestID", requestID)
+    const questions = await dbLegacy("travelDeskQuestion")
+      .select("*")
+      .where("requestID", traveRequestId)
     for (const question of questions) {
       question.state = { questionErr: false, responseErr: false }
     }
+    // @ts-ignore - not worth fixing at this time, belongs in a serializer
     travelRequest.questions = questions
 
-    const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
-      attributes: ["invoiceNumber"],
-      where: { travelDeskTravelRequestId: requestID },
-    })
-    travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
+    // @ts-ignore - not worth fixing at this time, belongs in a serializer
+    travelRequest.invoiceNumber =
+      travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
   }
 
   res.status(200).json(travelRequests)
@@ -81,9 +100,10 @@ travelDeskRouter.get(
     try {
       const forms = await TravelAuthorization.findAll({
         where: adminScoping,
-        include: ["stops"],
+        include: ["stops", "travelDeskTravelRequest"],
       })
 
+      // TODO: move this code to a serializer
       for (const form of forms) {
         const stops = form.stops
         const earliestStop = minBy(stops, (stop) => {
@@ -95,17 +115,15 @@ travelDeskRouter.get(
         form.departureTime = earliestStop?.departureTime || "Unknown"
 
         // @ts-ignore - isn't worth fixing at this time
-        form.travelRequest = await dbLegacy("travelDeskTravelRequest")
-          .select("*")
-          .where("TAID", form.id)
-          .first()
+        form.travelRequest = form.travelDeskTravelRequest
+        delete form.travelDeskTravelRequest
 
         // @ts-ignore - isn't worth fixing at this time
-        const requestID = form.travelRequest?.requestID
-        if (requestID) {
+        const travelDeskTravelRequestId = form.travelRequest?.id
+        if (travelDeskTravelRequestId) {
           const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
             attributes: ["invoiceNumber"],
-            where: { travelDeskTravelRequestId: requestID },
+            where: { travelDeskTravelRequestId },
           })
 
           // @ts-ignore - isn't worth fixing at this time
@@ -165,20 +183,20 @@ travelDeskRouter.get(
 )
 
 travelDeskRouter.post(
-  "/flight-options/:requestID",
+  "/flight-options/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     try {
       await dbLegacy.transaction(async (trx) => {
-        const requestID = Number(req.params.requestID)
+        const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const newFlightOptions = req.body
         //console.log(newFlightOptions)
-        if (newFlightOptions.length < 1 || !requestID)
+        if (newFlightOptions.length < 1 || !travelDeskTravelRequestId)
           return res.status(500).json("Empty Payload for Flight Options")
 
         const flightRequestQuery = await await dbLegacy("travelDeskFlightRequest")
           .select("flightRequestID")
-          .where("requestID", requestID)
+          .where("requestID", travelDeskTravelRequestId)
         const flightRequestIDs = flightRequestQuery.map((req) => req.flightRequestID)
         // console.log(flightRequestIDs)
         await dbLegacy("travelDeskFlightOption")
@@ -218,17 +236,17 @@ travelDeskRouter.post(
 )
 
 travelDeskRouter.delete(
-  "/flight-options/:requestID",
+  "/flight-options/:travelDeskTravelRequestId",
   RequiresAuth,
   RequiresRoleTdUser,
   async function (req: Request, res: Response) {
     try {
-      const requestID = Number(req.params.requestID)
+      const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
       // console.log(flightRequestIDs)
       await dbLegacy.transaction(async (trx) => {
         const flightRequestQuery = await await dbLegacy("travelDeskFlightRequest")
           .select("flightRequestID")
-          .where("requestID", requestID)
+          .where("requestID", travelDeskTravelRequestId)
         const flightRequestIDs = flightRequestQuery.map((req) => req.flightRequestID)
 
         await dbLegacy("travelDeskFlightOption")
@@ -245,7 +263,7 @@ travelDeskRouter.delete(
 )
 
 travelDeskRouter.get(
-  "/flight-request/:requestID",
+  "/flight-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     const flightSegmentState = {
@@ -261,14 +279,14 @@ travelDeskRouter.get(
       statusErr: false,
     }
 
-    const requestID = Number(req.params.requestID)
+    const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
 
-    if (requestID) {
+    if (travelDeskTravelRequestId) {
       let tmpId = 3000
 
       const flightRequests = await dbLegacy("travelDeskFlightRequest")
         .select("*")
-        .where("requestID", requestID)
+        .where("requestID", travelDeskTravelRequestId)
       for (const flightRequest of flightRequests) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
@@ -297,17 +315,19 @@ travelDeskRouter.get(
 )
 
 travelDeskRouter.post(
-  "/flight-request/:requestID",
+  "/flight-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     try {
       await dbLegacy.transaction(async (trx) => {
-        const requestID = Number(req.params.requestID)
+        const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const flightRequests = req.body
         // console.log(flightRequests)
 
-        if (requestID) {
-          await dbLegacy("travelDeskFlightRequest").delete().where("requestID", requestID)
+        if (travelDeskTravelRequestId) {
+          await dbLegacy("travelDeskFlightRequest")
+            .delete()
+            .where("requestID", travelDeskTravelRequestId)
 
           for (const flightRequest of flightRequests) {
             const newFlightOptions = flightRequest.flightOptions
@@ -315,7 +335,7 @@ travelDeskRouter.post(
             delete flightRequest.tmpId
             if (flightRequest.flightRequestID == null) delete flightRequest.flightRequestID
 
-            flightRequest.requestID = requestID
+            flightRequest.requestID = travelDeskTravelRequestId
 
             const flightId = await dbLegacy("travelDeskFlightRequest").insert(
               flightRequest,
@@ -366,7 +386,7 @@ travelDeskRouter.post(
 )
 
 travelDeskRouter.get(
-  "/travel-request/:taid",
+  "/travel-request/:travelAuthorizationId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     const flightSegmentState = {
@@ -382,21 +402,26 @@ travelDeskRouter.get(
       statusErr: false,
     }
 
-    const travelRequest = await dbLegacy("travelDeskTravelRequest")
-      .select("*")
-      .where({
-        TAID: req.params.taid,
-      })
-      .first()
+    const travelAuthorizationId = req.params.travelAuthorizationId
+    const travelRequest = await TravelDeskTravelRequest.findOne({
+      where: { travelAuthorizationId },
+      include: [
+        {
+          association: "travelDeskPassengerNameRecordDocument",
+          attributes: ["invoiceNumber"],
+        },
+      ],
+    })
 
+    // TODO: move this code to a serializer
     if (travelRequest) {
-      const requestID = travelRequest.requestID
+      const travelRequestId = travelRequest.id
 
       let tmpId = 1000
 
       const flightRequests = await dbLegacy("travelDeskFlightRequest")
         .select("*")
-        .where("requestID", requestID)
+        .where("requestID", travelRequestId)
       for (const flightRequest of flightRequests) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
@@ -419,34 +444,40 @@ travelDeskRouter.get(
         }
         flightRequest.flightOptions = flightOptions
       }
+      // @ts-ignore - not worth fixing at this time
       travelRequest.flightRequests = flightRequests
 
       const rentalCars = await dbLegacy("travelDeskRentalCar")
         .select("*")
-        .where("requestID", requestID)
+        .where("requestID", travelRequestId)
+      // @ts-ignore - not worth fixing at this time
       travelRequest.rentalCars = rentalCars
 
-      const hotels = await dbLegacy("travelDeskHotel").select("*").where("requestID", requestID)
+      const hotels = await dbLegacy("travelDeskHotel")
+        .select("*")
+        .where("requestID", travelRequestId)
+      // @ts-ignore - not worth fixing at this time
       travelRequest.hotels = hotels
 
       const otherTransportation = await dbLegacy("travelDeskOtherTransportation")
         .select("*")
-        .where("requestID", requestID)
+        .where("requestID", travelRequestId)
+      // @ts-ignore - not worth fixing at this time
       travelRequest.otherTransportation = otherTransportation
 
       const questions = await dbLegacy("travelDeskQuestion")
         .select("*")
-        .where("requestID", requestID)
+        .where("requestID", travelRequestId)
       for (const question of questions) {
         question.state = { questionErr: false, responseErr: false }
       }
+      // @ts-ignore - not worth fixing at this time
       travelRequest.questions = questions
 
-      const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
-        attributes: ["invoiceNumber"],
-        where: { travelDeskTravelRequestId: requestID },
-      })
-      travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
+      // @ts-ignore - not worth fixing at this time
+      travelRequest.invoiceNumber =
+        travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
+      delete travelRequest.travelDeskPassengerNameRecordDocument
     }
 
     res.status(200).json(travelRequest)
@@ -454,16 +485,16 @@ travelDeskRouter.get(
 )
 
 travelDeskRouter.post(
-  "/travel-request/:taid",
+  "/travel-request/:travelAuthorizationId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     try {
       await dbLegacy.transaction(async (trx) => {
-        const TAID = Number(req.params.taid)
+        const travelAuthorizationId = Number(req.params.travelAuthorizationId)
         const newTravelRequest = req.body
         // console.log(newTravelRequest)
 
-        if (TAID) {
+        if (travelAuthorizationId) {
           delete newTravelRequest.invoiceNumber
 
           const flightRequests = newTravelRequest.flightRequests
@@ -481,23 +512,17 @@ travelDeskRouter.post(
           const questions = newTravelRequest.questions
           delete newTravelRequest.questions
 
-          let id = null
-          const travelRequestQuery = await dbLegacy("travelDeskTravelRequest")
-            .select("*")
-            .where("TAID", TAID)
+          const [travelRequest, _created] = await TravelDeskTravelRequest.upsert({
+            ...newTravelRequest,
+            travelAuthorizationId,
+          })
 
-          if (travelRequestQuery.length == 1) {
-            id = await dbLegacy("travelDeskTravelRequest")
-              .update(newTravelRequest, "requestID")
-              .where("TAID", TAID)
-          } else if (travelRequestQuery.length == 0) {
-            id = await dbLegacy("travelDeskTravelRequest").insert(newTravelRequest, "requestID")
-          } else {
-            return res.status(500).json("Multiple Travel Request Records!")
+          if (isNull(travelRequest)) {
+            return res.status(422).json({ message: "Failed to upsert travel request" })
           }
 
           //FlightRequests
-          await dbLegacy("travelDeskFlightRequest").delete().where("requestID", id[0].requestID)
+          await dbLegacy("travelDeskFlightRequest").delete().where("requestID", travelRequest.id)
 
           for (const flightRequest of flightRequests) {
             const newFlightOptions = flightRequest.flightOptions
@@ -505,7 +530,7 @@ travelDeskRouter.post(
             delete flightRequest.tmpId
             if (flightRequest.flightRequestID == null) delete flightRequest.flightRequestID
 
-            flightRequest.requestID = id[0].requestID
+            flightRequest.requestID = travelRequest.id
 
             const flightId = await dbLegacy("travelDeskFlightRequest").insert(
               flightRequest,
@@ -525,7 +550,7 @@ travelDeskRouter.post(
 
               newFlightOption.flightRequestID = flightRequestID
 
-              const id = await dbLegacy("travelDeskFlightOption").insert(
+              const travelDeskFlighOption = await dbLegacy("travelDeskFlightOption").insert(
                 newFlightOption,
                 "flightOptionID"
               )
@@ -538,53 +563,53 @@ travelDeskRouter.post(
                 delete flightSegment.departTime
                 delete flightSegment.arriveDay
                 delete flightSegment.arriveTime
-                flightSegment.flightOptionID = id[0].flightOptionID
+                flightSegment.flightOptionID = travelDeskFlighOption[0].flightOptionID
                 await dbLegacy("travelDeskFlightSegment").insert(flightSegment)
               }
             }
           }
 
           //RentalCars
-          await dbLegacy("travelDeskRentalCar").delete().where("requestID", id[0].requestID)
+          await dbLegacy("travelDeskRentalCar").delete().where("requestID", travelRequest.id)
 
           for (const rentalCar of rentalCars) {
             delete rentalCar.tmpId
             if (rentalCar.rentalVehicleID == null) delete rentalCar.rentalVehicleID
-            rentalCar.requestID = id[0].requestID
+            rentalCar.requestID = travelRequest.id
             await dbLegacy("travelDeskRentalCar").insert(rentalCar)
           }
 
           //Hotels
-          await dbLegacy("travelDeskHotel").delete().where("requestID", id[0].requestID)
+          await dbLegacy("travelDeskHotel").delete().where("requestID", travelRequest.id)
 
           for (const hotel of hotels) {
             delete hotel.tmpId
             if (hotel.hotelID == null) delete hotel.hotelID
-            hotel.requestID = id[0].requestID
+            hotel.requestID = travelRequest.id
             await dbLegacy("travelDeskHotel").insert(hotel)
           }
 
           //Other Transportations
           await dbLegacy("travelDeskOtherTransportation")
             .delete()
-            .where("requestID", id[0].requestID)
+            .where("requestID", travelRequest.id)
 
           for (const otherTransportation of otherTransportations) {
             delete otherTransportation.tmpId
             if (otherTransportation.transportationID == null)
               delete otherTransportation.transportationID
-            otherTransportation.requestID = id[0].requestID
+            otherTransportation.requestID = travelRequest.id
             await dbLegacy("travelDeskOtherTransportation").insert(otherTransportation)
           }
 
           //Questions
-          await dbLegacy("travelDeskQuestion").delete().where("requestID", id[0].requestID)
+          await dbLegacy("travelDeskQuestion").delete().where("requestID", travelRequest.id)
 
           for (const question of questions) {
             delete question.tmpId
             delete question.state
             if (question.questionID == null) delete question.questionID
-            question.requestID = id[0].requestID
+            question.requestID = travelRequest.id
             await dbLegacy("travelDeskQuestion").insert(question)
           }
 
@@ -663,49 +688,52 @@ travelDeskRouter.post(
 )
 
 travelDeskRouter.post(
-  "/pnr-document/:requestID",
+  "/pnr-document/:travelDeskTravelRequestId",
   RequiresAuth,
   RequiresRoleTdUser,
   async function (req: Request, res: Response) {
     const file = req.body.file
-    const requestID = parseInt(req.params.requestID)
+    const travelDeskTravelRequestId = parseInt(req.params.travelDeskTravelRequestId)
     const data = JSON.parse(req.body.data)
+    const { invoiceNumber, travelDeskTravelAgentId } = data
 
-    try {
-      await dbLegacy.transaction(async (trx) => {
-        // TODO: re-add to transaction once travelDeskTravelRequest is in Sequelize
+    return db
+      .transaction(async () => {
         await TravelDeskPassengerNameRecordDocument.upsert({
-          travelDeskTravelRequestId: requestID,
-          invoiceNumber: data.invoiceNumber,
+          travelDeskTravelRequestId,
+          invoiceNumber,
           pnrDocument: file,
         })
 
-        if (data.agencyID) {
-          await dbLegacy("travelDeskTravelRequest")
-            .update({
-              agencyID: data.agencyID,
-            })
-            .where("requestID", requestID)
+        if (travelDeskTravelAgentId) {
+          await TravelDeskTravelRequest.update(
+            {
+              travelDeskTravelAgentId,
+            },
+            {
+              where: { id: travelDeskTravelRequestId },
+            }
+          )
         }
 
         res.status(200).json("Successful")
       })
-    } catch (error: any) {
-      console.log(error)
-      res.status(500).json("Insert failed")
-    }
+      .catch((error) => {
+        console.log(error)
+        res.status(500).json("Insert failed")
+      })
   }
 )
 
 travelDeskRouter.get(
-  "/pnr-document/:requestID",
+  "/pnr-document/:travelDeskTravelRequestId",
   RequiresAuth,
   RequiresRoleTdUser,
   async function (req, res) {
     try {
-      const requestID = req.params.requestID
+      const travelDeskTravelRequestId = req.params.travelDeskTravelRequestId
       const doc = await TravelDeskPassengerNameRecordDocument.findOne({
-        where: { travelDeskTravelRequestId: requestID },
+        where: { travelDeskTravelRequestId },
       })
 
       if (isNull(doc)) {

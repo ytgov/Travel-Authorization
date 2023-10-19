@@ -27,6 +27,7 @@ import sequelize from "@/db/db-client"
 import Expense from "./expense"
 import Preapproved from "./preapproved"
 import Stop from "./stop"
+import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelPurpose from "./travel-purpose"
 import User from "./user"
 
@@ -82,13 +83,17 @@ export class TravelAuthorization extends Model<
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
-  // associations stops, purpose, expenses
+  // Associations
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
   declare getPurpose: BelongsToGetAssociationMixin<TravelPurpose>
   declare setPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
+
+  declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
+  declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<TravelDeskTravelRequest, TravelDeskTravelRequest["travelAuthorizationId"]>
+  declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
 
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
   declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
@@ -112,20 +117,27 @@ export class TravelAuthorization extends Model<
   declare countStops: HasManyCountAssociationsMixin
   declare createStop: HasManyCreateAssociationMixin<Stop>
 
-  declare expenses?: NonAttribute<Expense[]>
   declare purpose?: NonAttribute<TravelPurpose>
+  declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
+  declare expenses?: NonAttribute<Expense[]>
   declare stops?: NonAttribute<Stop[]>
 
   declare static associations: {
     expenses: Association<TravelAuthorization, Expense>
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
+    travelDeskTravelRequest: Association<TravelAuthorization, TravelDeskTravelRequest>
   }
 
   static establishAssociations() {
     this.belongsTo(TravelPurpose, {
       as: "purpose",
       foreignKey: "purposeId",
+    })
+    this.hasOne(TravelDeskTravelRequest, {
+      as: "travelDeskTravelRequest",
+      sourceKey: "id",
+      foreignKey: "travelAuthorizationId",
     })
     this.hasMany(Stop, {
       as: "stops",
