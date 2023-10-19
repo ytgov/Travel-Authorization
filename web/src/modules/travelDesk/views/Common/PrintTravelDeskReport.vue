@@ -85,9 +85,9 @@
               class="elevation-1"
               hide-default-footer
             >
-              <template #item.submit-date="{ item }">
+              <template #item.created-at="{ item }">
                 <div>
-                  {{ item.submitDate | beautifyDate }}
+                  {{ item.createdAt | beautifyDate }}
                 </div>
               </template>
 
@@ -164,7 +164,7 @@ export default {
   data() {
     return {
       headers: [
-        { text: "Submit Date", value: "submitDate", class: "m-0 p-0" },
+        { text: "Submit Date", value: "createdAt", class: "m-0 p-0" },
         { text: "Name", value: "fullname", class: "m-0 p-0", sortable: false },
         { text: "Department", value: "department", class: "m-0 p-0" },
         { text: "Branch", value: "branch", class: "m-0 p-0", sortable: false },

@@ -38,9 +38,9 @@
       item-key="id"
       class="elevation-1 mt-4"
     >
-      <template #item.submit-date="{ item }">
+      <template #item.created-at="{ item }">
         <div>
-          {{ item.submitDate | beautifyDate }}
+          {{ item.createdAt | beautifyDate }}
         </div>
       </template>
 
@@ -129,7 +129,7 @@ export default {
   data() {
     return {
       headers: [
-        { text: "Submit Date", value: "submitDate", class: "blue-grey lighten-4" },
+        { text: "Submit Date", value: "createdAt", class: "blue-grey lighten-4" },
         { text: "Name", value: "fullname", class: "blue-grey lighten-4", sortable: false },
         { text: "Department", value: "department", class: "blue-grey lighten-4" },
         { text: "Branch", value: "branch", class: "blue-grey lighten-4" },
@@ -198,7 +198,7 @@ export default {
       console.log(this.selectedRequests)
       const csvInfo = this.selectedRequests.map((req) => {
         return {
-          submitDate: req.submitDate.slice(0, 10),
+          createdAt: req.createdAt.slice(0, 10),
           name: req.form.firstName + " " + req.form.lastName,
           department: req.form.department,
           branch: req.form.branch ? req.form.branch : "",
