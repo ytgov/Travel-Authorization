@@ -117,8 +117,7 @@ TravelDeskTravelRequest.init(
       field: "travel_authorization_id",
       type: DataTypes.INTEGER,
       allowNull: false,
-      // TODO: enable this once enfoced in database
-      // unique: true,
+      unique: true,
       references: {
         model: "travel_authorizations", // using real table name here
         key: "id", // using real column name here
