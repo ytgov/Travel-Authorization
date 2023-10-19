@@ -67,7 +67,7 @@
                       <v-row class="mt-0 mx-0">
                         <v-col cols="9">
                           <flight-request-table
-                            :requestID="travelerDetails.requestID"
+                            :travel-desk-travel-request-id="travelerDetails.id"
                             :authorizedTravel="authorizedTravel"
                             :readonly="false"
                             :travelDeskUser="false"

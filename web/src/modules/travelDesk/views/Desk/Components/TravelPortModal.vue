@@ -159,7 +159,7 @@ export default {
   },
   props: {
     flightRequests: {},
-    requestID: {},
+    travelDeskTravelRequestId: {},
   },
   data() {
     return {
@@ -215,7 +215,7 @@ export default {
 
     deleteFlightOptions(removeSegments) {
       this.savingData = true
-      secureDelete(`${TRAVEL_DESK_URL}/flight-options/${this.requestID}`)
+      secureDelete(`${TRAVEL_DESK_URL}/flight-options/${this.travelDeskTravelRequestId}`)
         .then((resp) => {
           console.log(resp)
           this.flightOptions.splice(0)
@@ -243,7 +243,7 @@ export default {
         this.savingData = true
         const body = this.flightOptions
 
-        securePost(`${TRAVEL_DESK_URL}/flight-options/${this.requestID}`, body)
+        securePost(`${TRAVEL_DESK_URL}/flight-options/${this.travelDeskTravelRequestId}`, body)
           .then((resp) => {
             console.log(resp)
             this.savingData = false

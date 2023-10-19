@@ -61,7 +61,7 @@
                   >
                     <travel-port-modal
                       :flightRequests="travelRequest.flightRequests"
-                      :requestID="travelDetail.requestID"
+                      :travel-desk-travel-request-id="travelDetail.id"
                       @close="flightKey++"
                       class="my-1 ml-auto"
                     />
@@ -83,7 +83,7 @@
                             :key="flightKey"
                             class="mr-n5 mt-n1"
                             :readonly="readonly"
-                            :requestID="travelDetail.requestID"
+                            :travel-desk-travel-request-id="travelDetail.id"
                             showFlightOptions
                             travelDeskUser
                             :flightRequests="travelRequest.flightRequests"
@@ -502,9 +502,9 @@ export default {
           "Content-Type": "application/text",
         },
       }
-      const requestID = this.travelRequest.requestID
+      const travelDeskTravelRequestId = this.travelRequest.id
 
-      secureGet(`${TRAVEL_DESK_URL}/pnr-document/${requestID}`, header)
+      secureGet(`${TRAVEL_DESK_URL}/pnr-document/${travelDeskTravelRequestId}`, header)
         .then((res) => {
           this.savingData = false
           const link = document.createElement("a")

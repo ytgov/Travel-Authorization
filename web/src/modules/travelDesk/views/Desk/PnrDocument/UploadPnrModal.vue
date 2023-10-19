@@ -2,42 +2,42 @@
 	<div>
 		<v-dialog v-model="uploadPnrDialog" persistent  max-width="650px" >
 			<template v-slot:activator="{ on, attrs }">
-				<v-btn					
-					size="x-small"					
-					style="min-width:0;"					
-					color="secondary"					
+				<v-btn
+					size="x-small"
+					style="min-width:0;"
+					color="secondary"
 					@click="initForm()"
 					v-bind="attrs"
 					v-on="on">
-					<div class=" px-2">Upload PNR</div>		
+					<div class=" px-2">Upload PNR</div>
 				</v-btn>
 			</template>
-			
+
 			<v-card>
 				<v-card-title class="primary" style="border-bottom: 1px solid black">
-					<div class="text-h5"> 
-						Upload PNR						
-					</div>					
+					<div class="text-h5">
+						Upload PNR
+					</div>
 				</v-card-title>
 
 				<v-card-text>
 
 					<v-row class="mx-0 mt-5">
 						<v-col cols="6">
-							<v-text-field																
+							<v-text-field
 								:error="invoiceNumberErr"
-								@input="invoiceNumberErr=false"									
+								@input="invoiceNumberErr=false"
 								label="Invoice Number"
-								v-model="invoiceNumber"								
+								v-model="invoiceNumber"
 								outlined/>
 						</v-col>
 						<v-col cols="6">
-							<v-select								
+							<v-select
 								:items="travelAgentsInfo"
 								item-text="agencyName"
-								item-value="agencyID"										
+								item-value="agencyID"
 								label="Assign Agent"
-								v-model="travelRequest.agencyID"								
+								v-model="travelRequest.agencyID"
 								outlined />
 						</v-col>
 					</v-row>
@@ -67,49 +67,49 @@
 					<v-alert v-model="alert" dense color="red darken-4" dark dismissible>
 						{{ alertMsg }}
 					</v-alert>
-							
+
 					<v-row class="mx-0 mt-15 mb-2">
-						<v-btn 
-							color="grey darken-5" 
-							class="my-0 ml-1 px-5" 
-							:loading="savingData" 
+						<v-btn
+							color="grey darken-5"
+							class="my-0 ml-1 px-5"
+							:loading="savingData"
 							@click="closeModal()"
 							>Close
-						</v-btn>					
-						
-						<v-btn                                     
-							@click="saveDocument()"							
+						</v-btn>
+
+						<v-btn
+							@click="saveDocument()"
 							color="#005A65"
 							class="ml-auto mr-1 my-0 px-5"
 							:loading="savingData"
-							>Save 
-						</v-btn>						
+							>Save
+						</v-btn>
 					</v-row>
 
 				</v-card-text>
-			</v-card>			
-		</v-dialog>			
+			</v-card>
+		</v-dialog>
 	</div>
 </template>
 
 <script>
-	// import Vue from "vue";	
+	// import Vue from "vue";
 	import { TRAVEL_DESK_URL } from "../../../../../urls"
 	import { securePost } from '../../../../../store/jwt';
 
-	export default {		
+	export default {
 		name: "UploadPnrModal",
 		components: {
-			
+
 		},
-		props: {		
+		props: {
 			travelAgentsInfo: {},
 			travelRequest:{}
 		},
 		data() {
 			return {
 				uploadPnrDialog:false,
-				invoiceNumberErr:false,			
+				invoiceNumberErr:false,
 				invoiceNumber: "",
 				alert: false,
 				alertMsg: "",
@@ -118,10 +118,10 @@
 				reader: new FileReader(),
 			};
 		},
-		mounted() {			
+		mounted() {
 		},
-		methods: {			
-			initForm(){								
+		methods: {
+			initForm(){
 				this.savingData=true
 				this.$emit('saveData')
 				this.invoiceNumberErr=false
@@ -162,9 +162,9 @@
 						this.alert = true;
 						return;
 					}
-					const requestID = this.travelRequest.requestID
+					const travelRequestId = this.travelRequest.id
 					this.savingData = true;
-					const data = {						
+					const data = {
 						invoiceNumber: this.invoiceNumber,
 						agencyID: this.travelRequest.agencyID
 					};
@@ -179,10 +179,10 @@
 						}
 					};
 
-					securePost(`${TRAVEL_DESK_URL}/pnr-document/${requestID}`, bodyFormData, header)
+					securePost(`${TRAVEL_DESK_URL}/pnr-document/${travelRequestId}`, bodyFormData, header)
 					.then(() => {
 						this.savingData = false;
-						this.$emit('close')				
+						this.$emit('close')
 						this.closeModal();
 					})
 					.catch(e => {
@@ -194,15 +194,15 @@
 				}
 			},
 
-		
+
 			checkStates(){
 				this.invoiceNumberErr = this.invoiceNumber? false : true
 				return (!this.invoiceNumberErr)
 			},
-			
+
 
 			closeModal(){
-				this.uploadPnrDialog=false				
+				this.uploadPnrDialog=false
             },
 
 		}

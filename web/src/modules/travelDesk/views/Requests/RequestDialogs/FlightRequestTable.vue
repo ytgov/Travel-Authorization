@@ -109,7 +109,7 @@ export default {
     flightRequests: {},
     travelDeskUser: { type: Boolean, default: false },
     showFlightOptions: { type: Boolean, default: false },
-    requestID: {},
+    travelDeskTravelRequestId: {},
     authorizedTravel: { required: false },
   },
   data() {
@@ -174,7 +174,7 @@ export default {
         this.minDate = this.authorizedTravel.startDate.slice(0, 10)
         this.maxDate = this.authorizedTravel.endDate.slice(0, 10)
       }
-      if (this.requestID) await this.loadFlightRequests()
+      if (this.travelDeskTravelRequestId) await this.loadFlightRequests()
       const flightRequest = {}
       flightRequest.flightRequestID = null
       flightRequest.tmpId = null
@@ -215,7 +215,7 @@ export default {
     async loadFlightRequests() {
       this.loadingData = true
 
-      secureGet(`${TRAVEL_DESK_URL}/flight-request/${this.requestID}`)
+      secureGet(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`)
         .then((resp) => {
           // console.log(resp.data)
           this.flightRequests.splice(0)
@@ -232,7 +232,7 @@ export default {
       this.loadingData = true
       const body = this.flightRequests
 
-      securePost(`${TRAVEL_DESK_URL}/flight-request/${this.requestID}`, body)
+      securePost(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`, body)
         .then(() => {
           // console.log(resp)
           this.loadFlightRequests()
