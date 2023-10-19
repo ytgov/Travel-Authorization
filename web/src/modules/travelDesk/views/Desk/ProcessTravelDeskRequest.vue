@@ -11,7 +11,7 @@
 					v-bind="attrs"
 					v-on="on"
 					>
-					<div class="mx-0 px-1"><v-icon style="font-size:15pt;">mdi-pencil</v-icon></div>					
+					<div class="mx-0 px-1"><v-icon style="font-size:15pt;">mdi-pencil</v-icon></div>
 				</v-btn>
 			</template>
 
@@ -25,19 +25,19 @@
 				<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
 				<v-card-text v-if="!loadingData">
 					<v-row class="mb-3">
-						<v-col cols="8">										
-							<traveler-details 
-								:travelerDetails="travelRequest" 
-								:travelerState="state" 
+						<v-col cols="8">
+							<traveler-details
+								:travelerDetails="travelRequest"
+								:travelerState="state"
 								:readonly="readonly"/>
 
 							<title-card class="mt-10" titleWidth="12.5rem" largeTitle>
 								<template #title>
 									<div>Travel Information</div>
-								</template>										
+								</template>
 								<template #body>
 									<v-row v-if="!readonly" class="mt-n2 mb-n9 mr-5">
-										<travel-port-modal											
+										<travel-port-modal
 											:flightRequests="travelRequest.flightRequests"
 											:requestID="travelDetail.requestID"
 											@close="flightKey++;"
@@ -47,16 +47,16 @@
 									<title-card class="mt-9 mx-5" titleWidth="8.5rem">
 										<template #title>
 											<div>Flight Request</div>
-										</template>										
+										</template>
 										<template #body>
 											<v-row class="m-0 p-0">
 												<v-col cols="9" class="my-0 mx-0 py-4" >
-													<flight-request-table 
+													<flight-request-table
 														:key="flightKey"
 														class="mr-n5 mt-n1"
 														:readonly="readonly"
 														:requestID="travelDetail.requestID"
-														showFlightOptions 												
+														showFlightOptions
 														travelDeskUser
 														:flightRequests="travelRequest.flightRequests" />
 												</v-col>
@@ -70,47 +70,47 @@
 														auto-grow
 														counter
 														:rules="[v => (v || '' ).length <= 255 || 'Must be 255 characters or less']"
-														:clearable="!readonly"/>									
+														:clearable="!readonly"/>
 												</v-col>
 											</v-row>
 										</template>
 									</title-card>
-									<rental-car-request-table 
+									<rental-car-request-table
 										:readonly="readonly"
-										:flightRequests="travelRequest.flightRequests" 
+										:flightRequests="travelRequest.flightRequests"
 										:rentalCars="travelRequest.rentalCars" />
-									<hotel-request-table 
+									<hotel-request-table
 										:readonly="readonly"
-										:flightRequests="travelRequest.flightRequests" 
+										:flightRequests="travelRequest.flightRequests"
 										:hotels="travelRequest.hotels" />
-									<transportation-request-table 
+									<transportation-request-table
 										:readonly="readonly"
-										:otherTransportations="travelRequest.otherTransportation" />	
-														
-									
+										:otherTransportations="travelRequest.otherTransportation" />
+
+
 								</template>
 							</title-card>
-						</v-col>	 
+						</v-col>
 						<v-col cols="4">
 							<v-row class="mt-3 mb-0 mx-0">
 								<v-col cols="6">
-									<v-select								
+									<v-select
 										:items="travelAgentsInfo"
 										item-text="agencyName"
-										item-value="agencyID"										
+										item-value="agencyID"
 										label="Assign Agent"
-										v-model="travelRequest.agencyID"								
+										v-model="travelRequest.agencyID"
 										outlined />
 								</v-col>
 								<v-col cols="6">
 									<v-select
 										:readonly="readonly"
 										class="mr-2"
-										:items="travelDeskAgentList"							
+										:items="travelDeskAgentList"
 										label="Travel Desk Agent Assigned"
-										v-model="travelRequest.travelDeskOfficer"								
-										outlined/>		
-								</v-col>											
+										v-model="travelRequest.travelDeskOfficer"
+										outlined/>
+								</v-col>
 							</v-row>
 							<v-row class="mx-0 mb-5 mt-n6" v-if="travelRequest.invoiceNumber">
 								<title-card class="mt-10 mx-4" titleWidth="4rem" style="width:100%" >
@@ -133,22 +133,22 @@
 									</template>
 								</title-card>
 							</v-row>
-							<questions-table 
+							<questions-table
 								:readonly="readonly"
 								:travelDeskUser="true"
 								:questions="travelRequest.questions" />
 						</v-col>
 					</v-row>
-					
+
 				</v-card-text>
 
 				<v-card-actions>
-					<v-btn color="grey darken-5" class="px-5" @click="closeDialog">						
+					<v-btn color="grey darken-5" class="px-5" @click="closeDialog">
 						<div>Close</div>
 					</v-btn>
 					<itinerary-modal class="ml-auto mr-3"
 						v-if="travelRequest.invoiceNumber"
-						:invoiceNumber="travelRequest.invoiceNumber"					
+						:invoiceNumber="travelRequest.invoiceNumber"
 					/>
 					<upload-pnr-modal
 						@saveData="saveNewTravelRequest('save', false, false)"
@@ -170,7 +170,7 @@
 						@click="saveNewTravelRequest('sendback', true, false)"
 						:loading="savingData">Send to Traveler
 					</v-btn>
-					
+
 					<v-btn
 						v-if="!readonly && travelRequest.invoiceNumber"
 						class="mr-5 px-5 "
@@ -180,7 +180,7 @@
 					</v-btn>
 				</v-card-actions>
 			</v-card>
-		</v-dialog>	
+		</v-dialog>
 
 
 		<v-dialog v-model="confirmBookingDialog" persistent width="30%">
@@ -188,7 +188,7 @@
 				<v-card-title class="warning">
 					<div class="text-h5">
 						Confirm Booking is Complete
-					</div>					
+					</div>
 				</v-card-title>
 				<v-card-text>
 					<p class="mt-5">
@@ -197,7 +197,7 @@
 					</p>
 				</v-card-text>
 				<v-card-actions>
-					<v-btn color="grey darken-5" class="px-5" @click="confirmBookingDialog=false;">						
+					<v-btn color="grey darken-5" class="px-5" @click="confirmBookingDialog=false;">
 						<div>Cancel</div>
 					</v-btn>
 					<v-btn
@@ -214,7 +214,7 @@
 </template>
 
 <script>
-	import Vue from "vue";	
+	import Vue from "vue";
 	import { TRAVEL_DESK_URL } from "../../../../urls";
 	import { secureGet, securePost } from "@/store/jwt";
 	import TitleCard from  '../Common/TitleCard.vue'
@@ -224,12 +224,12 @@
 	import HotelRequestTable from "../Requests/RequestDialogs/HotelRequestTable.vue";
 	import TransportationRequestTable from "../Requests/RequestDialogs/TransportationRequestTable.vue";
 	import TravelPortModal from "./Components/TravelPortModal.vue"
-	
+
 	import UploadPnrModal from "./PnrDocument/UploadPnrModal.vue"
 
 	import QuestionsTable from "./Components/QuestionsTable.vue"
 	import ItineraryModal from '../Requests/Components/ItineraryModal.vue';
-	
+
 
 	export default {
 		components: {
@@ -252,13 +252,13 @@
 			travelDetail: {}
 		},
 		data() {
-			return {					
-				
+			return {
+
 				addNewTravelDialog: false,
-				confirmBookingDialog: false,				
+				confirmBookingDialog: false,
 				readonly: false,
 				internationalTravel: false,
-				travelDeskAgentList: [],				
+				travelDeskAgentList: [],
 				travelerDetails: {},
 				savingData: false,
 				travelRequest: {},
@@ -280,17 +280,17 @@
 					businessEmailErr: false,
 					travelPhoneErr: false,
 					travelEmailErr: false,
-					flightRequestsErr: false,					
+					flightRequestsErr: false,
 					rentalCarsErr: false,
 					hotelsErr: false,
 					otherTransportationErr: false
 				},
 				travelAgentsInfo: [],
 				agencyID: null,
-				loadingData: false				
+				loadingData: false
 			};
 		},
-		mounted() {						
+		mounted() {
 		},
 		methods: {
 			updateTable() {
@@ -298,12 +298,12 @@
 			},
 
 			async initForm() {
-				
+
 				this.initStates();
 				this.savingData = false;
 				this.loadingData = true;
-				const taid = this.travelDetail.TAID
-				this.travelRequest = await this.getTravelRequestInfo(taid)
+				const travelAuthorizationId = this.travelDetail.travelAuthorizationId
+				this.travelRequest = await this.getTravelRequestInfo(travelAuthorizationId)
 				this.travelAgentsInfo = await this.getTravelAgentsInfo()
 				this.travelAgentsInfo.push({"agencyID": null, "agencyName": "None", "agencyInfo": ""})
 				this.readonly = (this.type=='booked' || this.travelRequest.status=='booked')
@@ -316,7 +316,7 @@
 						this.travelRequest.travelDeskOfficer=currentUser.first_name+' '+currentUser.last_name
 				}
 				this.travelRequest.internationalTravel= (this.travelRequest.passportCountry || this.travelRequest.passportNum)
-				Vue.nextTick(()=>this.loadingData = false)				
+				Vue.nextTick(()=>this.loadingData = false)
 			},
 
 			closeDialog(){
@@ -324,10 +324,10 @@
 				this.addNewTravelDialog = false
 			},
 
-			async getTravelRequestInfo(taid) {				
+			async getTravelRequestInfo(taid) {
 				return secureGet(`${TRAVEL_DESK_URL}/travel-request/`+taid)
 					.then(resp => {
-						// console.log(resp.data)						
+						// console.log(resp.data)
 						return(resp.data)
 					})
 					.catch(e => {
@@ -335,15 +335,15 @@
 					});
 			},
 
-			async getTravelAgentsInfo() {				
+			async getTravelAgentsInfo() {
 				return secureGet(`${TRAVEL_DESK_URL}/travel-agents/`)
-					.then(resp => {						
+					.then(resp => {
 						return(resp.data)
 					})
 					.catch(e => {
 						console.log(e);
 					});
-			},	
+			},
 
 			saveNewTravelRequest(saveType, close, refresh) {
 				console.log(saveType)
@@ -361,18 +361,18 @@
 					console.log(body);
 					if(saveType == 'sendback'){
 						body.status='options_provided'
-						//TODO EMail						
+						//TODO EMail
 					}else if(saveType == 'booked'){
 						body.status='booked'
 					}
 
-					const id = this.travelRequest.TAID
-					securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
+					const travelAuthorizationId = this.travelRequest.travelAuthorizationId
+					securePost(`${TRAVEL_DESK_URL}/travel-request/${travelAuthorizationId}`, body)
 					.then(() => {
 						this.savingData = false;
 						this.confirmBookingDialog = false;
 						if(close) this.closeDialog();
-						if(refresh) this.initForm()						
+						if(refresh) this.initForm()
 					})
 					.catch(e => {
 						this.savingData = false;
@@ -386,13 +386,13 @@
 					this.state[key] = false;
 				}
 			},
-			
+
 			checkFields() {
 				this.state.firstNameErr = this.travelRequest.legalFirstName? false:true;
 				this.state.middleNameErr = false,
 				this.state.lastNameErr = this.travelRequest.legalLastName? false:true;
 				this.state.birthDateErr = this.travelRequest.birthDate? false:true;
-				this.state.travelAuthErr = false; 
+				this.state.travelAuthErr = false;
 				this.state.addressErr = this.travelRequest.strAddress? false:true;
 				this.state.cityErr = this.travelRequest.city? false:true;
 				this.state.provinceErr = this.travelRequest.province? false:true;
@@ -403,15 +403,15 @@
 				this.state.businessEmailErr = this.travelRequest.busEmail? false:true;
 				this.state.travelPhoneErr = this.travelRequest.travelContact && !this.travelRequest.travelPhone? true: false;//show hint
 				this.state.travelEmailErr = this.travelRequest.travelContact && !this.travelRequest.travelEmail? true: false;//show hint
-				this.state.flightRequestsErr = false;					
+				this.state.flightRequestsErr = false;
 				this.state.rentalCarsErr = false;
 				this.state.hotelsErr = false;
 				this.state.otherTransportationErr = false;
-				
+
 				let error=false
-				for(const question of this.travelRequest.questions){						
+				for(const question of this.travelRequest.questions){
 					if(question.question) question.state.questionErr=false;
-					else { question.state.questionErr=true; error=true} 
+					else { question.state.questionErr=true; error=true}
 				}
 				if(error) return false;
 
@@ -445,13 +445,13 @@
 						this.savingData = false;
 						console.log(e);
 					});
-			},		
-			
+			},
+
 		}
 	};
 </script>
 
 <style scoped >
-	
+
 
 </style>

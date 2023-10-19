@@ -12,7 +12,7 @@
 					v-on="on"
 					>
 					<div v-if="type == 'Submit'">Submit Travel Desk Request</div>
-					<div v-else-if="type == 'Review'">Review Travel Options</div>					
+					<div v-else-if="type == 'Review'">Review Travel Options</div>
 				</v-btn>
 			</template>
 
@@ -26,31 +26,31 @@
 				<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
 				<v-card-text v-if="!loadingData">
 					<v-row class="mb-3">
-						<v-col :cols="type != 'Submit'? 8 : 12">										
-							<traveler-details 
-								:travelerDetails="travelerDetails" 
-								:travelerState="state" 
+						<v-col :cols="type != 'Submit'? 8 : 12">
+							<traveler-details
+								:travelerDetails="travelerDetails"
+								:travelerState="state"
 								:readonly="false"/>
-							
+
 							<title-card class="mt-10" titleWidth="12.5rem" largeTitle>
 								<template #title>
 									<div>Travel Information</div>
 								</template>
 								<template #body>
-							
+
 									<title-card class="mt-5 mx-5" titleWidth="8.5rem">
 										<template #title>
 											<div>Flight Request</div>
 										</template>
-										<template #body>						
+										<template #body>
 											<v-row class="mt-0 mx-0">
 												<v-col cols="9" >
 													<flight-request-table
-														:requestID="travelerDetails.requestID" 
+														:requestID="travelerDetails.requestID"
 														:authorizedTravel="authorizedTravel"
 														:readonly="false"
 														:travelDeskUser="false"
-														:showFlightOptions="travelerDetails.status!='draft'" 
+														:showFlightOptions="travelerDetails.status!='draft'"
 														:flightRequests="travelerDetails.flightRequests" />
 												</v-col>
 												<v-col cols="3" class="px-0" >
@@ -62,28 +62,28 @@
 														outlined
 														auto-grow
 														counter
-														:clearable="!readonly"/>									
+														:clearable="!readonly"/>
 												</v-col>
 											</v-row>
 										</template>
 									</title-card>
-								
+
 									<rental-car-request-table
 										:authorizedTravel="authorizedTravel"
 										:readonly="false"
-										:flightRequests="travelerDetails.flightRequests" 
+										:flightRequests="travelerDetails.flightRequests"
 										:rentalCars="travelerDetails.rentalCars" />
 									<hotel-request-table
 										:authorizedTravel="authorizedTravel"
 										:readonly="false"
-										:flightRequests="travelerDetails.flightRequests" 
+										:flightRequests="travelerDetails.flightRequests"
 										:hotels="travelerDetails.hotels" />
 									<transportation-request-table
-										:authorizedTravel="authorizedTravel" 
+										:authorizedTravel="authorizedTravel"
 										:readonly="false"
-										:otherTransportations="travelerDetails.otherTransportation" />						
+										:otherTransportations="travelerDetails.otherTransportation" />
 								</template>
-							</title-card>	
+							</title-card>
 						</v-col>
 						<v-col v-if="type != 'Submit'" cols="4">
 							<v-row class="mt-3 mb-0 mx-0">
@@ -91,18 +91,18 @@
 								<v-col cols="6">
 									<v-text-field
 										readonly
-										class="mr-2"																	
+										class="mr-2"
 										label="Travel Desk Agent Assigned"
-										v-model="travelerDetails.travelDeskOfficer"								
-										outlined/>		
-								</v-col>											
+										v-model="travelerDetails.travelDeskOfficer"
+										outlined/>
+								</v-col>
 							</v-row>
-							<questions-table 
-								:readonly="false"								
+							<questions-table
+								:readonly="false"
 								:questions="travelerDetails.questions" />
 						</v-col>
 					</v-row>
-					
+
 				</v-card-text>
 
 				<v-card-actions>
@@ -126,12 +126,12 @@
 					</v-btn>
 				</v-card-actions>
 			</v-card>
-		</v-dialog>	
-		
+		</v-dialog>
+
 	</div>
 </template>
 
-<script>	
+<script>
 	import { LOOKUP_URL, TRAVEL_DESK_URL } from "../../../../urls";
 	import { secureGet, securePost } from "@/store/jwt";
 	import TitleCard from  '../Common/TitleCard.vue'
@@ -160,12 +160,12 @@
 			authorizedTravel: {}
 		},
 		data() {
-			return {					
-				
-				addNewTravelDialog: false,				
+			return {
+
+				addNewTravelDialog: false,
 				readonly: false,
-				internationalTravel: false,				
-				
+				internationalTravel: false,
+
 				travelerDetails: {},
 				savingData: false,
 
@@ -185,16 +185,16 @@
 					businessEmailErr: false,
 					travelPhoneErr: false,
 					travelEmailErr: false,
-					flightRequestsErr: false,					
+					flightRequestsErr: false,
 					rentalCarsErr: false,
 					hotelsErr: false,
 					otherTransportationErr: false
 				},
 
-				loadingData: false				
+				loadingData: false
 			};
 		},
-		mounted() {						
+		mounted() {
 		},
 		methods: {
 			updateTable() {
@@ -213,10 +213,10 @@
 					await this.getEmployeeInfo()
 			},
 
-			async getTravelRequestInfo() {				
+			async getTravelRequestInfo() {
 				return secureGet(`${TRAVEL_DESK_URL}/travel-request/`+this.authorizedTravel.id)
 					.then(resp => {
-						// console.log(resp.data)						
+						// console.log(resp.data)
 						return(resp.data)
 					})
 					.catch(e => {
@@ -224,10 +224,10 @@
 					});
 			},
 
-			async getEmployeeInfo() {				
+			async getEmployeeInfo() {
 				return secureGet(`${LOOKUP_URL}/employee-info?email=`+this.authorizedTravel.email)
 					.then(resp => {
-						console.log(resp.data)						
+						console.log(resp.data)
 						const employee = resp.data
 						const travelerDetails={
 							legalFirstName: employee.firstName,
@@ -242,18 +242,18 @@
 							passportNum: "",
 							travelPurpose: "",
 							travelLocation: "",
-							travelNotes: "",							
-							busPhone: employee.businessPhone, 
+							travelNotes: "",
+							busPhone: employee.businessPhone,
 							busEmail: employee.email,
 							travelContact:false,
 							travelPhone: employee.mobile,
 							travelEmail: "",
 							travelDeskOfficer: "",
-							internationalTravel:false,							
+							internationalTravel:false,
 							office: employee.office,
 							department: employee.department,
 							fullName: employee.fullName,
-							TAID: this.authorizedTravel.id,
+							travelAuthorizationId: this.authorizedTravel.id,
 							additionalInformation: "",
 							rentalCars: [],
 							flightRequests: [],
@@ -279,21 +279,21 @@
 				this.travelerDetails = travelerDetails;
 				this.loadingData = false;
 			},
-			
+
 
 			saveNewTravelRequest(saveType) {
 				console.log(saveType)
 				// console.log(this.travelerDetails)
 
 				if (saveType=='save' || this.checkFields()) {
-					this.savingData = true;					
+					this.savingData = true;
 					const body = this.travelerDetails
 					delete body.internationalTravel;
 					delete body.differentTravelContact
 					delete body.office
 					delete body.department
 					delete body.fullName
-					if(saveType=="submit" && body.status=="draft"){ 
+					if(saveType=="submit" && body.status=="draft"){
 						const today = new Date();
 						body.status="submitted"
 						body.submitDate= today
@@ -320,7 +320,7 @@
 					this.state[key] = false;
 				}
 			},
-			
+
 			checkFields() {
 
 				this.state.firstNameErr = this.travelerDetails.legalFirstName? false:true;
@@ -338,22 +338,22 @@
 				this.state.businessEmailErr = this.travelerDetails.busEmail? false:true;
 				this.state.travelPhoneErr = this.travelerDetails.travelContact && !this.travelerDetails.travelPhone? true: false;//show hint
 				this.state.travelEmailErr = this.travelerDetails.travelContact && !this.travelerDetails.travelEmail? true: false;//show hint
-				this.state.flightRequestsErr = false;					
+				this.state.flightRequestsErr = false;
 				this.state.rentalCarsErr = false;
 				this.state.hotelsErr = false;
 				this.state.otherTransportationErr = false;
-				
+
 				if(this.travelerDetails.status=='options_provided'){
 					let error=false
-					for(const question of this.travelerDetails.questions){						
+					for(const question of this.travelerDetails.questions){
 						if(question.response) question.state.responseErr=false;
-						else { question.state.responseErr=true; error=true} 
+						else { question.state.responseErr=true; error=true}
 					}
 
 					for(const flightRequest of this.travelerDetails.flightRequests){
 						for(const flightOption of flightRequest.flightOptions){
 							if(!flightOption.flightPreference){ error=true;}
-						}						
+						}
 					}
 
 					if(error) return false;
@@ -364,7 +364,7 @@
 				}
 				return true;
 			},
-			
+
 		}
 	};
 </script>

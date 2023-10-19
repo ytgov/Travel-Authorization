@@ -384,7 +384,7 @@ travelDeskRouter.post(
 )
 
 travelDeskRouter.get(
-  "/travel-request/:taid",
+  "/travel-request/:travelAuthorizationId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     const flightSegmentState = {
@@ -400,8 +400,9 @@ travelDeskRouter.get(
       statusErr: false,
     }
 
+    const travelAuthorizationId = req.params.travelAuthorizationId
     const travelRequest = await TravelDeskTravelRequest.findOne({
-      where: { TAID: req.params.taid },
+      where: { travelAuthorizationId },
       include: [
         {
           association: "travelDeskPassengerNameRecordDocument",
@@ -482,16 +483,16 @@ travelDeskRouter.get(
 )
 
 travelDeskRouter.post(
-  "/travel-request/:taid",
+  "/travel-request/:travelAuthorizationId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     try {
       await dbLegacy.transaction(async (trx) => {
-        const TAID = Number(req.params.taid)
+        const travelAuthorizationId = Number(req.params.travelAuthorizationId)
         const newTravelRequest = req.body
         // console.log(newTravelRequest)
 
-        if (TAID) {
+        if (travelAuthorizationId) {
           delete newTravelRequest.invoiceNumber
 
           const flightRequests = newTravelRequest.flightRequests
@@ -511,7 +512,7 @@ travelDeskRouter.post(
 
           const [travelRequest, _created] = await TravelDeskTravelRequest.upsert({
             ...newTravelRequest,
-            TAID: TAID,
+            travelAuthorizationId,
           })
 
           if (isNull(travelRequest)) {

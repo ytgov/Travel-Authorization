@@ -6,16 +6,6 @@ import {
   CreationOptional,
   DataTypes,
   ForeignKey,
-  HasManyAddAssociationMixin,
-  HasManyAddAssociationsMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
-  HasManyHasAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
-  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -33,7 +23,7 @@ export class TravelDeskTravelRequest extends Model<
   InferCreationAttributes<TravelDeskTravelRequest>
 > {
   declare id: CreationOptional<number>
-  declare TAID: ForeignKey<TravelAuthorization["id"]>
+  declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare agencyID: ForeignKey<TravelDeskTravelAgent["agencyID"]>
   declare legalFirstName: string
   declare legalMiddleName: string | null
@@ -104,7 +94,7 @@ export class TravelDeskTravelRequest extends Model<
     })
     this.belongsTo(TravelAuthorization, {
       as: "travelAuthorization",
-      foreignKey: "TAID",
+      foreignKey: "travelAuthorizationId",
     })
     // TODO: enable this once TravelDeskTravelRequest model is set up
     // this.belongsTo(TravelDeskTravelAgent, {
@@ -122,7 +112,9 @@ TravelDeskTravelRequest.init(
       autoIncrement: true,
       allowNull: false,
     },
-    TAID: {
+    travelAuthorizationId: {
+      // TODO: remove field customization once columns all other columsn are underscored
+      field: "travel_authorization_id",
       type: DataTypes.INTEGER,
       allowNull: false,
       // TODO: enable this once enfoced in database
