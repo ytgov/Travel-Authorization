@@ -85,45 +85,45 @@
               class="elevation-1"
               hide-default-footer
             >
-              <template v-slot:[`item.submitDate`]="{ item }">
+              <template #item.submit-date="{ item }">
                 <div>
                   {{ item.submitDate | beautifyDate }}
                 </div>
               </template>
 
-              <template v-slot:[`item.fullname`]="{ item }">
+              <template #item.fullname="{ item }">
                 {{ item.form.firstName + " " + item.form.lastName }}
               </template>
 
-              <template v-slot:[`item.department`]="{ item }">
+              <template #item.department="{ item }">
                 {{ item.form.department }}
               </template>
 
-              <template v-slot:[`item.branch`]="{ item }">
+              <template #item.branch="{ item }">
                 {{ item.form.branch }}
               </template>
 
-              <template v-slot:[`item.startDate`]="{ item }">
+              <template #item.start-date="{ item }">
                 <div>
                   {{ item.startDate | beautifyDate }}
                 </div>
               </template>
 
-              <template v-slot:[`item.endDate`]="{ item }">
+              <template #item.end-date="{ item }">
                 <div>
                   {{ item.form.dateBackToWork | beautifyDate }}
                 </div>
               </template>
 
-              <template v-slot:[`item.location`]="{ item }">
+              <template #item.location="{ item }">
                 {{ getLocationName(item.form.stops) }}
               </template>
 
-              <template v-slot:[`item.requested`]="{ item }">
+              <template #item.requested="{ item }">
                 {{ getRequested(item) }}
               </template>
 
-              <template v-slot:[`item.status`]="{ item }">
+              <template #item.status="{ item }">
                 <div v-if="item.status == 'submitted' && !item.travelDeskOfficer">Not started</div>
                 <div v-else>{{ item.status | getTravelStatus }}</div>
               </template>

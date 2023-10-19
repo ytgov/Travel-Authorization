@@ -38,45 +38,45 @@
       item-key="id"
       class="elevation-1 mt-4"
     >
-      <template v-slot:[`item.submitDate`]="{ item }">
+      <template #item.submit-date="{ item }">
         <div>
           {{ item.submitDate | beautifyDate }}
         </div>
       </template>
 
-      <template v-slot:[`item.fullname`]="{ item }">
+      <template #item.fullname="{ item }">
         {{ item.form.firstName + " " + item.form.lastName }}
       </template>
 
-      <template v-slot:[`item.department`]="{ item }">
+      <template #item.department="{ item }">
         {{ item.form.department }}
       </template>
 
-      <template v-slot:[`item.branch`]="{ item }">
+      <template #item.branch="{ item }">
         {{ item.form.branch }}
       </template>
 
-      <template v-slot:[`item.startDate`]="{ item }">
+      <template #item.start-date="{ item }">
         <div>
           {{ item.startDate | beautifyDate }}
         </div>
       </template>
 
-      <template v-slot:[`item.endDate`]="{ item }">
+      <template #item.end-date="{ item }">
         <div>
           {{ item.form.dateBackToWork | beautifyDate }}
         </div>
       </template>
 
-      <template v-slot:[`item.location`]="{ item }">
+      <template #item.location="{ item }">
         {{ getLocationName(item.form.stops) }}
       </template>
 
-      <template v-slot:[`item.requested`]="{ item }">
+      <template #item.requested="{ item }">
         {{ getRequested(item) }}
       </template>
 
-      <template v-slot:[`item.status`]="{ item }">
+      <template #item.status="{ item }">
         <div v-if="item.status == 'submitted' && !item.travelDeskOfficer">
           Not started <v-icon class="red--text">mdi-flag</v-icon>
         </div>
@@ -100,7 +100,7 @@
         </div>
       </template>
 
-      <template v-slot:[`item.edit`]="{ item }">
+      <template #item.edit="{ item }">
         <process-travel-desk-request
           :type="item.status == 'booked' ? 'booked' : 'edit'"
           @updateTable="updateTable()"
