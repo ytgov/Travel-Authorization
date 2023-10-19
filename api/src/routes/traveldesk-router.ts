@@ -14,6 +14,7 @@ import {
   TravelDeskTravelRequest,
 } from "@/models"
 
+import db from "@/db/db-client"
 import dbLegacy from "@/db/db-client-legacy"
 
 export const travelDeskRouter = express.Router()
@@ -690,9 +691,8 @@ travelDeskRouter.post(
     const requestID = parseInt(req.params.requestID)
     const data = JSON.parse(req.body.data)
 
-    try {
-      await dbLegacy.transaction(async (trx) => {
-        // TODO: re-add to transaction once travelDeskTravelRequest is in Sequelize
+    return db
+      .transaction(async () => {
         await TravelDeskPassengerNameRecordDocument.upsert({
           travelDeskTravelRequestId: requestID,
           invoiceNumber: data.invoiceNumber,
@@ -700,19 +700,22 @@ travelDeskRouter.post(
         })
 
         if (data.agencyID) {
-          await dbLegacy("travelDeskTravelRequest")
-            .update({
+          await TravelDeskTravelRequest.update(
+            {
               agencyID: data.agencyID,
-            })
-            .where("requestID", requestID)
+            },
+            {
+              where: { requestID },
+            }
+          )
         }
 
         res.status(200).json("Successful")
       })
-    } catch (error: any) {
-      console.log(error)
-      res.status(500).json("Insert failed")
-    }
+      .catch((error) => {
+        console.log(error)
+        res.status(500).json("Insert failed")
+      })
   }
 )
 
