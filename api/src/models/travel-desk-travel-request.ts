@@ -234,7 +234,7 @@ TravelDeskTravelRequest.init(
   {
     sequelize,
     modelName: "TravelDeskTravelRequest",
-    tableName: "travelDeskTravelRequest",
+    tableName: "travel_desk_travel_requests",
     underscored: false,
     timestamps: false,
   }

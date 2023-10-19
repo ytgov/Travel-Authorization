@@ -65,7 +65,7 @@ TravelDeskPassengerNameRecordDocument.init(
       allowNull: false,
       unique: true,
       references: {
-        model: "travelDeskTravelRequest", // using real table name here
+        model: "travel_desk_travel_requests", // using real table name here
         key: "requestID", // using real column name here
       },
       onDelete: "CASCADE",
