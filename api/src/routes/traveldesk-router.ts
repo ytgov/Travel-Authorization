@@ -707,7 +707,7 @@ travelDeskRouter.post(
         if (data.agencyID) {
           await TravelDeskTravelRequest.update(
             {
-              agencyID: data.agencyID,
+              travelDeskTravelAgentId: data.agencyID,
             },
             {
               where: { id: travelDeskTravelRequestId },

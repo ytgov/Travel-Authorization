@@ -24,7 +24,7 @@ export class TravelDeskTravelRequest extends Model<
 > {
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
-  declare agencyID: ForeignKey<TravelDeskTravelAgent["agencyID"]>
+  declare travelDeskTravelAgentId: ForeignKey<TravelDeskTravelAgent["agencyID"]>
   declare legalFirstName: string
   declare legalMiddleName: string | null
   declare legalLastName: string
@@ -113,7 +113,7 @@ TravelDeskTravelRequest.init(
       allowNull: false,
     },
     travelAuthorizationId: {
-      // TODO: remove field customization once columns all other columsn are underscored
+      // TODO: remove field customization once columns all other columns are underscored
       field: "travel_authorization_id",
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -125,7 +125,9 @@ TravelDeskTravelRequest.init(
       },
       onDelete: "CASCADE",
     },
-    agencyID: {
+    travelDeskTravelAgentId: {
+      // TODO: remove field customization once columns all other columns are underscored
+      field: "travel_desk_travel_agent_id",
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
