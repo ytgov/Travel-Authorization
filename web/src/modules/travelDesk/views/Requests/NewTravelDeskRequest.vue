@@ -1,374 +1,415 @@
 <template>
-	<div>
-		<v-dialog v-model="addNewTravelDialog" persistent >
-			<template v-slot:activator="{ on, attrs }">
-				<v-btn
-					elevation="5"
-					style="width: 80%"
-					class="mr-5 my-2"
-					color="primary"
-					@click="initForm()"
-					v-bind="attrs"
-					v-on="on"
-					>
-					<div v-if="type == 'Submit'">Submit Travel Desk Request</div>
-					<div v-else-if="type == 'Review'">Review Travel Options</div>
-				</v-btn>
-			</template>
+  <div>
+    <v-dialog
+      v-model="addNewTravelDialog"
+      persistent
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          elevation="5"
+          style="width: 80%"
+          class="mr-5 my-2"
+          color="primary"
+          @click="initForm()"
+          v-bind="attrs"
+          v-on="on"
+        >
+          <div v-if="type == 'Submit'">Submit Travel Desk Request</div>
+          <div v-else-if="type == 'Review'">Review Travel Options</div>
+        </v-btn>
+      </template>
 
-			<v-card :loading="loadingData" :disabled="loadingData" en>
-				<v-card-title class="primary" style="border-bottom: 1px solid black">
-					<div class="text-h5">
-						Travel Desk Request
-					</div>
-				</v-card-title>
+      <v-card
+        :loading="loadingData"
+        :disabled="loadingData"
+        en
+      >
+        <v-card-title
+          class="primary"
+          style="border-bottom: 1px solid black"
+        >
+          <div class="text-h5">Travel Desk Request</div>
+        </v-card-title>
 
-				<div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
-				<v-card-text v-if="!loadingData">
-					<v-row class="mb-3">
-						<v-col :cols="type != 'Submit'? 8 : 12">
-							<traveler-details
-								:travelerDetails="travelerDetails"
-								:travelerState="state"
-								:readonly="false"/>
+        <div
+          v-if="loadingData"
+          class="mt-10"
+          style="text-align: center"
+        >
+          loading ...
+        </div>
+        <v-card-text v-if="!loadingData">
+          <v-row class="mb-3">
+            <v-col :cols="type != 'Submit' ? 8 : 12">
+              <traveler-details
+                :travelerDetails="travelerDetails"
+                :travelerState="state"
+                :readonly="false"
+              />
 
-							<title-card class="mt-10" titleWidth="12.5rem" largeTitle>
-								<template #title>
-									<div>Travel Information</div>
-								</template>
-								<template #body>
+              <title-card
+                class="mt-10"
+                titleWidth="12.5rem"
+                largeTitle
+              >
+                <template #title>
+                  <div>Travel Information</div>
+                </template>
+                <template #body>
+                  <title-card
+                    class="mt-5 mx-5"
+                    titleWidth="8.5rem"
+                  >
+                    <template #title>
+                      <div>Flight Request</div>
+                    </template>
+                    <template #body>
+                      <v-row class="mt-0 mx-0">
+                        <v-col cols="9">
+                          <flight-request-table
+                            :requestID="travelerDetails.requestID"
+                            :authorizedTravel="authorizedTravel"
+                            :readonly="false"
+                            :travelDeskUser="false"
+                            :showFlightOptions="travelerDetails.status != 'draft'"
+                            :flightRequests="travelerDetails.flightRequests"
+                          />
+                        </v-col>
+                        <v-col
+                          cols="3"
+                          class="px-0"
+                        >
+                          <v-textarea
+                            class="mt-5 mr-5"
+                            :readonly="readonly"
+                            v-model="travelerDetails.additionalInformation"
+                            label="Additional Information"
+                            outlined
+                            auto-grow
+                            counter
+                            :clearable="!readonly"
+                          />
+                        </v-col>
+                      </v-row>
+                    </template>
+                  </title-card>
 
-									<title-card class="mt-5 mx-5" titleWidth="8.5rem">
-										<template #title>
-											<div>Flight Request</div>
-										</template>
-										<template #body>
-											<v-row class="mt-0 mx-0">
-												<v-col cols="9" >
-													<flight-request-table
-														:requestID="travelerDetails.requestID"
-														:authorizedTravel="authorizedTravel"
-														:readonly="false"
-														:travelDeskUser="false"
-														:showFlightOptions="travelerDetails.status!='draft'"
-														:flightRequests="travelerDetails.flightRequests" />
-												</v-col>
-												<v-col cols="3" class="px-0" >
-													<v-textarea
-														class="mt-5 mr-5"
-														:readonly="readonly"
-														v-model="travelerDetails.additionalInformation"
-														label="Additional Information"
-														outlined
-														auto-grow
-														counter
-														:clearable="!readonly"/>
-												</v-col>
-											</v-row>
-										</template>
-									</title-card>
+                  <rental-car-request-table
+                    :authorizedTravel="authorizedTravel"
+                    :readonly="false"
+                    :flightRequests="travelerDetails.flightRequests"
+                    :rentalCars="travelerDetails.rentalCars"
+                  />
+                  <hotel-request-table
+                    :authorizedTravel="authorizedTravel"
+                    :readonly="false"
+                    :flightRequests="travelerDetails.flightRequests"
+                    :hotels="travelerDetails.hotels"
+                  />
+                  <transportation-request-table
+                    :authorizedTravel="authorizedTravel"
+                    :readonly="false"
+                    :otherTransportations="travelerDetails.otherTransportation"
+                  />
+                </template>
+              </title-card>
+            </v-col>
+            <v-col
+              v-if="type != 'Submit'"
+              cols="4"
+            >
+              <v-row class="mt-3 mb-0 mx-0">
+                <v-col cols="6" />
+                <v-col cols="6">
+                  <v-text-field
+                    readonly
+                    class="mr-2"
+                    label="Travel Desk Agent Assigned"
+                    v-model="travelerDetails.travelDeskOfficer"
+                    outlined
+                  />
+                </v-col>
+              </v-row>
+              <questions-table
+                :readonly="false"
+                :questions="travelerDetails.questions"
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
 
-									<rental-car-request-table
-										:authorizedTravel="authorizedTravel"
-										:readonly="false"
-										:flightRequests="travelerDetails.flightRequests"
-										:rentalCars="travelerDetails.rentalCars" />
-									<hotel-request-table
-										:authorizedTravel="authorizedTravel"
-										:readonly="false"
-										:flightRequests="travelerDetails.flightRequests"
-										:hotels="travelerDetails.hotels" />
-									<transportation-request-table
-										:authorizedTravel="authorizedTravel"
-										:readonly="false"
-										:otherTransportations="travelerDetails.otherTransportation" />
-								</template>
-							</title-card>
-						</v-col>
-						<v-col v-if="type != 'Submit'" cols="4">
-							<v-row class="mt-3 mb-0 mx-0">
-								<v-col cols="6"/>
-								<v-col cols="6">
-									<v-text-field
-										readonly
-										class="mr-2"
-										label="Travel Desk Agent Assigned"
-										v-model="travelerDetails.travelDeskOfficer"
-										outlined/>
-								</v-col>
-							</v-row>
-							<questions-table
-								:readonly="false"
-								:questions="travelerDetails.questions" />
-						</v-col>
-					</v-row>
-
-				</v-card-text>
-
-				<v-card-actions>
-					<v-btn color="grey darken-5" class="px-5" @click="addNewTravelDialog = false">
-						<div v-if="!type">Close</div>
-						<div v-else>Cancel</div>
-					</v-btn>
-					<v-btn
-						v-if="type"
-						class="ml-auto mr-2 px-5"
-						color="green darken-1"
-						@click="saveNewTravelRequest('save')"
-						:loading="savingData">Save Draft
-					</v-btn>
-					<v-btn
-						v-if="type"
-						class="mr-5 px-5 "
-						color="brown darken-1"
-						@click="saveNewTravelRequest('submit')"
-						:loading="savingData">Submit
-					</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
-
-	</div>
+        <v-card-actions>
+          <v-btn
+            color="grey darken-5"
+            class="px-5"
+            @click="addNewTravelDialog = false"
+          >
+            <div v-if="!type">Close</div>
+            <div v-else>Cancel</div>
+          </v-btn>
+          <v-btn
+            v-if="type"
+            class="ml-auto mr-2 px-5"
+            color="green darken-1"
+            @click="saveNewTravelRequest('save')"
+            :loading="savingData"
+            >Save Draft
+          </v-btn>
+          <v-btn
+            v-if="type"
+            class="mr-5 px-5"
+            color="brown darken-1"
+            @click="saveNewTravelRequest('submit')"
+            :loading="savingData"
+            >Submit
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
-	import { LOOKUP_URL, TRAVEL_DESK_URL } from "../../../../urls";
-	import { secureGet, securePost } from "@/store/jwt";
-	import TitleCard from  '../Common/TitleCard.vue'
-	import TravelerDetails from "./Components/TravelerDetails.vue";
-	import FlightRequestTable from "./RequestDialogs/FlightRequestTable.vue";
-	import RentalCarRequestTable from "./RequestDialogs/RentalCarRequestTable.vue";
-	import HotelRequestTable from "./RequestDialogs/HotelRequestTable.vue";
-	import TransportationRequestTable from "./RequestDialogs/TransportationRequestTable.vue";
-	import QuestionsTable from '../Desk/Components/QuestionsTable.vue'
+import { LOOKUP_URL, TRAVEL_DESK_URL } from "../../../../urls"
+import { secureGet, securePost } from "@/store/jwt"
+import TitleCard from "../Common/TitleCard.vue"
+import TravelerDetails from "./Components/TravelerDetails.vue"
+import FlightRequestTable from "./RequestDialogs/FlightRequestTable.vue"
+import RentalCarRequestTable from "./RequestDialogs/RentalCarRequestTable.vue"
+import HotelRequestTable from "./RequestDialogs/HotelRequestTable.vue"
+import TransportationRequestTable from "./RequestDialogs/TransportationRequestTable.vue"
+import QuestionsTable from "../Desk/Components/QuestionsTable.vue"
 
-	export default {
-		components: {
-			TitleCard,
-			TravelerDetails,
-			FlightRequestTable,
-			RentalCarRequestTable,
-			TransportationRequestTable,
-			HotelRequestTable,
-			QuestionsTable
-		},
-		name: "NewTravelDeskRequest",
-		props: {
-			type: {
-				type: String
-			},
-			authorizedTravel: {}
-		},
-		data() {
-			return {
+export default {
+  components: {
+    TitleCard,
+    TravelerDetails,
+    FlightRequestTable,
+    RentalCarRequestTable,
+    TransportationRequestTable,
+    HotelRequestTable,
+    QuestionsTable,
+  },
+  name: "NewTravelDeskRequest",
+  props: {
+    type: {
+      type: String,
+    },
+    authorizedTravel: {},
+  },
+  data() {
+    return {
+      addNewTravelDialog: false,
+      readonly: false,
+      internationalTravel: false,
 
-				addNewTravelDialog: false,
-				readonly: false,
-				internationalTravel: false,
+      travelerDetails: {},
+      savingData: false,
 
-				travelerDetails: {},
-				savingData: false,
+      state: {
+        firstNameErr: false,
+        middleNameErr: false,
+        lastNameErr: false,
+        birthDateErr: false,
+        travelAuthErr: false,
+        addressErr: false,
+        cityErr: false,
+        provinceErr: false,
+        postalCodeErr: false,
+        passportNumberErr: false,
+        passportCountryErr: false,
+        businessPhoneErr: false,
+        businessEmailErr: false,
+        travelPhoneErr: false,
+        travelEmailErr: false,
+        flightRequestsErr: false,
+        rentalCarsErr: false,
+        hotelsErr: false,
+        otherTransportationErr: false,
+      },
 
-				state: {
-					firstNameErr: false,
-					middleNameErr: false,
-					lastNameErr: false,
-					birthDateErr: false,
-					travelAuthErr: false,
-					addressErr: false,
-					cityErr: false,
-					provinceErr: false,
-					postalCodeErr: false,
-					passportNumberErr: false,
-					passportCountryErr: false,
-					businessPhoneErr: false,
-					businessEmailErr: false,
-					travelPhoneErr: false,
-					travelEmailErr: false,
-					flightRequestsErr: false,
-					rentalCarsErr: false,
-					hotelsErr: false,
-					otherTransportationErr: false
-				},
+      loadingData: false,
+    }
+  },
+  mounted() {},
+  methods: {
+    updateTable() {
+      this.$emit("updateTable")
+    },
 
-				loadingData: false
-			};
-		},
-		mounted() {
-		},
-		methods: {
-			updateTable() {
-				this.$emit("updateTable");
-			},
+    async initForm() {
+      this.initStates()
+      this.savingData = false
+      this.loadingData = true
+      const travelRequest = await this.getTravelRequestInfo()
+      // console.log(travelRequest)
+      if (travelRequest) {
+        this.extractTravelRequestInfo(travelRequest)
+      } else await this.getEmployeeInfo()
+    },
 
-			async initForm() {
-				this.initStates();
-				this.savingData = false;
-				this.loadingData = true;
-				const travelRequest = await this.getTravelRequestInfo()
-				// console.log(travelRequest)
-				if(travelRequest){
-					this.extractTravelRequestInfo(travelRequest)
-				}else
-					await this.getEmployeeInfo()
-			},
+    async getTravelRequestInfo() {
+      return secureGet(`${TRAVEL_DESK_URL}/travel-request/` + this.authorizedTravel.id)
+        .then((resp) => {
+          // console.log(resp.data)
+          return resp.data
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
 
-			async getTravelRequestInfo() {
-				return secureGet(`${TRAVEL_DESK_URL}/travel-request/`+this.authorizedTravel.id)
-					.then(resp => {
-						// console.log(resp.data)
-						return(resp.data)
-					})
-					.catch(e => {
-						console.log(e);
-					});
-			},
+    async getEmployeeInfo() {
+      return secureGet(`${LOOKUP_URL}/employee-info?email=` + this.authorizedTravel.email)
+        .then((resp) => {
+          console.log(resp.data)
+          const employee = resp.data
+          const travelerDetails = {
+            legalFirstName: employee.firstName,
+            legalMiddleName: "",
+            legalLastName: employee.lastName,
+            birthDate: "",
+            strAddress: employee.address,
+            city: employee.community,
+            province: employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : "",
+            postalCode: employee.postalCode,
+            passportCountry: "",
+            passportNum: "",
+            travelPurpose: "",
+            travelLocation: "",
+            travelNotes: "",
+            busPhone: employee.businessPhone,
+            busEmail: employee.email,
+            travelContact: false,
+            travelPhone: employee.mobile,
+            travelEmail: "",
+            travelDeskOfficer: "",
+            internationalTravel: false,
+            office: employee.office,
+            department: employee.department,
+            fullName: employee.fullName,
+            travelAuthorizationId: this.authorizedTravel.id,
+            additionalInformation: "",
+            rentalCars: [],
+            flightRequests: [],
+            hotels: [],
+            otherTransportation: [],
+            questions: [],
+            status: "draft",
+          }
+          this.travelerDetails = travelerDetails
+          this.loadingData = false
+        })
+        .catch((e) => {
+          console.log(e)
+          this.loadingData = false
+        })
+    },
 
-			async getEmployeeInfo() {
-				return secureGet(`${LOOKUP_URL}/employee-info?email=`+this.authorizedTravel.email)
-					.then(resp => {
-						console.log(resp.data)
-						const employee = resp.data
-						const travelerDetails={
-							legalFirstName: employee.firstName,
-							legalMiddleName: "",
-							legalLastName: employee.lastName,
-							birthDate: "",
-							strAddress: employee.address,
-							city: employee.community,
-							province: employee.community?.toLowerCase()=='whitehorse'? "Yukon": "",
-							postalCode: employee.postalCode,
-							passportCountry: "",
-							passportNum: "",
-							travelPurpose: "",
-							travelLocation: "",
-							travelNotes: "",
-							busPhone: employee.businessPhone,
-							busEmail: employee.email,
-							travelContact:false,
-							travelPhone: employee.mobile,
-							travelEmail: "",
-							travelDeskOfficer: "",
-							internationalTravel:false,
-							office: employee.office,
-							department: employee.department,
-							fullName: employee.fullName,
-							travelAuthorizationId: this.authorizedTravel.id,
-							additionalInformation: "",
-							rentalCars: [],
-							flightRequests: [],
-							hotels: [],
-							otherTransportation: [],
-							questions: [],
-							status: 'draft',
-						}
-						this.travelerDetails = travelerDetails
-						this.loadingData = false;
-					})
-					.catch(e => {
-						console.log(e);
-						this.loadingData = false;
-					});
-			},
+    extractTravelRequestInfo(travelerDetails) {
+      travelerDetails.internationalTravel =
+        travelerDetails.passportCountry || travelerDetails.passportNum
+      travelerDetails.office = ""
+      travelerDetails.department = this.$store.state.auth.department
+      travelerDetails.fullName =
+        travelerDetails.legalFirstName + "." + travelerDetails.legalLastName
+      this.travelerDetails = travelerDetails
+      this.loadingData = false
+    },
 
-			extractTravelRequestInfo(travelerDetails){
-				travelerDetails.internationalTravel= (travelerDetails.passportCountry || travelerDetails.passportNum)
-				travelerDetails.office="";
-				travelerDetails.department= this.$store.state.auth.department;
-				travelerDetails.fullName= travelerDetails.legalFirstName+'.'+travelerDetails.legalLastName;
-				this.travelerDetails = travelerDetails;
-				this.loadingData = false;
-			},
+    saveNewTravelRequest(saveType) {
+      console.log(saveType)
+      // console.log(this.travelerDetails)
 
+      if (saveType == "save" || this.checkFields()) {
+        this.savingData = true
+        const body = this.travelerDetails
+        delete body.internationalTravel
+        delete body.differentTravelContact
+        delete body.office
+        delete body.department
+        delete body.fullName
+        if (saveType == "submit" && body.status == "draft") {
+          const today = new Date()
+          body.status = "submitted"
+          body.submitDate = today
+        } else if (saveType == "submit" && body.status == "options_provided") {
+          body.status = "options_ranked"
+        }
+        // console.log(body);
+        const id = this.authorizedTravel.id
+        securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
+          .then(() => {
+            this.savingData = false
+            this.addNewTravelDialog = false
+            this.$emit("updateTable")
+          })
+          .catch((e) => {
+            this.savingData = false
+            console.log(e)
+          })
+      }
+    },
 
-			saveNewTravelRequest(saveType) {
-				console.log(saveType)
-				// console.log(this.travelerDetails)
+    initStates() {
+      for (const key of Object.keys(this.state)) {
+        this.state[key] = false
+      }
+    },
 
-				if (saveType=='save' || this.checkFields()) {
-					this.savingData = true;
-					const body = this.travelerDetails
-					delete body.internationalTravel;
-					delete body.differentTravelContact
-					delete body.office
-					delete body.department
-					delete body.fullName
-					if(saveType=="submit" && body.status=="draft"){
-						const today = new Date();
-						body.status="submitted"
-						body.submitDate= today
-					}else if (saveType=="submit" && body.status=="options_provided"){
-						body.status="options_ranked"
-					}
-					// console.log(body);
-					const id = this.authorizedTravel.id
-					securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
-					.then(() => {
-						this.savingData = false;
-						this.addNewTravelDialog = false;
-						this.$emit("updateTable");
-					})
-					.catch(e => {
-						this.savingData = false;
-						console.log(e);
-					});
-				}
-			},
+    checkFields() {
+      this.state.firstNameErr = this.travelerDetails.legalFirstName ? false : true
+      ;(this.state.middleNameErr = false),
+        (this.state.lastNameErr = this.travelerDetails.legalLastName ? false : true)
+      this.state.birthDateErr = this.travelerDetails.birthDate ? false : true
+      this.state.travelAuthErr = false //this.travelerDetails.travelAuth? false:true; TODO: add this in backend
+      this.state.addressErr = this.travelerDetails.strAddress ? false : true
+      this.state.cityErr = this.travelerDetails.city ? false : true
+      this.state.provinceErr = this.travelerDetails.province ? false : true
+      this.state.postalCodeErr = this.travelerDetails.postalCode ? false : true
+      this.state.passportNumberErr =
+        this.internationalTravel && !this.travelerDetails.passportNum ? true : false
+      this.state.passportCountryErr =
+        this.internationalTravel && !this.travelerDetails.passportCountry ? true : false
+      this.state.businessPhoneErr = this.travelerDetails.busPhone ? false : true
+      this.state.businessEmailErr = this.travelerDetails.busEmail ? false : true
+      this.state.travelPhoneErr =
+        this.travelerDetails.travelContact && !this.travelerDetails.travelPhone ? true : false //show hint
+      this.state.travelEmailErr =
+        this.travelerDetails.travelContact && !this.travelerDetails.travelEmail ? true : false //show hint
+      this.state.flightRequestsErr = false
+      this.state.rentalCarsErr = false
+      this.state.hotelsErr = false
+      this.state.otherTransportationErr = false
 
-			initStates() {
-				for (const key of Object.keys(this.state)) {
-					this.state[key] = false;
-				}
-			},
+      if (this.travelerDetails.status == "options_provided") {
+        let error = false
+        for (const question of this.travelerDetails.questions) {
+          if (question.response) question.state.responseErr = false
+          else {
+            question.state.responseErr = true
+            error = true
+          }
+        }
 
-			checkFields() {
+        for (const flightRequest of this.travelerDetails.flightRequests) {
+          for (const flightOption of flightRequest.flightOptions) {
+            if (!flightOption.flightPreference) {
+              error = true
+            }
+          }
+        }
 
-				this.state.firstNameErr = this.travelerDetails.legalFirstName? false:true;
-				this.state.middleNameErr = false,
-				this.state.lastNameErr = this.travelerDetails.legalLastName? false:true;
-				this.state.birthDateErr = this.travelerDetails.birthDate? false:true;
-				this.state.travelAuthErr = false; //this.travelerDetails.travelAuth? false:true; TODO: add this in backend
-				this.state.addressErr = this.travelerDetails.strAddress? false:true;
-				this.state.cityErr = this.travelerDetails.city? false:true;
-				this.state.provinceErr = this.travelerDetails.province? false:true;
-				this.state.postalCodeErr = this.travelerDetails.postalCode? false:true;
-				this.state.passportNumberErr = this.internationalTravel && !this.travelerDetails.passportNum? true: false;
-				this.state.passportCountryErr = this.internationalTravel && !this.travelerDetails.passportCountry? true: false;
-				this.state.businessPhoneErr = this.travelerDetails.busPhone? false:true;
-				this.state.businessEmailErr = this.travelerDetails.busEmail? false:true;
-				this.state.travelPhoneErr = this.travelerDetails.travelContact && !this.travelerDetails.travelPhone? true: false;//show hint
-				this.state.travelEmailErr = this.travelerDetails.travelContact && !this.travelerDetails.travelEmail? true: false;//show hint
-				this.state.flightRequestsErr = false;
-				this.state.rentalCarsErr = false;
-				this.state.hotelsErr = false;
-				this.state.otherTransportationErr = false;
+        if (error) return false
+      }
 
-				if(this.travelerDetails.status=='options_provided'){
-					let error=false
-					for(const question of this.travelerDetails.questions){
-						if(question.response) question.state.responseErr=false;
-						else { question.state.responseErr=true; error=true}
-					}
-
-					for(const flightRequest of this.travelerDetails.flightRequests){
-						for(const flightOption of flightRequest.flightOptions){
-							if(!flightOption.flightPreference){ error=true;}
-						}
-					}
-
-					if(error) return false;
-				}
-
-				for (const key of Object.keys(this.state)) {
-					if (this.state[key]) return false;
-				}
-				return true;
-			},
-
-		}
-	};
+      for (const key of Object.keys(this.state)) {
+        if (this.state[key]) return false
+      }
+      return true
+    },
+  },
+}
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
-
-</style>
+<style scoped lang="css" src="@/styles/_travel_desk.css"></style>
