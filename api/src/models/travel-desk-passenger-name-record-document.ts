@@ -21,7 +21,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   InferCreationAttributes<TravelDeskPassengerNameRecordDocument>
 > {
   declare id: CreationOptional<number>
-  declare travelDeskTravelRequestId: ForeignKey<TravelDeskTravelRequest["requestID"]>
+  declare travelDeskTravelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare pnrDocument: Buffer | null
   declare invoiceNumber: string | null
   declare createdAt: CreationOptional<Date>
@@ -30,7 +30,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
   declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<
     TravelDeskTravelRequest,
-    TravelDeskTravelRequest["requestID"]
+    TravelDeskTravelRequest["id"]
   >
   declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
 
@@ -46,7 +46,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   static establishAssociations() {
     this.belongsTo(TravelDeskTravelRequest, {
       as: "travelDeskTravelRequest",
-      targetKey: "requestID",
+      targetKey: "id",
       foreignKey: "travelDeskTravelRequestId",
     })
   }
@@ -66,7 +66,7 @@ TravelDeskPassengerNameRecordDocument.init(
       unique: true,
       references: {
         model: "travel_desk_travel_requests", // using real table name here
-        key: "requestID", // using real column name here
+        key: "id", // using real column name here
       },
       onDelete: "CASCADE",
     },

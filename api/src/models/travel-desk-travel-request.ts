@@ -32,7 +32,7 @@ export class TravelDeskTravelRequest extends Model<
   InferAttributes<TravelDeskTravelRequest>,
   InferCreationAttributes<TravelDeskTravelRequest>
 > {
-  declare requestID: CreationOptional<number>
+  declare id: CreationOptional<number>
   declare TAID: ForeignKey<TravelAuthorization["id"]>
   declare agencyID: ForeignKey<TravelDeskTravelAgent["agencyID"]>
   declare legalFirstName: string
@@ -99,7 +99,7 @@ export class TravelDeskTravelRequest extends Model<
   static establishAssociations() {
     this.hasOne(TravelDeskPassengerNameRecordDocument, {
       as: "travelDeskPassengerNameRecordDocument",
-      sourceKey: "requestID",
+      sourceKey: "id",
       foreignKey: "travelDeskTravelRequestId",
     })
     this.belongsTo(TravelAuthorization, {
@@ -116,7 +116,7 @@ export class TravelDeskTravelRequest extends Model<
 
 TravelDeskTravelRequest.init(
   {
-    requestID: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
