@@ -16,7 +16,7 @@ export async function up(knex: Knex): Promise<void> {
       .inTable("travelDeskTravelRequest")
       .onDelete("CASCADE")
 
-    table.unique("travel_desk_travel_request_id", {
+    table.unique(["travel_desk_travel_request_id"], {
       indexName: "travel_desk_pnr_documents_travel_desk_travel_request_id_unique",
     })
   })
