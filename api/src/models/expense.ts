@@ -16,7 +16,7 @@ import sequelize from "@/db/db-client"
 
 import TravelAuthorization from "./travel-authorization"
 
-// Keep in sync with web/src/modules/travelForm/components/ExpenseTypeSelect.vue
+// Keep in sync with web/src/modules/travel-form/components/ExpenseTypeSelect.vue
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",

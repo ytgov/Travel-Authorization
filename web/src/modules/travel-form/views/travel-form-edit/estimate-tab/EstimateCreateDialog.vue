@@ -93,7 +93,7 @@ import { required } from "@/utils/validators"
 
 import CurrencyTextField from "@/components/Utils/CurrencyTextField"
 import DatePicker from "@/components/Utils/DatePicker"
-import ExpenseTypeSelect from "@/modules/travelForm/components/ExpenseTypeSelect"
+import ExpenseTypeSelect from "@/modules/travel-form/components/ExpenseTypeSelect"
 
 import expensesApi from "@/apis/expenses-api"
 
