@@ -63,6 +63,7 @@ TravelDeskPassengerNameRecordDocument.init(
     travelDeskTravelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: true,
       references: {
         model: "travelDeskTravelRequest", // using real table name here
         key: "requestID", // using real column name here
