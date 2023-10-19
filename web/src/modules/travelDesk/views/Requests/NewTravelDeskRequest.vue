@@ -330,9 +330,7 @@ export default {
         delete body.department
         delete body.fullName
         if (saveType == "submit" && body.status == "draft") {
-          const today = new Date()
           body.status = "submitted"
-          body.submitDate = today
         } else if (saveType == "submit" && body.status == "options_provided") {
           body.status = "options_ranked"
         }
