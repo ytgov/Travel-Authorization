@@ -27,6 +27,7 @@ import sequelize from "@/db/db-client"
 import Expense from "./expense"
 import Preapproved from "./preapproved"
 import Stop from "./stop"
+import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelPurpose from "./travel-purpose"
 import User from "./user"
 
@@ -82,7 +83,7 @@ export class TravelAuthorization extends Model<
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
-  // associations stops, purpose, expenses
+  // Associations
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
@@ -112,14 +113,48 @@ export class TravelAuthorization extends Model<
   declare countStops: HasManyCountAssociationsMixin
   declare createStop: HasManyCreateAssociationMixin<Stop>
 
-  declare expenses?: NonAttribute<Expense[]>
+  declare getTravelDeskTravelRequests: HasManyGetAssociationsMixin<TravelDeskTravelRequest>
+  declare setTravelDeskTravelRequests: HasManySetAssociationsMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["TAID"]
+  >
+  declare hasTravelDeskTravelRequest: HasManyHasAssociationMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["TAID"]
+  >
+  declare hasTravelDeskTravelRequests: HasManyHasAssociationsMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["TAID"]
+  >
+  declare addTravelDeskTravelRequest: HasManyAddAssociationMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["TAID"]
+  >
+  declare addTravelDeskTravelRequests: HasManyAddAssociationsMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["TAID"]
+  >
+  declare removeTravelDeskTravelRequest: HasManyRemoveAssociationMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["TAID"]
+  >
+  declare removeTravelDeskTravelRequests: HasManyRemoveAssociationsMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["TAID"]
+  >
+  declare countTravelDeskTravelRequests: HasManyCountAssociationsMixin
+  declare createTravelDeskTravelRequest: HasManyCreateAssociationMixin<TravelDeskTravelRequest>
+
   declare purpose?: NonAttribute<TravelPurpose>
+  declare expenses?: NonAttribute<Expense[]>
   declare stops?: NonAttribute<Stop[]>
+  declare travelDeskTravelRequests?: NonAttribute<TravelDeskTravelRequest[]>
 
   declare static associations: {
     expenses: Association<TravelAuthorization, Expense>
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
+    travelDeskTravelRequests: Association<TravelAuthorization, TravelDeskTravelRequest>
   }
 
   static establishAssociations() {
@@ -136,6 +171,11 @@ export class TravelAuthorization extends Model<
       as: "expenses",
       sourceKey: "id",
       foreignKey: "travelAuthorizationId",
+    })
+    this.hasMany(TravelDeskTravelRequest, {
+      as: "travelDeskTravelRequests",
+      sourceKey: "id",
+      foreignKey: "TAID",
     })
   }
 
