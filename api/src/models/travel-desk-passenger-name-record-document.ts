@@ -46,6 +46,7 @@ export class TravelDeskPassengerNameRecordDocument extends Model<
   static establishAssociations() {
     this.belongsTo(TravelDeskTravelRequest, {
       as: "travelDeskTravelRequest",
+      targetKey: "requestID",
       foreignKey: "travelDeskTravelRequestId",
     })
   }

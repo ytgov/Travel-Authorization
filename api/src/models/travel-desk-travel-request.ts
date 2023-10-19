@@ -69,6 +69,13 @@ export class TravelDeskTravelRequest extends Model<
   >
   declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
+  declare getTravelDeskPassengerNameRecordDocument: BelongsToGetAssociationMixin<TravelDeskPassengerNameRecordDocument>
+  declare setTravelDeskPassengerNameRecordDocument: BelongsToSetAssociationMixin<
+    TravelDeskPassengerNameRecordDocument,
+    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
+  >
+  declare createTravelDeskPassengerNameRecordDocument: BelongsToCreateAssociationMixin<TravelDeskPassengerNameRecordDocument>
+
   declare getTravelDeskTravelAgent: BelongsToGetAssociationMixin<TravelDeskTravelAgent>
   declare setTravelDeskTravelAgent: BelongsToSetAssociationMixin<
     TravelDeskTravelAgent,
@@ -76,54 +83,25 @@ export class TravelDeskTravelRequest extends Model<
   >
   declare createTravelDeskTravelAgent: BelongsToCreateAssociationMixin<TravelDeskTravelAgent>
 
-  declare getTravelDeskPassengerNameRecordDocuments: HasManyGetAssociationsMixin<TravelDeskPassengerNameRecordDocument>
-  declare setTravelDeskPassengerNameRecordDocuments: HasManySetAssociationsMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare hasTravelDeskPassengerNameRecordDocument: HasManyHasAssociationMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare hasTravelDeskPassengerNameRecordDocuments: HasManyHasAssociationsMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare addTravelDeskPassengerNameRecordDocument: HasManyAddAssociationMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare addTravelDeskPassengerNameRecordDocuments: HasManyAddAssociationsMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare removeTravelDeskPassengerNameRecordDocument: HasManyRemoveAssociationMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare removeTravelDeskPassengerNameRecordDocuments: HasManyRemoveAssociationsMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare countTravelDeskPassengerNameRecordDocuments: HasManyCountAssociationsMixin
-  declare createTravelDeskPassengerNameRecordDocument: HasManyCreateAssociationMixin<TravelDeskPassengerNameRecordDocument>
-
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
+  declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
   declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
-  declare travelDeskPassengerNameRecordDocuments?: NonAttribute<
-    TravelDeskPassengerNameRecordDocument[]
-  >
 
   declare static associations: {
     travelAuthorization: Association<TravelDeskTravelRequest, TravelAuthorization>
-    travelDeskTravelAgent: Association<TravelDeskTravelRequest, TravelDeskTravelAgent>
-    TravelDeskPassengerNameRecordDocument: Association<
+    travelDeskPassengerNameRecordDocument: Association<
       TravelDeskTravelRequest,
       TravelDeskPassengerNameRecordDocument
     >
+    travelDeskTravelAgent: Association<TravelDeskTravelRequest, TravelDeskTravelAgent>
   }
 
   static establishAssociations() {
+    this.hasOne(TravelDeskPassengerNameRecordDocument, {
+      as: "travelDeskPassengerNameRecordDocument",
+      sourceKey: "requestID",
+      foreignKey: "travelDeskTravelRequestId",
+    })
     this.belongsTo(TravelAuthorization, {
       as: "travelAuthorization",
       foreignKey: "TAID",
