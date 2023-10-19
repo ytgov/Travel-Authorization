@@ -1,6 +1,6 @@
 import { isNull } from "lodash"
 
-import { Stop, TravelAuthorization, TravelPurpose } from "@/models"
+import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
@@ -3991,7 +3991,7 @@ export async function seedUp() {
     },
   ])
 
-  await dbLegacy("travelDeskTravelRequest").delete().whereRaw("1=1")
+  await TravelDeskTravelRequest.destroy({ where: {} })
 
   return "Done"
 }
