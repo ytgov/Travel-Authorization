@@ -12,7 +12,7 @@ import {
   NonAttribute,
 } from "sequelize"
 
-import { TravelDeskTravelRequest } from "./travel-desk-travel-request"
+import TravelDeskTravelRequest from "./travel-desk-travel-request"
 
 import sequelize from "@/db/db-client"
 
