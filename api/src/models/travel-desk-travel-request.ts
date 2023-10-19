@@ -128,10 +128,11 @@ export class TravelDeskTravelRequest extends Model<
       as: "travelAuthorization",
       foreignKey: "TAID",
     })
-    this.belongsTo(TravelDeskTravelAgent, {
-      as: "travelDeskTravelAgent",
-      foreignKey: "agencyID",
-    })
+    // TODO: enable this once TravelDeskTravelRequest model is set up
+    // this.belongsTo(TravelDeskTravelAgent, {
+    //   as: "travelDeskTravelAgent",
+    //   foreignKey: "agencyID",
+    // })
   }
 }
 
