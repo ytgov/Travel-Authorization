@@ -2,51 +2,26 @@
   <div>
     <div class="d-flex justify-space-between align-baseline my-5">
       <h1>My Travel</h1>
-      <v-btn
-        :disabled="loadingCreatingForm"
-        :loading="loadingCreatingForm"
-        color="primary"
-        @click="createAndGoToFormDetails"
-      >
-        + Travel Authorization
-      </v-btn>
+      <CreateTravelAuthorizationButton />
     </div>
 
     <MyTravelAuthorizationsTable />
   </div>
 </template>
 <script>
+import CreateTravelAuthorizationButton from "@/modules/travel-form/views/travel-form-list/CreateTravelAuthorizationButton"
 import MyTravelAuthorizationsTable from "@/modules/travel-form/components/MyTravelAuthorizationsTable"
 
 export default {
   name: "TravelFormList",
   components: {
+    CreateTravelAuthorizationButton,
     MyTravelAuthorizationsTable,
   },
-  data: () => ({
-    loadingCreatingForm: false,
-  }),
+  data: () => ({}),
   mounted() {},
   computed: {},
-  methods: {
-    goToFormDetails(form) {
-      const formId = form.id
-      this.$router.push({ name: "TravelFormEdit-DetailsTab", params: { formId } })
-    },
-    createAndGoToFormDetails() {
-      this.loadingCreatingForm = true
-      return this.create({ status: "Draft" })
-        .then((form) => {
-          return this.goToFormDetails(form)
-        })
-        .catch((error) => {
-          this.$snack(error.message, { color: "error" })
-        })
-        .finally(() => {
-          this.loadingCreatingForm = false
-        })
-    },
-  },
+  methods: {},
   watch: {},
 }
 </script>

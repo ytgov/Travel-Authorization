@@ -62,7 +62,7 @@ export default {
     ...mapState("travelForm", ["myForms"]),
   },
   methods: {
-    ...mapActions("travelForm", ["loadForms", "create"]),
+    ...mapActions("travelForm", ["loadForms"]),
     refreshForms() {
       this.loadingForms = true
       return this.loadForms({ page: this.page, perPage: this.perPage })
