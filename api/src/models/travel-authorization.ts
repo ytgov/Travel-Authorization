@@ -42,6 +42,7 @@ enum Statuses {
   APPROVED = "Approved",
   DENIED = "Denied",
   CHANGE_REQUESTED = "Change Requested",
+  EXPENSED = "Expensed",
 }
 
 export class TravelAuthorization extends Model<
@@ -92,7 +93,10 @@ export class TravelAuthorization extends Model<
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
 
   declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
-  declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<TravelDeskTravelRequest, TravelDeskTravelRequest["travelAuthorizationId"]>
+  declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["travelAuthorizationId"]
+  >
   declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
 
   declare getExpenses: HasManyGetAssociationsMixin<Expense>

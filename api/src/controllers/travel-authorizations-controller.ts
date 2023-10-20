@@ -21,6 +21,7 @@ export class TravelAuthorizationsController extends BaseController {
           association: "stops",
           include: ["location"],
         },
+        "expenses",
         "purpose",
         "travelDeskTravelRequest",
       ],

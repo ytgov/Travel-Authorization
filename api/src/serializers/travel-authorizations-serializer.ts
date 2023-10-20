@@ -1,6 +1,6 @@
-import { isNil, last, first, pick } from "lodash"
+import { isEmpty, isNil, last, first, pick } from "lodash"
 
-import { Stop, TravelAuthorization } from "@/models"
+import { Expense, Stop, TravelAuthorization } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 
@@ -14,11 +14,13 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   private firstStop: Stop | undefined
   private lastStop: Stop | undefined
+  private currentDate: Date
 
   constructor(record: TravelAuthorization) {
     super(record)
     this.firstStop = first(this.record.stops)
     this.lastStop = last(this.record.stops)
+    this.currentDate = new Date()
   }
 
   asTableRow() {
@@ -38,6 +40,14 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       return "travel_planning"
     } else if (this.isTravelling()) {
       return "travelling"
+    } else if (this.travellingComplete()) {
+      return "travel_complete"
+    } else if (this.hasExpenses()) {
+      return "expensing"
+    } else if (this.isExpensed()) {
+      return "expensed"
+    } else {
+      return undefined
     }
   }
 
@@ -45,13 +55,15 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     return this.record.status === TravelAuthorization.Statuses.DRAFT
   }
 
+  isExpensed() {
+    return this.record.status === TravelAuthorization.Statuses.EXPENSED
+  }
+
   hasCreatedTravelDeskRequest() {
     return this.record.travelDeskTravelRequest !== null
   }
 
   isTravelling() {
-    const currentDate = new Date()
-
     if (
       isNil(this.firstStop) ||
       isNil(this.lastStop) ||
@@ -61,11 +73,33 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       return false
     }
 
-    if (this.firstStop.departureAt <= currentDate && currentDate <= this.lastStop.departureAt) {
+    if (
+      this.firstStop.departureAt <= this.currentDate &&
+      this.currentDate <= this.lastStop.departureAt
+    ) {
       return true
     }
 
     return false
+  }
+
+  travellingComplete() {
+    if (isNil(this.lastStop) || isNil(this.lastStop.departureAt)) {
+      return false
+    }
+
+    if (this.currentDate > this.lastStop.departureAt) {
+      return true
+    }
+
+    return false
+  }
+
+  hasExpenses() {
+    const expenses = this.record.expenses?.filter(
+      (expense) => expense.type === Expense.Types.EXPENSE
+    )
+    return !isEmpty(expenses)
   }
 }
 
