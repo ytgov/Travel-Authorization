@@ -1,18 +1,19 @@
 import Vue from "vue"
 import VueApexCharts from "vue-apexcharts"
+import axios from "axios"
+
+import vuetify from "@/plugins/vuetify"
+import SnackPlugin from "@/plugins/snack-plugin"
+import createI18n from "@/plugins/vue-i18n-plugin"
+import { Auth0Plugin } from "@/auth"
 
 import App from "@/App"
 import router from "@/router"
 import store from "@/store"
-import axios from "axios"
 import "@/filters"
 import Notifications from "@/components/Notifications"
 import MapDialog from "@/components/MapDialog"
-import vuetify from "@/plugins/vuetify"
-import SnackPlugin from "@/plugins/snack-plugin"
-import I18nPlugin from "@/plugins/vue-i18n-plugin"
 
-import { Auth0Plugin } from "@/auth"
 
 Vue.use(VueApexCharts)
 
@@ -25,7 +26,7 @@ Vue.use(Auth0Plugin, {
   },
 })
 Vue.use(SnackPlugin)
-const i18n = I18nPlugin.install(Vue) // Install/use inversion to permit returning i18n instance
+const i18n = createI18n(Vue)
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
