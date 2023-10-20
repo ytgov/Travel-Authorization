@@ -10,6 +10,7 @@ import Notifications from "@/components/Notifications"
 import MapDialog from "@/components/MapDialog"
 import vuetify from "@/plugins/vuetify"
 import SnackPlugin from "@/plugins/snack-plugin"
+import I18nPlugin from "@/plugins/vue-i18n-plugin"
 
 import { Auth0Plugin } from "@/auth"
 
@@ -24,6 +25,7 @@ Vue.use(Auth0Plugin, {
   },
 })
 Vue.use(SnackPlugin)
+const i18n = I18nPlugin.install(Vue) // Install/use inversion to permit returning i18n instance
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -49,5 +51,6 @@ new Vue({
   router,
   store,
   vuetify,
+  i18n,
   render: (h) => h(App),
 }).$mount("#app")

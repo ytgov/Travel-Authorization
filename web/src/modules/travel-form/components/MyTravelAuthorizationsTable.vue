@@ -10,6 +10,9 @@
       class="elevation-2"
       @click:row="goToFormDetails"
     >
+      <template #item.phase="{ value }">
+        <span>{{ formatPhase(value) }}</span>
+      </template>
       <template #item.finalDestination="{ value }">
         <span>{{ formatLocation(value) }}</span>
       </template>
@@ -30,17 +33,6 @@
 import { mapActions, mapState } from "vuex"
 import { isNil } from "lodash"
 import { DateTime } from "luxon"
-
-// TODO: move this to a global translation file
-const StatusToHumanReadable = Object.freeze({
-  deleted: "Deleted",
-  draft: "Draft",
-  submitted: "Submitted",
-  approved: "Approved",
-  denied: "Denied",
-  change_requested: "Change Requested",
-  expensed: "Expensed",
-})
 
 export default {
   name: "MyTravelAuthorizationsTable",
@@ -114,7 +106,10 @@ export default {
       return value.city
     },
     formatStatus(value) {
-      StatusToHumanReadable[value] || "Unknown"
+      return this.$t(`global.status.${value}`, "Unknown")
+    },
+    formatPhase(value) {
+      return this.$t(`global.phase.${value}`, "Unknown")
     },
   },
   watch: {
