@@ -11,13 +11,16 @@
       @click:row="goToFormDetails"
     >
       <template #item.finalDestination="{ value }">
-        <span>{{ formatAsLocation(value) }}</span>
+        <span>{{ formatLocation(value) }}</span>
       </template>
       <template #item.departingAt="{ value }">
-        <span>{{ formatAsDate(value) }}</span>
+        <span>{{ formatDate(value) }}</span>
       </template>
       <template #item.returningAt="{ value }">
-        <span>{{ formatAsDate(value) }}</span>
+        <span>{{ formatDate(value) }}</span>
+      </template>
+      <template #item.status="{ value }">
+        <span>{{ formatStatus(value) }}</span>
       </template>
     </v-data-table>
   </div>
@@ -27,6 +30,16 @@
 import { mapActions, mapState } from "vuex"
 import { isNil } from "lodash"
 import { DateTime } from "luxon"
+
+const StatusToHumanReadable = Object.freeze({
+  deleted: "Deleted",
+  draft: "Draft",
+  submitted: "Submitted",
+  approved: "Approved",
+  denied: "Denied",
+  change_requested: "Change Requested",
+  expensed: "Expensed",
+})
 
 export default {
   name: "MyTravelAuthorizationsTable",
@@ -88,16 +101,19 @@ export default {
       const formId = form.id
       this.$router.push({ name: "TravelFormEdit-DetailsTab", params: { formId } })
     },
-    formatAsDate(value) {
+    formatDate(value) {
       if (isNil(value)) return "Unknown"
 
       const date = DateTime.fromISO(value, { zone: "utc" })
       return date.toFormat("dd-LLL-yyyy")
     },
-    formatAsLocation(value) {
+    formatLocation(value) {
       if (isNil(value) || isNil(value.city)) return "Unknown"
 
       return value.city
+    },
+    formatStatus(value) {
+      StatusToHumanReadable[value] || "Unknown"
     },
   },
   watch: {
