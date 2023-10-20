@@ -1,6 +1,5 @@
 <template>
   <div>
-    <pre>{{ myForms }}</pre>
     <v-data-table
       :headers="headers"
       :items="myForms"
@@ -11,8 +10,14 @@
       class="elevation-2"
       @click:row="goToFormDetails"
     >
-      <template #item.departure-date="{ item }">
-        <span>{{ formatAsDate(item.departingAt) }}</span>
+      <template #item.finalDestination="{ value }">
+        <span>{{ formatAsLocation(value) }}</span>
+      </template>
+      <template #item.departingAt="{ value }">
+        <span>{{ formatAsDate(value) }}</span>
+      </template>
+      <template #item.returningAt="{ value }">
+        <span>{{ formatAsDate(value) }}</span>
       </template>
     </v-data-table>
   </div>
@@ -20,6 +25,8 @@
 
 <script>
 import { mapActions, mapState } from "vuex"
+import { isNil } from "lodash"
+import { DateTime } from "luxon"
 
 export default {
   name: "MyTravelAuthorizationsTable",
@@ -31,7 +38,7 @@ export default {
       },
       {
         text: "Location",
-        value: "location",
+        value: "finalDestination",
       },
       {
         text: "Description",
@@ -39,11 +46,11 @@ export default {
       },
       {
         text: "Start Date",
-        value: "startDate",
+        value: "departingAt",
       },
       {
         text: "End Date",
-        value: "endDate",
+        value: "returningAt",
       },
       {
         text: "Travel Auth Status",
@@ -82,11 +89,15 @@ export default {
       this.$router.push({ name: "TravelFormEdit-DetailsTab", params: { formId } })
     },
     formatAsDate(value) {
-      const timestamp = Date.parse(value)
-      if (isNaN(timestamp)) return value
+      if (isNil(value)) return "Unknown"
 
-      const date = new Date(timestamp)
-      return date.toDateString()
+      const date = DateTime.fromISO(value, { zone: "utc" })
+      return date.toFormat("dd-LLL-yyyy")
+    },
+    formatAsLocation(value) {
+      if (isNil(value) || isNil(value.city)) return "Unknown"
+
+      return value.city
     },
   },
   watch: {

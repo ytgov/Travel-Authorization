@@ -16,7 +16,18 @@ export class TravelAuthorizationsController extends BaseController {
     const where = this.query.where as WhereOptions<TravelAuthorization>
     return TravelAuthorization.findAndCountAll({
       where,
-      include: ["stops", "purpose"],
+      include: [
+        {
+          association: "stops",
+          include: ["location"],
+        },
+        "purpose",
+      ],
+      order: [
+        ["updatedAt", "DESC"],
+        ["stops", "departureDate", "ASC"],
+        ["stops", "departureTime", "ASC"],
+      ],
       limit: this.pagination.limit,
       offset: this.pagination.offset,
     }).then(({ rows: travelAuthorizations, count }) => {
