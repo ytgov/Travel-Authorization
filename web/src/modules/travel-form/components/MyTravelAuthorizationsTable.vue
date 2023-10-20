@@ -31,6 +31,7 @@ import { mapActions, mapState } from "vuex"
 import { isNil } from "lodash"
 import { DateTime } from "luxon"
 
+// TODO: move this to a global translation file
 const StatusToHumanReadable = Object.freeze({
   deleted: "Deleted",
   draft: "Draft",
