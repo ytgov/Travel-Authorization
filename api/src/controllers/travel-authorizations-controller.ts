@@ -1,4 +1,5 @@
 import { isNil } from "lodash"
+import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
@@ -12,7 +13,7 @@ const auditService = new AuditService()
 
 export class TravelAuthorizationsController extends BaseController {
   index() {
-    const where = this.query.where as any // TODO: figure out typing for "where" parameter
+    const where = this.query.where as WhereOptions<TravelAuthorization>
     return TravelAuthorization.findAndCountAll({
       where,
       include: ["stops", "purpose"],
