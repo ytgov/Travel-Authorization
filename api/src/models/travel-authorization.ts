@@ -255,6 +255,12 @@ TravelAuthorization.init(
     status: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      validate: {
+        isIn: {
+          args: [Object.values(Statuses)],
+          msg: "Invalid status value",
+        },
+      },
     },
     supervisorEmail: {
       type: DataTypes.STRING(255),
