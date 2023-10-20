@@ -42,7 +42,7 @@ export default {
       },
       {
         text: "Description",
-        value: "description",
+        value: "eventName",
       },
       {
         text: "Start Date",

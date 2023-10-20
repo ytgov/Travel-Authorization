@@ -22,6 +22,7 @@ export class TravelAuthorizationsController extends BaseController {
           include: ["location"],
         },
         "purpose",
+        "travelDeskTravelRequest",
       ],
       order: [
         ["updatedAt", "DESC"],
