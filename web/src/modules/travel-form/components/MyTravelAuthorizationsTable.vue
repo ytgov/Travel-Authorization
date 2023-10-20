@@ -1,53 +1,57 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="myForms"
-    :loading="loadingForms"
-    :items-per-page.sync="perPage"
-    :page.sync="page"
-    :server-items-length="totalCount"
-    class="elevation-2"
-    @click:row="goToFormDetails"
-  >
-    <template #item.department-and-branch="{ item }">
-      <span>{{ formatDepartmentAndBranch(item) }}</span>
-    </template>
-    <template #item.departure-date="{ item }">
-      <span>{{ formatAsDate(item.departingAt) }}</span>
-    </template>
-    <template #item.date-back-to-work="{ item }">
-      <span>{{ formatAsDate(item.dateBackToWork) }}</span>
-    </template>
-  </v-data-table>
+  <div>
+    <pre>{{ myForms }}</pre>
+    <v-data-table
+      :headers="headers"
+      :items="myForms"
+      :loading="loadingForms"
+      :items-per-page.sync="perPage"
+      :page.sync="page"
+      :server-items-length="totalCount"
+      class="elevation-2"
+      @click:row="goToFormDetails"
+    >
+      <template #item.departure-date="{ item }">
+        <span>{{ formatAsDate(item.departingAt) }}</span>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex"
-import { isEmpty } from "lodash"
 
 export default {
   name: "MyTravelAuthorizationsTable",
   data: () => ({
     headers: [
       {
-        text: "Department/Branch",
-        value: "departmentAndBranch",
+        text: "Phase",
+        value: "phase",
       },
       {
-        text: "Purpose",
-        value: "purpose",
+        text: "Location",
+        value: "location",
       },
       {
-        text: "Departure Date",
-        value: "departureDate",
+        text: "Description",
+        value: "description",
       },
       {
-        text: "Return Date",
-        value: "dateBackToWork",
+        text: "Start Date",
+        value: "startDate",
       },
       {
-        text: "Status",
+        text: "End Date",
+        value: "endDate",
+      },
+      {
+        text: "Travel Auth Status",
         value: "status",
+      },
+      {
+        text: "Travel Action",
+        value: "action",
       },
     ],
     perPage: 10,
@@ -84,13 +88,6 @@ export default {
       const date = new Date(timestamp)
       return date.toDateString()
     },
-    formatDepartmentAndBranch(item) {
-      const { department, branch } = item
-      if (isEmpty(branch)) return department
-      if (branch === department) return department
-
-      return `${department} - ${branch}`
-    },
   },
   watch: {
     page() {
@@ -102,3 +99,5 @@ export default {
   },
 }
 </script>
+
+<style scoped></style>
