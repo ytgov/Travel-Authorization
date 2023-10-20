@@ -31,18 +31,17 @@ import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelPurpose from "./travel-purpose"
 import User from "./user"
 
-// These are a best guess, database values may not match this list.
-// TODO: normalize database values and make sure all statuses are in this list.
-// If we want validation for this field we should swith to an ORM such as Sequelize.
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum Statuses {
-  DELETED = "deleted", // TODO: normalize this state, or replace with more standard `deleted_at` field
-  DRAFT = "Draft",
-  SUBMITTED = "Submitted",
-  APPROVED = "Approved",
-  DENIED = "Denied",
-  CHANGE_REQUESTED = "Change Requested",
-  EXPENSED = "Expensed",
+  // TODO: might want replace DELETED status with `deleted_at` field from Sequelize paranoid feature.
+  // See https://sequelize.org/docs/v6/core-concepts/paranoid/
+  DELETED = "deleted",
+  DRAFT = "draft",
+  SUBMITTED = "submitted",
+  APPROVED = "approved",
+  DENIED = "denied",
+  CHANGE_REQUESTED = "change_requested",
+  EXPENSED = "expensed",
 }
 
 export class TravelAuthorization extends Model<
