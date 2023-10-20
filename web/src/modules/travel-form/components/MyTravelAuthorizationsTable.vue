@@ -25,6 +25,43 @@
       <template #item.status="{ value }">
         <span>{{ formatStatus(value) }}</span>
       </template>
+      <template #item.action="{ value }">
+        <!-- TODO: decompose these into external components -->
+        <v-btn
+          v-if="value === 'submit_travel_desk_request'"
+          color="primary"
+        >
+          Submit Travel Desk Request
+        </v-btn>
+        <v-btn
+          v-else-if="value === 'submit_expense_claim'"
+          color="primary"
+        >
+          Submit Expense Claim
+        </v-btn>
+        <v-btn
+          v-else-if="value === 'view_itinerary'"
+          color="primary"
+        >
+          View Itinerary
+        </v-btn>
+        <v-btn
+          v-else-if="value === 'add_expense'"
+          color="primary"
+        >
+          Add Expense
+        </v-btn>
+        <v-btn
+          v-else-if="value === 'submit_pool_vehicle_request'"
+          color="primary"
+        >
+          Submit Pool Vehicle Request
+        </v-btn>
+        <template v-else-if="value === null || value === undefined">
+          <!-- no action: this is valid -->
+        </template>
+        <span v-else> ERROR: unkown action: {{ value }}</span>
+      </template>
     </v-data-table>
   </div>
 </template>
