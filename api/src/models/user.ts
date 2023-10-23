@@ -28,7 +28,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   static Statuses = Statuses
 
   declare id: CreationOptional<number>
-  declare sub: string
+  declare sub: string // Auth0 subject attribute
   declare email: string
   declare status: string
   declare firstName: string | null
@@ -50,6 +50,7 @@ User.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    // Auth0 subject attribute
     sub: {
       type: DataTypes.STRING(255),
       allowNull: false,
