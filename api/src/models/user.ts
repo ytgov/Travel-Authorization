@@ -35,7 +35,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare lastName: string | null
   declare roles: string | null
   declare department: string | null
-  declare createDate: Date
+  declare createDate: CreationOptional<Date>
 
   declare static associations: {}
 
