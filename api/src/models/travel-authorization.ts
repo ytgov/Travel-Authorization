@@ -52,9 +52,9 @@ export class TravelAuthorization extends Model<
 
   declare id: CreationOptional<number>
   declare slug: string
-  declare preappId: ForeignKey<Preapproved["preTID"]>
-  declare purposeId: ForeignKey<TravelPurpose["id"]>
   declare userId: ForeignKey<User["id"]>
+  declare preappId: ForeignKey<Preapproved["preTID"]> | null
+  declare purposeId: ForeignKey<TravelPurpose["id"]> | null
   declare firstName: string | null
   declare lastName: string | null
   declare department: string | null
