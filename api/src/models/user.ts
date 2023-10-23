@@ -71,6 +71,7 @@ User.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    // TODO: consider making this a string array or jsonb column
     roles: {
       type: DataTypes.STRING(1000),
       allowNull: true,
