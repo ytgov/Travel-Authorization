@@ -5,6 +5,7 @@ import Expense from "./expense"
 import TravelAuthorization from "./travel-authorization"
 import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
+import User from "./user"
 
 // Order matters here, though may be somewhat flexible
 Stop.establishAssociations()
@@ -12,6 +13,7 @@ Expense.establishAssociations()
 TravelAuthorization.establishAssociations()
 TravelDeskPassengerNameRecordDocument.establishAssociations()
 TravelDeskTravelRequest.establishAssociations()
+User.establishAssociations()
 
 // Alphabetically - order does not matter
 export * from "./auth"
