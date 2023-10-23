@@ -60,7 +60,7 @@
         <template v-else-if="value === null || value === undefined">
           <!-- no action: this is valid -->
         </template>
-        <span v-else> ERROR: unkown action: {{ value }}</span>
+        <span v-else> ERROR: unknown action: {{ value }}</span>
       </template>
     </v-data-table>
   </div>

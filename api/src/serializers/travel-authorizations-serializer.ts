@@ -34,6 +34,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     }
   }
 
+  // TODO: double check the order of these conditions
   determinePhase() {
     if (this.isDraft()) {
       return "travel_approval"
@@ -52,51 +53,18 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     }
   }
 
-  /*
-  Options
-    Submit Travel Desk Request
-    Forms.status is Approved and
-    If any travel_authorizations -> travel_authorizations.id -> stops.travel_authorization_id -> stops (any) -> stops.transport is of type Aircraft
-    Submit Expense Claim
-    Beyond travel end date.
-    After travel_authorizations -> travel_authorizations.id -> stops.travel_authorization_id -> stops (last) -> stops.departure_date
-    View Itinerary
-    Where the Travel desk request is complete. Request has a PNR number.
-    When travel_authorizations -> travel_authorizations.id -> travel_desk_travel_requests.travel_authorization_id -> travel_desk_travel_requests (exists) -> travel_desk_travel_requests.id -> travel_desk_passenger_name_record_documents.travel_desk_travel_request_id -> travel_desk_passenger_name_record_documents (exists) -> travel_desk_passenger_name_record_documents.pnr_document (is not null)
-    Add Expense
-    Available once travel approved.
-    travel_authorizations.status is Approved
-    Submit Pool Vehicle Request
-    Where travel auth form = approved and transport type =pool vehicle.
-    Forms.status is Approved
-    If any travel_authorizations -> travel_authorizations.id -> stops.travel_authorization_id -> stops (any) -> stops.transport is of type Pool Vehicle
-    no action/blank
-    travel_authorizations.status
-    TODO: where waiting on action from other party eg. approval or travel desk options returned.
-  */
+  // TODO: double check the order of these conditions
   determineAction() {
-    /*
-      Approved
-      Awaiting Director Approval
-      Draft
-      Expense Claim
-      Booked
-      Travelling
-      Approved
-
-      submit_travel_desk_request
-      submit_expense_claim
-      view_itinerary
-      add_expense
-      submit_pool_vehicle_request
-    */
     if (this.isApproved() && this.anyTransportTypeIsAircraft()) {
       return ["submit_travel_desk_request"]
     } else if (this.travellingComplete()) {
       return ["submit_expense_claim"]
     } else if (this.travelDeskRequestIsComplete()) {
       return ["view_itinerary"]
-      // TODO: more stuff.
+    } else if (this.isApproved()) {
+      return ["add_expense"]
+    } else if (this.isApproved() && this.anyTransportTypeIsPoolVehicle()) {
+      return ["submit_pool_vehicle_request"]
     } else {
       return []
     }
@@ -159,6 +127,10 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   anyTransportTypeIsAircraft() {
     return this.record.stops?.some((stop) => stop.transport === Stop.TravelMethods.AIRCRAFT)
+  }
+
+  anyTransportTypeIsPoolVehicle() {
+    return this.record.stops?.some((stop) => stop.transport === Stop.TravelMethods.POOL_VEHICLE)
   }
 
   // Optimization to avoid loading the prnDocument into memory,
