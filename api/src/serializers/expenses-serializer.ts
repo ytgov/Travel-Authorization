@@ -4,19 +4,24 @@ import { Expense } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 
-export class ExpensesSerializer extends BaseSerializer {
+export class ExpensesSerializer extends BaseSerializer<Expense> {
   static asTable(expenses: Expense[]) {
     return expenses.map((expense) => {
-      return {
-        ...pick(expense, ["id", "expenseType", "description", "date", "cost"]),
-        actions: this.actions(expense),
-      }
+      const serializer = new this(expense)
+      return serializer.asTableRow()
     })
   }
 
+  asTableRow() {
+    return {
+      ...pick(this.record, ["id", "expenseType", "description", "date", "cost"]),
+      actions: this.actions(),
+    }
+  }
+
   // TODO: investigate whether these should depend on a policy check
-  private static actions(expense: Expense): ("delete" | "edit")[] {
-    if (expense.expenseType === Expense.ExpenseTypes.MEALS_AND_INCIDENTALS) {
+  private actions(): ("delete" | "edit")[] {
+    if (this.record.expenseType === Expense.ExpenseTypes.MEALS_AND_INCIDENTALS) {
       return ["delete"]
     } else {
       return ["edit", "delete"]
