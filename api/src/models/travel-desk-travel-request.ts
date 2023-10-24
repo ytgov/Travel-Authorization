@@ -136,17 +136,9 @@ TravelDeskTravelRequest.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    legalMiddleName: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
     legalLastName: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    birthDate: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
     },
     strAddress: {
       type: DataTypes.STRING(255),
@@ -164,25 +156,13 @@ TravelDeskTravelRequest.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    passportCountry: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    passportNum: {
+    legalMiddleName: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
     travelPurpose: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    travelLocation: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    travelNotes: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
     },
     busPhone: {
       type: DataTypes.STRING(255),
@@ -191,6 +171,30 @@ TravelDeskTravelRequest.init(
     busEmail: {
       type: DataTypes.STRING(255),
       allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    birthDate: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    passportCountry: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    passportNum: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    travelLocation: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    travelNotes: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     travelContact: {
       type: DataTypes.BOOLEAN,
@@ -207,10 +211,6 @@ TravelDeskTravelRequest.init(
     additionalInformation: {
       type: DataTypes.STRING(255),
       allowNull: true,
-    },
-    status: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
     },
     travelDeskOfficer: {
       type: DataTypes.STRING(255),
