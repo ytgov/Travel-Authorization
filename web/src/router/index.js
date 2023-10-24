@@ -90,6 +90,11 @@ const routes = [
     component: TravelAgents,
   },
   {
+    path: "/qa/scenarios",
+    name: "Qa-Scenarios",
+    component: () => import("@/views/qa/ScenariosList"),
+  },
+  {
     path: "/healthCheck",
     name: "HealthCheck",
     component: HealthCheck,

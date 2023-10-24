@@ -94,6 +94,13 @@
             >
               <v-list-item-title>Manager View</v-list-item-title>
             </v-list-item>
+            <v-list-item
+              v-if="isInDevelopment"
+              :to="{ name: 'Qa-Scenarios' }"
+              @click="menuItemSelected('QA Scenarios')"
+            >
+              <v-list-item-title>QA Scenarios</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
 
@@ -215,6 +222,9 @@ export default {
     showAppSidebar() {
       return store.getters.showAppSidebar
     },
+    isInDevelopment() {
+      return config.environment === "development"
+    },
   },
   data: () => ({
     appVersion: config.appVersion,
@@ -302,6 +312,11 @@ export default {
         { name: "Reports", to: "/reporting-summary" },
         { name: "Manager View", to: "/managerView" },
       ]
+
+      if (this.isInDevelopment) {
+        routes.push({ name: "QA Scenarios", to: "/qa/scenarios" })
+      }
+
       for (const route of routes) {
         if (path.includes(route.to)) {
           this.menuTitle = route.name
