@@ -1,21 +1,22 @@
 export default {
   global: {
     status: {
-      deleted: "Deleted",
-      draft: "Draft",
-      submitted: "Submitted",
       approved: "Approved",
-      denied: "Denied",
+      awaiting_director_approval: "Awaiting Director Approval",
       change_requested: "Change Requested",
+      deleted: "Deleted",
+      denied: "Denied",
+      draft: "Draft",
       expensed: "Expensed",
+      submitted: "Submitted",
     },
     phase: {
+      expensed: "Expensed",
+      expensing: "Expensing",
       travel_approval: "Travel Approval",
+      travel_complete: "Travel Complete",
       travel_planning: "Travel Planning",
       travelling: "Travelling",
-      travel_complete: "Travel Complete",
-      expensing: "Expensing",
-      expensed: "Expensed",
     },
   },
 }
