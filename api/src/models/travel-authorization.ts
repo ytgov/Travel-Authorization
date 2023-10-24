@@ -31,17 +31,23 @@ import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelPurpose from "./travel-purpose"
 import User from "./user"
 
+// TODO: state management is going to be a bit deal for this project
+// we should do some aggressive data modeling an engineering before this becomes unmagable
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum Statuses {
   // TODO: might want replace DELETED status with `deleted_at` field from Sequelize paranoid feature.
   // See https://sequelize.org/docs/v6/core-concepts/paranoid/
   DELETED = "deleted",
-  DRAFT = "draft",
-  SUBMITTED = "submitted",
   APPROVED = "approved",
-  DENIED = "denied",
+  AWAITING_DIRECTOR_APPROVAL = "awaiting_director_approval",
+  BOOKED = "booked",
   CHANGE_REQUESTED = "change_requested",
+  DENIED = "denied",
+  DRAFT = "draft",
+  EXPENSE_CLAIM = "expense_claim",
   EXPENSED = "expensed",
+  SUBMITTED = "submitted",
+  TRAVELLING = "travelling",
 }
 
 export class TravelAuthorization extends Model<
