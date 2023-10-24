@@ -20,8 +20,8 @@ export class MyTravelRequestsService extends BaseService {
     // Phase: Travel Planning
     // Location: Vancouver
     // Description: Conference
-    // Start Date: 12-May-2023 (in future)
-    // End Date: 14-May-2023 (in future)
+    // Start Date: in-future, format 12-May-2023
+    // End Date: in-future, format 14-May-2023
     // Travel Auth Status: Approved
     // Travel Action: Submit Travel Desk Request
     const nextWeek = moment().add(7, "days")
@@ -79,8 +79,8 @@ export class MyTravelRequestsService extends BaseService {
     // Phase: Travel Approval
     // Location: Vancouver
     // Description: FN Finance meeting #3
-    // Start Date: 12-May-2023
-    // End Date: 14-May-2023
+    // Start Date: in-future, format 12-May-2023
+    // End Date: in-future, format 14-May-2023
     // Travel Auth Status: Awaiting Director Approval
     // Travel Action: no action
     const [travelAuthorization2] = await TravelAuthorization.findOrCreate({
@@ -129,8 +129,8 @@ export class MyTravelRequestsService extends BaseService {
     // Phase: Travel Approval
     // Location: Edmonton
     // Description: FN Finance meeting #4
-    // Start Date: 12-May-2023
-    // End Date: 14-May-2023
+    // Start Date: in-future, format 12-May-2023
+    // End Date: in-future, format 14-May-2023
     // Travel Auth Status: Draft
     // Travel Action: no action
     const [edmontonLocation] = await Location.findOrCreate({
@@ -183,8 +183,8 @@ export class MyTravelRequestsService extends BaseService {
     // Phase: Travel Complete
     // Location: Calgary
     // Description: FN Finance meeting #1
-    // Start Date: 12-May-2023
-    // End Date: 14-May-2023
+    // Start Date: in-past, format 12-May-2023
+    // End Date: in-past, format 14-May-2023
     // Travel Auth Status: Expense Claim
     // Travel Action: Submit Expense Claim
     const lastWeek = moment().subtract(7, "days")
@@ -238,8 +238,8 @@ export class MyTravelRequestsService extends BaseService {
     // Phase: Travel Planning
     // Location: Calgary
     // Description: FN Finance meeting #1
-    // Start Date: 12-May-2023
-    // End Date: 14-May-2023
+    // Start Date: in-future, format 12-May-2023
+    // End Date: in-future, format 14-May-2023
     // Travel Auth Status: Booked
     // Travel Action: View Itinerary
     const [travelAuthorization5] = await TravelAuthorization.findOrCreate({
