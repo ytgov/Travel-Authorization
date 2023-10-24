@@ -1,10 +1,15 @@
 export class BaseService {
-  static async perform(...args: any[]): Promise<any> {
-    // TODO: figure out how to abstact this with appropriate types
-    throw new Error("Not Implemented")
+  constructor(...args: any[]) {}
+
+  static perform<T extends typeof BaseService>(
+    this: T,
+    ...args: ConstructorParameters<T>
+  ): ReturnType<InstanceType<T>["perform"]> {
+    const instance = new this(...args)
+    return instance.perform()
   }
 
-  async perform(): Promise<any> {
+  perform(): any {
     throw new Error("Not Implemented")
   }
 }
