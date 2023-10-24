@@ -21,3 +21,31 @@ export class BaseService {
 }
 
 export default BaseService
+
+// Type Testing - keeping until I have real tests implemented
+// class AsyncService extends BaseService {
+//   private param1: number
+
+//   constructor(param1: number) {
+//     super()
+//     this.param1 = param1
+//   }
+
+//   async perform(): Promise<string[]> {
+//     return ["async-string1", "async-string2"]
+//   }
+// }
+
+// class NonAsyncService extends BaseService {
+//   perform(): string {
+//     return "non-async-string"
+//   }
+// }
+
+// const param1 = 77
+// AsyncService.perform(param1).then((result: string[]) => {
+//   console.log(result)
+// })
+
+// const result = NonAsyncService.perform()
+// console.log(result)
