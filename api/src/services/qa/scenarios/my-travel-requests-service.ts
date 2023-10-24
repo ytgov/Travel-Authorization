@@ -12,6 +12,9 @@ export class MyTravelRequestsService extends BaseService {
   }
 
   async perform(): Promise<void> {
+    await Stop.destroy({ where: {} })
+    await TravelAuthorization.destroy({ where: {} })
+
     // Phase: Travel Planning
     // Location: Vancouver
     // Description: Conference
@@ -19,12 +22,6 @@ export class MyTravelRequestsService extends BaseService {
     // End Date: 14-May-2023
     // Travel Auth Status: Approved
     // Travel Action: Submit Travel Desk Request
-
-    // cleanup
-    await Stop.destroy({ where: {} })
-    await TravelAuthorization.destroy({ where: {} })
-
-    // build the core travel authorization
     const [travelAuthorization1] = await TravelAuthorization.findOrCreate({
       where: {
         userId: this.user.id,
@@ -39,13 +36,10 @@ export class MyTravelRequestsService extends BaseService {
         eventName: "Conference",
       },
     })
-
-    // build some stops
     const [vancouverLocation] = await Location.findOrCreate({
       where: { city: "Vancouver", province: "British Columbia" },
       defaults: { city: "Vancouver", province: "British Columbia" },
     })
-
     const [_firstStop] = await Stop.findOrCreate({
       where: {
         travelAuthorizationId: travelAuthorization1.id,
@@ -62,7 +56,6 @@ export class MyTravelRequestsService extends BaseService {
         transport: Stop.TravelMethods.AIRCRAFT,
       },
     })
-
     const [_lastStop] = await Stop.findOrCreate({
       where: {
         travelAuthorizationId: travelAuthorization1.id,
