@@ -25,41 +25,39 @@
       <template #item.status="{ value }">
         <span>{{ formatStatus(value) }}</span>
       </template>
-      <template #item.action="{ value }">
+      <template #item.action="{ value: actions, item }">
+        <template v-if="isEmpty(actions)">
+          <!-- no action: this is a valid state -->
+        </template>
+        <SubmitTravelDeskRequestButton
+          v-if="actions.includes('submit_travel_desk_request')"
+          :travel-authorization-id="item.id"
+        />
         <!-- TODO: decompose these into external components -->
         <v-btn
-          v-if="value === 'submit_travel_desk_request'"
-          color="primary"
-        >
-          Submit Travel Desk Request
-        </v-btn>
-        <v-btn
-          v-else-if="value === 'submit_expense_claim'"
+          v-else-if="actions.includes('submit_expense_claim')"
           color="primary"
         >
           Submit Expense Claim
         </v-btn>
         <v-btn
-          v-else-if="value === 'view_itinerary'"
+          v-else-if="actions.includes('view_itinerary')"
           color="primary"
         >
           View Itinerary
         </v-btn>
         <v-btn
-          v-else-if="value === 'add_expense'"
+          v-else-if="actions.includes('add_expense')"
           color="primary"
         >
           Add Expense
         </v-btn>
         <v-btn
-          v-else-if="value === 'submit_pool_vehicle_request'"
+          v-else-if="actions.includes('submit_pool_vehicle_request')"
           color="primary"
         >
           Submit Pool Vehicle Request
         </v-btn>
-        <template v-else-if="value === null || value === undefined">
-          <!-- no action: this is valid -->
-        </template>
         <span v-else> ERROR: unknown action: {{ value }}</span>
       </template>
     </v-data-table>
@@ -68,11 +66,16 @@
 
 <script>
 import { mapActions, mapState } from "vuex"
-import { isNil } from "lodash"
+import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
+
+import SubmitTravelDeskRequestButton from "./my-travel-authorization-table/SubmitTravelDeskRequestButton"
 
 export default {
   name: "MyTravelAuthorizationsTable",
+  components: {
+    SubmitTravelDeskRequestButton,
+  },
   data: () => ({
     headers: [
       {
@@ -117,6 +120,7 @@ export default {
   },
   methods: {
     ...mapActions("travelForm", ["loadForms"]),
+    isEmpty,
     refreshForms() {
       this.loadingForms = true
       return this.loadForms({ page: this.page, perPage: this.perPage })
