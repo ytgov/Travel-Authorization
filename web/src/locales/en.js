@@ -7,6 +7,7 @@ export default {
       deleted: "Deleted",
       denied: "Denied",
       draft: "Draft",
+      expense_claim: "Expense Claim",
       expensed: "Expensed",
       submitted: "Submitted",
     },

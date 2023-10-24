@@ -178,6 +178,61 @@ export class MyTravelRequestsService extends BaseService {
         departureTime: "00:00:00",
       },
     })
+
+    // Phase: Travel Complete
+    // Location: Calgary
+    // Description: FN Finance meeting #1
+    // Start Date: 12-May-2023
+    // End Date: 14-May-2023
+    // Travel Auth Status: Expense Claim
+    // Travel Action: Submit Expense Claim
+    const lastWeek = moment().subtract(7, "days")
+    const [calgaryLocation] = await Location.findOrCreate({
+      where: { city: "Calgary", province: "Alberta" },
+      defaults: { city: "Calgary", province: "Alberta" },
+    })
+    const [travelAuthorization4] = await TravelAuthorization.findOrCreate({
+      where: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.EXPENSE_CLAIM,
+        eventName: "FN Finance meeting #1",
+      },
+      defaults: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.EXPENSE_CLAIM,
+        eventName: "FN Finance meeting #1",
+      },
+    })
+    const [_firstStop4] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization4.id,
+        locationId: calgaryLocation.id,
+        departureDate: lastWeek.clone().subtract(2, "days").toDate(),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization4.id,
+        locationId: calgaryLocation.id,
+        departureDate: lastWeek.clone().subtract(2, "days").toDate(),
+        departureTime: "00:00:00",
+      },
+    })
+    const [_lastStop4] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization4.id,
+        locationId: calgaryLocation.id,
+        departureDate: lastWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization4.id,
+        locationId: calgaryLocation.id,
+        departureDate: lastWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+    })
   }
 }
 
