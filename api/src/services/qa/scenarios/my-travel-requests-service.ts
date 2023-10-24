@@ -21,8 +21,8 @@ export class MyTravelRequestsService extends BaseService {
     // Travel Action: Submit Travel Desk Request
 
     // cleanup
-    Stop.destroy({ where: {} })
-    TravelAuthorization.destroy({ where: {} })
+    await Stop.destroy({ where: {} })
+    await TravelAuthorization.destroy({ where: {} })
 
     // build the core travel authorization
     const [travelAuthorization1] = await TravelAuthorization.findOrCreate({
