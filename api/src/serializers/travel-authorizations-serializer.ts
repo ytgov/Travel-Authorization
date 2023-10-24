@@ -57,7 +57,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   determineAction() {
     if (this.isApproved() && this.anyTransportTypeIsAircraft()) {
       return ["submit_travel_desk_request"]
-    } else if (this.travellingComplete()) {
+    } else if (!this.awaitingDirectorApproval() && this.travellingComplete()) {
       return ["submit_expense_claim"]
     } else if (this.travelDeskRequestIsComplete()) {
       return ["view_itinerary"]
@@ -80,6 +80,10 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   isApproved() {
     return this.record.status === TravelAuthorization.Statuses.APPROVED
+  }
+
+  awaitingDirectorApproval() {
+    return this.record.status === TravelAuthorization.Statuses.AWAITING_DIRECTOR_APPROVAL
   }
 
   hasCreatedTravelDeskRequest() {

@@ -30,7 +30,7 @@
           <!-- no action: this is a valid state -->
         </template>
         <SubmitTravelDeskRequestButton
-          v-if="actions.includes('submit_travel_desk_request')"
+          v-else-if="actions.includes('submit_travel_desk_request')"
           :travel-authorization-id="item.id"
         />
         <SubmitExpenseClaimButton
