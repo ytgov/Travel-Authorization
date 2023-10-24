@@ -35,6 +35,7 @@ export class TravelAuthorizationsController extends BaseController {
                   [Op.not]: null,
                 },
               },
+              required: false, // Avoid triggering an inner join due to inclue + where clause
             },
           ],
         },
