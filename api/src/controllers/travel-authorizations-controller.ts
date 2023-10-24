@@ -41,7 +41,7 @@ export class TravelAuthorizationsController extends BaseController {
         },
       ],
       order: [
-        ["updatedAt", "DESC"],
+        ["updatedAt", "ASC"],
         ["stops", "departureDate", "ASC"],
         ["stops", "departureTime", "ASC"],
       ],
