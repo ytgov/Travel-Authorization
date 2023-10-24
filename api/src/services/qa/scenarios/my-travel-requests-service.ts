@@ -1,4 +1,5 @@
 import { v4 as uuid } from "uuid"
+import moment from "moment"
 
 import BaseService from "@/services/base-service"
 import { TravelAuthorization, Stop, Location, User } from "@/models"
@@ -18,10 +19,11 @@ export class MyTravelRequestsService extends BaseService {
     // Phase: Travel Planning
     // Location: Vancouver
     // Description: Conference
-    // Start Date: 12-May-2023
-    // End Date: 14-May-2023
+    // Start Date: 12-May-2023 (in future)
+    // End Date: 14-May-2023 (in future)
     // Travel Auth Status: Approved
     // Travel Action: Submit Travel Desk Request
+    const nextWeek = moment().add(7, "days")
     const [travelAuthorization1] = await TravelAuthorization.findOrCreate({
       where: {
         userId: this.user.id,
@@ -44,14 +46,14 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-12T00:00:00Z"),
+        departureDate: nextWeek.toDate(),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
       defaults: {
         travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-12T00:00:00Z"),
+        departureDate: nextWeek.toDate(),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
@@ -60,14 +62,14 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-14T00:00:00Z"),
+        departureDate: nextWeek.add(2, "days").toDate(),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
       defaults: {
         travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-14T00:00:00Z"),
+        departureDate: nextWeek.add(2, "days").toDate(),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
@@ -96,13 +98,13 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         travelAuthorizationId: travelAuthorization2.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-12T00:00:00Z"),
+        departureDate: nextWeek.toDate(),
         departureTime: "00:00:00",
       },
       defaults: {
         travelAuthorizationId: travelAuthorization2.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-12T00:00:00Z"),
+        departureDate: nextWeek.toDate(),
         departureTime: "00:00:00",
       },
     })
@@ -110,13 +112,13 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         travelAuthorizationId: travelAuthorization2.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-14T00:00:00Z"),
+        departureDate: nextWeek.add(2, "days").toDate(),
         departureTime: "00:00:00",
       },
       defaults: {
         travelAuthorizationId: travelAuthorization2.id,
         locationId: vancouverLocation.id,
-        departureDate: new Date("2023-05-14T00:00:00Z"),
+        departureDate: nextWeek.add(2, "days").toDate(),
         departureTime: "00:00:00",
       },
     })
