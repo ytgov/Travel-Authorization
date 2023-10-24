@@ -72,6 +72,54 @@ export class MyTravelRequestsService extends BaseService {
         transport: Stop.TravelMethods.AIRCRAFT,
       },
     })
+
+    // Phase: Travel Approval
+    // Location: Vancouver
+    // Description: FN Finance meeting #3
+    // Start Date: 12-May-2023
+    // End Date: 14-May-2023
+    // Travel Auth Status: Awaiting Director Approval
+    // Travel Action: no action
+    const [travelAuthorization2] = await TravelAuthorization.findOrCreate({
+      where: {
+        userId: this.user.id,
+        eventName: "FN Finance meeting #3",
+      },
+      defaults: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.AWAITING_DIRECTOR_APPROVAL,
+        eventName: "FN Finance meeting #3",
+      },
+    })
+    const [_firstStop2] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization2.id,
+        locationId: vancouverLocation.id,
+        departureDate: new Date("2023-05-12T00:00:00Z"),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization2.id,
+        locationId: vancouverLocation.id,
+        departureDate: new Date("2023-05-12T00:00:00Z"),
+        departureTime: "00:00:00",
+      },
+    })
+    const [_lastStop2] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization2.id,
+        locationId: vancouverLocation.id,
+        departureDate: new Date("2023-05-14T00:00:00Z"),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization2.id,
+        locationId: vancouverLocation.id,
+        departureDate: new Date("2023-05-14T00:00:00Z"),
+        departureTime: "00:00:00",
+      },
+    })
   }
 }
 
