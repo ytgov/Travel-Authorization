@@ -62,14 +62,14 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
-        departureDate: nextWeek.add(2, "days").toDate(),
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
       defaults: {
         travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
-        departureDate: nextWeek.add(2, "days").toDate(),
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
@@ -114,13 +114,13 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         travelAuthorizationId: travelAuthorization2.id,
         locationId: vancouverLocation.id,
-        departureDate: nextWeek.add(2, "days").toDate(),
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
         departureTime: "00:00:00",
       },
       defaults: {
         travelAuthorizationId: travelAuthorization2.id,
         locationId: vancouverLocation.id,
-        departureDate: nextWeek.add(2, "days").toDate(),
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
         departureTime: "00:00:00",
       },
     })
@@ -168,13 +168,13 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         travelAuthorizationId: travelAuthorization3.id,
         locationId: edmontonLocation.id,
-        departureDate: nextWeek.add(2, "days").toDate(),
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
         departureTime: "00:00:00",
       },
       defaults: {
         travelAuthorizationId: travelAuthorization3.id,
         locationId: edmontonLocation.id,
-        departureDate: nextWeek.add(2, "days").toDate(),
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
         departureTime: "00:00:00",
       },
     })
