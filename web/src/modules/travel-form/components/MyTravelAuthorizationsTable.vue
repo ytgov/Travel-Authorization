@@ -33,31 +33,22 @@
           v-if="actions.includes('submit_travel_desk_request')"
           :travel-authorization-id="item.id"
         />
-        <!-- TODO: decompose these into external components -->
-        <v-btn
+        <SubmitExpenseClaimButton
           v-else-if="actions.includes('submit_expense_claim')"
-          color="primary"
-        >
-          Submit Expense Claim
-        </v-btn>
-        <v-btn
+          :travel-authorization-id="item.id"
+        />
+        <ViewItineraryButton
           v-else-if="actions.includes('view_itinerary')"
-          color="primary"
-        >
-          View Itinerary
-        </v-btn>
-        <v-btn
+          :travel-authorization-id="item.id"
+        />
+        <AddExpenseButton
           v-else-if="actions.includes('add_expense')"
-          color="primary"
-        >
-          Add Expense
-        </v-btn>
-        <v-btn
+          :travel-authorization-id="item.id"
+        />
+        <SubmitPoolVehicleRequestButton
           v-else-if="actions.includes('submit_pool_vehicle_request')"
-          color="primary"
-        >
-          Submit Pool Vehicle Request
-        </v-btn>
+          :travel-authorization-id="item.id"
+        />
         <span v-else> ERROR: unknown action: {{ value }}</span>
       </template>
     </v-data-table>
@@ -69,12 +60,20 @@ import { mapActions, mapState } from "vuex"
 import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
+import AddExpenseButton from "./my-travel-authorization-table/AddExpenseButton"
+import SubmitExpenseClaimButton from "./my-travel-authorization-table/SubmitExpenseClaimButton"
+import SubmitPoolVehicleRequestButton from "./my-travel-authorization-table/SubmitPoolVehicleRequestButton"
 import SubmitTravelDeskRequestButton from "./my-travel-authorization-table/SubmitTravelDeskRequestButton"
+import ViewItineraryButton from "./my-travel-authorization-table/ViewItineraryButton"
 
 export default {
   name: "MyTravelAuthorizationsTable",
   components: {
+    AddExpenseButton,
+    SubmitExpenseClaimButton,
+    SubmitPoolVehicleRequestButton,
     SubmitTravelDeskRequestButton,
+    ViewItineraryButton,
   },
   data: () => ({
     headers: [

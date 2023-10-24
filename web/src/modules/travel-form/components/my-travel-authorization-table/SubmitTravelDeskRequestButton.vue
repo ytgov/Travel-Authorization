@@ -9,6 +9,7 @@
 
 <script>
 export default {
+  name: "SubmitTravelDeskRequestButton",
   props: {
     travelAuthorizationId: {
       type: Number,
@@ -17,7 +18,9 @@ export default {
   },
   methods: {
     submitTravelDeskRequest() {
-      alert("TODO: submit travel desk request for travel authorization " + this.travelAuthorizationId);
+      alert(
+        "TODO: submit travel desk request for travel authorization " + this.travelAuthorizationId
+      )
     },
   },
 }
