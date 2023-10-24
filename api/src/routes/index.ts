@@ -26,11 +26,6 @@ export * from "./lookup-tables-router"
 
 const router = Router()
 
-router.get("/qa/scenarios", Qa.ScenariosController.index)
-Object.values(Qa.ScenarioTypes).forEach((scenarioType) => {
-  router.post(`/qa/scenarios/${scenarioType}`, Qa.Scenarios.MyTravelRequestsController.create)
-})
-
 router.use("/api", checkJwt)
 router.use("/api", loadUser)
 
@@ -53,6 +48,12 @@ router.post(
 router.get("/api/locations", LocationsController.index)
 router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
+
+// QA testing scenarios
+router.get("/api/qa/scenarios", Qa.ScenariosController.index)
+Object.values(Qa.ScenarioTypes).forEach((scenarioType) => {
+  router.post(`/api/qa/scenarios/${scenarioType}`, Qa.Scenarios.MyTravelRequestsController.create)
+})
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {

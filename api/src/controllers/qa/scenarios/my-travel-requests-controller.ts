@@ -4,7 +4,7 @@ import { MyTravelRequestsService } from "@/services/qa/scenarios"
 
 export class MyTravelRequestsController extends BaseController {
   async create() {
-    return MyTravelRequestsService.perform()
+    return MyTravelRequestsService.perform(this.currentUser)
       .then(() => {
         return this.response.status(201).json({ message: "My Travel Rquest Scenario Applied" })
       })

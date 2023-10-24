@@ -4,6 +4,13 @@ import BaseService from "@/services/base-service"
 import { TravelAuthorization, Stop, Location, User } from "@/models"
 
 export class MyTravelRequestsService extends BaseService {
+  private user: User
+
+  constructor(user: User) {
+    super()
+    this.user = user
+  }
+
   async perform(): Promise<void> {
     // Phase: Travel Planning
     // Location: Vancouver
@@ -13,31 +20,42 @@ export class MyTravelRequestsService extends BaseService {
     // Travel Auth Status: Approved
     // Travel Action: Submit Travel Desk Request
 
-    const [myTravelRequestUser] = await User.findOrCreate({
+    // cleanup
+    Stop.destroy({ where: {} })
+    TravelAuthorization.destroy({ where: {} })
+
+    // build the core travel authorization
+    const [travelAuthorization1] = await TravelAuthorization.findOrCreate({
       where: {
-        sub: "TODO?",
-        email: "test-my-travel-requests@test.com",
-        status: User.Statuses.ACTIVE,
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.APPROVED,
+        eventName: "Conference",
       },
       defaults: {
-        sub: "TODO?",
-        email: "test-my-travel-requests@test.com",
-        status: User.Statuses.ACTIVE,
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.APPROVED,
+        eventName: "Conference",
       },
     })
+
+    // build some stops
     const [vancouverLocation] = await Location.findOrCreate({
       where: { city: "Vancouver", province: "British Columbia" },
       defaults: { city: "Vancouver", province: "British Columbia" },
     })
 
-    const [firstStop] = await Stop.findOrCreate({
+    const [_firstStop] = await Stop.findOrCreate({
       where: {
+        travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
         departureDate: new Date("2023-05-12T00:00:00Z"),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
       defaults: {
+        travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
         departureDate: new Date("2023-05-12T00:00:00Z"),
         departureTime: "00:00:00",
@@ -45,38 +63,22 @@ export class MyTravelRequestsService extends BaseService {
       },
     })
 
-    const [lastStop] = await Stop.findOrCreate({
+    const [_lastStop] = await Stop.findOrCreate({
       where: {
+        travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
         departureDate: new Date("2023-05-14T00:00:00Z"),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
       defaults: {
+        travelAuthorizationId: travelAuthorization1.id,
         locationId: vancouverLocation.id,
         departureDate: new Date("2023-05-14T00:00:00Z"),
         departureTime: "00:00:00",
         transport: Stop.TravelMethods.AIRCRAFT,
       },
     })
-
-    const slug1 = uuid()
-    const [travelAuthorization1] = await TravelAuthorization.findOrCreate({
-      where: {
-        userId: 1,
-        slug: slug1,
-        status: TravelAuthorization.Statuses.APPROVED,
-        eventName: "Conference",
-      },
-      defaults: {
-        userId: 1,
-        slug: slug1,
-        status: TravelAuthorization.Statuses.APPROVED,
-        eventName: "Conference",
-      },
-    })
-
-    await travelAuthorization1.setStops([firstStop, lastStop])
   }
 }
 
