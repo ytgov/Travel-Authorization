@@ -18,10 +18,21 @@ import TravelDeskTravelAgent from "./travel-desk-travel-agent"
 
 import sequelize from "@/db/db-client"
 
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum Statuses {
+  BOOKED = "booked",
+  DRAFT = "draft",
+  OPTIONS_PROVIDED = "options_provided",
+  OPTIONS_RANKED = "options_ranked",
+  SUBMITTED = "submitted",
+}
+
 export class TravelDeskTravelRequest extends Model<
   InferAttributes<TravelDeskTravelRequest>,
   InferCreationAttributes<TravelDeskTravelRequest>
 > {
+  static Statuses = Statuses
+
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare travelDeskTravelAgentId: ForeignKey<TravelDeskTravelAgent["agencyID"]> | null
@@ -175,6 +186,12 @@ TravelDeskTravelRequest.init(
     status: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      validate: {
+        isIn: {
+          args: [Object.values(Statuses)],
+          msg: "Invalid status value",
+        },
+      },
     },
     birthDate: {
       type: DataTypes.STRING(255),
