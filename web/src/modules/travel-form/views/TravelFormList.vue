@@ -1,11 +1,22 @@
 <template>
   <div>
     <div class="d-flex justify-space-between align-baseline my-5">
-      <h1>My Travel</h1>
+      <h1>
+        My Travel
+        <v-btn
+          class="ma-0 ml-1"
+          icon
+          color="green"
+          title="Refresh Table"
+          @click="refresh"
+        >
+          <v-icon>mdi-cached</v-icon>
+        </v-btn>
+      </h1>
       <CreateTravelAuthorizationButton />
     </div>
 
-    <MyTravelAuthorizationsTable />
+    <MyTravelAuthorizationsTable ref="table" />
   </div>
 </template>
 <script>
@@ -21,7 +32,11 @@ export default {
   data: () => ({}),
   mounted() {},
   computed: {},
-  methods: {},
+  methods: {
+    refresh() {
+      this.$refs.table.refreshForms()
+    },
+  },
   watch: {},
 }
 </script>
