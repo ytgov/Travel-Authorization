@@ -85,6 +85,8 @@ export class MyTravelRequestsService extends BaseService {
     const [travelAuthorization2] = await TravelAuthorization.findOrCreate({
       where: {
         userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.AWAITING_DIRECTOR_APPROVAL,
         eventName: "FN Finance meeting #3",
       },
       defaults: {
@@ -118,6 +120,60 @@ export class MyTravelRequestsService extends BaseService {
       defaults: {
         travelAuthorizationId: travelAuthorization2.id,
         locationId: vancouverLocation.id,
+        departureDate: nextWeek.add(2, "days").toDate(),
+        departureTime: "00:00:00",
+      },
+    })
+
+    // Phase: Travel Approval
+    // Location: Edmonton
+    // Description: FN Finance meeting #4
+    // Start Date: 12-May-2023
+    // End Date: 14-May-2023
+    // Travel Auth Status: Draft
+    // Travel Action: no action
+    const [edmontonLocation] = await Location.findOrCreate({
+      where: { city: "Edmonton", province: "Alberta" },
+      defaults: { city: "Edmonton", province: "Alberta" },
+    })
+    const [travelAuthorization3] = await TravelAuthorization.findOrCreate({
+      where: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.DRAFT,
+        eventName: "FN Finance meeting #4",
+      },
+      defaults: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.DRAFT,
+        eventName: "FN Finance meeting #4",
+      },
+    })
+    const [_firstStop3] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization3.id,
+        locationId: edmontonLocation.id,
+        departureDate: nextWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization3.id,
+        locationId: edmontonLocation.id,
+        departureDate: nextWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+    })
+    const [_lastStop3] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization3.id,
+        locationId: edmontonLocation.id,
+        departureDate: nextWeek.add(2, "days").toDate(),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization3.id,
+        locationId: edmontonLocation.id,
         departureDate: nextWeek.add(2, "days").toDate(),
         departureTime: "00:00:00",
       },
