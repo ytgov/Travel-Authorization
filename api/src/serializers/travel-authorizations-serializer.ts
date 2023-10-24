@@ -1,6 +1,6 @@
 import { isEmpty, isNil, last, first, pick } from "lodash"
 
-import { Expense, Stop, TravelAuthorization, TravelDeskPassengerNameRecordDocument } from "@/models"
+import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 
@@ -149,10 +149,8 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     return this.record.stops?.some((stop) => stop.transport === Stop.TravelMethods.POOL_VEHICLE)
   }
 
-  // Optimization to avoid loading the prnDocument into memory,
-  // Using special query that only returns a travelDeskPassengerNameRecordDocument if the prnDocument exists
   travelDeskRequestIsComplete() {
-    return !isNil(this.record.travelDeskTravelRequest?.travelDeskPassengerNameRecordDocument?.id)
+    return this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.BOOKED
   }
 }
 

@@ -1,5 +1,5 @@
 import { isNil } from "lodash"
-import { Op, WhereOptions } from "sequelize"
+import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
@@ -24,21 +24,7 @@ export class TravelAuthorizationsController extends BaseController {
         },
         "expenses",
         "purpose",
-        {
-          association: "travelDeskTravelRequest",
-          include: [
-            {
-              association: "travelDeskPassengerNameRecordDocument",
-              attributes: ["id"],
-              where: {
-                pnrDocument: {
-                  [Op.not]: null,
-                },
-              },
-              required: false, // Avoid triggering an inner join due to inclue + where clause
-            },
-          ],
-        },
+        "travelDeskTravelRequest",
       ],
       order: [
         ["updatedAt", "ASC"],
