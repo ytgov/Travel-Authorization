@@ -12,6 +12,16 @@ function createI18n(VueInstance) {
     messages: {
       en,
     },
+    // Allows specifying $default as option to $t.
+    // Usage: this.$t(`global.phase.${value}`, { $default: "Unknown" })
+    // Using $default as this is unlikely to collide with translation interpolation options.
+    missing: (_locale, key, _vm, values) => {
+      if (values[0] && values[0].$default) {
+        return values[0].$default
+      }
+
+      return key
+    },
   })
 
   return i18n

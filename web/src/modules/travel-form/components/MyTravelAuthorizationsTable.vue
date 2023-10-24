@@ -146,10 +146,10 @@ export default {
       return value.city
     },
     formatStatus(value) {
-      return this.$t(`global.status.${value}`, "Unknown")
+      return this.$t(`global.status.${value}`, { $default: "Unknown" })
     },
     formatPhase(value) {
-      return this.$t(`global.phase.${value}`, "Unknown")
+      return this.$t(`global.phase.${value}`, { $default: "Unknown" })
     },
   },
   watch: {
