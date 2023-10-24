@@ -8,8 +8,16 @@
       :loading="loading"
       class="mx-auto"
       max-width="400"
-      tile
+      elevation="2"
     >
+      <v-card-title> Apply a given QA Scenario </v-card-title>
+      <v-card-subtitle>
+        The following buttons aggressively mutate database state for the purposes of QA testing.
+        This means that any property on the current user could be changed or removed by clicking
+        these buttons. Data might be deleted, new data might be created, existing data might be
+        completely changed.
+        <b>USE AT YOUR OWN RISK!</b>
+      </v-card-subtitle>
       <v-list>
         <v-list-item
           v-for="scenario in scenarios"
@@ -19,6 +27,7 @@
             <v-btn
               :loading="loading"
               :disabled="loading"
+              color="primary"
               @click="triggerScenario(scenario)"
               >{{ scenario }}</v-btn
             >
@@ -51,6 +60,9 @@ export default {
       .list()
       .then(({ scenarios }) => {
         this.scenarios = scenarios
+      })
+      .catch((error) => {
+        this.$snack(error.message, { color: "error" })
       })
       .finally(() => {
         this.loading = false
