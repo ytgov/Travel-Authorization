@@ -12,9 +12,10 @@ import { TravelAuthorizationsPolicy } from "@/policies"
 const auditService = new AuditService()
 
 export class TravelAuthorizationsController extends BaseController {
-  index() {
+  async index() {
     const where = this.query.where as WhereOptions<TravelAuthorization>
-    return TravelAuthorization.findAndCountAll({
+    const totalCount = await TravelAuthorization.count({ where })
+    return TravelAuthorization.findAll({
       where,
       include: [
         {
@@ -45,7 +46,7 @@ export class TravelAuthorizationsController extends BaseController {
       ],
       limit: this.pagination.limit,
       offset: this.pagination.offset,
-    }).then(({ rows: travelAuthorizations, count }) => {
+    }).then((travelAuthorizations) => {
       const scopedTravelAuthorizations = TravelAuthorizationsPolicy.scope(
         travelAuthorizations,
         this.currentUser
@@ -55,7 +56,7 @@ export class TravelAuthorizationsController extends BaseController {
       )
       return this.response.json({
         travelAuthorizations: serializedTravelAuthorizations,
-        totalCount: count,
+        totalCount,
       })
     })
   }
