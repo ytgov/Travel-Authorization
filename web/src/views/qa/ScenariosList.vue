@@ -5,6 +5,7 @@
     <Breadcrumbs />
 
     <v-card
+      :loading="loading"
       class="mx-auto"
       max-width="400"
       tile
@@ -15,7 +16,12 @@
           :key="scenario"
         >
           <v-list-item-content>
-            <v-btn @click="triggerScenario(scenario)">{{ scenario }}</v-btn>
+            <v-btn
+              :loading="loading"
+              :disabled="loading"
+              @click="triggerScenario(scenario)"
+              >{{ scenario }}</v-btn
+            >
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -26,7 +32,6 @@
 <script>
 import Breadcrumbs from "@/components/Breadcrumbs"
 
-import http from "@/apis/http-client"
 import scenariosApi from "@/apis/qa/scenarios-api"
 
 export default {
@@ -53,7 +58,15 @@ export default {
   },
   methods: {
     triggerScenario(scenario) {
-      return http.post(`/api/qa/${scenario}`).then(() => {})
+      this.loading = true
+      return scenariosApi
+        .create(scenario)
+        .then(() => {
+          this.$snack(`Scenario "${scenario}" enacted!`, { color: "success" })
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
   },
 }
