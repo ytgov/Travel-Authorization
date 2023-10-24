@@ -36,9 +36,9 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   // TODO: double check the order of these conditions
   determinePhase() {
-    if (this.isDraft()) {
+    if (this.isDraft() || this.awaitingDirectorApproval()) {
       return "travel_approval"
-    } else if ((this.isApproved() || this.awaitingDirectorApproval()) && this.beforeTravelling()) {
+    } else if (this.isApproved() && this.beforeTravelling()) {
       return "travel_planning"
     } else if (this.isTravelling()) {
       return "travelling"
