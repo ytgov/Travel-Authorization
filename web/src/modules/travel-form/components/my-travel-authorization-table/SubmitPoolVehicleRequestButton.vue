@@ -1,6 +1,7 @@
 <template>
   <v-btn
-    color="primary"
+    class="ma-0"
+    color="secondary"
     @click.stop="submitPoolVehicleRequest"
   >
     Submit Pool Vehicle Request
