@@ -38,7 +38,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   determinePhase() {
     if (this.isDraft()) {
       return "travel_approval"
-    } else if (this.hasCreatedTravelDeskRequest() && !this.isTravelling()) {
+    } else if (this.isApproved() && this.beforeTravelling()) {
       return "travel_planning"
     } else if (this.isTravelling()) {
       return "travelling"
@@ -86,8 +86,16 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     return this.record.status === TravelAuthorization.Statuses.AWAITING_DIRECTOR_APPROVAL
   }
 
-  hasCreatedTravelDeskRequest() {
-    return this.record.travelDeskTravelRequest !== null
+  beforeTravelling() {
+    if (isNil(this.firstStop) || isNil(this.firstStop.departureAt)) {
+      return false
+    }
+
+    if (this.currentDate < this.firstStop.departureAt) {
+      return true
+    }
+
+    return false
   }
 
   isTravelling() {
