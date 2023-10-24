@@ -24,7 +24,7 @@ export class TravelDeskTravelRequest extends Model<
 > {
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
-  declare travelDeskTravelAgentId: ForeignKey<TravelDeskTravelAgent["agencyID"]>
+  declare travelDeskTravelAgentId: ForeignKey<TravelDeskTravelAgent["agencyID"]> | null
   declare legalFirstName: string
   declare legalMiddleName: string | null
   declare legalLastName: string
