@@ -61,8 +61,11 @@ export default {
       this.loading = true
       return scenariosApi
         .create(scenario)
-        .then(() => {
-          this.$snack(`Scenario "${scenario}" enacted!`, { color: "success" })
+        .then(({ message }) => {
+          this.$snack(message, { color: "success" })
+        })
+        .catch((error) => {
+          this.$snack(error.message, { color: "error" })
         })
         .finally(() => {
           this.loading = false

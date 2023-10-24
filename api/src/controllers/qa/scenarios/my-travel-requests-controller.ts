@@ -6,10 +6,10 @@ export class MyTravelRequestsController extends BaseController {
   async create() {
     return MyTravelRequestsService.perform(this.currentUser)
       .then(() => {
-        return this.response.status(201).json({ message: "My Travel Rquest Scenario Applied" })
+        return this.response.status(201).json({ message: "My Travel Request Scenario Applied" })
       })
       .catch((error) => {
-        return this.response.status(422).json({ message: `Expense creation failed: ${error}` })
+        return this.response.status(422).json({ message: `My Travel Request Scenario enactment failed: ${error}` })
       })
   }
 }
