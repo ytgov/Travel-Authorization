@@ -372,6 +372,64 @@ export class MyTravelRequestsService extends BaseService {
         departureTime: "00:00:00",
       },
     })
+
+    // Phase: Travel Planning
+    // Location: Dawson
+    // Description: Field Work
+    // Start Date: in-future, format 12-May-2023
+    // End Date: in-future, format 14-May-2023
+    // Travel Auth Status: Approved
+    // Travel Action: Submit Pool Vehicle Request
+    const [dawsonLocation] = await Location.findOrCreate({
+      where: { city: "Dawson", province: "Yukon" },
+      defaults: { city: "Dawson", province: "Yukon" },
+    })
+    const [travelAuthorization7] = await TravelAuthorization.findOrCreate({
+      where: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.APPROVED,
+        eventName: "Field Work",
+      },
+      defaults: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.APPROVED,
+        eventName: "Field Work",
+      },
+    })
+    const [_firstStop7] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization7.id,
+        locationId: dawsonLocation.id,
+        departureDate: nextWeek.toDate(),
+        departureTime: "00:00:00",
+        transport: Stop.TravelMethods.POOL_VEHICLE,
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization7.id,
+        locationId: dawsonLocation.id,
+        departureDate: nextWeek.toDate(),
+        departureTime: "00:00:00",
+        transport: Stop.TravelMethods.POOL_VEHICLE,
+      },
+    })
+    const [_lastStop7] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization7.id,
+        locationId: dawsonLocation.id,
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
+        departureTime: "00:00:00",
+        transport: Stop.TravelMethods.POOL_VEHICLE,
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization7.id,
+        locationId: dawsonLocation.id,
+        departureDate: nextWeek.clone().add(2, "days").toDate(),
+        departureTime: "00:00:00",
+        transport: Stop.TravelMethods.POOL_VEHICLE,
+      },
+    })
   }
 }
 
