@@ -38,18 +38,10 @@ export class TravelAuthorizationsService {
   }
 
   static async update(
-    id: string | number,
+    travelAuthorization: TravelAuthorization,
     { stops = [], expenses = [], ...attributes }: Partial<TravelAuthorization>
   ): Promise<TravelAuthorization> {
-    // TODO: change the function signature, so that you can pass in a travelAuthorization instance.
-    const travelAuthorization = await TravelAuthorization.findByPk(id, {
-      include: ["expenses", "stops", "purpose"],
-    })
-    if (isNull(travelAuthorization)) {
-      throw new Error(`Could not find TravelAuthorization with id: ${id}`)
-    }
-
-    travelAuthorization.update(attributes).catch((error) => {
+    await travelAuthorization.update(attributes).catch((error) => {
       throw new Error(`Could not update TravelAuthorization: ${error}`)
     })
 
@@ -58,17 +50,14 @@ export class TravelAuthorizationsService {
     // If we are using an ORM such as Sequelize, it would then be worth doing.
     const travelAuthorizationId = travelAuthorization.id
     if (!isEmpty(stops)) {
-      travelAuthorization.stops = await StopsService.bulkReplace(travelAuthorizationId, stops)
+      await StopsService.bulkReplace(travelAuthorizationId, stops)
     }
 
     if (!isEmpty(expenses)) {
-      travelAuthorization.expenses = await ExpensesService.bulkReplace(
-        travelAuthorizationId,
-        expenses
-      )
+      await ExpensesService.bulkReplace(travelAuthorizationId, expenses)
     }
 
-    return travelAuthorization
+    return travelAuthorization.reload({ include: ["expenses", "stops", "purpose"] })
   }
 }
 
