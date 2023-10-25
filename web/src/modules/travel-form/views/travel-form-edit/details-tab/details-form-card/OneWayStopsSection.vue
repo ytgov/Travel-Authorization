@@ -91,10 +91,10 @@ import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 import AccommodationTypeSelect, {
   ACCOMMODATION_TYPES,
-} from "@/modules/travelForm/components/AccommodationTypeSelect"
+} from "@/modules/travel-form/components/AccommodationTypeSelect"
 import TravelMethodSelect, {
   TRAVEL_METHODS,
-} from "@/modules/travelForm/components/TravelMethodSelect"
+} from "@/modules/travel-form/components/TravelMethodSelect"
 
 export default {
   name: "OneWayStopsSection",

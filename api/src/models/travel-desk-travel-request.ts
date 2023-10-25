@@ -18,13 +18,24 @@ import TravelDeskTravelAgent from "./travel-desk-travel-agent"
 
 import sequelize from "@/db/db-client"
 
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum Statuses {
+  BOOKED = "booked",
+  DRAFT = "draft",
+  OPTIONS_PROVIDED = "options_provided",
+  OPTIONS_RANKED = "options_ranked",
+  SUBMITTED = "submitted",
+}
+
 export class TravelDeskTravelRequest extends Model<
   InferAttributes<TravelDeskTravelRequest>,
   InferCreationAttributes<TravelDeskTravelRequest>
 > {
+  static Statuses = Statuses
+
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
-  declare travelDeskTravelAgentId: ForeignKey<TravelDeskTravelAgent["agencyID"]>
+  declare travelDeskTravelAgentId: ForeignKey<TravelDeskTravelAgent["agencyID"]> | null
   declare legalFirstName: string
   declare legalMiddleName: string | null
   declare legalLastName: string
@@ -136,17 +147,9 @@ TravelDeskTravelRequest.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    legalMiddleName: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
     legalLastName: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    birthDate: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
     },
     strAddress: {
       type: DataTypes.STRING(255),
@@ -164,25 +167,13 @@ TravelDeskTravelRequest.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    passportCountry: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    passportNum: {
+    legalMiddleName: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
     travelPurpose: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    travelLocation: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
-    },
-    travelNotes: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
     },
     busPhone: {
       type: DataTypes.STRING(255),
@@ -191,6 +182,36 @@ TravelDeskTravelRequest.init(
     busEmail: {
       type: DataTypes.STRING(255),
       allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      validate: {
+        isIn: {
+          args: [Object.values(Statuses)],
+          msg: "Invalid status value",
+        },
+      },
+    },
+    birthDate: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    passportCountry: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    passportNum: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    travelLocation: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    travelNotes: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     travelContact: {
       type: DataTypes.BOOLEAN,
@@ -207,10 +228,6 @@ TravelDeskTravelRequest.init(
     additionalInformation: {
       type: DataTypes.STRING(255),
       allowNull: true,
-    },
-    status: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
     },
     travelDeskOfficer: {
       type: DataTypes.STRING(255),

@@ -19,11 +19,11 @@
       />
       <v-btn
            v-if="admin"
-          :disabled="selectedRequests.length == 0"        
-          @click="exportToExcel()"          
+          :disabled="selectedRequests.length == 0"
+          @click="exportToExcel()"
           class="mr-5 my-7"
           elevation="5"
-          color="primary"          
+          color="primary"
         >
           Export To Excel
       </v-btn>
@@ -77,7 +77,7 @@
 
       <template v-slot:item.edit="{ item }">
         <new-travel-request
-          :type="item.status == 'Draft' || !item.status ? 'Edit' : 'View'"
+          :type="item.status == 'draft' || !item.status ? 'Edit' : 'View'"
           @updateTable="updateTable"
           :travelRequest="item"
         />
@@ -211,7 +211,7 @@ export default {
           department: req.department,
           branch: (req.branch? req.branch:''),
           travelDate: (req.dateUnkInd? req.month:(req.startDate +' '+ req.endDate)),
-          location: req.location,          
+          location: req.location,
           purpose: (req.purpose? req.purpose :''),
           estimatedCost: req.estimatedCost,
           reason: (req.reason? req.reason :''),
@@ -219,11 +219,11 @@ export default {
           travelerNotes: (req.travelerNotes? req.travelerNotes :'')
         }
       })
-      const options = { 
+      const options = {
           fieldSeparator: ',',
           quoteStrings: '"',
           decimalSeparator: '.',
-          showLabels: true, 
+          showLabels: true,
           showTitle: false,
           title: '',
           filename: 'Preapproved-Travel-Requests',

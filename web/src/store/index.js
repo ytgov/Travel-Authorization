@@ -8,7 +8,7 @@ import preapproved from "./preapproved";
 import traveldesk from "./traveldesk";
 import reports from "./reports";
 
-import travelForm from "@/modules/travelForm/store";
+import travelForm from "@/modules/travel-form/store";
 
 Vue.use(Vuex);
 

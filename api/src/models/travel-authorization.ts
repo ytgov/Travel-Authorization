@@ -31,17 +31,22 @@ import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelPurpose from "./travel-purpose"
 import User from "./user"
 
-// These are a best guess, database values may not match this list.
-// TODO: normalize database values and make sure all statuses are in this list.
-// If we want validation for this field we should swith to an ORM such as Sequelize.
+// TODO: state management is going to be a bit deal for this project
+// we should do some aggressive data modeling an engineering before this becomes unmagable
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum Statuses {
-  DELETED = "deleted", // TODO: normalize this state, or replace with more standard `deleted_at` field
-  DRAFT = "Draft",
-  SUBMITTED = "Submitted",
-  APPROVED = "Approved",
-  DENIED = "Denied",
-  CHANGE_REQUESTED = "Change Requested",
+  // TODO: might want replace DELETED status with `deleted_at` field from Sequelize paranoid feature.
+  // See https://sequelize.org/docs/v6/core-concepts/paranoid/
+  DELETED = "deleted",
+  APPROVED = "approved",
+  AWAITING_DIRECTOR_APPROVAL = "awaiting_director_approval",
+  BOOKED = "booked",
+  CHANGE_REQUESTED = "change_requested",
+  DENIED = "denied",
+  DRAFT = "draft",
+  EXPENSE_CLAIM = "expense_claim",
+  EXPENSED = "expensed",
+  SUBMITTED = "submitted",
 }
 
 export class TravelAuthorization extends Model<
@@ -52,9 +57,9 @@ export class TravelAuthorization extends Model<
 
   declare id: CreationOptional<number>
   declare slug: string
-  declare preappId: ForeignKey<Preapproved["preTID"]>
-  declare purposeId: ForeignKey<TravelPurpose["id"]>
   declare userId: ForeignKey<User["id"]>
+  declare preappId: ForeignKey<Preapproved["preTID"]> | null
+  declare purposeId: ForeignKey<TravelPurpose["id"]> | null
   declare firstName: string | null
   declare lastName: string | null
   declare department: string | null
@@ -92,7 +97,10 @@ export class TravelAuthorization extends Model<
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
 
   declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
-  declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<TravelDeskTravelRequest, TravelDeskTravelRequest["travelAuthorizationId"]>
+  declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<
+    TravelDeskTravelRequest,
+    TravelDeskTravelRequest["travelAuthorizationId"]
+  >
   declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
 
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
@@ -252,6 +260,12 @@ TravelAuthorization.init(
     status: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      validate: {
+        isIn: {
+          args: [Object.values(Statuses)],
+          msg: "Invalid status value",
+        },
+      },
     },
     supervisorEmail: {
       type: DataTypes.STRING(255),

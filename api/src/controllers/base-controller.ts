@@ -80,7 +80,21 @@ export class BaseController {
   // Child controllers that are on an non-authorizable route should override this method
   // and return undefined
   get currentUser(): User {
-    return this.request.user
+    // TODO: fix this upstream so that this.request.user is a valid user, and
+    // doesn't need to be hacked together here.
+    const legacyUserDataFormat = this.request.user
+    const user = User.build({
+      id: legacyUserDataFormat.id,
+      sub: legacyUserDataFormat.sub,
+      email: legacyUserDataFormat.email,
+      status: legacyUserDataFormat.status,
+      firstName: legacyUserDataFormat.first_name,
+      lastName: legacyUserDataFormat.last_name,
+      roles: legacyUserDataFormat.roles.join(","),
+      department: legacyUserDataFormat.department,
+      createDate: new Date(legacyUserDataFormat.create_date),
+    })
+    return user
   }
 
   get params() {

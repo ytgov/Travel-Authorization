@@ -605,13 +605,13 @@ export default {
 
       this.loadingData = false;
       this.showApproval = false;
-      this.approved = this.travelRequest?.status == "Approved";
+      this.approved = this.travelRequest?.status == "approved";
       this.approvedBy = "";
       this.approvalDate = "";
 
       if (
         this.travelRequest?.preTSubID &&
-        (this.travelRequest.status == "Approved" || this.travelRequest.status == "Declined")
+        (this.travelRequest.status == "approved" || this.travelRequest.status == "declined")
       )
         this.initSubmission(this.travelRequest.preTSubID);
     },

@@ -98,9 +98,9 @@
                 <template v-slot:item.status="{ item }">
                   <v-select
                     :background-color="
-                      item.status == 'Declined'
+                      item.status == 'declined'
                         ? 'red lighten-4'
-                        : item.status == 'Approved'
+                        : item.status == 'approved'
                         ? 'green lighten-4'
                         : 'grey lighten-4'
                     "

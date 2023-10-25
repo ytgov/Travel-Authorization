@@ -1,4 +1,5 @@
 import { isNil } from "lodash"
+import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
@@ -11,14 +12,28 @@ import { TravelAuthorizationsPolicy } from "@/policies"
 const auditService = new AuditService()
 
 export class TravelAuthorizationsController extends BaseController {
-  index() {
-    const where = this.query.where as any // TODO: figure out typing for "where" parameter
-    return TravelAuthorization.findAndCountAll({
+  async index() {
+    const where = this.query.where as WhereOptions<TravelAuthorization>
+    const totalCount = await TravelAuthorization.count({ where })
+    return TravelAuthorization.findAll({
       where,
-      include: ["stops", "purpose"],
+      include: [
+        {
+          association: "stops",
+          include: ["location"],
+        },
+        "expenses",
+        "purpose",
+        "travelDeskTravelRequest",
+      ],
+      order: [
+        ["updatedAt", "ASC"],
+        ["stops", "departureDate", "ASC"],
+        ["stops", "departureTime", "ASC"],
+      ],
       limit: this.pagination.limit,
       offset: this.pagination.offset,
-    }).then(({ rows: travelAuthorizations, count }) => {
+    }).then((travelAuthorizations) => {
       const scopedTravelAuthorizations = TravelAuthorizationsPolicy.scope(
         travelAuthorizations,
         this.currentUser
@@ -28,7 +43,7 @@ export class TravelAuthorizationsController extends BaseController {
       )
       return this.response.json({
         travelAuthorizations: serializedTravelAuthorizations,
-        totalCount: count,
+        totalCount,
       })
     })
   }
