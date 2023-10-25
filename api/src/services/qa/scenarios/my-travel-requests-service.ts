@@ -322,6 +322,56 @@ export class MyTravelRequestsService extends BaseService {
         status: TravelDeskTravelRequest.Statuses.BOOKED,
       },
     })
+
+    // Phase: Travelling
+    // Location: Calgary
+    // Description: FN Finance meeting #2
+    // Start Date: in-past, format 12-May-2023
+    // End Date: in-future, format 14-May-2023
+    // Travel Auth Status: Travelling
+    // Travel Action: Add Expense
+    const [travelAuthorization6] = await TravelAuthorization.findOrCreate({
+      where: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.APPROVED,
+        eventName: "FN Finance meeting #2",
+      },
+      defaults: {
+        userId: this.user.id,
+        slug: uuid(),
+        status: TravelAuthorization.Statuses.APPROVED,
+        eventName: "FN Finance meeting #2",
+      },
+    })
+    const [_firstStop6] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization6.id,
+        locationId: calgaryLocation.id,
+        departureDate: lastWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization6.id,
+        locationId: calgaryLocation.id,
+        departureDate: lastWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+    })
+    const [_lastStop6] = await Stop.findOrCreate({
+      where: {
+        travelAuthorizationId: travelAuthorization6.id,
+        locationId: calgaryLocation.id,
+        departureDate: nextWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+      defaults: {
+        travelAuthorizationId: travelAuthorization6.id,
+        locationId: calgaryLocation.id,
+        departureDate: nextWeek.toDate(),
+        departureTime: "00:00:00",
+      },
+    })
   }
 }
 

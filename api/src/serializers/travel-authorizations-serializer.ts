@@ -25,11 +25,12 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   asTableRow() {
     return {
-      ...pick(this.record, ["id", "status", "eventName"]),
+      ...pick(this.record, ["id", "eventName"]),
       finalDestination: this.lastStop?.location,
       departingAt: this.firstStop?.departureAt,
       returningAt: this.lastStop?.departureAt,
       phase: this.determinePhase(),
+      status: this.determineStatus(),
       action: this.determineAction(),
     }
   }
@@ -38,7 +39,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   determinePhase() {
     if (this.isDraft() || this.awaitingDirectorApproval()) {
       return "travel_approval"
-    } else if (this.isApproved() || (this.isBooked() && this.beforeTravelling())) {
+    } else if (this.beforeTravelling() && (this.isApproved() || this.isBooked())) {
       return "travel_planning"
     } else if (this.isTravelling()) {
       return "travelling"
@@ -53,6 +54,14 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     }
   }
 
+  determineStatus() {
+    if (this.isTravelling() && this.isApproved()) {
+      return "travelling"
+    } else {
+      return this.record.status
+    }
+  }
+
   // TODO: double check the order of these conditions
   determineAction() {
     if (this.isApproved() && this.anyTransportTypeIsAircraft()) {
@@ -61,7 +70,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       return ["submit_expense_claim"]
     } else if (this.travelDeskRequestIsComplete()) {
       return ["view_itinerary"]
-    } else if (this.isApproved()) {
+    } else if (this.isApproved() && this.isTravelling()) {
       return ["add_expense"]
     } else if (this.isApproved() && this.anyTransportTypeIsPoolVehicle()) {
       return ["submit_pool_vehicle_request"]

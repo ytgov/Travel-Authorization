@@ -11,6 +11,7 @@ export default {
       expense_claim: "Expense Claim",
       expensed: "Expensed",
       submitted: "Submitted",
+      travelling: "Travelling",
     },
     phase: {
       expensed: "Expensed",

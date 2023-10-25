@@ -47,7 +47,6 @@ enum Statuses {
   EXPENSE_CLAIM = "expense_claim",
   EXPENSED = "expensed",
   SUBMITTED = "submitted",
-  TRAVELLING = "travelling",
 }
 
 export class TravelAuthorization extends Model<
