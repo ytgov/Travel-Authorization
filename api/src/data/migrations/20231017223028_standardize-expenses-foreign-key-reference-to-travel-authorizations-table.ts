@@ -20,6 +20,6 @@ export async function down(knex: Knex): Promise<void> {
 
     table.renameColumn("travel_authorization_id", "form_id")
 
-    table.foreign("form_id").references("id").inTable("forms").onDelete("CASCADE")
+    table.foreign("form_id").references("id").inTable("travel_authorizations").onDelete("CASCADE")
   })
 }
