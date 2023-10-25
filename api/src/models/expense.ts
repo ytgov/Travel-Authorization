@@ -14,10 +14,11 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import Form from "./form"
+import TravelAuthorization from "./travel-authorization"
 
 // Keep in sync with web/src/modules/travelForm/components/ExpenseTypeSelect.vue
-export enum ExpenseTypes {
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",
   TRANSPORTATION = "Transportation",
   MEALS_AND_INCIDENTALS = "Meals & Incidentals",
@@ -27,14 +28,18 @@ export enum ExpenseTypes {
 // move estimates to there own table.
 // It's also possible that this is a single table inheritance model,
 // and there should be two models, one for each "type".
-export enum Types {
-  ESTIMATE = "Estimates",
-  EXPENSE = "Expenses",
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum Types {
+  ESTIMATE = "Estimate",
+  EXPENSE = "Expense",
 }
 
 export class Expense extends Model<InferAttributes<Expense>, InferCreationAttributes<Expense>> {
+  static Types = Types
+  static ExpenseTypes = ExpenseTypes
+
   declare id: CreationOptional<number>
-  declare taid: ForeignKey<Form["id"]>
+  declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare description: string
   declare date: Date | null
   declare cost: number
@@ -44,24 +49,26 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   declare fileSize: number | null
   declare fileName: string | null
   declare expenseType: ExpenseTypes
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getForm: BelongsToGetAssociationMixin<Form>
-  declare setForm: BelongsToSetAssociationMixin<Form, Form["id"]>
-  declare createForm: BelongsToCreateAssociationMixin<Form>
+  declare getTravelAuthorization: BelongsToGetAssociationMixin<TravelAuthorization>
+  declare setTravelAuthorization: BelongsToSetAssociationMixin<TravelAuthorization, TravelAuthorization["id"]>
+  declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
-  declare form?: NonAttribute<Form>
+  declare travelAuthorization?: NonAttribute<TravelAuthorization>
 
   declare static associations: {
-    form: Association<Expense, Form>
+    travelAuthorization: Association<Expense, TravelAuthorization>
   }
 
   static establishAssociations() {
-    this.belongsTo(Form, {
-      as: "form",
-      foreignKey: "taid",
+    this.belongsTo(TravelAuthorization, {
+      as: "travelAuthorization",
+      foreignKey: "travelAuthorizationId",
     })
   }
 }
@@ -74,12 +81,12 @@ Expense.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    taid: {
+    travelAuthorizationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "forms", // using table name here, instead of Model class
-        key: "id",
+        model: "travel_authorizations", // using real table name here
+        key: "id", // using real column name here
       },
     },
     description: {
@@ -105,29 +112,34 @@ Expense.init(
     receiptImage: {
       type: DataTypes.BLOB,
       allowNull: true,
-      field: "receiptImage",
     },
     fileSize: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: "fileSize",
     },
     fileName: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "fileName",
     },
     expenseType: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: "expenseType",
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
   },
   {
     sequelize,
     modelName: "Expense",
     tableName: "expenses",
-    timestamps: false,
   }
 )
 

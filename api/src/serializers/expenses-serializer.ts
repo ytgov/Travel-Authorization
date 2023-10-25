@@ -1,6 +1,6 @@
 import { pick } from "lodash"
 
-import { Expense, ExpenseTypes } from "@/models"
+import { Expense } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 
@@ -16,7 +16,7 @@ export class ExpensesSerializer extends BaseSerializer {
 
   // TODO: investigate whether these should depend on a policy check
   private static actions(expense: Expense): ("delete" | "edit")[] {
-    if (expense.expenseType === ExpenseTypes.MEALS_AND_INCIDENTALS) {
+    if (expense.expenseType === Expense.ExpenseTypes.MEALS_AND_INCIDENTALS) {
       return ["delete"]
     } else {
       return ["edit", "delete"]

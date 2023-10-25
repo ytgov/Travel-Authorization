@@ -2,19 +2,15 @@ import { clone, isNil, max, min, times } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
 import {
-  AccommodationTypes,
   ClaimTypes,
-  Destination,
   DistanceMatrix,
   Expense,
-  ExpenseTypes,
-  Form,
+  Location,
   LocationTypes,
   PerDiem,
   Stop,
-  TravelMethods,
+  TravelAuthorization,
 } from "@/models"
-import { Types as ExpenseVariants } from "@/models/expense"
 import BaseService from "@/services/base-service"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
@@ -24,35 +20,35 @@ const HOTEL_ALLOWANCE_PER_NIGHT = 250
 const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
 export class BulkGenerate extends BaseService {
-  private formId: number
+  private travelAuthorizationId: number
   private aircraftAllowanceRemaining: number
 
-  constructor(formId: number) {
+  constructor(travelAuthorizationId: number) {
     super()
-    this.formId = formId
+    this.travelAuthorizationId = travelAuthorizationId
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
-  static async perform(formId: number): Promise<Expense[]> {
-    const instance = new this(formId)
+  static async perform(travelAuthorizationId: number): Promise<Expense[]> {
+    const instance = new this(travelAuthorizationId)
     return instance.perform()
   }
 
   async perform(): Promise<Expense[]> {
-    const form = await Form.findByPk(this.formId)
-    if (isNil(form)) {
-      throw new Error(`Form not found for id=${this.formId}`)
+    const travelAuthorization = await TravelAuthorization.findByPk(this.travelAuthorizationId)
+    if (isNil(travelAuthorization)) {
+      throw new Error(`TravelAuthorization not found for id=${this.travelAuthorizationId}`)
     }
 
     const stops = await Stop.findAll({
-      where: { taid: this.formId },
+      where: { travelAuthorizationId: this.travelAuthorizationId },
       order: [
         ["departureDate", "ASC"],
         ["departureTime", "ASC"],
       ],
       include: ["location"],
     })
-    const tripSegments = await this.buildTripSegments({ form, stops })
+    const tripSegments = await this.buildTripSegments({ travelAuthorization, stops })
 
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
@@ -123,17 +119,17 @@ export class BulkGenerate extends BaseService {
 
   // TODO: investigate having a tripSegments model in the database
   private async buildTripSegments({
-    form,
+    travelAuthorization,
     stops,
   }: {
-    form: Form
+    travelAuthorization: TravelAuthorization
     stops: Stop[]
   }): Promise<[Stop, Stop][]> {
     if (stops.length < 2) {
       throw new Error("Must have at least 2 stops to build a trip segment")
     }
 
-    const isRoundTrip = form.oneWayTrip !== true && form.multiStop !== true
+    const isRoundTrip = travelAuthorization.oneWayTrip !== true && travelAuthorization.multiStop !== true
     if (isRoundTrip) {
       return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
         const isLastStop = index === stops.length - 1
@@ -164,9 +160,9 @@ export class BulkGenerate extends BaseService {
     toLocation,
   }: {
     fromDepartureAt: Date
-    fromLocation: Destination
+    fromLocation: Location
     fromTransport: string
-    toLocation: Destination
+    toLocation: Location
   }): Promise<CreationAttributes<Expense>> {
     const fromCity = fromLocation.city
     const toCity = toLocation.city
@@ -175,10 +171,10 @@ export class BulkGenerate extends BaseService {
     const cost = await this.determineTravelMethodCost(fromTransport, fromCity, toCity)
 
     return {
-      type: ExpenseVariants.ESTIMATE,
-      taid: this.formId,
+      type: Expense.Types.ESTIMATE,
+      travelAuthorizationId: this.travelAuthorizationId,
       currency: "CAD",
-      expenseType: ExpenseTypes.TRANSPORTATION,
+      expenseType: Expense.ExpenseTypes.TRANSPORTATION,
       description,
       cost,
       date: fromDepartureAt,
@@ -191,7 +187,7 @@ export class BulkGenerate extends BaseService {
     arrivalAt,
     departureAt,
   }: {
-    location: Destination
+    location: Location
     accommodationType: string
     arrivalAt: Date
     departureAt: Date
@@ -206,10 +202,10 @@ export class BulkGenerate extends BaseService {
 
       const cost = this.determineAccommodationCost(accommodationType)
       return {
-        type: ExpenseVariants.ESTIMATE,
-        taid: this.formId,
+        type: Expense.Types.ESTIMATE,
+        travelAuthorizationId: this.travelAuthorizationId,
         currency: "CAD",
-        expenseType: ExpenseTypes.ACCOMODATIONS,
+        expenseType: Expense.ExpenseTypes.ACCOMODATIONS,
         description,
         cost,
         date: stayedAt,
@@ -222,7 +218,7 @@ export class BulkGenerate extends BaseService {
     arrivalAt,
     departureAt,
   }: {
-    location: Destination
+    location: Location
     arrivalAt: Date
     departureAt: Date
   }): Promise<CreationAttributes<Expense>[]> {
@@ -245,10 +241,10 @@ export class BulkGenerate extends BaseService {
       const cost = await this.determinePerDiemCost(province, claims)
 
       estimates.push({
-        type: ExpenseVariants.ESTIMATE,
-        taid: this.formId,
+        type: Expense.Types.ESTIMATE,
+        travelAuthorizationId: this.travelAuthorizationId,
         currency: "CAD",
-        expenseType: ExpenseTypes.MEALS_AND_INCIDENTALS,
+        expenseType: Expense.ExpenseTypes.MEALS_AND_INCIDENTALS,
         description,
         cost,
         date: stayedAt,
@@ -264,12 +260,12 @@ export class BulkGenerate extends BaseService {
     toCity: string
   ): Promise<number> {
     switch (travelMethod) {
-      case TravelMethods.AIRCRAFT:
+      case Stop.TravelMethods.AIRCRAFT:
         return this.determineAicraftAllowance()
-      case TravelMethods.PERSONAL_VEHICLE:
+      case Stop.TravelMethods.PERSONAL_VEHICLE:
         return this.determinePersonalVehicleAllowance(fromCity, toCity)
-      case TravelMethods.POOL_VEHICLE:
-      case TravelMethods.RENTAL_VEHICLE:
+      case Stop.TravelMethods.POOL_VEHICLE:
+      case Stop.TravelMethods.RENTAL_VEHICLE:
         return 0
       default:
         return 0
@@ -300,10 +296,10 @@ export class BulkGenerate extends BaseService {
 
   private determineAccommodationCost(accommodationType: string): number {
     switch (accommodationType) {
-      case AccommodationTypes.HOTEL:
+      case Stop.AccommodationTypes.HOTEL:
         return 1 * HOTEL_ALLOWANCE_PER_NIGHT
       // TODO: determine if Private Accommodation is part of the max daily per-diem
-      case AccommodationTypes.PRIVATE:
+      case Stop.AccommodationTypes.PRIVATE:
         return 1 * PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT
       default:
         return 0

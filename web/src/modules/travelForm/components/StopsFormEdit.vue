@@ -210,7 +210,7 @@ export default {
     },
     addStop() {
       this.request.stops.push({
-        taid: this.formId,
+        travelAuthorizationId: this.formId,
         locationId: "",
         departureDate: "",
         departureTime: "12:00",

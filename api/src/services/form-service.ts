@@ -1,40 +1,37 @@
-import knex, { Knex } from "knex"
-import { isEmpty, map } from "lodash"
+import { isNull, minBy } from "lodash"
 
-import { DB_CONFIG } from "../config"
+import { Expense, TravelAuthorization } from "@/models"
+import ExpensesService from "./expenses-service"
+import StopsService from "./stops-service"
 
+// DEPRECATED: superseded by the TravelAuthorizationsService
 export class FormService {
-  private db: Knex
-
-  constructor() {
-    this.db = knex(DB_CONFIG)
-  }
-
   //returns form
-  async getForm(formId: string): Promise<any | undefined> {
+  async getForm(slug: string): Promise<any | undefined> {
     console.warn(
       "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
     )
     try {
-      let form: any = await this.db("forms").select("*").first().where({ formId: formId })
+      const form = await TravelAuthorization.findOne({
+        where: { slug },
+        include: ["stops"],
+      })
 
-      if (isEmpty(form)) {
+      if (isNull(form)) {
         return undefined
       }
 
-      let expenses = await this.getExpenses(form.id)
-      let estimates = await this.getEstimates(form.id)
-      let stops = await this.getStops(form.id)
-      let departureDate = await this.db("stops")
-        .select("departureDate")
-        .first()
-        .where({ taid: form.id })
-        .orderBy("departureDate", "asc")
+      const expenses = await this.getExpenses(form.id)
+      const estimates = await this.getEstimates(form.id)
 
-      form.stops = stops
+      // @ts-ignore - not worth fixing as code is deprecated
       form.estimates = estimates
       form.expenses = expenses
-      form.departureDate = departureDate
+
+      const { stops } = form
+      const earliestStop = minBy(stops, "departureDate")
+      // @ts-ignore - not worth fixing as code is deprecated
+      form.departureDate = earliestStop?.departureDate
 
       return form
     } catch (error: any) {
@@ -62,10 +59,12 @@ export class FormService {
 
       console.log(form)
 
-      let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge()
-      let id = returnedForm[0].id
+      const [returnedForm, _] = await TravelAuthorization.upsert(form, {
+        conflictFields: ["slug"],
+      })
+      const id = returnedForm.id
 
-      await this.saveStops(id, stops)
+      await StopsService.bulkReplace(id, stops)
       await this.saveExpenses(id, expenses)
       await this.saveEstimates(id, estimates)
 
@@ -76,31 +75,23 @@ export class FormService {
     }
   }
 
-  async getStops(taid: number): Promise<any[] | undefined> {
+  async getExpenses(travelAuthorizationId: number): Promise<any[] | undefined> {
     try {
-      let stops = await this.db("stops")
-        .select("*")
-        .where({ taid: taid })
-        .orderBy("departureDate", "asc")
-      return stops
+      return Expense.findAll({
+        where: {
+          travelAuthorizationId,
+          type: Expense.Types.EXPENSE,
+        },
+      })
     } catch (error: any) {
       console.log(error)
       return undefined
     }
   }
 
-  async saveStops(taid: number, stops: any): Promise<Boolean> {
+  async saveExpenses(travelAuthorizationId: number, expenses: any): Promise<Boolean> {
     try {
-      await this.db("stops").delete().where({ taid: taid })
-
-      if (stops) {
-        stops = map(stops, (stop) => {
-          stop.taid = taid
-          stop.locationId = stop.locationId != "" ? stop.locationId : null
-          return stop
-        })
-        await this.db("stops").insert(stops)
-      }
+      await ExpensesService.bulkReplace(travelAuthorizationId, expenses)
       return true
     } catch (error: any) {
       console.log(error)
@@ -108,64 +99,23 @@ export class FormService {
     }
   }
 
-  async getExpenses(taid: number): Promise<any[] | undefined> {
+  async getEstimates(travelAuthorizationId: number): Promise<any[] | undefined> {
     try {
-      let expenses = await this.db("expenses")
-        .select("*")
-        .where({ taid: taid })
-        .andWhere("type", "=", "Expenses")
-      return expenses
+      return Expense.findAll({
+        where: {
+          travelAuthorizationId,
+          type: Expense.Types.ESTIMATE,
+        },
+      })
     } catch (error: any) {
       console.log(error)
       return undefined
     }
   }
 
-  async saveExpenses(taid: number, expenses: any): Promise<Boolean> {
-    try {
-      await this.db("expenses").delete().where({ taid: taid })
-      if (expenses) {
-        expenses = map(expenses, (expense) => {
-          expense.taid = taid
-          return stop
-        })
-        await this.db("expenses").insert(expenses)
-      }
-      return true
-    } catch (error: any) {
-      console.log(error)
-      return false
-    }
-  }
-
-  async getEstimates(taid: number): Promise<any[] | undefined> {
-    try {
-      let estimates = await this.db("expenses")
-        .select("*")
-        .where({ taid: taid })
-        .andWhere("type", "=", "Estimates")
-      return estimates
-    } catch (error: any) {
-      console.log(error)
-      return undefined
-    }
-  }
-
-  async saveEstimates(taid: number, estimates: any): Promise<Boolean> {
-    try {
-      await this.db("expenses").delete().where({ taid: taid })
-      if (estimates) {
-        estimates = map(estimates, (estimate) => {
-          estimate.taid = taid
-          return stop
-        })
-        await this.db("expenses").insert(estimates)
-      }
-      return true
-    } catch (error: any) {
-      console.log(error)
-      return false
-    }
+  async saveEstimates(travelAuthorizationId: number, estimates: any): Promise<Boolean> {
+    console.warn("DEPRECATED: use saveEstimates instead.")
+    return this.saveExpenses(travelAuthorizationId, estimates)
   }
 
   async submitForm(userId: number, form: any): Promise<Boolean> {
@@ -189,10 +139,12 @@ export class FormService {
         form.userId = userId
         form.status = "Submitted"
 
-        let returnedForm = await this.db("forms").insert(form, "id").onConflict("formId").merge()
-        let id = returnedForm[0].id
+        const [returnedForm, _] = await TravelAuthorization.upsert(form, {
+          conflictFields: ["slug"],
+        })
+        const id = returnedForm.id
 
-        await this.saveStops(id, stops)
+        await StopsService.bulkReplace(id, stops)
         await this.saveExpenses(id, expenses)
         await this.saveEstimates(id, estimates)
         return true

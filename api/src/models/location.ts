@@ -8,16 +8,18 @@ import {
 
 import sequelize from "@/db/db-client"
 
-export class Destination extends Model<
-  InferAttributes<Destination>,
-  InferCreationAttributes<Destination>
+export class Location extends Model<
+  InferAttributes<Location>,
+  InferCreationAttributes<Location>
 > {
   declare id: CreationOptional<number>
   declare province: string
   declare city: string
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 }
 
-Destination.init(
+Location.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -33,12 +35,21 @@ Destination.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
-    modelName: "Destination",
-    tableName: "destinations",
-    timestamps: false,
+    modelName: "Location",
+    tableName: "locations",
   }
 )
-export default Destination
+export default Location

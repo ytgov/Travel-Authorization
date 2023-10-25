@@ -1,9 +1,10 @@
 import { isString, upperFirst, omit } from "lodash"
 
-import { FORM_URL, LOOKUP_URL, DESTINATION_URL, USERS_URL } from "@/urls"
+import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
-import expensesApi, { TYPES as EXPENSE_VARIANT } from "@/apis/expenses-api"
-import formsApi from "@/apis/forms-api"
+import expensesApi from "@/apis/expenses-api"
+import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
+import locationsApi from "@/apis/locations-api"
 
 const state = {
   departments: [],
@@ -56,10 +57,10 @@ const actions = {
       return resp.data.data
     })
   },
-  loadEstimates({ commit, state }, { formId }) {
+  loadEstimates({ commit, state }, { travelAuthorizationId }) {
     state.loadingEstimates = true
     return expensesApi
-      .list({ where: { taid: formId, type: EXPENSE_VARIANT.ESTIMATE } })
+      .list({ where: { travelAuthorizationId, type: expensesApi.TYPES.ESTIMATE } })
       .then(({ expenses: estimates }) => {
         commit("SET_ESTIMATES", estimates)
         return estimates
@@ -75,41 +76,39 @@ const actions = {
     })
   },
   async loadDestinations({ commit }) {
-    return secureGet(`${DESTINATION_URL}`).then((resp) => {
-      let destinations = []
-
-      resp.data.forEach((v) => {
-        destinations.push({
-          value: v.id,
-          text: v.city + " (" + v.province + ")",
-        })
+    return locationsApi.list().then(({ locations }) => {
+      const formattedLocations = locations.map(({ id, city, province }) => {
+        return {
+          value: id,
+          text: `${city} (${province})`,
+        }
       })
 
-      commit("SET_DESTINATIONS", destinations)
+      commit("SET_DESTINATIONS", formattedLocations)
 
-      return destinations
+      return formattedLocations
     })
   },
   async loadForms({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
     const userId =
       state.currentUser.id || (await dispatch("loadCurrentUser").then((user) => user.id))
-    return formsApi
+    return travelAuthorizationsApi
       .list({
         page,
         perPage,
         ...otherParams,
         where: { userId },
       })
-      .then(({ forms, totalCount }) => {
+      .then(({ travelAuthorizations: forms, totalCount }) => {
         commit("SET_MYFORMS", forms)
         return { forms, totalCount }
       })
   },
   loadAsCurrentForm({ commit, state }, formId) {
     state.loadingCurrentForm = true
-    return formsApi
+    return travelAuthorizationsApi
       .get(formId)
-      .then(({ form }) => {
+      .then(({ travelAuthorization: form }) => {
         commit("SET_FORM", form)
         return form
       })
@@ -163,9 +162,9 @@ const actions = {
   },
   create({ commit, state }, attributes) {
     state.loadingCurrentForm = true
-    return formsApi
+    return travelAuthorizationsApi
       .create(attributes)
-      .then(({ form }) => {
+      .then(({ travelAuthorization: form }) => {
         commit("SET_FORM", form)
         return form
       })
@@ -177,9 +176,9 @@ const actions = {
     const formId = state.currentForm.id
     const attributes = state.currentForm
     state.loadingCurrentForm = true
-    return formsApi
+    return travelAuthorizationsApi
       .update(formId, attributes)
-      .then(({ form }) => {
+      .then(({ travelAuthorization: form }) => {
         commit("SET_FORM", form)
         return form
       })

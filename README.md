@@ -43,7 +43,7 @@
 
 3. Go back to the top level directory.
 
-4. [Set up the `dev`](./README.md#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
+4. [Set up the `dev`](#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
 
 5. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
 
@@ -151,14 +151,14 @@ You can generate migrations via the api service code. Currently uses [knex Migra
 ### Create a New Migration
 
 ```bash
-dev knex migrate:make migration_name
+dev knex migrate:make migration-name
 ```
 
 This will generate a migration of the form:
 
-- `api/src/data/migrations/20231013235256_migration_name.ts`
+- `api/src/data/migrations/20231013235256_migration-name.ts`
 
-FUTURE: Implement dash cased migration names and/or switch to `umzug/Sequelize`
+Ideally the full name would be dash cased but that would require switching to `umzug/Sequelize`.
 
 ### Running Migrations
 
@@ -227,6 +227,11 @@ All commands are just strings joined together, so it's easy to add new commmands
    You will now be able to do `dev xxx` instead ov `./bin/dev xxx`.
 
 # Deploying
+
+## Production Environment (remote)
+
+1. Create the appropriate database, as specified by the `DB_NAME` environment variable, and
+2. Make sure the `public` schema exists in that database.
 
 ## Test Production Build Locally
 

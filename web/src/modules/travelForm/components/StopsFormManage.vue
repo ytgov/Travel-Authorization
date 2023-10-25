@@ -62,8 +62,8 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-              ><DatePicker
+            <v-col>
+              <DatePicker
                 v-model="stop.departureDate"
                 text="Departure Date"
                 :review="review"
@@ -76,7 +76,8 @@
                 text="Departure Time"
                 :review="review"
                 :rules="requiredRules"
-            /></v-col>
+              />
+            </v-col>
             <v-col>
               <v-select
                 :items="transport"
@@ -210,7 +211,7 @@ export default {
     },
     addStop() {
       this.request.stops.push({
-        taid: this.formId,
+        travelAuthorizationId: this.formId,
         locationId: "",
         departureDate: "",
         departureTime: "12:00",

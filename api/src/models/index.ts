@@ -2,21 +2,30 @@ import db from "@/db/db-client"
 
 import Stop from "./stop"
 import Expense from "./expense"
-import Form from "./form"
+import TravelAuthorization from "./travel-authorization"
+import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
+import TravelDeskTravelRequest from "./travel-desk-travel-request"
 
+// Order matters here, though may be somewhat flexible
 Stop.establishAssociations()
 Expense.establishAssociations()
-Form.establishAssociations()
+TravelAuthorization.establishAssociations()
+TravelDeskPassengerNameRecordDocument.establishAssociations()
+TravelDeskTravelRequest.establishAssociations()
 
+// Alphabetically - order does not matter
 export * from "./auth"
-export * from "./destination"
 export * from "./distance-matrix"
 export * from "./expense"
-export * from "./form"
+export * from "./location"
 export * from "./per-diem"
 export * from "./preapproved-traveler"
 export * from "./preapproved"
 export * from "./stop"
+export * from "./travel-authorization"
+export * from "./travel-desk-passenger-name-record-document"
+export * from "./travel-desk-travel-agent"
+export * from "./travel-desk-travel-request"
 export * from "./travel-purpose"
 export * from "./user"
 

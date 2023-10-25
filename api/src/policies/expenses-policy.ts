@@ -1,16 +1,16 @@
 import { isNil } from "lodash"
 
 import BasePolicy from "./base-policy"
-import FormsPolicy from "./forms-policy"
+import TravelAuthorizationsPolicy from "./travel-authorizations-policy"
 import { Expense } from "@/models"
 
 export class ExpensesPolicy extends BasePolicy<Expense> {
   create(): boolean {
-    const form = this.record.form
-    if (isNil(form)) return false
+    const travelAuthorization = this.record.travelAuthorization
+    if (isNil(travelAuthorization)) return false
 
-    const formPolicy = new FormsPolicy(this.user, form)
-    return formPolicy.update()
+    const travelAuthorizationsPolicy = new TravelAuthorizationsPolicy(this.user, travelAuthorization)
+    return travelAuthorizationsPolicy.update()
   }
 
   update(): boolean {
@@ -26,7 +26,7 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
   }
 
   permittedAttributesForCreate(): string[] {
-    return ["taid", "type", "currency", ...this.permittedAttributes()]
+    return ["travelAuthorizationId", "type", "currency", ...this.permittedAttributes()]
   }
 }
 

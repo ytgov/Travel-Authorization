@@ -29,7 +29,7 @@ export class BasePolicy<Model> {
     return false
   }
 
-  // TODO: add scope method to base policy, see forms-policy.ts
+  // TODO: add scope method to base policy, see travel-authorizations-policy.ts
 
   permitAttributes(record: Partial<Model>): Partial<Model> {
     return pick(record, this.permittedAttributes())

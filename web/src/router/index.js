@@ -10,7 +10,6 @@ import PoolCarCost from "../components/Administration/RatesEstimateManagement/Po
 import RentalCarEstimates from "../components/Administration/RatesEstimateManagement/RentalCarEstimate";
 import YGRates from "../components/Administration/RatesEstimateManagement/YGRates";
 import TravelAgents from "../components/Administration/LookupTableManagement/TravelAgents";
-import Test from "../components/Test";
 import HealthCheck from "../components/HealthCheck";
 
 import preapprovedRouter from "../modules/preapproved/router/index.js";
@@ -89,11 +88,6 @@ const routes = [
       requiresAuth: true,
     },
     component: TravelAgents,
-  },
-  {
-    path: "/test",
-    name: "Test",
-    component: Test,
   },
   {
     path: "/healthCheck",
