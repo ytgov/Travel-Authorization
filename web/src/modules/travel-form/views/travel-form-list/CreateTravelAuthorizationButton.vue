@@ -24,7 +24,7 @@ export default {
     },
     createAndGoToFormDetails() {
       this.loadingCreatingForm = true
-      return this.create({ status: "Draft" })
+      return this.create({ status: "draft" })
         .then((form) => {
           return this.goToFormDetails(form)
         })

@@ -8,6 +8,7 @@ import {
 
 import sequelize from "@/db/db-client"
 
+// TODO: normalize these roles to snake_case
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Roles {
   ADMIN = "Admin",
@@ -17,6 +18,7 @@ enum Roles {
   TD_USER = "TdUser",
 }
 
+// TODO: normalize these status to snake_case
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Statuses {
   ACTIVE = "Active",

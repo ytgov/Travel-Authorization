@@ -55,7 +55,7 @@ export class FormService {
       delete form.departureDate
 
       form.userId = userId
-      form.status = "Draft"
+      form.status = TravelAuthorization.Statuses.DRAFT
 
       console.log(form)
 
@@ -137,7 +137,7 @@ export class FormService {
       // This is where we would check if the form is valid
       if (true) {
         form.userId = userId
-        form.status = "Submitted"
+        form.status = TravelAuthorization.Statuses.SUBMITTED
 
         const [returnedForm, _] = await TravelAuthorization.upsert(form, {
           conflictFields: ["slug"],

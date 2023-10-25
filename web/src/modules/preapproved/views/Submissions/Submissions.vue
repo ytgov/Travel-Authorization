@@ -15,7 +15,7 @@
         <v-row>
           <div style="width: 4.5rem">
             <submit-travel
-              v-if="item.status == 'Draft' && admin"
+              v-if="item.status == 'draft' && admin"
               :preTSubID="item.preTSubID"
               :editButton="true"
               buttonName="Edit"
@@ -26,7 +26,7 @@
           </div>
           <div style="width: 6.75rem">
             <approve-travel
-              v-if="item.status == 'Submitted' && admin"
+              v-if="item.status == 'submitted' && admin"
               :travelRequests="item.preapproved"
               :submissionId="item.preTSubID"
               @updateTable="updateTable"
