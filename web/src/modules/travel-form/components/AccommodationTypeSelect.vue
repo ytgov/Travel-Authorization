@@ -50,15 +50,17 @@ export default {
       accommodationTypes: Object.values(ACCOMMODATION_TYPES),
     }
   },
-  mounted() {
-    if (isNil(this.value)) {
-      this.accommodationType = this.defaultValue
-    } else if (this.accommodationTypes.includes(this.value)) {
-      this.accommodationType = this.value
-    } else {
-      this.accommodationType = ACCOMMODATION_TYPES.OTHER
-      this.accommodationTypeOther = this.value
-    }
+  watch: {
+    value(newValue) {
+      if (isNil(newValue)) {
+        this.accommodationType = this.defaultValue
+      } else if (this.accommodationTypes.includes(newValue)) {
+        this.accommodationType = newValue
+      } else {
+        this.accommodationType = ACCOMMODATION_TYPES.OTHER
+        this.accommodationTypeOther = newValue
+      }
+    },
   },
   methods: {
     updateAccommodationType(value) {
