@@ -91,7 +91,7 @@
                   auto-grow
                   background-color="white"
                   dense
-                  label="To meet with colleagues around project x"
+                  label="Objectives"
                   outlined
                   rows="10"
                 >
