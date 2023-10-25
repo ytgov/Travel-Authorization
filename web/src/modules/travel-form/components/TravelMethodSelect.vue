@@ -43,20 +43,22 @@ export default {
     },
   },
   data() {
+    const travelMethods = Object.values(TRAVEL_METHODS)
+    const travelMethod = this.travelMethodFromValue(travelMethods, this.value)
+    const travelMethodOther = this.travelMethodOtherFromValue(travelMethods, this.value)
+
     return {
       TRAVEL_METHODS,
-      travelMethods: Object.values(TRAVEL_METHODS),
-      travelMethod: "",
-      travelMethodOther: "",
+      travelMethods,
+      travelMethod,
+      travelMethodOther,
     }
   },
-  mounted() {
-    if (this.travelMethods.includes(this.value)) {
-      this.travelMethod = this.value
-    } else {
-      this.travelMethod = TRAVEL_METHODS.OTHER
-      this.travelMethodOther = this.value
-    }
+  watch: {
+    value (newValue) {
+      this.travelMethod = this.travelMethodFromValue(this.travelMethods, newValue)
+      this.travelMethodOther = this.travelMethodOtherFromValue(this.travelMethods, newValue)
+    },
   },
   methods: {
     updateFromTravelMethod(value) {
@@ -71,6 +73,20 @@ export default {
     updateFromTravelMethodOther(value) {
       this.$emit("input", value)
       this.travelMethodOther = value
+    },
+    travelMethodFromValue(travelMethods, value) {
+      if (travelMethods.includes(value)) {
+        return value
+      }
+
+      return TRAVEL_METHODS.OTHER
+    },
+    travelMethodOtherFromValue(travelMethods, value) {
+      if (travelMethods.includes(value)) {
+        return ""
+      }
+
+      return value
     },
   },
 }
