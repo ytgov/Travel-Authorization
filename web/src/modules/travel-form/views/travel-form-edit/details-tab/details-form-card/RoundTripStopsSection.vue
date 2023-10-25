@@ -69,7 +69,7 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="destinationStop.accommodationType"
+          v-model="originStop.accommodationType"
           :rules="[required]"
           background-color="white"
           dense
@@ -147,7 +147,7 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="originStop.accommodationType"
+          v-model="destinationStop.accommodationType"
           :default-value="null"
           background-color="white"
           hint="Optional, set only if neccessary"
