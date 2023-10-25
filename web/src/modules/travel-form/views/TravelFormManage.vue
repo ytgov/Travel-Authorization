@@ -281,7 +281,7 @@ export default {
 
     await this.getForm(this.$route.params.formId);
 
-    if (this.request.requestChange && this.review == false && this.request.status == "Change Requested") {
+    if (this.request.requestChange && this.review == false && this.request.status == "change_requested") {
       this.requestChangeDisplay = true;
     }
     this.$refs.form.resetValidation();
@@ -336,7 +336,7 @@ export default {
     },
     saveForm() {
       console.log("Trying to save", this.form);
-      this.request.status = "Draft";
+      this.request.status = "draft";
       this.$refs.form.resetValidation();
       this.showError = false;
       this.request.formId = this.request.formId ? this.request.formId : this.$route.params.formId;
@@ -422,6 +422,8 @@ export default {
               this.request.stops[key].location = this.destinations.find(entry => entry.value == v.location);
             });
           } else {
+            // TODO: figure out what this status means and what object it is for
+            // It might be another name for "draft"?
             this.request.status = "New Form";
             await this.loadUser();
             this.request.dateBackToWork = this.getToday();

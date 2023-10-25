@@ -85,7 +85,7 @@
               class="elevation-1"
               hide-default-footer
             >
-              <template #item.created-at="{ item }">
+              <template #item.createdAt="{ item }">
                 <div>
                   {{ item.createdAt | beautifyDate }}
                 </div>
@@ -103,13 +103,13 @@
                 {{ item.form.branch }}
               </template>
 
-              <template #item.start-date="{ item }">
+              <template #item.startDate="{ item }">
                 <div>
                   {{ item.startDate | beautifyDate }}
                 </div>
               </template>
 
-              <template #item.end-date="{ item }">
+              <template #item.endDate="{ item }">
                 <div>
                   {{ item.form.dateBackToWork | beautifyDate }}
                 </div>

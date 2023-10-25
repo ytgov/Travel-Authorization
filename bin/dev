@@ -64,8 +64,12 @@ class DevHelper
   end
 
   # Custom helpers
+  def web(*args, **kwargs)
+    exec("cd #{project_root}/web && #{args.join(" ")}")
+  end
+
   def up_web(*args, **kwargs)
-    exec("cd #{project_root}/web && npm run start")
+    web("npm run start")
   end
 
   def psql(*args, **kwargs)

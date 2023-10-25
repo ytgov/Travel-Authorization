@@ -294,7 +294,7 @@ export default {
       return this.travelRequests?.filter(
         req =>
           !currentIDs.includes(req.preTID) &&
-          (req.status == null || req.status == "Draft") &&
+          (req.status == null || req.status == "draft") &&
           (req.department == currentDept || currentIDs.length == 0)
       );
     }
@@ -302,7 +302,7 @@ export default {
   methods: {
     extractTravelRequests() {
       this.submittingRequests = JSON.parse(
-        JSON.stringify(this.selectedRequests.filter(req => req.status == null || req.status == "Draft"))
+        JSON.stringify(this.selectedRequests.filter(req => req.status == null || req.status == "draft"))
       );
     },
 

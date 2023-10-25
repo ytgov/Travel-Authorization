@@ -6,8 +6,9 @@ import {
   LocationsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
-  TravelAuthorizationsController,
+  Qa,
   TravelAuthorizations,
+  TravelAuthorizationsController,
 } from "@/controllers"
 
 export * from "./owner-router"
@@ -36,11 +37,23 @@ router.delete("/api/expenses/:expenseId", ExpensesController.destroy)
 router.get("/api/travel-authorizations", TravelAuthorizationsController.index)
 router.post("/api/travel-authorizations", TravelAuthorizationsController.create)
 router.get("/api/travel-authorizations/:travelAuthorizationId", TravelAuthorizationsController.show)
-router.patch("/api/travel-authorizations/:travelAuthorizationId", TravelAuthorizationsController.update)
-router.post("/api/travel-authorizations/:travelAuthorizationId/estimates/generate", TravelAuthorizations.Estimates.GenerateController.create)
+router.patch(
+  "/api/travel-authorizations/:travelAuthorizationId",
+  TravelAuthorizationsController.update
+)
+router.post(
+  "/api/travel-authorizations/:travelAuthorizationId/estimates/generate",
+  TravelAuthorizations.Estimates.GenerateController.create
+)
 router.get("/api/locations", LocationsController.index)
 router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
+
+// QA testing scenarios
+router.get("/api/qa/scenarios", Qa.ScenariosController.index)
+Object.values(Qa.ScenarioTypes).forEach((scenarioType) => {
+  router.post(`/api/qa/scenarios/${scenarioType}`, Qa.Scenarios.MyTravelRequestsController.create)
+})
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {

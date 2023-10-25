@@ -108,7 +108,7 @@ export default {
         return
       }
 
-      this.currentForm.status = "Submitted"
+      this.currentForm.status = "submitted"
       return this.updateCurrentForm()
         .then(() => {
           this.$router.push({ name: "TravelFormList" })
@@ -123,7 +123,7 @@ export default {
         return
       }
 
-      this.currentForm.status = "Draft"
+      this.currentForm.status = "draft"
       return this.updateCurrentForm()
         .then(() => {
           this.$snack("Form saved as a draft", { color: "success" })

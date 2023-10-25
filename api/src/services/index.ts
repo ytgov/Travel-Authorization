@@ -9,8 +9,9 @@ export * from "./user-service"
 
 // Namespaced services
 import * as Estimates from "./estimates"
+import * as Qa from "./qa"
 
-export { Estimates }
+export { Estimates, Qa }
 
 // TODO: move these to their own files, or deprecate and remove them completely
 export interface QueryStatement {

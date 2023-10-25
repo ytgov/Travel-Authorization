@@ -29,11 +29,6 @@ export class BulkGenerate extends BaseService {
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
-  static async perform(travelAuthorizationId: number): Promise<Expense[]> {
-    const instance = new this(travelAuthorizationId)
-    return instance.perform()
-  }
-
   async perform(): Promise<Expense[]> {
     const travelAuthorization = await TravelAuthorization.findByPk(this.travelAuthorizationId)
     if (isNil(travelAuthorization)) {

@@ -792,7 +792,7 @@ export default {
     this.getCostDifference();
 
     await this.getForm(this.$route.params.formId);
-    if (this.form.requestChange && this.review == false && this.form.status == "Change Requested") {
+    if (this.form.requestChange && this.review == false && this.form.status == "change_requested") {
       this.requestChangeDisplay = true;
     }
     this.$refs.form.resetValidation();
@@ -946,7 +946,7 @@ export default {
       }
     },
     saveForm() {
-      this.form.status = "Draft";
+      this.form.status = "draft";
       this.$refs.form.resetValidation();
       this.showError = false;
       let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
@@ -1035,7 +1035,7 @@ export default {
               this.form.stops[key].travelFrom = this.destinations.find(entry => entry.value == v.travelFrom);
             });
           } else {
-            this.form.status = "Draft";
+            this.form.status = "draft";
             await this.loadUser();
             this.form.dateBackToWork = this.getToday();
             this.form.stops[0].departureDate = this.getToday();

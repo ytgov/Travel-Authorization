@@ -23,7 +23,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
   const travelRequests = await TravelDeskTravelRequest.findAll({
     where: {
       status: {
-        [Op.ne]: "draft",
+        [Op.ne]: TravelDeskTravelRequest.Statuses.DRAFT,
       },
     },
     include: [

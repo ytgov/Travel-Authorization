@@ -12,6 +12,9 @@ const DEFAULT_CONFIG = {
     // }
     directory: "./../data/migrations",
   },
+  seeds: {
+    directory: "./../data/seeds",
+  },
 }
 
 const config: { [key: string]: Knex.Config } = {
