@@ -64,14 +64,6 @@ class DevHelper
   end
 
   # Custom helpers
-  def web(*args, **kwargs)
-    exec("cd #{project_root}/web && #{args.join(" ")}")
-  end
-
-  def up_web(*args, **kwargs)
-    web("npm run start")
-  end
-
   def psql(*args, **kwargs)
     # TODO: use environment variables for this instead
     db(*%w[psql "postgresql://app:itsallgood@localhost:5432/travel_development"], *args, **kwargs)

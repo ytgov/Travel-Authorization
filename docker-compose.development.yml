@@ -28,6 +28,19 @@ services:
     depends_on:
       - db
 
+  web:
+    build:
+      context: ./web
+      dockerfile: development.Dockerfile
+    environment:
+      <<: *default-environment
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./web:/usr/src/web
+    depends_on:
+      - api
+
   db:
     image: "postgres:14.4"
     environment:
