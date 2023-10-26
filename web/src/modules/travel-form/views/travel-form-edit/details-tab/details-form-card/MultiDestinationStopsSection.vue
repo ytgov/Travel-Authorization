@@ -253,7 +253,7 @@ import TravelMethodSelect, {
 } from "@/modules/travel-form/components/TravelMethodSelect"
 
 export default {
-  name: "MuliDestinationStopsSection",
+  name: "MultiDestinationStopsSection",
   components: {
     AccommodationTypeSelect,
     DatePicker,

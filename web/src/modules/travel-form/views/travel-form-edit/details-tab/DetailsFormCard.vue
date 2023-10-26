@@ -43,7 +43,7 @@
 
         <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
         <OneWayStopsSection v-else-if="tripType === TRIP_TYPES.ONE_WAY" />
-        <MuliDestinationStopsSection v-else-if="tripType === TRIP_TYPES.MULI_DESTINATION" />
+        <MultiDestinationStopsSection v-else-if="tripType === TRIP_TYPES.MULI_DESTINATION" />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
 
         <v-row>
@@ -98,7 +98,7 @@ import { mapState, mapGetters } from "vuex"
 import { last } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
-import MuliDestinationStopsSection from "./details-form-card/MuliDestinationStopsSection"
+import MultiDestinationStopsSection from "./details-form-card/MultiDestinationStopsSection"
 import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
 import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
 
@@ -112,7 +112,7 @@ export default {
   name: "DetailsFormCard",
   components: {
     DatePicker,
-    MuliDestinationStopsSection,
+    MultiDestinationStopsSection,
     OneWayStopsSection,
     RoundTripStopsSection,
   },
