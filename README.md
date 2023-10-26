@@ -201,11 +201,9 @@ Files:
 
 - [Dockerfile](./Dockerfile)
 - [docker-compose.yml](./docker-compose.yml)
-- Various non-commited `api/.env.*` files
+- Non-commited `.env` file
 
-1. Create a `.env.development` and `.env.production` file in the `api/` directory with the appropriate values.
-
-   - [ ] TODO: investigate if additional custom environment variables are needed
+1. Create a `.env` file in top level directory with the appropriate values.
 
    ```bash
    DB_HOST="db"
@@ -215,16 +213,16 @@ Files:
    DB_NAME="travel_production"
    ```
 
-2. Duplicate the `.env.production` file to `.env` in the top level directory.
+   - [ ] TODO: investigate if additional custom environment variables are needed
 
-3. Build and boot the production image via
+2. Build and boot the production image via
 
    ```bash
    docker compose up --build
    ```
 
-4. Go to http://localhost:3000/ and log in.
+3. Go to http://localhost:3000/ and log in.
 
-5. Run the seeds via http://localhost:3000/migrate/seed.
+4. Run the seeds via http://localhost:3000/migrate/seed.
 
-6. Navigate around the app and do some stuff and see if it works.
+5. Navigate around the app and do some stuff and see if it works.
