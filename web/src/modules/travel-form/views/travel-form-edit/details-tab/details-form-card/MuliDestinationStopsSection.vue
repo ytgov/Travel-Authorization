@@ -239,7 +239,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex"
-import { isArray, isEmpty } from "lodash"
+import { isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
@@ -260,41 +260,17 @@ export default {
     TimePicker,
     TravelMethodSelect,
   },
+  data() {
+    return {
+      stop1: {},
+      stop2: {},
+      stop3: {},
+      stop4: {},
+    }
+  },
   computed: {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
-    stop1() {
-      if (isEmpty(this.currentForm?.stops)) return this.newStop()
-
-      return this.currentForm.stops[0]
-    },
-    stop2() {
-      if (
-        isEmpty(this.currentForm?.stops) ||
-        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
-      )
-        return this.newStop()
-
-      return this.currentForm.stops[1]
-    },
-    stop3() {
-      if (
-        isEmpty(this.currentForm?.stops) ||
-        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 3)
-      )
-        return this.newStop()
-
-      return this.currentForm.stops[2]
-    },
-    stop4() {
-      if (
-        isEmpty(this.currentForm?.stops) ||
-        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 4)
-      )
-        return this.newStop()
-
-      return this.currentForm.stops[3]
-    },
   },
   async mounted() {
     await this.loadDestinations()
@@ -310,6 +286,11 @@ export default {
     } else if (this.currentForm.stops.length > 4) {
       this.currentForm.stops = this.currentForm.stops.slice(0, 3)
     }
+
+    this.stop1 = this.currentForm.stops[0]
+    this.stop2 = this.currentForm.stops[1]
+    this.stop3 = this.currentForm.stops[2]
+    this.stop4 = this.currentForm.stops[3]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
