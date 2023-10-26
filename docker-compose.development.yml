@@ -2,7 +2,13 @@ version: "3"
 
 x-default-environment: &default-environment
   NODE_ENV: development
-  # TODO: move environment variables from .env.development to this location
+  AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com"
+  AUTH0_AUDIENCE: testing
+  DB_HOST: db
+  DB_NAME: &default-db-name travel_development
+  DB_PASS: &default-db-password itsallgood
+  DB_USER: &default-db-user app
+  DB_PORT: 5432
 
 services:
   api:
@@ -26,11 +32,9 @@ services:
     image: "postgres:14.4"
     environment:
       <<: *default-environment
-      # TODO: Move these variables to x-default-environment
-      # see https://github.com/icefoganalytics/elcc-data-management/blob/23a601685aa2c03217964d72f5290399bfcbb719/docker-compose.development.yaml#L9
-      POSTGRES_USER: "user"
-      POSTGRES_PASSWORD: "itsallgood"
-      POSTGRES_DB: "travel"
+      POSTGRES_USER: *default-db-user
+      POSTGRES_PASSWORD: *default-db-password
+      POSTGRES_DB: *default-db-name
     restart: always
     ports:
       - "5432:5432"
