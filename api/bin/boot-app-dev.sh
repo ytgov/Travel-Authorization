@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run migrations
-npm run knex migrate:latest
+npm run ts-node ./src/initializers/index.ts
 
 initialization_status=$?
 if [ $initialization_status -ne 0 ]; then

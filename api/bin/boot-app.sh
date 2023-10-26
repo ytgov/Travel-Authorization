@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Run migrations
-./node_modules/.bin/knex --knexfile ./dist/config.d/knexfile.js migrate:latest
+# Run initializers
+node ./dist/initializers/index.js
 
 initialization_status=$?
 if [ $initialization_status -ne 0 ]; then

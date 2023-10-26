@@ -1,4 +1,4 @@
-import path from "path";
+import path from "path"
 import * as dotenv from "dotenv"
 
 let dotEnvPath
@@ -54,6 +54,18 @@ export const DB_CONFIG = {
     port: DB_PORT,
   },
   pool: { min: 0, max: 10, idleTimeoutMillis: 1000 },
+  migrations: {
+    schemaName: "public",
+    tableName: "knex_migrations",
+    // TODO: enable once https://github.com/knex/knex/pull/5422 gets merged
+    // getNewMigrationName: (name) => {
+    //   return `${someDateFormat(...)}-${name}.ts`;
+    // }
+    directory: path.resolve(__dirname, "./data/migrations"),
+  },
+  seeds: {
+    directory: path.resolve(__dirname, "./data/seeds"),
+  },
 }
 
 export const TRAVCOM_DB_CONFIG = {
