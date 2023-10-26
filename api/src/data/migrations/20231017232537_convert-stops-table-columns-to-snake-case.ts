@@ -1,7 +1,7 @@
 import { Knex } from "knex"
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.table("stops", (table) => {
+  await knex.schema.alterTable("stops", (table) => {
     table.renameColumn("taid", "ta_id")
     table.renameColumn("locationId", "location_id")
     table.renameColumn("departureDate", "departure_date")
@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.table("stops", (table) => {
+  await knex.schema.alterTable("stops", (table) => {
     table.renameColumn("ta_id", "taid")
     table.renameColumn("location_id", "locationId")
     table.renameColumn("departure_date", "departureDate")

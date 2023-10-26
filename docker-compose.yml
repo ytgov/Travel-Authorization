@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data_production:/var/lib/postgresql/data
   web:
     build: .
     restart: unless-stopped
@@ -24,4 +24,4 @@ services:
       - "${HOST_PORT:-8088}:3000"
 
 volumes:
-  db_data:
+  db_data_production:

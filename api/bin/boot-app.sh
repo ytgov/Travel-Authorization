@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run migrations
-npm run knex migrate:latest
+./node_modules/.bin/knex --knexfile ./dist/config.d/knexfile.js migrate:latest
 
 initialization_status=$?
 if [ $initialization_status -ne 0 ]; then
