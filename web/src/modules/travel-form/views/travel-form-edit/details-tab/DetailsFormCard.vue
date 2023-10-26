@@ -41,11 +41,11 @@
           </v-col>
         </v-row>
 
-        <RoundTripStopsSection v-if="tripType === TRIP_TYPES.ROUND_TRIP" />
-        <OneWayStopsSection v-else-if="tripType === TRIP_TYPES.ONE_WAY" />
-        <MultiDestinationStopsSection v-else-if="tripType === TRIP_TYPES.MULI_DESTINATION" />
+        <component
+          v-if="tripTypeComponent"
+          :is="tripTypeComponent"
+        />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
-
         <v-row>
           <v-col
             cols="12"
@@ -98,9 +98,6 @@ import { mapState, mapGetters } from "vuex"
 import { last } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
-import MultiDestinationStopsSection from "./details-form-card/MultiDestinationStopsSection"
-import OneWayStopsSection from "./details-form-card/OneWayStopsSection"
-import RoundTripStopsSection from "./details-form-card/RoundTripStopsSection"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -112,9 +109,6 @@ export default {
   name: "DetailsFormCard",
   components: {
     DatePicker,
-    MultiDestinationStopsSection,
-    OneWayStopsSection,
-    RoundTripStopsSection,
   },
   data: () => ({
     TRIP_TYPES,
@@ -128,6 +122,18 @@ export default {
     ...mapGetters("travelForm", ["currentFormId"]),
     finalDestination() {
       return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
+    },
+    tripTypeComponent() {
+      switch (this.tripType) {
+        case TRIP_TYPES.ROUND_TRIP:
+          return () => import("./details-form-card/RoundTripStopsSection")
+        case TRIP_TYPES.ONE_WAY:
+          return () => import("./details-form-card/OneWayStopsSection")
+        case TRIP_TYPES.MULI_DESTINATION:
+          return () => import("./details-form-card/MultiDestinationStopsSection")
+        default:
+          return null
+      }
     },
   },
   mounted() {
