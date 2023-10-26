@@ -64,6 +64,7 @@ COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./web
 
 EXPOSE 3000
 
+COPY --from=api-build-stage --chown=node:node /usr/src/api/bin/boot-app.sh ./bin/
 RUN chmod +x ./bin/boot-app.sh
 
 CMD ["./bin/boot-app.sh"]

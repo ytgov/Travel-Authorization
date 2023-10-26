@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run initializers
-node ./dist/initializers/index.js
+node ./initializers/index.js
 
 initialization_status=$?
 if [ $initialization_status -ne 0 ]; then
@@ -10,4 +10,4 @@ if [ $initialization_status -ne 0 ]; then
 fi
 
 # Start the application
-node ./dist/index.js
+node ./index.js
