@@ -59,12 +59,14 @@ WORKDIR /home/node/app
 COPY --from=api-build-stage --chown=node:node /usr/src/api/package*.json ./
 RUN npm install && npm cache clean --force --loglevel=error
 
-COPY --from=api-build-stage --chown=node:node /usr/src/api/dist ./
-COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./web
+COPY --from=api-build-stage --chown=node:node /usr/src/api/dist ./dist
+COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./dist/web
 
 EXPOSE 3000
 
 COPY --from=api-build-stage --chown=node:node /usr/src/api/bin/boot-app.sh ./bin/
 RUN chmod +x ./bin/boot-app.sh
+
+COPY --chown=node:node ./.env ./.env.production
 
 CMD ["./bin/boot-app.sh"]
