@@ -43,23 +43,35 @@ export default {
     },
   },
   data() {
+    const accommodationTypes = Object.values(ACCOMMODATION_TYPES)
+    const accommodationType = this.accommodationTypeFromValue(
+      accommodationTypes,
+      this.value,
+      this.defaultValue
+    )
+    const accommodationTypeOther = this.accommodationTypeOtherFromValue(
+      accommodationTypes,
+      this.value
+    )
+
     return {
       ACCOMMODATION_TYPES,
-      accommodationType: "",
-      accommodationTypeOther: "",
-      accommodationTypes: Object.values(ACCOMMODATION_TYPES),
+      accommodationType,
+      accommodationTypeOther,
+      accommodationTypes,
     }
   },
   watch: {
     value(newValue) {
-      if (isNil(newValue)) {
-        this.accommodationType = this.defaultValue
-      } else if (this.accommodationTypes.includes(newValue)) {
-        this.accommodationType = newValue
-      } else {
-        this.accommodationType = ACCOMMODATION_TYPES.OTHER
-        this.accommodationTypeOther = newValue
-      }
+      this.accommodationType = this.accommodationTypeFromValue(
+        this.accommodationTypes,
+        newValue,
+        this.defaultValue
+      )
+      this.accommodationTypeOther = this.accommodationTypeOtherFromValue(
+        this.accommodationTypes,
+        newValue
+      )
     },
   },
   methods: {
@@ -75,6 +87,24 @@ export default {
     updateAccommodationTypeOther(value) {
       this.$emit("input", value)
       this.accommodationTypeOther = value
+    },
+    accommodationTypeFromValue(accommodationTypes, value, defaultValue) {
+      if (isNil(value)) {
+        return defaultValue
+      }
+
+      if (accommodationTypes.includes(value)) {
+        return value
+      }
+
+      return ACCOMMODATION_TYPES.OTHER
+    },
+    accommodationTypeOtherFromValue(accommodationTypes, value) {
+      if (accommodationTypes.includes(value)) {
+        return ""
+      }
+
+      return value
     },
   },
 }
