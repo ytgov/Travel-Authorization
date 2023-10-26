@@ -33,23 +33,17 @@
    ```bash
    AUTH0_DOMAIN=https://dev-0tc6bn14.eu.auth0.com
    AUTH0_AUDIENCE=testing
-
-   DB_HOST="localhost"
-   DB_PORT="5432"
-   DB_USER="user"
-   DB_PASS="itsallgood"
-   DB_NAME="travel"
    ```
 
 3. Go back to the top level directory.
 
 4. [Set up the `dev`](#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
 
-5. Boot the api and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
+5. Boot the api, web, and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
 
 6. The seeds do not, yet, run automatically. You must run them via logging in to the front-end, then going to http://localhost:3000/migrate/seed.
 
-6. Stop the api and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
+7. Stop the api, web, and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
 
 ### API Service (a.k.a back-end)
 
@@ -67,49 +61,17 @@
 
 ### Web Service (a.k.a. front-end)
 
-> This has not yet been dockerized, you must install Node and some other stuff.
-
-1. Install `asdf` as seen in https://asdf-vm.com/guide/getting-started.html.
-
-   e.g. for Linux
+1. Boot only the web service using:
 
    ```bash
-   apt install curl git
+   dev up web
 
-   git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.12.0
+   # or
 
-   echo '
-   # asdf
-   . "$HOME/.asdf/asdf.sh"
-   . "$HOME/.asdf/completions/asdf.bash"
-   ' >> ~/.bashrc
+   docker compose -f docker-compose.development.yml up web
    ```
 
-2. Install the `nodejs` plugin via and the appropriate nodejs version.
-
-   ```bash
-   asdf plugin add nodejs
-
-   # install the version from the .tool-verions file
-   asdf install nodejs
-   ```
-
-   Check that you have the correct version set up by seeing that these two commands match:
-
-   ```bash
-   asdf current nodejs
-   node -v
-   ```
-
-3. In the `web` folder.
-
-4. Install the web dependecies using `npm install`
-
-5. Start the web service via `npm start`
-
-   > If you have the `dev` command you can also boot via `dev up_web` from the root directory.
-
-6. Log in to the front-end service at http://localhost:8080
+2. Log in to the front-end service at http://localhost:8080
 
 ### DB Service (a.k.a database service)
 
@@ -134,7 +96,7 @@
 
    # or
 
-   docker compose -f docker-compose.development.yml exec db psql "postgresql://user:itsallgood@localhost:5432/travel"
+   docker compose -f docker-compose.development.yml exec db psql "postgresql://app:itsallgood@localhost:5432/travel_development"
    ```
 
 ### Troubleshooting
@@ -243,32 +205,26 @@ Files:
 
 1. Create a `.env.development` and `.env.production` file in the `api/` directory with the appropriate values.
 
-   - [ ] TODO: investigate if custom environment variables are needed
-
-   This file must have the same variables as are used in the `docker-compose.yml` file.
+   - [ ] TODO: investigate if additional custom environment variables are needed
 
    ```bash
    DB_HOST="db"
    DB_PORT="5432"
-   DB_USER="user"
+   DB_USER="app"
    DB_PASS="itsallgood"
-   DB_NAME="travel"
+   DB_NAME="travel_production"
    ```
-
-   > TODO: keep all environment variables in a shared location.
 
 2. Duplicate the `.env.production` file to `.env` in the top level directory.
 
-3. TODO: figutre out the relevant environment variables to support login
-
-4. Build and boot the production image via
+3. Build and boot the production image via
 
    ```bash
-   HOST_PORT=3000 docker compose up --build
+   docker compose up --build
    ```
 
-5. Go to http://localhost:3000/ and log in.
+4. Go to http://localhost:3000/ and log in.
 
-6. Run the seeds via http://localhost:3000/migrate/seed.
+5. Run the seeds via http://localhost:3000/migrate/seed.
 
-7. Navigate around the app and do some stuff and see if it works.
+6. Navigate around the app and do some stuff and see if it works.

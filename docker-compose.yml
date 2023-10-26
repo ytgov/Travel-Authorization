@@ -1,27 +1,29 @@
 version: "3"
 services:
-  db:
-    image: "postgres:14.4"
-    restart: always
-    environment:
-      POSTGRES_USER: "user"
-      POSTGRES_PASSWORD: "itsallgood"
-      POSTGRES_DB: "travel"
-    ports:
-      - "5432:5432"
-    volumes:
-      - db_data_production:/var/lib/postgresql/data
-  web:
+  app:
     build: .
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      - "NODE_ENV=development"
+      NODE_ENV: production
+    ports:
+      - "${HOST_PORT:-3000}:3000"
     depends_on:
       - db
+  db:
+    image: "postgres:14.4"
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_DB: "${DB_NAME}"
     ports:
-      - "${HOST_PORT:-8088}:3000"
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
 volumes:
-  db_data_production:
+  db_data:
