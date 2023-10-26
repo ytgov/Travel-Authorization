@@ -1,7 +1,7 @@
 import { Knex } from "knex"
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.table("travelDeskPnrDocuments", async (table) => {
+  await knex.schema.alterTable("travelDeskPnrDocuments", async (table) => {
     table.dropPrimary()
     table.dropForeign(["requestID"])
   })
@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
     "travel_desk_passenger_name_record_documents"
   )
 
-  await knex.schema.table("travel_desk_passenger_name_record_documents", async (table) => {
+  await knex.schema.alterTable("travel_desk_passenger_name_record_documents", async (table) => {
     table.primary(["documentID"])
     table
       .foreign("requestID")
@@ -26,7 +26,7 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.table("travel_desk_passenger_name_record_documents", async (table) => {
+  await knex.schema.alterTable("travel_desk_passenger_name_record_documents", async (table) => {
     table.dropPrimary()
     table.dropForeign(["requestID"])
   })
@@ -36,7 +36,7 @@ export async function down(knex: Knex): Promise<void> {
     "travelDeskPnrDocuments"
   )
 
-  await knex.schema.table("travelDeskPnrDocuments", async (table) => {
+  await knex.schema.alterTable("travelDeskPnrDocuments", async (table) => {
     table.primary(["documentID"])
     table
       .foreign("requestID")
