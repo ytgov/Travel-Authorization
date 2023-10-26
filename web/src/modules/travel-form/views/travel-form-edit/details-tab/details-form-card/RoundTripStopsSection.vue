@@ -69,7 +69,7 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="destinationStop.accommodationType"
+          v-model="originStop.accommodationType"
           :rules="[required]"
           background-color="white"
           dense
@@ -147,7 +147,7 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="originStop.accommodationType"
+          v-model="destinationStop.accommodationType"
           :default-value="null"
           background-color="white"
           hint="Optional, set only if neccessary"
@@ -164,7 +164,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex"
-import { isArray, isEmpty } from "lodash"
+import { isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
@@ -185,23 +185,15 @@ export default {
     TimePicker,
     TravelMethodSelect,
   },
+  data() {
+    return {
+      originStop: {},
+      destinationStop: {},
+    }
+  },
   computed: {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
-    originStop() {
-      if (isEmpty(this.currentForm?.stops)) return this.newStop()
-
-      return this.currentForm.stops[0]
-    },
-    destinationStop() {
-      if (
-        isEmpty(this.currentForm?.stops) ||
-        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
-      )
-        return this.newStop()
-
-      return this.currentForm.stops[1]
-    },
   },
   async mounted() {
     await this.loadDestinations()
@@ -214,6 +206,9 @@ export default {
       const elementsToRemove = this.currentForm.stops.length - 2
       this.currentForm.stops.splice(1, elementsToRemove)
     }
+
+    this.originStop = this.currentForm.stops[0]
+    this.destinationStop = this.currentForm.stops[1]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),

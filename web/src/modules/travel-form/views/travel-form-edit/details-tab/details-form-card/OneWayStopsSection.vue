@@ -6,7 +6,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="from.locationId"
+          v-model="originStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
@@ -22,7 +22,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="to.locationId"
+          v-model="destinationStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
@@ -38,7 +38,7 @@
         md="2"
       >
         <DatePicker
-          v-model="from.departureDate"
+          v-model="originStop.departureDate"
           :rules="[required]"
           text="Date"
           persistent-hint
@@ -49,7 +49,7 @@
         md="2"
       >
         <TimePicker
-          v-model="from.departureTime"
+          v-model="originStop.departureTime"
           :rules="[required]"
           text="Time"
           persistent-hint
@@ -60,7 +60,7 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="from.transport"
+          v-model="originStop.transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -69,7 +69,7 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="from.accommodationType"
+          v-model="originStop.accommodationType"
           :rules="[required]"
           background-color="white"
           dense
@@ -83,7 +83,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex"
-import { isArray, isEmpty } from "lodash"
+import { isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
@@ -104,23 +104,15 @@ export default {
     TimePicker,
     TravelMethodSelect,
   },
+  data() {
+    return {
+      originStop: {},
+      destinationStop: {},
+    }
+  },
   computed: {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
-    from() {
-      if (isEmpty(this.currentForm?.stops)) return this.newStop()
-
-      return this.currentForm.stops[0]
-    },
-    to() {
-      if (
-        isEmpty(this.currentForm?.stops) ||
-        (isArray(this.currentForm?.stops) && this.currentForm.stops.length < 2)
-      )
-        return this.newStop()
-
-      return this.currentForm.stops[1]
-    },
   },
   async mounted() {
     await this.loadDestinations()
@@ -133,6 +125,9 @@ export default {
       const elementsToRemove = this.currentForm.stops.length - 2
       this.currentForm.stops.splice(1, elementsToRemove)
     }
+
+    this.originStop = this.currentForm.stops[0]
+    this.destinationStop = this.currentForm.stops[1]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
