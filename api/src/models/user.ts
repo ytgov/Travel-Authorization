@@ -4,8 +4,10 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "sequelize"
 import { isNil } from "lodash"
+import moment from "moment"
 
 import sequelize from "@/db/db-client"
 
@@ -54,6 +56,17 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare static associations: {}
 
   static establishAssociations() {}
+
+  isTimeToSyncWithEmployeeDirectory(): NonAttribute<boolean> {
+    if (this.lastEmployeeDirectorySyncAt === null) {
+      return true
+    }
+
+    const current = moment.utc()
+    const lastSyncDate = moment.utc(this.lastEmployeeDirectorySyncAt)
+
+    return !current.isSame(lastSyncDate, "day")
+  }
 }
 
 User.init(

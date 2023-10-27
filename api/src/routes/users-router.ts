@@ -1,14 +1,13 @@
-import { isNull } from "lodash"
+import { isNil, isNull } from "lodash"
 import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
 import { RequiresRoleAdmin } from "@/middleware"
-import { UserService } from "@/services"
 import { RequiresRoleTdUser } from "@/middleware"
 import { User } from "@/models"
+import { YkGovernmentDirectorySyncService } from "@/services"
 
 export const userRouter = express.Router()
-const userService = new UserService()
 
 userRouter.get("/me", async (req: Request, res: Response) => {
   let person = req.user
@@ -38,14 +37,21 @@ userRouter.get("/", async (req: Request, res: Response) => {
   }
 })
 
+// TODO: move this logic int the /me endpoint
 userRouter.get("/unit", async (req: Request, res: Response) => {
-  try {
-    let unit = await userService.getUnit(req.user?.email)
-    res.status(200).json(unit)
-  } catch (error: any) {
-    console.log(error)
-    res.status(500).json("Internal Server Error")
+  const { email } = req.user
+  const user = await User.findOne({ where: { email } })
+  if (isNil(user)) {
+    return res.status(404).json({ error: `User not found for email: ${email}` })
   }
+
+  if (!user.isTimeToSyncWithEmployeeDirectory()) {
+    return res.status(200).json(user)
+  }
+
+  return YkGovernmentDirectorySyncService.perform(user).then((user) => {
+    return res.status(200).json(user)
+  })
 })
 
 userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, res: Response) => {
