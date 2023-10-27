@@ -244,8 +244,8 @@ export default {
     async loadUser(id) {
       secureGet(`${USERS_URL}/${id}`).then(resp => {
         this.user = resp.data;
-        if (this.user.is_active == 1) this.user.status = "Active";
-        else this.user.status = "Inactive";
+        if (this.user.is_active == 1) this.user.status = "active";
+        else this.user.status = "inactive";
       });
       secureGet(`${USERS_URL}/${id}/permissions`).then(resp => {
         for (let i = 0; i < resp.data.departments.length; i++) {

@@ -1,12 +1,14 @@
+import User from "../user"
+
 export interface AuthUser {
-  id: string;
-  displayName: string;
-  last_name: string;
-  first_name: string;
-  username: string;
-  email: string;
-  email_verified: boolean;
-  status: string;
+  id: string
+  displayName: string
+  last_name: string
+  first_name: string
+  username: string
+  email: string
+  email_verified: boolean
+  status: string
 }
 
 export namespace AuthUser {
@@ -19,7 +21,7 @@ export namespace AuthUser {
       username: user.preferred_username,
       email: user.email,
       email_verified: user.email_verified,
-      status: "Active"
-    };
+      status: User.Statuses.ACTIVE,
+    }
   }
 }

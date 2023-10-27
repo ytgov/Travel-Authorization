@@ -22,8 +22,8 @@ enum Roles {
 // TODO: normalize these status to snake_case
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Statuses {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
+  ACTIVE = "active",
+  INACTIVE = "inactive",
 }
 
 function isRole(role: string): role is Roles {
