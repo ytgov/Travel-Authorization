@@ -1,8 +1,5 @@
 import { Knex } from "knex"
 
-import { User } from "@/models"
-import { isNil, snakeCase } from "lodash"
-
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     WITH unnested_roles AS (
