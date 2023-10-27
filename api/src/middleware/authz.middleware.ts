@@ -4,7 +4,8 @@ import axios from "axios"
 import jwksRsa from "jwks-rsa"
 
 import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config"
-import { UserService } from "@/services"
+import { User } from "@/models"
+import { isNil } from "lodash"
 
 console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
 
@@ -23,76 +24,69 @@ export const checkJwt = jwt({
 })
 
 export async function loadUser(req: Request, res: Response, next: NextFunction) {
-  const db = new UserService()
-  let sub = req.user.sub
+  const sub = req.user.sub
   const token = req.headers.authorization || ""
 
-  let u = await db.getBySub(sub)
-
-  if (u) {
-    u.display_name = `${u.first_name} ${u.last_name}`
-    u.roles = u.roles.split(",")
+  const user = await User.findOne({ where: { sub } })
+  if (user !== null) {
+    const userAttributes = user.dataValues as any
+    userAttributes.displayName = `${userAttributes.firstName} ${userAttributes.lastName}`
+    userAttributes.roles = userAttributes.roles.split(",")
     req.user = {
       ...req.user,
-      ...u,
+      ...userAttributes,
     }
     return next()
   }
 
-  await axios
+  return axios
     .get(`${AUTH0_DOMAIN}/userinfo`, {
       headers: {
         authorization: token,
       },
     })
-    .then(async (resp) => {
-      if (resp.data && resp.data.sub) {
-        let email = resp.data.email
-        let first_name = resp.data.given_name
-        let last_name = resp.data.family_name
-
-        email = resp.data.email
-
-        let u = await db.getBySub(sub)
-
-        if (u) {
-          u.display_name = `${u.first_name} ${u.last_name}`
-          req.user = {
-            ...req.user,
-            ...u,
-          }
-        } else {
-          if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`
-
-          let eu = await db.getBySub(sub)
-
-          if (eu) {
-            eu.display_name = `${eu.first_name} ${eu.last_name}`
-            eu.sub = sub
-            // await db.update(eu._id || new ObjectId(), eu);
-
-            // console.log("UPDATE USER SUB " + email, sub, u);
-            req.user = {
-              ...req.user,
-              ...eu,
-            }
-          } else {
-            u = await db.create(sub, email, first_name, last_name, "User", "Active")
-
-            console.log("CREATING USER FOR " + email, u)
-            req.user = {
-              ...req.user,
-              ...u,
-            }
-          }
-        }
-      } else {
+    .then(async ({ data }) => {
+      if (isNil(data.sub)) {
         console.log("Payload from Auth0 is strange or failed for", req.user)
+        return res
+          .status(502)
+          .json({ message: "Payload returned from authorization service is malformed" })
       }
 
-      next()
+      const { email, given_name: firstName, family_name: lastName } = data.email
+
+      const user = await User.findOne({ where: { sub } })
+      if (!isNil(user)) {
+        const userAttributes = user.dataValues as any
+        userAttributes.displayName = `${userAttributes.firstName} ${userAttributes.lastName}`
+        req.user = {
+          ...req.user,
+          ...userAttributes,
+        }
+        return next()
+      }
+
+      const fallbackEmail = `${firstName}.${lastName}@yukon-no-email.ca`
+      const newUser = await User.create({
+        sub,
+        email: email || fallbackEmail,
+        firstName,
+        lastName,
+        roles: User.Roles.USER,
+        status: User.Statuses.ACTIVE,
+      })
+
+      const newUserAttributes = newUser.dataValues as any
+      console.log("CREATED USER FOR " + email, newUserAttributes)
+      req.user = {
+        ...req.user,
+        ...newUserAttributes,
+      }
+
+      return next()
     })
-    .catch((err) => {
-      console.log("ERROR pulling userinfo from Auth0", err)
+    .catch((error) => {
+      console.log("ERROR pulling userinfo from Auth0", error)
+      return res.status(502).json({ message: "Error pulling user info from authorization service" })
     })
 }

@@ -1,6 +1,6 @@
 export interface AuthUser {
   id: string;
-  display_name: string;
+  displayName: string;
   last_name: string;
   first_name: string;
   username: string;
@@ -13,7 +13,7 @@ export namespace AuthUser {
   export function fromOpenId(user: any): AuthUser {
     return {
       id: user.id,
-      display_name: user.name,
+      displayName: user.name,
       last_name: user.family_name,
       first_name: user.given_name,
       username: user.preferred_username,

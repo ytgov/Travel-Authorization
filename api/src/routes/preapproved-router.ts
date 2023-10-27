@@ -2,12 +2,10 @@ import express, { Request, Response } from "express";
 import { RequiresAuth, RequiresRolePatAdminOrAdmin } from "../middleware";
 import { DB_CONFIG } from "../config";
 import knex from "knex";
-import { UserService } from "../services";
 
 const db = knex(DB_CONFIG);
 
 export const preapprovedRouter = express.Router();
-const userService = new UserService();
 
 preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request, res: Response) {
   const adminQuery = function (queryBuilder: any) {
@@ -64,7 +62,7 @@ preapprovedRouter.post(
 
         if (newSubmission.department && newSubmission.status && preapprovedIds.length > 0) {
           var id = [];
-          newSubmission.submitter = req.user.display_name;
+          newSubmission.submitter = req.user.displayName;
 
           if (preTSubID > 0) {
             id = await db("preapprovedSubmissions").update(newSubmission, "preTSubID").where("preTSubID", preTSubID);

@@ -21,7 +21,7 @@ userRouter.get("/me", async (req: Request, res: Response) => {
 
 async function makeDTO(userRaw: any) {
   let dto = userRaw
-  dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`
+  dto.displayName = `${userRaw.firstName} ${userRaw.lastName}`
   //dto.roles = _.split(userRaw.roles, ",").filter(r => r.length > 0);
   //dto.access = await db.getAccessFor(userRaw.email);
   //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")

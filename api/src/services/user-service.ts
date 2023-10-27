@@ -12,37 +12,6 @@ export class UserService {
     this.db = knex(DB_CONFIG)
   }
 
-  async create(
-    sub: string,
-    email: string,
-    first_name: string,
-    last_name: string,
-    roles: string,
-    status: string
-  ): Promise<any> {
-    const existingUser = await User.findOne({ where: { email } })
-    // TODO: rebuild this method to make it either an upsert or throw an error
-    // if the user already exists
-    if (existingUser !== null) return undefined
-
-    return User.create({
-      sub,
-      email,
-      firstName: first_name,
-      lastName: last_name,
-      roles,
-      status,
-    })
-  }
-
-  async getBySub(sub: string): Promise<any> {
-    return this.db("user")
-      .where({
-        sub,
-      })
-      .first()
-  }
-
   async getAccessFor(email: string): Promise<string[]> {
     return this.db("user")
       .where({
@@ -154,7 +123,7 @@ export class UserService {
 
   async makeDTO(userRaw: any) {
     let dto = userRaw
-    dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`
+    dto.displayName = `${userRaw.firstName} ${userRaw.lastName}`
     dto.roles = split(userRaw.roles, ",").filter((r: string) => r.length > 0)
     dto.manage_mailcodes = split(userRaw.manage_mailcodes, ",").filter((r: string) => r.length > 0)
     //dto.access = await this.db.getAccessFor(userRaw.email);
