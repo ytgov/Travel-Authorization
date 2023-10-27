@@ -10,12 +10,23 @@ import { YkGovernmentDirectorySyncService } from "@/services"
 export const userRouter = express.Router()
 
 userRouter.get("/me", async (req: Request, res: Response) => {
-  let person = req.user
+  // TODO: make the req.user an actual User object
+  // will make the next few lines unnecessary
+  const { email } = req.user
+  const user = await User.findOne({ where: { email } })
+  if (isNil(user)) {
+    return res.status(401).json({ error: `Current user is unauthenticated` })
+  }
 
-  if (person)
-    return res.json({
-      data: await makeDTO(person),
-    })
+  if (!user.isTimeToSyncWithEmployeeDirectory()) {
+    const serializedUser = makeDTO(user)
+    return res.status(200).json({ user: serializedUser })
+  }
+
+  return YkGovernmentDirectorySyncService.perform(user).then((user) => {
+    const serializedUser = makeDTO(user)
+    return res.status(200).json({ user: serializedUser })
+  })
 })
 
 async function makeDTO(userRaw: any) {
@@ -35,23 +46,6 @@ userRouter.get("/", async (req: Request, res: Response) => {
     console.log(error)
     res.status(500).json("Internal Server Error")
   }
-})
-
-// TODO: move this logic int the /me endpoint
-userRouter.get("/unit", async (req: Request, res: Response) => {
-  const { email } = req.user
-  const user = await User.findOne({ where: { email } })
-  if (isNil(user)) {
-    return res.status(404).json({ error: `User not found for email: ${email}` })
-  }
-
-  if (!user.isTimeToSyncWithEmployeeDirectory()) {
-    return res.status(200).json(user)
-  }
-
-  return YkGovernmentDirectorySyncService.perform(user).then((user) => {
-    return res.status(200).json(user)
-  })
 })
 
 userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, res: Response) => {
