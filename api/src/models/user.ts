@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   Model,
 } from "sequelize"
+import { isEmpty, isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
@@ -25,6 +26,10 @@ enum Statuses {
   INACTIVE = "Inactive",
 }
 
+function isRole(role: string): role is Roles {
+  return Object.values(Roles).includes(role as Roles);
+}
+
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   static Roles = Roles
   static Statuses = Statuses
@@ -35,7 +40,7 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare status: string
   declare firstName: string | null
   declare lastName: string | null
-  declare roles: string | null
+  declare roles: string[]
   declare department: string | null
   declare createDate: CreationOptional<Date>
 
@@ -74,17 +79,19 @@ User.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    // TODO: consider making this a string array or jsonb column
     roles: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
+      type: DataTypes.ARRAY(DataTypes.STRING(255)),
+      allowNull: false,
+      defaultValue: [],
       validate: {
-        isValidRole(value: string) {
-          if (!value) return
+        isValidRole(roles: string[] | string) {
+          if (isNil(roles)) return
+          if (!Array.isArray(roles)) {
+            throw new Error("roles must be an array")
+          }
 
-          const roleArray = value.split(",").map((role) => role.trim())
-          roleArray.forEach((role: string) => {
-            if (Object.values(Roles).includes(role as any)) return
+          roles.forEach((role: string) => {
+            if (isRole(role)) return
 
             throw new Error(
               `Invalid role: ${role}. Allowed roles are: ${Object.values(Roles).join(", ")}`

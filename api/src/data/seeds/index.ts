@@ -7,9 +7,9 @@ import dbLegacy from "@/db/db-client-legacy"
 export async function seedUp() {
   console.log("Seeding")
 
-  await User.update({ roles: User.Roles.USER }, { where: {} })
+  await User.update({ roles: [User.Roles.USER] }, { where: {} })
   await User.update(
-    { roles: User.Roles.ADMIN },
+    { roles: [User.Roles.ADMIN] },
     {
       where: {
         email: [

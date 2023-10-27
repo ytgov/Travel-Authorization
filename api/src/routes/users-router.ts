@@ -56,7 +56,7 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
       where: {
         status: User.Statuses.ACTIVE,
         roles: {
-          [Op.like]: "%TdUser%",
+          [Op.contains]: [User.Roles.TD_USER],
         },
       },
     })
@@ -99,7 +99,7 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
       first_name: user.firstName,
       last_name: user.lastName,
       departments: user.department,
-      roles: user.roles?.split(","),
+      roles: user.roles,
     }
     res.status(200).json(permissions)
   } catch (error: any) {

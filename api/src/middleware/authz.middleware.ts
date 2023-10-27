@@ -72,7 +72,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
         email: email || fallbackEmail,
         firstName,
         lastName,
-        roles: User.Roles.USER,
+        roles: [User.Roles.USER],
         status: User.Statuses.ACTIVE,
       })
 

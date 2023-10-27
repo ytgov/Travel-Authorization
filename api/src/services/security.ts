@@ -8,8 +8,7 @@ export class SecurityService {
       where: {
         email,
         roles: {
-          // TODO: convert roles to a string array so using a regex is not necessary
-          [Op.regexp]: "(^Admin,)|(,Admin,)|(,Admin$)",
+          [Op.contains]: [User.Roles.ADMIN]
         },
       },
     }).then((user) => user !== null)
