@@ -5,7 +5,7 @@ import {
   InferCreationAttributes,
   Model,
 } from "sequelize"
-import { isEmpty, isNil } from "lodash"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
