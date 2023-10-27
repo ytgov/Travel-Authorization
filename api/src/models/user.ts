@@ -27,7 +27,7 @@ enum Statuses {
 }
 
 function isRole(role: string): role is Roles {
-  return Object.values(Roles).includes(role as Roles);
+  return Object.values(Roles).includes(role as Roles)
 }
 
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
@@ -42,7 +42,8 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare lastName: string | null
   declare roles: string[]
   declare department: string | null
-  declare createDate: CreationOptional<Date>
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   declare static associations: {}
 
@@ -104,19 +105,21 @@ User.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    createDate: {
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
   },
   {
-    // TODO: standardize this model, make table name plural and standardize timestamps column names
     sequelize,
     modelName: "User",
     tableName: "users",
-    createdAt: "createDate",
-    updatedAt: false,
   }
 )
 
