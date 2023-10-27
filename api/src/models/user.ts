@@ -42,6 +42,12 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare lastName: string | null
   declare roles: string[]
   declare department: string | null
+  declare division: string | null
+  declare branch: string | null
+  declare unit: string | null
+  declare mailcode: string | null
+  declare manager: string | null
+  declare lastEmployeeDirectorySyncAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
@@ -103,6 +109,30 @@ User.init(
     },
     department: {
       type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    division: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    branch: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    unit: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    mailcode: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    manager: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    lastEmployeeDirectorySyncAt: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
     createdAt: {
