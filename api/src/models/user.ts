@@ -107,7 +107,7 @@ User.init(
     // TODO: standardize this model, make table name plural and standardize timestamps column names
     sequelize,
     modelName: "User",
-    tableName: "user",
+    tableName: "users",
     createdAt: "createDate",
     updatedAt: false,
   }
