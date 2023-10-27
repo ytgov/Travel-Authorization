@@ -1,59 +1,62 @@
-import { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
+import { NextFunction, Request, Response } from "express"
+import { validationResult } from "express-validator"
 
 export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
-    return next();
+    return next()
   }
 
-  res.status(401).send("You are not authorized to view this page");
+  res.status(401).send("You are not authorized to view this page")
 }
 
 export function ReturnValidationErrors(req: Request, res: Response, next: NextFunction) {
-  const errors = validationResult(req);
+  const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
     return res.status(400).json({
-      errors: errors.array()
-    });
+      errors: errors.array(),
+    })
   }
 
-  next();
+  next()
 }
 
 export function RequiresRoleAdmin(req: Request, res: Response, next: NextFunction) {
   if (req.user && req.user.roles.indexOf("Admin") == -1) {
-    return res.status(401).send("You are not an Administrator");
+    return res.status(401).send("You are not an Administrator")
   }
 
-  next();
+  next()
 }
 
 export function RequiresAuth(req: Request, res: Response, next: NextFunction) {
   // if (req.isAuthenticated()) {
-  return next();
+  return next()
   // }
 
   // res.redirect("/api/auth/login");
 }
 
 export function RequiresRolePatAdminOrAdmin(req: Request, res: Response, next: NextFunction) {
-  if (req.user && (req.user.roles.indexOf("Admin") >= 0 || req.user.roles.indexOf("PatAdmin") >= 0)) {
-    return next();
+  if (
+    req.user &&
+    (req.user.roles.indexOf("Admin") >= 0 || req.user.roles.indexOf("PatAdmin") >= 0)
+  ) {
+    return next()
   }
-  return res.status(401).send("You are not an Administrator for Pre-Approval Travel Requests!");
+  return res.status(401).send("You are not an Administrator for Pre-Approval Travel Requests!")
 }
 
 export function RequiresRoleTdUser(req: Request, res: Response, next: NextFunction) {
   if (req.user && req.user.roles.indexOf("TdUser") >= 0) {
-    return next();
+    return next()
   }
-  return res.status(401).send("You are not a Travel Desk User!");
+  return res.status(401).send("You are not a Travel Desk User!")
 }
 
 export function RequiresRoleTdUserOrAdmin(req: Request, res: Response, next: NextFunction) {
   if (req.user && (req.user.roles.indexOf("Admin") >= 0 || req.user.roles.indexOf("TdUser") >= 0)) {
-    return next();
+    return next()
   }
-  return res.status(401).send("You are not an Administrator or Travel Desk User!");
+  return res.status(401).send("You are not an Administrator or Travel Desk User!")
 }
