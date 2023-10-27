@@ -1,18 +1,26 @@
 import { isNull } from "lodash"
+import { Op } from "sequelize"
 
-import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose } from "@/models"
+import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose, User } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
 export async function seedUp() {
   console.log("Seeding")
 
-  await dbLegacy("user").update({ roles: "User" }).whereRaw("1=1")
-  await dbLegacy("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" })
-  await dbLegacy("user").update({ roles: "Admin" }).where({ email: "dpdavids@ynet.gov.yk.ca" })
-  await dbLegacy("user")
-    .update({ roles: "Admin" })
-    .where({ email: "hassan.anvar@pacificintelligent.com" })
+  await User.update({ roles: "User" }, { where: {} })
+  await User.update(
+    { roles: "Admin" },
+    {
+      where: {
+        email: [
+          "Max.parker@yukon.ca",
+          "dpdavids@ynet.gov.yk.ca",
+          "hassan.anvar@pacificintelligent.com",
+        ],
+      },
+    }
+  )
 
   await dbLegacy("roles").delete().whereRaw("1=1")
   await dbLegacy("roles").insert([

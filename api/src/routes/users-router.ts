@@ -1,11 +1,13 @@
-import express, { Request, Response } from "express"
-import { DB_CONFIG } from "../config"
+import { isNull } from "lodash"
+import { Op } from "sequelize"
 import knex from "knex"
-import { ReturnValidationErrors, RequiresRoleAdmin } from "../middleware"
-import { param, query } from "express-validator"
-import { loadUser, checkJwt } from "../middleware/authz.middleware"
-import { UserService } from "../services"
-import { RequiresRoleTdUser } from "../middleware"
+import express, { Request, Response } from "express"
+
+import { DB_CONFIG } from "@/config"
+import { RequiresRoleAdmin } from "@/middleware"
+import { UserService } from "@/services"
+import { RequiresRoleTdUser } from "@/middleware"
+import { User } from "@/models"
 
 export const userRouter = express.Router()
 const db = knex(DB_CONFIG)
@@ -52,10 +54,16 @@ userRouter.get("/unit", async (req: Request, res: Response) => {
 
 userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, res: Response) => {
   try {
-    const users = await db("user")
-      .select("email", "first_name", "last_name")
-      .where("status", "=", "Active")
-      .andWhereLike("roles", "%TdUser%")
+    // TODO: update the front-end so renaming is no longer needed
+    const users = await User.findAll({
+      attributes: ["email", ["firstName", "first_name"], ["lastName", "last_name"]],
+      where: {
+        status: User.Statuses.ACTIVE,
+        roles: {
+          [Op.like]: "%TdUser%",
+        },
+      },
+    })
 
     res.status(200).json(users)
   } catch (error: any) {
@@ -84,16 +92,15 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
   try {
     // let departments = await userService.getDepartmentAccess(req.params.id);
     // let roles = await userService.getRoleAccess(req.params.id);
-    const user = await db("user")
-      .select("*")
-      .where({
-        id: req.params.id,
-      })
-      .first()
+    const user = await User.findByPk(req.params.id)
+    if (isNull(user)) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
     console.log(user)
     let permissions = {
-      first_name: user.first_name,
-      last_name: user.last_name,
+      first_name: user.firstName,
+      last_name: user.lastName,
       departments: user.department,
       roles: user.roles?.split(","),
     }

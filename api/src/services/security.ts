@@ -1,27 +1,17 @@
-import knex, { Knex } from "knex";
-import { DB_CONFIG } from "../config";
-import _, { map } from "lodash";
-import axios from "axios";
-import { timeStamp } from "console";
+import { Op } from "sequelize"
+
+import { User } from "@/models"
+
 export class SecurityService {
-  private db: Knex;
-
-  constructor() {
-    this.db = knex(DB_CONFIG);
-  }
-
-  async isAdmin(email: string): Promise<any | undefined> {
-    try {      
-      await this.db.transaction(async (trx: any) => {
-        let user = await this.db("user").select("roles").where("email", "=", email).first().transacting(trx);
-
-        if (user.find("Admin")) {
-          return true;
-        }
-        return false;
-      });
-    } catch (error: any) {
-      console.log(error);
-    }
+  async isAdmin(email: string): Promise<boolean> {
+    return User.findOne({
+      where: {
+        email,
+        roles: {
+          // TODO: convert roles to a string array so using a regex is not necessary
+          [Op.regexp]: "(^Admin,)|(,Admin,)|(,Admin$)",
+        },
+      },
+    }).then((user) => user !== null)
   }
 }
