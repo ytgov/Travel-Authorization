@@ -1,10 +1,11 @@
 import { isString, upperFirst, omit } from "lodash"
 
-import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls"
+import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
 import expensesApi from "@/apis/expenses-api"
 import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
 import locationsApi from "@/apis/locations-api"
+import usersApi from "@/apis/users-api"
 
 const state = {
   departments: [],
@@ -122,29 +123,27 @@ const actions = {
   },
   loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true
-    return Promise.all([secureGet(`${USERS_URL}/me`), secureGet(`${USERS_URL}/unit`)])
-      .then(([{ data: userData }, { data: unitData }]) => {
-        const user = userData.data
-        commit("SET_CURRENT_USER", {
-          id: user.id,
-          firstName: upperFirst(user.first_name),
-          lastName: upperFirst(user.last_name),
-          email: user.email,
-          department: user.department || unitData.department,
-          division: unitData.division,
-          branch: unitData.branch,
-          unit: unitData.unit,
-          mailcode: unitData.mailcode,
-        })
-        commit("SET_FORM", {
-          ...state.request,
-          ...omit(state.currentUser, "id"),
-        })
-        return state.currentUser
+    return usersApi.then(({ user }) => {
+      commit("SET_CURRENT_USER", {
+        id: user.id,
+        firstName: upperFirst(user.firstName),
+        lastName: upperFirst(user.lastName),
+        email: user.email,
+        department: user.department,
+        division: user.division,
+        branch: user.branch,
+        unit: user.unit,
+        mailcode: user.mailcode,
       })
-      .finally(() => {
-        state.loadingCurrentUser = false
+      commit("SET_FORM", {
+        ...state.request,
+        ...omit(state.currentUser, "id"),
       })
+      return state.currentUser
+    })
+    .finally(() => {
+      state.loadingCurrentUser = false
+    })
   },
   loadUser({ dispatch }) {
     console.warn("Deprecated: use loadCurrentUser instead.")

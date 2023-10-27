@@ -948,12 +948,16 @@
 </template>
 
 <script>
-import { FORM_URL, LOOKUP_URL, USERS_URL } from "../../urls"
-import { secureGet, securePost } from "@/store/jwt"
-import locationsApi from "@/apis/locations-api"
+import { upperFirst } from 'lodash'
 
-import ExpenseList from "./ExpenseList.vue"
-import TripReport from "./TripReport.vue"
+import { FORM_URL, LOOKUP_URL } from "@/urls"
+import { secureGet, securePost } from "@/store/jwt"
+
+import locationsApi from "@/apis/locations-api"
+import usersApi from "@/apis/users-api"
+
+import ExpenseList from "./ExpenseList"
+import TripReport from "./TripReport"
 
 export default {
   name: "Form",
@@ -1164,23 +1168,20 @@ export default {
     },
     //secureGets
     async loadUser() {
-      await secureGet(`${USERS_URL}/me`).then((resp) => {
-        this.user = resp.data.data
-        this.form.firstName =
-          this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1)
-        this.form.lastName = this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1)
-        this.form.email = this.user.email
-        return resp.data
+      return usersApi.then(({ user }) => {
+        this.user = user
+
+        this.form.firstName = upperFirst(user.firstName)
+        this.form.lastName = upperFirst(user.lastName)
+        this.form.email = user.email
+        this.form.department = user.department
+        this.form.division = user.division
+        this.form.branch = user.branch
+        this.form.unit = user.unit
+        this.form.mailcode = user.mailcode
+
+        return this.user
       })
-      await secureGet(`${USERS_URL}/unit`).then((resp) => {
-        this.form.department = resp.data.department
-        this.form.division = resp.data.division
-        this.form.branch = resp.data.branch
-        this.form.unit = resp.data.unit
-        this.form.mailcode = resp.data.mailcode
-        return resp.data
-      })
-      return
     },
     async loadEmails() {
       return secureGet(`${LOOKUP_URL}/emailList`).then((resp) => {

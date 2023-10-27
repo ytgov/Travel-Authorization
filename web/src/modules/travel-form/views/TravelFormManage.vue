@@ -329,8 +329,9 @@
 
 <script>
 import { mapActions, mapState } from "vuex"
+import { upperFirst } from "lodash"
 
-import { FORM_URL, LOOKUP_URL, USERS_URL } from "@/urls"
+import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "../../../store/jwt"
 import ExpenseList from "../components/ExpenseList"
 import TripReport from "../components/TripReport"
@@ -340,6 +341,7 @@ import StopsFormManage from "../components/StopsFormManage"
 import TravelDetailsForm from "../components/TravelDetailsForm"
 
 import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
+import usersApi from "@/apis/users-api"
 
 export default {
   name: "TravelForm",
@@ -519,24 +521,20 @@ export default {
     },
     //secureGets
     async loadUser() {
-      await secureGet(`${USERS_URL}/me`).then((resp) => {
-        this.user = resp.data.data
-        this.request.firstName =
-          this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1)
-        this.request.lastName =
-          this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1)
-        this.request.email = this.user.email
-        return resp.data
+      return usersApi.then(({ user }) => {
+        this.user = user
+
+        this.request.firstName = upperFirst(user.firstName)
+        this.request.lastName = upperFirst(user.lastName)
+        this.request.email = user.email
+        this.request.department = user.department
+        this.request.division = user.division
+        this.request.branch = user.branch
+        this.request.unit = user.unit
+        this.request.mailcode = user.mailcode
+
+        return this.user
       })
-      /* await secureGet(`${USERS_URL}/unit`).then((resp) => {
-        this.request.department = resp.data.department;
-        this.request.division = resp.data.division;
-        this.request.branch = resp.data.branch;
-        this.request.unit = resp.data.unit;
-        this.request.mailcode = resp.data.mailcode;
-        return resp.data;
-      }); */
-      return
     },
     async loadEmails() {
       return secureGet(`${LOOKUP_URL}/emailList?email=${this.emailSearch}`).then((resp) => {
