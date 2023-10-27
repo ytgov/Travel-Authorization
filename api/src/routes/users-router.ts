@@ -1,16 +1,13 @@
 import { isNull } from "lodash"
 import { Op } from "sequelize"
-import knex from "knex"
 import express, { Request, Response } from "express"
 
-import { DB_CONFIG } from "@/config"
 import { RequiresRoleAdmin } from "@/middleware"
 import { UserService } from "@/services"
 import { RequiresRoleTdUser } from "@/middleware"
 import { User } from "@/models"
 
 export const userRouter = express.Router()
-const db = knex(DB_CONFIG)
 const userService = new UserService()
 
 userRouter.get("/me", async (req: Request, res: Response) => {
@@ -34,7 +31,7 @@ async function makeDTO(userRaw: any) {
 
 userRouter.get("/", async (req: Request, res: Response) => {
   try {
-    let users = await userService.getAll()
+    let users = await User.findAll()
     res.status(200).json(users)
   } catch (error: any) {
     console.log(error)
@@ -75,10 +72,13 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
 userRouter.put("/:id/permissions", RequiresRoleAdmin, async (req: Request, res: Response) => {
   try {
     console.log("body", req.body)
-    await userService.updateById(req.params.id, {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-    })
+    await User.update(
+      {
+        firstName: req.body.first_name,
+        lastName: req.body.last_name,
+      },
+      { where: { id: req.params.id } }
+    )
     await userService.saveDepartmentAccess(req.params.id, req.body.departments)
     await userService.saveRoleAccess(req.params.id, req.body.roles)
     res.status(200).json("Saved permissions")
@@ -113,8 +113,12 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
   try {
-    let users = await userService.getById(req.params.id)
-    res.status(200).json(users)
+    const user = User.findByPk(req.params.id)
+    if (isNull(user)) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    res.status(200).json(user)
   } catch (error: any) {
     console.log(error)
     res.status(500).json("Internal Server Error")

@@ -1,8 +1,9 @@
 import knex, { Knex } from "knex"
 import axios from "axios"
-import { isEmpty, split } from "lodash"
+import { isEmpty, last, split } from "lodash"
 
 import { AZURE_KEY, DB_CONFIG } from "@/config"
+import { User } from "@/models"
 
 export class UserService {
   private db: Knex
@@ -19,61 +20,23 @@ export class UserService {
     roles: string,
     status: string
   ): Promise<any> {
-    let existing = await this.db("user")
-      .where({
-        email,
-      })
-      .count("email as cnt")
+    const existingUser = await User.findOne({ where: { email } })
+    // TODO: rebuild this method to make it either an upsert or throw an error
+    // if the user already exists
+    if (existingUser !== null) return undefined
 
-    if (existing[0].cnt > 0) return undefined
-
-    let user = {
+    return User.create({
       sub,
       email,
-      first_name,
-      last_name,
+      firstName: first_name,
+      lastName: last_name,
       roles,
       status,
-      create_date: new Date(),
-    }
-
-    return await this.db("user").insert(user)
+    })
   }
 
-  async updateByEmail(email: string, item: any) {
-    return this.db("user")
-      .where({
-        email,
-      })
-      .update(item)
-  }
-
-  async updateById(id: string, item: any) {
-    return this.db("user")
-      .where({
-        id,
-      })
-      .update(item)
-  }
-
-  async getAll() {
-    return this.db("user")
-  }
-
-  async getByEmail(email: string): Promise<any | undefined> {
-    return this.db("user")
-      .where({
-        email,
-      })
-      .first()
-  }
-
-  async getById(id: string): Promise<any | undefined> {
-    return this.db("user")
-      .where({
-        id,
-      })
-      .first()
+  async getByEmail(email: string): Promise<User | null> {
+    return User.findOne({ where: { email } })
   }
 
   async getBySub(sub: string): Promise<any> {
@@ -197,9 +160,7 @@ export class UserService {
     let dto = userRaw
     dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`
     dto.roles = split(userRaw.roles, ",").filter((r: string) => r.length > 0)
-    dto.manage_mailcodes = split(userRaw.manage_mailcodes, ",").filter(
-      (r: string) => r.length > 0
-    )
+    dto.manage_mailcodes = split(userRaw.manage_mailcodes, ",").filter((r: string) => r.length > 0)
     //dto.access = await this.db.getAccessFor(userRaw.email);
     //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")
 
