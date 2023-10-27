@@ -119,7 +119,7 @@ export class TravelAuthorizationsController extends BaseController {
         .json({ message: "You are not authorized to update this travelAuthorization." })
     }
 
-    return TravelAuthorizationsService.update(this.params.travelAuthorizationId, this.request.body)
+    return TravelAuthorizationsService.update(travelAuthorization, this.request.body)
       .then((travelAuthorization) => {
         this.response.json({ travelAuthorization })
       })
