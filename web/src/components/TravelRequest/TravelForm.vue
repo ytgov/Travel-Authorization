@@ -1143,7 +1143,7 @@ export default {
       this.showError = false
       let formId = this.form.formId ? this.form.formId : this.$route.params.formId
 
-      securePost(`${FORM_URL}/${formId}/save`, this.form).then((resp) => {
+      securePost(`${FORM_URL}/${formId}/save`, this.form).then(() => {
         this.apiSuccess = "Form saved as a draft"
         this.snackbar = true
       })
