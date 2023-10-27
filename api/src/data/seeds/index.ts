@@ -22,7 +22,7 @@ export async function seedUp() {
   )
 
   await dbLegacy("roles").delete().whereRaw("1=1")
-  await dbLegacy("roles").insert(Object.values(User.Roles))
+  await dbLegacy("roles").insert(Object.values(User.Roles).map((role) => ({ name: role })))
 
   await TravelAuthorization.destroy({ where: {} })
   await dbLegacy("travelPurpose").delete().whereRaw("1=1")
