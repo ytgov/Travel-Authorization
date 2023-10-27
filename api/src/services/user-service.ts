@@ -1,13 +1,14 @@
-import knex, { Knex } from "knex";
-import { AZURE_KEY, DB_CONFIG } from "../config";
-import _, { isEmpty, map } from "lodash";
-import axios from "axios";
-import { timeStamp } from "console";
+import knex, { Knex } from "knex"
+import axios from "axios"
+import { isEmpty, split } from "lodash"
+
+import { AZURE_KEY, DB_CONFIG } from "@/config"
+
 export class UserService {
-  private db: Knex;
+  private db: Knex
 
   constructor() {
-    this.db = knex(DB_CONFIG);
+    this.db = knex(DB_CONFIG)
   }
 
   async create(
@@ -22,9 +23,9 @@ export class UserService {
       .where({
         email,
       })
-      .count("email as cnt");
+      .count("email as cnt")
 
-    if (existing[0].cnt > 0) return undefined;
+    if (existing[0].cnt > 0) return undefined
 
     let user = {
       sub,
@@ -34,9 +35,9 @@ export class UserService {
       roles,
       status,
       create_date: new Date(),
-    };
+    }
 
-    return await this.db("user").insert(user);
+    return await this.db("user").insert(user)
   }
 
   async updateByEmail(email: string, item: any) {
@@ -44,7 +45,7 @@ export class UserService {
       .where({
         email,
       })
-      .update(item);
+      .update(item)
   }
 
   async updateById(id: string, item: any) {
@@ -52,11 +53,11 @@ export class UserService {
       .where({
         id,
       })
-      .update(item);
+      .update(item)
   }
 
   async getAll() {
-    return this.db("user");
+    return this.db("user")
   }
 
   async getByEmail(email: string): Promise<any | undefined> {
@@ -64,7 +65,7 @@ export class UserService {
       .where({
         email,
       })
-      .first();
+      .first()
   }
 
   async getById(id: string): Promise<any | undefined> {
@@ -72,7 +73,7 @@ export class UserService {
       .where({
         id,
       })
-      .first();
+      .first()
   }
 
   async getBySub(sub: string): Promise<any> {
@@ -80,7 +81,7 @@ export class UserService {
       .where({
         sub,
       })
-      .first();
+      .first()
   }
 
   async getAccessFor(email: string): Promise<string[]> {
@@ -88,7 +89,7 @@ export class UserService {
       .where({
         email,
       })
-      .select("roles");
+      .select("roles")
   }
 
   async setAccess(email: string, access: string[]) {
@@ -98,11 +99,11 @@ export class UserService {
       })
       .update({
         roles: access,
-      });
+      })
   }
 
   async getDepartmentAccess(id: string): Promise<number[]> {
-    return this.db("departmentassignments").where("userid", "=", id).select("*");
+    return this.db("departmentassignments").where("userid", "=", id).select("*")
   }
 
   async saveDepartmentAccess(id: string, department: string) {
@@ -113,10 +114,10 @@ export class UserService {
             department: department,
           })
           .where("id", id)
-          .transacting(trx);
-      });
+          .transacting(trx)
+      })
     } catch (error: any) {
-      console.log(error);
+      console.log(error)
     }
     // await this.db('departmentassignments').where('userid', '=', id).del();
     // if (access) {
@@ -129,7 +130,7 @@ export class UserService {
   }
 
   async getRoleAccess(id: string): Promise<number[]> {
-    return this.db("roleassignments").where("userid", "=", id).select("*");
+    return this.db("roleassignments").where("userid", "=", id).select("*")
   }
 
   async saveRoleAccess(id: string, roles: string[]) {
@@ -140,10 +141,10 @@ export class UserService {
             roles: roles.join(),
           })
           .where("id", id)
-          .transacting(trx);
-      });
+          .transacting(trx)
+      })
     } catch (error: any) {
-      console.log(error);
+      console.log(error)
     }
     // await this.db('roleassignments').where('userid', '=', id).del();
     // if (access) {
@@ -178,7 +179,7 @@ export class UserService {
       unit: "",
       mailcode: "",
       manager: "",
-    };
+    }
     if (unitSearch) {
       unit = {
         department: unitSearch.department || "",
@@ -187,20 +188,22 @@ export class UserService {
         unit: unitSearch.unit || "",
         mailcode: unitSearch.mailcode || "",
         manager: unitSearch.manager || "",
-      };
+      }
     }
-    return unit;
+    return unit
   }
 
   async makeDTO(userRaw: any) {
-    let dto = userRaw;
-    dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`;
-    dto.roles = _.split(userRaw.roles, ",").filter((r: string) => r.length > 0);
-    dto.manage_mailcodes = _.split(userRaw.manage_mailcodes, ",").filter((r: string) => r.length > 0);
+    let dto = userRaw
+    dto.display_name = `${userRaw.first_name} ${userRaw.last_name}`
+    dto.roles = split(userRaw.roles, ",").filter((r: string) => r.length > 0)
+    dto.manage_mailcodes = split(userRaw.manage_mailcodes, ",").filter(
+      (r: string) => r.length > 0
+    )
     //dto.access = await this.db.getAccessFor(userRaw.email);
     //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")
 
-    return dto;
+    return dto
   }
 
   isConnected(): Promise<boolean> {
@@ -209,15 +212,15 @@ export class UserService {
         .raw("SELECT 'Connected' as [working]")
         .then((data: Array<any>) => {
           if (data && data.length == 1) {
-            resolve(data[0].working === "Connected");
+            resolve(data[0].working === "Connected")
           }
 
-          resolve(false);
+          resolve(false)
         })
         .catch((err: Error) => {
-          console.error(err);
-          resolve(false);
-        });
-    });
+          console.error(err)
+          resolve(false)
+        })
+    })
   }
 }
