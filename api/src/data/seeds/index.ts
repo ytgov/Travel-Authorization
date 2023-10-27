@@ -1,5 +1,4 @@
 import { isNull } from "lodash"
-import { Op } from "sequelize"
 
 import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose, User } from "@/models"
 

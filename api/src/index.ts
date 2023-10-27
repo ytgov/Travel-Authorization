@@ -4,8 +4,6 @@ import path from "path";
 import helmet from "helmet";
 
 import * as config from "./config";
-import { doHealthCheck } from "./utils/healthCheck";
-import { RequiresAuth } from "./middleware";
 import { CreateMigrationRoutes } from "./data";
 
 import {

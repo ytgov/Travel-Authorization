@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
-import { DB_HOST } from "@/config";
 
 export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
@@ -28,15 +27,6 @@ export function RequiresRoleAdmin(req: Request, res: Response, next: NextFunctio
   }
 
   next();
-}
-
-export async function doHealthCheck(req: Request, res: Response) {
-  //let dbConnected = await data.isConnected();
-
-  //if (!dbConnected)
-  //    return res.status(500).send(`Not able to connect to <strong>MONGODB</strong> database on <strong>${MONGO_HOST}</strong>.`);
-
-  res.send(`Connection to database on '<strong>${DB_HOST}</strong>' is connected and functioning.`);
 }
 
 export function RequiresAuth(req: Request, res: Response, next: NextFunction) {
