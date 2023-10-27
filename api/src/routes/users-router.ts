@@ -19,21 +19,19 @@ userRouter.get("/me", async (req: Request, res: Response) => {
   }
 
   if (!user.isTimeToSyncWithEmployeeDirectory()) {
-    const serializedUser = makeDTO(user)
+    const serializedUser = makeDTO(user.dataValues)
     return res.status(200).json({ user: serializedUser })
   }
 
   return YkGovernmentDirectorySyncService.perform(user).then((user) => {
-    const serializedUser = makeDTO(user)
+    const serializedUser = makeDTO(user.dataValues)
     return res.status(200).json({ user: serializedUser })
   })
 })
 
-async function makeDTO(userRaw: any) {
+function makeDTO(userRaw: any) {
   let dto = userRaw
   dto.displayName = `${userRaw.firstName} ${userRaw.lastName}`
-  //dto.roles = _.split(userRaw.roles, ",").filter(r => r.length > 0);
-  //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")
 
   return dto
 }
