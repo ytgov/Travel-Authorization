@@ -35,10 +35,6 @@ export class UserService {
     })
   }
 
-  async getByEmail(email: string): Promise<User | null> {
-    return User.findOne({ where: { email } })
-  }
-
   async getBySub(sub: string): Promise<any> {
     return this.db("user")
       .where({

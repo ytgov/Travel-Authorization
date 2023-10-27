@@ -4,8 +4,8 @@ import express, { Request, Response } from "express"
 
 import { ReturnValidationErrors } from "@/middleware"
 
-import { UserService, FormService, AuditService } from "@/services"
-import { Expense, TravelAuthorization } from "@/models"
+import { FormService, AuditService } from "@/services"
+import { Expense, TravelAuthorization, User } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
@@ -30,7 +30,6 @@ function resetPgDateParsers() {
 resetPgDateParsers()
 
 export const formRouter = express.Router()
-const userService = new UserService()
 const formService = new FormService()
 const auditService = new AuditService()
 
@@ -38,7 +37,11 @@ const auditService = new AuditService()
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
   console.warn("DEPRECATED: prefer /api/forms instead")
   try {
-    let user = await userService.getByEmail(req.user.email)
+    const user = await User.findOne({ where: { email: req.user.email } })
+    if (isNull(user)) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
     const forms = await TravelAuthorization.findAll({
       where: { userId: user.id },
       include: ["stops"],
@@ -68,10 +71,13 @@ formRouter.get(
   "/upcomingTrips",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    //let user = await userService.getByEmail(req.user.email);
-    let user = await userService.getByEmail("Max.parker@yukon.ca")
+    const user = await User.findOne({ where: { email: req.user.email } })
+    if (isNull(user)) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
     try {
-      const form = await TravelAuthorization.findOne()
+      const form = await TravelAuthorization.findOne({ where: { userId: user.id } })
       if (isNull(form)) {
         return res.status(404).json({ message: "No upcoming trips found" })
       }
@@ -87,7 +93,11 @@ formRouter.get(
 //Get one of your own forms
 formRouter.get("/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    let user = await userService.getByEmail(req.user.email)
+    const user = await User.findOne({ where: { email: req.user.email } })
+    if (isNull(user)) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
     let form = await formService.getForm(req.params.formId)
 
     if (form && form.userId === user.id) {
@@ -111,7 +121,10 @@ formRouter.post(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      let user = await userService.getByEmail(req.user.email)
+      const user = await User.findOne({ where: { email: req.user.email } })
+      if (isNull(user)) {
+        return res.status(404).json({ message: "User not found" })
+      }
       let form = await formService.getForm(req.params.formId)
 
       if (!form || (form && form.userId === user.id)) {
@@ -149,7 +162,10 @@ formRouter.post(
     )
     try {
       await dbLegacy.transaction(async (trx) => {
-        let user = await userService.getByEmail(req.user.email)
+        const user = await User.findOne({ where: { email: req.user.email } })
+        if (isNull(user)) {
+          return res.status(404).json({ message: "User not found" })
+        }
         let form = await formService.getForm(req.params.formId)
 
         if (!form || (form && form.userId === user.id)) {
@@ -187,7 +203,10 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        let user = await userService.getByEmail(req.user.email)
+        const user = await User.findOne({ where: { email: req.user.email } })
+        if (isNull(user)) {
+          return res.status(404).json({ message: "User not found" })
+        }
 
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
@@ -228,7 +247,10 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        let user = await userService.getByEmail(req.user.email)
+        const user = await User.findOne({ where: { email: req.user.email } })
+        if (isNull(user)) {
+          return res.status(404).json({ message: "User not found" })
+        }
 
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
@@ -268,7 +290,10 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        let user = await userService.getByEmail(req.user.email)
+        const user = await User.findOne({ where: { email: req.user.email } })
+        if (isNull(user)) {
+          return res.status(404).json({ message: "User not found" })
+        }
 
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
@@ -312,7 +337,10 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        let user = await userService.getByEmail(req.user.email)
+        const user = await User.findOne({ where: { email: req.user.email } })
+        if (isNull(user)) {
+          return res.status(404).json({ message: "User not found" })
+        }
 
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
@@ -352,7 +380,10 @@ formRouter.post(
 //SHould just hide it in db with staus change
 formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    let user = await userService.getByEmail(req.user.email)
+    const user = await User.findOne({ where: { email: req.user.email } })
+    if (isNull(user)) {
+      return res.status(404).json({ message: "User not found" })
+    }
 
     const form = await TravelAuthorization.findOne({
       where: {
@@ -480,24 +511,21 @@ formRouter.post(
   "/:formId/report/save",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    let user = await userService.getByEmail(req.user.email)
     try {
-      await dbLegacy.transaction(async (trx) => {
-        const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
-        if (isNull(form)) {
-          return res.status(404).json({ message: "Form not found" })
-        }
+      const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
+      if (isNull(form)) {
+        return res.status(404).json({ message: "Form not found" })
+      }
 
-        let reportInsert = {
-          ...req.body,
-          reportStatus: "Submitted",
-          taid: form.id,
-        }
+      let reportInsert = {
+        ...req.body,
+        reportStatus: "Submitted",
+        taid: form.id,
+      }
 
-        let id = await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge()
+      await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge()
 
-        res.status(200).json("Updated report successful")
-      })
+      res.status(200).json("Updated report successful")
     } catch (error: any) {
       console.log(error)
       res.status(500).json("Update failed")
