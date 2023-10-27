@@ -23,7 +23,6 @@ async function makeDTO(userRaw: any) {
   let dto = userRaw
   dto.displayName = `${userRaw.firstName} ${userRaw.lastName}`
   //dto.roles = _.split(userRaw.roles, ",").filter(r => r.length > 0);
-  //dto.access = await db.getAccessFor(userRaw.email);
   //dto.display_access = _.join(dto.access.map((a: any) => a.level), ", ")
 
   return dto
@@ -76,11 +75,11 @@ userRouter.put("/:id/permissions", RequiresRoleAdmin, async (req: Request, res: 
       {
         firstName: req.body.first_name,
         lastName: req.body.last_name,
+        department: req.body.departments,
+        roles: req.body.roles.join(","),
       },
       { where: { id: req.params.id } }
     )
-    await userService.saveDepartmentAccess(req.params.id, req.body.departments)
-    await userService.saveRoleAccess(req.params.id, req.body.roles)
     res.status(200).json("Saved permissions")
   } catch (error: any) {
     console.log(error)
@@ -90,8 +89,6 @@ userRouter.put("/:id/permissions", RequiresRoleAdmin, async (req: Request, res: 
 
 userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
   try {
-    // let departments = await userService.getDepartmentAccess(req.params.id);
-    // let roles = await userService.getRoleAccess(req.params.id);
     const user = await User.findByPk(req.params.id)
     if (isNull(user)) {
       return res.status(404).json({ message: "User not found" })
