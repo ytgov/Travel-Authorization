@@ -1,97 +1,98 @@
-import { NextFunction, Request, Response } from "express";
-import jwt from "express-jwt";
-import axios from "axios";
-import jwksRsa from "jwks-rsa";
-import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config";
-import { UserService } from "@/services";
+import { NextFunction, Request, Response } from "express"
+import jwt from "express-jwt"
+import axios from "axios"
+import jwksRsa from "jwks-rsa"
 
-console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`);
+import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config"
+import { UserService } from "@/services"
+
+console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
 
 export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri: `${AUTH0_DOMAIN}/.well-known/jwks.json`
+    jwksUri: `${AUTH0_DOMAIN}/.well-known/jwks.json`,
   }),
 
   // Validate the audience and the issuer.
   audience: AUTH0_AUDIENCE,
   issuer: [`${AUTH0_DOMAIN}/`],
-  algorithms: ["RS256"]
-});
+  algorithms: ["RS256"],
+})
 
 export async function loadUser(req: Request, res: Response, next: NextFunction) {
-  const db = new UserService();
-  let sub = req.user.sub;
-  const token = req.headers.authorization || "";
+  const db = new UserService()
+  let sub = req.user.sub
+  const token = req.headers.authorization || ""
 
-  let u = await db.getBySub(sub);
+  let u = await db.getBySub(sub)
 
   if (u) {
-    u.display_name = `${u.first_name} ${u.last_name}`;
-    u.roles = u.roles.split(',');
+    u.display_name = `${u.first_name} ${u.last_name}`
+    u.roles = u.roles.split(",")
     req.user = {
       ...req.user,
-      ...u
-    };
-    return next();
+      ...u,
+    }
+    return next()
   }
 
   await axios
     .get(`${AUTH0_DOMAIN}/userinfo`, {
       headers: {
-        authorization: token
-      }
+        authorization: token,
+      },
     })
-    .then(async resp => {
+    .then(async (resp) => {
       if (resp.data && resp.data.sub) {
-        let email = resp.data.email;
-        let first_name = resp.data.given_name;
-        let last_name = resp.data.family_name;
+        let email = resp.data.email
+        let first_name = resp.data.given_name
+        let last_name = resp.data.family_name
 
-        email = resp.data.email;
+        email = resp.data.email
 
-        let u = await db.getBySub(sub);
+        let u = await db.getBySub(sub)
 
         if (u) {
-          u.display_name = `${u.first_name} ${u.last_name}`;
+          u.display_name = `${u.first_name} ${u.last_name}`
           req.user = {
             ...req.user,
-            ...u
-          };
+            ...u,
+          }
         } else {
-          if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`;
+          if (!email) email = `${first_name}.${last_name}@yukon-no-email.ca`
 
-          let eu = await db.getBySub(sub);
+          let eu = await db.getBySub(sub)
 
           if (eu) {
-            eu.display_name = `${eu.first_name} ${eu.last_name}`;
-            eu.sub = sub;
+            eu.display_name = `${eu.first_name} ${eu.last_name}`
+            eu.sub = sub
             // await db.update(eu._id || new ObjectId(), eu);
 
             // console.log("UPDATE USER SUB " + email, sub, u);
             req.user = {
               ...req.user,
-              ...eu
-            };
+              ...eu,
+            }
           } else {
-            u = await db.create(sub, email, first_name, last_name, "User", "Active");
+            u = await db.create(sub, email, first_name, last_name, "User", "Active")
 
-            console.log("CREATING USER FOR " + email, u);
+            console.log("CREATING USER FOR " + email, u)
             req.user = {
               ...req.user,
-              ...u
-            };
+              ...u,
+            }
           }
         }
       } else {
-        console.log("Payload from Auth0 is strange or failed for", req.user);
+        console.log("Payload from Auth0 is strange or failed for", req.user)
       }
 
-      next();
+      next()
     })
-    .catch(err => {
-      console.log("ERROR pulling userinfo from Auth0", err);
-    });
+    .catch((err) => {
+      console.log("ERROR pulling userinfo from Auth0", err)
+    })
 }
