@@ -1,4 +1,41 @@
-FROM node:16-alpine3.15
+# State 0 - base node customizations
+FROM node:16-alpine3.15 as base-node
+
+RUN npm install -g npm@8.5.5
+
+# Stage 1 - api build - requires development environment because typescript
+FROM base-node as api-build-stage
+
+ENV NODE_ENV=development
+
+WORKDIR /usr/src/api
+
+COPY api/package*.json ./
+COPY api/tsconfig*.json ./
+RUN npm install
+
+COPY api ./
+
+RUN npm run build
+
+# State 2 - web build - requires development environment because typescript
+FROM base-node as web-build-stage
+
+ENV NODE_ENV=development
+
+WORKDIR /usr/src/web
+
+COPY web/package*.json ./
+COPY web/tsconfig*.json ./
+COPY web/babel.config.js ./
+RUN npm install
+
+COPY web ./
+
+RUN npm run build:docker
+
+# Stage 3 - production setup
+FROM base-node
 
 RUN apk add --no-cache \
     chromium \
@@ -11,35 +48,25 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-RUN mkdir /home/node/app && chown -R node:node /home/node/app
-RUN mkdir /home/node/web && chown -R node:node /home/node/web
-
-COPY --chown=node:node web/package*.json /home/node/web/
-COPY --chown=node:node api/package*.json /home/node/app/
-
-RUN npm install -g npm@8.5.5
+ENV NODE_ENV=production
 USER node
 
 WORKDIR /home/node/app
-RUN npm install && npm cache clean --force --loglevel=error
-COPY --chown=node:node api/.env* ./
-
-WORKDIR /home/node/web
-
-RUN npm install && npm cache clean --force --loglevel=error
-COPY --chown=node:node api /home/node/app/
-COPY --chown=node:node web /home/node/web/
-
-RUN npm run build:docker
-
-EXPOSE 3000
+RUN chown -R node:node /home/node/app
 
 WORKDIR /home/node/app
 
-ENV NODE_ENV=development
-#RUN npm install --platform=linux --arch=x64 sharp@0.29.1
-RUN npm run build
+COPY --from=api-build-stage --chown=node:node /usr/src/api/package*.json ./
+RUN npm install && npm cache clean --force --loglevel=error
 
+COPY --from=api-build-stage --chown=node:node /usr/src/api/dist ./dist
+COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./dist/web
+
+EXPOSE 3000
+
+COPY --from=api-build-stage --chown=node:node /usr/src/api/bin/boot-app.sh ./bin/
 RUN chmod +x ./bin/boot-app.sh
 
-CMD ["/home/node/app/bin/boot-app.sh"]
+COPY --chown=node:node ./.env ./.env.production
+
+CMD ["./bin/boot-app.sh"]

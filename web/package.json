@@ -1,12 +1,12 @@
 {
-  "name": "test",
-  "version": "0.1.0",
+  "name": "travel-authorization-web",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "set NODE_OPTIONS=--openssl-legacy-provider &&  vue-cli-service serve",
+    "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:web": "vue-cli-service build",
-    "build:docker": "vue-cli-service build --dest ../app/dist/web",
+    "build:docker": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
