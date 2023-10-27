@@ -67,6 +67,4 @@ EXPOSE 3000
 COPY --from=api-build-stage --chown=node:node /usr/src/api/bin/boot-app.sh ./bin/
 RUN chmod +x ./bin/boot-app.sh
 
-COPY --chown=node:node ./.env ./.env.production
-
 CMD ["./bin/boot-app.sh"]

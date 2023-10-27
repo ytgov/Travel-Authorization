@@ -9,6 +9,8 @@ services:
       NODE_ENV: production
     ports:
       - "${HOST_PORT:-3000}:3000"
+    volumes:
+      - ./.env:/home/node/app.env.production
     depends_on:
       - db
   db:
