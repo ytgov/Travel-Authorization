@@ -74,20 +74,20 @@ export default {
       this.loadingData = false;
     },
 
-    async getUserAuth() {      
+    async getUserAuth() {
       return secureGet(`${PROFILE_URL}`)
         .then(resp => {
-          this.$store.commit("auth/setUser", resp.data.data);          
+          this.$store.commit("auth/setUser", resp.data.user);
         })
         .catch(e => {
           console.log(e);
         });
     },
 
-    async getEmployees() {      
+    async getEmployees() {
       return secureGet(`${LOOKUP_URL}/employees`)
         .then(resp => {
-          this.$store.commit("preapproved/SET_EMPLOYEES", resp.data);          
+          this.$store.commit("preapproved/SET_EMPLOYEES", resp.data);
         })
         .catch(e => {
           console.log(e);
@@ -97,7 +97,7 @@ export default {
     async getDepartmentBranch() {
       return secureGet(`${LOOKUP_URL}/department-branch`)
         .then(resp => {
-          this.$store.commit("preapproved/SET_DEPARTMENT_BRANCH", resp.data);          
+          this.$store.commit("preapproved/SET_DEPARTMENT_BRANCH", resp.data);
         })
         .catch(e => {
           console.log(e);
@@ -106,21 +106,21 @@ export default {
 
     async getTravelPurposes(){
       return secureGet(`${LOOKUP_URL}/travelPurpose`)
-        .then(resp => {          
-          this.$store.commit("preapproved/SET_TRAVEL_PURPOSES", resp.data);          
+        .then(resp => {
+          this.$store.commit("preapproved/SET_TRAVEL_PURPOSES", resp.data);
         })
         .catch(e => {
           console.log(e);
         });
     },
 
-    async getPreapprovedTravel() {      
+    async getPreapprovedTravel() {
       return secureGet(`${PREAPPROVED_URL}/`)
         .then(resp => {
           this.travelRequests = resp.data.map(x => ({
             ...x,
             isSelectable: x.status != "Approved" && x.status != "Declined"
-          }));          
+          }));
         })
         .catch(e => {
           console.log(e);
@@ -130,7 +130,7 @@ export default {
     async getPreapprovedTravelSubmissions() {
       return secureGet(`${PREAPPROVED_URL}/submissions`)
         .then(resp => {
-          this.travelSubmissions = resp.data;          
+          this.travelSubmissions = resp.data;
         })
         .catch(e => {
           console.log(e);

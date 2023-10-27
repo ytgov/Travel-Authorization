@@ -23,7 +23,7 @@ const actions = {
   async loadProfile({ commit }) {
     await secureGet(PROFILE_URL)
       .then(resp => {
-        commit("setProfile", resp.data.data);
+        commit("setProfile", resp.data.user);
       })
       .catch(() => {
         commit("auth/clearUser");
@@ -32,8 +32,8 @@ const actions = {
 };
 const mutations = {
   setProfile(state, profile) {
-    state.firstName = profile.first_name;
-    state.lastName = profile.last_name;
+    state.firstName = profile.firstName;
+    state.lastName = profile.lastName;
     state.email = profile.email;
     state.id = profile.id;
     state.username = profile.username;

@@ -20,7 +20,7 @@ const actions = {
   async checkAuthentication({ commit }) {
     await secureGet(PROFILE_URL)
       .then(resp => {
-        commit("setUser", resp.data.data);
+        commit("setUser", resp.data.user);
       })
       .catch(() => {
         commit("clearUser");
