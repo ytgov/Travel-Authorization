@@ -31,7 +31,7 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
   if (user !== null) {
     const userAttributes = user.dataValues as any
     userAttributes.displayName = `${userAttributes.firstName} ${userAttributes.lastName}`
-    userAttributes.roles = userAttributes.roles.split(",")
+    userAttributes.roles = userAttributes.roles
     req.user = {
       ...req.user,
       ...userAttributes,
