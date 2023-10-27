@@ -3,6 +3,7 @@ import knex from "knex"
 
 import { RequiresAuth, RequiresRolePatAdminOrAdmin } from "@/middleware"
 import { DB_CONFIG } from "@/config"
+import { User } from "@/models"
 
 const db = knex(DB_CONFIG)
 
@@ -10,7 +11,7 @@ export const preapprovedRouter = express.Router()
 
 preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request, res: Response) {
   const adminQuery = function (queryBuilder: any) {
-    if (req?.user?.roles?.indexOf("Admin") >= 0) queryBuilder.select("*")
+    if (req?.user?.roles?.indexOf(User.Roles.ADMIN) >= 0) queryBuilder.select("*")
     else queryBuilder.where("department", req.user.department).select("*")
   }
 
@@ -222,7 +223,7 @@ preapprovedRouter.get("/document/:submissionId", RequiresAuth, async function (r
 
 preapprovedRouter.get("/", RequiresAuth, async function (req: Request, res: Response) {
   const adminQuery = function (queryBuilder: any) {
-    if (req?.user?.roles?.indexOf("Admin") >= 0) queryBuilder.select("*")
+    if (req?.user?.roles?.indexOf(User.Roles.ADMIN) >= 0) queryBuilder.select("*")
     else queryBuilder.where("department", req.user.department).select("*")
   }
 

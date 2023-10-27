@@ -7,9 +7,9 @@ import dbLegacy from "@/db/db-client-legacy"
 export async function seedUp() {
   console.log("Seeding")
 
-  await User.update({ roles: "User" }, { where: {} })
+  await User.update({ roles: User.Roles.USER }, { where: {} })
   await User.update(
-    { roles: "Admin" },
+    { roles: User.Roles.ADMIN },
     {
       where: {
         email: [
@@ -22,23 +22,7 @@ export async function seedUp() {
   )
 
   await dbLegacy("roles").delete().whereRaw("1=1")
-  await dbLegacy("roles").insert([
-    {
-      name: "Admin",
-    },
-    {
-      name: "User",
-    },
-    {
-      name: "PatAdmin",
-    },
-    {
-      name: "DeptAdmin",
-    },
-    {
-      name: "TdUser",
-    },
-  ])
+  await dbLegacy("roles").insert(Object.values(User.Roles))
 
   await TravelAuthorization.destroy({ where: {} })
   await dbLegacy("travelPurpose").delete().whereRaw("1=1")

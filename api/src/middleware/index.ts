@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import { validationResult } from "express-validator"
 
+import { User } from "@/models"
+
 export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
     return next()
@@ -22,7 +24,7 @@ export function ReturnValidationErrors(req: Request, res: Response, next: NextFu
 }
 
 export function RequiresRoleAdmin(req: Request, res: Response, next: NextFunction) {
-  if (req.user && req.user.roles.indexOf("Admin") == -1) {
+  if (req.user && req.user.roles.indexOf(User.Roles.ADMIN) == -1) {
     return res.status(401).send("You are not an Administrator")
   }
 
@@ -40,7 +42,8 @@ export function RequiresAuth(req: Request, res: Response, next: NextFunction) {
 export function RequiresRolePatAdminOrAdmin(req: Request, res: Response, next: NextFunction) {
   if (
     req.user &&
-    (req.user.roles.indexOf("Admin") >= 0 || req.user.roles.indexOf("PatAdmin") >= 0)
+    (req.user.roles.indexOf(User.Roles.ADMIN) >= 0 ||
+      req.user.roles.indexOf(User.Roles.PAT_ADMIN) >= 0)
   ) {
     return next()
   }
@@ -48,14 +51,18 @@ export function RequiresRolePatAdminOrAdmin(req: Request, res: Response, next: N
 }
 
 export function RequiresRoleTdUser(req: Request, res: Response, next: NextFunction) {
-  if (req.user && req.user.roles.indexOf("TdUser") >= 0) {
+  if (req.user && req.user.roles.indexOf(User.Roles.TD_USER) >= 0) {
     return next()
   }
   return res.status(401).send("You are not a Travel Desk User!")
 }
 
 export function RequiresRoleTdUserOrAdmin(req: Request, res: Response, next: NextFunction) {
-  if (req.user && (req.user.roles.indexOf("Admin") >= 0 || req.user.roles.indexOf("TdUser") >= 0)) {
+  if (
+    req.user &&
+    (req.user.roles.indexOf(User.Roles.ADMIN) >= 0 ||
+      req.user.roles.indexOf(User.Roles.TD_USER) >= 0)
+  ) {
     return next()
   }
   return res.status(401).send("You are not an Administrator or Travel Desk User!")
