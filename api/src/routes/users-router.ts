@@ -6,6 +6,7 @@ import { RequiresRoleAdmin } from "@/middleware"
 import { RequiresRoleTdUser } from "@/middleware"
 import { User } from "@/models"
 import { YkGovernmentDirectorySyncService } from "@/services"
+import { UsersSerializer } from "@/serializers"
 
 export const userRouter = express.Router()
 
@@ -19,22 +20,15 @@ userRouter.get("/me", async (req: Request, res: Response) => {
   }
 
   if (!user.isTimeToSyncWithEmployeeDirectory()) {
-    const serializedUser = makeDTO(user.dataValues)
+    const serializedUser = UsersSerializer.asDetailed(user)
     return res.status(200).json({ user: serializedUser })
   }
 
   return YkGovernmentDirectorySyncService.perform(user).then((user) => {
-    const serializedUser = makeDTO(user.dataValues)
+    const serializedUser = UsersSerializer.asDetailed(user)
     return res.status(200).json({ user: serializedUser })
   })
 })
-
-function makeDTO(userRaw: any) {
-  let dto = userRaw
-  dto.displayName = `${userRaw.firstName} ${userRaw.lastName}`
-
-  return dto
-}
 
 userRouter.get("/", async (req: Request, res: Response) => {
   try {
