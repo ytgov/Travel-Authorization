@@ -24,6 +24,7 @@ userRouter.get("/me", async (req: Request, res: Response) => {
     return res.status(200).json({ user: serializedUser })
   }
 
+  // TODO: add a force sync endpoint
   return YkGovernmentDirectorySyncService.perform(user).then((user) => {
     const serializedUser = UsersSerializer.asDetailed(user)
     return res.status(200).json({ user: serializedUser })
