@@ -123,27 +123,29 @@ const actions = {
   },
   loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true
-    return usersApi.then(({ user }) => {
-      commit("SET_CURRENT_USER", {
-        id: user.id,
-        firstName: upperFirst(user.firstName),
-        lastName: upperFirst(user.lastName),
-        email: user.email,
-        department: user.department,
-        division: user.division,
-        branch: user.branch,
-        unit: user.unit,
-        mailcode: user.mailcode,
+    return usersApi
+      .me()
+      .then(({ user }) => {
+        commit("SET_CURRENT_USER", {
+          id: user.id,
+          firstName: upperFirst(user.firstName),
+          lastName: upperFirst(user.lastName),
+          email: user.email,
+          department: user.department,
+          division: user.division,
+          branch: user.branch,
+          unit: user.unit,
+          mailcode: user.mailcode,
+        })
+        commit("SET_FORM", {
+          ...state.request,
+          ...omit(state.currentUser, "id"),
+        })
+        return state.currentUser
       })
-      commit("SET_FORM", {
-        ...state.request,
-        ...omit(state.currentUser, "id"),
+      .finally(() => {
+        state.loadingCurrentUser = false
       })
-      return state.currentUser
-    })
-    .finally(() => {
-      state.loadingCurrentUser = false
-    })
   },
   loadUser({ dispatch }) {
     console.warn("Deprecated: use loadCurrentUser instead.")

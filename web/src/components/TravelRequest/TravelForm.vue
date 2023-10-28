@@ -948,7 +948,7 @@
 </template>
 
 <script>
-import { upperFirst } from 'lodash'
+import { upperFirst } from "lodash"
 
 import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
@@ -1168,7 +1168,7 @@ export default {
     },
     //secureGets
     async loadUser() {
-      return usersApi.then(({ user }) => {
+      return usersApi.me().then(({ user }) => {
         this.user = user
 
         this.form.firstName = upperFirst(user.firstName)

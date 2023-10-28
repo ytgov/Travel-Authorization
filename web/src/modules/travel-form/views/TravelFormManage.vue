@@ -521,7 +521,7 @@ export default {
     },
     //secureGets
     async loadUser() {
-      return usersApi.then(({ user }) => {
+      return usersApi.me().then(({ user }) => {
         this.user = user
 
         this.request.firstName = upperFirst(user.firstName)
