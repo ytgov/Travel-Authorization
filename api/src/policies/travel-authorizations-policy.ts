@@ -39,6 +39,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     return [
       "preappId",
       "purposeId",
+      "status", // Permit status changes until we have a state management system.
       "firstName", // all this user information should probably be restricted?
       "lastName",
       "department",
