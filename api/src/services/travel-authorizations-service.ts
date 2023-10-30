@@ -7,6 +7,10 @@ import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"
 
 import db from "@/db/db-client"
+import { AuditService } from "./audit-service"
+
+// TODO: upgrade this to the enhanced service pattern.
+const auditService = new AuditService()
 
 export class TravelAuthorizationsService {
   static async create(
@@ -33,7 +37,23 @@ export class TravelAuthorizationsService {
       await instance.saveExpenses(travelAuthorizationId, expenses)
       await instance.saveEstimates(travelAuthorizationId, estimates)
 
+       auditService.log(
+        currentUser.id,
+        travelAuthorization.id,
+        "Submit",
+        "TravelAuthorization submitted successfully."
+      )
+
       return travelAuthorization
+    }).catch((error) => {
+      // TODO: push the audit logging code back into services where it belongs
+      auditService.log(
+        currentUser.id,
+        -1,
+        "Submit",
+        "TravelAuthorization did not submit successfully."
+      )
+      throw error
     })
   }
 

@@ -3,13 +3,10 @@ import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
-import { AuditService, TravelAuthorizationsService } from "@/services"
+import { TravelAuthorizationsService } from "@/services"
 import { TravelAuthorization } from "@/models"
 import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
-
-// TODO: push this code back into services where it belongs
-const auditService = new AuditService()
 
 export class TravelAuthorizationsController extends BaseController {
   async index() {
@@ -51,23 +48,9 @@ export class TravelAuthorizationsController extends BaseController {
   create() {
     return TravelAuthorizationsService.create(this.request.body, this.currentUser)
       .then((travelAuthorization) => {
-        // TODO: push the audit logging code back into services where it belongs
-        auditService.log(
-          this.currentUser.id,
-          travelAuthorization.id,
-          "Submit",
-          "TravelAuthorization submitted successfully."
-        )
         return this.response.status(201).json({ travelAuthorization })
       })
       .catch((error) => {
-        // TODO: push the audit logging code back into services where it belongs
-        auditService.log(
-          this.currentUser.id,
-          -1,
-          "Submit",
-          "TravelAuthorization did not submit successfully."
-        )
         return this.response
           .status(422)
           .json({ message: `TravelAuthorization submission failed: ${error}` })
