@@ -111,7 +111,8 @@ export class TravelAuthorizationsController extends BaseController {
         .json({ message: "You are not authorized to update this travelAuthorization." })
     }
 
-    return TravelAuthorizationsService.update(travelAuthorization, this.request.body)
+    const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
+    return TravelAuthorizationsService.update(travelAuthorization, permittedAttributes)
       .then((travelAuthorization) => {
         this.response.json({ travelAuthorization })
       })
