@@ -1,4 +1,4 @@
-import { isNil, isEmpty, isNull } from "lodash"
+import { isNil, isEmpty } from "lodash"
 import { v4 as uuid } from "uuid"
 
 import { TravelAuthorization, User } from "@/models"
