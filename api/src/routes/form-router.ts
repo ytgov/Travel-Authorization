@@ -37,11 +37,7 @@ const auditService = new AuditService()
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
   console.warn("DEPRECATED: prefer /api/forms instead")
   try {
-    const user = await User.findOne({ where: { email: req.user.email } })
-    if (isNull(user)) {
-      return res.status(404).json({ message: "User not found" })
-    }
-
+    const user = req.user
     const forms = await TravelAuthorization.findAll({
       where: { userId: user.id },
       include: ["stops"],
@@ -71,10 +67,7 @@ formRouter.get(
   "/upcomingTrips",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    const user = await User.findOne({ where: { email: req.user.email } })
-    if (isNull(user)) {
-      return res.status(404).json({ message: "User not found" })
-    }
+    const user = req.user
 
     try {
       const form = await TravelAuthorization.findOne({ where: { userId: user.id } })
@@ -93,11 +86,7 @@ formRouter.get(
 //Get one of your own forms
 formRouter.get("/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    const user = await User.findOne({ where: { email: req.user.email } })
-    if (isNull(user)) {
-      return res.status(404).json({ message: "User not found" })
-    }
-
+    const user = req.user
     let form = await formService.getForm(req.params.formId)
 
     if (form && form.userId === user.id) {
@@ -121,10 +110,7 @@ formRouter.post(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const user = await User.findOne({ where: { email: req.user.email } })
-      if (isNull(user)) {
-        return res.status(404).json({ message: "User not found" })
-      }
+      const user = req.user
       let form = await formService.getForm(req.params.formId)
 
       if (!form || (form && form.userId === user.id)) {
@@ -162,10 +148,7 @@ formRouter.post(
     )
     try {
       await dbLegacy.transaction(async (trx) => {
-        const user = await User.findOne({ where: { email: req.user.email } })
-        if (isNull(user)) {
-          return res.status(404).json({ message: "User not found" })
-        }
+        const user = req.user
         let form = await formService.getForm(req.params.formId)
 
         if (!form || (form && form.userId === user.id)) {
@@ -203,11 +186,7 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        const user = await User.findOne({ where: { email: req.user.email } })
-        if (isNull(user)) {
-          return res.status(404).json({ message: "User not found" })
-        }
-
+        const user = req.user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -247,11 +226,7 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        const user = await User.findOne({ where: { email: req.user.email } })
-        if (isNull(user)) {
-          return res.status(404).json({ message: "User not found" })
-        }
-
+        const user = req.user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -290,11 +265,7 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        const user = await User.findOne({ where: { email: req.user.email } })
-        if (isNull(user)) {
-          return res.status(404).json({ message: "User not found" })
-        }
-
+        const user = req.user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -337,11 +308,7 @@ formRouter.post(
 
     try {
       await dbLegacy.transaction(async (trx) => {
-        const user = await User.findOne({ where: { email: req.user.email } })
-        if (isNull(user)) {
-          return res.status(404).json({ message: "User not found" })
-        }
-
+        const user = req.user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -380,11 +347,7 @@ formRouter.post(
 //SHould just hide it in db with staus change
 formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    const user = await User.findOne({ where: { email: req.user.email } })
-    if (isNull(user)) {
-      return res.status(404).json({ message: "User not found" })
-    }
-
+    const user = req.user
     const form = await TravelAuthorization.findOne({
       where: {
         slug: req.params.formId,

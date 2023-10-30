@@ -11,11 +11,7 @@ managerRouter.get(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const user = await User.findOne({ where: { email: req.user.email } })
-      if (isNull(user)) {
-        return res.status(404).json({ message: "User not found" })
-      }
-
+      const user = req.user
       const form = await TravelAuthorization.findOne({
         where: { slug: req.params.formId, supervisorEmail: user.email },
         include: ["stops"],
@@ -35,11 +31,7 @@ managerRouter.get(
 
 managerRouter.get("/forms", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    const user = await User.findOne({ where: { email: req.user.email } })
-    if (isNull(user)) {
-      return res.status(404).json({ message: "User not found" })
-    }
-
+    const user = req.user
     const forms = await TravelAuthorization.findAll({
       where: { supervisorEmail: user.email },
       include: ["stops"],

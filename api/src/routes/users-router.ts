@@ -11,13 +11,7 @@ import { UsersSerializer } from "@/serializers"
 export const userRouter = express.Router()
 
 userRouter.get("/me", async (req: Request, res: Response) => {
-  // TODO: make the req.user an actual User object
-  // will make the next few lines unnecessary
-  const { email } = req.user
-  const user = await User.findOne({ where: { email } })
-  if (isNil(user)) {
-    return res.status(401).json({ error: `Current user is unauthenticated` })
-  }
+  const user = req.user
 
   if (!user.isTimeToSyncWithEmployeeDirectory()) {
     const serializedUser = UsersSerializer.asDetailed(user)
