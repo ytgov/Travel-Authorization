@@ -46,7 +46,16 @@ export class TravelAuthorizationsController extends BaseController {
   }
 
   create() {
-    return TravelAuthorizationsService.create(this.request.body, this.currentUser)
+    const travelAuthorization = this.buildTravelAuthorization()
+    const policy = this.buildPolicy(travelAuthorization)
+    if (!policy.create()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to create this travel authorization." })
+    }
+
+    const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
+    return TravelAuthorizationsService.create(permittedAttributes, this.currentUser)
       .then((travelAuthorization) => {
         return this.response.status(201).json({ travelAuthorization })
       })
@@ -115,6 +124,12 @@ export class TravelAuthorizationsController extends BaseController {
 
   private loadTravelAuthorization(): Promise<TravelAuthorization | null> {
     return TravelAuthorization.findByPk(this.params.travelAuthorizationId)
+  }
+
+  private buildTravelAuthorization() {
+    const attributes = this.request.body
+    const travelAuthorization = TravelAuthorization.build(attributes)
+    return travelAuthorization
   }
 
   private buildPolicy(record: TravelAuthorization): TravelAuthorizationsPolicy {

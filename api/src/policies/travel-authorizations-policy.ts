@@ -34,6 +34,46 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
       return policy.show()
     })
   }
+
+  permittedAttributes(): string[] {
+    return [
+      "preappId",
+      "purposeId",
+      "firstName", // all this user information should probably be restricted?
+      "lastName",
+      "department",
+      "division",
+      "branch",
+      "unit",
+      "email",
+      "mailcode",
+      "daysOffTravelStatus",
+      "dateBackToWork",
+      "travelDuration",
+      "travelAdvance",
+      "eventName",
+      "summary",
+      "benefits",
+      "supervisorEmail",
+      "approved",
+      "requestChange",
+      "denialReason",
+      "oneWayTrip",
+      "multiStop",
+      "travelAdvanceInCents",
+      "allTravelWithinTerritory",
+
+      // TODO: limit these using the appropriate policy
+      // association attributes
+      "stops",
+      "expenses",
+      "estimates",
+    ]
+  }
+
+  permittedAttributesForCreate() {
+    return ["slug", ...this.permittedAttributes()]
+  }
 }
 
 export default TravelAuthorizationsPolicy
