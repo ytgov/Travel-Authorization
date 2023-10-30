@@ -20,7 +20,7 @@ const actions = {
   async checkAuthentication({ commit }) {
     await secureGet(PROFILE_URL)
       .then(resp => {
-        commit("setUser", resp.data.data);
+        commit("setUser", resp.data.user);
       })
       .catch(() => {
         commit("clearUser");
@@ -33,7 +33,7 @@ const actions = {
 const mutations = {
   setUser(state, user) {
     state.user = user;
-    state.fullName = user.display_name;
+    state.fullName = user.displayName;
     state.roles = user.roles;
     state.department = user.department;
   },

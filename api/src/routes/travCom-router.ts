@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import { RequiresAuth } from "../middleware";
 import knex from "knex";
-import { UserService } from "../services";
 import {airports} from "../json/airportCodes"
 import { TRAVCOM_DB_CONFIG, DB_CONFIG } from "../config";
 

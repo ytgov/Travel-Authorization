@@ -4,25 +4,32 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "sequelize"
+import { isNil } from "lodash"
+import moment from "moment"
 
 import sequelize from "@/db/db-client"
 
 // TODO: normalize these roles to snake_case
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Roles {
-  ADMIN = "Admin",
-  USER = "User",
-  PAT_ADMIN = "PatAdmin",
-  DEPT_ADMIN = "DeptAdmin",
-  TD_USER = "TdUser",
+  ADMIN = "admin",
+  USER = "user",
+  PAT_ADMIN = "pat_admin",
+  DEPT_ADMIN = "dept_admin",
+  TD_USER = "td_user",
 }
 
 // TODO: normalize these status to snake_case
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Statuses {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+}
+
+function isRole(role: string): role is Roles {
+  return Object.values(Roles).includes(role as Roles)
 }
 
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
@@ -35,13 +42,36 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare status: string
   declare firstName: string | null
   declare lastName: string | null
-  declare roles: string | null
+  declare roles: string[]
   declare department: string | null
-  declare createDate: CreationOptional<Date>
+  declare division: string | null
+  declare branch: string | null
+  declare unit: string | null
+  declare mailcode: string | null
+  declare manager: string | null
+  declare lastEmployeeDirectorySyncAt: Date | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 
   declare static associations: {}
 
   static establishAssociations() {}
+
+  // TODO: push this into a serializer, once its no longer in legacy code
+  get displayName(): NonAttribute<string> {
+    return [this.firstName, this.lastName].filter(Boolean).join(" ") || ""
+  }
+
+  isTimeToSyncWithEmployeeDirectory(): NonAttribute<boolean> {
+    if (this.lastEmployeeDirectorySyncAt === null) {
+      return true
+    }
+
+    const current = moment.utc()
+    const lastSyncDate = moment.utc(this.lastEmployeeDirectorySyncAt)
+
+    return !current.isSame(lastSyncDate, "day")
+  }
 }
 
 User.init(
@@ -74,17 +104,19 @@ User.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    // TODO: consider making this a string array or jsonb column
     roles: {
-      type: DataTypes.STRING(1000),
-      allowNull: true,
+      type: DataTypes.ARRAY(DataTypes.STRING(255)),
+      allowNull: false,
+      defaultValue: [],
       validate: {
-        isValidRole(value: string) {
-          if (!value) return
+        isValidRole(roles: string[] | string) {
+          if (isNil(roles)) return
+          if (!Array.isArray(roles)) {
+            throw new Error("roles must be an array")
+          }
 
-          const roleArray = value.split(",").map((role) => role.trim())
-          roleArray.forEach((role: string) => {
-            if (Object.values(Roles).includes(role as any)) return
+          roles.forEach((role: string) => {
+            if (isRole(role)) return
 
             throw new Error(
               `Invalid role: ${role}. Allowed roles are: ${Object.values(Roles).join(", ")}`
@@ -97,19 +129,45 @@ User.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    createDate: {
+    division: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    branch: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    unit: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    mailcode: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    manager: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    lastEmployeeDirectorySyncAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
   },
   {
-    // TODO: standardize this model, make table name plural and standardize timestamps column names
     sequelize,
     modelName: "User",
-    tableName: "user",
-    createdAt: "createDate",
-    updatedAt: false,
+    tableName: "users",
   }
 )
 

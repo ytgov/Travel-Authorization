@@ -1,37 +1,29 @@
 import { isNull } from "lodash"
 
-import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose } from "@/models"
+import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose, User } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
 export async function seedUp() {
   console.log("Seeding")
 
-  await dbLegacy("user").update({ roles: "User" }).whereRaw("1=1")
-  await dbLegacy("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" })
-  await dbLegacy("user").update({ roles: "Admin" }).where({ email: "dpdavids@ynet.gov.yk.ca" })
-  await dbLegacy("user")
-    .update({ roles: "Admin" })
-    .where({ email: "hassan.anvar@pacificintelligent.com" })
+  await User.update({ roles: [User.Roles.USER] }, { where: {} })
+  await User.update(
+    { roles: [User.Roles.ADMIN] },
+    {
+      where: {
+        email: [
+          "Max.parker@yukon.ca",
+          "dpdavids@ynet.gov.yk.ca",
+          "hassan.anvar@pacificintelligent.com",
+        ],
+      },
+    }
+  )
 
   await dbLegacy("roles").delete().whereRaw("1=1")
-  await dbLegacy("roles").insert([
-    {
-      name: "Admin",
-    },
-    {
-      name: "User",
-    },
-    {
-      name: "PatAdmin",
-    },
-    {
-      name: "DeptAdmin",
-    },
-    {
-      name: "TdUser",
-    },
-  ])
+  const rolesAttributes = Object.values(User.Roles).map((role) => ({ name: role }))
+  await dbLegacy("roles").insert(rolesAttributes)
 
   await TravelAuthorization.destroy({ where: {} })
   await dbLegacy("travelPurpose").delete().whereRaw("1=1")
