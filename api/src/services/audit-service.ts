@@ -17,8 +17,4 @@ export class AuditService {
       console.log(error)
     }
   }
-
-  insertAudit(userId: number, taid: number, action: string, note?: string){
-    
-  }
 }
