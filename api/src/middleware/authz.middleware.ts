@@ -35,6 +35,13 @@ interface Auth0Response {
   email_verified: boolean // true
 }
 
+class Auth0PayloadError extends Error {
+  constructor(data: any) {
+    super(`Payload from Auth0 is strange or failed for: ${JSON.stringify(data)}`)
+    this.name = "Auth0PayloadError"
+  }
+}
+
 function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
   return axios
     .get(`${AUTH0_DOMAIN}/userinfo`, {
@@ -45,7 +52,7 @@ function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
     .then(async ({ data }: { data: Auth0Response }) => {
       const sub = data.sub
       if (isNil(sub)) {
-        throw new Error(`Payload from Auth0 is strange or failed for: ${JSON.stringify(data)}`)
+        throw new Auth0PayloadError(data)
       }
 
       const { email, given_name: firstName, family_name: lastName } = data
@@ -86,7 +93,11 @@ export async function loadUser(req: Request, res: Response, next: NextFunction) 
       return next()
     })
     .catch((error) => {
-      console.log("ERROR pulling userinfo from Auth0", error)
-      return res.status(502).json({ message: "Error pulling user info from authorization service" })
+      if (error instanceof Auth0PayloadError) {
+        console.log(error)
+        return res.status(502).json({ message: "External authorization api failed." })
+      } else {
+        return res.status(401).json({ message: "User authentication failed." })
+      }
     })
 }
