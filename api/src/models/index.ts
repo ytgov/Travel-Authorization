@@ -16,7 +16,6 @@ TravelDeskTravelRequest.establishAssociations()
 User.establishAssociations()
 
 // Alphabetically - order does not matter
-export * from "./auth"
 export * from "./distance-matrix"
 export * from "./expense"
 export * from "./location"
