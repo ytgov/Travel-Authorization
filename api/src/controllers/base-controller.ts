@@ -88,11 +88,11 @@ export class BaseController {
       sub: legacyUserDataFormat.sub,
       email: legacyUserDataFormat.email,
       status: legacyUserDataFormat.status,
-      firstName: legacyUserDataFormat.first_name,
-      lastName: legacyUserDataFormat.last_name,
-      roles: legacyUserDataFormat.roles.join(","),
+      firstName: legacyUserDataFormat.firstName,
+      lastName: legacyUserDataFormat.lastName,
+      roles: legacyUserDataFormat.roles,
       department: legacyUserDataFormat.department,
-      createDate: new Date(legacyUserDataFormat.create_date),
+      createdAt: new Date(legacyUserDataFormat.createdAt),
     })
     return user
   }
