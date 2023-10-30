@@ -57,6 +57,11 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   static establishAssociations() {}
 
+  // TODO: push this into a serializer, once its no longer in legacy code
+  get displayName(): NonAttribute<string> {
+    return [this.firstName, this.lastName].filter(Boolean).join(" ") || ""
+  }
+
   isTimeToSyncWithEmployeeDirectory(): NonAttribute<boolean> {
     if (this.lastEmployeeDirectorySyncAt === null) {
       return true
