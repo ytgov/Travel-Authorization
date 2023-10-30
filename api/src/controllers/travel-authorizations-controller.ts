@@ -129,7 +129,10 @@ export class TravelAuthorizationsController extends BaseController {
 
   private buildTravelAuthorization() {
     const attributes = this.request.body
-    const travelAuthorization = TravelAuthorization.build(attributes)
+    const travelAuthorization = TravelAuthorization.build({
+      ...attributes,
+      userId: this.currentUser.id,
+    })
     return travelAuthorization
   }
 
