@@ -1,4 +1,4 @@
-# State 0 - base node customizations
+# Stage 0 - base node customizations
 FROM node:16-alpine3.15 as base-node
 
 RUN npm install -g npm@8.5.5
@@ -18,10 +18,10 @@ COPY api ./
 
 RUN npm run build
 
-# State 2 - web build - requires development environment because typescript
+# Stage 2 - web build
 FROM base-node as web-build-stage
 
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
 WORKDIR /usr/src/web
 
@@ -32,7 +32,7 @@ RUN npm install
 
 COPY web ./
 
-RUN npm run build:docker
+RUN npm run build
 
 # Stage 3 - production setup
 FROM base-node
