@@ -57,4 +57,9 @@ new Vue({
   render: (h) => h(App),
 }).$mount("#app")
 
-console.log("App is running config", { environment, apiBaseUrl })
+console.log("App is running config", {
+  environment,
+  apiBaseUrl,
+  releaseTag: process.env.VUE_APP_RELEASE_TAG,
+  gitCommitHash: process.env.VUE_APP_GIT_COMMIT_HASH,
+})

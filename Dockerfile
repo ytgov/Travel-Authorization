@@ -32,8 +32,16 @@ RUN npm install
 
 COPY web ./
 
+# Accept build arguments for release tag and git commit hash
+ARG RELEASE_TAG
+ARG GIT_COMMIT_HASH
+
+ENV VUE_APP_RELEASE_TAG=${RELEASE_TAG}
+ENV VUE_APP_GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
+
 # Switching to production mode for build environment.
-RUN NODE_ENV=production npm run build
+ENV NODE_ENV=production
+RUN npm run build
 
 # Stage 3 - production setup
 FROM base-node
