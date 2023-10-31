@@ -10,7 +10,7 @@ services:
     ports:
       - "${HOST_PORT:-3000}:3000"
     volumes:
-      - ./.env:/home/node/app.env.production
+      - ./.env:/home/node/app/.env.production
     depends_on:
       - db
   db:
