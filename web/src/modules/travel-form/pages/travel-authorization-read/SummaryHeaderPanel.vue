@@ -32,6 +32,7 @@
         <v-text-field
           :value="initialDestination.departureDate"
           label="Start Date"
+          prepend-icon="mdi-calendar"
           dense
           outlined
           readonly
@@ -44,6 +45,7 @@
         <v-text-field
           :value="finalDestination.departureDate"
           label="End Date"
+          prepend-icon="mdi-calendar"
           dense
           outlined
           readonly

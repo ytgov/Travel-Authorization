@@ -65,9 +65,10 @@
           cols="12"
           md="3"
         >
-          <DatePicker
+          <v-text-field
             :value="currentForm.dateBackToWork"
-            text="Expected Date return to work"
+            label="Expected Date return to work"
+            prepend-icon="mdi-calendar"
             dense
             outlined
             readonly
@@ -82,8 +83,6 @@
 import { mapState, mapGetters } from "vuex"
 import { last } from "lodash"
 
-import DatePicker from "@/components/Utils/DatePicker"
-
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
   ONE_WAY: "One Way",
@@ -93,7 +92,6 @@ const TRIP_TYPES = Object.freeze({
 export default {
   name: "DetailsFormCard",
   components: {
-    DatePicker,
   },
   data: () => ({
     tripType: "",
