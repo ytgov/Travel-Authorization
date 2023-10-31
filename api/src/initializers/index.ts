@@ -23,6 +23,7 @@ async function importAndExecuteInitializers() {
   }, Promise.resolve())
 }
 
+// TODO: add some kind of middleware that 503s? if initialization failed?
 importAndExecuteInitializers()
   .then(() => process.exit(0))
   .catch(() => {

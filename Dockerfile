@@ -67,6 +67,4 @@ EXPOSE 3000
 COPY --from=api-build-stage --chown=node:node /usr/src/api/bin/boot-app.sh ./bin/
 RUN chmod +x ./bin/boot-app.sh
 
-# TODO: fix boot pipeline so migrations can auto-run properly
-# CMD ["./bin/boot-app.sh"]
-CMD ["node", "./dist/index.js"]
+ENTRYPOINT ["./bin/boot-app.sh"]
