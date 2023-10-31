@@ -66,9 +66,13 @@ console.log("host: ", process.env.DB_HOST)
 console.log("user: ", process.env.DB_USER)
 console.log("psss: ", "*********")
 console.log("db name: ", process.env.DB_NAME)
-app.use(databaseHealthCheckMiddleware)
 
-CreateMigrationRoutes(app) // TODO: make this a router/controller
+// TODO: move these to the routes file
+app.use("/api", databaseHealthCheckMiddleware)
+app.use("/migrate", databaseHealthCheckMiddleware)
+
+ // TODO: make this a router/controller and hide it behind the /api namespace
+CreateMigrationRoutes(app)
 
 app.use("/api/form", checkJwt, loadUser, formRouter)
 app.use("/api/user", checkJwt, loadUser, userRouter)
