@@ -278,7 +278,9 @@ export default {
       router.push(location)
     },
     signOut: function () {
-      this.$auth.logout()
+      this.$auth.logout({
+        returnTo: `${window.location.origin}/sign-in`,
+      })
     },
     showHistory() {
       this.$refs.historySidebar.show()
