@@ -132,7 +132,14 @@ export default {
     },
     goToFormDetails(form) {
       const formId = form.id
-      this.$router.push({ name: "TravelFormEdit-DetailsTab", params: { formId } })
+      if (form.status === "draft") {
+        this.$router.push({ name: "TravelFormEdit-DetailsTab", params: { formId } })
+      } else {
+        this.$router.push({
+          name: "TravelAuthorizationRead-DetailsTab",
+          params: { formId },
+        })
+      }
     },
     formatDate(value) {
       if (isNil(value)) return "Unknown"

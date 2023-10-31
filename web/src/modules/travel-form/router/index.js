@@ -13,6 +13,14 @@ const routes = [
       },
       {
         path: ":formId",
+        // TODO: build out details tab child route
+        name: "TravelAuthorizationRead-DetailsTab",
+        component: () => import("@/modules/travel-form/pages/TravelAuthorizationRead"),
+        props: true,
+        children: [],
+      },
+      {
+        path: ":formId/edit",
         component: () => import("../views/TravelFormEdit"),
         props: true,
         children: [
