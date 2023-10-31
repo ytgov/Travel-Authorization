@@ -24,6 +24,9 @@ spec:
             - mountPath: "/home/node/app/.env.development"
               subPath: .env
               name: env-configmap-volume
+            - mountPath: "/home/node/app/.env.production"
+              subPath: .env
+              name: env-configmap-volume
       volumes:
         - name: env-configmap-volume
           configMap:
