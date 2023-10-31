@@ -1,4 +1,4 @@
-# State 0 - base node customizations
+# Stage 0 - base node customizations
 FROM node:16-alpine3.15 as base-node
 
 RUN npm install -g npm@8.5.5
@@ -18,7 +18,7 @@ COPY api ./
 
 RUN npm run build
 
-# State 2 - web build
+# Stage 2 - web build
 FROM base-node as web-build-stage
 
 ENV NODE_ENV=production
