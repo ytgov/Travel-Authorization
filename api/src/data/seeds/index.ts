@@ -5,8 +5,6 @@ import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose } fro
 import dbLegacy from "@/db/db-client-legacy"
 
 export async function seedUp() {
-  console.log("Seeding")
-
   await dbLegacy("user").update({ roles: "User" }).whereRaw("1=1")
   await dbLegacy("user").update({ roles: "Admin" }).where({ email: "Max.parker@yukon.ca" })
   await dbLegacy("user").update({ roles: "Admin" }).where({ email: "dpdavids@ynet.gov.yk.ca" })

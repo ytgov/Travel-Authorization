@@ -1,20 +1,32 @@
 import * as fs from "fs/promises"
 import * as path from "path"
 
+const NON_INITIALIZER_REGEX = /^index\.(ts|js)$/
+
 async function importAndExecuteInitializers() {
   const files = await fs.readdir(__dirname)
 
-  for (const file of files) {
-    if (/^index\.(ts|js)$/.test(file)) return
+  return files.reduce(async (previousInitializerAction, file) => {
+    await previousInitializerAction
+
+    if (NON_INITIALIZER_REGEX.test(file)) return
 
     const modulePath = path.join(__dirname, file)
+    console.log(`Running initializer: ${modulePath}`)
+
     const { default: initializerAction } = await import(modulePath)
-    console.log(`Running: ${modulePath}`)
-    await initializerAction().catch((error: any) => {
+
+    return initializerAction().catch((error: any) => {
       console.error(`Initialization error in ${modulePath}:`, error)
-      process.exit(1)
+      return Promise.reject(error)
     })
-  }
+  }, Promise.resolve())
 }
 
-importAndExecuteInitializers().then(() => process.exit(0))
+// TODO: add some kind of middleware that 503s? if initialization failed?
+importAndExecuteInitializers()
+  .then(() => process.exit(0))
+  .catch(() => {
+    console.log("Failed to complete initialization!")
+    return process.exit(0)
+  })

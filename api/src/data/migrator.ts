@@ -1,44 +1,53 @@
-import { Express, Request, Response } from "express";
-import { join } from "path";
+import { Express, Request, Response } from "express"
 
 import dbLegacy from "@/db/db-client-legacy"
-import { seedUp } from "./seeds";
-
-export async function migrateUp() {
-  console.log("-------- MIGRATE UP ---------");
-  return await dbLegacy.migrate.up({
-    directory: join(__dirname, "migrations")
-  });
-}
-
-export async function migrateDown() {
-  console.log("-------- MIGRATE DOWN ---------");
-  return await dbLegacy.migrate.down({
-    directory: join(__dirname, "migrations")
-  });
-}
-
-export async function migrateLatest() {
-  console.log("-------- MIGRATE LATEST ---------");
-  return await dbLegacy.migrate.latest({
-    directory: join(__dirname, "migrations")
-  });
-}
+import { seedUp } from "./seeds"
 
 export async function CreateMigrationRoutes(app: Express) {
   app.get("/migrate/up", async (req: Request, res: Response) => {
-    res.send(await migrateUp());
-  });
+    console.log("-------- MIGRATE UP ---------")
+    return dbLegacy.migrate
+      .up()
+      .then((result) => {
+        return res.json(result)
+      })
+      .catch((error) => {
+        res.status(422).json({ message: `Failed to migrate: ${error}` })
+      })
+  })
 
   app.get("/migrate/down", async (req: Request, res: Response) => {
-    res.send(await migrateDown());
-  });
+    console.log("-------- MIGRATE DOWN ---------")
+    return dbLegacy.migrate
+      .down()
+      .then((result) => {
+        return res.json(result)
+      })
+      .catch((error) => {
+        res.status(422).json({ message: `Failed to migrate: ${error}` })
+      })
+  })
 
   app.get("/migrate/latest", async (req: Request, res: Response) => {
-    res.send(await migrateLatest());
-  });
+    console.log("-------- MIGRATE LATEST ---------")
+    return dbLegacy.migrate
+      .latest()
+      .then((result) => {
+        return res.json(result)
+      })
+      .catch((error) => {
+        res.status(422).json({ message: `Failed to migrate: ${error}` })
+      })
+  })
 
   app.get("/migrate/seed", async (req: Request, res: Response) => {
-    res.send(await seedUp());
-  });
+    console.log("-------- MIGRATE SEED ---------")
+    return seedUp()
+      .then((result) => {
+        return res.json(result)
+      })
+      .catch((error) => {
+        res.status(422).json({ message: `Failed to seed: ${error}` })
+      })
+  })
 }
