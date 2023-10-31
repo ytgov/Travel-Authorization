@@ -17,7 +17,7 @@
         md="2"
       >
         <v-text-field
-          :value="destinationText"
+          :value="finalDestinationText"
           label="Final Destination"
           outlined
           readonly
@@ -51,7 +51,7 @@
 
 <script>
 import { first, last } from "lodash"
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters, mapState } from "vuex"
 
 export default {
   name: "SummaryHeaderReadonly",
@@ -60,7 +60,8 @@ export default {
     loadingDestinations: false,
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm", "purposes", "destinations"]),
+    ...mapState("travelForm", ["currentForm", "purposes"]),
+    ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
     finalDestination() {
       return last(this.currentForm.stops) || {}
     },
@@ -71,8 +72,8 @@ export default {
       const purpose = this.purposes.find((p) => p.id === this.currentForm.purposeId)
       return purpose?.purpose || ""
     },
-    destinationText() {
-      const destination = this.destinations.find(
+    finalDestinationText() {
+      const destination = this.destinationsByCurrentFormTravelRestriction.find(
         (d) => d.value === this.finalDestination.locationId
       )
       return destination?.text || ""
