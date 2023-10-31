@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express"
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
 
+// TODO: make this a generic error hanlder instead and suppress logs?
+// It's clearly not something that should spam the logs on every request.
 export async function databaseHealthCheckMiddleware(
   _req: Request,
   res: Response,
