@@ -39,11 +39,9 @@
 
 4. [Set up the `dev`](#set-up-dev-command) command, or use `docker compose -f docker-compose.development.yml` instead of `dev` in all instructions.
 
-5. Boot the api, web, and db services via `dev up` or `docker compose -f docker-compose.development.yml up`
+5. Boot the api, web, and db services via `dev up` or `docker compose -f docker-compose.development.yml up`. This will run the boot pipeline and create the database, run migrations, and run seeds.
 
-6. The seeds do not, yet, run automatically. You must run them via logging in to the front-end, then going to http://localhost:3000/migrate/seed.
-
-7. Stop the api, web, and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
+6. Stop the api, web, and db services via `ctrl+c` or `dev down` or if you want to wipe the database `dev down -v`.
 
 ### API Service (a.k.a back-end)
 
@@ -85,11 +83,9 @@
    docker compose -f docker-compose.development.yml up db
    ```
 
-   > Migrations run automatically, seeds do not, yet.
+   > Migrations run automatically, as do seeds. We need to change the seed format for production as it currently wipes the database during seeding.
 
-2. You can run the seeds by going to http://localhost:3000/migrate/seed
-
-3. You can access the `psql` command line via
+2. You can access the `psql` command line via
 
    ```bash
    dev psql
@@ -98,6 +94,13 @@
 
    docker compose -f docker-compose.development.yml exec db psql "postgresql://app:itsallgood@localhost:5432/travel_development"
    ```
+
+You can also run migrations and seeding manually after login in to the web UI by going to
+
+- http://localhost:3000/migrate/latest
+- http://localhost:3000/migrate/up
+- http://localhost:3000/migrate/down
+- http://localhost:3000/migrate/seed
 
 ### Troubleshooting
 
@@ -223,6 +226,4 @@ Files:
 
 3. Go to http://localhost:3000/ and log in.
 
-4. Run the seeds via http://localhost:3000/migrate/seed.
-
-5. Navigate around the app and do some stuff and see if it works.
+4. Navigate around the app and do some stuff and see if it works.
