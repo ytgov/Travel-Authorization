@@ -8,13 +8,6 @@ else
   node ./dist/initializers/index.js
 fi
 
-# Check initialization status
-initialization_status=$?
-if [ $initialization_status -ne 0 ]; then
-  echo "Failed to complete initialization, exit code was $initialization_status"
-  exit 1
-fi
-
 # Start the application
 if [ "$NODE_ENV" != "production" ]; then
   npm run start
