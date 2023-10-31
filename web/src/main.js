@@ -14,6 +14,7 @@ import "@/filters"
 import Notifications from "@/components/Notifications"
 import MapDialog from "@/components/MapDialog"
 
+import { environment, apiBaseUrl } from "@/config"
 
 Vue.use(VueApexCharts)
 
@@ -55,3 +56,5 @@ new Vue({
   i18n,
   render: (h) => h(App),
 }).$mount("#app")
+
+console.log("App is running config", { environment, apiBaseUrl })
