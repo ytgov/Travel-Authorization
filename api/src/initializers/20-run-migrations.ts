@@ -20,6 +20,7 @@ async function runMigrations(): Promise<void> {
     })
     .catch((error) => {
       console.error("Error running migrations:", error)
+      throw error
     })
 }
 
