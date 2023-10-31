@@ -81,7 +81,6 @@
 
 <script>
 import { mapState, mapGetters } from "vuex"
-import { last } from "lodash"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -99,17 +98,14 @@ export default {
   computed: {
     ...mapState("travelForm", ["currentForm"]),
     ...mapGetters("travelForm", ["currentFormId"]),
-    finalDestination() {
-      return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
-    },
     tripTypeComponent() {
       switch (this.tripType) {
-        // case TRIP_TYPES.ROUND_TRIP:
-        //   return () => import("./details-form-card/RoundTripStopsSection")
+        case TRIP_TYPES.ROUND_TRIP:
+          return () => import("./details-card/RoundTripStopsSection")
         // case TRIP_TYPES.ONE_WAY:
-        //   return () => import("./details-form-card/OneWayStopsSection")
+        //   return () => import("./details-card/OneWayStopsSection")
         // case TRIP_TYPES.MULI_DESTINATION:
-        //   return () => import("./details-form-card/MultiDestinationStopsSection")
+        //   return () => import("./details-card/MultiDestinationStopsSection")
         default:
           return null
       }
