@@ -18,10 +18,10 @@ COPY api ./
 
 RUN npm run build
 
-# Stage 2 - web build
+# Stage 2 - web build - requires development environment to install vue-cli-service
 FROM base-node as web-build-stage
 
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 
 WORKDIR /usr/src/web
 
@@ -32,7 +32,8 @@ RUN npm install
 
 COPY web ./
 
-RUN npm run build
+# Switching to production mode for build environment.
+RUN NODE_ENV=production npm run build
 
 # Stage 3 - production setup
 FROM base-node
