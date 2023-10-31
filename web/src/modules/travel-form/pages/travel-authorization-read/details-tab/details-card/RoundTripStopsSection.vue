@@ -61,6 +61,7 @@
       >
         <v-text-field
           :value="originStop.transport"
+          label="Travel Method"
           dense
           persistent-hint
           outlined
@@ -68,6 +69,7 @@
         />
         <v-text-field
           :value="originStop.accommodationType"
+          label="Type of Accommodation"
           dense
           outlined
           readonly
@@ -135,6 +137,7 @@
       >
         <v-text-field
           :value="destinationStop.transport"
+          label="Travel Method"
           dense
           persistent-hint
           outlined
@@ -142,6 +145,7 @@
         />
         <v-text-field
           :value="destinationStop.accommodationType"
+          label="Type of Accommodation"
           hint="Optional, set only if neccessary"
           placeholder="N/A"
           dense
