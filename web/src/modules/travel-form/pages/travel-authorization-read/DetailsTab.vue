@@ -5,12 +5,12 @@
         <PurposeCard />
       </v-col>
     </v-row>
-    <!-- <v-row>
+    <v-row>
       <v-col>
         <DetailsCard />
       </v-col>
     </v-row>
-    <v-row>
+    <!-- <v-row>
       <v-col>
         <ApprovalsCard />
       </v-col>
@@ -20,14 +20,14 @@
 
 <script>
 import PurposeCard from "./details-tab/PurposeCard"
-// import DetailsCard from "./details-tab/DetailsCard"
+import DetailsCard from "./details-tab/DetailsCard"
 // import ApprovalsCard from "./details-tab/ApprovalsCard"
 
 export default {
   name: "DetailsTab",
   components: {
     PurposeCard,
-    // DetailsCard,
+    DetailsCard,
     // ApprovalsCard,
   },
 }
