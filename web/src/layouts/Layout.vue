@@ -95,7 +95,7 @@
               <v-list-item-title>Manager View</v-list-item-title>
             </v-list-item>
             <v-list-item
-              v-if="isInDevelopment"
+              v-if="isInDevelopmentOrUserAcceptanceTesting"
               :to="{ name: 'Qa-Scenarios' }"
               @click="menuItemSelected('QA Scenarios')"
             >
@@ -222,8 +222,11 @@ export default {
     showAppSidebar() {
       return store.getters.showAppSidebar
     },
-    isInDevelopment() {
-      return config.environment === "development"
+    isInDevelopmentOrUserAcceptanceTesting() {
+      return (
+        config.environment === "development" ||
+        window.location.hostname === "travel-auth-dev.ynet.gov.yk.ca"
+      )
     },
   },
   data: () => ({
@@ -315,7 +318,7 @@ export default {
         { name: "Manager View", to: "/managerView" },
       ]
 
-      if (this.isInDevelopment) {
+      if (this.isInDevelopmentOrUserAcceptanceTesting) {
         routes.push({ name: "QA Scenarios", to: "/qa/scenarios" })
       }
 
