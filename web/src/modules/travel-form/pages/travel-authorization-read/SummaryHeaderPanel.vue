@@ -8,6 +8,7 @@
         <v-text-field
           :value="purposeText"
           label="Purpose"
+          dense
           outlined
           readonly
         ></v-text-field>
@@ -19,6 +20,7 @@
         <v-text-field
           :value="finalDestinationText"
           label="Final Destination"
+          dense
           outlined
           readonly
         ></v-text-field>
@@ -30,6 +32,7 @@
         <v-text-field
           :value="initialDestination.departureDate"
           label="Start Date"
+          dense
           outlined
           readonly
         ></v-text-field>
@@ -41,6 +44,7 @@
         <v-text-field
           :value="finalDestination.departureDate"
           label="End Date"
+          dense
           outlined
           readonly
         ></v-text-field>

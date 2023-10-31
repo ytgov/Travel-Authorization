@@ -11,6 +11,7 @@
           <v-checkbox
             :value="currentForm.allTravelWithinTerritory"
             label="In Territory?"
+            dense
             outlined
             readonly
           >
@@ -23,6 +24,7 @@
           <v-text-field
             :value="tripType"
             label="Trip Type"
+            dense
             outlined
             readonly
           ></v-text-field>
@@ -42,6 +44,7 @@
           <v-text-field
             :value="currentForm.travelDuration"
             label="# Days"
+            dense
             outlined
             readonly
           ></v-text-field>
@@ -53,6 +56,7 @@
           <v-text-field
             :value="currentForm.daysOffTravelStatus"
             label="Days on non-travel status"
+            dense
             outlined
             readonly
           ></v-text-field>
@@ -64,6 +68,7 @@
           <DatePicker
             :value="currentForm.dateBackToWork"
             text="Expected Date return to work"
+            dense
             outlined
             readonly
           />

@@ -15,6 +15,7 @@
               <v-text-field
                 :value="purposeText"
                 label="Purpose"
+                dense
                 outlined
                 readonly
               ></v-text-field>
@@ -23,6 +24,7 @@
               <v-text-field
                 :value="currentForm.eventName"
                 label="Name of meeting/conference, mission, trade fair or course"
+                dense
                 outlined
                 readonly
               ></v-text-field>
@@ -34,6 +36,7 @@
               <v-text-field
                 :value="finalDestinationText"
                 label="Final Destination"
+                dense
                 outlined
                 readonly
               ></v-text-field>
@@ -64,6 +67,7 @@
                 label="Objectives"
                 rows="10"
                 auto-grow
+                dense
                 outlined
                 readonly
               >
