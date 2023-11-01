@@ -51,7 +51,7 @@
         <TimePicker
           v-model="stop1.departureTime"
           :rules="[required]"
-          text="Time"
+          label="Time (24h)"
           persistent-hint
         />
       </v-col>
@@ -129,7 +129,7 @@
         <TimePicker
           v-model="stop2.departureTime"
           :rules="[required]"
-          text="Time"
+          label="Time (24 hour)"
           persistent-hint
         />
       </v-col>
@@ -207,7 +207,7 @@
         <TimePicker
           v-model="stop3.departureTime"
           :rules="[required]"
-          text="Time"
+          label="Time (24 hour)"
           persistent-hint
         />
       </v-col>

@@ -47,7 +47,7 @@
       >
         <v-text-field
           :value="originStop.departureTime"
-          label="Time"
+          label="Time (24h)"
           prepend-icon="mdi-clock"
           dense
           outlined
