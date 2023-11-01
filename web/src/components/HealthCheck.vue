@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <v-container>
-      <v-row>
+      <router-link :to="{ name: 'Dashboard' }">Dashboard</router-link>
+
+      <v-row class="mt-5">
         <v-col
           cols="12"
           md="6"
@@ -112,6 +114,8 @@
 import http from "@/apis/http-client"
 
 export default {
+  name: "HealthCheck",
+  components: {},
   data: () => ({
     healthCheck: {
       appHealth: {},
@@ -135,12 +139,15 @@ export default {
   },
   methods: {
     refresh() {
-      return http.get("/api/health-check").then(({ data }) => {
-        this.$set(this, "healthCheck", data)
-        console.log("this.healthCheck:", JSON.stringify(this.healthCheck, null, 2))
-      }).catch((error) => {
-        this.$snack(`Failed to fetch health check data: ${error}`, { color: "error" });
-      })
+      return http
+        .get("/api/health-check")
+        .then(({ data }) => {
+          this.$set(this, "healthCheck", data)
+          console.log("this.healthCheck:", JSON.stringify(this.healthCheck, null, 2))
+        })
+        .catch((error) => {
+          this.$snack(`Failed to fetch health check data: ${error}`, { color: "error" })
+        })
     },
   },
 }
