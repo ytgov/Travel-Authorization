@@ -91,7 +91,7 @@ export default {
   methods: {
     ...mapActions("travelForm", ["loadAsCurrentForm", "loadCurrentUser"]),
     goToAdminEditPage() {
-      alert("TODO: redirect user to admin edit interface for:" + this.travelAuthorizationId)
+      alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)
     },
   },
 }
