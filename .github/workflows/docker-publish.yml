@@ -42,9 +42,9 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ steps.generate_release_tag.outputs.next_release_tag }}
-          build-args:
-            - RELEASE_TAG: ${{ steps.generate_release_tag.outputs.next_release_tag }}
-            - GIT_COMMIT_HASH: ${{ steps.git_commit_hash.outputs.commit_hash }}
+          build-args: |
+            RELEASE_TAG=${{ steps.generate_release_tag.outputs.next_release_tag }}
+            GIT_COMMIT_HASH=${{ steps.git_commit_hash.outputs.commit_hash }}
 
       - name: Create release
         uses: ncipollo/release-action@v1
