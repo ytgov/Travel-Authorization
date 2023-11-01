@@ -1,6 +1,9 @@
 version: "3"
 services:
   app:
+    # replace `build` line with `image` line, if you want to pull a build generated via github workflow
+    # Note you must use the appropriate build tag
+    # image: ghcr.io/icefoganalytics/travel-authorization:v2023.11.1.3
     build: .
     restart: unless-stopped
     env_file:
