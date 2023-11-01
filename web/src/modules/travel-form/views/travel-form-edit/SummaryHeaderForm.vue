@@ -8,6 +8,21 @@
         cols="12"
         md="2"
       >
+        <!-- Depending on in territory flag we will load a different list of destinations -->
+        <v-checkbox
+          v-model="currentForm.allTravelWithinTerritory"
+          label="In Territory?"
+          dense
+          required
+        >
+        </v-checkbox>
+      </v-col>
+    </v-row>
+    <v-row dense>
+      <v-col
+        cols="12"
+        md="2"
+      >
         <v-select
           v-model="currentForm.purposeId"
           :items="purposes"
