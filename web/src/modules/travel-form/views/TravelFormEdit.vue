@@ -33,14 +33,6 @@
     <template v-if="!loadingCurrentForm">
       <router-view></router-view>
     </template>
-
-    <div class="d-flex justify-end">
-      <v-btn
-        color="secondary"
-        :to="{ name: 'TravelFormList' }"
-        >Back</v-btn
-      >
-    </div>
   </div>
 </template>
 

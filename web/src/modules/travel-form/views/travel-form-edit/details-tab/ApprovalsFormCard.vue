@@ -1,7 +1,5 @@
 <template>
-  <v-card
-    elevation="2"
-  >
+  <v-card elevation="2">
     <v-card-title> Approvals </v-card-title>
     <v-card-text>
       <v-form
@@ -69,6 +67,15 @@
               required
             />
           </v-col>
+          <v-col
+            cols="12"
+            md="3"
+          >
+            <SubmitToSupervisorButton
+              :validate-form="validateForm"
+              class="mt-1"
+            />
+          </v-col>
         </v-row>
       </v-form>
     </v-card-text>
@@ -83,11 +90,19 @@ import { TYPES } from "@/apis/expenses-api"
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+import SubmitToSupervisorButton from "./SubmitToSupervisorButton"
 
 export default {
   name: "ApprovalsFormCard",
   components: {
     SearchableUserEmailCombobox,
+    SubmitToSupervisorButton,
+  },
+  props: {
+    validateForm: {
+      type: Function,
+      required: true,
+    },
   },
   data: () => ({
     required: (v) => !!v || "This field is required",
