@@ -37,7 +37,7 @@
           md="6"
         >
           <v-text-field
-            :value="getPreApprovedTravelRequestText"
+            :value="preApprovedTravelRequestText"
             :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
             label="Pre-approved Travel Request?"
             no-data-text="No pre-approvals available"
@@ -88,6 +88,13 @@ export default {
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
+    preApprovedTravelRequestText() {
+      const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
+        (p) => p.value === this.currentForm.preappId
+      )
+      console.log("preApprovedTravelRequest:", preApprovedTravelRequest)
+      return preApprovedTravelRequest?.text || ""
+    },
     travelAdvanceInDollars() {
       return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
     },
@@ -100,12 +107,6 @@ export default {
   },
   methods: {
     ...mapActions("travelForm", ["loadCurrentUser"]),
-    getPreApprovedTravelRequestText() {
-      const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
-        (p) => p.value === this.currentForm.preappId
-      )
-      return preApprovedTravelRequest?.text || ""
-    },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {
