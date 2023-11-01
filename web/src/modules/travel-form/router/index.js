@@ -13,6 +13,24 @@ const routes = [
       },
       {
         path: ":formId",
+        component: () => import("@/modules/travel-form/pages/TravelAuthorizationRead"),
+        props: true,
+        children: [
+          {
+            path: "",
+            redirect: "details",
+          },
+          {
+            path: "details",
+            name: "TravelAuthorizationRead-DetailsTab",
+            component: () => import("@/modules/travel-form/pages/travel-authorization-read/DetailsTab"),
+            props: true,
+          },
+          // TODO: add read only estimates tab
+        ],
+      },
+      {
+        path: ":formId/edit",
         component: () => import("../views/TravelFormEdit"),
         props: true,
         children: [

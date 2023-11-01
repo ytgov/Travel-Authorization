@@ -1,14 +1,6 @@
 <template>
   <div>
-    <v-overlay :value="loadingCurrentForm">
-      <v-progress-circular
-        indeterminate
-        color="#f3b228"
-        :size="70"
-        :width="7"
-        class="text-center"
-      ></v-progress-circular>
-    </v-overlay>
+    <FullScreenLoadingOverlay :value="loadingCurrentForm" />
 
     <Breadcrumbs />
 
@@ -37,34 +29,10 @@
       <v-tab>Expense - TODO</v-tab>
       <v-tab>Reporting - TODO</v-tab>
     </v-tabs>
-    <v-form
-      ref="form"
-      lazy-validation
-    >
-      <template v-if="!loadingCurrentForm">
-        <router-view></router-view>
-      </template>
-      <div>
-        <v-btn
-          color="blue"
-          class="mr-5"
-          @click="submitForm"
-        >
-          Submit to Supervisor
-        </v-btn>
-        <v-btn
-          color="green"
-          class="mr-5"
-          @click="saveForm"
-          >Save Draft
-        </v-btn>
-        <v-btn
-          color="secondary"
-          :to="{ name: 'TravelFormList' }"
-          >Back</v-btn
-        >
-      </div>
-    </v-form>
+
+    <template v-if="!loadingCurrentForm">
+      <router-view></router-view>
+    </template>
   </div>
 </template>
 
@@ -72,12 +40,14 @@
 import { mapActions, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
+import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 import SummaryHeaderForm from "./travel-form-edit/SummaryHeaderForm"
 
 export default {
   name: "TravelFormEdit",
   components: {
     Breadcrumbs,
+    FullScreenLoadingOverlay,
     SummaryHeaderForm,
   },
   props: {
@@ -90,48 +60,13 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelForm", [
-      "currentForm",
-      "currentUser",
-      "loadingCurrentForm",
-      "loadingCurrentUser",
-    ]),
+    ...mapState("travelForm", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
   },
   mounted() {
     return Promise.all([this.loadAsCurrentForm(this.formId), this.loadCurrentUser()])
   },
   methods: {
-    ...mapActions("travelForm", ["loadAsCurrentForm", "updateCurrentForm", "loadCurrentUser"]),
-    submitForm() {
-      if (!this.$refs.form.validate()) {
-        this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
-        return
-      }
-
-      this.currentForm.status = "submitted"
-      return this.updateCurrentForm()
-        .then(() => {
-          this.$router.push({ name: "TravelFormList" })
-        })
-        .catch((error) => {
-          this.$snack(error.message, { color: "error" })
-        })
-    },
-    saveForm() {
-      if (!this.$refs.form.validate()) {
-        this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
-        return
-      }
-
-      this.currentForm.status = "draft"
-      return this.updateCurrentForm()
-        .then(() => {
-          this.$snack("Form saved as a draft", { color: "success" })
-        })
-        .catch((error) => {
-          this.$snack(error.message, { color: "error" })
-        })
-    },
+    ...mapActions("travelForm", ["loadAsCurrentForm", "loadCurrentUser"]),
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
     resetActiveState() {

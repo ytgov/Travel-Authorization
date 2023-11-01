@@ -201,7 +201,7 @@ formRouter.post(
             status: TravelAuthorization.Statuses.DENIED,
           })
 
-          auditService.insertAudit(user.id, form.id, "Reassign", "Successfully denied form")
+          await auditService.log(user.id, form.id, "Reassign", "Successfully denied form")
 
           res.status(200).json({
             formId: req.body.formId,
@@ -239,7 +239,7 @@ formRouter.post(
             status: TravelAuthorization.Statuses.APPROVED,
           })
 
-          auditService.insertAudit(user.id, form.id, "Reassign", "Successfully approved form")
+          await auditService.log(user.id, form.id, "Reassign", "Successfully approved form")
 
           res.status(200).json({
             formId: req.body.formId,
@@ -280,7 +280,7 @@ formRouter.post(
             supervisorEmail: reassign,
           })
 
-          auditService.insertAudit(
+          await auditService.log(
             user.id,
             form.id,
             "Reassign",
@@ -322,7 +322,7 @@ formRouter.post(
             status: TravelAuthorization.Statuses.CHANGE_REQUESTED,
           })
 
-          auditService.insertAudit(
+          await auditService.log(
             user.id,
             form.id,
             "Reassign",
@@ -363,9 +363,9 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
       .update({
         status: TravelAuthorization.Statuses.DELETED,
       })
-      .then(() => {
+      .then(async () => {
         console.log("Delete successful", req.params.id)
-        auditService.insertAudit(user.id, form.id, "Delete", "Deteled form")
+        await auditService.log(user.id, form.id, "Delete", "Deteled form")
         res.status(200).json("Delete successful")
       })
       .catch(() => {

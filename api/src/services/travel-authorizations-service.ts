@@ -1,40 +1,75 @@
-import { isNil, isEmpty, isNull } from "lodash"
+import { CreationAttributes } from "sequelize"
+import { isNil, isEmpty } from "lodash"
 import { v4 as uuid } from "uuid"
 
-import { TravelAuthorization, User } from "@/models"
+import { Expense, Stop, TravelAuthorization, User } from "@/models"
 import StopsService from "./stops-service"
 import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"
 
 import db from "@/db/db-client"
+import { AuditService } from "./audit-service"
+
+// TODO: upgrade this to the enhanced service pattern.
+const auditService = new AuditService()
+
+type TravelAuthorizationCreationAttributes = Omit<
+  CreationAttributes<TravelAuthorization>,
+  "slug"
+> & {
+  slug?: TravelAuthorization["slug"]
+} & {
+  stops?: CreationAttributes<Stop>[]
+  expenses?: CreationAttributes<Expense>[]
+  estimates?: CreationAttributes<Expense>[]
+}
 
 export class TravelAuthorizationsService {
   static async create(
-    { stops = [], expenses, estimates, ...attributes }: TravelAuthorization,
+    { stops = [], expenses, estimates, ...attributes }: TravelAuthorizationCreationAttributes,
     currentUser: User
   ): Promise<TravelAuthorization> {
-    attributes.userId = currentUser.id
-    // Not sure if this is correct, but I can't find anything that generates the formId elsewhere
-    if (isNil(attributes.slug)) {
-      attributes.slug = uuid()
+    const secureAttributes = {
+      ...attributes,
+      userId: currentUser.id,
+      slug: attributes.slug || uuid(),
     }
 
-    return db.transaction(async () => {
-      const travelAuthorization = await TravelAuthorization.create(attributes).catch((error) => {
-        throw new Error(`Could not create TravelAuthorization: ${error}`)
+    return db
+      .transaction(async () => {
+        const travelAuthorization = await TravelAuthorization.create(secureAttributes).catch(
+          (error) => {
+            throw new Error(`Could not create TravelAuthorization: ${error}`)
+          }
+        )
+
+        const travelAuthorizationId = travelAuthorization.id
+        if (!isEmpty(stops)) {
+          await StopsService.bulkCreate(travelAuthorizationId, stops)
+        }
+
+        const instance = new LegacyFormSerivce()
+        await instance.saveExpenses(travelAuthorizationId, expenses)
+        await instance.saveEstimates(travelAuthorizationId, estimates)
+
+        auditService.log(
+          currentUser.id,
+          travelAuthorization.id,
+          "Submit",
+          "TravelAuthorization submitted successfully."
+        )
+
+        return travelAuthorization
       })
-
-      const travelAuthorizationId = travelAuthorization.id
-      if (!isEmpty(stops)) {
-        await StopsService.bulkCreate(travelAuthorizationId, stops)
-      }
-
-      const instance = new LegacyFormSerivce()
-      await instance.saveExpenses(travelAuthorizationId, expenses)
-      await instance.saveEstimates(travelAuthorizationId, estimates)
-
-      return travelAuthorization
-    })
+      .catch((error) => {
+        auditService.log(
+          currentUser.id,
+          -1,
+          "Submit",
+          "TravelAuthorization did not submit successfully."
+        )
+        throw error
+      })
   }
 
   static async update(

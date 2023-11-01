@@ -1,4 +1,4 @@
-import { isString, upperFirst, omit } from "lodash"
+import { isString, upperFirst, pick } from "lodash"
 
 import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
@@ -136,10 +136,20 @@ const actions = {
           branch: user.branch,
           unit: user.unit,
           mailcode: user.mailcode,
+          roles: user.roles,
         })
         commit("SET_FORM", {
           ...state.request,
-          ...omit(state.currentUser, "id"),
+          ...pick(state.currentUser, [
+            "firstName",
+            "lastName",
+            "email",
+            "department",
+            "division",
+            "branch",
+            "unit",
+            "mailcode",
+          ]),
         })
         return state.currentUser
       })

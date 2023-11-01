@@ -3,13 +3,10 @@ import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
-import { AuditService, TravelAuthorizationsService } from "@/services"
+import { TravelAuthorizationsService } from "@/services"
 import { TravelAuthorization } from "@/models"
 import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
-
-// TODO: push this code back into services where it belongs
-const auditService = new AuditService()
 
 export class TravelAuthorizationsController extends BaseController {
   async index() {
@@ -49,25 +46,20 @@ export class TravelAuthorizationsController extends BaseController {
   }
 
   create() {
-    return TravelAuthorizationsService.create(this.request.body, this.currentUser)
+    const travelAuthorization = this.buildTravelAuthorization()
+    const policy = this.buildPolicy(travelAuthorization)
+    if (!policy.create()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to create this travel authorization." })
+    }
+
+    const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
+    return TravelAuthorizationsService.create(permittedAttributes, this.currentUser)
       .then((travelAuthorization) => {
-        // TODO: push the audit logging code back into services where it belongs
-        auditService.log(
-          this.currentUser.id,
-          travelAuthorization.id,
-          "Submit",
-          "TravelAuthorization submitted successfully."
-        )
         return this.response.status(201).json({ travelAuthorization })
       })
       .catch((error) => {
-        // TODO: push the audit logging code back into services where it belongs
-        auditService.log(
-          this.currentUser.id,
-          -1,
-          "Submit",
-          "TravelAuthorization did not submit successfully."
-        )
         return this.response
           .status(422)
           .json({ message: `TravelAuthorization submission failed: ${error}` })
@@ -119,7 +111,8 @@ export class TravelAuthorizationsController extends BaseController {
         .json({ message: "You are not authorized to update this travelAuthorization." })
     }
 
-    return TravelAuthorizationsService.update(travelAuthorization, this.request.body)
+    const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
+    return TravelAuthorizationsService.update(travelAuthorization, permittedAttributes)
       .then((travelAuthorization) => {
         this.response.json({ travelAuthorization })
       })
@@ -132,6 +125,15 @@ export class TravelAuthorizationsController extends BaseController {
 
   private loadTravelAuthorization(): Promise<TravelAuthorization | null> {
     return TravelAuthorization.findByPk(this.params.travelAuthorizationId)
+  }
+
+  private buildTravelAuthorization() {
+    const attributes = this.request.body
+    const travelAuthorization = TravelAuthorization.build({
+      ...attributes,
+      userId: this.currentUser.id,
+    })
+    return travelAuthorization
   }
 
   private buildPolicy(record: TravelAuthorization): TravelAuthorizationsPolicy {

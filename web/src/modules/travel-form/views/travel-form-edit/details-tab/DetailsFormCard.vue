@@ -1,7 +1,6 @@
 <template>
   <v-card
     elevation="2"
-    class="default"
   >
     <v-card-title> Details </v-card-title>
     <v-card-text>
@@ -32,7 +31,6 @@
               :items="tripTypes"
               :rules="[required]"
               label="Trip Type"
-              background-color="white"
               dense
               outlined
               required
@@ -55,7 +53,6 @@
               v-model="currentForm.travelDuration"
               :rules="[required, isNumber]"
               label="# Days"
-              background-color="white"
               dense
               outlined
               required
@@ -69,7 +66,6 @@
               v-model="currentForm.daysOffTravelStatus"
               :rules="[isNumber]"
               label="Days on non-travel status"
-              background-color="white"
               dense
               required
               outlined

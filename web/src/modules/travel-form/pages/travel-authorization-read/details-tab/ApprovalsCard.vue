@@ -2,82 +2,65 @@
   <v-card elevation="2">
     <v-card-title> Approvals </v-card-title>
     <v-card-text>
-      <v-form
-        ref="form"
-        lazy-validation
-      >
-        <v-row>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <!-- TODO: add tooltip with link to estimate tab explaining where this data comes from -->
-            <v-text-field
-              :value="formatCurrency(estimatedCost)"
-              :rules="[required]"
-              label="Estimated Cost"
-              disabled
-              dense
-              outlined
-              required
-            ></v-text-field>
-          </v-col>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <v-text-field
-              v-model="travelAdvanceInDollars"
-              :rules="[required, isInteger]"
-              label="Travel Advance"
-              prefix="$"
-              dense
-              outlined
-              required
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col
-            cols="12"
-            md="6"
-          >
-            <v-select
-              v-model="currentForm.preappId"
-              :items="preApprovedTravelRequests"
-              :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
-              label="Pre-approved Travel Request?"
-              no-data-text="No pre-approvals available"
-              dense
-              outlined
-            ></v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <SearchableUserEmailCombobox
-              v-model="currentForm.supervisorEmail"
-              :rules="[required]"
-              label="Submit to"
-              dense
-              outlined
-              required
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <SubmitToSupervisorButton
-              :validate-form="validateForm"
-              class="mt-1"
-            />
-          </v-col>
-        </v-row>
-      </v-form>
+      <v-row>
+        <v-col
+          cols="12"
+          md="3"
+        >
+          <!-- TODO: add tooltip with link to estimate tab explaining where this data comes from -->
+          <v-text-field
+            :value="formatCurrency(estimatedCost)"
+            label="Estimated Cost"
+            disabled
+            dense
+            outlined
+            readonly
+          ></v-text-field>
+        </v-col>
+        <v-col
+          cols="12"
+          md="3"
+        >
+          <v-text-field
+            :value="travelAdvanceInDollars"
+            label="Travel Advance"
+            prefix="$"
+            dense
+            outlined
+            readonly
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          cols="12"
+          md="6"
+        >
+          <v-text-field
+            :value="preApprovedTravelRequestText"
+            :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
+            label="Pre-approved Travel Request?"
+            no-data-text="No pre-approvals available"
+            dense
+            outlined
+            readonly
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col
+          cols="12"
+          md="3"
+        >
+          <v-text-field
+            :value="currentForm.supervisorEmail"
+            label="Submit to"
+            dense
+            outlined
+            readonly
+          />
+        </v-col>
+      </v-row>
     </v-card-text>
   </v-card>
 </template>
@@ -89,24 +72,10 @@ import { mapActions, mapState } from "vuex"
 import { TYPES } from "@/apis/expenses-api"
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
-import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-import SubmitToSupervisorButton from "./SubmitToSupervisorButton"
-
 export default {
-  name: "ApprovalsFormCard",
-  components: {
-    SearchableUserEmailCombobox,
-    SubmitToSupervisorButton,
-  },
-  props: {
-    validateForm: {
-      type: Function,
-      required: true,
-    },
-  },
+  name: "ApprovalsCard",
+  components: {},
   data: () => ({
-    required: (v) => !!v || "This field is required",
-    isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
   }),
@@ -119,13 +88,14 @@ export default {
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
-    travelAdvanceInDollars: {
-      get() {
-        return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
-      },
-      set(value) {
-        this.currentForm.travelAdvanceInCents = Math.ceil(value * 100)
-      },
+    preApprovedTravelRequestText() {
+      const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
+        (p) => p.value === this.currentForm.preappId
+      )
+      return preApprovedTravelRequest?.text || ""
+    },
+    travelAdvanceInDollars() {
+      return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
     },
   },
   async mounted() {
