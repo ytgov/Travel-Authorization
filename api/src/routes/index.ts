@@ -51,9 +51,9 @@ router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsControl
 
 // QA testing scenarios
 router.get("/api/qa/scenarios", Qa.ScenariosController.index)
-Object.values(Qa.ScenarioTypes).forEach((scenarioType) => {
-  router.post(`/api/qa/scenarios/${scenarioType}`, Qa.Scenarios.MyTravelRequestsController.create)
-})
+router.post(`/api/qa/scenarios/${Qa.ScenarioTypes.MY_TRAVEL_REQUESTS}`, Qa.Scenarios.MyTravelRequestsController.create)
+router.post(`/api/qa/scenarios/${Qa.ScenarioTypes.BECOME_ADMIN_ROLE}`, Qa.Scenarios.BecomeAdminRoleController.create)
+router.post(`/api/qa/scenarios/${Qa.ScenarioTypes.BECOME_USER_ROLE}`, Qa.Scenarios.BecomeUserRoleController.create)
 
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
