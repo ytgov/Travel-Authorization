@@ -1,14 +1,6 @@
 <template>
   <div>
-    <v-overlay :value="loadingCurrentForm">
-      <v-progress-circular
-        indeterminate
-        color="#f3b228"
-        :size="70"
-        :width="7"
-        class="text-center"
-      ></v-progress-circular>
-    </v-overlay>
+    <FullScreenLoadingOverlay :value="loadingCurrentForm" />
 
     <Breadcrumbs />
 
@@ -72,12 +64,14 @@
 import { mapActions, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
+import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 import SummaryHeaderForm from "./travel-form-edit/SummaryHeaderForm"
 
 export default {
   name: "TravelFormEdit",
   components: {
     Breadcrumbs,
+    FullScreenLoadingOverlay,
     SummaryHeaderForm,
   },
   props: {
