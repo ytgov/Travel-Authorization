@@ -1,7 +1,6 @@
 <template>
   <v-card
     elevation="2"
-    class="default"
   >
     <v-card-title> Purpose </v-card-title>
     <v-card-text>
@@ -24,7 +23,6 @@
                   :items="purposes"
                   :loading="loadingPurposes"
                   :rules="[required]"
-                  background-color="white"
                   dense
                   item-text="purpose"
                   item-value="id"
@@ -37,7 +35,6 @@
                 <v-text-field
                   v-model="currentForm.eventName"
                   :rules="[required]"
-                  background-color="white"
                   dense
                   label="Name of meeting/conference, mission, trade fair or course"
                   outlined
@@ -53,7 +50,6 @@
                   :items="destinationsByCurrentFormTravelRestriction"
                   :loading="loadingDestinations"
                   :rules="[required]"
-                  background-color="white"
                   clearable
                   dense
                   label="Final Destination"
@@ -89,7 +85,6 @@
                   v-model="currentForm.benefits"
                   :rules="[required]"
                   auto-grow
-                  background-color="white"
                   dense
                   label="Objectives"
                   outlined

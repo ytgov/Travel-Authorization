@@ -1,7 +1,6 @@
 <template>
   <v-card
     elevation="2"
-    class="default"
   >
     <v-card-title> Approvals </v-card-title>
     <v-card-text>
@@ -19,7 +18,6 @@
               :value="formatCurrency(estimatedCost)"
               :rules="[required]"
               label="Estimated Cost"
-              background-color="white"
               disabled
               dense
               outlined
@@ -34,7 +32,6 @@
               v-model="travelAdvanceInDollars"
               :rules="[required, isInteger]"
               label="Travel Advance"
-              background-color="white"
               prefix="$"
               dense
               outlined
@@ -53,7 +50,6 @@
               :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
               label="Pre-approved Travel Request?"
               no-data-text="No pre-approvals available"
-              background-color="white"
               dense
               outlined
             ></v-select>
@@ -68,7 +64,6 @@
               v-model="currentForm.supervisorEmail"
               :rules="[required]"
               label="Submit to"
-              background-color="white"
               dense
               outlined
               required
