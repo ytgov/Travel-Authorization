@@ -26,6 +26,7 @@ const routes = [
             component: () => import("@/modules/travel-form/pages/travel-authorization-read/DetailsTab"),
             props: true,
           },
+          // TODO: add read only estimates tab
         ],
       },
       {

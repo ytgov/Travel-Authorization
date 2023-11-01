@@ -43,15 +43,7 @@
       <v-tab :to="{ name: 'TravelAuthorizationRead-DetailsTab', params: { formId } }"
         >Details</v-tab
       >
-      <v-tab
-        :to="{ name: 'TravelAuthorizationRead-EstimateTab', params: { formId } }"
-        @click="resetActiveState"
-        >Estimate</v-tab
-      >
-      <v-tab>Request - TODO</v-tab>
-      <v-tab>Itinerary - TODO</v-tab>
-      <v-tab>Expense - TODO</v-tab>
-      <v-tab>Reporting - TODO</v-tab>
+      <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
 
     <template v-if="!loadingCurrentForm">
@@ -93,7 +85,6 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", [
-      "currentForm",
       "currentUser",
       "loadingCurrentForm",
       "loadingCurrentUser",
@@ -109,11 +100,6 @@ export default {
     ...mapActions("travelForm", ["loadAsCurrentForm", "loadCurrentUser"]),
     goToAdminEditPage() {
       alert("TODO: redirect user to admin edit interface for:" + this.travelAuthorizationId)
-    },
-    // This will be unnecessary once all tabs are router links
-    // This fixes a bug where the active state of the tabs is not reset, because url is not changed
-    resetActiveState() {
-      this.tab = this.$route.path
     },
   },
 }
