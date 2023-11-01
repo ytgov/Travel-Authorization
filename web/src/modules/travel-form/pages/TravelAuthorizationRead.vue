@@ -17,8 +17,22 @@
         v-if="isAdmin"
         color="primary"
         @click="goToAdminEditPage"
-        >Edit</v-btn
       >
+        Edit
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              small
+              class="ml-2"
+              v-bind="attrs"
+              v-on="on"
+            >
+              mdi-help-circle-outline
+            </v-icon>
+          </template>
+          <span>You can edit this because you are an admin.</span>
+        </v-tooltip>
+      </v-btn>
     </h1>
 
     <template v-if="!loadingCurrentForm">
