@@ -4,13 +4,21 @@
 
     <Breadcrumbs />
 
-    <h1>
-      Travel -
-      <v-progress-circular
-        v-if="loadingCurrentUser"
-        indeterminate
-      ></v-progress-circular>
-      <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
+    <h1 class="d-flex justify-space-between">
+      <span>
+        Travel -
+        <v-progress-circular
+          v-if="loadingCurrentUser"
+          indeterminate
+        ></v-progress-circular>
+        <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
+      </span>
+      <v-btn
+        v-if="isAdmin"
+        color="primary"
+        @click="goToAdminEditPage"
+        >Edit</v-btn
+      >
     </h1>
 
     <template v-if="!loadingCurrentForm">
@@ -76,12 +84,18 @@ export default {
       "loadingCurrentForm",
       "loadingCurrentUser",
     ]),
+    isAdmin() {
+      return this.currentUser?.roles.includes("admin")
+    },
   },
   mounted() {
     return Promise.all([this.loadAsCurrentForm(this.formId), this.loadCurrentUser()])
   },
   methods: {
     ...mapActions("travelForm", ["loadAsCurrentForm", "loadCurrentUser"]),
+    goToAdminEditPage() {
+      alert("TODO: redirect user to admin edit interface for:" + this.travelAuthorizationId)
+    },
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
     resetActiveState() {
