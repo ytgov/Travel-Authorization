@@ -122,10 +122,10 @@ export default {
     healthCheck: {
       appHealth: {},
       dbHealth: {},
-      environment: {
-        releaseTag,
-        gitCommitHash,
-      },
+    },
+    environment: { // TODO: load from back-end
+      releaseTag,
+      gitCommitHash,
     },
   }),
   computed: {
@@ -134,9 +134,6 @@ export default {
     },
     appHealth() {
       return this.healthCheck.appHealth || {}
-    },
-    environment() {
-      return this.healthCheck.environment || {}
     },
   },
   async mounted() {
