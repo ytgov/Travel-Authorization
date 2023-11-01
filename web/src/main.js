@@ -57,7 +57,7 @@ new Vue({
   render: (h) => h(App),
 }).$mount("#app")
 
-console.log("App is running config", {
+console.log("App is running", {
   environment,
   apiBaseUrl,
   releaseTag: process.env.VUE_APP_RELEASE_TAG,

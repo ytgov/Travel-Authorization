@@ -10,7 +10,6 @@ import PoolCarCost from "../components/Administration/RatesEstimateManagement/Po
 import RentalCarEstimates from "../components/Administration/RatesEstimateManagement/RentalCarEstimate"
 import YGRates from "../components/Administration/RatesEstimateManagement/YGRates"
 import TravelAgents from "../components/Administration/LookupTableManagement/TravelAgents"
-import HealthCheck from "../components/HealthCheck"
 
 import preapprovedRouter from "../modules/preapproved/router/index.js"
 import travelDeskRouter from "../modules/travelDesk/router/index.js"
@@ -95,9 +94,9 @@ const routes = [
     component: () => import("@/views/qa/ScenariosList"),
   },
   {
-    path: "/healthCheck",
+    path: "/health-check",
     name: "HealthCheck",
-    component: HealthCheck,
+    component: () => import("@/components/HealthCheck"),
   },
   {
     path: "*",
