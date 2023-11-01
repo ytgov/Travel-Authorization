@@ -113,6 +113,8 @@
 <script>
 import http from "@/apis/http-client"
 
+import { releaseTag, gitCommitHash } from "@/config"
+
 export default {
   name: "HealthCheck",
   components: {},
@@ -120,7 +122,10 @@ export default {
     healthCheck: {
       appHealth: {},
       dbHealth: {},
-      environment: {},
+      environment: {
+        releaseTag,
+        gitCommitHash,
+      },
     },
   }),
   computed: {
@@ -143,7 +148,6 @@ export default {
         .get("/api/health-check")
         .then(({ data }) => {
           this.$set(this, "healthCheck", data)
-          console.log("this.healthCheck:", JSON.stringify(this.healthCheck, null, 2))
         })
         .catch((error) => {
           this.$snack(`Failed to fetch health check data: ${error}`, { color: "error" })

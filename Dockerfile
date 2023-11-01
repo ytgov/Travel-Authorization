@@ -6,12 +6,6 @@ RUN npm install -g npm@8.5.5
 # Stage 1 - api build - requires development environment because typescript
 FROM base-node as api-build-stage
 
-ARG RELEASE_TAG
-ARG GIT_COMMIT_HASH
-
-ENV RELEASE_TAG=${RELEASE_TAG}
-ENV GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
-
 ENV NODE_ENV=development
 
 WORKDIR /usr/src/api

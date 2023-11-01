@@ -16,9 +16,10 @@ healthCheckRouter.get("/", (req: Request, res: Response) => {
       user: DB_CONFIG.connection.user,
       port: DB_CONFIG.connection.port,
     },
-    environment: {
-      releaseTag: process.env.RELEASE_TAG,
-      gitCommitHash: process.env.GIT_COMMIT_HASH,
-    },
+    // TODO: figure out how to inject these into the back-end image.
+    // environment: {
+    //   releaseTag: process.env.RELEASE_TAG,
+    //   gitCommitHash: process.env.GIT_COMMIT_HASH,
+    // },
   })
 })
