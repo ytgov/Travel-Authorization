@@ -155,11 +155,11 @@
               </v-list-item-icon>
               <v-list-item-title>Sign out</v-list-item-title>
             </v-list-item>
-            <v-list-item>
+            <v-list-item :to="{ name: 'HealthCheck' }">
               <v-list-item-icon>
                 <v-icon>mdi-clock</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>{{ appVersion }}</v-list-item-title>
+              <v-list-item-title>{{ releaseTag || "2023.11.01" }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -230,7 +230,7 @@ export default {
     },
   },
   data: () => ({
-    appVersion: config.appVersion,
+    releaseTag: config.releaseTag,
     dialog: false,
     drawer: null,
     drawerRight: null,

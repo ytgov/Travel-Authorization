@@ -10,7 +10,6 @@ import {
   userRouter,
   managerRouter,
   lookupRouter,
-  healthCheckRouter,
   formRouter,
   preapprovedRouter,
   travelDeskRouter,
@@ -87,7 +86,6 @@ app.use("/api/reconcile", checkJwt, loadUser, reconcileRouter)
 app.use("/api/lookup", lookupRouter)
 app.use("/api/lookup-tables", lookupTableRouter)
 
-app.use("/api/healthCheck", healthCheckRouter)
 // TODO: move all routes to the same file, using simplified binding syntax for easier lookups
 app.use(routes)
 

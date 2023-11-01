@@ -70,4 +70,5 @@ export const sections = [
 ];
 export const environment = process.env.NODE_ENV;
 export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";
-export const appVersion = "1.1.7";
+export const releaseTag = process.env.VUE_APP_RELEASE_TAG
+export const gitCommitHash = process.env.VUE_APP_GIT_COMMIT_HASH

@@ -21,6 +21,12 @@ RUN npm run build
 # Stage 2 - web build - requires development environment to install vue-cli-service
 FROM base-node as web-build-stage
 
+ARG RELEASE_TAG
+ARG GIT_COMMIT_HASH
+
+ENV VUE_APP_RELEASE_TAG=${RELEASE_TAG}
+ENV VUE_APP_GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
+
 ENV NODE_ENV=development
 
 WORKDIR /usr/src/web
@@ -33,7 +39,8 @@ RUN npm install
 COPY web ./
 
 # Switching to production mode for build environment.
-RUN NODE_ENV=production npm run build
+ENV NODE_ENV=production
+RUN npm run build
 
 # Stage 3 - production setup
 FROM base-node
