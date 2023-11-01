@@ -7,7 +7,7 @@
       >
         <!-- Depending on in territory flag we will load a different list of destinations -->
         <v-checkbox
-          :value="currentForm.allTravelWithinTerritory"
+          :input-value="currentForm.allTravelWithinTerritory"
           label="In Territory?"
           dense
           outlined
