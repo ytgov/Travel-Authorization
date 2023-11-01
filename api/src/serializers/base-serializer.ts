@@ -5,7 +5,7 @@ export class BaseSerializer<Model> {
     this.record = record
   }
 
-  static perform<Model>(record: Model) {
+  static perform<Model>(record: Model): any {
     const serializer = new this(record)
     return serializer.perform()
   }

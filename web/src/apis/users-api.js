@@ -3,6 +3,9 @@ import { isString } from "lodash"
 import http from "@/apis/http-client"
 
 export const usersApi = {
+  me() {
+    return http.get("/api/user/me").then(({ data }) => data)
+  },
   search({ email, ...otherParams } = {}) {
     if (isString(email) && email.length >= 3) {
       return http

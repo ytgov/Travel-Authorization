@@ -3,9 +3,8 @@ export * from "./distance-matrix-service"
 export * from "./expenses-service"
 export * from "./form-service"
 export * from "./travel-authorizations-service"
-export * from "./lookup-service"
 export * from "./stops-service"
-export * from "./user-service"
+export * from "./yk-government-directory-sync-service"
 
 // Namespaced services
 import * as Estimates from "./estimates"

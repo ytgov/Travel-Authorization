@@ -17,7 +17,10 @@
     <br />
     <v-tabs-items v-model="tab">
       <v-tab-item>
-        <v-form ref="form" lazy-validation>
+        <v-form
+          ref="form"
+          lazy-validation
+        >
           <h2>Personal Information</h2>
           <v-row>
             <v-col class="col-4">
@@ -126,14 +129,24 @@
                 dense
               >
               </v-checkbox>
-              <v-checkbox v-model="noReturnFlight" label="Is this trip only one way?" :disabled="review" dense>
+              <v-checkbox
+                v-model="noReturnFlight"
+                label="Is this trip only one way?"
+                :disabled="review"
+                dense
+              >
               </v-checkbox>
             </v-col>
           </v-row>
 
           <div v-if="multistop === false">
             <v-row>
-              <v-col cols="1" style="display: flex"> Destination </v-col>
+              <v-col
+                cols="1"
+                style="display: flex"
+              >
+                Destination
+              </v-col>
               <v-col cols="2">
                 <v-autocomplete
                   v-if="index == 0"
@@ -256,8 +269,18 @@
                 ></v-select
               ></v-col>
               <!-- Delete button -->
-              <v-col cols="1" v-if="index > 0">
-                <v-btn class="ma-2" dense small color="red" @click="removeStop(index)" :disabled="review">
+              <v-col
+                cols="1"
+                v-if="index > 0"
+              >
+                <v-btn
+                  class="ma-2"
+                  dense
+                  small
+                  color="red"
+                  @click="removeStop(index)"
+                  :disabled="review"
+                >
                   <v-icon>mdi-trash-can</v-icon>
                 </v-btn>
               </v-col>
@@ -386,8 +409,18 @@
                 ></v-select
               ></v-col>
               <!-- Delete button -->
-              <v-col cols="1" v-if="index > 0">
-                <v-btn class="ma-2" dense small color="red" @click="removeStop(index)" :disabled="review">
+              <v-col
+                cols="1"
+                v-if="index > 0"
+              >
+                <v-btn
+                  class="ma-2"
+                  dense
+                  small
+                  color="red"
+                  @click="removeStop(index)"
+                  :disabled="review"
+                >
                   <v-icon>mdi-trash-can</v-icon>
                 </v-btn>
               </v-col>
@@ -395,8 +428,14 @@
           </div>
 
           <div v-if="multistop === true">
-            <div v-for="(stop, index) in form.stops" :key="index">
-              <v-divider class="mb-6" v-if="index > 0" />
+            <div
+              v-for="(stop, index) in form.stops"
+              :key="index"
+            >
+              <v-divider
+                class="mb-6"
+                v-if="index > 0"
+              />
               <v-row>
                 <v-col cols="2">
                   <v-autocomplete
@@ -520,15 +559,31 @@
                   ></v-select
                 ></v-col>
                 <!-- Delete button -->
-                <v-col cols="1" v-if="index > 0">
-                  <v-btn class="ma-2" dense small color="red" @click="removeStop(index)" :disabled="review">
+                <v-col
+                  cols="1"
+                  v-if="index > 0"
+                >
+                  <v-btn
+                    class="ma-2"
+                    dense
+                    small
+                    color="red"
+                    @click="removeStop(index)"
+                    :disabled="review"
+                  >
                     <v-icon>mdi-trash-can</v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
             </div>
 
-            <v-btn color="blue" class="mr-5" @click="addStop" :disabled="review">Add Stop</v-btn>
+            <v-btn
+              color="blue"
+              class="mr-5"
+              @click="addStop"
+              :disabled="review"
+              >Add Stop</v-btn
+            >
           </div>
 
           <h2>Details</h2>
@@ -574,7 +629,10 @@
                     :disabled="review"
                   ></v-text-field>
                 </template>
-                <v-date-picker v-model="form.dateBackToWork" @input="btwMenu = false"></v-date-picker>
+                <v-date-picker
+                  v-model="form.dateBackToWork"
+                  @input="btwMenu = false"
+                ></v-date-picker>
               </v-menu>
             </v-col>
           </v-row>
@@ -659,24 +717,77 @@
           </v-row>
         </v-form>
         <div v-if="review == true">
-          <v-btn color="blue" class="mr-5" @click="approveForm()">Approve</v-btn>
-          <v-btn color="green" class="mr-5" @click="requestChangePopup()"> Request Changes </v-btn>
-          <v-btn color="#f3b228" class="mr-5" @click="reassignPopup()"> Reassign </v-btn>
-          <v-btn color="red" class="mr-5" @click="denyPopup()">Deny</v-btn>
-          <v-btn color="secondary" @click="managePage()">Back</v-btn>
+          <v-btn
+            color="blue"
+            class="mr-5"
+            @click="approveForm()"
+            >Approve</v-btn
+          >
+          <v-btn
+            color="green"
+            class="mr-5"
+            @click="requestChangePopup()"
+          >
+            Request Changes
+          </v-btn>
+          <v-btn
+            color="#f3b228"
+            class="mr-5"
+            @click="reassignPopup()"
+          >
+            Reassign
+          </v-btn>
+          <v-btn
+            color="red"
+            class="mr-5"
+            @click="denyPopup()"
+            >Deny</v-btn
+          >
+          <v-btn
+            color="secondary"
+            @click="managePage()"
+            >Back</v-btn
+          >
         </div>
         <div v-else>
-          <v-btn color="blue" class="mr-5" @click="submitForm()"> Submit </v-btn>
-          <v-btn color="green" class="mr-5" @click="saveForm()">Save Draft </v-btn>
-          <v-btn color="red" class="mr-5" @click="deleteForm()">Delete</v-btn>
-          <v-btn color="secondary" @click="requestPage()">Back</v-btn>
+          <v-btn
+            color="blue"
+            class="mr-5"
+            @click="submitForm()"
+          >
+            Submit
+          </v-btn>
+          <v-btn
+            color="green"
+            class="mr-5"
+            @click="saveForm()"
+            >Save Draft
+          </v-btn>
+          <v-btn
+            color="red"
+            class="mr-5"
+            @click="deleteForm()"
+            >Delete</v-btn
+          >
+          <v-btn
+            color="secondary"
+            @click="requestPage()"
+            >Back</v-btn
+          >
         </div>
-        <v-snackbar v-model="snackbar" right color="success">
+        <v-snackbar
+          v-model="snackbar"
+          right
+          color="success"
+        >
           <v-icon class="mr-3">mdi-thumb-up-outline</v-icon>
           {{ apiSuccess }}
         </v-snackbar>
 
-        <v-dialog v-model="requestChangeDisplay" width="80%">
+        <v-dialog
+          v-model="requestChangeDisplay"
+          width="80%"
+        >
           <v-card>
             <v-card-title class="text-h5 grey lighten-2"> Change Required </v-card-title>
 
@@ -685,28 +796,57 @@
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="blue" text @click="requestChangeDisplay = false"> Ok </v-btn>
+              <v-btn
+                color="blue"
+                text
+                @click="requestChangeDisplay = false"
+              >
+                Ok
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="denyDialog" width="80%">
+        <v-dialog
+          v-model="denyDialog"
+          width="80%"
+        >
           <v-card>
             <v-card-title class="text-h5 grey lighten-2"> Request Denied </v-card-title>
 
             <v-card-text> Please provide a reason for the denial of this form. </v-card-text>
             <v-card-text>
-              <v-textarea v-model="form.denialReason" label="Denial Reason" rows="1" auto-grow></v-textarea>
+              <v-textarea
+                v-model="form.denialReason"
+                label="Denial Reason"
+                rows="1"
+                auto-grow
+              ></v-textarea>
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="blue" text @click="denyForm()"> Submit </v-btn>
-              <v-btn color="red" text @click="denyDialog = false"> Cancel </v-btn>
+              <v-btn
+                color="blue"
+                text
+                @click="denyForm()"
+              >
+                Submit
+              </v-btn>
+              <v-btn
+                color="red"
+                text
+                @click="denyDialog = false"
+              >
+                Cancel
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="reassignDialog" width="80%">
+        <v-dialog
+          v-model="reassignDialog"
+          width="80%"
+        >
           <v-card>
             <v-card-title class="text-h5 grey lighten-2"> Reassign Form </v-card-title>
 
@@ -726,77 +866,126 @@
             ></v-card-text>
 
             <v-card-actions>
-              <v-btn color="blue" text @click="reassignForm()"> Submit </v-btn>
-              <v-btn color="red" text @click="reassignDialog = false"> Cancel </v-btn>
+              <v-btn
+                color="blue"
+                text
+                @click="reassignForm()"
+              >
+                Submit
+              </v-btn>
+              <v-btn
+                color="red"
+                text
+                @click="reassignDialog = false"
+              >
+                Cancel
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
 
-        <v-dialog v-model="requestChangeDialog" width="80%">
+        <v-dialog
+          v-model="requestChangeDialog"
+          width="80%"
+        >
           <v-card>
             <v-card-title class="text-h5 grey lighten-2"> Request Change </v-card-title>
 
             <v-card-text> What changes need to be made to this form? </v-card-text>
             <v-card-text>
-              <v-textarea v-model="form.requestChange" label="Requested Changes" rows="1" auto-grow></v-textarea>
+              <v-textarea
+                v-model="form.requestChange"
+                label="Requested Changes"
+                rows="1"
+                auto-grow
+              ></v-textarea>
             </v-card-text>
 
             <v-card-actions>
-              <v-btn color="blue" text @click="requestChange()"> Submit </v-btn>
-              <v-btn color="red" text @click="requestChangeDialog = false"> Cancel </v-btn>
+              <v-btn
+                color="blue"
+                text
+                @click="requestChange()"
+              >
+                Submit
+              </v-btn>
+              <v-btn
+                color="red"
+                text
+                @click="requestChangeDialog = false"
+              >
+                Cancel
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-tab-item>
-      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Estimates" /></v-tab-item>
-      <v-tab-item><ExpenseList @reloadCost="getCostDifference" title="Expenses" /></v-tab-item>
+      <v-tab-item
+        ><ExpenseList
+          @reloadCost="getCostDifference"
+          title="Estimates"
+      /></v-tab-item>
+      <v-tab-item
+        ><ExpenseList
+          @reloadCost="getCostDifference"
+          title="Expenses"
+      /></v-tab-item>
       <v-tab-item>
         <TripReport> </TripReport>
       </v-tab-item>
     </v-tabs-items>
     <div class="text-center">
       <v-overlay :value="overlay">
-        <v-progress-circular indeterminate color="#f3b228" :size="70" :width="7"></v-progress-circular>
+        <v-progress-circular
+          indeterminate
+          color="#f3b228"
+          :size="70"
+          :width="7"
+        ></v-progress-circular>
       </v-overlay>
     </div>
   </div>
 </template>
 
 <script>
-import { FORM_URL, LOOKUP_URL, USERS_URL } from "../../urls";
-import { secureGet, securePost } from "@/store/jwt";
-import locationsApi from "@/apis/locations-api"
+import { upperFirst } from "lodash"
 
-import ExpenseList from "./ExpenseList.vue";
-import TripReport from "./TripReport.vue";
+import { FORM_URL, LOOKUP_URL } from "@/urls"
+import { secureGet, securePost } from "@/store/jwt"
+
+import locationsApi from "@/apis/locations-api"
+import usersApi from "@/apis/users-api"
+
+import ExpenseList from "./ExpenseList"
+import TripReport from "./TripReport"
 
 export default {
   name: "Form",
   components: {
     ExpenseList,
-    TripReport
+    TripReport,
   },
   async mounted() {
-    this.overlay = false;
+    this.overlay = false
     if (this.$route.params.manage == "manage") {
-      this.review = true;
+      this.review = true
     }
 
-    this.destinations = await this.getDestinations();
-    this.departments = await this.getDepartmentList();
+    this.destinations = await this.getDestinations()
+    this.departments = await this.getDepartmentList()
 
-    this.$refs.form.resetValidation();
+    this.$refs.form.resetValidation()
 
-    this.emails = await this.loadEmails();
+    this.emails = await this.loadEmails()
 
-    this.getCostDifference();
+    this.getCostDifference()
 
-    await this.getForm(this.$route.params.formId);
+    await this.getForm(this.$route.params.formId)
     if (this.form.requestChange && this.review == false && this.form.status == "change_requested") {
-      this.requestChangeDisplay = true;
+      this.requestChangeDisplay = true
     }
-    this.$refs.form.resetValidation();
-    this.overlay = false;
+    this.$refs.form.resetValidation()
+    this.overlay = false
   },
   data: () => ({
     //Form
@@ -813,15 +1002,15 @@ export default {
           travelFrom: "",
           departureDate: "",
           departureTime: "",
-          transport: ""
+          transport: "",
         },
         {
           travelTo: "",
           travelFrom: "",
           departureDate: "",
           departureTime: "",
-          transport: ""
-        }
+          transport: "",
+        },
       ],
       travelDuration: "1",
       daysNotTravel: "0",
@@ -835,7 +1024,7 @@ export default {
       supervisorEmail: "",
       status: "",
       requestChange: "",
-      denialReason: ""
+      denialReason: "",
     },
 
     report: {},
@@ -879,35 +1068,38 @@ export default {
     overlay: true,
 
     //Rules
-    firstNameRules: [v => !!v || "First name is required"],
-    lastNameRules: [v => !!v || "Last name is required"],
+    firstNameRules: [(v) => !!v || "First name is required"],
+    lastNameRules: [(v) => !!v || "Last name is required"],
     emailRules: [
-      v => !!v || "E-mail is required",
-      v =>
+      (v) => !!v || "E-mail is required",
+      (v) =>
         /^(([^<>()[\]\\.,;:\s@']+(\.[^<>()\\[\]\\.,;:\s@']+)*)|('.+'))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
           v
-        ) || "E-mail must be valid"
+        ) || "E-mail must be valid",
     ],
-    fromRules: [v => !!v || "This field is required"],
-    destinationRules: [v => !!v || "This field is required"],
-    requiredRules: [v => !!v || "This field is required"],
-    numberRules: [v => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"]
+    fromRules: [(v) => !!v || "This field is required"],
+    destinationRules: [(v) => !!v || "This field is required"],
+    requiredRules: [(v) => !!v || "This field is required"],
+    numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
   computed: {
     myDepartments: function () {
-      return Object.keys(this.departments);
+      return Object.keys(this.departments)
     },
     myDivisions: function () {
       if (this.departments[this.form.department]) {
-        return Object.keys(this.departments[this.form.department]);
+        return Object.keys(this.departments[this.form.department])
       }
-      return [];
+      return []
     },
     myBranches: function () {
-      if (this.departments[this.form.department] && this.departments[this.form.department][this.form.division]) {
-        return Object.keys(this.departments[this.form.department][this.form.division]);
+      if (
+        this.departments[this.form.department] &&
+        this.departments[this.form.department][this.form.division]
+      ) {
+        return Object.keys(this.departments[this.form.department][this.form.division])
       }
-      return [];
+      return []
     },
     myUnits: function () {
       if (
@@ -915,10 +1107,10 @@ export default {
         this.departments[this.form.department][this.form.division] &&
         this.departments[this.form.department][this.form.division][this.form.branch]
       ) {
-        return this.departments[this.form.department][this.form.division][this.form.branch];
+        return this.departments[this.form.department][this.form.division][this.form.branch]
       }
-      return [];
-    }
+      return []
+    },
   },
   methods: {
     addStop() {
@@ -927,40 +1119,39 @@ export default {
         travelFrom: "",
         departureDate: this.getToday(),
         departureTime: "12:00",
-        transport: ""
-      });
+        transport: "",
+      })
     },
     removeStop(index) {
-      if (this.form.stops.length > 1) this.form.stops.splice(index, 1);
+      if (this.form.stops.length > 1) this.form.stops.splice(index, 1)
     },
     submitForm() {
-      this.showError = false;
+      this.showError = false
       if (this.$refs.form.validate()) {
-        let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
-        securePost(`${FORM_URL}/${formId}/submit`, this.form).then(resp => {
-          console.log(resp);
-          this.apiSuccess = "Form submitted successfully";
-          this.snackbar = true;
-          this.requestPage();
-        });
+        let formId = this.form.formId ? this.form.formId : this.$route.params.formId
+        securePost(`${FORM_URL}/${formId}/submit`, this.form).then((resp) => {
+          console.log(resp)
+          this.apiSuccess = "Form submitted successfully"
+          this.snackbar = true
+          this.requestPage()
+        })
       }
     },
     saveForm() {
-      this.form.status = "draft";
-      this.$refs.form.resetValidation();
-      this.showError = false;
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      this.form.status = "draft"
+      this.$refs.form.resetValidation()
+      this.showError = false
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId
 
-      securePost(`${FORM_URL}/${formId}/save`, this.form).then(resp => {
-        this.apiSuccess = "Form saved as a draft";
-        this.snackbar = true;
-      });
+      securePost(`${FORM_URL}/${formId}/save`, this.form).then(() => {
+        this.apiSuccess = "Form saved as a draft"
+        this.snackbar = true
+      })
     },
     deleteForm() {
       // let formId = this.form.formId
       //   ? this.form.formId
       //   : this.$route.params.formId;
-
       // secureDelete(`${FORM_URL}/${formId}`, this.form).then((resp) => {
       //   console.log(resp);
       //   this.apiSuccess = "Form Deleted";
@@ -969,40 +1160,38 @@ export default {
       // });
     },
     getCostDifference() {
-      secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then(resp => {
-        this.expensesTotal = resp.data.expenses;
-        this.estimatesTotal = resp.data.estimates;
-        this.costDifference = (this.expensesTotal - this.estimatesTotal).toFixed(2);
-      });
+      secureGet(`${FORM_URL}/${this.$route.params.formId}/costDifference`).then((resp) => {
+        this.expensesTotal = resp.data.expenses
+        this.estimatesTotal = resp.data.estimates
+        this.costDifference = (this.expensesTotal - this.estimatesTotal).toFixed(2)
+      })
     },
     //secureGets
     async loadUser() {
-      await secureGet(`${USERS_URL}/me`).then(resp => {
-        this.user = resp.data.data;
-        this.form.firstName = this.user.first_name[0].toUpperCase() + this.user.first_name.substring(1);
-        this.form.lastName = this.user.last_name[0].toUpperCase() + this.user.last_name.substring(1);
-        this.form.email = this.user.email;
-        return resp.data;
-      });
-      await secureGet(`${USERS_URL}/unit`).then(resp => {
-        this.form.department = resp.data.department;
-        this.form.division = resp.data.division;
-        this.form.branch = resp.data.branch;
-        this.form.unit = resp.data.unit;
-        this.form.mailcode = resp.data.mailcode;
-        return resp.data;
-      });
-      return;
+      return usersApi.me().then(({ user }) => {
+        this.user = user
+
+        this.form.firstName = upperFirst(user.firstName)
+        this.form.lastName = upperFirst(user.lastName)
+        this.form.email = user.email
+        this.form.department = user.department
+        this.form.division = user.division
+        this.form.branch = user.branch
+        this.form.unit = user.unit
+        this.form.mailcode = user.mailcode
+
+        return this.user
+      })
     },
     async loadEmails() {
-      return secureGet(`${LOOKUP_URL}/emailList`).then(resp => {
-        return resp.data;
-      });
+      return secureGet(`${LOOKUP_URL}/emailList`).then((resp) => {
+        return resp.data
+      })
     },
     async getDepartmentList() {
-      return secureGet(`${LOOKUP_URL}/departmentList`).then(resp => {
-        return resp.data;
-      });
+      return secureGet(`${LOOKUP_URL}/departmentList`).then((resp) => {
+        return resp.data
+      })
     },
     async getDestinations() {
       return locationsApi.list().then(({ locations }) => {
@@ -1018,95 +1207,102 @@ export default {
     //Helpers
     calculateDaysGone(index) {
       var Difference_In_Time =
-        new Date(this.form.stops[index].departureDate).getTime() - new Date(this.form.stops[0].departureDate).getTime();
+        new Date(this.form.stops[index].departureDate).getTime() -
+        new Date(this.form.stops[0].departureDate).getTime()
 
-      this.form.travelDuration = (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24);
+      this.form.travelDuration = (Difference_In_Time + 1000 * 3600 * 24) / (1000 * 3600 * 24)
     },
     getToday() {
-      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
+      return new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10)
     },
     async getForm(formId) {
       if (formId) {
-        return await secureGet(`${FORM_URL}/${formId}`).then(async resp => {
+        return await secureGet(`${FORM_URL}/${formId}`).then(async (resp) => {
           if (resp.data.form != "empty") {
-            this.form = resp.data;
+            this.form = resp.data
             this.form.stops.forEach((v, key) => {
-              this.form.stops[key].travelTo = this.destinations.find(entry => entry.value == v.travelTo);
-              this.form.stops[key].travelFrom = this.destinations.find(entry => entry.value == v.travelFrom);
-            });
+              this.form.stops[key].travelTo = this.destinations.find(
+                (entry) => entry.value == v.travelTo
+              )
+              this.form.stops[key].travelFrom = this.destinations.find(
+                (entry) => entry.value == v.travelFrom
+              )
+            })
           } else {
-            this.form.status = "draft";
-            await this.loadUser();
-            this.form.dateBackToWork = this.getToday();
-            this.form.stops[0].departureDate = this.getToday();
-            this.form.stops[0].departureTime = "12:00";
-            this.form.stops[1].departureDate = this.getToday();
-            this.form.stops[1].departureTime = "12:00";
+            this.form.status = "draft"
+            await this.loadUser()
+            this.form.dateBackToWork = this.getToday()
+            this.form.stops[0].departureDate = this.getToday()
+            this.form.stops[0].departureTime = "12:00"
+            this.form.stops[1].departureDate = this.getToday()
+            this.form.stops[1].departureTime = "12:00"
           }
-        });
+        })
       }
     },
     reassignForm() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId
 
       securePost(`${FORM_URL}/${formId}/reassign`, {
         reassign: this.reassignEmail,
-        form: this.form
-      }).then(resp => {
-        console.log(resp);
-        this.apiSuccess = "Form reassigned";
-        this.snackbar = true;
-      });
-      this.reassignDialog = false;
-      this.managePage();
+        form: this.form,
+      }).then((resp) => {
+        console.log(resp)
+        this.apiSuccess = "Form reassigned"
+        this.snackbar = true
+      })
+      this.reassignDialog = false
+      this.managePage()
     },
     denyForm() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId
 
-      securePost(`${FORM_URL}/${formId}/deny`, this.form).then(resp => {
-        console.log(resp);
-        this.apiSuccess = "Form denied";
-        this.snackbar = true;
-      });
-      this.denyDialog = false;
-      this.managePage();
+      securePost(`${FORM_URL}/${formId}/deny`, this.form).then((resp) => {
+        console.log(resp)
+        this.apiSuccess = "Form denied"
+        this.snackbar = true
+      })
+      this.denyDialog = false
+      this.managePage()
     },
     requestChange() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId
 
-      securePost(`${FORM_URL}/${formId}/requestChange`, this.form).then(resp => {
-        console.log(resp);
-        this.apiSuccess = "Change requested";
-        this.snackbar = true;
-      });
-      this.requestChangeDialog = false;
-      this.managePage();
+      securePost(`${FORM_URL}/${formId}/requestChange`, this.form).then((resp) => {
+        console.log(resp)
+        this.apiSuccess = "Change requested"
+        this.snackbar = true
+      })
+      this.requestChangeDialog = false
+      this.managePage()
     },
     approveForm() {
-      let formId = this.form.formId ? this.form.formId : this.$route.params.formId;
+      let formId = this.form.formId ? this.form.formId : this.$route.params.formId
 
-      securePost(`${FORM_URL}/${formId}/approve`, this.form).then(resp => {
-        console.log(resp);
-        this.apiSuccess = "Form approved";
-        this.snackbar = true;
-        this.managePage();
-      });
+      securePost(`${FORM_URL}/${formId}/approve`, this.form).then((resp) => {
+        console.log(resp)
+        this.apiSuccess = "Form approved"
+        this.snackbar = true
+        this.managePage()
+      })
     },
     managePage() {
-      this.$router.push(`/managerView`);
+      this.$router.push(`/managerView`)
     },
     requestPage() {
-      this.$router.push(`/forms`);
+      this.$router.push(`/forms`)
     },
     denyPopup() {
-      this.denyDialog = true;
+      this.denyDialog = true
     },
     requestChangePopup() {
-      this.requestChangeDialog = true;
+      this.requestChangeDialog = true
     },
     reassignPopup() {
-      this.reassignDialog = true;
-    }
-  }
-};
+      this.reassignDialog = true
+    },
+  },
+}
 </script>

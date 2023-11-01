@@ -122,7 +122,7 @@ export default {
       let data = [];
       for (let usr of this.users) {
         if (this.selectedFilter.indexOf("Active") >= 0) {
-          if (usr.status == "Active") data.push(usr);
+          if (usr.status == "active") data.push(usr);
         }
       }
       return data;

@@ -54,7 +54,7 @@
             async getUserAuth() {
                 return secureGet(`${PROFILE_URL}`)
                     .then(resp => {
-                        this.$store.commit("auth/setUser", resp.data.data);
+                        this.$store.commit("auth/setUser", resp.data.user);
                     })
                     .catch(e => {
                         console.log(e);

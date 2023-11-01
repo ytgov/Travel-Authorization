@@ -12,6 +12,7 @@ import {
   TravelAuthorization,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskTravelRequest,
+  User,
 } from "@/models"
 
 import db from "@/db/db-client"
@@ -89,9 +90,9 @@ travelDeskRouter.get(
   RequiresAuth,
   async function (req: Request, res: Response) {
     const adminScoping: WhereOptions<TravelAuthorization> = {}
-    if (req?.user?.roles?.includes("Admin")) {
+    if (req?.user?.roles?.includes(User.Roles.ADMIN)) {
       // No additional conditions for Admin, selects all records
-    } else if (req?.user?.roles?.includes("DeptAdmin")) {
+    } else if (req?.user?.roles?.includes(User.Roles.DEPT_ADMIN)) {
       adminScoping.department = req.user.department
     } else {
       adminScoping.userId = req.user.id

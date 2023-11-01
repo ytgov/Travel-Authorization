@@ -2,7 +2,7 @@
     <v-card :loading="loadingData" :disabled="loadingData" en class="px-5 pb-15">
         <v-alert v-if="alertMsg" dense class="mt-5" color="warning" dismissible>{{ alertMsg }}</v-alert>
         <div v-if="loadingData" class="mt-10" style="text-align: center">loading ...</div>
-        <div v-else>        
+        <div v-else>
             <v-toolbar  class="" height="100px" flat>
                 <v-toolbar-title class="text-h6" style="width:100%">
                     <v-row class="my-10 mx-1">
@@ -10,7 +10,7 @@
                         <div style="width:20%;" />
                         <div style="width:20%;"> <b style="float:right; font-weight:300;" class="mr-4">Records Date Range :</b></div>
                         <div style="width:15%;" >
-                            <v-text-field 
+                            <v-text-field
                                 class="mx-2"
                                 v-model="startDate"
                                 :error="startDateErr"
@@ -23,7 +23,7 @@
                                 />
                         </div>
                         <div style="width:15%;" >
-                            <v-text-field 
+                            <v-text-field
                                 class="mx-2"
                                 v-model="endDate"
                                 :error="endDateErr"
@@ -44,7 +44,7 @@
                             </v-btn>
                         </div>
                     </v-row>
-                   
+
                 </v-toolbar-title>
 
                 <template v-slot:extension>
@@ -59,13 +59,13 @@
             <v-tabs-items v-model="tabs" v-if="dataReady">
                 <v-tab-item>
                     <v-card flat>
-                        <flights 
+                        <flights
                             :flights="flights" />
                     </v-card>
                 </v-tab-item>
                 <v-tab-item>
                     <v-card flat>
-                        <un-reconciled-flights					
+                        <un-reconciled-flights
                             :unReconciledFlights="unReconciledFlights"
                             @updateTable="reloadData(1, false)"/>
                     </v-card>
@@ -123,10 +123,10 @@ export default {
     },
     methods: {
 
-        async getUserAuth() {      
+        async getUserAuth() {
             return secureGet(`${PROFILE_URL}`)
             .then(resp => {
-                this.$store.commit("auth/setUser", resp.data.data);          
+                this.$store.commit("auth/setUser", resp.data.user);
             })
             .catch(e => {
                 console.log(e);
@@ -136,9 +136,9 @@ export default {
         async getFlights() {
             return secureGet(`${TRAVEL_COM_URL}/flights/${this.startDate}/${this.endDate}`)
             .then((resp) => {
-                console.log(resp.data)						
+                console.log(resp.data)
                 this.flights = resp.data;
-                
+
             })
             .catch(e => {
                 console.log(e);
@@ -149,7 +149,7 @@ export default {
             this.reconciledFlights = [];
             this.unReconciledFlights = [];
 
-            for (const flight of this.flights){				
+            for (const flight of this.flights){
                 if (flight.reconciled){
                     this.reconciledFlights.push(flight)
                 } else {
@@ -158,7 +158,7 @@ export default {
             }
         },
 
-        async search(){            
+        async search(){
             this.startDateErr = this.startDate && this.startDate<this.endDate? false : true;
             this.endDateErr = this.endDate && this.endDate>this.startDate? false : true;
             if(this.startDateErr || this.endDateErr){
