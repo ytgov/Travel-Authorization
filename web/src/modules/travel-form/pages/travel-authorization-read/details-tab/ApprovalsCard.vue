@@ -92,7 +92,6 @@ export default {
       const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
         (p) => p.value === this.currentForm.preappId
       )
-      console.log("preApprovedTravelRequest:", preApprovedTravelRequest)
       return preApprovedTravelRequest?.text || ""
     },
     travelAdvanceInDollars() {
