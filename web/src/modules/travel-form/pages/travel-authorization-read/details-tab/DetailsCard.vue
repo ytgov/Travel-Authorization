@@ -102,8 +102,8 @@ export default {
       switch (this.tripType) {
         case TRIP_TYPES.ROUND_TRIP:
           return () => import("./details-card/RoundTripStopsSection")
-        // case TRIP_TYPES.ONE_WAY:
-        //   return () => import("./details-card/OneWayStopsSection")
+        case TRIP_TYPES.ONE_WAY:
+          return () => import("./details-card/OneWayStopsSection")
         // case TRIP_TYPES.MULI_DESTINATION:
         //   return () => import("./details-card/MultiDestinationStopsSection")
         default:
