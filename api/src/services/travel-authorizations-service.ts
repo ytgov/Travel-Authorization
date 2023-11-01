@@ -62,7 +62,6 @@ export class TravelAuthorizationsService {
         return travelAuthorization
       })
       .catch((error) => {
-        // TODO: push the audit logging code back into services where it belongs
         auditService.log(
           currentUser.id,
           -1,
