@@ -36,7 +36,7 @@
       <router-view></router-view>
     </template>
 
-    <div>
+    <div class="d-flex justify-end">
       <v-btn
         color="secondary"
         :to="{ name: 'TravelFormList' }"
