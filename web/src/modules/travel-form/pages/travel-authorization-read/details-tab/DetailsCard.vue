@@ -89,7 +89,7 @@ const TRIP_TYPES = Object.freeze({
 })
 
 export default {
-  name: "DetailsFormCard",
+  name: "DetailsCard",
   components: {
   },
   data: () => ({
@@ -104,8 +104,8 @@ export default {
           return () => import("./details-card/RoundTripStopsSection")
         case TRIP_TYPES.ONE_WAY:
           return () => import("./details-card/OneWayStopsSection")
-        // case TRIP_TYPES.MULI_DESTINATION:
-        //   return () => import("./details-card/MultiDestinationStopsSection")
+        case TRIP_TYPES.MULI_DESTINATION:
+          return () => import("./details-card/MultiDestinationStopsSection")
         default:
           return null
       }
