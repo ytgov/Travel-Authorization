@@ -4,7 +4,7 @@
 
     <Breadcrumbs />
 
-    <h1 class="d-flex justify-space-between">
+    <h1 class="d-flex justify-space-between mb-0">
       <span>
         Travel -
         <v-progress-circular
@@ -76,11 +76,7 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelForm", [
-      "currentUser",
-      "loadingCurrentForm",
-      "loadingCurrentUser",
-    ]),
+    ...mapState("travelForm", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
     isAdmin() {
       return this.currentUser?.roles.includes("admin")
     },
