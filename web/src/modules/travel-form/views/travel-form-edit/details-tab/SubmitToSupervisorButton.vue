@@ -33,7 +33,10 @@ export default {
       this.currentForm.status = "submitted"
       return this.updateCurrentForm()
         .then(() => {
-          this.$router.push({ name: "TravelFormList" })
+          this.$router.push({
+            name: "TravelAuthorizationRead-DetailsTab",
+            params: { formId: this.currentForm.id },
+          })
         })
         .catch((error) => {
           this.$snack(error.message, { color: "error" })
