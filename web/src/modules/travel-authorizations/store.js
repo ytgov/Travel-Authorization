@@ -117,10 +117,6 @@ const actions = {
         state.loadingCurrentForm = false
       })
   },
-  loadForm({ dispatch }, formId) {
-    console.warn("Deprecated: use loadAsCurrentTravelAuthorization instead.")
-    return dispatch("loadAsCurrentTravelAuthorization", formId)
-  },
   loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true
     return usersApi
@@ -160,16 +156,6 @@ const actions = {
   loadUser({ dispatch }) {
     console.warn("Deprecated: use loadCurrentUser instead.")
     return dispatch("loadCurrentUser")
-  },
-  getAll() {
-    return secureGet(FORM_URL).then((resp) => {
-      return resp.data.data
-    })
-  },
-  getById(store, { id }) {
-    return secureGet(`${FORM_URL}/${id}`).then((resp) => {
-      return resp.data.data
-    })
   },
   create({ commit, state }, attributes) {
     state.loadingCurrentForm = true
