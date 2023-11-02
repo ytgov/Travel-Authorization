@@ -117,7 +117,13 @@
       >
         <DatePicker
           v-model="destinationStop.departureDate"
-          :rules="[required]"
+          :min="originStop.departureDate"
+          :rules="[
+            required,
+            greaterThanOrEqualToDate(originStop.departureDate, {
+              referenceFieldLabel: 'previous departure date',
+            }),
+          ]"
           label="Date"
           persistent-hint
         />
@@ -166,7 +172,7 @@
 import { mapActions, mapState, mapGetters } from "vuex"
 import { isEmpty } from "lodash"
 
-import { required } from "@/utils/validators"
+import { required, greaterThanOrEqualToDate } from "@/utils/validators"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
@@ -189,17 +195,25 @@ export default {
     return {
       originStop: {},
       destinationStop: {},
+      greaterThanOrEqualToDate,
+      required,
     }
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
   },
   async mounted() {
     await this.loadDestinations()
 
     if (isEmpty(this.currentTravelAuthorization.stops)) {
-      this.currentTravelAuthorization.stops = [this.newStop(), this.newStop({ accommodationType: null })]
+      this.currentTravelAuthorization.stops = [
+        this.newStop(),
+        this.newStop({ accommodationType: null }),
+      ]
     } else if (this.currentTravelAuthorization.stops.length === 1) {
       this.currentTravelAuthorization.stops.push(this.newStop({ accommodationType: null }))
     } else if (this.currentTravelAuthorization.stops.length > 2) {
@@ -212,7 +226,6 @@ export default {
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadDestinations"]),
-    required,
     newStop(attributes) {
       return {
         travelAuthorizationId: this.currentTravelAuthorizationId,
