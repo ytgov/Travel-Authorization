@@ -112,7 +112,10 @@ export default {
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
   },
   async mounted() {
     await this.loadDestinations()

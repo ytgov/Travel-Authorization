@@ -1,7 +1,5 @@
 <template>
-  <v-card
-    elevation="2"
-  >
+  <v-card elevation="2">
     <v-card-title> Details </v-card-title>
     <v-card-text>
       <v-form
@@ -27,8 +25,8 @@
         </v-row>
 
         <component
-          v-if="tripTypeComponent"
           :is="tripTypeComponent"
+          v-if="tripTypeComponent"
         />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
         <v-row>
@@ -36,14 +34,10 @@
             cols="12"
             md="1"
           >
-            <v-text-field
+            <TravelDurationTextField
               v-model="currentTravelAuthorization.travelDuration"
-              :rules="[required, isNumber]"
-              label="# Days"
-              dense
-              outlined
-              required
-            ></v-text-field>
+              :stops="currentTravelAuthorization.stops"
+            />
           </v-col>
           <v-col
             cols="12"
@@ -77,34 +71,38 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex"
 import { last } from "lodash"
+import { mapState, mapGetters } from "vuex"
+
+import { required } from "@/utils/validators"
 
 import DatePicker from "@/components/Utils/DatePicker"
+
+import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
   ONE_WAY: "One Way",
-  MULI_DESTINATION: "Muli-Destination",
+  MULTI_DESTINATION: "Multi-Destination",
 })
 
 export default {
   name: "DetailsFormCard",
   components: {
     DatePicker,
+    TravelDurationTextField,
   },
   data: () => ({
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
     tripType: "",
-    required: (v) => !!v || "This field is required",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
     finalDestination() {
-      return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
+      return last(this.currentTravelAuthorization.stops) || {}
     },
     tripTypeComponent() {
       switch (this.tripType) {
@@ -112,7 +110,7 @@ export default {
           return () => import("./details-form-card/RoundTripStopsSection")
         case TRIP_TYPES.ONE_WAY:
           return () => import("./details-form-card/OneWayStopsSection")
-        case TRIP_TYPES.MULI_DESTINATION:
+        case TRIP_TYPES.MULTI_DESTINATION:
           return () => import("./details-form-card/MultiDestinationStopsSection")
         default:
           return null
@@ -123,12 +121,13 @@ export default {
     if (this.currentTravelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
     } else if (this.currentTravelAuthorization.multiStop) {
-      this.tripType = TRIP_TYPES.MULI_DESTINATION
+      this.tripType = TRIP_TYPES.MULTI_DESTINATION
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
   },
   methods: {
+    required,
     updateTripType(value) {
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentTravelAuthorization.oneWayTrip = false
@@ -136,7 +135,7 @@ export default {
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
         this.currentTravelAuthorization.multiStop = false
-      } else if (value === TRIP_TYPES.MULI_DESTINATION) {
+      } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
         this.currentTravelAuthorization.multiStop = true
         this.currentTravelAuthorization.oneWayTrip = false
       } else {

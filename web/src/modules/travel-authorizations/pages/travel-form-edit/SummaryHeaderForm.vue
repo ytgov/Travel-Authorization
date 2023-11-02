@@ -77,7 +77,9 @@
           :min="initialDestination.departureDate"
           :rules="[
             required,
-            greaterThanOrEqualToDate(initialDestination.departureDate, 'start date'),
+            greaterThanOrEqualToDate(initialDestination.departureDate, {
+              referenceFieldLabel: 'start date',
+            }),
           ]"
           label="End Date"
           required
@@ -91,6 +93,8 @@
 import { first, last } from "lodash"
 import { mapState, mapActions, mapGetters } from "vuex"
 
+import { required, greaterThanOrEqualToDate } from "@/utils/validators"
+
 import DatePicker from "@/components/Utils/DatePicker"
 
 export default {
@@ -101,9 +105,6 @@ export default {
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
-    required: (v) => !!v || "This field is required",
-    greaterThanOrEqualToDate: (b, label) => (a) =>
-      new Date(a) >= new Date(b) || `This field must be greater than or equal to ${b || label}`,
   }),
   computed: {
     ...mapState("travelAuthorizations", [
@@ -111,18 +112,33 @@ export default {
       "purposes",
       "destinationsByCurrentFormTravelRestriction",
     ]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
     finalDestination: {
       get() {
-        return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
+        return (
+          last(this.currentTravelAuthorization.stops) || {
+            travelAuthorizationId: this.currentTravelAuthorizationId,
+          }
+        )
       },
       set(newValue) {
-        this.$set(this.currentTravelAuthorization.stops, this.currentTravelAuthorization.stops.length - 1, newValue)
+        this.$set(
+          this.currentTravelAuthorization.stops,
+          this.currentTravelAuthorization.stops.length - 1,
+          newValue
+        )
       },
     },
     initialDestination: {
       get() {
-        return first(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
+        return (
+          first(this.currentTravelAuthorization.stops) || {
+            travelAuthorizationId: this.currentTravelAuthorizationId,
+          }
+        )
       },
       set(newValue) {
         this.$set(this.currentTravelAuthorization.stops, 0, newValue)
@@ -143,6 +159,8 @@ export default {
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadPurposes", "loadDestinations"]),
+    required,
+    greaterThanOrEqualToDate,
   },
 }
 </script>

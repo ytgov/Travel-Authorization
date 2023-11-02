@@ -117,7 +117,13 @@
       >
         <DatePicker
           v-model="stop2.departureDate"
-          :rules="[required]"
+          :min="stop1.departureDate"
+          :rules="[
+            required,
+            greaterThanOrEqualToDate(stop1.departureDate, {
+              referenceFieldLabel: 'previous departure date',
+            }),
+          ]"
           label="Date"
           persistent-hint
         />
@@ -195,7 +201,13 @@
       >
         <DatePicker
           v-model="stop3.departureDate"
-          :rules="[required]"
+          :min="stop2.departureDate"
+          :rules="[
+            required,
+            greaterThanOrEqualToDate(stop2.departureDate, {
+              referenceFieldLabel: 'previous departure date',
+            }),
+          ]"
           label="Date"
           persistent-hint
         />
@@ -241,7 +253,7 @@
 import { mapActions, mapState, mapGetters } from "vuex"
 import { isEmpty } from "lodash"
 
-import { required } from "@/utils/validators"
+import { required, greaterThanOrEqualToDate } from "@/utils/validators"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
@@ -270,15 +282,29 @@ export default {
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
   },
   async mounted() {
     await this.loadDestinations()
 
     if (isEmpty(this.currentTravelAuthorization.stops)) {
-      this.currentTravelAuthorization.stops = [this.newStop(), this.newStop(), this.newStop(), this.newStop()]
+      this.currentTravelAuthorization.stops = [
+        this.newStop(),
+        this.newStop(),
+        this.newStop(),
+        this.newStop(),
+      ]
     } else if (this.currentTravelAuthorization.stops.length === 1) {
-      this.currentTravelAuthorization.stops.splice(0, 0, this.newStop(), this.newStop(), this.newStop())
+      this.currentTravelAuthorization.stops.splice(
+        0,
+        0,
+        this.newStop(),
+        this.newStop(),
+        this.newStop()
+      )
     } else if (this.currentTravelAuthorization.stops.length === 2) {
       this.currentTravelAuthorization.stops.splice(1, 0, this.newStop(), this.newStop())
     } else if (this.currentTravelAuthorization.stops.length === 3) {
@@ -295,6 +321,7 @@ export default {
   methods: {
     ...mapActions("travelAuthorizations", ["loadDestinations"]),
     required,
+    greaterThanOrEqualToDate,
     newStop() {
       return {
         travelAuthorizationId: this.currentTravelAuthorizationId,
