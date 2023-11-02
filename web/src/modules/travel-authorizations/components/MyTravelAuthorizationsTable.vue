@@ -2,7 +2,7 @@
   <div>
     <v-data-table
       :headers="headers"
-      :items="myForms"
+      :items="myTravelAuthorizations"
       :loading="loadingForms"
       :items-per-page.sync="perPage"
       :page.sync="page"
@@ -115,7 +115,7 @@ export default {
     await this.refreshForms()
   },
   computed: {
-    ...mapState("travelForm", ["myForms"]),
+    ...mapState("travelForm", ["myTravelAuthorizations"]),
   },
   methods: {
     ...mapActions("travelForm", ["loadForms"]),

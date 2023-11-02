@@ -12,7 +12,7 @@ const state = {
   destinations: [],
   emails: [],
   estimates: [],
-  myForms: [],
+  myTravelAuthorizations: [],
   purposes: [],
   currentForm: {},
   currentUser: {},
@@ -216,7 +216,7 @@ const mutations = {
     store.emails = value
   },
   SET_MYFORMS(store, value) {
-    store.myForms = value
+    store.myTravelAuthorizations = value
   },
   SET_FORM(store, value) {
     store.currentForm = value
