@@ -57,7 +57,11 @@ export class TravelAuthorizationsController extends BaseController {
     const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
     return TravelAuthorizationsService.create(permittedAttributes, this.currentUser)
       .then((travelAuthorization) => {
-        return this.response.status(201).json({ travelAuthorization })
+        const serializedTravelAuthorization =
+          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+        return this.response
+          .status(201)
+          .json({ travelAuthorization: serializedTravelAuthorization })
       })
       .catch((error) => {
         return this.response
@@ -90,7 +94,10 @@ export class TravelAuthorizationsController extends BaseController {
         return this.response.status(404).json({ message: "TravelAuthorization not found." })
       }
 
-      return this.response.json({ travelAuthorization })
+      const serializedTravelAuthorization =
+        TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+
+      return this.response.json({ travelAuthorization: serializedTravelAuthorization })
     })
   }
 
@@ -114,7 +121,10 @@ export class TravelAuthorizationsController extends BaseController {
     const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
     return TravelAuthorizationsService.update(travelAuthorization, permittedAttributes)
       .then((travelAuthorization) => {
-        this.response.json({ travelAuthorization })
+        const serializedTravelAuthorization =
+          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+
+        return this.response.json({ travelAuthorization: serializedTravelAuthorization })
       })
       .catch((error) => {
         return this.response
