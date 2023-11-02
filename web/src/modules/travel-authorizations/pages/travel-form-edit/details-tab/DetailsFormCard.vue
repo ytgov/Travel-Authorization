@@ -76,7 +76,7 @@
 
 <script>
 import { DateTime } from "luxon"
-import { first, isNil, last } from "lodash"
+import { first, isNil, last, max } from "lodash"
 import { mapState, mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
@@ -170,8 +170,8 @@ export default {
 
       const departureDateOrigin = DateTime.fromISO(originDestination.departureDate)
       const departureDateFinal = DateTime.fromISO(finalDestination.departureDate)
-
-      return departureDateFinal.diff(departureDateOrigin, "days").days
+      const timeDifference = departureDateFinal.diff(departureDateOrigin, "days")
+      return max([0, timeDifference.days])
     },
   },
 }
