@@ -1,7 +1,5 @@
 <template>
-  <v-card
-    elevation="2"
-  >
+  <v-card elevation="2">
     <v-card-title> Details </v-card-title>
     <v-card-text>
       <v-form
@@ -37,13 +35,13 @@
             md="1"
           >
             <v-text-field
-              v-model="currentTravelAuthorization.travelDuration"
-              :rules="[required, isNumber]"
+              :value="currentTravelAuthorization.travelDuration"
               label="# Days"
               dense
               outlined
-              required
+              readonly
             ></v-text-field>
+            <!-- TODO: add (?) tooltip about where this value comes from -->
           </v-col>
           <v-col
             cols="12"
@@ -77,8 +75,9 @@
 </template>
 
 <script>
+import { DateTime } from "luxon"
+import { first, isNil, last } from "lodash"
 import { mapState, mapGetters } from "vuex"
-import { last } from "lodash"
 
 import DatePicker from "@/components/Utils/DatePicker"
 
@@ -103,8 +102,14 @@ export default {
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
+    originDestination() {
+      return first(this.currentTravelAuthorization.stops) || {}
+    },
     finalDestination() {
-      return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
+      return last(this.currentTravelAuthorization.stops) || {}
+    },
+    travelDuration() {
+      return this.computeTravelDuration(this.originDestination, this.finalDestination)
     },
     tripTypeComponent() {
       switch (this.tripType) {
@@ -119,6 +124,11 @@ export default {
       }
     },
   },
+  watch: {
+    travelDuration(newValue) {
+      this.currentTravelAuthorization.travelDuration = newValue
+    },
+  },
   mounted() {
     if (this.currentTravelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
@@ -127,6 +137,8 @@ export default {
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
+
+    this.currentTravelAuthorization.travelDuration = this.travelDuration
   },
   methods: {
     updateTripType(value) {
@@ -148,6 +160,16 @@ export default {
       this.$nextTick(() => {
         this.$refs.form.resetValidation()
       })
+    },
+    computeTravelDuration(originDestination, finalDestination) {
+      if (isNil(originDestination.departureDate) || isNil(finalDestination.departureDate)) {
+        return null
+      }
+
+      const departureDateOrigin = DateTime.fromISO(originDestination.departureDate)
+      const departureDateFinal = DateTime.fromISO(finalDestination.departureDate)
+
+      return departureDateFinal.diff(departureDateOrigin, "days").days
     },
   },
 }
