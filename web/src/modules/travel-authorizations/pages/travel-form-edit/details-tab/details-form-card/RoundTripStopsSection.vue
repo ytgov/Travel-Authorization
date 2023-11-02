@@ -6,7 +6,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="stop1.locationId"
+          v-model="originStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
@@ -22,7 +22,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="stop2.locationId"
+          v-model="destinationStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
@@ -38,7 +38,7 @@
         md="2"
       >
         <DatePicker
-          v-model="stop1.departureDate"
+          v-model="originStop.departureDate"
           :rules="[required]"
           text="Date"
           persistent-hint
@@ -49,7 +49,7 @@
         md="2"
       >
         <TimePicker
-          v-model="stop1.departureTime"
+          v-model="originStop.departureTime"
           :rules="[required]"
           label="Time (24h)"
           persistent-hint
@@ -60,7 +60,7 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="stop1.transport"
+          v-model="originStop.transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -69,7 +69,7 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="stop1.accommodationType"
+          v-model="originStop.accommodationType"
           :rules="[required]"
           background-color="white"
           dense
@@ -84,7 +84,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="stop2.locationId"
+          v-model="destinationStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="To"
@@ -100,7 +100,7 @@
         md="2"
       >
         <v-autocomplete
-          v-model="stop3.locationId"
+          v-model="originStop.locationId"
           :items="destinationsByCurrentFormTravelRestriction"
           :rules="[required]"
           label="From"
@@ -116,7 +116,7 @@
         md="2"
       >
         <DatePicker
-          v-model="stop2.departureDate"
+          v-model="destinationStop.departureDate"
           :rules="[required]"
           text="Date"
           persistent-hint
@@ -127,9 +127,9 @@
         md="2"
       >
         <TimePicker
-          v-model="stop2.departureTime"
+          v-model="destinationStop.departureTime"
           :rules="[required]"
-          label="Time (24 hour)"
+          label="Time (24h)"
           persistent-hint
         />
       </v-col>
@@ -138,7 +138,7 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="stop2.transport"
+          v-model="destinationStop.transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -147,90 +147,15 @@
           outlined
         />
         <AccommodationTypeSelect
-          v-model="stop2.accommodationType"
-          :rules="[required]"
+          v-model="destinationStop.accommodationType"
+          :default-value="null"
           background-color="white"
-          dense
-          outlined
-          required
-        />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-autocomplete
-          v-model="stop3.locationId"
-          :items="destinationsByCurrentFormTravelRestriction"
-          :rules="[required]"
-          label="From"
-          background-color="white"
+          hint="Optional, set only if neccessary"
+          placeholder="N/A"
+          clearable
           dense
           outlined
           persistent-hint
-          required
-        />
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <v-autocomplete
-          v-model="stop4.locationId"
-          :items="destinationsByCurrentFormTravelRestriction"
-          :rules="[required]"
-          label="To"
-          background-color="white"
-          dense
-          outlined
-          persistent-hint
-          required
-        />
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <DatePicker
-          v-model="stop3.departureDate"
-          :rules="[required]"
-          text="Date"
-          persistent-hint
-        />
-      </v-col>
-      <v-col
-        cols="12"
-        md="2"
-      >
-        <TimePicker
-          v-model="stop3.departureTime"
-          :rules="[required]"
-          label="Time (24 hour)"
-          persistent-hint
-        />
-      </v-col>
-      <v-col
-        cols="12"
-        md="4"
-      >
-        <TravelMethodSelect
-          v-model="stop3.transport"
-          :rules="[required]"
-          background-color="white"
-          dense
-          persistent-hint
-          required
-          outlined
-        />
-        <AccommodationTypeSelect
-          v-model="stop3.accommodationType"
-          :rules="[required]"
-          background-color="white"
-          dense
-          outlined
-          required
         />
       </v-col>
     </v-row>
@@ -247,13 +172,13 @@ import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 import AccommodationTypeSelect, {
   ACCOMMODATION_TYPES,
-} from "@/modules/travel-form/components/AccommodationTypeSelect"
+} from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
 import TravelMethodSelect, {
   TRAVEL_METHODS,
-} from "@/modules/travel-form/components/TravelMethodSelect"
+} from "@/modules/travel-authorizations/components/TravelMethodSelect"
 
 export default {
-  name: "MultiDestinationStopsSection",
+  name: "RoundTripStopsSection",
   components: {
     AccommodationTypeSelect,
     DatePicker,
@@ -262,10 +187,8 @@ export default {
   },
   data() {
     return {
-      stop1: {},
-      stop2: {},
-      stop3: {},
-      stop4: {},
+      originStop: {},
+      destinationStop: {},
     }
   },
   computed: {
@@ -276,30 +199,26 @@ export default {
     await this.loadDestinations()
 
     if (isEmpty(this.currentForm.stops)) {
-      this.currentForm.stops = [this.newStop(), this.newStop(), this.newStop(), this.newStop()]
+      this.currentForm.stops = [this.newStop(), this.newStop({ accommodationType: null })]
     } else if (this.currentForm.stops.length === 1) {
-      this.currentForm.stops.splice(0, 0, this.newStop(), this.newStop(), this.newStop())
-    } else if (this.currentForm.stops.length === 2) {
-      this.currentForm.stops.splice(1, 0, this.newStop(), this.newStop())
-    } else if (this.currentForm.stops.length === 3) {
-      this.currentForm.stops.splice(2, 0, this.newStop())
-    } else if (this.currentForm.stops.length > 4) {
-      this.currentForm.stops = this.currentForm.stops.slice(0, 3)
+      this.currentForm.stops.push(this.newStop({ accommodationType: null }))
+    } else if (this.currentForm.stops.length > 2) {
+      const elementsToRemove = this.currentForm.stops.length - 2
+      this.currentForm.stops.splice(1, elementsToRemove)
     }
 
-    this.stop1 = this.currentForm.stops[0]
-    this.stop2 = this.currentForm.stops[1]
-    this.stop3 = this.currentForm.stops[2]
-    this.stop4 = this.currentForm.stops[3]
+    this.originStop = this.currentForm.stops[0]
+    this.destinationStop = this.currentForm.stops[1]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
     required,
-    newStop() {
+    newStop(attributes) {
       return {
         travelAuthorizationId: this.currentFormId,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
+        ...attributes,
       }
     },
   },

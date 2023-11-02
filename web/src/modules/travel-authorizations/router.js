@@ -9,11 +9,11 @@ const routes = [
         meta: {
           requiresAuth: true,
         },
-        component: () => import("@/modules/travel-form/pages/TravelFormList"),
+        component: () => import("@/modules/travel-authorizations/pages/TravelFormList"),
       },
       {
         path: ":formId",
-        component: () => import("@/modules/travel-form/pages/TravelAuthorizationRead"),
+        component: () => import("@/modules/travel-authorizations/pages/TravelAuthorizationRead"),
         props: true,
         children: [
           {
@@ -23,7 +23,7 @@ const routes = [
           {
             path: "details",
             name: "TravelAuthorizationRead-DetailsTab",
-            component: () => import("@/modules/travel-form/pages/travel-authorization-read/DetailsTab"),
+            component: () => import("@/modules/travel-authorizations/pages/travel-authorization-read/DetailsTab"),
             props: true,
           },
           // TODO: add read only estimates tab
@@ -31,7 +31,7 @@ const routes = [
       },
       {
         path: ":formId/edit",
-        component: () => import("@/modules/travel-form/pages/TravelFormEdit"),
+        component: () => import("@/modules/travel-authorizations/pages/TravelFormEdit"),
         props: true,
         children: [
           {
@@ -41,13 +41,13 @@ const routes = [
           {
             path: "details",
             name: "TravelFormEdit-DetailsTab",
-            component: () => import("@/modules/travel-form/pages/travel-form-edit/DetailsTab"),
+            component: () => import("@/modules/travel-authorizations/pages/travel-form-edit/DetailsTab"),
             props: true,
           },
           {
             path: "estimate",
             name: "TravelFormEdit-EstimateTab",
-            component: () => import("@/modules/travel-form/pages/travel-form-edit/EstimateTab"),
+            component: () => import("@/modules/travel-authorizations/pages/travel-form-edit/EstimateTab"),
             props: true,
           },
         ],
@@ -58,7 +58,7 @@ const routes = [
         meta: {
           requiresAuth: true,
         },
-        component: () => import("@/modules/travel-form/pages/ManagerView"),
+        component: () => import("@/modules/travel-authorizations/pages/ManagerView"),
       },
       {
         name: "travelRequestManage",
@@ -66,7 +66,7 @@ const routes = [
         meta: {
           requiresAuth: true,
         },
-        component: () => import("@/modules/travel-form/pages/TravelFormManage"),
+        component: () => import("@/modules/travel-authorizations/pages/TravelFormManage"),
       },
     ],
   },
