@@ -13,7 +13,7 @@ import TravelAgents from "../components/Administration/LookupTableManagement/Tra
 
 import preapprovedRouter from "../modules/preapproved/router/index.js"
 import travelDeskRouter from "../modules/travelDesk/router/index.js"
-import travelRequestRouter from "../modules/travel-form/router/index.js"
+import travelRequestRouter from "../modules/travel-form/router.js/index.js"
 import flightExpenseRouter from "../modules/flightExpenses/router/index.js"
 import reportsRouter from "../modules/reports/router/index.js"
 
