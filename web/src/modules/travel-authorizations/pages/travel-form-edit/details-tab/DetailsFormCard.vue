@@ -86,7 +86,7 @@ import DatePicker from "@/components/Utils/DatePicker"
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
   ONE_WAY: "One Way",
-  MULI_DESTINATION: "Muli-Destination",
+  MULTI_DESTINATION: "Multi-Destination",
 })
 
 export default {
@@ -118,7 +118,7 @@ export default {
           return () => import("./details-form-card/RoundTripStopsSection")
         case TRIP_TYPES.ONE_WAY:
           return () => import("./details-form-card/OneWayStopsSection")
-        case TRIP_TYPES.MULI_DESTINATION:
+        case TRIP_TYPES.MULTI_DESTINATION:
           return () => import("./details-form-card/MultiDestinationStopsSection")
         default:
           return null
@@ -134,7 +134,7 @@ export default {
     if (this.currentTravelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
     } else if (this.currentTravelAuthorization.multiStop) {
-      this.tripType = TRIP_TYPES.MULI_DESTINATION
+      this.tripType = TRIP_TYPES.MULTI_DESTINATION
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
@@ -150,7 +150,7 @@ export default {
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
         this.currentTravelAuthorization.multiStop = false
-      } else if (value === TRIP_TYPES.MULI_DESTINATION) {
+      } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
         this.currentTravelAuthorization.multiStop = true
         this.currentTravelAuthorization.oneWayTrip = false
       } else {
