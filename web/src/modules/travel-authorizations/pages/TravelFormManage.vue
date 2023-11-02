@@ -437,7 +437,7 @@ export default {
     this.overlay = false
   },
   computed: {
-    ...mapState("travelForm", ["departments", "purposes", "request"]),
+    ...mapState("travelAuthorizations", ["departments", "purposes", "request"]),
 
     myDepartments: function () {
       return Object.keys(this.departments)
@@ -469,7 +469,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("travelForm", ["initialize"]),
+    ...mapActions("travelAuthorizations", ["initialize"]),
 
     submitForm() {
       this.showError = false

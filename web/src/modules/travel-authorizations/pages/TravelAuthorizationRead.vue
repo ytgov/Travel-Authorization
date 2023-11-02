@@ -76,7 +76,7 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelForm", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
+    ...mapState("travelAuthorizations", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
     isAdmin() {
       return this.currentUser?.roles.includes("admin")
     },
@@ -85,7 +85,7 @@ export default {
     return Promise.all([this.loadAsCurrentTravelAuthorization(this.formId), this.loadCurrentUser()])
   },
   methods: {
-    ...mapActions("travelForm", ["loadAsCurrentTravelAuthorization", "loadCurrentUser"]),
+    ...mapActions("travelAuthorizations", ["loadAsCurrentTravelAuthorization", "loadCurrentUser"]),
     goToAdminEditPage() {
       alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)
     },

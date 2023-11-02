@@ -17,7 +17,7 @@ export default {
     loadingCreatingForm: false,
   }),
   methods: {
-    ...mapActions("travelForm", ["create"]),
+    ...mapActions("travelAuthorizations", ["create"]),
     goToFormDetails(form) {
       const formId = form.id
       this.$router.push({ name: "TravelFormEdit-DetailsTab", params: { formId } })

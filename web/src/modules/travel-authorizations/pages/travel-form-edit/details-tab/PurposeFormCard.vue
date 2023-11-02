@@ -112,8 +112,8 @@ export default {
     required: (v) => !!v || "This field is required",
   }),
   computed: {
-    ...mapState("travelForm", ["currentTravelAuthorization", "purposes"]),
-    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
         return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
@@ -136,7 +136,7 @@ export default {
     ])
   },
   methods: {
-    ...mapActions("travelForm", ["loadPurposes", "loadDestinations"]),
+    ...mapActions("travelAuthorizations", ["loadPurposes", "loadDestinations"]),
   },
 }
 </script>

@@ -106,12 +106,12 @@ export default {
       new Date(a) >= new Date(b) || `This field must be greater than or equal to ${b || label}`,
   }),
   computed: {
-    ...mapState("travelForm", [
+    ...mapState("travelAuthorizations", [
       "currentTravelAuthorization",
       "purposes",
       "destinationsByCurrentFormTravelRestriction",
     ]),
-    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
         return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
@@ -142,7 +142,7 @@ export default {
     ])
   },
   methods: {
-    ...mapActions("travelForm", ["loadPurposes", "loadDestinations"]),
+    ...mapActions("travelAuthorizations", ["loadPurposes", "loadDestinations"]),
   },
 }
 </script>

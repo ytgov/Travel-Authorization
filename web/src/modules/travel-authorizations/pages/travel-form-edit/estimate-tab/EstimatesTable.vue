@@ -84,7 +84,7 @@ export default {
     totalRowClasses: "text-start font-weight-bold text-uppercase",
   }),
   computed: {
-    ...mapState("travelForm", ["estimates", "loadingEstimates"]),
+    ...mapState("travelAuthorizations", ["estimates", "loadingEstimates"]),
     // Will need to be calculated in the back-end if data is multi-page.
     totalAmount() {
       return sumBy(this.estimates, "cost")
@@ -97,7 +97,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions("travelForm", ["loadEstimates"]),
+    ...mapActions("travelAuthorizations", ["loadEstimates"]),
     formatDate(date) {
       return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
     },

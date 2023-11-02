@@ -195,7 +195,7 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
   }),
   computed: {
-    ...mapState("travelForm", ["departments", "request", "emails"]),
+    ...mapState("travelAuthorizations", ["departments", "request", "emails"]),
     divisions() {
       const department = this.departments.find((d) => d.name == this.request.department)
       return department?.divisions || []
@@ -222,7 +222,7 @@ export default {
     ])
   },
   methods: {
-    ...mapActions("travelForm", ["loadDepartments", "loadUser", "emailSearch"]),
+    ...mapActions("travelAuthorizations", ["loadDepartments", "loadUser", "emailSearch"]),
     searchEmail(token) {
       return this.emailSearch(token)
     },

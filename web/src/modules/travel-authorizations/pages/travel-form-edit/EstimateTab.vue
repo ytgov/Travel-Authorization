@@ -42,7 +42,7 @@ export default {
   },
   data: () => ({}),
   computed: {
-    ...mapState("travelForm", ["estimates", "loadingEstimates"]),
+    ...mapState("travelAuthorizations", ["estimates", "loadingEstimates"]),
     formIdAsNumber() {
       return parseInt(this.formId)
     },
@@ -54,7 +54,7 @@ export default {
     await this.loadEstimates({ travelAuthorizationId: this.formId })
   },
   methods: {
-    ...mapActions("travelForm", ["loadEstimates"]),
+    ...mapActions("travelAuthorizations", ["loadEstimates"]),
     refreshEstimates() {
       this.$refs.estimatesTable.refresh()
     },

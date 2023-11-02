@@ -80,7 +80,7 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("travelForm", ["currentTravelAuthorization", "currentUser", "loadingCurrentUser"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "currentUser", "loadingCurrentUser"]),
     // TODO: Make this a getter in the store
     estimates() {
       return this.currentTravelAuthorization.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
@@ -105,7 +105,7 @@ export default {
     return this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("travelForm", ["loadCurrentUser"]),
+    ...mapActions("travelAuthorizations", ["loadCurrentUser"]),
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {

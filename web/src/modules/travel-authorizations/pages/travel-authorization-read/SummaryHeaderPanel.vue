@@ -82,8 +82,8 @@ export default {
     loadingDestinations: false,
   }),
   computed: {
-    ...mapState("travelForm", ["currentTravelAuthorization", "purposes"]),
-    ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
+    ...mapGetters("travelAuthorizations", ["destinationsByCurrentFormTravelRestriction"]),
     finalDestination() {
       return last(this.currentTravelAuthorization.stops) || {}
     },
@@ -114,7 +114,7 @@ export default {
     ])
   },
   methods: {
-    ...mapActions("travelForm", ["loadPurposes", "loadDestinations"]),
+    ...mapActions("travelAuthorizations", ["loadPurposes", "loadDestinations"]),
   },
 }
 </script>

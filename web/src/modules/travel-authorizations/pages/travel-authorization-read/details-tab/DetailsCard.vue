@@ -82,8 +82,8 @@ export default {
     tripType: "",
   }),
   computed: {
-    ...mapState("travelForm", ["currentTravelAuthorization"]),
-    ...mapGetters("travelForm", ["currentTravelAuthorizationId"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
     tripTypeComponent() {
       switch (this.tripType) {
         case TRIP_TYPES.ROUND_TRIP:

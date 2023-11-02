@@ -181,7 +181,7 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
   }),
   computed: {
-    ...mapState("travelForm", ["destinations", "request"]),
+    ...mapState("travelAuthorizations", ["destinations", "request"]),
     miminumStops() {
       if (this.request.multiStop) return 2
 
@@ -200,7 +200,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("travelForm", ["loadDestinations"]),
+    ...mapActions("travelAuthorizations", ["loadDestinations"]),
     updateMultiStop(value) {
       if (value && this.request.stops.length < 2) {
         this.addStop()

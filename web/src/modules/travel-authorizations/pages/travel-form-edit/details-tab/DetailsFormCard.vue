@@ -101,8 +101,8 @@ export default {
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
-    ...mapState("travelForm", ["currentTravelAuthorization"]),
-    ...mapGetters("travelForm", ["currentTravelAuthorizationId"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
     finalDestination() {
       return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
     },

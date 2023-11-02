@@ -244,8 +244,8 @@ export default {
     }
   },
   computed: {
-    ...mapState("travelForm", ["currentTravelAuthorization"]),
-    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
   },
   async mounted() {
     await this.loadDestinations()
@@ -256,7 +256,7 @@ export default {
     this.stop4 = this.currentTravelAuthorization.stops[3]
   },
   methods: {
-    ...mapActions("travelForm", ["loadDestinations"]),
+    ...mapActions("travelAuthorizations", ["loadDestinations"]),
     getDestinationText(locationId) {
       const destination = this.destinationsByCurrentFormTravelRestriction.find(
         (d) => d.value === locationId

@@ -159,7 +159,7 @@ export default {
     numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
   computed: {
-    ...mapState("travelForm", ["purposes", "request"]),
+    ...mapState("travelAuthorizations", ["purposes", "request"]),
     travelAdvanceInDollars: {
       get() {
         return Math.ceil(this.request.travelAdvanceInCents / 100.0);
@@ -173,7 +173,7 @@ export default {
     this.loadPurposes();
   },
   methods: {
-    ...mapActions("travelForm", ["loadPurposes"]),
+    ...mapActions("travelAuthorizations", ["loadPurposes"]),
     continueClick() {
       this.continue();
     },

@@ -115,10 +115,10 @@ export default {
     await this.refreshForms()
   },
   computed: {
-    ...mapState("travelForm", ["myTravelAuthorizations"]),
+    ...mapState("travelAuthorizations", ["myTravelAuthorizations"]),
   },
   methods: {
-    ...mapActions("travelForm", ["loadTravelAuthorizations"]),
+    ...mapActions("travelAuthorizations", ["loadTravelAuthorizations"]),
     isEmpty,
     refreshForms() {
       this.loadingForms = true
