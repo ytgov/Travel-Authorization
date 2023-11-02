@@ -51,7 +51,7 @@
         <TimePicker
           v-model="originStop.departureTime"
           :rules="[required]"
-          text="Time"
+          label="Time (24h)"
           persistent-hint
         />
       </v-col>

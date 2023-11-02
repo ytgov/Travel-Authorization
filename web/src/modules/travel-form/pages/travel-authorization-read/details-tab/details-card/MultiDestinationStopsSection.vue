@@ -123,7 +123,7 @@
       >
         <v-text-field
           :value="stop2.departureTime"
-          text="Time"
+          label="Time (24h)"
           prepend-icon="mdi-clock"
           dense
           outlined
@@ -197,7 +197,7 @@
       >
         <v-text-field
           :value="stop3.departureTime"
-          text="Time"
+          label="Time (24h)"
           prepend-icon="mdi-clock"
           dense
           outlined

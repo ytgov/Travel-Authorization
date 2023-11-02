@@ -11,7 +11,7 @@
       <v-text-field
         dense
         :value="value"
-        :label="text"
+        :label="label || text"
         prepend-icon="mdi-clock"
         background-color="white"
         outlined
@@ -37,7 +37,17 @@
 export default {
   props: {
     value: String,
-    text: String,
+    text: {
+      type: String,
+      default: undefined,
+      validator(value) {
+        if (value !== undefined) {
+          console.warn('The "text" prop is deprecated; prefer using "label" instead.')
+        }
+        return true
+      },
+    },
+    label: String,
     review: {
       type: Boolean,
       default: false,
