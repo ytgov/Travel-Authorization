@@ -27,8 +27,8 @@
         </v-row>
 
         <component
-          v-if="tripTypeComponent"
           :is="tripTypeComponent"
+          v-if="tripTypeComponent"
         />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
         <v-row>
