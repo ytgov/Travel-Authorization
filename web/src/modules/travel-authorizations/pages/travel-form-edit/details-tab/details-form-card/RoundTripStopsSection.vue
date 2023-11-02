@@ -195,8 +195,6 @@ export default {
     return {
       originStop: {},
       destinationStop: {},
-      greaterThanOrEqualToDate,
-      required,
     }
   },
   computed: {
@@ -226,6 +224,8 @@ export default {
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadDestinations"]),
+    greaterThanOrEqualToDate,
+    required,
     newStop(attributes) {
       return {
         travelAuthorizationId: this.currentTravelAuthorizationId,

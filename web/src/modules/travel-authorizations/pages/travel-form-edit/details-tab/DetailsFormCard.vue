@@ -98,7 +98,6 @@ export default {
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
     tripType: "",
-    required,
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
@@ -143,6 +142,7 @@ export default {
     this.currentTravelAuthorization.travelDuration = this.travelDuration
   },
   methods: {
+    required,
     updateTripType(value) {
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentTravelAuthorization.oneWayTrip = false

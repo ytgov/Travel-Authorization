@@ -105,8 +105,6 @@ export default {
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
-    required,
-    greaterThanOrEqualToDate,
   }),
   computed: {
     ...mapState("travelAuthorizations", [
@@ -161,6 +159,8 @@ export default {
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadPurposes", "loadDestinations"]),
+    required,
+    greaterThanOrEqualToDate,
   },
 }
 </script>
