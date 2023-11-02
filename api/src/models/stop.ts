@@ -20,7 +20,7 @@ import TravelAuthorization from "./travel-authorization"
 
 const BEGINNING_OF_DAY = "00:00:00"
 
-// Keep in sync with web/src/modules/travel-form/components/TravelMethodSelect.vue
+// Keep in sync with web/src/modules/travel-authorizations/components/TravelMethodSelect.vue
 // Until both are using a shared location
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum TravelMethods {
@@ -33,7 +33,7 @@ enum TravelMethods {
   // OTHER = "Other:"
 }
 
-// Keep in sync with web/src/modules/travel-form/components/AccommodationTypeSelect.vue
+// Keep in sync with web/src/modules/travel-authorizations/components/AccommodationTypeSelect.vue
 // Until both are using a shared location
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum AccommodationTypes {

@@ -8,7 +8,7 @@ import preapproved from "./preapproved";
 import traveldesk from "./traveldesk";
 import reports from "./reports";
 
-import travelForm from "@/modules/travel-form/store";
+import travelAuthorizations from "@/modules/travel-authorizations/store";
 
 Vue.use(Vuex);
 
@@ -62,6 +62,6 @@ export default new Vuex.Store({
     preapproved,
     traveldesk,
     reports,
-    travelForm,
+    travelAuthorizations,
   },
 });
