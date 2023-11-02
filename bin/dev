@@ -64,6 +64,14 @@ class DevHelper
   end
 
   # Custom helpers
+  def api(*args, **kwargs)
+    run(*%w[api], *args, **kwargs)
+  end
+
+  def web(*args, **kwargs)
+    run(*%w[web], *args, **kwargs)
+  end
+
   def psql(*args, **kwargs)
     # TODO: use environment variables for this instead
     db(*%w[psql "postgresql://app:itsallgood@localhost:5432/travel_development"], *args, **kwargs)
