@@ -270,15 +270,29 @@ export default {
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
   },
   async mounted() {
     await this.loadDestinations()
 
     if (isEmpty(this.currentTravelAuthorization.stops)) {
-      this.currentTravelAuthorization.stops = [this.newStop(), this.newStop(), this.newStop(), this.newStop()]
+      this.currentTravelAuthorization.stops = [
+        this.newStop(),
+        this.newStop(),
+        this.newStop(),
+        this.newStop(),
+      ]
     } else if (this.currentTravelAuthorization.stops.length === 1) {
-      this.currentTravelAuthorization.stops.splice(0, 0, this.newStop(), this.newStop(), this.newStop())
+      this.currentTravelAuthorization.stops.splice(
+        0,
+        0,
+        this.newStop(),
+        this.newStop(),
+        this.newStop()
+      )
     } else if (this.currentTravelAuthorization.stops.length === 2) {
       this.currentTravelAuthorization.stops.splice(1, 0, this.newStop(), this.newStop())
     } else if (this.currentTravelAuthorization.stops.length === 3) {
