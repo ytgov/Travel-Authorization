@@ -34,14 +34,10 @@
             cols="12"
             md="1"
           >
-            <v-text-field
-              :value="currentTravelAuthorization.travelDuration"
-              label="# Days"
-              dense
-              outlined
-              readonly
-            ></v-text-field>
-            <!-- TODO: add (?) tooltip about where this value comes from -->
+            <TravelDurationTextField
+              v-model="currentTravelAuthorization.travelDuration"
+              :stops="currentTravelAuthorization.stops"
+            />
           </v-col>
           <v-col
             cols="12"
@@ -75,13 +71,14 @@
 </template>
 
 <script>
-import { DateTime } from "luxon"
-import { first, isNil, last, max } from "lodash"
+import { last } from "lodash"
 import { mapState, mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
 
 import DatePicker from "@/components/Utils/DatePicker"
+
+import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -93,6 +90,7 @@ export default {
   name: "DetailsFormCard",
   components: {
     DatePicker,
+    TravelDurationTextField,
   },
   data: () => ({
     TRIP_TYPES,
@@ -103,14 +101,8 @@ export default {
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
-    originDestination() {
-      return first(this.currentTravelAuthorization.stops) || {}
-    },
     finalDestination() {
       return last(this.currentTravelAuthorization.stops) || {}
-    },
-    travelDuration() {
-      return this.computeTravelDuration(this.originDestination, this.finalDestination)
     },
     tripTypeComponent() {
       switch (this.tripType) {
@@ -125,11 +117,6 @@ export default {
       }
     },
   },
-  watch: {
-    travelDuration(newValue) {
-      this.currentTravelAuthorization.travelDuration = newValue
-    },
-  },
   mounted() {
     if (this.currentTravelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
@@ -138,8 +125,6 @@ export default {
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
-
-    this.currentTravelAuthorization.travelDuration = this.travelDuration
   },
   methods: {
     required,
@@ -162,16 +147,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.form.resetValidation()
       })
-    },
-    computeTravelDuration(originDestination, finalDestination) {
-      if (isNil(originDestination.departureDate) || isNil(finalDestination.departureDate)) {
-        return null
-      }
-
-      const departureDateOrigin = DateTime.fromISO(originDestination.departureDate)
-      const departureDateFinal = DateTime.fromISO(finalDestination.departureDate)
-      const timeDifference = departureDateFinal.diff(departureDateOrigin, "days")
-      return max([0, timeDifference.days])
     },
   },
 }
