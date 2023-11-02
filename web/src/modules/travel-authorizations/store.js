@@ -90,7 +90,7 @@ const actions = {
       return formattedLocations
     })
   },
-  async loadForms({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
+  async loadTravelAuthorizations({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
     const userId =
       state.currentUser.id || (await dispatch("loadCurrentUser").then((user) => user.id))
     return travelAuthorizationsApi

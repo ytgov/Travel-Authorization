@@ -48,10 +48,10 @@ export default {
     ]
   }),
   created() {
-    this.loadForms();
+    this.loadTravelAuthorizations();
   },
   methods: {
-    loadForms() {
+    loadTravelAuthorizations() {
       secureGet(`${FORM_URL}`).then(resp => {
         this.forms = resp.data;
       });

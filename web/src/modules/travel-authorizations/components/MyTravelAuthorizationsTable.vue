@@ -118,11 +118,11 @@ export default {
     ...mapState("travelForm", ["myTravelAuthorizations"]),
   },
   methods: {
-    ...mapActions("travelForm", ["loadForms"]),
+    ...mapActions("travelForm", ["loadTravelAuthorizations"]),
     isEmpty,
     refreshForms() {
       this.loadingForms = true
-      return this.loadForms({ page: this.page, perPage: this.perPage })
+      return this.loadTravelAuthorizations({ page: this.page, perPage: this.perPage })
         .then(({ totalCount }) => {
           this.totalCount = totalCount
         })

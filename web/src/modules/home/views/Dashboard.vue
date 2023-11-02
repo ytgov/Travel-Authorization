@@ -216,11 +216,11 @@ export default {
     dialog: false,
   }),
   created() {
-    this.loadForms();
+    this.loadTravelAuthorizations();
     this.getTrip();
   },
   methods: {
-    loadForms() {
+    loadTravelAuthorizations() {
       secureGet(`${FORM_URL}`).then((resp) => {
         this.forms = resp.data;
       });
