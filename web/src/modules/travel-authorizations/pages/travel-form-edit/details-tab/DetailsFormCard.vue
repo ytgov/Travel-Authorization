@@ -79,6 +79,8 @@ import { DateTime } from "luxon"
 import { first, isNil, last } from "lodash"
 import { mapState, mapGetters } from "vuex"
 
+import { required } from "@/utils/validators"
+
 import DatePicker from "@/components/Utils/DatePicker"
 
 const TRIP_TYPES = Object.freeze({
@@ -96,7 +98,7 @@ export default {
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
     tripType: "",
-    required: (v) => !!v || "This field is required",
+    required,
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
