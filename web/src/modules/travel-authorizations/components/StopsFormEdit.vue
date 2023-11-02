@@ -73,7 +73,7 @@
             <v-col>
               <TimePicker
                 v-model="stop.departureTime"
-                text="Departure Time"
+                label="Departure Time"
                 :review="review"
                 :rules="requiredRules"
             /></v-col>
