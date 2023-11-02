@@ -62,6 +62,11 @@ export default {
       this.$emit("input", newValue)
     },
   },
+  mounted() {
+    // Backwards compatibility feature, fills missing value not previously set
+    // but all dates are set, you still need to save the form to persist this value
+    this.$emit("input", this.travelDuration)
+  },
   methods: {
     computeTravelDuration(originDestination, finalDestination) {
       if (isNil(originDestination.departureDate) || isNil(finalDestination.departureDate)) {
