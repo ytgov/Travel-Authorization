@@ -82,10 +82,10 @@ export default {
     },
   },
   mounted() {
-    return Promise.all([this.loadAsCurrentForm(this.formId), this.loadCurrentUser()])
+    return Promise.all([this.loadAsCurrentTravelAuthorization(this.formId), this.loadCurrentUser()])
   },
   methods: {
-    ...mapActions("travelForm", ["loadAsCurrentForm", "loadCurrentUser"]),
+    ...mapActions("travelForm", ["loadAsCurrentTravelAuthorization", "loadCurrentUser"]),
     goToAdminEditPage() {
       alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)
     },

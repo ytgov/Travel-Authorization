@@ -105,7 +105,7 @@ const actions = {
         return { forms, totalCount }
       })
   },
-  loadAsCurrentForm({ commit, state }, formId) {
+  loadAsCurrentTravelAuthorization({ commit, state }, formId) {
     state.loadingCurrentForm = true
     return travelAuthorizationsApi
       .get(formId)
@@ -118,8 +118,8 @@ const actions = {
       })
   },
   loadForm({ dispatch }, formId) {
-    console.warn("Deprecated: use loadAsCurrentForm instead.")
-    return dispatch("loadAsCurrentForm", formId)
+    console.warn("Deprecated: use loadAsCurrentTravelAuthorization instead.")
+    return dispatch("loadAsCurrentTravelAuthorization", formId)
   },
   loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true
