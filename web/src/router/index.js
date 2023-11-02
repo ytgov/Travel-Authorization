@@ -13,7 +13,7 @@ import TravelAgents from "../components/Administration/LookupTableManagement/Tra
 
 import preapprovedRouter from "../modules/preapproved/router"
 import travelDeskRouter from "../modules/travelDesk/router"
-import travelFormRouter from "../modules/travel-authorizations/router"
+import travelAuthorizationsRouter from "../modules/travel-authorizations/router"
 import flightExpenseRouter from "../modules/flightExpenses/router"
 import reportsRouter from "../modules/reports/router"
 
@@ -36,7 +36,7 @@ const routes = [
   ...authenticationRouter,
   ...preapprovedRouter,
   ...travelDeskRouter,
-  ...travelFormRouter,
+  ...travelAuthorizationsRouter,
   ...flightExpenseRouter,
   ...reportsRouter,
 
