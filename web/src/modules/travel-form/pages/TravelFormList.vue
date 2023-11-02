@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import CreateTravelAuthorizationButton from "@/modules/travel-form/views/travel-form-list/CreateTravelAuthorizationButton"
+import CreateTravelAuthorizationButton from "@/modules/travel-form/pages/travel-form-list/CreateTravelAuthorizationButton"
 import MyTravelAuthorizationsTable from "@/modules/travel-form/components/MyTravelAuthorizationsTable"
 
 export default {

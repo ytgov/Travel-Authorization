@@ -11,11 +11,11 @@ import RentalCarEstimates from "../components/Administration/RatesEstimateManage
 import YGRates from "../components/Administration/RatesEstimateManagement/YGRates"
 import TravelAgents from "../components/Administration/LookupTableManagement/TravelAgents"
 
-import preapprovedRouter from "../modules/preapproved/router/index.js"
-import travelDeskRouter from "../modules/travelDesk/router/index.js"
-import travelRequestRouter from "../modules/travel-form/router.js/index.js"
-import flightExpenseRouter from "../modules/flightExpenses/router/index.js"
-import reportsRouter from "../modules/reports/router/index.js"
+import preapprovedRouter from "../modules/preapproved/router"
+import travelDeskRouter from "../modules/travelDesk/router"
+import travelFormRouter from "../modules/travel-form/router"
+import flightExpenseRouter from "../modules/flightExpenses/router"
+import reportsRouter from "../modules/reports/router"
 
 import authenticationRouter from "../modules/authentication/router"
 import homeRouter from "../modules/home/router"
@@ -36,7 +36,7 @@ const routes = [
   ...authenticationRouter,
   ...preapprovedRouter,
   ...travelDeskRouter,
-  ...travelRequestRouter,
+  ...travelFormRouter,
   ...flightExpenseRouter,
   ...reportsRouter,
 
