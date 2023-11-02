@@ -65,7 +65,7 @@
             <v-col
               ><DatePicker
                 v-model="stop.departureDate"
-                text="Departure Date"
+                label="Departure Date"
                 :review="review"
                 :rules="requiredRules"
               />

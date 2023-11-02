@@ -66,7 +66,7 @@
               v-model="currentTravelAuthorization.dateBackToWork"
               :min="finalDestination.departureDate"
               :rules="[required]"
-              text="Expected Date return to work"
+              label="Expected Date return to work"
               required
             />
           </v-col>

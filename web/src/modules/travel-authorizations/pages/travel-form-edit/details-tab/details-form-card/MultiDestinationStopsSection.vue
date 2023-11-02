@@ -40,7 +40,7 @@
         <DatePicker
           v-model="stop1.departureDate"
           :rules="[required]"
-          text="Date"
+          label="Date"
           persistent-hint
         />
       </v-col>
@@ -118,7 +118,7 @@
         <DatePicker
           v-model="stop2.departureDate"
           :rules="[required]"
-          text="Date"
+          label="Date"
           persistent-hint
         />
       </v-col>
@@ -196,7 +196,7 @@
         <DatePicker
           v-model="stop3.departureDate"
           :rules="[required]"
-          text="Date"
+          label="Date"
           persistent-hint
         />
       </v-col>

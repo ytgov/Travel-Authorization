@@ -40,7 +40,7 @@
         <DatePicker
           v-model="originStop.departureDate"
           :rules="[required]"
-          text="Date"
+          label="Date"
           persistent-hint
         />
       </v-col>
@@ -118,7 +118,7 @@
         <DatePicker
           v-model="destinationStop.departureDate"
           :rules="[required]"
-          text="Date"
+          label="Date"
           persistent-hint
         />
       </v-col>

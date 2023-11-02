@@ -64,7 +64,7 @@
         <DatePicker
           v-model="initialDestination.departureDate"
           :rules="[required]"
-          text="Start Date"
+          label="Start Date"
           required
         />
       </v-col>
@@ -79,7 +79,7 @@
             required,
             greaterThanOrEqualToDate(initialDestination.departureDate, 'start date'),
           ]"
-          text="End Date"
+          label="End Date"
           required
         />
       </v-col>
