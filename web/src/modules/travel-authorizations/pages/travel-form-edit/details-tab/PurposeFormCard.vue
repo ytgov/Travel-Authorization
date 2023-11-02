@@ -19,7 +19,7 @@
                 md="6"
               >
                 <v-select
-                  v-model="currentForm.purposeId"
+                  v-model="currentTravelAuthorization.purposeId"
                   :items="purposes"
                   :loading="loadingPurposes"
                   :rules="[required]"
@@ -33,7 +33,7 @@
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  v-model="currentForm.eventName"
+                  v-model="currentTravelAuthorization.eventName"
                   :rules="[required]"
                   dense
                   label="Name of meeting/conference, mission, trade fair or course"
@@ -82,7 +82,7 @@
                 md="9"
               >
                 <v-textarea
-                  v-model="currentForm.benefits"
+                  v-model="currentTravelAuthorization.benefits"
                   :rules="[required]"
                   auto-grow
                   dense
@@ -112,14 +112,14 @@ export default {
     required: (v) => !!v || "This field is required",
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm", "purposes"]),
-    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelForm", ["currentTravelAuthorization", "purposes"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
-        return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
+        return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
       },
       set(newValue) {
-        this.$set(this.currentForm.stops, this.currentForm.stops.length - 1, newValue)
+        this.$set(this.currentTravelAuthorization.stops, this.currentTravelAuthorization.stops.length - 1, newValue)
       },
     },
   },

@@ -244,16 +244,16 @@ export default {
     }
   },
   computed: {
-    ...mapState("travelForm", ["currentForm"]),
-    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelForm", ["currentTravelAuthorization"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
   },
   async mounted() {
     await this.loadDestinations()
 
-    this.stop1 = this.currentForm.stops[0]
-    this.stop2 = this.currentForm.stops[1]
-    this.stop3 = this.currentForm.stops[2]
-    this.stop4 = this.currentForm.stops[3]
+    this.stop1 = this.currentTravelAuthorization.stops[0]
+    this.stop2 = this.currentTravelAuthorization.stops[1]
+    this.stop3 = this.currentTravelAuthorization.stops[2]
+    this.stop4 = this.currentTravelAuthorization.stops[3]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),

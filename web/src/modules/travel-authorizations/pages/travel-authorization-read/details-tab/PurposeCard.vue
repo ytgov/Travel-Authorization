@@ -22,7 +22,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                :value="currentForm.eventName"
+                :value="currentTravelAuthorization.eventName"
                 label="Name of meeting/conference, mission, trade fair or course"
                 dense
                 outlined
@@ -63,7 +63,7 @@
               md="9"
             >
               <v-textarea
-                :value="currentForm.benefits"
+                :value="currentTravelAuthorization.benefits"
                 label="Objectives"
                 rows="10"
                 auto-grow
@@ -91,13 +91,13 @@ export default {
     loadingDestinations: false,
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm", "purposes"]),
-    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelForm", ["currentTravelAuthorization", "purposes"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination() {
-      return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
+      return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
     },
     purposeText() {
-      const purpose = this.purposes.find((p) => p.id === this.currentForm.purposeId)
+      const purpose = this.purposes.find((p) => p.id === this.currentTravelAuthorization.purposeId)
       return purpose?.purpose || ""
     },
     finalDestinationText() {

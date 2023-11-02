@@ -171,14 +171,14 @@ export default {
     }
   },
   computed: {
-    ...mapState("travelForm", ["currentForm"]),
-    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelForm", ["currentTravelAuthorization"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
   },
   async mounted() {
     await this.loadDestinations()
 
-    this.originStop = this.currentForm.stops[0]
-    this.destinationStop = this.currentForm.stops[1]
+    this.originStop = this.currentTravelAuthorization.stops[0]
+    this.destinationStop = this.currentTravelAuthorization.stops[1]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),

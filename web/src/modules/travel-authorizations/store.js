@@ -14,7 +14,7 @@ const state = {
   estimates: [],
   myTravelAuthorizations: [],
   purposes: [],
-  currentForm: {},
+  currentTravelAuthorization: {},
   currentUser: {},
   loadingCurrentUser: true,
   loadingCurrentForm: true,
@@ -22,18 +22,18 @@ const state = {
 }
 
 // Shim to support refering to form as request for legacy code
-state.request = state.currentForm
+state.request = state.currentTravelAuthorization
 
 const getters = {
   destinationsByCurrentFormTravelRestriction(state) {
-    if (state.currentForm.allTravelWithinTerritory !== true) {
+    if (state.currentTravelAuthorization.allTravelWithinTerritory !== true) {
       return state.destinations
     }
 
     return state.destinations.filter((d) => d.text.endsWith("(YT)"))
   },
-  currentFormId(state) {
-    return state.currentForm.id
+  currentTravelAuthorizationId(state) {
+    return state.currentTravelAuthorization.id
   },
 }
 
@@ -184,8 +184,8 @@ const actions = {
       })
   },
   updateCurrentForm({ commit, state }) {
-    const formId = state.currentForm.id
-    const attributes = state.currentForm
+    const formId = state.currentTravelAuthorization.id
+    const attributes = state.currentTravelAuthorization
     state.loadingCurrentForm = true
     return travelAuthorizationsApi
       .update(formId, attributes)
@@ -219,9 +219,9 @@ const mutations = {
     store.myTravelAuthorizations = value
   },
   SET_FORM(store, value) {
-    store.currentForm = value
+    store.currentTravelAuthorization = value
     // propagates to store.request object, for legacy code
-    store.request = store.currentForm
+    store.request = store.currentTravelAuthorization
   },
   SET_DEPARTMENTS(store, value) {
     store.departments = value

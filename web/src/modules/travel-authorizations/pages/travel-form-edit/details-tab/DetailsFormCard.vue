@@ -37,7 +37,7 @@
             md="1"
           >
             <v-text-field
-              v-model="currentForm.travelDuration"
+              v-model="currentTravelAuthorization.travelDuration"
               :rules="[required, isNumber]"
               label="# Days"
               dense
@@ -50,7 +50,7 @@
             md="2"
           >
             <v-text-field
-              v-model="currentForm.daysOffTravelStatus"
+              v-model="currentTravelAuthorization.daysOffTravelStatus"
               :rules="[isNumber]"
               label="Days on non-travel status"
               dense
@@ -63,7 +63,7 @@
             md="3"
           >
             <DatePicker
-              v-model="currentForm.dateBackToWork"
+              v-model="currentTravelAuthorization.dateBackToWork"
               :min="finalDestination.departureDate"
               :rules="[required]"
               text="Expected Date return to work"
@@ -101,10 +101,10 @@ export default {
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm"]),
-    ...mapGetters("travelForm", ["currentFormId"]),
+    ...mapState("travelForm", ["currentTravelAuthorization"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId"]),
     finalDestination() {
-      return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
+      return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
     },
     tripTypeComponent() {
       switch (this.tripType) {
@@ -120,9 +120,9 @@ export default {
     },
   },
   mounted() {
-    if (this.currentForm.oneWayTrip) {
+    if (this.currentTravelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
-    } else if (this.currentForm.multiStop) {
+    } else if (this.currentTravelAuthorization.multiStop) {
       this.tripType = TRIP_TYPES.MULI_DESTINATION
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP
@@ -131,14 +131,14 @@ export default {
   methods: {
     updateTripType(value) {
       if (value === TRIP_TYPES.ROUND_TRIP) {
-        this.currentForm.oneWayTrip = false
-        this.currentForm.multiStop = false
+        this.currentTravelAuthorization.oneWayTrip = false
+        this.currentTravelAuthorization.multiStop = false
       } else if (value === TRIP_TYPES.ONE_WAY) {
-        this.currentForm.oneWayTrip = true
-        this.currentForm.multiStop = false
+        this.currentTravelAuthorization.oneWayTrip = true
+        this.currentTravelAuthorization.multiStop = false
       } else if (value === TRIP_TYPES.MULI_DESTINATION) {
-        this.currentForm.multiStop = true
-        this.currentForm.oneWayTrip = false
+        this.currentTravelAuthorization.multiStop = true
+        this.currentTravelAuthorization.oneWayTrip = false
       } else {
         throw new Error("Invalid trip type")
       }

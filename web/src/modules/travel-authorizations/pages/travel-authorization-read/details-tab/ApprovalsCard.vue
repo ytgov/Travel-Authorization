@@ -53,7 +53,7 @@
           md="3"
         >
           <v-text-field
-            :value="currentForm.supervisorEmail"
+            :value="currentTravelAuthorization.supervisorEmail"
             label="Submit to"
             dense
             outlined
@@ -80,22 +80,22 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
+    ...mapState("travelForm", ["currentTravelAuthorization", "currentUser", "loadingCurrentUser"]),
     // TODO: Make this a getter in the store
     estimates() {
-      return this.currentForm.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
+      return this.currentTravelAuthorization.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
     },
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
     preApprovedTravelRequestText() {
       const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
-        (p) => p.value === this.currentForm.preappId
+        (p) => p.value === this.currentTravelAuthorization.preappId
       )
       return preApprovedTravelRequest?.text || ""
     },
     travelAdvanceInDollars() {
-      return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
+      return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0)
     },
   },
   async mounted() {

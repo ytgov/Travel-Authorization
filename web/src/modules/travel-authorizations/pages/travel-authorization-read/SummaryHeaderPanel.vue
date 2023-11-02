@@ -7,7 +7,7 @@
       >
         <!-- Depending on in territory flag we will load a different list of destinations -->
         <v-checkbox
-          :input-value="currentForm.allTravelWithinTerritory"
+          :input-value="currentTravelAuthorization.allTravelWithinTerritory"
           label="In Territory?"
           dense
           outlined
@@ -82,16 +82,16 @@ export default {
     loadingDestinations: false,
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm", "purposes"]),
+    ...mapState("travelForm", ["currentTravelAuthorization", "purposes"]),
     ...mapGetters("travelForm", ["destinationsByCurrentFormTravelRestriction"]),
     finalDestination() {
-      return last(this.currentForm.stops) || {}
+      return last(this.currentTravelAuthorization.stops) || {}
     },
     initialDestination() {
-      return first(this.currentForm.stops) || {}
+      return first(this.currentTravelAuthorization.stops) || {}
     },
     purposeText() {
-      const purpose = this.purposes.find((p) => p.id === this.currentForm.purposeId)
+      const purpose = this.purposes.find((p) => p.id === this.currentTravelAuthorization.purposeId)
       return purpose?.purpose || ""
     },
     finalDestinationText() {

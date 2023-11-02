@@ -20,7 +20,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("travelForm", ["currentForm", "loadingCurrentForm"]),
+    ...mapState("travelForm", ["currentTravelAuthorization", "loadingCurrentForm"]),
   },
   methods: {
     ...mapActions("travelForm", ["updateCurrentForm"]),
@@ -30,12 +30,12 @@ export default {
         return
       }
 
-      this.currentForm.status = "submitted"
+      this.currentTravelAuthorization.status = "submitted"
       return this.updateCurrentForm()
         .then(() => {
           this.$router.push({
             name: "TravelAuthorizationRead-DetailsTab",
-            params: { formId: this.currentForm.id },
+            params: { formId: this.currentTravelAuthorization.id },
           })
         })
         .catch((error) => {

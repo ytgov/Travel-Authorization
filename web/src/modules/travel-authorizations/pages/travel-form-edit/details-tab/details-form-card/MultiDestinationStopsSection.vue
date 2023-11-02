@@ -269,35 +269,35 @@ export default {
     }
   },
   computed: {
-    ...mapState("travelForm", ["currentForm"]),
-    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelForm", ["currentTravelAuthorization"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
   },
   async mounted() {
     await this.loadDestinations()
 
-    if (isEmpty(this.currentForm.stops)) {
-      this.currentForm.stops = [this.newStop(), this.newStop(), this.newStop(), this.newStop()]
-    } else if (this.currentForm.stops.length === 1) {
-      this.currentForm.stops.splice(0, 0, this.newStop(), this.newStop(), this.newStop())
-    } else if (this.currentForm.stops.length === 2) {
-      this.currentForm.stops.splice(1, 0, this.newStop(), this.newStop())
-    } else if (this.currentForm.stops.length === 3) {
-      this.currentForm.stops.splice(2, 0, this.newStop())
-    } else if (this.currentForm.stops.length > 4) {
-      this.currentForm.stops = this.currentForm.stops.slice(0, 3)
+    if (isEmpty(this.currentTravelAuthorization.stops)) {
+      this.currentTravelAuthorization.stops = [this.newStop(), this.newStop(), this.newStop(), this.newStop()]
+    } else if (this.currentTravelAuthorization.stops.length === 1) {
+      this.currentTravelAuthorization.stops.splice(0, 0, this.newStop(), this.newStop(), this.newStop())
+    } else if (this.currentTravelAuthorization.stops.length === 2) {
+      this.currentTravelAuthorization.stops.splice(1, 0, this.newStop(), this.newStop())
+    } else if (this.currentTravelAuthorization.stops.length === 3) {
+      this.currentTravelAuthorization.stops.splice(2, 0, this.newStop())
+    } else if (this.currentTravelAuthorization.stops.length > 4) {
+      this.currentTravelAuthorization.stops = this.currentTravelAuthorization.stops.slice(0, 3)
     }
 
-    this.stop1 = this.currentForm.stops[0]
-    this.stop2 = this.currentForm.stops[1]
-    this.stop3 = this.currentForm.stops[2]
-    this.stop4 = this.currentForm.stops[3]
+    this.stop1 = this.currentTravelAuthorization.stops[0]
+    this.stop2 = this.currentTravelAuthorization.stops[1]
+    this.stop3 = this.currentTravelAuthorization.stops[2]
+    this.stop4 = this.currentTravelAuthorization.stops[3]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
     required,
     newStop() {
       return {
-        travelAuthorizationId: this.currentFormId,
+        travelAuthorizationId: this.currentTravelAuthorizationId,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
       }

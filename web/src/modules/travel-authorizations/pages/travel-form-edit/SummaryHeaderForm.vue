@@ -10,7 +10,7 @@
       >
         <!-- Depending on in territory flag we will load a different list of destinations -->
         <v-checkbox
-          v-model="currentForm.allTravelWithinTerritory"
+          v-model="currentTravelAuthorization.allTravelWithinTerritory"
           label="In Territory?"
           dense
           required
@@ -24,7 +24,7 @@
         md="2"
       >
         <v-select
-          v-model="currentForm.purposeId"
+          v-model="currentTravelAuthorization.purposeId"
           :items="purposes"
           :loading="loadingPurposes"
           :rules="[required]"
@@ -107,25 +107,25 @@ export default {
   }),
   computed: {
     ...mapState("travelForm", [
-      "currentForm",
+      "currentTravelAuthorization",
       "purposes",
       "destinationsByCurrentFormTravelRestriction",
     ]),
-    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
     finalDestination: {
       get() {
-        return last(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
+        return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
       },
       set(newValue) {
-        this.$set(this.currentForm.stops, this.currentForm.stops.length - 1, newValue)
+        this.$set(this.currentTravelAuthorization.stops, this.currentTravelAuthorization.stops.length - 1, newValue)
       },
     },
     initialDestination: {
       get() {
-        return first(this.currentForm.stops) || { travelAuthorizationId: this.currentFormId }
+        return first(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
       },
       set(newValue) {
-        this.$set(this.currentForm.stops, 0, newValue)
+        this.$set(this.currentTravelAuthorization.stops, 0, newValue)
       },
     },
   },

@@ -43,7 +43,7 @@
             md="6"
           >
             <v-select
-              v-model="currentForm.preappId"
+              v-model="currentTravelAuthorization.preappId"
               :items="preApprovedTravelRequests"
               :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
               label="Pre-approved Travel Request?"
@@ -59,7 +59,7 @@
             md="3"
           >
             <SearchableUserEmailCombobox
-              v-model="currentForm.supervisorEmail"
+              v-model="currentTravelAuthorization.supervisorEmail"
               :rules="[required]"
               label="Submit to"
               dense
@@ -111,20 +111,20 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm", "currentUser", "loadingCurrentUser"]),
+    ...mapState("travelForm", ["currentTravelAuthorization", "currentUser", "loadingCurrentUser"]),
     // TODO: Make this a getter in the store
     estimates() {
-      return this.currentForm.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
+      return this.currentTravelAuthorization.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
     },
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
     travelAdvanceInDollars: {
       get() {
-        return Math.ceil(this.currentForm.travelAdvanceInCents / 100.0)
+        return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0)
       },
       set(value) {
-        this.currentForm.travelAdvanceInCents = Math.ceil(value * 100)
+        this.currentTravelAuthorization.travelAdvanceInCents = Math.ceil(value * 100)
       },
     },
   },

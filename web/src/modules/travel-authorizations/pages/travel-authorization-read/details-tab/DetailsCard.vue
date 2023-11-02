@@ -28,7 +28,7 @@
           md="1"
         >
           <v-text-field
-            :value="currentForm.travelDuration"
+            :value="currentTravelAuthorization.travelDuration"
             label="# Days"
             dense
             outlined
@@ -40,7 +40,7 @@
           md="2"
         >
           <v-text-field
-            :value="currentForm.daysOffTravelStatus"
+            :value="currentTravelAuthorization.daysOffTravelStatus"
             label="Days on non-travel status"
             dense
             outlined
@@ -52,7 +52,7 @@
           md="3"
         >
           <v-text-field
-            :value="currentForm.dateBackToWork"
+            :value="currentTravelAuthorization.dateBackToWork"
             label="Expected Date return to work"
             prepend-icon="mdi-calendar"
             dense
@@ -82,8 +82,8 @@ export default {
     tripType: "",
   }),
   computed: {
-    ...mapState("travelForm", ["currentForm"]),
-    ...mapGetters("travelForm", ["currentFormId"]),
+    ...mapState("travelForm", ["currentTravelAuthorization"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId"]),
     tripTypeComponent() {
       switch (this.tripType) {
         case TRIP_TYPES.ROUND_TRIP:
@@ -98,9 +98,9 @@ export default {
     },
   },
   mounted() {
-    if (this.currentForm.oneWayTrip) {
+    if (this.currentTravelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
-    } else if (this.currentForm.multiStop) {
+    } else if (this.currentTravelAuthorization.multiStop) {
       this.tripType = TRIP_TYPES.MULI_DESTINATION
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP

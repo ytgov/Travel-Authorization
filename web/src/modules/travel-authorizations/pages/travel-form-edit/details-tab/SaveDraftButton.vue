@@ -19,7 +19,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("travelForm", ["currentForm", "loadingCurrentForm"]),
+    ...mapState("travelForm", ["currentTravelAuthorization", "loadingCurrentForm"]),
   },
   methods: {
     ...mapActions("travelForm", ["updateCurrentForm"]),
@@ -29,7 +29,7 @@ export default {
         return
       }
 
-      this.currentForm.status = "draft"
+      this.currentTravelAuthorization.status = "draft"
       return this.updateCurrentForm()
         .then(() => {
           this.$snack("Form saved as a draft", { color: "success" })

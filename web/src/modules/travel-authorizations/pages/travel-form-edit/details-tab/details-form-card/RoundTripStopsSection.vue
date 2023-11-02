@@ -192,30 +192,30 @@ export default {
     }
   },
   computed: {
-    ...mapState("travelForm", ["currentForm"]),
-    ...mapGetters("travelForm", ["currentFormId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapState("travelForm", ["currentTravelAuthorization"]),
+    ...mapGetters("travelForm", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
   },
   async mounted() {
     await this.loadDestinations()
 
-    if (isEmpty(this.currentForm.stops)) {
-      this.currentForm.stops = [this.newStop(), this.newStop({ accommodationType: null })]
-    } else if (this.currentForm.stops.length === 1) {
-      this.currentForm.stops.push(this.newStop({ accommodationType: null }))
-    } else if (this.currentForm.stops.length > 2) {
-      const elementsToRemove = this.currentForm.stops.length - 2
-      this.currentForm.stops.splice(1, elementsToRemove)
+    if (isEmpty(this.currentTravelAuthorization.stops)) {
+      this.currentTravelAuthorization.stops = [this.newStop(), this.newStop({ accommodationType: null })]
+    } else if (this.currentTravelAuthorization.stops.length === 1) {
+      this.currentTravelAuthorization.stops.push(this.newStop({ accommodationType: null }))
+    } else if (this.currentTravelAuthorization.stops.length > 2) {
+      const elementsToRemove = this.currentTravelAuthorization.stops.length - 2
+      this.currentTravelAuthorization.stops.splice(1, elementsToRemove)
     }
 
-    this.originStop = this.currentForm.stops[0]
-    this.destinationStop = this.currentForm.stops[1]
+    this.originStop = this.currentTravelAuthorization.stops[0]
+    this.destinationStop = this.currentTravelAuthorization.stops[1]
   },
   methods: {
     ...mapActions("travelForm", ["loadDestinations"]),
     required,
     newStop(attributes) {
       return {
-        travelAuthorizationId: this.currentFormId,
+        travelAuthorizationId: this.currentTravelAuthorizationId,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
         ...attributes,
