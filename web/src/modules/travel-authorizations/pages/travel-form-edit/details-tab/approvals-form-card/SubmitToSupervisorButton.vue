@@ -3,6 +3,7 @@
     <v-btn
       v-if="hasEstimates"
       :loading="loadingCurrentForm"
+      class="mt-0"
       color="primary"
       @click="submitForm"
     >
