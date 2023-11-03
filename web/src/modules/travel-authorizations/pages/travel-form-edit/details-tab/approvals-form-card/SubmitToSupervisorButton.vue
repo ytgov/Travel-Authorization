@@ -49,6 +49,7 @@ export default {
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization", "loadingCurrentForm"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationEstimates"]),
     hasEstimates() {
       return this.currentTravelAuthorizationEstimates.length > 0
     },
@@ -62,7 +63,6 @@ export default {
   },
   methods: {
     ...mapActions("travelAuthorizations", ["updateCurrentForm"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationEstimates"]),
     submitForm() {
       if (!this.validateForm()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })

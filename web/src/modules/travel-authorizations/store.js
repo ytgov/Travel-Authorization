@@ -15,7 +15,11 @@ const state = {
   estimates: [],
   myTravelAuthorizations: [],
   purposes: [],
-  currentTravelAuthorization: {},
+  currentTravelAuthorization: {
+    expenses: [],
+    purpose: {},
+    stops: [],
+  },
   currentUser: {},
   loadingCurrentUser: true,
   loadingCurrentForm: true,
