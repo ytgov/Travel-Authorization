@@ -36,7 +36,7 @@ const getters = {
   currentTravelAuthorizationId(state) {
     return state.currentTravelAuthorization.id
   },
-  estimates(state) {
+  currentTravelAuthorizationEstimates(state) {
     return (
       state.currentTravelAuthorization.expenses?.filter(
         (expense) => expense.type === expensesApi.TYPES.ESTIMATE

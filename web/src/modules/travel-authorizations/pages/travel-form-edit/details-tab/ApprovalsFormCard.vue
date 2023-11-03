@@ -11,21 +11,29 @@
             cols="12"
             md="2"
           >
-            <EstimatedCostTextField :estimates="estimates" />
+            <EstimatedCostTextField :estimates="currentTravelAuthorizationEstimates" />
           </v-col>
           <v-col
             cols="12"
             md="2"
           >
             <v-btn
+              v-if="hasEstimates"
               :to="{
                 name: 'TravelFormEdit-EstimateTab',
                 params: { formId: currentTravelAuthorizationId },
               }"
               class="mt-1"
               color="secondary"
-              >Go to Esitmate tab</v-btn
+              >Edit Estimate</v-btn
             >
+            <EstimateGenerateDialog
+              v-else
+              :form-id="currentTravelAuthorizationId"
+              button-classes="mt-1"
+              button-color="primary"
+              @created="refreshEstimates"
+            />
           </v-col>
         </v-row>
         <v-row>
@@ -94,6 +102,7 @@ import { mapActions, mapState, mapGetters } from "vuex"
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+import EstimateGenerateDialog from "@/modules/travel-authorizations/pages/travel-form-edit/estimate-tab/EstimateGenerateDialog"
 
 import EstimatedCostTextField from "./approvals-form-card/EstimatedCostTextField"
 import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"
@@ -102,6 +111,7 @@ export default {
   name: "ApprovalsFormCard",
   components: {
     EstimatedCostTextField,
+    EstimateGenerateDialog,
     SearchableUserEmailCombobox,
     SubmitToSupervisorButton,
   },
@@ -123,7 +133,10 @@ export default {
       "currentUser",
       "loadingCurrentUser",
     ]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "estimates"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "currentTravelAuthorizationEstimates",
+    ]),
     travelAdvanceInDollars: {
       get() {
         return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0) || 0
@@ -131,6 +144,9 @@ export default {
       set(value) {
         this.currentTravelAuthorization.travelAdvanceInCents = Math.ceil(value * 100)
       },
+    },
+    hasEstimates() {
+      return this.currentTravelAuthorizationEstimates.length > 0
     },
   },
   async mounted() {
@@ -140,7 +156,10 @@ export default {
     await this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadCurrentUser"]),
+    ...mapActions("travelAuthorizations", ["loadCurrentUser", "loadAsCurrentTravelAuthorization"]),
+    refreshEstimates() {
+      return this.loadAsCurrentTravelAuthorization(this.currentTravelAuthorizationId)
+    },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {
