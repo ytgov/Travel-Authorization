@@ -139,10 +139,10 @@ export default {
     ]
   }),
   created() {
-    this.loadForms();
+    this.loadTravelAuthorizations();
   },
   methods: {
-    loadForms() {
+    loadTravelAuthorizations() {
       secureGet(`${MANAGER_URL}/forms/`).then(resp => {
         this.forms = resp.data;
         this.pending = this.forms.filter(form => {

@@ -3,6 +3,7 @@ import { isEmpty, isNil, last, first, pick } from "lodash"
 import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest } from "@/models"
 
 import BaseSerializer from "./base-serializer"
+import StopsSerializer from "./stops-serializer"
 
 export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthorization> {
   static asTable(travelAuthorizations: TravelAuthorization[]) {
@@ -10,6 +11,13 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       const serializer = new this(travelAuthorization)
       return serializer.asTableRow()
     })
+  }
+
+  static asDetailed(
+    record: TravelAuthorization
+  ): Omit<Partial<TravelAuthorization>, "stops"> & { stops: Partial<Stop>[] } {
+    const serializer = new this(record)
+    return serializer.asDetailed()
   }
 
   private firstStop: Stop | undefined
@@ -21,6 +29,13 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     this.firstStop = first(this.record.stops)
     this.lastStop = last(this.record.stops)
     this.currentDate = new Date()
+  }
+
+  asDetailed(): Omit<Partial<TravelAuthorization>, "stops"> & { stops: Partial<Stop>[] } {
+    return {
+      ...this.record.dataValues,
+      stops: this.record.stops?.map(StopsSerializer.asDetailed) || [],
+    }
   }
 
   asTableRow() {

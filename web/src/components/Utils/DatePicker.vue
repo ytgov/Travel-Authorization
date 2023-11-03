@@ -30,15 +30,24 @@
 </template>
 
 <script>
-import { isEmpty } from 'lodash'
+import { isEmpty } from "lodash"
 
-import { required } from '@/utils/validators'
+import { required } from "@/utils/validators"
 
 export default {
   inheritAttrs: false,
   props: {
     value: String,
-    text: String, // DEPRECATED: prefer label
+    text: {
+      type: String,
+      default: undefined,
+      validator(value) {
+        if (value !== undefined) {
+          console.warn('The "text" prop is deprecated; prefer using "label" instead.')
+        }
+        return true
+      },
+    },
     label: String,
     rules: {
       type: Array,

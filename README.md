@@ -102,6 +102,8 @@ You can also run migrations and seeding manually after login in to the web UI by
 - http://localhost:3000/migrate/down
 - http://localhost:3000/migrate/seed
 
+You can also skip seeding if database is not empty by setting the `SKIP_SEEDING_UNLESS_EMPTY=true` environment variable.
+
 ### Troubleshooting
 
 If you are getting a bunch of "Login required" errors in the console, make sure that you have disabled any kind of enhanced tracking protection.

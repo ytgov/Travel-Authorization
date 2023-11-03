@@ -1,0 +1,15 @@
+require("@rushstack/eslint-patch/modern-module-resolution")
+
+module.exports = {
+  root: true,
+  env: {
+    node: true,
+  },
+  extends: ["plugin:vue/recommended", "eslint:recommended", "plugin:prettier/recommended"],
+  parserOptions: {
+    parser: "@babel/eslint-parser",
+  },
+  rules: {
+    // Override/add rules' settings here
+  },
+}

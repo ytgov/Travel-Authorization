@@ -10,13 +10,12 @@ import PoolCarCost from "../components/Administration/RatesEstimateManagement/Po
 import RentalCarEstimates from "../components/Administration/RatesEstimateManagement/RentalCarEstimate"
 import YGRates from "../components/Administration/RatesEstimateManagement/YGRates"
 import TravelAgents from "../components/Administration/LookupTableManagement/TravelAgents"
-import HealthCheck from "../components/HealthCheck"
 
-import preapprovedRouter from "../modules/preapproved/router/index.js"
-import travelDeskRouter from "../modules/travelDesk/router/index.js"
-import travelRequestRouter from "../modules/travel-form/router/index.js"
-import flightExpenseRouter from "../modules/flightExpenses/router/index.js"
-import reportsRouter from "../modules/reports/router/index.js"
+import preapprovedRouter from "../modules/preapproved/router"
+import travelDeskRouter from "../modules/travelDesk/router"
+import travelAuthorizationsRouter from "../modules/travel-authorizations/router"
+import flightExpenseRouter from "../modules/flightExpenses/router"
+import reportsRouter from "../modules/reports/router"
 
 import authenticationRouter from "../modules/authentication/router"
 import homeRouter from "../modules/home/router"
@@ -37,7 +36,7 @@ const routes = [
   ...authenticationRouter,
   ...preapprovedRouter,
   ...travelDeskRouter,
-  ...travelRequestRouter,
+  ...travelAuthorizationsRouter,
   ...flightExpenseRouter,
   ...reportsRouter,
 
@@ -95,9 +94,9 @@ const routes = [
     component: () => import("@/views/qa/ScenariosList"),
   },
   {
-    path: "/healthCheck",
+    path: "/health-check",
     name: "HealthCheck",
-    component: HealthCheck,
+    component: () => import("@/components/HealthCheck"),
   },
   {
     path: "*",
