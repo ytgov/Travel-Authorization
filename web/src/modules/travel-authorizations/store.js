@@ -2,9 +2,10 @@ import { isString, upperFirst, pick } from "lodash"
 
 import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
+
 import expensesApi from "@/apis/expenses-api"
-import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
 import locationsApi from "@/apis/locations-api"
+import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
 import usersApi from "@/apis/users-api"
 
 const state = {
@@ -34,6 +35,13 @@ const getters = {
   },
   currentTravelAuthorizationId(state) {
     return state.currentTravelAuthorization.id
+  },
+  estimates(state) {
+    return (
+      state.currentTravelAuthorization.expenses?.filter(
+        (expense) => expense.type === expensesApi.TYPES.ESTIMATE
+      ) || []
+    )
   },
 }
 
