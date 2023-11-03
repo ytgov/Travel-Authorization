@@ -90,7 +90,7 @@ import { TYPES } from "@/apis/expenses-api"
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-import SubmitToSupervisorButton from "./SubmitToSupervisorButton"
+import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"
 
 export default {
   name: "ApprovalsFormCard",
