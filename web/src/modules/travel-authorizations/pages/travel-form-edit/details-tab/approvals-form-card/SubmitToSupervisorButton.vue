@@ -31,7 +31,7 @@
           </v-btn>
         </span>
       </template>
-      <span>You need to generate an estaimte before submitting.</span>
+      <span>You need to generate an estimate before submitting.</span>
     </v-tooltip>
   </div>
 </template>
