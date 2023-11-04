@@ -60,13 +60,31 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
+    ...mapState("travelAuthorizations", [
+      "currentUser",
+      "loadingCurrentForm",
+      "loadingCurrentUser",
+    ]),
   },
-  mounted() {
-    return Promise.all([this.loadCurrentTravelAuthorization(this.formId), this.loadCurrentUser()])
+  watch: {
+    // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
+    // This does a wizard of oz style, silent, background refresh.
+    $route(to) {
+      if (to.name === "TravelFormEdit-DetailsTab") {
+        this.loadCurrentTravelAuthorizationSilently(this.formId)
+      }
+    },
+  },
+  async mounted() {
+    await this.loadCurrentTravelAuthorization(this.formId)
+    await this.loadCurrentUser()
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorization", "loadCurrentUser"]),
+    ...mapActions("travelAuthorizations", [
+      "loadCurrentTravelAuthorization",
+      "loadCurrentTravelAuthorizationSilently",
+      "loadCurrentUser",
+    ]),
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
     resetActiveState() {

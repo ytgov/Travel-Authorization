@@ -117,17 +117,17 @@ const actions = {
         return { forms, totalCount }
       })
   },
-  loadCurrentTravelAuthorization({ commit, state }, formId) {
+  loadCurrentTravelAuthorization({ state, dispatch }, formId) {
     state.loadingCurrentForm = true
-    return travelAuthorizationsApi
-      .get(formId)
-      .then(({ travelAuthorization: form }) => {
-        commit("SET_FORM", form)
-        return form
-      })
-      .finally(() => {
-        state.loadingCurrentForm = false
-      })
+    return dispatch("loadCurrentTravelAuthorizationSilently", formId).finally(() => {
+      state.loadingCurrentForm = false
+    })
+  },
+  loadCurrentTravelAuthorizationSilently({ commit }, formId) {
+    return travelAuthorizationsApi.get(formId).then(({ travelAuthorization: form }) => {
+      commit("SET_FORM", form)
+      return form
+    })
   },
   loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true
