@@ -4,6 +4,7 @@
       <div class="d-flex align-start">
         <v-text-field
           :value="formatCurrency(estimatedCost)"
+          :loading="loading"
           label="Estimated Cost"
           dense
           disabled
@@ -34,6 +35,10 @@ export default {
   props: {
     estimates: {
       type: Array,
+      required: true,
+    },
+    loading: {
+      type: Boolean,
       required: true,
     },
   },

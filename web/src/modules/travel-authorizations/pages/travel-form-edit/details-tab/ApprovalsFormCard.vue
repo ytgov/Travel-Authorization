@@ -11,14 +11,17 @@
             cols="12"
             md="2"
           >
-            <EstimatedCostTextField :estimates="currentTravelAuthorizationEstimates" />
+            <EstimatedCostTextField
+              :estimates="currentTravelAuthorizationEstimates"
+              :loading="loadingEstimates"
+            />
           </v-col>
           <v-col
             cols="12"
             md="2"
           >
             <v-btn
-              v-if="hasEstimates"
+              v-if="!loadingEstimates && hasEstimates"
               :to="{
                 name: 'TravelFormEdit-EstimateTab',
                 params: { formId: currentTravelAuthorizationId },
@@ -30,9 +33,10 @@
             <EstimateGenerateDialog
               v-else
               :form-id="currentTravelAuthorizationId"
+              :loading="loadingEstimates"
               button-classes="mt-1"
               button-color="primary"
-              @created="refreshEstimates"
+              @created="refreshEstimatesSilently"
             />
           </v-col>
         </v-row>
@@ -126,6 +130,7 @@ export default {
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
+    loadingEstimates: false,
   }),
   computed: {
     ...mapState("travelAuthorizations", [
@@ -156,9 +161,17 @@ export default {
     await this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadCurrentUser", "loadCurrentTravelAuthorization"]),
-    refreshEstimates() {
-      return this.loadCurrentTravelAuthorization(this.currentTravelAuthorizationId)
+    ...mapActions("travelAuthorizations", [
+      "loadCurrentUser",
+      "loadCurrentTravelAuthorizationSilently",
+    ]),
+    refreshEstimatesSilently() {
+      this.loadingEstimates = true
+      return this.loadCurrentTravelAuthorizationSilently(this.currentTravelAuthorizationId).finally(
+        () => {
+          this.loadingEstimates = false
+        }
+      )
     },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
