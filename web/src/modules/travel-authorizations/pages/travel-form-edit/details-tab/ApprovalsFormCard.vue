@@ -11,17 +11,14 @@
             cols="12"
             md="2"
           >
-            <EstimatedCostTextField
-              :estimates="currentTravelAuthorizationEstimates"
-              :loading="loadingEstimates"
-            />
+            <EstimatedCostTextField :estimates="currentTravelAuthorizationEstimates" />
           </v-col>
           <v-col
             cols="12"
             md="2"
           >
             <v-btn
-              v-if="!loadingEstimates && hasEstimates"
+              v-if="!refreshingEstimatesSilently && hasEstimates"
               :to="{
                 name: 'TravelFormEdit-EstimateTab',
                 params: { formId: currentTravelAuthorizationId },
@@ -33,7 +30,6 @@
             <EstimateGenerateDialog
               v-else
               :form-id="currentTravelAuthorizationId"
-              :loading="loadingEstimates"
               button-classes="mt-1"
               button-color="primary"
               @created="refreshEstimatesSilently"
@@ -130,7 +126,7 @@ export default {
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
-    loadingEstimates: false,
+    refreshingEstimatesSilently: false,
   }),
   computed: {
     ...mapState("travelAuthorizations", [
@@ -166,10 +162,10 @@ export default {
       "loadCurrentTravelAuthorizationSilently",
     ]),
     refreshEstimatesSilently() {
-      this.loadingEstimates = true
+      this.refreshingEstimatesSilently = true
       return this.loadCurrentTravelAuthorizationSilently(this.currentTravelAuthorizationId).finally(
         () => {
-          this.loadingEstimates = false
+          this.refreshingEstimatesSilently = false
         }
       )
     },
