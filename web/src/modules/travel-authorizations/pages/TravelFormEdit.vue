@@ -63,10 +63,10 @@ export default {
     ...mapState("travelAuthorizations", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
   },
   mounted() {
-    return Promise.all([this.loadAsCurrentTravelAuthorization(this.formId), this.loadCurrentUser()])
+    return Promise.all([this.loadCurrentTravelAuthorization(this.formId), this.loadCurrentUser()])
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadAsCurrentTravelAuthorization", "loadCurrentUser"]),
+    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorization", "loadCurrentUser"]),
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
     resetActiveState() {

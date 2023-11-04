@@ -156,9 +156,9 @@ export default {
     await this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadCurrentUser", "loadAsCurrentTravelAuthorization"]),
+    ...mapActions("travelAuthorizations", ["loadCurrentUser", "loadCurrentTravelAuthorization"]),
     refreshEstimates() {
-      return this.loadAsCurrentTravelAuthorization(this.currentTravelAuthorizationId)
+      return this.loadCurrentTravelAuthorization(this.currentTravelAuthorizationId)
     },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.

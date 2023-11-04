@@ -117,7 +117,7 @@ const actions = {
         return { forms, totalCount }
       })
   },
-  loadAsCurrentTravelAuthorization({ commit, state }, formId) {
+  loadCurrentTravelAuthorization({ commit, state }, formId) {
     state.loadingCurrentForm = true
     return travelAuthorizationsApi
       .get(formId)
