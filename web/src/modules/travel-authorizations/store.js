@@ -104,9 +104,9 @@ const actions = {
     { commit, dispatch, rootState },
     { page, perPage, ...otherParams } = {}
   ) {
-    const currentUserId =
-      rootState.current.user.id ||
-      (await dispatch("current/user/loadCurrentUser", null, { root: true }).then((user) => user.id))
+    const currentUserId = rootState.current.user.isInitialized
+      ? rootState.current.user.id
+      : await dispatch("current/user/initialize", null, { root: true }).then((user) => user.id)
 
     return travelAuthorizationsApi
       .list({
@@ -127,9 +127,9 @@ const actions = {
     })
   },
   async loadCurrentTravelAuthorizationSilently({ commit, dispatch, rootState }, formId) {
-    const currentUser =
-      rootState.current.user ||
-      (await dispatch("current/user/loadCurrentUser", null, { root: true }))
+    const currentUser = rootState.current.user.isInitialized
+      ? rootState.current.user.attributes
+      : await dispatch("current/user/initialize", null, { root: true })
 
     return travelAuthorizationsApi.get(formId).then(({ travelAuthorization: form }) => {
       commit("SET_FORM", {

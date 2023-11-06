@@ -15,7 +15,7 @@ const getters = {
 }
 
 const actions = {
-  async loadUserData({ commit }) {
+  async initialize({ commit }) {
     commit("SET_LOADING", true)
     try {
       const { user } = await usersApi.me()
