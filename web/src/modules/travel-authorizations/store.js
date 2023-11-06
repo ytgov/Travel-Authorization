@@ -19,7 +19,6 @@ const state = {
     purpose: {},
     stops: [],
   },
-  loadingCurrentUser: true,
   loadingCurrentForm: true,
   loadingEstimates: true,
 }
