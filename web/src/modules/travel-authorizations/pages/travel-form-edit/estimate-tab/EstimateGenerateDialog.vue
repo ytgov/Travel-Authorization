@@ -53,7 +53,7 @@
 <script>
 import { required } from "@/utils/validators"
 
-import generateApi from "@/apis/travel-authorizations/estimates/generate-api"
+import generateApi from "@/api/travel-authorizations/estimates/generate-api"
 
 export default {
   name: "EstimateGenerateDialog",

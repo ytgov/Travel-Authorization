@@ -1,6 +1,6 @@
 import { isString } from "lodash"
 
-import http from "@/apis/http-client"
+import http from "@/api/http-client"
 
 export const usersApi = {
   me() {

@@ -41,7 +41,7 @@
 <script>
 import Breadcrumbs from "@/components/Breadcrumbs"
 
-import scenariosApi from "@/apis/qa/scenarios-api"
+import scenariosApi from "@/api/qa/scenarios-api"
 
 export default {
   name: "Scenarios",

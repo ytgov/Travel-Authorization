@@ -111,7 +111,7 @@
   </v-app>
 </template>
 <script>
-import http from "@/apis/http-client"
+import http from "@/api/http-client"
 
 import { releaseTag, gitCommitHash } from "@/config"
 

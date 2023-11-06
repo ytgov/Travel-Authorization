@@ -1,4 +1,4 @@
-import http from "@/apis/http-client"
+import http from "@/api/http-client"
 
 export const generateApi = {
   create(travelAuthorizationId) {
