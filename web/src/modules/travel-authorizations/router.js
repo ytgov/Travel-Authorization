@@ -23,10 +23,17 @@ const routes = [
           {
             path: "details",
             name: "TravelAuthorizationRead-DetailsTab",
-            component: () => import("@/modules/travel-authorizations/pages/travel-authorization-read/DetailsTab"),
+            component: () =>
+              import("@/modules/travel-authorizations/pages/travel-authorization-read/DetailsTab"),
             props: true,
           },
-          // TODO: add read only estimates tab
+          {
+            path: "estimate",
+            name: "TravelAuthorizationRead-EstimateTab",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/travel-authorization-read/EstimateTab"),
+            props: true,
+          },
         ],
       },
       {
@@ -41,13 +48,15 @@ const routes = [
           {
             path: "details",
             name: "TravelFormEdit-DetailsTab",
-            component: () => import("@/modules/travel-authorizations/pages/travel-form-edit/DetailsTab"),
+            component: () =>
+              import("@/modules/travel-authorizations/pages/travel-form-edit/DetailsTab"),
             props: true,
           },
           {
             path: "estimate",
             name: "TravelFormEdit-EstimateTab",
-            component: () => import("@/modules/travel-authorizations/pages/travel-form-edit/EstimateTab"),
+            component: () =>
+              import("@/modules/travel-authorizations/pages/travel-form-edit/EstimateTab"),
             props: true,
           },
         ],

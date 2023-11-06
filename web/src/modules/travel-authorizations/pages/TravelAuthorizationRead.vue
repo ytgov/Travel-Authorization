@@ -20,7 +20,7 @@
       >
         Edit
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <v-icon
               small
               class="ml-2"
@@ -42,6 +42,9 @@
     <v-tabs v-model="tab">
       <v-tab :to="{ name: 'TravelAuthorizationRead-DetailsTab', params: { formId } }"
         >Details</v-tab
+      >
+      <v-tab :to="{ name: 'TravelAuthorizationRead-EstimateTab', params: { formId } }"
+        >Estimate</v-tab
       >
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
@@ -78,7 +81,11 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
+    ...mapState("travelAuthorizations", [
+      "currentUser",
+      "loadingCurrentForm",
+      "loadingCurrentUser",
+    ]),
     isAdmin() {
       return this.currentUser?.roles?.includes(User.Roles.ADMIN)
     },
