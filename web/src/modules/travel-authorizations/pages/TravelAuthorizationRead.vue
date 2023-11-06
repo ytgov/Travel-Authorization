@@ -8,7 +8,7 @@
       <span>
         Travel -
         <v-progress-circular
-          v-if="loadingCurrentUser"
+          v-if="isLoadingCurrentUser"
           indeterminate
         ></v-progress-circular>
         <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
@@ -81,17 +81,20 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("current/user", ["currentUser", "loadingCurrentUser"]),
+    ...mapState("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
     isAdmin() {
       return this.currentUser?.roles?.includes(User.Roles.ADMIN)
     },
   },
   mounted() {
-    return Promise.all([this.loadCurrentTravelAuthorization(this.formId), this.loadCurrentUser()])
+    return Promise.all([
+      this.loadCurrentTravelAuthorization(this.formId),
+      this.initializeCurrentUser(),
+    ])
   },
   methods: {
-    ...mapActions("current/user", ["loadCurrentUser"]),
+    ...mapActions("current/user", { initializeCurrentUser: "initialize" }),
     ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorization"]),
     goToAdminEditPage() {
       alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)

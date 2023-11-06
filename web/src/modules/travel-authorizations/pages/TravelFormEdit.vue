@@ -7,7 +7,7 @@
     <h1>
       Travel -
       <v-progress-circular
-        v-if="loadingCurrentUser"
+        v-if="isLoadingCurrentUser"
         indeterminate
       ></v-progress-circular>
       <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
@@ -60,7 +60,7 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("current/user", ["currentUser", "loadingCurrentUser"]),
+    ...mapState("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
   },
   watch: {
@@ -74,10 +74,10 @@ export default {
   },
   async mounted() {
     await this.loadCurrentTravelAuthorization(this.formId)
-    await this.loadCurrentUser()
+    await this.initializeCurrentUser()
   },
   methods: {
-    ...mapActions("current/user", ["loadCurrentUser"]),
+    ...mapActions("current/user", { initializeCurrentUser: "initialize" }),
     ...mapActions("travelAuthorizations", [
       "loadCurrentTravelAuthorization",
       "loadCurrentTravelAuthorizationSilently",

@@ -38,7 +38,7 @@
         >
           <v-text-field
             :value="preApprovedTravelRequestText"
-            :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
+            :loading="isLoadingCurrentUser || loadingPreApprovedTravelRequests"
             label="Pre-approved Travel Request?"
             no-data-text="No pre-approvals available"
             dense
@@ -80,7 +80,7 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("current/user", ["currentUser", "loadingCurrentUser"]),
+    ...mapState("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     // TODO: Make this a getter in the store
     estimates() {
@@ -106,11 +106,11 @@ export default {
   async mounted() {
     const department = !isEmpty(this.currentUser.department)
       ? this.currentUser.department
-      : await this.loadCurrentUser().then((user) => user.department)
+      : await this.initializeCurrentUser().then((user) => user.department)
     return this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("current/user", ["loadCurrentUser"]),
+    ...mapActions("current/user", { initializeCurrentUser: "initialize" }),
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {

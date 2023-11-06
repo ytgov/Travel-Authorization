@@ -58,7 +58,7 @@
             <v-select
               v-model="currentTravelAuthorization.preappId"
               :items="preApprovedTravelRequests"
-              :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
+              :loading="isLoadingCurrentUser || loadingPreApprovedTravelRequests"
               label="Pre-approved Travel Request?"
               no-data-text="No pre-approvals available"
               dense
@@ -129,7 +129,7 @@ export default {
     refreshingEstimatesSilently: false,
   }),
   computed: {
-    ...mapState("current/user", ["currentUser", "loadingCurrentUser"]),
+    ...mapState("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     ...mapGetters("travelAuthorizations", [
       "currentTravelAuthorizationId",
@@ -150,11 +150,11 @@ export default {
   async mounted() {
     const department = !isEmpty(this.currentUser.department)
       ? this.currentUser.department
-      : await this.loadCurrentUser().then((user) => user.department)
+      : await this.initializeCurrentUser().then((user) => user.department)
     await this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("current/user", ["loadCurrentUser"]),
+    ...mapActions("current/user", { initializeCurrentUser: "initialize" }),
     ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorizationSilently"]),
     refreshEstimatesSilently() {
       this.refreshingEstimatesSilently = true
