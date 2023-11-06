@@ -1,12 +1,13 @@
 import Vue from "vue"
 import Vuex from "vuex"
 
-import auth from "./auth"
-import profile from "./profile"
 import alerts from "./alerts"
+import auth from "./auth"
+import current from "./current"
 import preapproved from "./preapproved"
-import traveldesk from "./traveldesk"
+import profile from "./profile"
 import reports from "./reports"
+import traveldesk from "./traveldesk"
 
 import travelAuthorizations from "@/modules/travel-authorizations/store"
 
@@ -56,12 +57,13 @@ export default new Vuex.Store({
     showAppSidebar: (state) => state.showAppSidebar,
   },
   modules: {
-    auth,
-    profile,
     alerts,
+    auth,
+    current,
     preapproved,
-    traveldesk,
+    profile,
     reports,
     travelAuthorizations,
+    traveldesk,
   },
 })
