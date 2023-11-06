@@ -3,11 +3,11 @@
     v-model="showDialog"
     max-width="500px"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <v-btn
-        color="primary"
         dark
-        class="mb-2"
+        :class="buttonClasses"
+        :color="buttonColor"
         v-bind="attrs"
         v-on="on"
       >
@@ -62,6 +62,14 @@ export default {
     formId: {
       type: Number,
       required: true,
+    },
+    buttonClasses: {
+      type: [String, Array, Object],
+      default: () => "mb-2",
+    },
+    buttonColor: {
+      type: String,
+      default: "primary",
     },
   },
   data() {

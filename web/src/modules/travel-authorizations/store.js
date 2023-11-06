@@ -2,9 +2,10 @@ import { isString, upperFirst, pick } from "lodash"
 
 import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
+
 import expensesApi from "@/apis/expenses-api"
-import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
 import locationsApi from "@/apis/locations-api"
+import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
 import usersApi from "@/apis/users-api"
 
 const state = {
@@ -14,7 +15,11 @@ const state = {
   estimates: [],
   myTravelAuthorizations: [],
   purposes: [],
-  currentTravelAuthorization: {},
+  currentTravelAuthorization: {
+    expenses: [],
+    purpose: {},
+    stops: [],
+  },
   currentUser: {},
   loadingCurrentUser: true,
   loadingCurrentForm: true,
@@ -34,6 +39,13 @@ const getters = {
   },
   currentTravelAuthorizationId(state) {
     return state.currentTravelAuthorization.id
+  },
+  currentTravelAuthorizationEstimates(state) {
+    return (
+      state.currentTravelAuthorization.expenses?.filter(
+        (expense) => expense.type === expensesApi.TYPES.ESTIMATE
+      ) || []
+    )
   },
 }
 
@@ -105,17 +117,17 @@ const actions = {
         return { forms, totalCount }
       })
   },
-  loadAsCurrentTravelAuthorization({ commit, state }, formId) {
+  loadCurrentTravelAuthorization({ state, dispatch }, formId) {
     state.loadingCurrentForm = true
-    return travelAuthorizationsApi
-      .get(formId)
-      .then(({ travelAuthorization: form }) => {
-        commit("SET_FORM", form)
-        return form
-      })
-      .finally(() => {
-        state.loadingCurrentForm = false
-      })
+    return dispatch("loadCurrentTravelAuthorizationSilently", formId).finally(() => {
+      state.loadingCurrentForm = false
+    })
+  },
+  loadCurrentTravelAuthorizationSilently({ commit }, formId) {
+    return travelAuthorizationsApi.get(formId).then(({ travelAuthorization: form }) => {
+      commit("SET_FORM", form)
+      return form
+    })
   },
   loadCurrentUser({ commit, state }) {
     state.loadingCurrentUser = true

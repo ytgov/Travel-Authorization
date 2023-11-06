@@ -1,8 +1,5 @@
 <template>
-  <v-tooltip
-    bottom
-    nudge-bottom="20"
-  >
+  <v-tooltip bottom>
     <template #activator="{ on, attrs }">
       <div class="d-flex align-start">
         <v-text-field
@@ -13,7 +10,7 @@
           outlined
           disabled
           readonly
-          v-bind="{ ...attrs }"
+          v-bind="attrs"
           v-on="on"
         ></v-text-field>
         <v-icon

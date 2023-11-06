@@ -9,22 +9,37 @@
         <v-row>
           <v-col
             cols="12"
-            md="3"
+            md="2"
           >
-            <!-- TODO: add tooltip with link to estimate tab explaining where this data comes from -->
-            <v-text-field
-              :value="formatCurrency(estimatedCost)"
-              :rules="[required]"
-              label="Estimated Cost"
-              disabled
-              dense
-              outlined
-              required
-            ></v-text-field>
+            <EstimatedCostTextField :estimates="currentTravelAuthorizationEstimates" />
           </v-col>
           <v-col
             cols="12"
-            md="3"
+            md="2"
+          >
+            <v-btn
+              v-if="!refreshingEstimatesSilently && hasEstimates"
+              :to="{
+                name: 'TravelFormEdit-EstimateTab',
+                params: { formId: currentTravelAuthorizationId },
+              }"
+              class="mt-1"
+              color="secondary"
+              >Edit Estimate</v-btn
+            >
+            <EstimateGenerateDialog
+              v-else
+              :form-id="currentTravelAuthorizationId"
+              button-classes="mt-1"
+              button-color="primary"
+              @created="refreshEstimatesSilently"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            md="2"
           >
             <v-text-field
               v-model="travelAdvanceInDollars"
@@ -36,11 +51,9 @@
               required
             ></v-text-field>
           </v-col>
-        </v-row>
-        <v-row>
           <v-col
             cols="12"
-            md="6"
+            md="4"
           >
             <v-select
               v-model="currentTravelAuthorization.preappId"
@@ -83,18 +96,22 @@
 </template>
 
 <script>
-import { isEmpty, sumBy } from "lodash"
-import { mapActions, mapState } from "vuex"
+import { isEmpty } from "lodash"
+import { mapActions, mapState, mapGetters } from "vuex"
 
-import { TYPES } from "@/apis/expenses-api"
 import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-import SubmitToSupervisorButton from "./SubmitToSupervisorButton"
+import EstimateGenerateDialog from "@/modules/travel-authorizations/pages/travel-form-edit/estimate-tab/EstimateGenerateDialog"
+
+import EstimatedCostTextField from "./approvals-form-card/EstimatedCostTextField"
+import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"
 
 export default {
   name: "ApprovalsFormCard",
   components: {
+    EstimatedCostTextField,
+    EstimateGenerateDialog,
     SearchableUserEmailCombobox,
     SubmitToSupervisorButton,
   },
@@ -109,33 +126,49 @@ export default {
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
+    refreshingEstimatesSilently: false,
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "currentUser", "loadingCurrentUser"]),
-    // TODO: Make this a getter in the store
-    estimates() {
-      return this.currentTravelAuthorization.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
-    },
-    estimatedCost() {
-      return sumBy(this.estimates, "cost")
-    },
+    ...mapState("travelAuthorizations", [
+      "currentTravelAuthorization",
+      "currentUser",
+      "loadingCurrentUser",
+    ]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "currentTravelAuthorizationEstimates",
+    ]),
     travelAdvanceInDollars: {
       get() {
-        return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0)
+        return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0) || 0
       },
       set(value) {
         this.currentTravelAuthorization.travelAdvanceInCents = Math.ceil(value * 100)
       },
+    },
+    hasEstimates() {
+      return this.currentTravelAuthorizationEstimates.length > 0
     },
   },
   async mounted() {
     const department = !isEmpty(this.currentUser.department)
       ? this.currentUser.department
       : await this.loadCurrentUser().then((user) => user.department)
-    return this.loadPreApprovedTravelRequests(department)
+    await this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadCurrentUser"]),
+    ...mapActions("travelAuthorizations", [
+      "loadCurrentUser",
+      "loadCurrentTravelAuthorizationSilently",
+    ]),
+    refreshEstimatesSilently() {
+      this.refreshingEstimatesSilently = true
+      return this.loadCurrentTravelAuthorizationSilently(this.currentTravelAuthorizationId).finally(
+        () => {
+          this.refreshingEstimatesSilently = false
+        }
+      )
+    },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {
@@ -183,13 +216,6 @@ export default {
           }))
         }
       )
-    },
-    formatCurrency(amount) {
-      const formatter = new Intl.NumberFormat("en-CA", {
-        style: "currency",
-        currency: "CAD",
-      })
-      return formatter.format(amount)
     },
   },
 }
