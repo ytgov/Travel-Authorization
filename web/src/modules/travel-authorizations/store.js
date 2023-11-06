@@ -1,4 +1,4 @@
-import { isString, upperFirst, pick } from "lodash"
+import { isString, pick } from "lodash"
 
 import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
@@ -6,7 +6,6 @@ import { secureGet, securePost } from "@/store/jwt"
 import expensesApi from "@/api/expenses-api"
 import locationsApi from "@/api/locations-api"
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
-import usersApi from "@/api/users-api"
 
 const state = {
   departments: [],
@@ -20,7 +19,6 @@ const state = {
     purpose: {},
     stops: [],
   },
-  currentUser: {},
   loadingCurrentUser: true,
   loadingCurrentForm: true,
   loadingEstimates: true,
@@ -102,15 +100,20 @@ const actions = {
       return formattedLocations
     })
   },
-  async loadTravelAuthorizations({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
-    const userId =
-      state.currentUser.id || (await dispatch("loadCurrentUser").then((user) => user.id))
+  async loadTravelAuthorizations(
+    { commit, dispatch, rootState },
+    { page, perPage, ...otherParams } = {}
+  ) {
+    const currentUserId =
+      rootState.current.user.id ||
+      (await dispatch("current/user/loadCurrentUser", null, { root: true }).then((user) => user.id))
+
     return travelAuthorizationsApi
       .list({
         page,
         perPage,
         ...otherParams,
-        where: { userId },
+        where: { userId: currentUserId },
       })
       .then(({ travelAuthorizations: forms, totalCount }) => {
         commit("SET_MYFORMS", forms)
@@ -123,51 +126,28 @@ const actions = {
       state.loadingCurrentForm = false
     })
   },
-  loadCurrentTravelAuthorizationSilently({ commit }, formId) {
+  async loadCurrentTravelAuthorizationSilently({ commit, dispatch, rootState }, formId) {
+    const currentUser =
+      rootState.current.user ||
+      (await dispatch("current/user/loadCurrentUser", null, { root: true }))
+
     return travelAuthorizationsApi.get(formId).then(({ travelAuthorization: form }) => {
+      commit("SET_FORM", {
+        ...form,
+        ...pick(currentUser, [
+          "firstName",
+          "lastName",
+          "email",
+          "department",
+          "division",
+          "branch",
+          "unit",
+          "mailcode",
+        ]),
+      })
       commit("SET_FORM", form)
       return form
     })
-  },
-  loadCurrentUser({ commit, state }) {
-    state.loadingCurrentUser = true
-    return usersApi
-      .me()
-      .then(({ user }) => {
-        commit("SET_CURRENT_USER", {
-          id: user.id,
-          firstName: upperFirst(user.firstName),
-          lastName: upperFirst(user.lastName),
-          email: user.email,
-          department: user.department,
-          division: user.division,
-          branch: user.branch,
-          unit: user.unit,
-          mailcode: user.mailcode,
-          roles: user.roles,
-        })
-        commit("SET_FORM", {
-          ...state.request,
-          ...pick(state.currentUser, [
-            "firstName",
-            "lastName",
-            "email",
-            "department",
-            "division",
-            "branch",
-            "unit",
-            "mailcode",
-          ]),
-        })
-        return state.currentUser
-      })
-      .finally(() => {
-        state.loadingCurrentUser = false
-      })
-  },
-  loadUser({ dispatch }) {
-    console.warn("Deprecated: use loadCurrentUser instead.")
-    return dispatch("loadCurrentUser")
   },
   create({ commit, state }, attributes) {
     state.loadingCurrentForm = true
@@ -207,9 +187,6 @@ const actions = {
 }
 
 const mutations = {
-  SET_CURRENT_USER(store, value) {
-    store.currentUser = value
-  },
   SET_EMAILS(store, value) {
     store.emails = value
   },

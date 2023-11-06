@@ -60,11 +60,8 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelAuthorizations", [
-      "currentUser",
-      "loadingCurrentForm",
-      "loadingCurrentUser",
-    ]),
+    ...mapState("current/user", ["currentUser", "loadingCurrentUser"]),
+    ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
   },
   watch: {
     // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
@@ -80,10 +77,10 @@ export default {
     await this.loadCurrentUser()
   },
   methods: {
+    ...mapActions("current/user", ["loadCurrentUser"]),
     ...mapActions("travelAuthorizations", [
       "loadCurrentTravelAuthorization",
       "loadCurrentTravelAuthorizationSilently",
-      "loadCurrentUser",
     ]),
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed

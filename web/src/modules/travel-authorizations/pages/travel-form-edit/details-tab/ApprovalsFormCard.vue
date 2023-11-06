@@ -129,11 +129,8 @@ export default {
     refreshingEstimatesSilently: false,
   }),
   computed: {
-    ...mapState("travelAuthorizations", [
-      "currentTravelAuthorization",
-      "currentUser",
-      "loadingCurrentUser",
-    ]),
+    ...mapState("current/user", ["currentUser", "loadingCurrentUser"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     ...mapGetters("travelAuthorizations", [
       "currentTravelAuthorizationId",
       "currentTravelAuthorizationEstimates",
@@ -157,10 +154,8 @@ export default {
     await this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("travelAuthorizations", [
-      "loadCurrentUser",
-      "loadCurrentTravelAuthorizationSilently",
-    ]),
+    ...mapActions("current/user", ["loadCurrentUser"]),
+    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorizationSilently"]),
     refreshEstimatesSilently() {
       this.refreshingEstimatesSilently = true
       return this.loadCurrentTravelAuthorizationSilently(this.currentTravelAuthorizationId).finally(
