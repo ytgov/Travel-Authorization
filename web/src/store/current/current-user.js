@@ -1,49 +1,49 @@
 import usersApi from "@/api/users-api"
 
 const state = {
-  currentUser: {},
-  loadingCurrentUser: true,
-  erroredCurrentUser: false,
-  initializedCurrentUser: false,
+  attributes: {},
+  isLoading: false,
+  isErrored: false,
+  isInitialized: false,
 }
 
 const getters = {
   fullName: (state) => {
-    const { firstName, lastName } = state.currentUser
+    const { firstName, lastName } = state.attributes
     return `${firstName} ${lastName}`
   },
 }
 
 const actions = {
-  async loadCurrentUser({ commit }) {
-    commit("SET_LOADING_CURRENT_USER", true)
+  async loadUserData({ commit }) {
+    commit("SET_LOADING", true)
     try {
       const { user } = await usersApi.me()
-      commit("SET_CURRENT_USER", user)
-      commit("SET_INITIALIZED_CURRENT_USER", true)
-      commit("SET_ERRORED_CURRENT_USER", false)
-      return state.currentUser
+      commit("SET_IS_ERRORED", false)
+      commit("SET_ATTRIBUTES", user)
+      commit("SET_IS_INITIALIZED", true)
+      return state.attributes
     } catch (error) {
       console.error("Failed to load current user:", error)
-      commit("SET_ERRORED_CURRENT_USER", true)
+      commit("SET_IS_ERRORED", true)
     } finally {
-      commit("SET_LOADING_CURRENT_USER", false)
+      commit("SET_IS_LOADING", false)
     }
   },
 }
 
 const mutations = {
-  SET_CURRENT_USER(state, user) {
-    state.currentUser = user
+  SET_ATTRIBUTES(state, value) {
+    state.attributes = value
   },
-  SET_LOADING_CURRENT_USER(state, loading) {
-    state.loadingCurrentUser = loading
+  SET_IS_LOADING(state, value) {
+    state.isLoading = value
   },
-  SET_ERRORED_CURRENT_USER(state, errored) {
-    state.erroredCurrentUser = errored
+  SET_IS_ERRORED(state, value) {
+    state.isErrored = value
   },
-  SET_INITIALIZED_CURRENT_USER(state, initialized) {
-    state.initializedCurrentUser = initialized
+  SET_IS_INITIALIZED(state, value) {
+    state.isInitialized = value
   },
 }
 
