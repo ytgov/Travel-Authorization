@@ -99,7 +99,7 @@
 import { isEmpty } from "lodash"
 import { mapActions, mapState, mapGetters } from "vuex"
 
-import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
+import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
 import EstimateGenerateDialog from "@/modules/travel-authorizations/pages/travel-form-edit/estimate-tab/EstimateGenerateDialog"

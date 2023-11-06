@@ -340,8 +340,8 @@ import PersonalDetailsFormManage from "../components/PersonalDetailsFormManage"
 import StopsFormManage from "../components/StopsFormManage"
 import TravelDetailsForm from "../components/TravelDetailsForm"
 
-import travelAuthorizationsApi from "@/apis/travel-authorizations-api"
-import usersApi from "@/apis/users-api"
+import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import usersApi from "@/api/users-api"
 
 export default {
   name: "TravelForm",

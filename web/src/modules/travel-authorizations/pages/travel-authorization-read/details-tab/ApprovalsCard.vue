@@ -69,8 +69,8 @@
 import { isEmpty, sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
 
-import { TYPES } from "@/apis/expenses-api"
-import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
+import { TYPES } from "@/api/expenses-api"
+import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 export default {
   name: "ApprovalsCard",

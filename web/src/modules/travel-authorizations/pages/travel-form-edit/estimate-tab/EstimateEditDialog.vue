@@ -86,7 +86,7 @@ import CurrencyTextField from "@/components/Utils/CurrencyTextField"
 import DatePicker from "@/components/Utils/DatePicker"
 import ExpenseTypeSelect from "@/modules/travel-authorizations/components/ExpenseTypeSelect"
 
-import expensesApi from "@/apis/expenses-api"
+import expensesApi from "@/api/expenses-api"
 
 export default {
   name: "EstimateEditDialog",
