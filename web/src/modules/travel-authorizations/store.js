@@ -101,11 +101,11 @@ const actions = {
     })
   },
   async loadTravelAuthorizations(
-    { commit, dispatch, rootState },
+    { commit, dispatch, rootState, rootGetters },
     { page, perPage, ...otherParams } = {}
   ) {
     const currentUserId = rootState.current.user.isInitialized
-      ? rootState.current.user.id
+      ? rootGetters["current/user/id"]
       : await dispatch("current/user/initialize", null, { root: true }).then((user) => user.id)
 
     return travelAuthorizationsApi
