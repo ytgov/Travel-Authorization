@@ -222,7 +222,7 @@ export default {
     ])
   },
   methods: {
-    ...mapActions("current/user", { initializeCurrentUser: "initialize" }),
+    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     ...mapActions("travelAuthorizations", ["loadDepartments", "emailSearch"]),
     searchEmail(token) {
       return this.emailSearch(token)

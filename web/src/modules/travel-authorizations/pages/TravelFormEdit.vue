@@ -60,7 +60,7 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
   },
   watch: {
@@ -77,7 +77,7 @@ export default {
     await this.initializeCurrentUser()
   },
   methods: {
-    ...mapActions("current/user", { initializeCurrentUser: "initialize" }),
+    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     ...mapActions("travelAuthorizations", [
       "loadCurrentTravelAuthorization",
       "loadCurrentTravelAuthorizationSilently",

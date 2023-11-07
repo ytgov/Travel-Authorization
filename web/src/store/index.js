@@ -3,7 +3,7 @@ import Vuex from "vuex"
 
 import alerts from "./alerts"
 import auth from "./auth"
-import current from "./current"
+import currentUser from "./current-user"
 import preapproved from "./preapproved"
 import profile from "./profile"
 import reports from "./reports"
@@ -59,7 +59,7 @@ export default new Vuex.Store({
   modules: {
     alerts,
     auth,
-    current,
+    currentUser,
     preapproved,
     profile,
     reports,

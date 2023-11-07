@@ -80,7 +80,7 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     // TODO: Make this a getter in the store
     estimates() {
@@ -110,7 +110,7 @@ export default {
     return this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("current/user", { initializeCurrentUser: "initialize" }),
+    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {

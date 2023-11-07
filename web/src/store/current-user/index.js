@@ -57,4 +57,8 @@ export default {
   getters,
   actions,
   mutations,
+  modules: {
+    // TODO: add things that depend on the current user e.g.
+    // travel authorizations, leads to interface currentUser/travelAuthorizations
+  },
 }
