@@ -11,7 +11,7 @@ const getters = {
   id: (state) => state.attributes.id,
   fullName: (state) => {
     const { firstName, lastName } = state.attributes
-    return `${firstName} ${lastName}`
+    return [firstName, lastName].filter(Boolean).join(" ")
   },
 }
 
