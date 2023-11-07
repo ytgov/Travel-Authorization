@@ -1,7 +1,6 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 
-import NotFound from "../views/NotFound.vue"
 import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form"
 import AdminDashboard from "../components/Administration/Administration"
 import UserManagement from "../components/Administration/UserManagement/Grid"
@@ -29,7 +28,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: "/",
-    component: () => import("@/views/Default.vue"),
+    component: () => import("@/pages/Default"),
   },
   ...homeRouter,
 
@@ -91,7 +90,7 @@ const routes = [
   {
     path: "/qa/scenarios",
     name: "Qa-Scenarios",
-    component: () => import("@/views/qa/ScenariosList"),
+    component: () => import("@/pages/qa/ScenariosList"),
   },
   {
     path: "/health-check",
@@ -101,7 +100,7 @@ const routes = [
   {
     path: "*",
     name: "Not Found",
-    component: NotFound,
+    component: () => import("@/pages/NotFound"),
   },
 ]
 
