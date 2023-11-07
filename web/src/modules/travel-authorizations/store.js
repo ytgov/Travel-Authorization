@@ -104,10 +104,8 @@ const actions = {
       state.loadingCurrentForm = false
     })
   },
-  async loadCurrentTravelAuthorizationSilently({ commit, dispatch, rootState }, formId) {
-    const currentUser = rootState.currentUser.isInitialized
-      ? rootState.currentUser.attributes
-      : await dispatch("currentUser/initialize", null, { root: true })
+  async loadCurrentTravelAuthorizationSilently({ commit, dispatch }, formId) {
+    const currentUser = await dispatch("currentUser/initialize", null, { root: true })
 
     return travelAuthorizationsApi.get(formId).then(({ travelAuthorization: form }) => {
       commit("SET_FORM", {

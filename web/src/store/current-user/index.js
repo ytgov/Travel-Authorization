@@ -20,7 +20,12 @@ const getters = withGettersFromState(state, {
 })
 
 const actions = {
-  async initialize({ commit }) {
+  async initialize({ state, dispatch }) {
+    if (state.isInitialized) return state.attributes
+
+    return dispatch("fetch")
+  },
+  async fetch({ state, commit }) {
     commit("SET_IS_LOADING", true)
     try {
       const { user } = await usersApi.me()
@@ -35,12 +40,6 @@ const actions = {
     } finally {
       commit("SET_IS_LOADING", false)
     }
-  },
-  async fetchId({ state, dispatch }) {
-    if (state.isInitialized) return state.attributes.id
-
-    const user = await dispatch("initialize")
-    return user.id
   },
 }
 

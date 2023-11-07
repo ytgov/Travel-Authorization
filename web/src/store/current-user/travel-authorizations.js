@@ -16,8 +16,7 @@ const actions = {
   async initialize({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
     commit("SET_IS_LOADING", true)
     try {
-      const currentUserId = await dispatch("currentUser/fetchId", null, { root: true })
-
+      const { id: currentUserId } = await dispatch("currentUser/initialize", null, { root: true })
       const { travelAuthorizations, totalCount } = await travelAuthorizationsApi.list({
         page,
         perPage,
