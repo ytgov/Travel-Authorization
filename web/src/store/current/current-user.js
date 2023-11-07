@@ -27,6 +27,7 @@ const actions = {
     } catch (error) {
       console.error("Failed to load current user:", error)
       commit("SET_IS_ERRORED", true)
+      throw error
     } finally {
       commit("SET_IS_LOADING", false)
     }
