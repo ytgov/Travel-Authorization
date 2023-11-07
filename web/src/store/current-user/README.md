@@ -9,3 +9,4 @@ Pattern:
 - Primary objects should attempt to keep the same type as much as possible. e.g. `attributes` -> `{}` instead of `attributes` -> `null`.
 - Each object should get three additional generic stateful attributes. i.e. `attributes` -> `isLoading`, `isErrored`, and `isInitialized`.
 - actions should log then raise any errors, until we have a notification store or something for generic error handling.
+- Singular objects should store their attributes in `state.attributes`, plural objects should use `state.items`
