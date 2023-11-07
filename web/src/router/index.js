@@ -113,7 +113,7 @@ const routes = [
   {
     path: "/health-check",
     name: "HealthCheck",
-    component: () => import("@/components/HealthCheck"),
+    component: () => import("@/pages/HealthCheckPage"),
   },
   {
     path: "*",
