@@ -20,22 +20,38 @@ export default {
   data: () => ({
     title: `Loading ${applicationName}`,
   }),
-  computed: {},
-  watch: {},
-  async mounted() {
-    const authService = getInstance()
-
-    let i = window.setInterval(() => {
-      if (authService.isLoading === false) {
-        window.clearInterval(i)
-
-        if (authService.isAuthenticated) {
-          if (authService.targetUrl) this.$router.push(authService.targetUrl)
-          else this.$router.push("/dashboard")
-        } else this.$router.push("/sign-in")
-      }
-    }, 1000)
+  computed: {
+    authService() {
+      return getInstance()
+    },
   },
-  methods: {},
+  watch: {
+    "authService.isAuthenticated"(newValue) {
+      if (newValue === true) {
+        this.performPostAuthenticationRedirect()
+      }
+    },
+    "authService.isLoading"(newValue) {
+      if (newValue === false && this.authService.isAuthenticated === false) {
+        this.performRedirectToSignIn()
+      }
+    },
+  },
+  async mounted() {
+    if (this.authService.isLoading === false && this.authService.isAuthenticated === false) {
+      this.performRedirectToSignIn()
+    } else if (this.authService.isAuthenticated === true) {
+      this.performPostAuthenticationRedirect()
+    }
+  },
+  methods: {
+    performPostAuthenticationRedirect() {
+      const targetUrl = this.authService.targetUrl || "/dashboard"
+      this.$router.push(targetUrl)
+    },
+    performRedirectToSignIn() {
+      this.$router.push("/sign-in")
+    },
+  },
 }
 </script>
