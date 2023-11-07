@@ -1,25 +1,24 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 
-import AdminUserForm from "../components/Administration/UserManagement/UserComponent/Form"
-import AdminDashboard from "../components/Administration/Administration"
-import UserManagement from "../components/Administration/UserManagement/Grid"
-import FlightEstimate from "../components/Administration/RatesEstimateManagement/AirEstimate"
-import PoolCarCost from "../components/Administration/RatesEstimateManagement/PoolCarCost"
-import RentalCarEstimates from "../components/Administration/RatesEstimateManagement/RentalCarEstimate"
-import YGRates from "../components/Administration/RatesEstimateManagement/YGRates"
-import TravelAgents from "../components/Administration/LookupTableManagement/TravelAgents"
+import AdminUserForm from "@/components/Administration/UserManagement/UserComponent/Form"
+import AdminDashboard from "@/components/Administration/Administration"
+import UserManagement from "@/components/Administration/UserManagement/Grid"
+import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
+import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
+import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
+import YGRates from "@/components/Administration/RatesEstimateManagement/YGRates"
+import TravelAgents from "@/components/Administration/LookupTableManagement/TravelAgents"
 
-import preapprovedRouter from "../modules/preapproved/router"
-import travelDeskRouter from "../modules/travelDesk/router"
-import travelAuthorizationsRouter from "../modules/travel-authorizations/router"
-import flightExpenseRouter from "../modules/flightExpenses/router"
-import reportsRouter from "../modules/reports/router"
+import preapprovedRouter from "@/modules/preapproved/router"
+import travelDeskRouter from "@/modules/travelDesk/router"
+import travelAuthorizationsRouter from "@/modules/travel-authorizations/router"
+import flightExpenseRouter from "@/modules/flightExpenses/router"
+import reportsRouter from "@/modules/reports/router"
 
-import authenticationRouter from "../modules/authentication/router"
-import homeRouter from "../modules/home/router"
+import authenticationRouter from "@/modules/authentication/router"
 
-import store from "../store"
+import store from "@/store"
 
 // import { authGuard } from "../auth/authGuard";
 
@@ -27,10 +26,28 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    // TODO: make this a route guard
     path: "/",
     component: () => import("@/pages/AuthLoadingOverlay"),
   },
-  ...homeRouter,
+  {
+    path: "/",
+    component: () => import("@/layouts/Layout"),
+    children: [
+      {
+        name: "Dashboard",
+        path: "dashboard",
+        meta: { requiresAuth: true },
+        component: () => import("@/pages/DashboardPage"),
+      },
+      {
+        name: "Profile",
+        path: "profile",
+        meta: { requiresAuth: true },
+        component: () => import("@/pages/UserProfilePage"),
+      },
+    ],
+  },
 
   ...authenticationRouter,
   ...preapprovedRouter,
@@ -39,6 +56,7 @@ const routes = [
   ...flightExpenseRouter,
   ...reportsRouter,
 
+  // CONSIDER: moving these into modules, or moving all route definitions into this file
   {
     path: "/admin/users/view/:id",
     name: "AdminUserView",

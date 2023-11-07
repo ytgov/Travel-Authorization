@@ -133,7 +133,7 @@ import TimePicker from "@/components/Utils/TimePicker.vue";
 import UploadReceipts from "@/components/Utils/UploadReceipts.vue";
 
 export default {
-  name: "Home",
+  name: "DashboardPage",
   components: {
     DatePicker,
     TimePicker,
