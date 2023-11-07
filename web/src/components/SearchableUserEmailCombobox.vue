@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import usersApi from "@/apis/users-api"
+import usersApi from "@/api/users-api"
 
 function isValidEmail(v) {
   return (

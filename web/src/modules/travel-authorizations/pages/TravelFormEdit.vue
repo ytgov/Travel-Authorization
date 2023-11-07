@@ -7,7 +7,7 @@
     <h1>
       Travel -
       <v-progress-circular
-        v-if="loadingCurrentUser"
+        v-if="isLoadingCurrentUser"
         indeterminate
       ></v-progress-circular>
       <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
@@ -60,11 +60,8 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelAuthorizations", [
-      "currentUser",
-      "loadingCurrentForm",
-      "loadingCurrentUser",
-    ]),
+    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
   },
   watch: {
     // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
@@ -77,13 +74,13 @@ export default {
   },
   async mounted() {
     await this.loadCurrentTravelAuthorization(this.formId)
-    await this.loadCurrentUser()
+    await this.initializeCurrentUser()
   },
   methods: {
+    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     ...mapActions("travelAuthorizations", [
       "loadCurrentTravelAuthorization",
       "loadCurrentTravelAuthorizationSilently",
-      "loadCurrentUser",
     ]),
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed

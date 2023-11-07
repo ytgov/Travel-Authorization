@@ -21,7 +21,7 @@
     import TravelDeskRequests from "./Desk/TravelDeskRequests.vue";
     import {TRAVEL_DESK_URL,  USERS_URL, PROFILE_URL} from "../../../urls";
     import { secureGet } from "../../../store/jwt";
-    import locationsApi from "@/apis/locations-api"
+    import locationsApi from "@/api/locations-api"
 
     export default {
 

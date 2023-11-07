@@ -2,8 +2,8 @@
   <div>
     <v-data-table
       :headers="headers"
-      :items="myTravelAuthorizations"
-      :loading="loadingForms"
+      :items="items"
+      :loading="isLoading"
       :items-per-page.sync="perPage"
       :page.sync="page"
       :server-items-length="totalCount"
@@ -108,27 +108,26 @@ export default {
     ],
     perPage: 10,
     page: 1,
-    totalCount: 1,
-    loadingForms: true,
   }),
-  async mounted() {
-    await this.refreshForms()
-  },
   computed: {
-    ...mapState("travelAuthorizations", ["myTravelAuthorizations"]),
+    ...mapState("currentUser/travelAuthorizations", ["items", "totalCount", "isLoading"]),
+  },
+  watch: {
+    page() {
+      this.refresh()
+    },
+    perPage() {
+      this.refresh()
+    },
+  },
+  async mounted() {
+    await this.refresh()
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadTravelAuthorizations"]),
+    ...mapActions("currentUser/travelAuthorizations", ["initialize"]),
     isEmpty,
-    refreshForms() {
-      this.loadingForms = true
-      return this.loadTravelAuthorizations({ page: this.page, perPage: this.perPage })
-        .then(({ totalCount }) => {
-          this.totalCount = totalCount
-        })
-        .finally(() => {
-          this.loadingForms = false
-        })
+    refresh() {
+      return this.initialize({ page: this.page, perPage: this.perPage })
     },
     goToFormDetails(form) {
       const formId = form.id
@@ -157,14 +156,6 @@ export default {
     },
     formatPhase(value) {
       return this.$t(`global.phase.${value}`, { $default: "Unknown" })
-    },
-  },
-  watch: {
-    page() {
-      this.refreshForms()
-    },
-    perPage() {
-      this.refreshForms()
     },
   },
 }

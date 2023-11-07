@@ -55,7 +55,7 @@
 import { isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
-import expensesApi from "@/apis/expenses-api"
+import expensesApi from "@/api/expenses-api"
 
 export default {
   name: "EstimateDeleteDialog",

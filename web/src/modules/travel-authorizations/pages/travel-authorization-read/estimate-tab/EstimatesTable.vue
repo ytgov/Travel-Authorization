@@ -6,38 +6,11 @@
     :loading="loadingEstimates"
     class="elevation-2"
   >
-    <template #top>
-      <EstimateEditDialog
-        ref="editDialog"
-        @saved="refresh"
-      />
-      <EstimateDeleteDialog
-        ref="deleteDialog"
-        @deleted="refresh"
-      />
-    </template>
     <template #item.date="{ value }">
       {{ formatDate(value) }}
     </template>
     <template #item.cost="{ value }">
       {{ formatCurrency(value) }}
-    </template>
-    <template #item.actions="{ value: actions, item }">
-      <div class="d-flex justify-end">
-        <v-btn
-          v-if="actions.includes('edit')"
-          color="secondary"
-          @click="showEditDialog(item)"
-          >Edit</v-btn
-        >
-        <v-btn
-          v-if="actions.includes('delete')"
-          class="ml-2"
-          color="error"
-          @click="showDeleteDialog(item)"
-          >Delete</v-btn
-        >
-      </div>
     </template>
     <template #foot>
       <tfoot>
@@ -58,15 +31,9 @@ import { sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
 import { DateTime } from "luxon"
 
-import EstimateDeleteDialog from "./EstimateDeleteDialog"
-import EstimateEditDialog from "./EstimateEditDialog"
-
 export default {
   name: "EstimatesTable",
-  components: {
-    EstimateDeleteDialog,
-    EstimateEditDialog,
-  },
+  components: {},
   props: {
     formId: {
       type: Number,
@@ -79,7 +46,7 @@ export default {
       { test: "Description", value: "description" },
       { text: "Date", value: "date" },
       { text: "Amount", value: "cost" },
-      { text: "", value: "actions" },
+      // { text: "", value: "actions" }, // no actions; read-only
     ],
     totalRowClasses: "text-start font-weight-bold text-uppercase",
   }),
@@ -91,10 +58,7 @@ export default {
     },
   },
   mounted() {
-    return this.loadEstimates({ travelAuthorizationId: this.formId }).then(() => {
-      this.showEditDialogForRouteQuery()
-      this.showDeleteDialogForRouteQuery()
-    })
+    return this.loadEstimates({ travelAuthorizationId: this.formId })
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadEstimates"]),
@@ -107,33 +71,6 @@ export default {
         currency: "CAD",
       })
       return formatter.format(amount)
-    },
-    refresh() {
-      return this.loadEstimates({ formId: this.formId })
-    },
-    showDeleteDialog(item) {
-      this.$refs.deleteDialog.show(item)
-    },
-    showEditDialog(item) {
-      this.$refs.editDialog.show(item)
-    },
-    showEditDialogForRouteQuery() {
-      const estimateId = parseInt(this.$route.query.showEdit)
-      if (isNaN(estimateId)) return
-
-      const estimate = this.estimates.find((estimate) => estimate.id === estimateId)
-      if (!estimate) return
-
-      this.showEditDialog(estimate)
-    },
-    showDeleteDialogForRouteQuery() {
-      const estimateId = parseInt(this.$route.query.showDelete)
-      if (isNaN(estimateId)) return
-
-      const estimate = this.estimates.find((estimate) => estimate.id === estimateId)
-      if (!estimate) return
-
-      this.showDeleteDialog(estimate)
     },
   },
 }

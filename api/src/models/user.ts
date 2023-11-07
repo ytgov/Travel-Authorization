@@ -11,7 +11,6 @@ import moment from "moment"
 
 import sequelize from "@/db/db-client"
 
-// TODO: normalize these roles to snake_case
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Roles {
   ADMIN = "admin",
@@ -21,7 +20,6 @@ enum Roles {
   TD_USER = "td_user",
 }
 
-// TODO: normalize these status to snake_case
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Statuses {
   ACTIVE = "active",

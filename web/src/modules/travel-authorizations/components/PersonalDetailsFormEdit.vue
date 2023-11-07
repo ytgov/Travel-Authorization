@@ -216,18 +216,19 @@ export default {
       this.loadDepartments().finally(() => {
         this.loadingDepartments = false
       }),
-      this.loadUserWrapper().finally(() => {
+      this.initializeCurrentUserWrapper().finally(() => {
         this.loadingUser = false
       }),
     ])
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadDepartments", "loadUser", "emailSearch"]),
+    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("travelAuthorizations", ["loadDepartments", "emailSearch"]),
     searchEmail(token) {
       return this.emailSearch(token)
     },
-    loadUserWrapper() {
-      return this.loadUser().catch((error) => {
+    initializeCurrentUserWrapper() {
+      return this.initializeCurrentUser().catch((error) => {
         this.$snack(error.message, { color: "error" })
       })
     },

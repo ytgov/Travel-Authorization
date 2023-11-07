@@ -8,7 +8,7 @@
       <span>
         Travel -
         <v-progress-circular
-          v-if="loadingCurrentUser"
+          v-if="isLoadingCurrentUser"
           indeterminate
         ></v-progress-circular>
         <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
@@ -20,7 +20,7 @@
       >
         Edit
         <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <v-icon
               small
               class="ml-2"
@@ -42,6 +42,9 @@
     <v-tabs v-model="tab">
       <v-tab :to="{ name: 'TravelAuthorizationRead-DetailsTab', params: { formId } }"
         >Details</v-tab
+      >
+      <v-tab :to="{ name: 'TravelAuthorizationRead-EstimateTab', params: { formId } }"
+        >Estimate</v-tab
       >
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
@@ -78,16 +81,21 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentUser", "loadingCurrentForm", "loadingCurrentUser"]),
+    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
     isAdmin() {
       return this.currentUser?.roles?.includes(User.Roles.ADMIN)
     },
   },
   mounted() {
-    return Promise.all([this.loadCurrentTravelAuthorization(this.formId), this.loadCurrentUser()])
+    return Promise.all([
+      this.loadCurrentTravelAuthorization(this.formId),
+      this.initializeCurrentUser(),
+    ])
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorization", "loadCurrentUser"]),
+    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorization"]),
     goToAdminEditPage() {
       alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)
     },

@@ -38,7 +38,7 @@
         >
           <v-text-field
             :value="preApprovedTravelRequestText"
-            :loading="loadingCurrentUser || loadingPreApprovedTravelRequests"
+            :loading="isLoadingCurrentUser || loadingPreApprovedTravelRequests"
             label="Pre-approved Travel Request?"
             no-data-text="No pre-approvals available"
             dense
@@ -69,8 +69,8 @@
 import { isEmpty, sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
 
-import { TYPES } from "@/apis/expenses-api"
-import preApprovedTravelRequestsApi from "@/apis/pre-approved-travel-requests-api"
+import { TYPES } from "@/api/expenses-api"
+import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 export default {
   name: "ApprovalsCard",
@@ -80,10 +80,15 @@ export default {
     loadingPreApprovedTravelRequests: false,
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "currentUser", "loadingCurrentUser"]),
+    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     // TODO: Make this a getter in the store
     estimates() {
-      return this.currentTravelAuthorization.expenses?.filter((expense) => expense.type === TYPES.ESTIMATE) || []
+      return (
+        this.currentTravelAuthorization.expenses?.filter(
+          (expense) => expense.type === TYPES.ESTIMATE
+        ) || []
+      )
     },
     estimatedCost() {
       return sumBy(this.estimates, "cost")
@@ -101,11 +106,11 @@ export default {
   async mounted() {
     const department = !isEmpty(this.currentUser.department)
       ? this.currentUser.department
-      : await this.loadCurrentUser().then((user) => user.department)
+      : await this.initializeCurrentUser().then((user) => user.department)
     return this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadCurrentUser"]),
+    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {

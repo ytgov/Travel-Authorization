@@ -953,8 +953,8 @@ import { upperFirst } from "lodash"
 import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
 
-import locationsApi from "@/apis/locations-api"
-import usersApi from "@/apis/users-api"
+import locationsApi from "@/api/locations-api"
+import usersApi from "@/api/users-api"
 
 import ExpenseList from "./ExpenseList"
 import TripReport from "./TripReport"
