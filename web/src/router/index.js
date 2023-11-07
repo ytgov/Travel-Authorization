@@ -28,7 +28,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: "/",
-    component: () => import("@/pages/Default"),
+    component: () => import("@/pages/AuthLoadingOverlay"),
   },
   ...homeRouter,
 
@@ -90,7 +90,7 @@ const routes = [
   {
     path: "/qa/scenarios",
     name: "Qa-Scenarios",
-    component: () => import("@/pages/qa/ScenariosList"),
+    component: () => import("@/pages/qa/ScenariosListPage"),
   },
   {
     path: "/health-check",
@@ -100,7 +100,7 @@ const routes = [
   {
     path: "*",
     name: "Not Found",
-    component: () => import("@/pages/NotFound"),
+    component: () => import("@/pages/NotFoundPage"),
   },
 ]
 

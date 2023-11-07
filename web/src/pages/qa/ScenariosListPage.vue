@@ -44,7 +44,7 @@ import Breadcrumbs from "@/components/Breadcrumbs"
 import scenariosApi from "@/api/qa/scenarios-api"
 
 export default {
-  name: "ScenariosList",
+  name: "ScenariosListPage",
   components: {
     Breadcrumbs,
   },
