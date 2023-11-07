@@ -1,5 +1,7 @@
 import usersApi from "@/api/users-api"
 
+import { withGettersFromState } from "@/utils/vuex-utils"
+
 const state = {
   attributes: {},
   isLoading: false,
@@ -7,13 +9,13 @@ const state = {
   isInitialized: false,
 }
 
-const getters = {
+const getters = withGettersFromState(state, {
   id: (state) => state.attributes.id,
   fullName: (state) => {
     const { firstName, lastName } = state.attributes
     return [firstName, lastName].filter(Boolean).join(" ")
   },
-}
+})
 
 const actions = {
   async initialize({ commit }) {
