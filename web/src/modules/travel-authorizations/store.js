@@ -12,7 +12,6 @@ const state = {
   destinations: [],
   emails: [],
   estimates: [],
-  myTravelAuthorizations: [],
   purposes: [],
   currentTravelAuthorization: {
     expenses: [],
@@ -99,26 +98,6 @@ const actions = {
       return formattedLocations
     })
   },
-  async loadTravelAuthorizations(
-    { commit, dispatch, rootState, rootGetters },
-    { page, perPage, ...otherParams } = {}
-  ) {
-    const currentUserId = rootState.current.user.isInitialized
-      ? rootGetters["currentUser/id"]
-      : await dispatch("currentUser/initialize", null, { root: true }).then((user) => user.id)
-
-    return travelAuthorizationsApi
-      .list({
-        page,
-        perPage,
-        ...otherParams,
-        where: { userId: currentUserId },
-      })
-      .then(({ travelAuthorizations: forms, totalCount }) => {
-        commit("SET_MYFORMS", forms)
-        return { forms, totalCount }
-      })
-  },
   loadCurrentTravelAuthorization({ state, dispatch }, formId) {
     state.loadingCurrentForm = true
     return dispatch("loadCurrentTravelAuthorizationSilently", formId).finally(() => {
@@ -126,8 +105,8 @@ const actions = {
     })
   },
   async loadCurrentTravelAuthorizationSilently({ commit, dispatch, rootState }, formId) {
-    const currentUser = rootState.current.user.isInitialized
-      ? rootState.current.user.attributes
+    const currentUser = rootState.currentUser.isInitialized
+      ? rootState.currentUser.attributes
       : await dispatch("currentUser/initialize", null, { root: true })
 
     return travelAuthorizationsApi.get(formId).then(({ travelAuthorization: form }) => {
@@ -188,9 +167,6 @@ const actions = {
 const mutations = {
   SET_EMAILS(store, value) {
     store.emails = value
-  },
-  SET_MYFORMS(store, value) {
-    store.myTravelAuthorizations = value
   },
   SET_FORM(store, value) {
     store.currentTravelAuthorization = value

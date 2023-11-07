@@ -3,7 +3,7 @@ import Vuex from "vuex"
 
 import alerts from "./alerts"
 import auth from "./auth"
-import currentUser from "./current-user"
+import currentUser from "@/store/current-user"
 import preapproved from "./preapproved"
 import profile from "./profile"
 import reports from "./reports"

@@ -2,6 +2,8 @@ import usersApi from "@/api/users-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
 
+import travelAuthorizations from "@/store/current-user/travel-authorizations"
+
 const state = {
   attributes: {},
   isLoading: false,
@@ -34,6 +36,12 @@ const actions = {
       commit("SET_IS_LOADING", false)
     }
   },
+  async fetchId({ state, dispatch }) {
+    if (state.isInitialized) return state.attributes.id
+
+    const user = await dispatch("initialize")
+    return user.id
+  },
 }
 
 const mutations = {
@@ -58,6 +66,7 @@ export default {
   actions,
   mutations,
   modules: {
+    travelAuthorizations,
     // TODO: add things that depend on the current user e.g.
     // travel authorizations, leads to interface currentUser/travelAuthorizations
   },
