@@ -5,17 +5,45 @@
 
     <div class="row">
       <div class="col-md-6 mb-3">
-        <v-text-field v-model="firstName" dense outlined label="First name" readonly hide-details></v-text-field>
+        <v-text-field
+          v-model="firstName"
+          dense
+          outlined
+          label="First name"
+          readonly
+          hide-details
+        ></v-text-field>
       </div>
       <div class="col-md-6 mb-3">
-        <v-text-field v-model="lastName" dense outlined label="Last name" readonly hide-details></v-text-field>
+        <v-text-field
+          v-model="lastName"
+          dense
+          outlined
+          label="Last name"
+          readonly
+          hide-details
+        ></v-text-field>
       </div>
 
       <div class="col-md-6 mb-3">
-        <v-text-field v-model="email" outlined dense label="Email" readonly hide-details></v-text-field>
+        <v-text-field
+          v-model="email"
+          outlined
+          dense
+          label="Email"
+          readonly
+          hide-details
+        ></v-text-field>
       </div>
       <div class="col-md-6">
-        <v-text-field v-model="username" outlined dense label="Username" readonly hide-details></v-text-field>
+        <v-text-field
+          v-model="username"
+          outlined
+          dense
+          label="Username"
+          readonly
+          hide-details
+        ></v-text-field>
       </div>
 
       <div class="col-md-6">
@@ -29,7 +57,10 @@
       <div class="col-md-6">
         <h2>Access</h2>
         <ul>
-          <li v-for="item of access" :key="item.id">
+          <li
+            v-for="item of access"
+            :key="item.id"
+          >
             ({{ item.level }})
             {{ item.name }}
           </li>
@@ -40,17 +71,17 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import store from "@/store";
+import { mapState } from "vuex"
+import store from "@/store"
 
 export default {
   name: "Profile",
+  data: () => ({}),
   computed: {
     ...mapState("profile", ["firstName", "lastName", "username", "email", "roles", "access"]),
   },
-  data: () => ({}),
   async created() {
-    await store.dispatch("profile/loadProfile");
+    await store.dispatch("profile/loadProfile")
   },
-};
+}
 </script>
