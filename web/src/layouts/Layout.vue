@@ -280,10 +280,15 @@ export default {
     nav: function (location) {
       router.push(location)
     },
-    signOut: function () {
-      this.$auth.logout({
-        returnTo: `${window.location.origin}/sign-in`,
-      })
+    signOut() {
+      // TODO: remove development customization once we update Auth0 environment
+      if (config.environment === "development") {
+        this.$auth.logout()
+      } else {
+        this.$auth.logout({
+          returnTo: `${window.location.origin}/sign-in`,
+        })
+      }
     },
     showHistory() {
       this.$refs.historySidebar.show()
