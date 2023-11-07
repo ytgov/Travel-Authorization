@@ -116,14 +116,15 @@ import http from "@/api/http-client"
 import { releaseTag, gitCommitHash } from "@/config"
 
 export default {
-  name: "HealthCheck",
+  name: "HealthCheckPage",
   components: {},
   data: () => ({
     healthCheck: {
       appHealth: {},
       dbHealth: {},
     },
-    environment: { // TODO: load from back-end
+    // TODO: load from back-end
+    environment: {
       releaseTag,
       gitCommitHash,
     },

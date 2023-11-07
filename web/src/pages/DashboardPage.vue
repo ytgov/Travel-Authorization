@@ -2,7 +2,10 @@
   <div class="home">
     <h1>Dashboard</h1>
 
-    <v-card class="mt-5" color="#fff2d5">
+    <v-card
+      class="mt-5"
+      color="#fff2d5"
+    >
       <v-card-title>Current/Recent Trip</v-card-title>
       <v-card-text>
         <v-row>
@@ -21,25 +24,25 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <DatePicker v-bind:value="'Start Date'"></DatePicker>
+                    <DatePicker label="Start Date"></DatePicker>
                   </v-col>
                   <v-col>
-                    <TimePicker v-bind:value="'Start Time'"></TimePicker>
+                    <TimePicker label="Start Time"></TimePicker>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <DatePicker v-bind:value="'End Date'"></DatePicker>
+                    <DatePicker label="End Date"></DatePicker>
                   </v-col>
                   <v-col>
-                    <TimePicker v-bind:value="'End Date'"></TimePicker>
+                    <TimePicker label="End Date"></TimePicker>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
                     <v-text-field
-                      dense
                       v-model="daysOffTravel"
+                      dense
                       label="# of days off travel"
                       prepend-icon="mdi-hail"
                     ></v-text-field>
@@ -57,25 +60,54 @@
               class="elevation-2"
               style="margin: 20px"
             >
-              <template v-slot:[`item.actions`]="{ item }">
-                <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-                <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+              <template #item.actions="{ item }">
+                <v-icon
+                  small
+                  class="mr-2"
+                  @click="editItem(item)"
+                >
+                  mdi-pencil
+                </v-icon>
+                <v-icon
+                  small
+                  @click="deleteItem(item)"
+                >
+                  mdi-delete
+                </v-icon>
               </template>
-              <template v-slot:[`item.receipts`]>
-                <v-btn text color="blue" x-small @click="uploadReceiptDialog"> Upload Receipts </v-btn>
+              <template #item.receipts>
+                <v-btn
+                  text
+                  color="blue"
+                  x-small
+                  @click="uploadReceiptDialog"
+                >
+                  Upload Receipts
+                </v-btn>
               </template>
             </v-data-table>
-            <v-dialog v-model="dialog" width="400">
+            <v-dialog
+              v-model="dialog"
+              width="400"
+            >
               <UploadReceipts />
             </v-dialog>
           </v-col>
         </v-row>
-        <v-btn color="blue" small @click="saveChanges">Save Changes</v-btn>
+        <v-btn
+          color="blue"
+          small
+          @click="saveChanges"
+          >Save Changes</v-btn
+        >
       </v-card-text>
     </v-card>
     <v-row>
       <v-col>
-        <v-card class="mt-5" color="#fff2d5">
+        <v-card
+          class="mt-5"
+          color="#fff2d5"
+        >
           <v-card-title>Travel Authorization Status</v-card-title>
           <v-card-text>
             <v-data-table
@@ -84,15 +116,18 @@
               hide-default-footer
               disable-pagination
               class="elevation-2"
-              @click:row="openForm"
               style="margin: 20px"
+              @click:row="openForm"
             >
             </v-data-table>
           </v-card-text>
         </v-card>
       </v-col>
       <v-col>
-        <v-card class="mt-5" color="#fff2d5">
+        <v-card
+          class="mt-5"
+          color="#fff2d5"
+        >
           <v-card-title>Upcoming Trips</v-card-title>
           <v-card-text>
             <v-data-table
@@ -101,8 +136,8 @@
               hide-default-footer
               disable-pagination
               class="elevation-2"
-              @click:row="openForm"
               style="margin: 20px"
+              @click:row="openForm"
             >
             </v-data-table>
           </v-card-text>
@@ -112,11 +147,22 @@
 
     <v-row>
       <v-col>
-        <v-card class="mt-5" color="#fff2d5">
+        <v-card
+          class="mt-5"
+          color="#fff2d5"
+        >
           <v-card-title>Create a new travel request</v-card-title>
-          <v-card-text> To begin the process of creating a new travel request, click the button bellow.</v-card-text>
+          <v-card-text>
+            To begin the process of creating a new travel request, click the button
+            bellow.</v-card-text
+          >
           <v-card-actions>
-            <v-btn @click="createForm()" color="blue"> New Travel Request </v-btn>
+            <v-btn
+              color="blue"
+              @click="createForm"
+            >
+              New Travel Request
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -125,15 +171,15 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid";
-import { FORM_URL } from "@/urls";
-import { secureGet } from "@/store/jwt";
-import DatePicker from "@/components/Utils/DatePicker.vue";
-import TimePicker from "@/components/Utils/TimePicker.vue";
-import UploadReceipts from "@/components/Utils/UploadReceipts.vue";
+import { v4 as uuidv4 } from "uuid"
+import { FORM_URL } from "@/urls"
+import { secureGet } from "@/store/jwt"
+import DatePicker from "@/components/Utils/DatePicker.vue"
+import TimePicker from "@/components/Utils/TimePicker.vue"
+import UploadReceipts from "@/components/Utils/UploadReceipts.vue"
 
 export default {
-  name: "Home",
+  name: "DashboardPage",
   components: {
     DatePicker,
     TimePicker,
@@ -216,32 +262,32 @@ export default {
     dialog: false,
   }),
   created() {
-    this.loadTravelAuthorizations();
-    this.getTrip();
+    this.loadTravelAuthorizations()
+    this.getTrip()
   },
   methods: {
     loadTravelAuthorizations() {
       secureGet(`${FORM_URL}`).then((resp) => {
-        this.forms = resp.data;
-      });
+        this.forms = resp.data
+      })
     },
     uploadReceiptDialog() {
-      this.dialog = true;
+      this.dialog = true
     },
     openForm(value) {
-      this.$router.push(`/TravelRequest/Request/${value.formId}`);
+      this.$router.push(`/TravelRequest/Request/${value.formId}`)
     },
     createForm() {
-      this.$router.push(`/TravelRequest/Request/${uuidv4()}`);
+      this.$router.push(`/TravelRequest/Request/${uuidv4()}`)
     },
     getTrip() {
       secureGet(`${FORM_URL}/recent`).then((resp) => {
-        this.data = resp.data;
-      });
+        this.data = resp.data
+      })
     },
     editItem() {},
     deleteItem() {},
-    saveChanges() {}
+    saveChanges() {},
   },
-};
+}
 </script>
