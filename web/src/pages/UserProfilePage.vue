@@ -75,7 +75,7 @@ import { mapState } from "vuex"
 import store from "@/store"
 
 export default {
-  name: "Profile",
+  name: "UserProfilePage",
   data: () => ({}),
   computed: {
     ...mapState("profile", ["firstName", "lastName", "username", "email", "roles", "access"]),
