@@ -12,12 +12,12 @@
 
 <script>
 export default {
-  name: 'FullScreenLoadingOverlay',
+  name: "FullScreenLoadingOverlay",
   props: {
     value: {
       type: Boolean,
-      required: true
-    }
-  }
+      required: true,
+    },
+  },
 }
 </script>

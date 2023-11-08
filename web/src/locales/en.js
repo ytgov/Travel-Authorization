@@ -1,6 +1,7 @@
 export default {
   global: {
     status: {
+      active: "Active",
       approved: "Approved",
       awaiting_director_approval: "Awaiting Director Approval",
       booked: "Booked",
@@ -10,6 +11,7 @@ export default {
       draft: "Draft",
       expense_claim: "Expense Claim",
       expensed: "Expensed",
+      inactive: "Inactive",
       submitted: "Submitted",
       travelling: "Travelling",
     },

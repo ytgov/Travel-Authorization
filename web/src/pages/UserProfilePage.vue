@@ -1,51 +1,147 @@
 <template>
-  <div>
+  <v-container>
+    <FullScreenLoadingOverlay :value="isLoading" />
+
     <h1>My Profile</h1>
 
-    <div class="row">
-      <div class="col-md-6 mb-3">
+    <v-row>
+      <v-col
+        cols="12"
+        md="6"
+      >
         <v-text-field
-          v-model="attributes.firstName"
-          dense
-          outlined
+          :value="attributes.firstName"
           label="First name"
-          readonly
-          hide-details
-        ></v-text-field>
-      </div>
-      <div class="col-md-6 mb-3">
-        <v-text-field
-          v-model="attributes.lastName"
           dense
+          hide-details
           outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.lastName"
           label="Last name"
-          readonly
-          hide-details
-        ></v-text-field>
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <v-text-field
-          v-model="attributes.email"
-          outlined
           dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.email"
           label="Email"
-          readonly
-          hide-details
-        ></v-text-field>
-      </div>
-      <div class="col-md-6">
-        <v-text-field
-          v-model="attributes.username"
-          outlined
           dense
-          label="Username"
-          readonly
           hide-details
+          outlined
+          readonly
         ></v-text-field>
-      </div>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="formatStatus(attributes.status)"
+          label="Status"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.mailcode"
+          label="Mail code"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.manager"
+          label="Manager"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
 
-      <div class="col-md-6">
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.department"
+          label="Department"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.division"
+          label="Division"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.branch"
+          label="Branch"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.unit"
+          label="Unit"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+
+      <v-col
+        cols="12"
+        md="6"
+      >
         <h2>Roles</h2>
 
         <v-chip
@@ -56,19 +152,24 @@
         >
           {{ formatRole(role) }}
         </v-chip>
-      </div>
-    </div>
-  </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import { mapState, mapActions } from "vuex"
 
+import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
+
 export default {
   name: "UserProfilePage",
+  components: {
+    FullScreenLoadingOverlay,
+  },
   data: () => ({}),
   computed: {
-    ...mapState("currentUser", ["attributes"]),
+    ...mapState("currentUser", ["attributes", "isLoading"]),
   },
   async mounted() {
     await this.initialize()
@@ -76,7 +177,10 @@ export default {
   methods: {
     ...mapActions("currentUser", ["initialize"]),
     formatRole(value) {
-      return this.$t(`global.role.${value}`, { $default: `Unknown: ${value}` })
+      return this.$t(`global.role.${value}`, { $default: value })
+    },
+    formatStatus(value) {
+      return this.$t(`global.status.${value}`, { $default: value })
     },
   },
 }
