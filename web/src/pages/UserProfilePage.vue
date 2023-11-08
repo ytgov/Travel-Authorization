@@ -31,7 +31,9 @@
           readonly
         ></v-text-field>
       </v-col>
+    </v-row>
 
+    <v-row>
       <v-col
         cols="12"
         md="6"
@@ -58,19 +60,11 @@
           readonly
         ></v-text-field>
       </v-col>
-      <v-col
-        cols="12"
-        md="6"
-      >
-        <v-text-field
-          :value="attributes.mailcode"
-          label="Mail code"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
-      </v-col>
+    </v-row>
+
+    <v-divider class="my-6"></v-divider>
+
+    <v-row>
       <v-col
         cols="12"
         md="6"
@@ -84,7 +78,22 @@
           readonly
         ></v-text-field>
       </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          :value="attributes.mailcode"
+          label="Mail code"
+          dense
+          hide-details
+          outlined
+          readonly
+        ></v-text-field>
+      </v-col>
+    </v-row>
 
+    <v-row>
       <v-col
         cols="12"
         md="6"
@@ -111,6 +120,9 @@
           readonly
         ></v-text-field>
       </v-col>
+    </v-row>
+
+    <v-row>
       <v-col
         cols="12"
         md="6"
@@ -137,7 +149,9 @@
           readonly
         ></v-text-field>
       </v-col>
+    </v-row>
 
+    <v-row>
       <v-col
         cols="12"
         md="6"
