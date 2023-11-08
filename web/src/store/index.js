@@ -5,7 +5,6 @@ import alerts from "./alerts"
 import auth from "./auth"
 import currentUser from "@/store/current-user"
 import preapproved from "./preapproved"
-import profile from "./profile"
 import reports from "./reports"
 import traveldesk from "./traveldesk"
 
@@ -61,7 +60,6 @@ export default new Vuex.Store({
     auth,
     currentUser,
     preapproved,
-    profile,
     reports,
     travelAuthorizations,
     traveldesk,

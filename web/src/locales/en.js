@@ -21,5 +21,12 @@ export default {
       travel_planning: "Travel Planning",
       travelling: "Travelling",
     },
+    role: {
+      admin: "Admin",
+      user: "User",
+      pat_admin: "Pat Admin",
+      dept_admin: "Dept Admin",
+      td_user: "Td User",
+    },
   },
 }

@@ -5,7 +5,9 @@ import { withGettersFromState } from "@/utils/vuex-utils"
 import travelAuthorizations from "@/store/current-user/travel-authorizations"
 
 const state = {
-  attributes: {},
+  attributes: {
+    roles: [],
+  },
   isLoading: false,
   isErrored: false,
   isInitialized: false,
