@@ -38,7 +38,7 @@ const routes = [
       },
       {
         path: ":formId/edit",
-        component: () => import("@/modules/travel-authorizations/pages/TravelFormEdit"),
+        component: () => import("@/modules/travel-authorizations/pages/TravelAuthorizationEdit"),
         props: true,
         children: [
           {
@@ -47,16 +47,16 @@ const routes = [
           },
           {
             path: "details",
-            name: "TravelFormEdit-DetailsTab",
+            name: "TravelAuthorizationEdit-DetailsTab",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-form-edit/DetailsTab"),
+              import("@/modules/travel-authorizations/pages/travel-authorization-edit/DetailsTab"),
             props: true,
           },
           {
             path: "estimate",
-            name: "TravelFormEdit-EstimateTab",
+            name: "TravelAuthorizationEdit-EstimateTab",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-form-edit/EstimateTab"),
+              import("@/modules/travel-authorizations/pages/travel-authorization-edit/EstimateTab"),
             props: true,
           },
         ],

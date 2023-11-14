@@ -20,7 +20,7 @@
             <v-btn
               v-if="!refreshingEstimatesSilently && hasEstimates"
               :to="{
-                name: 'TravelFormEdit-EstimateTab',
+                name: 'TravelAuthorizationEdit-EstimateTab',
                 params: { formId: currentTravelAuthorizationId },
               }"
               class="mt-1"
@@ -102,7 +102,7 @@ import { mapActions, mapState, mapGetters } from "vuex"
 import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-import EstimateGenerateDialog from "@/modules/travel-authorizations/pages/travel-form-edit/estimate-tab/EstimateGenerateDialog"
+import EstimateGenerateDialog from "@/modules/travel-authorizations/pages/travel-authorization-edit/estimate-tab/EstimateGenerateDialog"
 
 import EstimatedCostTextField from "./approvals-form-card/EstimatedCostTextField"
 import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"

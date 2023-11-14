@@ -1,7 +1,5 @@
 <template>
-  <v-card
-    elevation="2"
-  >
+  <v-card elevation="2">
     <v-card-title> Purpose </v-card-title>
     <v-card-text>
       <v-form
@@ -43,7 +41,20 @@
               </v-col>
               <v-col
                 cols="12"
-                md="6"
+                md="3"
+              >
+                <!-- Depending on in territory flag we will load a different list of destinations -->
+                <v-checkbox
+                  v-model="currentTravelAuthorization.allTravelWithinTerritory"
+                  label="In Territory?"
+                  dense
+                  required
+                >
+                </v-checkbox>
+              </v-col>
+              <v-col
+                cols="12"
+                md="9"
               >
                 <v-autocomplete
                   v-model="finalDestination.locationId"
@@ -113,13 +124,24 @@ export default {
   }),
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
     finalDestination: {
       get() {
-        return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
+        return (
+          last(this.currentTravelAuthorization.stops) || {
+            travelAuthorizationId: this.currentTravelAuthorizationId,
+          }
+        )
       },
       set(newValue) {
-        this.$set(this.currentTravelAuthorization.stops, this.currentTravelAuthorization.stops.length - 1, newValue)
+        this.$set(
+          this.currentTravelAuthorization.stops,
+          this.currentTravelAuthorization.stops.length - 1,
+          newValue
+        )
       },
     },
   },

@@ -5,22 +5,6 @@
         cols="12"
         md="2"
       >
-        <!-- Depending on in territory flag we will load a different list of destinations -->
-        <v-checkbox
-          :input-value="currentTravelAuthorization.allTravelWithinTerritory"
-          label="In Territory?"
-          dense
-          outlined
-          readonly
-        >
-        </v-checkbox>
-      </v-col>
-    </v-row>
-    <v-row dense>
-      <v-col
-        cols="12"
-        md="2"
-      >
         <v-text-field
           :value="purposeText"
           label="Purpose"
