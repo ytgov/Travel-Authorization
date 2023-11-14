@@ -61,7 +61,7 @@ import { User } from "@/constants"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
-import SummaryHeaderPanel from "./travel-authorization-read/SummaryHeaderPanel"
+import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {

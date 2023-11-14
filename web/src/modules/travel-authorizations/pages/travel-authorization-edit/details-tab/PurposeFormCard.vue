@@ -41,7 +41,20 @@
               </v-col>
               <v-col
                 cols="12"
-                md="6"
+                md="3"
+              >
+                <!-- Depending on in territory flag we will load a different list of destinations -->
+                <v-checkbox
+                  v-model="currentTravelAuthorization.allTravelWithinTerritory"
+                  label="In Territory?"
+                  dense
+                  required
+                >
+                </v-checkbox>
+              </v-col>
+              <v-col
+                cols="12"
+                md="9"
               >
                 <v-autocomplete
                   v-model="finalDestination.locationId"

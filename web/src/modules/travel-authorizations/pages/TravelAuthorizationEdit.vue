@@ -13,7 +13,7 @@
     </h1>
 
     <template v-if="!loadingCurrentForm">
-      <SummaryHeaderForm />
+      <SummaryHeaderPanel />
     </template>
 
     <v-tabs v-model="tab">
@@ -42,7 +42,7 @@ import { mapActions, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
-import SummaryHeaderForm from "./travel-authorization-edit/SummaryHeaderForm"
+import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {
@@ -50,7 +50,7 @@ export default {
   components: {
     Breadcrumbs,
     FullScreenLoadingOverlay,
-    SummaryHeaderForm,
+    SummaryHeaderPanel,
     VUserChipMenu,
   },
   props: {

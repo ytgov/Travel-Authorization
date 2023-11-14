@@ -31,7 +31,20 @@
             </v-col>
             <v-col
               cols="12"
-              md="6"
+              md="3"
+            >
+              <!-- Depending on in territory flag we will load a different list of destinations -->
+              <v-checkbox
+                :value="currentTravelAuthorization.allTravelWithinTerritory"
+                label="In Territory?"
+                dense
+                readonly
+              >
+              </v-checkbox>
+            </v-col>
+            <v-col
+              cols="12"
+              md="9"
             >
               <v-text-field
                 :value="finalDestinationText"
@@ -92,9 +105,16 @@ export default {
   }),
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
     finalDestination() {
-      return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
+      return (
+        last(this.currentTravelAuthorization.stops) || {
+          travelAuthorizationId: this.currentTravelAuthorizationId,
+        }
+      )
     },
     purposeText() {
       const purpose = this.purposes.find((p) => p.id === this.currentTravelAuthorization.purposeId)
