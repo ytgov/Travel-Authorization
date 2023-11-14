@@ -86,16 +86,13 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex"
-import { isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
 import AccommodationTypeSelect from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
-import TravelMethodSelect, {
-  TRAVEL_METHODS,
-} from "@/modules/travel-authorizations/components/TravelMethodSelect"
+import TravelMethodSelect from "@/modules/travel-authorizations/components/TravelMethodSelect"
 
 export default {
   name: "OneWayStopsSection",
@@ -121,29 +118,12 @@ export default {
   async mounted() {
     await this.loadDestinations()
 
-    if (isEmpty(this.currentTravelAuthorization.stops)) {
-      this.currentTravelAuthorization.stops = [this.newStop(), this.newStop({ transport: null })]
-    } else if (this.currentTravelAuthorization.stops.length === 1) {
-      this.currentTravelAuthorization.stops.push(this.newStop({ transport: null }))
-    } else if (this.currentTravelAuthorization.stops.length > 2) {
-      const elementsToRemove = this.currentTravelAuthorization.stops.length - 2
-      this.currentTravelAuthorization.stops.splice(1, elementsToRemove)
-    }
-
     this.originStop = this.currentTravelAuthorization.stops[0]
     this.destinationStop = this.currentTravelAuthorization.stops[1]
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadDestinations"]),
     required,
-    newStop(attributes) {
-      return {
-        travelAuthorizationId: this.currentTravelAuthorizationId,
-        accommodationType: null,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        ...attributes,
-      }
-    },
   },
 }
 </script>

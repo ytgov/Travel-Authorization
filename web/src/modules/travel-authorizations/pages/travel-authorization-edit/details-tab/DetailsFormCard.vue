@@ -75,9 +75,9 @@ import { last } from "lodash"
 import { mapState, mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
-
+import { ACCOMMODATION_TYPES } from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
+import { TRAVEL_METHODS } from "@/modules/travel-authorizations/components/TravelMethodSelect"
 import DatePicker from "@/components/Utils/DatePicker"
-
 import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
 
 const TRIP_TYPES = Object.freeze({
@@ -132,12 +132,26 @@ export default {
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentTravelAuthorization.oneWayTrip = false
         this.currentTravelAuthorization.multiStop = false
+        this.currentTravelAuthorization.stops = [
+          this.newStop(),
+          this.newStop({ accommodationType: null, transport: null }),
+        ]
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
         this.currentTravelAuthorization.multiStop = false
+        this.currentTravelAuthorization.stops = [
+          this.newStop({ accommodationType: null }),
+          this.newStop({ accommodationType: null, transport: null }),
+        ]
       } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
         this.currentTravelAuthorization.multiStop = true
         this.currentTravelAuthorization.oneWayTrip = false
+        this.currentTravelAuthorization.stops = [
+          this.newStop(),
+          this.newStop(),
+          this.newStop({ accommodationType: null }),
+          this.newStop({ accommodationType: null, transport: null }),
+        ]
       } else {
         throw new Error("Invalid trip type")
       }
@@ -147,6 +161,14 @@ export default {
       this.$nextTick(() => {
         this.$refs.form.resetValidation()
       })
+    },
+    newStop(attributes) {
+      return {
+        travelAuthorizationId: this.currentTravelAuthorizationId,
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...attributes,
+      }
     },
   },
 }
