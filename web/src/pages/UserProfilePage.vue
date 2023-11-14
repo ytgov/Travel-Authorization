@@ -2,7 +2,19 @@
   <v-container>
     <FullScreenLoadingOverlay :value="isLoading" />
 
-    <h1>My Profile</h1>
+    <h1 class="d-flex justify-space-between">
+      My Profile
+
+      <v-btn
+        title="Sync profile with external directory"
+        color="primary"
+        small
+        icon
+        @click="syncProfile"
+      >
+        <v-icon>mdi-cached</v-icon>
+      </v-btn>
+    </h1>
 
     <v-row>
       <v-col
@@ -174,6 +186,7 @@
 <script>
 import { mapState, mapActions } from "vuex"
 
+import usersApi from "@/api/users-api"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 
 export default {
@@ -190,6 +203,11 @@ export default {
   },
   methods: {
     ...mapActions("currentUser", ["initialize"]),
+    syncProfile() {
+      return usersApi.ygGovernmentDirectorySync(this.attributes.id).then(({ user }) => {
+        console.log("user:", JSON.stringify(user, null, 2))
+      })
+    },
     formatRole(value) {
       return this.$t(`global.role.${value}`, { $default: value })
     },
