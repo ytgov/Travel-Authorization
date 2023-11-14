@@ -6,11 +6,10 @@
 
     <h1>
       Travel -
-      <v-progress-circular
-        v-if="isLoadingCurrentUser"
-        indeterminate
-      ></v-progress-circular>
-      <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
+      <VUserChipMenu
+        :user-id="currentUser.id"
+        :is-current-user="true"
+      />
     </h1>
 
     <template v-if="!loadingCurrentForm">
@@ -42,6 +41,7 @@ import { mapActions, mapState } from "vuex"
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 import SummaryHeaderForm from "./travel-form-edit/SummaryHeaderForm"
+import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {
   name: "TravelFormEdit",
@@ -49,6 +49,7 @@ export default {
     Breadcrumbs,
     FullScreenLoadingOverlay,
     SummaryHeaderForm,
+    VUserChipMenu,
   },
   props: {
     formId: {

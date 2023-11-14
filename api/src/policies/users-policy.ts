@@ -2,6 +2,10 @@ import BasePolicy from "./base-policy"
 import { User } from "@/models"
 
 export class UsersPolicy extends BasePolicy<User> {
+  show(): boolean {
+    return true
+  }
+
   create(): boolean {
     if (this.user.roles.includes(User.Roles.ADMIN)) return true
 

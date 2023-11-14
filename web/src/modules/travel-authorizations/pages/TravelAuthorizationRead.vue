@@ -7,11 +7,10 @@
     <h1 class="d-flex justify-space-between mb-0">
       <span>
         Travel -
-        <v-progress-circular
-          v-if="isLoadingCurrentUser"
-          indeterminate
-        ></v-progress-circular>
-        <template v-else> {{ currentUser.firstName }} {{ currentUser.lastName }} </template>
+        <VUserChipMenu
+          :user-id="currentUser.id"
+          :is-current-user="true"
+        />
       </span>
       <v-btn
         v-if="isAdmin"
@@ -63,6 +62,7 @@ import { User } from "@/constants"
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 import SummaryHeaderPanel from "./travel-authorization-read/SummaryHeaderPanel"
+import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {
   name: "TravelAuthorizationRead",
@@ -70,6 +70,7 @@ export default {
     Breadcrumbs,
     FullScreenLoadingOverlay,
     SummaryHeaderPanel,
+    VUserChipMenu,
   },
   props: {
     formId: {
