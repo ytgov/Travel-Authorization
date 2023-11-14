@@ -238,11 +238,14 @@
         />
         <AccommodationTypeSelect
           v-model="stop3.accommodationType"
-          :rules="[required]"
+          :default-value="null"
+          hint="Optional, set only if neccessary"
+          placeholder="N/A"
           background-color="white"
+          clearable
           dense
           outlined
-          required
+          persistent-hint
         />
       </v-col>
     </v-row>
@@ -294,8 +297,8 @@ export default {
       this.currentTravelAuthorization.stops = [
         this.newStop(),
         this.newStop(),
-        this.newStop(),
-        this.newStop(),
+        this.newStop({ accommodationType: null }),
+        this.newStop({ accommodationType: null }),
       ]
     } else if (this.currentTravelAuthorization.stops.length === 1) {
       this.currentTravelAuthorization.stops.splice(
@@ -322,11 +325,12 @@ export default {
     ...mapActions("travelAuthorizations", ["loadDestinations"]),
     required,
     greaterThanOrEqualToDate,
-    newStop() {
+    newStop(attributes) {
       return {
         travelAuthorizationId: this.currentTravelAuthorizationId,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
+        ...attributes,
       }
     },
   },
