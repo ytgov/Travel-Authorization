@@ -155,9 +155,9 @@
         <AccommodationTypeSelect
           v-model="destinationStop.accommodationType"
           :default-value="null"
-          background-color="white"
           hint="Optional, set only if neccessary"
           placeholder="N/A"
+          background-color="white"
           clearable
           dense
           outlined
