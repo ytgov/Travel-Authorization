@@ -1,7 +1,5 @@
 <template>
-  <v-card
-    elevation="2"
-  >
+  <v-card elevation="2">
     <v-card-title> Purpose </v-card-title>
     <v-card-text>
       <v-form
@@ -113,13 +111,24 @@ export default {
   }),
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", [
+      "currentTravelAuthorizationId",
+      "destinationsByCurrentFormTravelRestriction",
+    ]),
     finalDestination: {
       get() {
-        return last(this.currentTravelAuthorization.stops) || { travelAuthorizationId: this.currentTravelAuthorizationId }
+        return (
+          last(this.currentTravelAuthorization.stops) || {
+            travelAuthorizationId: this.currentTravelAuthorizationId,
+          }
+        )
       },
       set(newValue) {
-        this.$set(this.currentTravelAuthorization.stops, this.currentTravelAuthorization.stops.length - 1, newValue)
+        this.$set(
+          this.currentTravelAuthorization.stops,
+          this.currentTravelAuthorization.stops.length - 1,
+          newValue
+        )
       },
     },
   },

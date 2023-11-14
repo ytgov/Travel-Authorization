@@ -17,9 +17,11 @@
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'TravelFormEdit-DetailsTab', params: { formId } }">Details</v-tab>
+      <v-tab :to="{ name: 'TravelAuthorizationEdit-DetailsTab', params: { formId } }"
+        >Details</v-tab
+      >
       <v-tab
-        :to="{ name: 'TravelFormEdit-EstimateTab', params: { formId } }"
+        :to="{ name: 'TravelAuthorizationEdit-EstimateTab', params: { formId } }"
         @click="resetActiveState"
         >Estimate</v-tab
       >
@@ -40,11 +42,11 @@ import { mapActions, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
-import SummaryHeaderForm from "./travel-form-edit/SummaryHeaderForm"
+import SummaryHeaderForm from "./travel-authorization-edit/SummaryHeaderForm"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {
-  name: "TravelFormEdit",
+  name: "TravelAuthorizationEdit",
   components: {
     Breadcrumbs,
     FullScreenLoadingOverlay,
@@ -68,7 +70,7 @@ export default {
     // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
     // This does a wizard of oz style, silent, background refresh.
     $route(to) {
-      if (to.name === "TravelFormEdit-DetailsTab") {
+      if (to.name === "TravelAuthorizationEdit-DetailsTab") {
         this.loadCurrentTravelAuthorizationSilently(this.formId)
       }
     },

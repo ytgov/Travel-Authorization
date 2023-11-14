@@ -1,7 +1,7 @@
 <template>
   <v-form
-    class="mt-4"
     ref="form"
+    class="mt-4"
     lazy-validation
   >
     <v-row>
