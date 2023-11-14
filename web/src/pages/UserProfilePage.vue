@@ -10,7 +10,7 @@
         color="primary"
         small
         icon
-        @click="syncProfile"
+        @click="ygGovernmentDirectorySync"
       >
         <v-icon>mdi-cached</v-icon>
       </v-btn>
@@ -186,7 +186,6 @@
 <script>
 import { mapState, mapActions } from "vuex"
 
-import usersApi from "@/api/users-api"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 
 export default {
@@ -202,12 +201,7 @@ export default {
     await this.initialize()
   },
   methods: {
-    ...mapActions("currentUser", ["initialize"]),
-    syncProfile() {
-      return usersApi.ygGovernmentDirectorySync(this.attributes.id).then(({ user }) => {
-        console.log("user:", JSON.stringify(user, null, 2))
-      })
-    },
+    ...mapActions("currentUser", ["initialize", "ygGovernmentDirectorySync"]),
     formatRole(value) {
       return this.$t(`global.role.${value}`, { $default: value })
     },

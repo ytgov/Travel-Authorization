@@ -15,10 +15,8 @@ export const usersApi = {
       return Promise.resolve([])
     }
   },
-  ygGovernmentDirectorySync(userId, attributes) {
-    return http
-      .post(`/api/users/${userId}/yg-government-directory-sync`, attributes)
-      .then(({ data }) => data)
+  ygGovernmentDirectorySync(userId) {
+    return http.post(`/api/users/${userId}/yg-government-directory-sync`).then(({ data }) => data)
   },
 }
 
