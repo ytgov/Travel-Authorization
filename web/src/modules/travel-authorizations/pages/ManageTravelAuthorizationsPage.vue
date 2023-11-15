@@ -9,7 +9,7 @@
         >
           <v-card-title>Pending Approvals</v-card-title>
           <v-card-text>
-            <TravelAuthorizationsDashboardWidget :status="STATUSES.PENDING" />
+            <TravelAuthorizationsDashboardWidget :status="STATUSES.SUBMITTED" />
           </v-card-text>
         </v-card>
       </v-col>
