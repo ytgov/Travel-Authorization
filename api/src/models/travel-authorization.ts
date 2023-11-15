@@ -76,6 +76,7 @@ export class TravelAuthorization extends Model<
   declare summary: string | null
   declare benefits: string | null
   declare status: Statuses | null
+  // TODO: consider making this supervisorId?
   declare supervisorEmail: string | null
   declare approved: string | null
   declare requestChange: string | null
