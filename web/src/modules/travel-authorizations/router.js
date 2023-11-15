@@ -13,7 +13,8 @@ const routes = [
       },
       {
         path: ":formId",
-        component: () => import("@/modules/travel-authorizations/pages/TravelAuthorizationRead"),
+        component: () =>
+          import("@/modules/travel-authorizations/layouts/MyTravelAuthorizationReadLayout"),
         props: true,
         children: [
           {
@@ -22,9 +23,9 @@ const routes = [
           },
           {
             path: "details",
-            name: "TravelAuthorizationRead-DetailsTab",
+            name: "MyTravelAuthorizationReadDetailsPage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-authorization-read/DetailsTab"),
+              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationReadDetailsPage"),
             props: true,
           },
           {
@@ -57,9 +58,7 @@ const routes = [
             path: "estimate",
             name: "MyTravelAuthorizationEditEstimatePage",
             component: () =>
-              import(
-                "@/modules/travel-authorizations/pages/MyTravelAuthorizationEditEstimatePage"
-              ),
+              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationEditEstimatePage"),
             props: true,
           },
         ],

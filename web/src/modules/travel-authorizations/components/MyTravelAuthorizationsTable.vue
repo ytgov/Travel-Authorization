@@ -135,7 +135,7 @@ export default {
         this.$router.push({ name: "MyTravelAuthorizationEditDetailsPage", params: { formId } })
       } else {
         this.$router.push({
-          name: "TravelAuthorizationRead-DetailsTab",
+          name: "MyTravelAuthorizationReadDetailsPage",
           params: { formId },
         })
       }

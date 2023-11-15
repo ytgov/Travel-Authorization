@@ -4,7 +4,7 @@
 
     <Breadcrumbs />
 
-    <h1 class="d-flex justify-space-between mb-0">
+    <h1 class="d-flex justify-space-between">
       <span>
         Travel -
         <VUserChipMenu
@@ -39,7 +39,7 @@
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'TravelAuthorizationRead-DetailsTab', params: { formId } }"
+      <v-tab :to="{ name: 'MyTravelAuthorizationReadDetailsPage', params: { formId } }"
         >Details</v-tab
       >
       <v-tab :to="{ name: 'TravelAuthorizationRead-EstimateTab', params: { formId } }"
@@ -65,7 +65,7 @@ import SummaryHeaderPanel from "@/modules/travel-authorizations/components/Summa
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {
-  name: "TravelAuthorizationRead",
+  name: "MyTravelAuthorizationReadLayout",
   components: {
     Breadcrumbs,
     FullScreenLoadingOverlay,
