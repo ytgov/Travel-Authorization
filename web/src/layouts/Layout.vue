@@ -53,7 +53,7 @@
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
             <v-list-item
-              to="/my-travel-requests"
+              :to="{ name: 'TravelFormList' }"
               @click="menuItemSelected('My Travel Requests')"
             >
               <v-list-item-title>My Travel Requests</v-list-item-title>
@@ -89,7 +89,7 @@
               <v-list-item-title>Reports </v-list-item-title>
             </v-list-item>
             <v-list-item
-              to="/managerView"
+              :to="{ name: 'ManagerView' }"
               @click="menuItemSelected('Manager View')"
             >
               <v-list-item-title>Manager View</v-list-item-title>
@@ -314,17 +314,17 @@ export default {
       const path = this.$route.path
       const routes = [
         { name: "Dashboard", to: "/dashboard" },
-        { name: "My Travel Requests", to: "/my-travel-requests" },
+        { name: "My Travel Requests", to: { name: "TravelFormList" } },
         { name: "PreApproved", to: "/preapproved" },
         { name: "Travel Desk", to: "/travel-desk" },
         { name: "Travel Request", to: "/travel-request" },
         { name: "Flight Expense", to: "/flight-expense" },
         { name: "Reports", to: "/reporting-summary" },
-        { name: "Manager View", to: "/managerView" },
+        { name: "Manager View", to: { name: "ManagerView" } },
       ]
 
       if (this.isInDevelopmentOrUserAcceptanceTesting) {
-        routes.push({ name: "QA Scenarios", to: "/qa/scenarios" })
+        routes.push({ name: "QA Scenarios", to: { name: "Qa-Scenarios" } })
       }
 
       for (const route of routes) {

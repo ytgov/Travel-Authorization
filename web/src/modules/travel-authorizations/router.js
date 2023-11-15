@@ -62,8 +62,8 @@ const routes = [
         ],
       },
       {
-        name: "TravelFormManagerList",
-        path: "/managerView",
+        name: "ManagerView",
+        path: "/manager-view",
         meta: {
           requiresAuth: true,
         },
