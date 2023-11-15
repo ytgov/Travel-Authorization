@@ -19,7 +19,7 @@
       <v-btn
         class="ml-3"
         color="secondary"
-        :to="{ name: 'TravelFormList' }"
+        :to="{ name: 'MyTravelAuthorizationsPage' }"
         >Back</v-btn
       >
     </div>

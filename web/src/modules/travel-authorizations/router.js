@@ -4,12 +4,12 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "TravelFormList",
+        name: "MyTravelAuthorizationsPage",
         path: "",
         meta: {
           requiresAuth: true,
         },
-        component: () => import("@/modules/travel-authorizations/pages/TravelFormList"),
+        component: () => import("@/modules/travel-authorizations/pages/MyTravelAuthorizationsPage"),
       },
       {
         path: ":formId",
