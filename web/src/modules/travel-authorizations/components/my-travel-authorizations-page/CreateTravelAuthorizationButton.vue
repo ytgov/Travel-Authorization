@@ -20,7 +20,7 @@ export default {
     ...mapActions("travelAuthorizations", ["create"]),
     goToFormDetails(form) {
       const formId = form.id
-      this.$router.push({ name: "MyTravelAuthorizationEditLayout-DetailsTab", params: { formId } })
+      this.$router.push({ name: "MyTravelAuthorizationsEditDetailsPage", params: { formId } })
     },
     createAndGoToFormDetails() {
       this.loadingCreatingForm = true

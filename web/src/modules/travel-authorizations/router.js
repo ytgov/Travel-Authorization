@@ -48,9 +48,9 @@ const routes = [
           },
           {
             path: "details",
-            name: "MyTravelAuthorizationEditLayout-DetailsTab",
+            name: "MyTravelAuthorizationsEditDetailsPage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-authorization-edit/DetailsTab"),
+              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationsEditDetailsPage"),
             props: true,
           },
           {
