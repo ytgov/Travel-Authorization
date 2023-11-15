@@ -155,6 +155,7 @@ export default {
   },
   methods: {
     loadTravelAuthorizations() {
+      // TODO: fetch these via an api, probably from the travel-authorizations-controller
       secureGet(`${MANAGER_URL}/forms/`).then((resp) => {
         this.forms = resp.data
         this.pending = this.forms.filter((form) => {
