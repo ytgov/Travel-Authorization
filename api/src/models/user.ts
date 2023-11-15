@@ -1,6 +1,17 @@
 import {
+  Association,
   CreationOptional,
   DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -10,6 +21,7 @@ import { isNil } from "lodash"
 import moment from "moment"
 
 import sequelize from "@/db/db-client"
+import TravelAuthorization from "./travel-authorization"
 
 // Avoid exporting here, and instead expose via the User model to avoid naming conflicts
 enum Roles {
@@ -51,9 +63,55 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
-  declare static associations: {}
+  // Associations
+  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
+  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
+  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
+  declare getTravelAuthorizations: HasManyGetAssociationsMixin<TravelAuthorization>
+  declare setTravelAuthorizations: HasManySetAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
+  declare hasTravelAuthorization: HasManyHasAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
+  declare hasTravelAuthorizations: HasManyHasAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
+  declare addTravelAuthorization: HasManyAddAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
+  declare addTravelAuthorizations: HasManyAddAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
+  declare removeTravelAuthorization: HasManyRemoveAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
+  declare removeTravelAuthorizations: HasManyRemoveAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
+  declare countTravelAuthorizations: HasManyCountAssociationsMixin
+  declare createTravelAuthorization: HasManyCreateAssociationMixin<TravelAuthorization>
 
-  static establishAssociations() {}
+  declare travelAuthorizations?: NonAttribute<TravelAuthorization[]>
+
+  declare static associations: {
+    travelAuthorizations: Association<User, TravelAuthorization>
+  }
+
+  static establishAssociations() {
+    this.hasMany(TravelAuthorization, {
+      as: "travelAuthorizations",
+      sourceKey: "id",
+      foreignKey: "userId",
+    })
+  }
 
   // TODO: push this into a serializer, once its no longer in legacy code
   get displayName(): NonAttribute<string> {
