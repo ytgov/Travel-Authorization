@@ -1,5 +1,7 @@
 <template>
   <div>
+    <Breadcrumbs class="mb-2" />
+
     <h1>Manage Submissions</h1>
     <v-row>
       <v-col>
@@ -21,17 +23,20 @@
 </template>
 
 <script>
+import Breadcrumbs from "@/components/Breadcrumbs"
+
+import ApprovedTripsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/ApprovedTripsCard"
 import AwaitingChangesCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingChangesCard"
 import AwaitingExpenseApprovalCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingExpenseApprovalCard"
-import ApprovedTripsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/ApprovedTripsCard"
 import PendingApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/PendingApprovalsCard"
 
 export default {
   name: "ManageTravelAuthorizationsPage",
   components: {
+    ApprovedTripsCard,
     AwaitingChangesCard,
     AwaitingExpenseApprovalCard,
-    ApprovedTripsCard,
+    Breadcrumbs,
     PendingApprovalsCard,
   },
   data: () => ({}),
