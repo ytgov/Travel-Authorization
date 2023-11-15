@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import CreateTravelAuthorizationButton from "@/modules/travel-authorizations/pages/travel-form-list/CreateTravelAuthorizationButton"
+import CreateTravelAuthorizationButton from "@/modules/travel-authorizations/components/my-travel-authorizations-page/CreateTravelAuthorizationButton"
 import MyTravelAuthorizationsTable from "@/modules/travel-authorizations/components/MyTravelAuthorizationsTable"
 
 export default {
@@ -30,13 +30,13 @@ export default {
     MyTravelAuthorizationsTable,
   },
   data: () => ({}),
-  mounted() {},
   computed: {},
+  watch: {},
+  mounted() {},
   methods: {
     refresh() {
       this.$refs.table.refreshForms()
     },
   },
-  watch: {},
 }
 </script>

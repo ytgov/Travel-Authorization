@@ -60,11 +60,11 @@ import { mapActions, mapState } from "vuex"
 import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
-import AddExpenseButton from "./my-travel-authorization-table/AddExpenseButton"
-import SubmitExpenseClaimButton from "./my-travel-authorization-table/SubmitExpenseClaimButton"
-import SubmitPoolVehicleRequestButton from "./my-travel-authorization-table/SubmitPoolVehicleRequestButton"
-import SubmitTravelDeskRequestButton from "./my-travel-authorization-table/SubmitTravelDeskRequestButton"
-import ViewItineraryButton from "./my-travel-authorization-table/ViewItineraryButton"
+import AddExpenseButton from "./my-travel-authorizations-table/AddExpenseButton"
+import SubmitExpenseClaimButton from "./my-travel-authorizations-table/SubmitExpenseClaimButton"
+import SubmitPoolVehicleRequestButton from "./my-travel-authorizations-table/SubmitPoolVehicleRequestButton"
+import SubmitTravelDeskRequestButton from "./my-travel-authorizations-table/SubmitTravelDeskRequestButton"
+import ViewItineraryButton from "./my-travel-authorizations-table/ViewItineraryButton"
 
 export default {
   name: "MyTravelAuthorizationsTable",
@@ -132,10 +132,10 @@ export default {
     goToFormDetails(form) {
       const formId = form.id
       if (form.status === "draft") {
-        this.$router.push({ name: "TravelAuthorizationEdit-DetailsTab", params: { formId } })
+        this.$router.push({ name: "EditMyTravelAuthorizationDetailsPage", params: { formId } })
       } else {
         this.$router.push({
-          name: "TravelAuthorizationRead-DetailsTab",
+          name: "ReadMyTravelAuthorizationDetailsPage",
           params: { formId },
         })
       }

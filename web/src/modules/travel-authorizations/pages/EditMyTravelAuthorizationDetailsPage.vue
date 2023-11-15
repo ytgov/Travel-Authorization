@@ -24,7 +24,7 @@
       <v-btn
         class="ml-3"
         color="secondary"
-        :to="{ name: 'TravelFormList' }"
+        :to="{ name: 'MyTravelAuthorizationsPage' }"
         >Back</v-btn
       >
     </div>
@@ -32,14 +32,14 @@
 </template>
 
 <script>
-import PurposeFormCard from "./details-tab/PurposeFormCard"
-import DetailsFormCard from "./details-tab/DetailsFormCard"
-import ApprovalsFormCard from "./details-tab/ApprovalsFormCard"
+import PurposeFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/PurposeFormCard"
+import DetailsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/DetailsFormCard"
+import ApprovalsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/ApprovalsFormCard"
 
-import SaveDraftButton from "./details-tab/SaveDraftButton"
+import SaveDraftButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/SaveDraftButton"
 
 export default {
-  name: "DetailsTab",
+  name: "EditMyTravelAuthorizationDetailsPage",
   components: {
     PurposeFormCard,
     DetailsFormCard,

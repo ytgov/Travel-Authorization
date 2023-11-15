@@ -23,12 +23,12 @@
 <script>
 import { mapActions, mapState } from "vuex"
 
-import EstimateCreateDialog from "./estimate-tab/EstimateCreateDialog"
-import EstimateGenerateDialog from "./estimate-tab/EstimateGenerateDialog"
-import EstimatesTable from "./estimate-tab/EstimatesTable"
+import EstimateCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateCreateDialog"
+import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
+import EstimatesTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimatesTable"
 
 export default {
-  name: "EstimateTab",
+  name: "EditMyTravelAuthorizationEstimatePage",
   components: {
     EstimateCreateDialog,
     EstimateGenerateDialog,
