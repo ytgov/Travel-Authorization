@@ -52,8 +52,9 @@
             >
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
+            <!-- Use route literal here to avoid trailing slash which breaks breadcrumbs -->
             <v-list-item
-              :to="{ name: 'MyTravelAuthorizationsPage' }"
+              to="/my-travel-requests"
               @click="menuItemSelected('My Travel Requests')"
             >
               <v-list-item-title>My Travel Requests</v-list-item-title>

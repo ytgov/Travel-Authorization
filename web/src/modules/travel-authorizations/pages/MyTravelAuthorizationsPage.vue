@@ -1,5 +1,7 @@
 <template>
   <div>
+    <Breadcrumbs />
+
     <div class="d-flex justify-space-between align-baseline my-5">
       <h1>
         My Travel
@@ -20,12 +22,15 @@
   </div>
 </template>
 <script>
+import Breadcrumbs from "@/components/Breadcrumbs"
+
 import CreateTravelAuthorizationButton from "@/modules/travel-authorizations/components/my-travel-authorizations-page/CreateTravelAuthorizationButton"
 import MyTravelAuthorizationsTable from "@/modules/travel-authorizations/components/MyTravelAuthorizationsTable"
 
 export default {
-  name: "TravelFormList",
+  name: "MyTravelAuthorizationsPage",
   components: {
+    Breadcrumbs,
     CreateTravelAuthorizationButton,
     MyTravelAuthorizationsTable,
   },
