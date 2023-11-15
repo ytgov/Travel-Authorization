@@ -2,7 +2,10 @@
   <v-data-table
     :headers="headers"
     :items="items"
-    :items-per-page="20"
+    :loading="isLoading"
+    :items-per-page.sync="perPage"
+    :page.sync="page"
+    :server-items-length="totalCount"
     class="elevation-2"
     @click:row="goToManageTravelAuthorization"
   >
@@ -57,22 +60,51 @@ export default {
         value: "dateBackToWork",
       },
     ],
+    isLoading: false,
+    totalCount: 0,
+    perPage: 10,
+    page: 1,
   }),
   computed: {
     ...mapState("currentUser", { currentUser: "attributes" }),
   },
+  watch: {
+    page() {
+      this.refresh()
+    },
+    perPage() {
+      this.refresh()
+    },
+  },
   async mounted() {
     // TODO: move current user initialization to a higher level
     await this.initializeCurrentUser()
-    await travelAuthorizationsApi.list({
-      where: {
-        status: this.status,
-        supervisorEmail: this.currentUser.email,
-      },
-    })
+    await this.refresh()
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    refresh() {
+      this.isLoading = true
+      return travelAuthorizationsApi
+        .list({
+          where: {
+            status: this.status,
+            supervisorEmail: this.currentUser.email,
+          },
+          page: this.page,
+          perPage: this.perPage,
+        })
+        .then(({ travelAuthorizations, totalCount }) => {
+          this.items = travelAuthorizations
+          this.totalCount = totalCount
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
     formatDate(value) {
       if (isNil(value)) return "Unknown"
 

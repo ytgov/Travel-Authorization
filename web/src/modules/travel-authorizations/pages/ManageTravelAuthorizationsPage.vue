@@ -54,8 +54,8 @@
     </v-row>
   </div>
 </template>
-<script>
 
+<script>
 import { STATUSES } from "@/api/travel-authorizations-api"
 import TravelAuthorizationsDashboardWidget from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/TravelAuthorizationsDashboardWidgetTable"
 
