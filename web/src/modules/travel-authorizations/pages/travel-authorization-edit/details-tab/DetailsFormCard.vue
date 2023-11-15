@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { last } from "lodash"
+import { isEmpty, last } from "lodash"
 import { mapState, mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
@@ -97,6 +97,11 @@ export default {
     tripTypes: Object.values(TRIP_TYPES),
     tripType: "",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
+    stopsCache: {
+      [TRIP_TYPES.ROUND_TRIP]: [],
+      [TRIP_TYPES.ONE_WAY]: [],
+      [TRIP_TYPES.MULTI_DESTINATION]: [],
+    },
   }),
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
@@ -129,29 +134,40 @@ export default {
   methods: {
     required,
     updateTripType(value) {
+      this.stopsCache[this.tripType] = this.currentTravelAuthorization.stops
+
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentTravelAuthorization.oneWayTrip = false
         this.currentTravelAuthorization.multiStop = false
-        this.currentTravelAuthorization.stops = [
-          this.newStop(),
-          this.newStop({ accommodationType: null, transport: null }),
-        ]
+
+        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
+          TRIP_TYPES.ROUND_TRIP,
+          [this.newStop(), this.newStop({ accommodationType: null, transport: null })]
+        )
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
         this.currentTravelAuthorization.multiStop = false
-        this.currentTravelAuthorization.stops = [
-          this.newStop({ accommodationType: null }),
-          this.newStop({ accommodationType: null, transport: null }),
-        ]
+
+        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
+          TRIP_TYPES.ONE_WAY,
+          [
+            this.newStop({ accommodationType: null }),
+            this.newStop({ accommodationType: null, transport: null }),
+          ]
+        )
       } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
         this.currentTravelAuthorization.multiStop = true
         this.currentTravelAuthorization.oneWayTrip = false
-        this.currentTravelAuthorization.stops = [
-          this.newStop(),
-          this.newStop(),
-          this.newStop({ accommodationType: null }),
-          this.newStop({ accommodationType: null, transport: null }),
-        ]
+
+        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
+          TRIP_TYPES.MULTI_DESTINATION,
+          [
+            this.newStop(),
+            this.newStop(),
+            this.newStop({ accommodationType: null }),
+            this.newStop({ accommodationType: null, transport: null }),
+          ]
+        )
       } else {
         throw new Error("Invalid trip type")
       }
@@ -161,6 +177,12 @@ export default {
       this.$nextTick(() => {
         this.$refs.form.resetValidation()
       })
+    },
+    getStopsFromCacheOrDefault(key, defaultStops) {
+      const cachedStops = this.stopsCache[key]
+      if (isEmpty(cachedStops)) return defaultStops
+
+      return cachedStops
     },
     newStop(attributes) {
       return {
