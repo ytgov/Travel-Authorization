@@ -32,14 +32,14 @@
 </template>
 
 <script>
-import PurposeFormCard from "@/modules/travel-authorizations/components/my-travel-authorizations-edit-details-page/PurposeFormCard"
-import DetailsFormCard from "@/modules/travel-authorizations/components/my-travel-authorizations-edit-details-page/DetailsFormCard"
-import ApprovalsFormCard from "@/modules/travel-authorizations/components/my-travel-authorizations-edit-details-page/ApprovalsFormCard"
+import PurposeFormCard from "@/modules/travel-authorizations/components/my-travel-authorization-edit-details-page/PurposeFormCard"
+import DetailsFormCard from "@/modules/travel-authorizations/components/my-travel-authorization-edit-details-page/DetailsFormCard"
+import ApprovalsFormCard from "@/modules/travel-authorizations/components/my-travel-authorization-edit-details-page/ApprovalsFormCard"
 
-import SaveDraftButton from "@/modules/travel-authorizations/components/my-travel-authorizations-edit-details-page/SaveDraftButton"
+import SaveDraftButton from "@/modules/travel-authorizations/components/my-travel-authorization-edit-details-page/SaveDraftButton"
 
 export default {
-  name: "MyTravelAuthorizationsEditDetailsPage",
+  name: "MyTravelAuthorizationEditDetailsPage",
   components: {
     PurposeFormCard,
     DetailsFormCard,

@@ -17,7 +17,7 @@
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'MyTravelAuthorizationsEditDetailsPage', params: { formId } }"
+      <v-tab :to="{ name: 'MyTravelAuthorizationEditDetailsPage', params: { formId } }"
         >Details</v-tab
       >
       <v-tab
@@ -70,7 +70,7 @@ export default {
     // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
     // This does a wizard of oz style, silent, background refresh.
     $route(to) {
-      if (to.name === "MyTravelAuthorizationsEditDetailsPage") {
+      if (to.name === "MyTravelAuthorizationEditDetailsPage") {
         this.loadCurrentTravelAuthorizationSilently(this.formId)
       }
     },
