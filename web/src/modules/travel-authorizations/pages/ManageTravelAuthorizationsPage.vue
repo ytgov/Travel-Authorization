@@ -9,7 +9,7 @@
         >
           <v-card-title>Pending Approvals</v-card-title>
           <v-card-text>
-            <TravelAuthorizationsDashboardWidget :status="STATUSES.SUBMITTED" />
+            <SupervisorTravelAuthorizationsByStatusTable :status="STATUSES.SUBMITTED" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -21,7 +21,7 @@
         >
           <v-card-title>Awaiting changes</v-card-title>
           <v-card-text>
-            <TravelAuthorizationsDashboardWidget :status="STATUSES.CHANGE_REQUESTED" />
+            <SupervisorTravelAuthorizationsByStatusTable :status="STATUSES.CHANGE_REQUESTED" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -36,7 +36,7 @@
           <v-card-title>Awaiting Expense Approval</v-card-title>
           <v-card-text>
             <!-- TODO: double check this status is the one intended -->
-            <TravelAuthorizationsDashboardWidget :status="STATUSES.EXPENSE_CLAIM" />
+            <SupervisorTravelAuthorizationsByStatusTable :status="STATUSES.EXPENSE_CLAIM" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -47,7 +47,7 @@
         >
           <v-card-title>Approved Trips</v-card-title>
           <v-card-text>
-            <TravelAuthorizationsDashboardWidget :status="STATUSES.APPROVED" />
+            <SupervisorTravelAuthorizationsByStatusTable :status="STATUSES.APPROVED" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -57,12 +57,13 @@
 
 <script>
 import { STATUSES } from "@/api/travel-authorizations-api"
-import TravelAuthorizationsDashboardWidget from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/TravelAuthorizationsDashboardWidgetTable"
+
+import SupervisorTravelAuthorizationsByStatusTable from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/SupervisorTravelAuthorizationsByStatusTable"
 
 export default {
   name: "ManageTravelAuthorizationsPage",
   components: {
-    TravelAuthorizationsDashboardWidget,
+    SupervisorTravelAuthorizationsByStatusTable,
   },
   data: () => ({
     STATUSES,

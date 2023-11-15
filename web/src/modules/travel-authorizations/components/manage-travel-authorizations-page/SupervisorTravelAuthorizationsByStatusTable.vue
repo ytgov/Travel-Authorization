@@ -32,7 +32,7 @@ import { mapActions, mapState } from "vuex"
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 
 export default {
-  name: "TravelAuthorizationsDashboardWidgetTable",
+  name: "SupervisorTravelAuthorizationsByStatusTable",
   props: {
     status: {
       type: String,
