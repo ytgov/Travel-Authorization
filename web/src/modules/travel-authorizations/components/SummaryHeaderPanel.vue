@@ -60,7 +60,7 @@ import { first, last } from "lodash"
 import { mapActions, mapGetters, mapState } from "vuex"
 
 export default {
-  name: "SummaryHeaderReadonly",
+  name: "SummaryHeaderPanel",
   data: () => ({
     loadingPurposes: false,
     loadingDestinations: false,
