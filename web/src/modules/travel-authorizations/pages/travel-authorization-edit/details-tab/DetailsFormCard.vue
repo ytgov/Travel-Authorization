@@ -152,7 +152,14 @@ export default {
 
         this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
           TRIP_TYPES.ROUND_TRIP,
-          [this.newStop(), this.newStop({ accommodationType: null, transport: null })]
+          [
+            this.newStop(),
+            this.newStop({
+              ...this.finalDestination,
+              accommodationType: null,
+              transport: null,
+            }),
+          ]
         )
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
@@ -162,7 +169,11 @@ export default {
           TRIP_TYPES.ONE_WAY,
           [
             this.newStop({ accommodationType: null }),
-            this.newStop({ accommodationType: null, transport: null }),
+            this.newStop({
+              ...this.finalDestination,
+              accommodationType: null,
+              transport: null,
+            }),
           ]
         )
       } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
@@ -175,7 +186,11 @@ export default {
             this.newStop(),
             this.newStop(),
             this.newStop({ accommodationType: null }),
-            this.newStop({ accommodationType: null, transport: null }),
+            this.newStop({
+              ...this.finalDestination,
+              accommodationType: null,
+              transport: null,
+            }),
           ]
         )
       } else {
