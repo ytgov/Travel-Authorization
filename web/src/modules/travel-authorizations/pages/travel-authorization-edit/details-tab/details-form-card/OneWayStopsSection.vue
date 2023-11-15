@@ -70,11 +70,14 @@
         />
         <AccommodationTypeSelect
           v-model="originStop.accommodationType"
-          :rules="[required]"
+          :default-value="null"
+          hint="Optional, set only if neccessary"
+          placeholder="N/A"
           background-color="white"
+          clearable
           dense
           outlined
-          required
+          persistent-hint
         />
       </v-col>
     </v-row>
@@ -83,18 +86,13 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex"
-import { isEmpty } from "lodash"
 
 import { required } from "@/utils/validators"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker"
-import AccommodationTypeSelect, {
-  ACCOMMODATION_TYPES,
-} from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
-import TravelMethodSelect, {
-  TRAVEL_METHODS,
-} from "@/modules/travel-authorizations/components/TravelMethodSelect"
+import AccommodationTypeSelect from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
+import TravelMethodSelect from "@/modules/travel-authorizations/components/TravelMethodSelect"
 
 export default {
   name: "OneWayStopsSection",
@@ -120,28 +118,12 @@ export default {
   async mounted() {
     await this.loadDestinations()
 
-    if (isEmpty(this.currentTravelAuthorization.stops)) {
-      this.currentTravelAuthorization.stops = [this.newStop(), this.newStop()]
-    } else if (this.currentTravelAuthorization.stops.length === 1) {
-      this.currentTravelAuthorization.stops.push(this.newStop())
-    } else if (this.currentTravelAuthorization.stops.length > 2) {
-      const elementsToRemove = this.currentTravelAuthorization.stops.length - 2
-      this.currentTravelAuthorization.stops.splice(1, elementsToRemove)
-    }
-
     this.originStop = this.currentTravelAuthorization.stops[0]
     this.destinationStop = this.currentTravelAuthorization.stops[1]
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadDestinations"]),
     required,
-    newStop() {
-      return {
-        travelAuthorizationId: this.currentTravelAuthorizationId,
-        accommodationType: ACCOMMODATION_TYPES.HOTEL,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-      }
-    },
   },
 }
 </script>

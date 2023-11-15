@@ -71,13 +71,13 @@
 </template>
 
 <script>
-import { last } from "lodash"
+import { isEmpty, last } from "lodash"
 import { mapState, mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
-
+import { ACCOMMODATION_TYPES } from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
+import { TRAVEL_METHODS } from "@/modules/travel-authorizations/components/TravelMethodSelect"
 import DatePicker from "@/components/Utils/DatePicker"
-
 import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
 
 const TRIP_TYPES = Object.freeze({
@@ -97,6 +97,11 @@ export default {
     tripTypes: Object.values(TRIP_TYPES),
     tripType: "",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
+    stopsCache: {
+      [TRIP_TYPES.ROUND_TRIP]: [],
+      [TRIP_TYPES.ONE_WAY]: [],
+      [TRIP_TYPES.MULTI_DESTINATION]: [],
+    },
   }),
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
@@ -128,16 +133,66 @@ export default {
   },
   methods: {
     required,
+    /*
+      Update trip type selection, setting default stops as needed,
+      or loading stops from cache if cached valued exists.
+
+      Use of a cache permits stops to have a blank accomodation or trip type,
+      against a variety of stop configurations, without wiping stop content on trip type change.
+
+      NOTE: This would probably be made irrelevant by modeling stops differently, such as by
+      using a "trip segment" model, with a departure and arrival location.
+    */
     updateTripType(value) {
+      this.stopsCache[this.tripType] = this.currentTravelAuthorization.stops
+
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentTravelAuthorization.oneWayTrip = false
         this.currentTravelAuthorization.multiStop = false
+
+        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
+          TRIP_TYPES.ROUND_TRIP,
+          [
+            this.newStop(),
+            this.newStop({
+              ...this.finalDestination,
+              accommodationType: null,
+              transport: null,
+            }),
+          ]
+        )
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
         this.currentTravelAuthorization.multiStop = false
+
+        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
+          TRIP_TYPES.ONE_WAY,
+          [
+            this.newStop({ accommodationType: null }),
+            this.newStop({
+              ...this.finalDestination,
+              accommodationType: null,
+              transport: null,
+            }),
+          ]
+        )
       } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
         this.currentTravelAuthorization.multiStop = true
         this.currentTravelAuthorization.oneWayTrip = false
+
+        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
+          TRIP_TYPES.MULTI_DESTINATION,
+          [
+            this.newStop(),
+            this.newStop(),
+            this.newStop({ accommodationType: null }),
+            this.newStop({
+              ...this.finalDestination,
+              accommodationType: null,
+              transport: null,
+            }),
+          ]
+        )
       } else {
         throw new Error("Invalid trip type")
       }
@@ -147,6 +202,20 @@ export default {
       this.$nextTick(() => {
         this.$refs.form.resetValidation()
       })
+    },
+    getStopsFromCacheOrDefault(key, defaultStops) {
+      const cachedStops = this.stopsCache[key]
+      if (isEmpty(cachedStops)) return defaultStops
+
+      return cachedStops
+    },
+    newStop(attributes) {
+      return {
+        travelAuthorizationId: this.currentTravelAuthorizationId,
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...attributes,
+      }
     },
   },
 }
