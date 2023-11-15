@@ -52,6 +52,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       firstName: this.user.firstName,
       lastName: this.user.lastName,
       department: this.user.department,
+      branch: this.user.branch,
     }
   }
 

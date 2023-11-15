@@ -9,6 +9,9 @@
     class="elevation-2"
     @click:row="goToManageTravelAuthorization"
   >
+    <template #item.departmentAndBranch="{ item }">
+      <span>{{ formatDepartmentAndBranch(item) }}</span>
+    </template>
     <template #item.name="{ item }">
       <span>{{ item.firstName }} {{ item.lastName }}</span>
     </template>
@@ -45,7 +48,7 @@ export default {
       },
       {
         text: "Department/Branch",
-        value: "department",
+        value: "departmentAndBranch",
       },
       {
         text: "Requestee",
@@ -104,6 +107,9 @@ export default {
         .finally(() => {
           this.isLoading = false
         })
+    },
+    formatDepartmentAndBranch(item) {
+      return [item.department, item.branch].filter(Boolean).join("/")
     },
     formatDate(value) {
       if (isNil(value)) return "Unknown"
