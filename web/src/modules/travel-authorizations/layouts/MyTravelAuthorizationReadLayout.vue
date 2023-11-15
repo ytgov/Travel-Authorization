@@ -42,7 +42,7 @@
       <v-tab :to="{ name: 'MyTravelAuthorizationReadDetailsPage', params: { formId } }"
         >Details</v-tab
       >
-      <v-tab :to="{ name: 'TravelAuthorizationRead-EstimateTab', params: { formId } }"
+      <v-tab :to="{ name: 'MyTravelAuthorizationReadEstimatePage', params: { formId } }"
         >Estimate</v-tab
       >
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->

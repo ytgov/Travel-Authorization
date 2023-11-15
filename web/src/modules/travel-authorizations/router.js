@@ -30,9 +30,9 @@ const routes = [
           },
           {
             path: "estimate",
-            name: "TravelAuthorizationRead-EstimateTab",
+            name: "MyTravelAuthorizationReadEstimatePage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-authorization-read/EstimateTab"),
+              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationReadEstimatePage"),
             props: true,
           },
         ],
