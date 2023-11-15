@@ -224,6 +224,13 @@ TravelAuthorization.init(
     email: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      set(value: string | null) {
+        if (typeof value === "string") {
+          this.setDataValue("email", value.toLowerCase())
+        } else {
+          this.setDataValue("email", null)
+        }
+      },
     },
     mailcode: {
       type: DataTypes.STRING(255),
@@ -270,6 +277,13 @@ TravelAuthorization.init(
     supervisorEmail: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      set(value: string | null) {
+        if (typeof value === "string") {
+          this.setDataValue("supervisorEmail", value.toLowerCase())
+        } else {
+          this.setDataValue("supervisorEmail", null)
+        }
+      },
     },
     approved: {
       type: DataTypes.STRING(255),
