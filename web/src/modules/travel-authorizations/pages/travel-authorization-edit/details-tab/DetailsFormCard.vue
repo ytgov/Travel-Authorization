@@ -133,6 +133,16 @@ export default {
   },
   methods: {
     required,
+    /*
+      Update trip type selection, setting default stops as needed,
+      or loading stops from cache if cached valued exists.
+
+      Use of a cache permits stops to have a blank accomodation or trip type,
+      against a variety of stop configurations, without wiping stop content on trip type change.
+
+      NOTE: This would probably be made irrelevant by modeling stops differently, such as by
+      using a "trip segment" model, with a departure and arrival location.
+    */
     updateTripType(value) {
       this.stopsCache[this.tripType] = this.currentTravelAuthorization.stops
 
