@@ -308,6 +308,9 @@ TravelAuthorization.init(
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    // TODO: make this a foreign key to the users table
+    // also non-nullable,
+    // maybe rename to creatorId
     createdBy: {
       type: DataTypes.INTEGER,
       allowNull: true,
