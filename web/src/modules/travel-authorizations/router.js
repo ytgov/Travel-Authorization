@@ -55,10 +55,10 @@ const routes = [
           },
           {
             path: "estimate",
-            name: "MyTravelAuthorizationsEditEstimatePage",
+            name: "MyTravelAuthorizationEditEstimatePage",
             component: () =>
               import(
-                "@/modules/travel-authorizations/pages/MyTravelAuthorizationsEditEstimatePage"
+                "@/modules/travel-authorizations/pages/MyTravelAuthorizationEditEstimatePage"
               ),
             props: true,
           },
