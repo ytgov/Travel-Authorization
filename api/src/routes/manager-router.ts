@@ -29,6 +29,8 @@ managerRouter.get(
   }
 )
 
+// TODO: make sure all functionality is available in the travel-authorizations-controller
+// Then delete this
 managerRouter.get("/forms", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
     const user = req.user

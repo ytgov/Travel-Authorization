@@ -9,23 +9,7 @@
         >
           <v-card-title>Pending Approvals</v-card-title>
           <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="pending"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            >
+            <TravelAuthorizationsDashboardWidget :status="STATUSES.PENDING" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -37,24 +21,8 @@
         >
           <v-card-title>Awaiting changes</v-card-title>
           <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="changeRequests"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            ></v-card-text
-          >
+            <TravelAuthorizationsDashboardWidget :status="STATUSES.CHANGE_REQUESTED" />
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
@@ -67,23 +35,8 @@
         >
           <v-card-title>Awaiting Expense Approval</v-card-title>
           <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="pending"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            >
+            <!-- TODO: double check this status is the one intended -->
+            <TravelAuthorizationsDashboardWidget :status="STATUSES.EXPENSE_CLAIM" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -94,85 +47,26 @@
         >
           <v-card-title>Approved Trips</v-card-title>
           <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="approved"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            ></v-card-text
-          >
+            <TravelAuthorizationsDashboardWidget :status="STATUSES.APPROVED" />
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
   </div>
 </template>
 <script>
-import { MANAGER_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+
+import { STATUSES } from "@/api/travel-authorizations-api"
+import TravelAuthorizationsDashboardWidget from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/TravelAuthorizationsDashboardWidgetTable"
+
 export default {
   name: "ManageTravelAuthorizationsPage",
+  components: {
+    TravelAuthorizationsDashboardWidget,
+  },
   data: () => ({
-    forms: [],
-    pending: [],
-    approved: [],
-    changeRequests: [],
-    headers: [
-      {
-        text: "TA Form Number",
-        value: "id",
-      },
-      {
-        text: "Department/Branch",
-        value: "department",
-      },
-      {
-        text: "Requestee",
-        value: "name",
-      },
-      {
-        text: "Departure Date",
-        value: "departureDate",
-      },
-      {
-        text: "Return Date",
-        value: "dateBackToWork",
-      },
-    ],
+    STATUSES,
   }),
-  created() {
-    this.loadTravelAuthorizations()
-  },
-  methods: {
-    loadTravelAuthorizations() {
-      // TODO: fetch these via an api, probably from the travel-authorizations-controller
-      secureGet(`${MANAGER_URL}/forms/`).then((resp) => {
-        this.forms = resp.data
-        this.pending = this.forms.filter((form) => {
-          if (form.status == "submitted") return true
-        })
-        this.approved = this.forms.filter((form) => {
-          if (form.status == "approved") return true
-        })
-        this.changeRequests = this.forms.filter((form) => {
-          if (form.status == "change_requested") return true
-        })
-      })
-    },
-    handleClick(value) {
-      //Redirects the user to the edit user form
-      this.$router.push(`/request/${value.formId}/manage`)
-    },
-  },
+  methods: {},
 }
 </script>
