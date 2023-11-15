@@ -89,7 +89,7 @@
               <v-list-item-title>Reports </v-list-item-title>
             </v-list-item>
             <v-list-item
-              :to="{ name: 'ManagerView' }"
+              :to="{ name: 'ManageTravelAuthorizationsPage' }"
               @click="menuItemSelected('Manager View')"
             >
               <v-list-item-title>Manager View</v-list-item-title>
@@ -320,7 +320,7 @@ export default {
         { name: "Travel Request", to: "/travel-request" },
         { name: "Flight Expense", to: "/flight-expense" },
         { name: "Reports", to: "/reporting-summary" },
-        { name: "Manager View", to: { name: "ManagerView" } },
+        { name: "Manager View", to: { name: "ManageTravelAuthorizationsPage" } },
       ]
 
       if (this.isInDevelopmentOrUserAcceptanceTesting) {

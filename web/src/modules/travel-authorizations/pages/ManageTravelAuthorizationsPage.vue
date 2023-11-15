@@ -121,7 +121,7 @@
 import { MANAGER_URL } from "@/urls"
 import { secureGet } from "@/store/jwt"
 export default {
-  name: "ManagerView",
+  name: "ManageTravelAuthorizationsPage",
   data: () => ({
     forms: [],
     pending: [],

@@ -64,12 +64,13 @@ const routes = [
         ],
       },
       {
-        name: "ManagerView",
+        name: "ManageTravelAuthorizationsPage",
         path: "/manager-view",
         meta: {
           requiresAuth: true,
         },
-        component: () => import("@/modules/travel-authorizations/pages/ManagerView"),
+        component: () =>
+          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
       },
       {
         name: "travelRequestManage",
