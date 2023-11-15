@@ -3,7 +3,10 @@
     <h1>Manage Submissions</h1>
     <v-row>
       <v-col>
-        <v-card class="mt-5" color="#fff2d5">
+        <v-card
+          class="mt-5"
+          color="#fff2d5"
+        >
           <v-card-title>Pending Approvals</v-card-title>
           <v-card-text>
             <v-data-table
@@ -13,13 +16,13 @@
               class="elevation-2"
               @click:row="handleClick"
             >
-              <template v-slot:item.name="{ item }">
+              <template #item.name="{ item }">
                 <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.dateBackToWork="{ item }">
+              <template #item.dateBackToWork="{ item }">
                 <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
-              <template v-slot:item.departureDate="{ item }">
+              <template #item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
               </template></v-data-table
             >
@@ -28,7 +31,10 @@
       </v-col>
 
       <v-col>
-        <v-card class="mt-5" color="#fff2d5">
+        <v-card
+          class="mt-5"
+          color="#fff2d5"
+        >
           <v-card-title>Awaiting changes</v-card-title>
           <v-card-text>
             <v-data-table
@@ -38,13 +44,13 @@
               class="elevation-2"
               @click:row="handleClick"
             >
-              <template v-slot:item.name="{ item }">
+              <template #item.name="{ item }">
                 <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.dateBackToWork="{ item }">
+              <template #item.dateBackToWork="{ item }">
                 <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
-              <template v-slot:item.departureDate="{ item }">
+              <template #item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
               </template></v-data-table
             ></v-card-text
@@ -55,7 +61,10 @@
 
     <v-row>
       <v-col>
-        <v-card class="mt-5" color="#fff2d5">
+        <v-card
+          class="mt-5"
+          color="#fff2d5"
+        >
           <v-card-title>Awaiting Expense Approval</v-card-title>
           <v-card-text>
             <v-data-table
@@ -65,13 +74,13 @@
               class="elevation-2"
               @click:row="handleClick"
             >
-              <template v-slot:item.name="{ item }">
+              <template #item.name="{ item }">
                 <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.dateBackToWork="{ item }">
+              <template #item.dateBackToWork="{ item }">
                 <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
-              <template v-slot:item.departureDate="{ item }">
+              <template #item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
               </template></v-data-table
             >
@@ -79,7 +88,10 @@
         </v-card>
       </v-col>
       <v-col>
-        <v-card class="mt-5" color="#fff2d5">
+        <v-card
+          class="mt-5"
+          color="#fff2d5"
+        >
           <v-card-title>Approved Trips</v-card-title>
           <v-card-text>
             <v-data-table
@@ -89,13 +101,13 @@
               class="elevation-2"
               @click:row="handleClick"
             >
-              <template v-slot:item.name="{ item }">
+              <template #item.name="{ item }">
                 <span>{{ item.firstName }} {{ item.lastName }}</span>
               </template>
-              <template v-slot:item.dateBackToWork="{ item }">
+              <template #item.dateBackToWork="{ item }">
                 <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
               </template>
-              <template v-slot:item.departureDate="{ item }">
+              <template #item.departureDate="{ item }">
                 <span>{{ new Date(item.departureDate).toDateString() }}</span>
               </template></v-data-table
             ></v-card-text
@@ -106,10 +118,10 @@
   </div>
 </template>
 <script>
-import { MANAGER_URL } from "@/urls";
-import { secureGet } from "@/store/jwt";
+import { MANAGER_URL } from "@/urls"
+import { secureGet } from "@/store/jwt"
 export default {
-  name: "Home",
+  name: "ManagerView",
   data: () => ({
     forms: [],
     pending: [],
@@ -118,48 +130,48 @@ export default {
     headers: [
       {
         text: "TA Form Number",
-        value: "id"
+        value: "id",
       },
       {
         text: "Department/Branch",
-        value: "department"
+        value: "department",
       },
       {
         text: "Requestee",
-        value: "name"
+        value: "name",
       },
       {
         text: "Departure Date",
-        value: "departureDate"
+        value: "departureDate",
       },
       {
         text: "Return Date",
-        value: "dateBackToWork"
-      }
-    ]
+        value: "dateBackToWork",
+      },
+    ],
   }),
   created() {
-    this.loadTravelAuthorizations();
+    this.loadTravelAuthorizations()
   },
   methods: {
     loadTravelAuthorizations() {
-      secureGet(`${MANAGER_URL}/forms/`).then(resp => {
-        this.forms = resp.data;
-        this.pending = this.forms.filter(form => {
-          if (form.status == "submitted") return true;
-        });
-        this.approved = this.forms.filter(form => {
-          if (form.status == "approved") return true;
-        });
-        this.changeRequests = this.forms.filter(form => {
-          if (form.status == "change_requested") return true;
-        });
-      });
+      secureGet(`${MANAGER_URL}/forms/`).then((resp) => {
+        this.forms = resp.data
+        this.pending = this.forms.filter((form) => {
+          if (form.status == "submitted") return true
+        })
+        this.approved = this.forms.filter((form) => {
+          if (form.status == "approved") return true
+        })
+        this.changeRequests = this.forms.filter((form) => {
+          if (form.status == "change_requested") return true
+        })
+      })
     },
     handleClick(value) {
       //Redirects the user to the edit user form
-      this.$router.push(`/request/${value.formId}/manage`);
-    }
-  }
-};
+      this.$router.push(`/request/${value.formId}/manage`)
+    },
+  },
+}
 </script>
