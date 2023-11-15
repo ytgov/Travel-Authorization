@@ -200,6 +200,7 @@ TravelAuthorization.init(
         key: "id", // using real column name here
       },
     },
+    // TODO: consider renaming this to requestorId?
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
