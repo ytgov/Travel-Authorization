@@ -7,13 +7,15 @@
     :return-object="false"
     clearable
     persistent-hint
-    @input="input"
-    @update:search-input="search"
     v-bind="$attrs"
+    @input="input"
+    @update:search-input="debouncedSearch"
   ></v-combobox>
 </template>
 
 <script>
+import { debounce } from "lodash"
+
 import usersApi from "@/api/users-api"
 
 function isValidEmail(v) {
@@ -30,6 +32,7 @@ export default {
   props: {
     value: {
       type: String,
+      default: null,
     },
     rules: {
       type: Array,
@@ -44,19 +47,25 @@ export default {
     emailRules() {
       return [...this.rules, isValidEmail]
     },
+    debouncedSearch() {
+      return debounce(this.search, 300)
+    },
   },
   methods: {
     search(token) {
       this.loading = true
-      return usersApi.search({ email: token }).then(({ emails }) => {
-        this.emails = emails
-      }).finally(() => {
-        this.loading = false
-      })
+      return usersApi
+        .search({ email: token })
+        .then(({ emails }) => {
+          this.emails = emails
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     input(value) {
       this.$emit("input", value)
-    }
+    },
   },
 }
 </script>
