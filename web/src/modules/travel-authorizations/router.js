@@ -55,9 +55,11 @@ const routes = [
           },
           {
             path: "estimate",
-            name: "MyTravelAuthorizationEditLayout-EstimateTab",
+            name: "MyTravelAuthorizationsEditEstimatePage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-authorization-edit/EstimateTab"),
+              import(
+                "@/modules/travel-authorizations/pages/MyTravelAuthorizationsEditEstimatePage"
+              ),
             props: true,
           },
         ],

@@ -21,7 +21,7 @@
         >Details</v-tab
       >
       <v-tab
-        :to="{ name: 'MyTravelAuthorizationEditLayout-EstimateTab', params: { formId } }"
+        :to="{ name: 'MyTravelAuthorizationsEditEstimatePage', params: { formId } }"
         @click="resetActiveState"
         >Estimate</v-tab
       >
