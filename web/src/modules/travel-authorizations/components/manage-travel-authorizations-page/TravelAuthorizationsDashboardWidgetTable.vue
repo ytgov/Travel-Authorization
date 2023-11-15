@@ -12,10 +12,10 @@
     <template #item.name="{ item }">
       <span>{{ item.firstName }} {{ item.lastName }}</span>
     </template>
-    <template #item.dateBackToWork="{ value }">
+    <template #item.departingAt="{ value }">
       <span>{{ formatDate(value) }}</span>
     </template>
-    <template #item.departureDate="{ value }">
+    <template #item.returningAt="{ value }">
       <span>{{ formatDate(value) }}</span>
     </template>
   </v-data-table>
@@ -53,11 +53,11 @@ export default {
       },
       {
         text: "Departure Date",
-        value: "departureDate",
+        value: "departingAt",
       },
       {
         text: "Return Date",
-        value: "dateBackToWork",
+        value: "returningAt",
       },
     ],
     isLoading: false,
