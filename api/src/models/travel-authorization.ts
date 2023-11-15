@@ -104,6 +104,10 @@ export class TravelAuthorization extends Model<
   >
   declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
 
+  declare getUser: BelongsToGetAssociationMixin<User>
+  declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createUser: BelongsToCreateAssociationMixin<User>
+
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
   declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
   declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["travelAuthorizationId"]>
@@ -128,6 +132,7 @@ export class TravelAuthorization extends Model<
 
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
+  declare user: NonAttribute<User>
   declare expenses?: NonAttribute<Expense[]>
   declare stops?: NonAttribute<Stop[]>
 
@@ -136,6 +141,7 @@ export class TravelAuthorization extends Model<
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
     travelDeskTravelRequest: Association<TravelAuthorization, TravelDeskTravelRequest>
+    user: Association<TravelAuthorization, User>
   }
 
   static establishAssociations() {
@@ -147,6 +153,10 @@ export class TravelAuthorization extends Model<
       as: "travelDeskTravelRequest",
       sourceKey: "id",
       foreignKey: "travelAuthorizationId",
+    })
+    this.belongsTo(User, {
+      as: "user",
+      foreignKey: "userId",
     })
     this.hasMany(Stop, {
       as: "stops",

@@ -22,6 +22,7 @@ export class TravelAuthorizationsController extends BaseController {
         "expenses",
         "purpose",
         "travelDeskTravelRequest",
+        "user",
       ],
       order: [
         ["updatedAt", "ASC"],
