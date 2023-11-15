@@ -14,7 +14,7 @@ const routes = [
       {
         path: ":formId",
         component: () =>
-          import("@/modules/travel-authorizations/layouts/MyTravelAuthorizationReadLayout"),
+          import("@/modules/travel-authorizations/layouts/ReadMyTravelAuthorizationLayout"),
         props: true,
         children: [
           {
@@ -23,16 +23,16 @@ const routes = [
           },
           {
             path: "details",
-            name: "MyTravelAuthorizationReadDetailsPage",
+            name: "ReadMyTravelAuthorizationDetailsPage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationReadDetailsPage"),
+              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationDetailsPage"),
             props: true,
           },
           {
             path: "estimate",
-            name: "MyTravelAuthorizationReadEstimatePage",
+            name: "ReadMyTravelAuthorizationEstimatePage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationReadEstimatePage"),
+              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationEstimatePage"),
             props: true,
           },
         ],
@@ -40,7 +40,7 @@ const routes = [
       {
         path: ":formId/edit",
         component: () =>
-          import("@/modules/travel-authorizations/layouts/MyTravelAuthorizationEditLayout"),
+          import("@/modules/travel-authorizations/layouts/EditMyTravelAuthorizationLayout"),
         props: true,
         children: [
           {
@@ -49,16 +49,16 @@ const routes = [
           },
           {
             path: "details",
-            name: "MyTravelAuthorizationEditDetailsPage",
+            name: "EditMyTravelAuthorizationDetailsPage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationEditDetailsPage"),
+              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage"),
             props: true,
           },
           {
             path: "estimate",
-            name: "MyTravelAuthorizationEditEstimatePage",
+            name: "EditMyTravelAuthorizationEstimatePage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/MyTravelAuthorizationEditEstimatePage"),
+              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationEstimatePage"),
             props: true,
           },
         ],

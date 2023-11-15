@@ -74,7 +74,7 @@ export default {
       return this.updateCurrentForm()
         .then(() => {
           this.$router.push({
-            name: "MyTravelAuthorizationReadDetailsPage",
+            name: "ReadMyTravelAuthorizationDetailsPage",
             params: { formId: this.currentTravelAuthorization.id },
           })
         })

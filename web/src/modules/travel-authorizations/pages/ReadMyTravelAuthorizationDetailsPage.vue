@@ -27,12 +27,12 @@
 </template>
 
 <script>
-import PurposeCard from "@/modules/travel-authorizations/components/my-travel-authorization-read-details-page/PurposeCard"
-import DetailsCard from "@/modules/travel-authorizations/components/my-travel-authorization-read-details-page/DetailsCard"
-import ApprovalsCard from "@/modules/travel-authorizations/components/my-travel-authorization-read-details-page/ApprovalsCard"
+import PurposeCard from "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/PurposeCard"
+import DetailsCard from "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/DetailsCard"
+import ApprovalsCard from "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/ApprovalsCard"
 
 export default {
-  name: "MyTravelAuthorizationReadDetailsPage",
+  name: "ReadMyTravelAuthorizationDetailsPage",
   components: {
     PurposeCard,
     DetailsCard,

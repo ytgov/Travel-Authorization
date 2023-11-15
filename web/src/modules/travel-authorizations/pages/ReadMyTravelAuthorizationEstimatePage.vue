@@ -8,10 +8,10 @@
 </template>
 
 <script>
-import EstimatesTable from "@/modules/travel-authorizations/components/my-travel-authorization-read-estimate-page/EstimatesTable"
+import EstimatesTable from "@/modules/travel-authorizations/components/read-my-travel-authorization-estimate-page/EstimatesTable"
 
 export default {
-  name: "MyTravelAuthorizationReadEstimatePage",
+  name: "ReadMyTravelAuthorizationEstimatePage",
   components: {
     EstimatesTable,
   },

@@ -132,10 +132,10 @@ export default {
     goToFormDetails(form) {
       const formId = form.id
       if (form.status === "draft") {
-        this.$router.push({ name: "MyTravelAuthorizationEditDetailsPage", params: { formId } })
+        this.$router.push({ name: "EditMyTravelAuthorizationDetailsPage", params: { formId } })
       } else {
         this.$router.push({
-          name: "MyTravelAuthorizationReadDetailsPage",
+          name: "ReadMyTravelAuthorizationDetailsPage",
           params: { formId },
         })
       }

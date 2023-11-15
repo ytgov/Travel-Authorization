@@ -17,11 +17,11 @@
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'MyTravelAuthorizationEditDetailsPage', params: { formId } }"
+      <v-tab :to="{ name: 'EditMyTravelAuthorizationDetailsPage', params: { formId } }"
         >Details</v-tab
       >
       <v-tab
-        :to="{ name: 'MyTravelAuthorizationEditEstimatePage', params: { formId } }"
+        :to="{ name: 'EditMyTravelAuthorizationEstimatePage', params: { formId } }"
         @click="resetActiveState"
         >Estimate</v-tab
       >
@@ -46,7 +46,7 @@ import SummaryHeaderPanel from "@/modules/travel-authorizations/components/Summa
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {
-  name: "MyTravelAuthorizationEditLayout",
+  name: "EditMyTravelAuthorizationLayout",
   components: {
     Breadcrumbs,
     FullScreenLoadingOverlay,
@@ -70,7 +70,7 @@ export default {
     // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
     // This does a wizard of oz style, silent, background refresh.
     $route(to) {
-      if (to.name === "MyTravelAuthorizationEditDetailsPage") {
+      if (to.name === "EditMyTravelAuthorizationDetailsPage") {
         this.loadCurrentTravelAuthorizationSilently(this.formId)
       }
     },

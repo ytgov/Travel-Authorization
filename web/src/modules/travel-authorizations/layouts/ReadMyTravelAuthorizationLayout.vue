@@ -39,10 +39,10 @@
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'MyTravelAuthorizationReadDetailsPage', params: { formId } }"
+      <v-tab :to="{ name: 'ReadMyTravelAuthorizationDetailsPage', params: { formId } }"
         >Details</v-tab
       >
-      <v-tab :to="{ name: 'MyTravelAuthorizationReadEstimatePage', params: { formId } }"
+      <v-tab :to="{ name: 'ReadMyTravelAuthorizationEstimatePage', params: { formId } }"
         >Estimate</v-tab
       >
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
@@ -65,7 +65,7 @@ import SummaryHeaderPanel from "@/modules/travel-authorizations/components/Summa
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 export default {
-  name: "MyTravelAuthorizationReadLayout",
+  name: "ReadMyTravelAuthorizationLayout",
   components: {
     Breadcrumbs,
     FullScreenLoadingOverlay,
