@@ -1,16 +1,26 @@
 const routes = [
   {
-    path: "/my-travel-requests",
+    path: "/",
     component: () => import("@/layouts/Layout"),
     children: [
       {
         name: "MyTravelAuthorizationsPage",
-        path: "",
-        meta: {
-          requiresAuth: true,
-        },
+        path: "my-travel-requests",
         component: () => import("@/modules/travel-authorizations/pages/MyTravelAuthorizationsPage"),
       },
+
+      {
+        name: "ManageTravelAuthorizationsPage",
+        path: "manager-view",
+        component: () =>
+          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
+      },
+    ],
+  },
+  {
+    path: "/my-travel-requests",
+    component: () => import("@/layouts/Layout"),
+    children: [
       {
         path: ":formId",
         component: () =>
@@ -66,18 +76,6 @@ const routes = [
     ],
   },
   {
-    path: "",
-    component: () => import("@/layouts/Layout"),
-    children: [
-      {
-        name: "ManageTravelAuthorizationsPage",
-        path: "manager-view",
-        component: () =>
-          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
-      },
-    ],
-  },
-  {
     path: "/travel-requests/:travelAuthorizationId",
     component: () => import("@/layouts/Layout"),
     children: [
@@ -90,6 +88,7 @@ const routes = [
         path: "details",
         component: () =>
           import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetails"),
+        props: true,
       },
     ],
   },
