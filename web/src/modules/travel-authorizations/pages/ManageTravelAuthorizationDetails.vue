@@ -302,13 +302,13 @@
       </v-tab-item>
       <v-tab-item
         ><ExpenseList
-          @reloadCost="getCostDifference"
           title="Estimates"
+          @reloadCost="getCostDifference"
       /></v-tab-item>
       <v-tab-item
         ><ExpenseList
-          @reloadCost="getCostDifference"
           title="Expenses"
+          @reloadCost="getCostDifference"
       /></v-tab-item>
       <v-tab-item>
         <TripReport> </TripReport>
@@ -344,7 +344,7 @@ import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 import usersApi from "@/api/users-api"
 
 export default {
-  name: "TravelForm",
+  name: "ManageTravelAuthorizationDetails",
   components: {
     ExpenseList,
     TripReport,
@@ -412,30 +412,6 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
     numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
-  async mounted() {
-    this.overlay = true
-
-    if (this.$route.params.manage == "manage") {
-      this.review = true
-    }
-
-    await this.initialize()
-
-    this.$refs.form.resetValidation()
-    //this.getCostDifference();
-
-    await this.getForm(this.$route.params.formId)
-
-    if (
-      this.request.requestChange &&
-      this.review == false &&
-      this.request.status == "change_requested"
-    ) {
-      this.requestChangeDisplay = true
-    }
-    this.$refs.form.resetValidation()
-    this.overlay = false
-  },
   computed: {
     ...mapState("travelAuthorizations", ["departments", "purposes", "request"]),
 
@@ -467,6 +443,30 @@ export default {
       }
       return []
     },
+  },
+  async mounted() {
+    this.overlay = true
+
+    if (this.$route.params.manage == "manage") {
+      this.review = true
+    }
+
+    await this.initialize()
+
+    this.$refs.form.resetValidation()
+    //this.getCostDifference();
+
+    await this.getForm(this.$route.params.formId)
+
+    if (
+      this.request.requestChange &&
+      this.review == false &&
+      this.request.status == "change_requested"
+    ) {
+      this.requestChangeDisplay = true
+    }
+    this.$refs.form.resetValidation()
+    this.overlay = false
   },
   methods: {
     ...mapActions("travelAuthorizations", ["initialize"]),

@@ -63,22 +63,33 @@ const routes = [
           },
         ],
       },
+    ],
+  },
+  {
+    path: "/manager-view",
+    component: () => import("@/layouts/Layout"),
+    children: [
       {
         name: "ManageTravelAuthorizationsPage",
-        path: "/manager-view",
-        meta: {
-          requiresAuth: true,
-        },
+        path: "",
         component: () =>
           import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
       },
+    ],
+  },
+  {
+    path: "/travel-requests/:travelAuthorizationId",
+    component: () => import("@/layouts/Layout"),
+    children: [
       {
-        name: "TravelFormManage",
-        path: "request/:formId?/manage",
-        meta: {
-          requiresAuth: true,
-        },
-        component: () => import("@/modules/travel-authorizations/pages/TravelFormManage"),
+        path: "",
+        redirect: "details",
+      },
+      {
+        name: "ManageTravelAuthorizationDetails",
+        path: "details",
+        component: () =>
+          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetails"),
       },
     ],
   },
