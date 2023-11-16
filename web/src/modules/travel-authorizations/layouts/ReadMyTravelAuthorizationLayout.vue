@@ -35,7 +35,7 @@
     </h1>
 
     <template v-if="!loadingCurrentForm">
-      <SummaryHeaderPanel />
+      <SummaryHeaderPanel :travel-authorization-id="formId" />
     </template>
 
     <v-tabs v-model="tab">
@@ -74,7 +74,7 @@ export default {
   },
   props: {
     formId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
   },

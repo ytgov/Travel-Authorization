@@ -25,7 +25,7 @@ const routes = [
         path: ":formId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ReadMyTravelAuthorizationLayout"),
-        props: true,
+        props: (route) => ({ formId: parseInt(route.params.formId) }),
         children: [
           {
             path: "",
@@ -51,7 +51,7 @@ const routes = [
         path: ":formId/edit",
         component: () =>
           import("@/modules/travel-authorizations/layouts/EditMyTravelAuthorizationLayout"),
-        props: true,
+        props: (route) => ({ formId: parseInt(route.params.formId) }),
         children: [
           {
             path: "",

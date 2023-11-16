@@ -32,8 +32,7 @@
     </h1>
 
     <template v-if="isCachedTravelAuthorization">
-      <!-- TODO: rebuild this component to accept a travel authorization id -->
-      <SummaryHeaderPanel />
+      <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
     </template>
 
     <v-tabs v-model="tab">

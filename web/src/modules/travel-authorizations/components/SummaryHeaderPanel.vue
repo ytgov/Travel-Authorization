@@ -66,29 +66,35 @@ export default {
   components: {
     VReadonlyLocationTextField,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
+    ...mapState("travelAuthorization", { travelAuthorization: "attributes" }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
     finalDestination() {
-      return last(this.currentTravelAuthorization.stops) || {}
+      return last(this.travelAuthorization.stops) || {}
     },
     initialDestination() {
-      return first(this.currentTravelAuthorization.stops) || {}
+      return first(this.travelAuthorization.stops) || {}
     },
     purposeText() {
-      const purpose = this.travelPurposes.find(
-        (p) => p.id === this.currentTravelAuthorization.purposeId
-      )
+      const purpose = this.travelPurposes.find((p) => p.id === this.travelAuthorization.purposeId)
       return purpose?.purpose || ""
     },
   },
   async mounted() {
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
+    ...mapActions("travelAuthorization", { ensureTravelAuthorization: "ensure" }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }
