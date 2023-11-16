@@ -57,7 +57,7 @@
 <script>
 import { mapActions, mapState } from "vuex"
 
-import { User } from "@/constants"
+import { ROLES as USER_ROLES } from "@/api/users-api"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
@@ -85,7 +85,7 @@ export default {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
     isAdmin() {
-      return this.currentUser?.roles?.includes(User.Roles.ADMIN)
+      return this.currentUser?.roles?.includes(USER_ROLES.ADMIN)
     },
   },
   mounted() {
