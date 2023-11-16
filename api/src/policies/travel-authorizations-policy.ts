@@ -1,3 +1,5 @@
+import { ModelStatic, Op, WhereOptions } from "sequelize"
+
 import BasePolicy from "./base-policy"
 
 import { User, TravelAuthorization } from "@/models"
@@ -29,11 +31,24 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     return false
   }
 
-  static scope(records: TravelAuthorization[], currentUser: User) {
-    return records.filter((record) => {
-      const policy = new this(currentUser, record)
-      return policy.show()
-    })
+  static applyScope(
+    modelClass: ModelStatic<TravelAuthorization>,
+    currentUser: User
+  ): ModelStatic<TravelAuthorization> {
+    if (currentUser.roles.includes(User.Roles.ADMIN)) {
+      return modelClass
+    }
+
+    const where: WhereOptions<TravelAuthorization> = {
+      [Op.or]: [
+        {
+          supervisorEmail: currentUser.email,
+        },
+        { userId: currentUser.id },
+      ],
+    }
+
+    return modelClass.scope({ where })
   }
 
   permittedAttributes(): string[] {
