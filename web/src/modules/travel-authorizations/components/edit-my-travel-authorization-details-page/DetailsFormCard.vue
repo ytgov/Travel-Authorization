@@ -200,7 +200,7 @@ export default {
       this.tripType = value
 
       this.$nextTick(() => {
-        this.$refs.form.resetValidation()
+        this.$refs.form?.resetValidation()
       })
     },
     getStopsFromCacheOrDefault(key, defaultStops) {
