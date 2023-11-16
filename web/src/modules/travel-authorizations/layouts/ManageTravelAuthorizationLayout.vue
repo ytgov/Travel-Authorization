@@ -5,13 +5,9 @@
     <Breadcrumbs />
 
     <h1 class="d-flex justify-space-between">
-      <!-- TODO: replace current user with user from travel authorization -->
       <span>
         Travel -
-        <VUserChipMenu
-          :user-id="currentUser.id"
-          :is-current-user="true"
-        />
+        <VUserChipMenu :user-id="travelAuthorizationUser.id" />
       </span>
       <v-btn
         v-if="isAdmin"
@@ -35,7 +31,7 @@
       </v-btn>
     </h1>
 
-    <template v-if="!isLoadingTravelAuthorization">
+    <template v-if="isInitializedTravelAuthorization">
       <SummaryHeaderPanel />
     </template>
 
@@ -57,7 +53,7 @@
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
 
-    <template v-if="!isLoadingTravelAuthorization">
+    <template v-if="isInitializedTravelAuthorization">
       <router-view></router-view>
     </template>
   </div>
@@ -83,7 +79,7 @@ export default {
   },
   props: {
     travelAuthorizationId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
   },
@@ -93,22 +89,30 @@ export default {
   computed: {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("travelAuthorization", {
-      initializeTravelAuthorization: "initialize",
+      travelAuthorization: "attributes",
       isLoadingTravelAuthorization: "isLoading",
+      isInitializedTravelAuthorization: "isInitialized",
     }),
+    travelAuthorizationUser() {
+      return this.travelAuthorization.user
+    },
     isAdmin() {
       return this.currentUser?.roles?.includes(User.Roles.ADMIN)
     },
   },
   async mounted() {
-    await this.loadCurrentTravelAuthorization(this.travelAuthorizationId)
+    await this.initializeTravelAuthorization(this.travelAuthorizationId)
     await this.initializeCurrentUser()
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
-    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorization"]),
+    ...mapActions("travelAuthorization", {
+      initializeTravelAuthorization: "initialize",
+    }),
     goToAdminEditPage() {
-      alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)
+      alert(
+        `TODO: redirect user to admin edit interface for TravelAuthorization#${this.travelAuthorizationId}`
+      )
     },
   },
 }

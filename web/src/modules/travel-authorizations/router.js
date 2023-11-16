@@ -83,7 +83,7 @@ const routes = [
         path: ":travelAuthorizationId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ManageTravelAuthorizationLayout"),
-        props: true,
+        props: (route) => ({ travelAuthorizationId: parseInt(route.params.travelAuthorizationId) }),
         children: [
           {
             path: "",
