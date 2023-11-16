@@ -52,7 +52,10 @@
             >
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
-            <!-- Use route literal here to avoid trailing slash which breaks breadcrumbs -->
+            <!--
+              Use route literal here to avoid trailing slash which breaks breadcrumbs
+              TODO: debug why using a named route here adds a trailing slash
+            -->
             <v-list-item
               to="/my-travel-requests"
               @click="menuItemSelected('My Travel Requests')"
