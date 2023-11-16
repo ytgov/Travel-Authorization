@@ -66,12 +66,12 @@ const routes = [
     ],
   },
   {
-    path: "/manager-view",
+    path: "",
     component: () => import("@/layouts/Layout"),
     children: [
       {
         name: "ManageTravelAuthorizationsPage",
-        path: "",
+        path: "manager-view",
         component: () =>
           import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
       },
