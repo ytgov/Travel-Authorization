@@ -1,3 +1,5 @@
+import { cast } from "@/utils/vue-router-utils"
+
 const routes = [
   {
     path: "/",
@@ -25,7 +27,7 @@ const routes = [
         path: ":formId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ReadMyTravelAuthorizationLayout"),
-        props: (route) => ({ formId: parseInt(route.params.formId) }),
+        props: cast("formId", parseInt),
         children: [
           {
             path: "",
@@ -51,7 +53,7 @@ const routes = [
         path: ":formId/edit",
         component: () =>
           import("@/modules/travel-authorizations/layouts/EditMyTravelAuthorizationLayout"),
-        props: (route) => ({ formId: parseInt(route.params.formId) }),
+        props: cast("formId", parseInt),
         children: [
           {
             path: "",
@@ -83,7 +85,7 @@ const routes = [
         path: ":travelAuthorizationId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ManageTravelAuthorizationLayout"),
-        props: (route) => ({ travelAuthorizationId: parseInt(route.params.travelAuthorizationId) }),
+        props: cast("travelAuthorizationId", parseInt),
         children: [
           {
             path: "",
