@@ -76,19 +76,27 @@ const routes = [
     ],
   },
   {
-    path: "/travel-requests/:travelAuthorizationId",
+    path: "/travel-requests",
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        path: "",
-        redirect: "details",
-      },
-      {
-        name: "ManageTravelAuthorizationDetails",
-        path: "details",
+        path: ":travelAuthorizationId",
         component: () =>
-          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetails"),
+          import("@/modules/travel-authorizations/layouts/ManageTravelAuthorizationLayout"),
         props: true,
+        children: [
+          {
+            path: "",
+            redirect: "details",
+          },
+          {
+            name: "ManageTravelAuthorizationDetails",
+            path: "details",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetails"),
+            props: true,
+          },
+        ],
       },
     ],
   },

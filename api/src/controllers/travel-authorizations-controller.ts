@@ -92,7 +92,7 @@ export class TravelAuthorizationsController extends BaseController {
     }
 
     return TravelAuthorization.findByPk(this.params.travelAuthorizationId, {
-      include: ["expenses", "stops", "purpose"],
+      include: ["expenses", "stops", "purpose", "user"],
     }).then((travelAuthorization) => {
       if (isNil(travelAuthorization)) {
         return this.response.status(404).json({ message: "TravelAuthorization not found." })

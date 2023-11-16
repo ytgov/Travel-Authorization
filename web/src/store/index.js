@@ -7,9 +7,11 @@ import currentUser from "@/store/current-user"
 import locations from "@/store/locations"
 import preapproved from "./preapproved"
 import reports from "./reports"
+import travelAuthorization from "@/store/travel-authorization"
 import traveldesk from "./traveldesk"
 import travelPurposes from "@/store/travel-purposes"
 
+// TODO: replace this legacy store with the new pattern
 import travelAuthorizations from "@/modules/travel-authorizations/store"
 
 Vue.use(Vuex)
@@ -64,6 +66,7 @@ export default new Vuex.Store({
     locations,
     preapproved,
     reports,
+    travelAuthorization,
     travelAuthorizations,
     traveldesk,
     travelPurposes,
