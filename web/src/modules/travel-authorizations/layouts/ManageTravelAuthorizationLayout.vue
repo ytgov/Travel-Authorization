@@ -31,7 +31,8 @@
       </v-btn>
     </h1>
 
-    <template v-if="isInitializedTravelAuthorization">
+    <template v-if="isCachedTravelAuthorization">
+      <!-- TODO: rebuild this component to accept a travel authorization id -->
       <SummaryHeaderPanel />
     </template>
 
@@ -53,7 +54,7 @@
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
 
-    <template v-if="isInitializedTravelAuthorization">
+    <template v-if="isCachedTravelAuthorization">
       <router-view></router-view>
     </template>
   </div>
@@ -91,7 +92,7 @@ export default {
     ...mapState("travelAuthorization", {
       travelAuthorization: "attributes",
       isLoadingTravelAuthorization: "isLoading",
-      isInitializedTravelAuthorization: "isInitialized",
+      isCachedTravelAuthorization: "isCached",
     }),
     travelAuthorizationUser() {
       return this.travelAuthorization.user
@@ -101,13 +102,13 @@ export default {
     },
   },
   async mounted() {
-    await this.initializeTravelAuthorization(this.travelAuthorizationId)
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
     await this.initializeCurrentUser()
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     ...mapActions("travelAuthorization", {
-      initializeTravelAuthorization: "initialize",
+      ensureTravelAuthorization: "ensure",
     }),
     goToAdminEditPage() {
       alert(

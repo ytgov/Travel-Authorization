@@ -11,7 +11,7 @@ const state = {
   },
   isLoading: false,
   isErrored: false,
-  isInitialized: false,
+  isCached: false,
 }
 
 const getters = withGettersFromState(state, {
@@ -19,11 +19,12 @@ const getters = withGettersFromState(state, {
 })
 
 const actions = {
-  async initialize({ state, dispatch, getters }, travelAuthorizationId) {
-    if (state.isInitialized && getters.id === travelAuthorizationId) {
+  async ensure({ commit, state, dispatch, getters }, travelAuthorizationId) {
+    if (state.isCached && getters.id === travelAuthorizationId) {
       return state.attributes
     }
 
+    commit("SET_IS_CACHED", false)
     return dispatch("fetch", travelAuthorizationId)
   },
   async fetch({ commit, dispatch }, travelAuthorizationId) {
@@ -39,8 +40,8 @@ const actions = {
       const { travelAuthorization } = await travelAuthorizationsApi.get(travelAuthorizationId)
       commit("SET_IS_ERRORED", false)
       commit("SET_ATTRIBUTES", travelAuthorization)
-      commit("SET_IS_INITIALIZED", true)
-      return state.attributes
+      commit("SET_IS_CACHED", true)
+      return travelAuthorization
     } catch (error) {
       console.error("Failed to load travel authorization:", error)
       commit("SET_IS_ERRORED", true)
@@ -59,8 +60,8 @@ const mutations = {
   SET_IS_ERRORED(state, value) {
     state.isErrored = value
   },
-  SET_IS_INITIALIZED(state, value) {
-    state.isInitialized = value
+  SET_IS_CACHED(state, value) {
+    state.isCached = value
   },
 }
 
