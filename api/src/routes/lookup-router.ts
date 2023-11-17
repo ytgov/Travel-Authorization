@@ -5,6 +5,7 @@ import { uniq } from "lodash"
 
 import { RequiresAuth, ReturnValidationErrors } from "@/middleware"
 import { DB_CONFIG, AZURE_KEY } from "@/config"
+import { TravelPurpose } from "@/models"
 
 export const lookupRouter = express.Router()
 const db = knex(DB_CONFIG)
@@ -211,12 +212,13 @@ lookupRouter.get(
   }
 )
 
+// TODO: remove this once the appropriate controller endpoint is in place
 lookupRouter.get(
   "/travelPurpose",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      let result = await db("travelPurpose").select("id", "purpose")
+      let result = await TravelPurpose.findAll({ attributes: ["id", "purpose"] })
       res.status(200).json(result)
     } catch (error: any) {
       console.log(error)

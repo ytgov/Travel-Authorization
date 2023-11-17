@@ -31,7 +31,7 @@ TravelPurpose.init(
   },
   {
     sequelize,
-    tableName: "travelPurpose",
+    tableName: "travel_purposes",
     modelName: "TravelPurpose",
     timestamps: false,
   }
