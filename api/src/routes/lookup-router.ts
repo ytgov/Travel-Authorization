@@ -212,21 +212,6 @@ lookupRouter.get(
   }
 )
 
-// TODO: remove this once the appropriate controller endpoint is in place
-lookupRouter.get(
-  "/travelPurpose",
-  ReturnValidationErrors,
-  async function (req: Request, res: Response) {
-    try {
-      let result = await TravelPurpose.findAll({ attributes: ["id", "purpose"] })
-      res.status(200).json(result)
-    } catch (error: any) {
-      console.log(error)
-      res.status(500).json("Internal Server Error")
-    }
-  }
-)
-
 lookupRouter.get(
   "/transportMethod",
   ReturnValidationErrors,

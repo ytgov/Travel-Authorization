@@ -65,6 +65,7 @@
 <script>
 import { PREAPPROVED_URL, LOOKUP_URL, PROFILE_URL } from "@/urls"
 import { secureGet } from "@/store/jwt"
+import travelPurposesApi from "@/api/travel-purposes-api"
 
 import PreapprovedRequests from "./Requests/PreapprovedRequests.vue"
 import Submissions from "./Submissions/Submissions.vue"
@@ -135,9 +136,10 @@ export default {
     },
 
     async getTravelPurposes() {
-      return secureGet(`${LOOKUP_URL}/travelPurpose`)
-        .then((resp) => {
-          this.$store.commit("preapproved/SET_TRAVEL_PURPOSES", resp.data)
+      return travelPurposesApi
+        .list()
+        .then(({ travelPurposes }) => {
+          this.$store.commit("preapproved/SET_TRAVEL_PURPOSES", travelPurposes)
         })
         .catch((e) => {
           console.log(e)

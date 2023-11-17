@@ -6,6 +6,7 @@ import { secureGet, securePost } from "@/store/jwt"
 import expensesApi from "@/api/expenses-api"
 import locationsApi from "@/api/locations-api"
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import travelPurposesApi from "@/api/travel-purposes-api"
 
 const state = {
   departments: [],
@@ -79,9 +80,9 @@ const actions = {
       })
   },
   async loadPurposes({ commit }) {
-    return secureGet(`${LOOKUP_URL}/travelPurpose`).then((resp) => {
-      commit("SET_PURPOSE", resp.data)
-      return resp.data
+    return travelPurposesApi.list().then(({ travelPurposes }) => {
+      commit("SET_PURPOSE", travelPurposes)
+      return travelPurposes
     })
   },
   async loadDestinations({ commit }) {

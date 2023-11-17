@@ -9,6 +9,7 @@ import {
   Qa,
   TravelAuthorizations,
   TravelAuthorizationsController,
+  TravelPurposesController,
   Users,
   UsersController,
 } from "@/controllers"
@@ -55,6 +56,7 @@ router.post(
   "/api/users/:userId/yg-government-directory-sync",
   Users.YgGovernmentDirectorySyncController.create
 )
+router.get("/api/travel-purposes", TravelPurposesController.index)
 
 // QA testing scenarios
 router.get("/api/qa/scenarios", Qa.ScenariosController.index)
