@@ -1,5 +1,6 @@
 import locationsApi from "@/api/locations-api"
 
+import { sleep } from "@/utils/sleep"
 import { withGettersFromState } from "@/utils/vuex-utils"
 
 const state = {
@@ -17,6 +18,15 @@ const getters = withGettersFromState(state, {
 
 const actions = {
   async ensure({ commit, state, dispatch }) {
+    while (state.isLoading) {
+      await sleep(75)
+    }
+
+    if (state.isErrored) {
+      console.error("Location store has errored, returning [].")
+      return []
+    }
+
     if (state.isCached) {
       return state.items
     }
