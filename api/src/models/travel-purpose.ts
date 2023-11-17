@@ -14,6 +14,8 @@ export class TravelPurpose extends Model<
 > {
   declare id: CreationOptional<number>
   declare purpose: string
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 }
 
 TravelPurpose.init(
@@ -28,12 +30,21 @@ TravelPurpose.init(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     tableName: "travel_purposes",
     modelName: "TravelPurpose",
-    timestamps: false,
   }
 )
 
