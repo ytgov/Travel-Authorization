@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import { isNil } from "lodash"
+
 // TODO: load from back-end?
 export const TRAVEL_METHODS = Object.freeze({
   AIRCRAFT: "Aircraft",
@@ -55,7 +57,7 @@ export default {
     }
   },
   watch: {
-    value (newValue) {
+    value(newValue) {
       this.travelMethod = this.travelMethodFromValue(this.travelMethods, newValue)
       this.travelMethodOther = this.travelMethodOtherFromValue(this.travelMethods, newValue)
     },
@@ -75,6 +77,10 @@ export default {
       this.travelMethodOther = value
     },
     travelMethodFromValue(travelMethods, value) {
+      if (isNil(value)) {
+        return value
+      }
+
       if (travelMethods.includes(value)) {
         return value
       }

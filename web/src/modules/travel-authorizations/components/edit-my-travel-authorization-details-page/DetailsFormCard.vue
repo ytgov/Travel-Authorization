@@ -124,12 +124,14 @@ export default {
   },
   mounted() {
     if (this.currentTravelAuthorization.oneWayTrip) {
-      this.updateTripType(TRIP_TYPES.ONE_WAY)
+      this.tripType = TRIP_TYPES.ONE_WAY
     } else if (this.currentTravelAuthorization.multiStop) {
-      this.updateTripType(TRIP_TYPES.MULTI_DESTINATION)
+      this.tripType = TRIP_TYPES.MULTI_DESTINATION
     } else {
-      this.updateTripType(TRIP_TYPES.ROUND_TRIP)
+      this.tripType = TRIP_TYPES.ROUND_TRIP
     }
+
+    this.updateTripType(this.tripType)
   },
   methods: {
     required,
@@ -156,8 +158,8 @@ export default {
             this.newStop(),
             this.newStop({
               ...this.finalDestination,
+              transport: TRAVEL_METHODS.AIRCRAFT,
               accommodationType: null,
-              transport: null,
             }),
           ]
         )
