@@ -1,177 +1,45 @@
 <template>
   <div>
+    <Breadcrumbs class="mb-2" />
+
     <h1>Manage Submissions</h1>
     <v-row>
       <v-col>
-        <v-card
-          class="mt-5"
-          color="#fff2d5"
-        >
-          <v-card-title>Pending Approvals</v-card-title>
-          <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="pending"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            >
-          </v-card-text>
-        </v-card>
+        <PendingApprovalsCard />
       </v-col>
-
       <v-col>
-        <v-card
-          class="mt-5"
-          color="#fff2d5"
-        >
-          <v-card-title>Awaiting changes</v-card-title>
-          <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="changeRequests"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            ></v-card-text
-          >
-        </v-card>
+        <AwaitingChangesCard />
       </v-col>
     </v-row>
-
     <v-row>
       <v-col>
-        <v-card
-          class="mt-5"
-          color="#fff2d5"
-        >
-          <v-card-title>Awaiting Expense Approval</v-card-title>
-          <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="pending"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            >
-          </v-card-text>
-        </v-card>
+        <AwaitingExpenseApprovalCard />
       </v-col>
       <v-col>
-        <v-card
-          class="mt-5"
-          color="#fff2d5"
-        >
-          <v-card-title>Approved Trips</v-card-title>
-          <v-card-text>
-            <v-data-table
-              :headers="headers"
-              :items="approved"
-              :items-per-page="20"
-              class="elevation-2"
-              @click:row="handleClick"
-            >
-              <template #item.name="{ item }">
-                <span>{{ item.firstName }} {{ item.lastName }}</span>
-              </template>
-              <template #item.dateBackToWork="{ item }">
-                <span>{{ new Date(item.dateBackToWork).toDateString() }}</span>
-              </template>
-              <template #item.departureDate="{ item }">
-                <span>{{ new Date(item.departureDate).toDateString() }}</span>
-              </template></v-data-table
-            ></v-card-text
-          >
-        </v-card>
+        <ApprovedTripsCard />
       </v-col>
     </v-row>
   </div>
 </template>
+
 <script>
-import { MANAGER_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+import Breadcrumbs from "@/components/Breadcrumbs"
+
+import ApprovedTripsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/ApprovedTripsCard"
+import AwaitingChangesCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingChangesCard"
+import AwaitingExpenseApprovalCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingExpenseApprovalCard"
+import PendingApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/PendingApprovalsCard"
+
 export default {
   name: "ManageTravelAuthorizationsPage",
-  data: () => ({
-    forms: [],
-    pending: [],
-    approved: [],
-    changeRequests: [],
-    headers: [
-      {
-        text: "TA Form Number",
-        value: "id",
-      },
-      {
-        text: "Department/Branch",
-        value: "department",
-      },
-      {
-        text: "Requestee",
-        value: "name",
-      },
-      {
-        text: "Departure Date",
-        value: "departureDate",
-      },
-      {
-        text: "Return Date",
-        value: "dateBackToWork",
-      },
-    ],
-  }),
-  created() {
-    this.loadTravelAuthorizations()
+  components: {
+    ApprovedTripsCard,
+    AwaitingChangesCard,
+    AwaitingExpenseApprovalCard,
+    Breadcrumbs,
+    PendingApprovalsCard,
   },
-  methods: {
-    loadTravelAuthorizations() {
-      secureGet(`${MANAGER_URL}/forms/`).then((resp) => {
-        this.forms = resp.data
-        this.pending = this.forms.filter((form) => {
-          if (form.status == "submitted") return true
-        })
-        this.approved = this.forms.filter((form) => {
-          if (form.status == "approved") return true
-        })
-        this.changeRequests = this.forms.filter((form) => {
-          if (form.status == "change_requested") return true
-        })
-      })
-    },
-    handleClick(value) {
-      //Redirects the user to the edit user form
-      this.$router.push(`/request/${value.formId}/manage`)
-    },
-  },
+  data: () => ({}),
+  methods: {},
 }
 </script>

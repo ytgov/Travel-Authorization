@@ -73,7 +73,7 @@ const routes = [
           import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
       },
       {
-        name: "travelRequestManage",
+        name: "TravelFormManage",
         path: "request/:formId?/manage",
         meta: {
           requiresAuth: true,

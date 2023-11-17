@@ -1,6 +1,6 @@
 import { isEmpty, isNil, last, first, pick } from "lodash"
 
-import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest } from "@/models"
+import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest, User } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 import StopsSerializer from "./stops-serializer"
@@ -23,12 +23,14 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   private firstStop: Stop | undefined
   private lastStop: Stop | undefined
   private currentDate: Date
+  private user: User
 
   constructor(record: TravelAuthorization) {
     super(record)
     this.firstStop = first(this.record.stops)
     this.lastStop = last(this.record.stops)
     this.currentDate = new Date()
+    this.user = record.user
   }
 
   asDetailed(): Omit<Partial<TravelAuthorization>, "stops"> & { stops: Partial<Stop>[] } {
@@ -47,6 +49,10 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       phase: this.determinePhase(),
       status: this.determineStatus(),
       action: this.determineAction(),
+      firstName: this.user.firstName,
+      lastName: this.user.lastName,
+      department: this.user.department,
+      branch: this.user.branch,
     }
   }
 

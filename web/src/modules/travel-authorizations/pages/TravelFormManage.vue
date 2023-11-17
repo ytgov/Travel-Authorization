@@ -635,7 +635,7 @@ export default {
       })
     },
     managePage() {
-      this.$router.push(`/managerView`)
+      this.$router.push({ name: "ManageTravelAuthorizationsPage" })
     },
     requestPage() {
       this.$router.push(`/my-travel-requests`)

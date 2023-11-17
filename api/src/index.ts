@@ -8,7 +8,6 @@ import { CreateMigrationRoutes } from "./data"
 
 import {
   userRouter,
-  managerRouter,
   lookupRouter,
   formRouter,
   preapprovedRouter,
@@ -75,7 +74,6 @@ CreateMigrationRoutes(app)
 
 app.use("/api/form", checkJwt, loadUser, formRouter)
 app.use("/api/user", checkJwt, loadUser, userRouter)
-app.use("/api/manager", checkJwt, loadUser, managerRouter)
 app.use("/api/preapproved", checkJwt, loadUser, preapprovedRouter)
 app.use("/api/traveldesk", checkJwt, loadUser, travelDeskRouter)
 

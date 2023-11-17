@@ -124,11 +124,11 @@ export default {
   },
   mounted() {
     if (this.currentTravelAuthorization.oneWayTrip) {
-      this.tripType = TRIP_TYPES.ONE_WAY
+      this.updateTripType(TRIP_TYPES.ONE_WAY)
     } else if (this.currentTravelAuthorization.multiStop) {
-      this.tripType = TRIP_TYPES.MULTI_DESTINATION
+      this.updateTripType(TRIP_TYPES.MULTI_DESTINATION)
     } else {
-      this.tripType = TRIP_TYPES.ROUND_TRIP
+      this.updateTripType(TRIP_TYPES.ROUND_TRIP)
     }
   },
   methods: {
