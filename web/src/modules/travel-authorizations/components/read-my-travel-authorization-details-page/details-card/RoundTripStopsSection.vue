@@ -5,26 +5,24 @@
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(originStop.locationId)"
+        <VReadonlyLocationTextField
+          :value="originStop.locationId"
           label="From"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(destinationStop.locationId)"
+        <VReadonlyLocationTextField
+          :value="destinationStop.locationId"
           label="To"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
@@ -81,26 +79,24 @@
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(destinationStop.locationId)"
+        <VReadonlyLocationTextField
+          :value="destinationStop.locationId"
           label="To"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(originStop.locationId)"
+        <VReadonlyLocationTextField
+          :value="originStop.locationId"
           label="From"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
@@ -159,11 +155,15 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex"
+import { mapState, mapGetters } from "vuex"
+
+import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
 export default {
   name: "RoundTripStopsSection",
-  components: {},
+  components: {
+    VReadonlyLocationTextField,
+  },
   data() {
     return {
       originStop: {},
@@ -172,22 +172,12 @@ export default {
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
   },
   async mounted() {
-    await this.loadDestinations()
-
     this.originStop = this.currentTravelAuthorization.stops[0]
     this.destinationStop = this.currentTravelAuthorization.stops[1]
   },
-  methods: {
-    ...mapActions("travelAuthorizations", ["loadDestinations"]),
-    getDestinationText(locationId) {
-      const destination = this.destinationsByCurrentFormTravelRestriction.find(
-        (d) => d.value === locationId
-      )
-      return destination?.text || ""
-    },
-  },
+  methods: {},
 }
 </script>

@@ -31,22 +31,18 @@
         >
           <v-row>
             <v-col>
-              <v-autocomplete
+              <LocationsAutocomplete
                 v-model="stop.locationId"
                 dense
                 label="Destination"
                 persistent-hint
-                :items="destinations"
-                :item-text="destinations.text"
-                :item-value="destinations.value"
                 required
                 clearable
                 background-color="white"
                 outlined
                 :disabled="review"
                 :rules="requiredRules"
-              >
-              </v-autocomplete>
+              />
             </v-col>
             <v-col>
               <v-btn
@@ -54,8 +50,8 @@
                 dense
                 small
                 color="red"
-                @click="removeStop(index)"
                 :disabled="index < miminumStops || review"
+                @click="removeStop(index)"
               >
                 <v-icon>mdi-trash-can</v-icon>
               </v-btn>
@@ -79,9 +75,9 @@
             /></v-col>
             <v-col>
               <v-select
+                v-model="stop.transport"
                 :items="transport"
                 label="Method of transport"
-                v-model="stop.transport"
                 dense
                 :disabled="review"
                 :rules="requiredRules"
@@ -92,22 +88,18 @@
 
         <v-row v-if="request.oneWayTrip !== true && request.stops.length > 0">
           <v-col>
-            <v-autocomplete
+            <LocationsAutocomplete
               v-model="request.stops[0].locationId"
               dense
               label="Final Destination"
               persistent-hint
-              :items="destinations"
-              :item-text="destinations.text"
-              :item-value="destinations.value"
               required
               background-color="white"
               outlined
               clearable
               :disabled="review"
               :rules="requiredRules"
-            >
-            </v-autocomplete>
+            />
           </v-col>
         </v-row>
 
@@ -115,8 +107,8 @@
           <v-col>
             <v-btn
               color="blue"
-              @click="addStop"
               :disabled="review"
+              @click="addStop"
               >Add Stop</v-btn
             >
           </v-col>
@@ -147,15 +139,17 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex"
+import { mapState } from "vuex"
 
 import DatePicker from "@/components/Utils/DatePicker"
+import LocationsAutocomplete from "@/components/LocationsAutocomplete"
 import TimePicker from "@/components/Utils/TimePicker"
 
 export default {
   name: "StopsFormEdit",
   components: {
     DatePicker,
+    LocationsAutocomplete,
     TimePicker,
   },
   props: {
@@ -181,7 +175,7 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["destinations", "request"]),
+    ...mapState("travelAuthorizations", ["request"]),
     miminumStops() {
       if (this.request.multiStop) return 2
 
@@ -189,8 +183,6 @@ export default {
     },
   },
   async mounted() {
-    await this.loadDestinations()
-
     if (this.request.stops.length < 1) {
       this.addStop()
     }
@@ -200,7 +192,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadDestinations"]),
     updateMultiStop(value) {
       if (value && this.request.stops.length < 2) {
         this.addStop()
