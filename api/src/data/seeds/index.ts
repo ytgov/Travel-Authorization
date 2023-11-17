@@ -24,8 +24,8 @@ export async function seedUp() {
   await dbLegacy("roles").insert(rolesAttributes)
 
   await TravelAuthorization.destroy({ where: {} })
-  await dbLegacy("travelPurpose").delete().whereRaw("1=1")
-  await dbLegacy("travelPurpose").insert([
+  await TravelPurpose.destroy({ where: {} })
+  await TravelPurpose.bulkCreate([
     {
       purpose: "Maintenance",
     },

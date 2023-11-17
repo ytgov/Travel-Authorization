@@ -12,7 +12,6 @@ const state = {
   destinations: [],
   emails: [],
   estimates: [],
-  purposes: [],
   currentTravelAuthorization: {
     expenses: [],
     purpose: {},
@@ -48,7 +47,6 @@ const getters = {
 const actions = {
   async initialize(store) {
     await store.dispatch("loadDepartments")
-    await store.dispatch("loadPurposes")
     await store.dispatch("loadDestinations")
   },
   async emailSearch({ commit }, token) {
@@ -77,12 +75,6 @@ const actions = {
       .finally(() => {
         state.loadingEstimates = false
       })
-  },
-  async loadPurposes({ commit }) {
-    return secureGet(`${LOOKUP_URL}/travelPurpose`).then((resp) => {
-      commit("SET_PURPOSE", resp.data)
-      return resp.data
-    })
   },
   async loadDestinations({ commit }) {
     return locationsApi.list().then(({ locations }) => {
@@ -173,9 +165,6 @@ const mutations = {
   },
   SET_DEPARTMENTS(store, value) {
     store.departments = value
-  },
-  SET_PURPOSE(store, value) {
-    store.purposes = value
   },
   SET_DESTINATIONS(store, value) {
     store.destinations = value

@@ -3,6 +3,7 @@ export * from "./locations-controller"
 export * from "./pre-approved-travel-requests-controller"
 export * from "./pre-approved-travelers-controller"
 export * from "./travel-authorizations-controller"
+export * from "./travel-purposes-controller"
 export * from "./users-controller"
 
 // Namespaced controllers

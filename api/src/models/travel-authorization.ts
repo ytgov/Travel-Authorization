@@ -196,7 +196,7 @@ TravelAuthorization.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "travelPurpose", // using real table name here
+        model: "travel_purposes", // using real table name here
         key: "id", // using real column name here
       },
     },

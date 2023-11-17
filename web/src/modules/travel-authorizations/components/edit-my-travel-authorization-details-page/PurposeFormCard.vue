@@ -18,8 +18,8 @@
               >
                 <v-select
                   v-model="currentTravelAuthorization.purposeId"
-                  :items="purposes"
-                  :loading="loadingPurposes"
+                  :items="travelPurposes"
+                  :loading="isLoadingTravelPurposes"
                   :rules="[required]"
                   dense
                   item-text="purpose"
@@ -118,16 +118,19 @@ import { mapState, mapActions, mapGetters } from "vuex"
 export default {
   name: "PurposeFormCard",
   data: () => ({
-    loadingPurposes: false,
     loadingDestinations: false,
     required: (v) => !!v || "This field is required",
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
     ...mapGetters("travelAuthorizations", [
       "currentTravelAuthorizationId",
       "destinationsByCurrentFormTravelRestriction",
     ]),
+    ...mapState("travelPurposes", {
+      travelPurposes: "items",
+      isLoadingTravelPurposes: "isLoading",
+    }),
     finalDestination: {
       get() {
         return (
@@ -146,19 +149,16 @@ export default {
     },
   },
   async mounted() {
-    this.loadingPurposes = true
+    await this.ensureTravelPurposes()
+
     this.loadingDestinations = true
-    await Promise.all([
-      this.loadPurposes().finally(() => {
-        this.loadingPurposes = false
-      }),
-      this.loadDestinations().finally(() => {
-        this.loadingDestinations = false
-      }),
-    ])
+    await this.loadDestinations().finally(() => {
+      this.loadingDestinations = false
+    })
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadPurposes", "loadDestinations"]),
+    ...mapActions("travelAuthorizations", ["loadDestinations"]),
+    ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }
 </script>
