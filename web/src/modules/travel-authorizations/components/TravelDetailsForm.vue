@@ -49,7 +49,10 @@
                 :disabled="review"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="request.dateBackToWork" @input="btwMenu = false"></v-date-picker>
+            <v-date-picker
+              v-model="request.dateBackToWork"
+              @input="btwMenu = false"
+            ></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
@@ -130,13 +133,19 @@
 
       <v-row>
         <v-col class="mr-auto pb-0">
-          <v-btn color="secondary" @click="backClick">
+          <v-btn
+            color="secondary"
+            @click="backClick"
+          >
             Back
           </v-btn>
         </v-col>
 
         <v-col class="col-auto pb-0">
-          <v-btn color="primary" @click="continueClick">
+          <v-btn
+            color="primary"
+            @click="continueClick"
+          >
             {{ continueTitle || "Continue" }}
           </v-btn>
         </v-col>
@@ -146,7 +155,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions } from "vuex"
 
 export default {
   name: "TravelDetailsForm",
@@ -162,24 +171,24 @@ export default {
     ...mapState("travelAuthorizations", ["purposes", "request"]),
     travelAdvanceInDollars: {
       get() {
-        return Math.ceil(this.request.travelAdvanceInCents / 100.0);
+        return Math.ceil(this.request.travelAdvanceInCents / 100.0)
       },
       set(value) {
-        this.request.travelAdvanceInCents = Math.ceil(value * 100);
+        this.request.travelAdvanceInCents = Math.ceil(value * 100)
       },
     },
   },
   async mounted() {
-    this.loadPurposes();
+    this.loadPurposes()
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadPurposes"]),
     continueClick() {
-      this.continue();
+      this.continue()
     },
     backClick() {
-      this.back();
+      this.back()
     },
   },
-};
+}
 </script>
