@@ -59,7 +59,8 @@
       <v-row>
         <v-col cols="5">
           <v-select
-            :items="purposes"
+            :items="travelPurposes"
+            :loading="isLoadingTravelPurposes"
             label="Purpose"
             v-model="request.purposeId"
             dense
@@ -168,7 +169,11 @@ export default {
     numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["purposes", "request"]),
+    ...mapState("travelAuthorizations", ["request"]),
+    ...mapState("travelPurposes", {
+      travelPurposes: "items",
+      isLoadingTravelPurposes: "isLoading",
+    }),
     travelAdvanceInDollars: {
       get() {
         return Math.ceil(this.request.travelAdvanceInCents / 100.0)
@@ -179,10 +184,10 @@ export default {
     },
   },
   async mounted() {
-    this.loadPurposes()
+    this.ensureTravelPurposes()
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadPurposes"]),
+    ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
     continueClick() {
       this.continue()
     },

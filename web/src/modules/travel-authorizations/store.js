@@ -6,14 +6,12 @@ import { secureGet, securePost } from "@/store/jwt"
 import expensesApi from "@/api/expenses-api"
 import locationsApi from "@/api/locations-api"
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
-import travelPurposesApi from "@/api/travel-purposes-api"
 
 const state = {
   departments: [],
   destinations: [],
   emails: [],
   estimates: [],
-  purposes: [],
   currentTravelAuthorization: {
     expenses: [],
     purpose: {},
@@ -49,7 +47,6 @@ const getters = {
 const actions = {
   async initialize(store) {
     await store.dispatch("loadDepartments")
-    await store.dispatch("loadPurposes")
     await store.dispatch("loadDestinations")
   },
   async emailSearch({ commit }, token) {
@@ -78,13 +75,6 @@ const actions = {
       .finally(() => {
         state.loadingEstimates = false
       })
-  },
-  async loadPurposes({ commit }) {
-    console.warn("DEPRECATED: use web/src/store/travel-purposes.js -> ensure instead")
-    return travelPurposesApi.list().then(({ travelPurposes }) => {
-      commit("SET_PURPOSE", travelPurposes)
-      return travelPurposes
-    })
   },
   async loadDestinations({ commit }) {
     return locationsApi.list().then(({ locations }) => {
@@ -175,9 +165,6 @@ const mutations = {
   },
   SET_DEPARTMENTS(store, value) {
     store.departments = value
-  },
-  SET_PURPOSE(store, value) {
-    store.purposes = value
   },
   SET_DESTINATIONS(store, value) {
     store.destinations = value

@@ -71,7 +71,6 @@ export default {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
-    ...mapState("travelAuthorizations", ["purposes"]),
     ...mapGetters("travelAuthorizations", ["destinationsByCurrentFormTravelRestriction"]),
     finalDestination() {
       return last(this.currentTravelAuthorization.stops) || {}
