@@ -4,6 +4,8 @@ import knex from "knex"
 import { RequiresAuth } from "@/middleware"
 import { airports } from "@/json/airportCodes"
 import { TRAVCOM_DB_CONFIG } from "@/config"
+import { Location } from "@/models"
+
 import dbLegacy from "@/db/db-client-legacy"
 
 const db = knex(TRAVCOM_DB_CONFIG)
@@ -319,7 +321,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
   await dbLegacy("StatisticsRecord").del()
   await dbLegacy.raw(`ALTER SEQUENCE "StatisticsRecord_id_seq" RESTART WITH 1;`)
 
-  const locations = await dbLegacy("locations").select("province", "city")
+  const locations = await Location.findAll({ attributes: ["province", "city"] })
 
   for (const key of Object.keys(statistics)) {
     const record = statistics[key]
