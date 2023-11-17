@@ -3,10 +3,10 @@ import knex from "knex"
 
 import { RequiresAuth } from "@/middleware"
 import { airports } from "@/json/airportCodes"
-import { TRAVCOM_DB_CONFIG, DB_CONFIG } from "@/config"
+import { TRAVCOM_DB_CONFIG } from "@/config"
+import dbLegacy from "@/db/db-client-legacy"
 
 const db = knex(TRAVCOM_DB_CONFIG)
-const preAuthDB = knex(DB_CONFIG)
 
 export const travComRouter = express.Router()
 
@@ -163,7 +163,7 @@ travComRouter.get(
           flightInfo.push(flight)
         }
 
-        const flightReconcile = await preAuthDB("flightReconciliation")
+        const flightReconcile = await dbLegacy("flightReconciliation")
           .select("reconciled")
           .where("invoiceDetailID", invoiceDetailID)
           .first()
@@ -200,7 +200,7 @@ travComRouter.get(
 )
 
 travComRouter.get("/statistics", RequiresAuth, async function (req: Request, res: Response) {
-  const reports = await preAuthDB("StatisticsRecord").select("*")
+  const reports = await dbLegacy("StatisticsRecord").select("*")
   res.status(200).json(reports)
 })
 
@@ -208,17 +208,17 @@ travComRouter.get(
   "/statistics-update-progress",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    const progress = await preAuthDB("StatisticsProgress").select("*")
+    const progress = await dbLegacy("StatisticsProgress").select("*")
     res.status(200).json(progress)
   }
 )
 
 travComRouter.get("/update-statistics", RequiresAuth, async function (req: Request, res: Response) {
   //__Progress
-  const statisticsProgress = await preAuthDB("StatisticsProgress").select("*").where("id", 1)
+  const statisticsProgress = await dbLegacy("StatisticsProgress").select("*").where("id", 1)
 
   if (statisticsProgress.length == 0) {
-    await preAuthDB("StatisticsProgress").insert({ id: 1, last_update: new Date(), progress: 0 })
+    await dbLegacy("StatisticsProgress").insert({ id: 1, last_update: new Date(), progress: 0 })
   } else {
     const lastUpdateTime = new Date(statisticsProgress[0].last_update)
     const updateTime = new Date()
@@ -226,7 +226,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     if (lastUpdateTime > updateTime) {
       return res.status(500).json("Please Wait at least 30 minutes before re-run the updates.")
     } else {
-      await preAuthDB("StatisticsProgress")
+      await dbLegacy("StatisticsProgress")
         .update({ last_update: new Date(), progress: 0 })
         .where("id", 1)
     }
@@ -249,7 +249,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
       const progress = ((100 * invoiceCounter) / invoices.length) | 0
       console.log(invoiceCounter + " => " + String(progress) + " %")
       try {
-        await preAuthDB("StatisticsProgress")
+        await dbLegacy("StatisticsProgress")
           .update({ last_update: new Date(), progress: progress })
           .where("id", 1)
       } catch (error: any) {
@@ -316,10 +316,10 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     if (result.returnFlight) statistics[inx].roundTripCost += totalFlightCost
   }
 
-  await preAuthDB("StatisticsRecord").del()
-  await preAuthDB.raw(`ALTER SEQUENCE "StatisticsRecord_id_seq" RESTART WITH 1;`)
+  await dbLegacy("StatisticsRecord").del()
+  await dbLegacy.raw(`ALTER SEQUENCE "StatisticsRecord_id_seq" RESTART WITH 1;`)
 
-  const locations = await preAuthDB("locations").select("province", "city")
+  const locations = await dbLegacy("locations").select("province", "city")
 
   for (const key of Object.keys(statistics)) {
     const record = statistics[key]
@@ -341,7 +341,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     record.averageExpensesPerDay = record.totalExpenses / record.days
     record.averageRoundTripFlightCost = record.roundTripCost / record.totalRoundTrips
     try {
-      await preAuthDB("StatisticsRecord").insert(record)
+      await dbLegacy("StatisticsRecord").insert(record)
     } catch (error: any) {
       console.log(error)
       console.log(record)
@@ -349,7 +349,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
   }
 
   try {
-    await preAuthDB("StatisticsProgress")
+    await dbLegacy("StatisticsProgress")
       .update({ last_update: new Date(), progress: 100 })
       .where("id", 1)
   } catch (error: any) {
