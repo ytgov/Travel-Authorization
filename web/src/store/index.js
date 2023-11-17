@@ -7,6 +7,7 @@ import currentUser from "@/store/current-user"
 import preapproved from "./preapproved"
 import reports from "./reports"
 import traveldesk from "./traveldesk"
+import travelPurposes from "@/store/travel-purposes"
 
 import travelAuthorizations from "@/modules/travel-authorizations/store"
 
@@ -63,5 +64,6 @@ export default new Vuex.Store({
     reports,
     travelAuthorizations,
     traveldesk,
+    travelPurposes,
   },
 })

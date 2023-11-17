@@ -80,6 +80,7 @@ const actions = {
       })
   },
   async loadPurposes({ commit }) {
+    console.warn("DEPRECATED: use web/src/store/travel-purposes.js -> ensure instead")
     return travelPurposesApi.list().then(({ travelPurposes }) => {
       commit("SET_PURPOSE", travelPurposes)
       return travelPurposes
