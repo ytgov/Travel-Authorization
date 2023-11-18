@@ -56,10 +56,9 @@
                 cols="12"
                 md="9"
               >
-                <v-autocomplete
+                <LocationsAutocomplete
                   v-model="finalDestination.locationId"
-                  :items="destinationsByCurrentFormTravelRestriction"
-                  :loading="loadingDestinations"
+                  :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
                   :rules="[required]"
                   clearable
                   dense
@@ -68,8 +67,7 @@
                   persistent-hint
                   required
                   validate-on-blur
-                >
-                </v-autocomplete>
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -115,18 +113,19 @@
 import { last } from "lodash"
 import { mapState, mapActions, mapGetters } from "vuex"
 
+import LocationsAutocomplete from "@/components/LocationsAutocomplete"
+
 export default {
   name: "PurposeFormCard",
+  components: {
+    LocationsAutocomplete,
+  },
   data: () => ({
-    loadingDestinations: false,
     required: (v) => !!v || "This field is required",
   }),
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", [
-      "currentTravelAuthorizationId",
-      "destinationsByCurrentFormTravelRestriction",
-    ]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
@@ -150,14 +149,8 @@ export default {
   },
   async mounted() {
     await this.ensureTravelPurposes()
-
-    this.loadingDestinations = true
-    await this.loadDestinations().finally(() => {
-      this.loadingDestinations = false
-    })
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadDestinations"]),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }

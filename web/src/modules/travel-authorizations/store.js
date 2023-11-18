@@ -4,12 +4,10 @@ import { FORM_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
 
 import expensesApi from "@/api/expenses-api"
-import locationsApi from "@/api/locations-api"
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 
 const state = {
   departments: [],
-  destinations: [],
   emails: [],
   estimates: [],
   currentTravelAuthorization: {
@@ -25,13 +23,6 @@ const state = {
 state.request = state.currentTravelAuthorization
 
 const getters = {
-  destinationsByCurrentFormTravelRestriction(state) {
-    if (state.currentTravelAuthorization.allTravelWithinTerritory !== true) {
-      return state.destinations
-    }
-
-    return state.destinations.filter((d) => d.text.endsWith("(YT)"))
-  },
   currentTravelAuthorizationId(state) {
     return state.currentTravelAuthorization.id
   },
@@ -47,7 +38,6 @@ const getters = {
 const actions = {
   async initialize(store) {
     await store.dispatch("loadDepartments")
-    await store.dispatch("loadDestinations")
   },
   async emailSearch({ commit }, token) {
     if (isString(token) && token.length >= 3) {
@@ -75,20 +65,6 @@ const actions = {
       .finally(() => {
         state.loadingEstimates = false
       })
-  },
-  async loadDestinations({ commit }) {
-    return locationsApi.list().then(({ locations }) => {
-      const formattedLocations = locations.map(({ id, city, province }) => {
-        return {
-          value: id,
-          text: `${city} (${province})`,
-        }
-      })
-
-      commit("SET_DESTINATIONS", formattedLocations)
-
-      return formattedLocations
-    })
   },
   loadCurrentTravelAuthorization({ state, dispatch }, formId) {
     state.loadingCurrentForm = true
@@ -165,9 +141,6 @@ const mutations = {
   },
   SET_DEPARTMENTS(store, value) {
     store.departments = value
-  },
-  SET_DESTINATIONS(store, value) {
-    store.destinations = value
   },
   SET_ESTIMATES(store, value) {
     store.estimates = value

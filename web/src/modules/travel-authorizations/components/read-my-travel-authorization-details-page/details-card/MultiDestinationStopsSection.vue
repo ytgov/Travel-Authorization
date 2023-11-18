@@ -5,26 +5,24 @@
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(stop1.locationId)"
+        <VReadonlyLocationTextField
+          :value="stop1.locationId"
           label="From"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(stop2.locationId)"
+        <VReadonlyLocationTextField
+          :value="stop2.locationId"
           label="To"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
@@ -81,26 +79,24 @@
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(stop2.locationId)"
+        <VReadonlyLocationTextField
+          :value="stop2.locationId"
           label="To"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(stop3.locationId)"
+        <VReadonlyLocationTextField
+          :value="stop3.locationId"
           label="From"
           dense
           outlined
           persistent-hint
-          readonly
         />
       </v-col>
       <v-col
@@ -157,8 +153,8 @@
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(stop3.locationId)"
+        <VReadonlyLocationTextField
+          :value="stop3.locationId"
           label="From"
           dense
           outlined
@@ -169,8 +165,8 @@
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="getDestinationText(stop4.locationId)"
+        <VReadonlyLocationTextField
+          :value="stop4.locationId"
           label="To"
           dense
           outlined
@@ -230,11 +226,15 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex"
+import { mapState, mapGetters } from "vuex"
+
+import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
 export default {
   name: "MultiDestinationStopsSection",
-  components: {},
+  components: {
+    VReadonlyLocationTextField,
+  },
   data() {
     return {
       stop1: {},
@@ -245,24 +245,14 @@ export default {
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId", "destinationsByCurrentFormTravelRestriction"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
   },
   async mounted() {
-    await this.loadDestinations()
-
     this.stop1 = this.currentTravelAuthorization.stops[0]
     this.stop2 = this.currentTravelAuthorization.stops[1]
     this.stop3 = this.currentTravelAuthorization.stops[2]
     this.stop4 = this.currentTravelAuthorization.stops[3]
   },
-  methods: {
-    ...mapActions("travelAuthorizations", ["loadDestinations"]),
-    getDestinationText(locationId) {
-      const destination = this.destinationsByCurrentFormTravelRestriction.find(
-        (d) => d.value === locationId
-      )
-      return destination?.text || ""
-    },
-  },
+  methods: {},
 }
 </script>

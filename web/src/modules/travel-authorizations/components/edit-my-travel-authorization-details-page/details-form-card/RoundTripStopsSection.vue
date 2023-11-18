@@ -5,9 +5,9 @@
         cols="12"
         md="2"
       >
-        <v-autocomplete
+        <LocationsAutocomplete
           v-model="originStop.locationId"
-          :items="destinationsByCurrentFormTravelRestriction"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -21,9 +21,9 @@
         cols="12"
         md="2"
       >
-        <v-autocomplete
+        <LocationsAutocomplete
           v-model="destinationStop.locationId"
-          :items="destinationsByCurrentFormTravelRestriction"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -83,9 +83,9 @@
         cols="12"
         md="2"
       >
-        <v-autocomplete
+        <LocationsAutocomplete
           v-model="destinationStop.locationId"
-          :items="destinationsByCurrentFormTravelRestriction"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -99,9 +99,9 @@
         cols="12"
         md="2"
       >
-        <v-autocomplete
+        <LocationsAutocomplete
           v-model="originStop.locationId"
-          :items="destinationsByCurrentFormTravelRestriction"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -169,11 +169,12 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex"
+import { mapState, mapGetters } from "vuex"
 
 import { required, greaterThanOrEqualToDate } from "@/utils/validators"
 
 import DatePicker from "@/components/Utils/DatePicker"
+import LocationsAutocomplete from "@/components/LocationsAutocomplete"
 import TimePicker from "@/components/Utils/TimePicker"
 import AccommodationTypeSelect from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
 import TravelMethodSelect from "@/modules/travel-authorizations/components/TravelMethodSelect"
@@ -183,6 +184,7 @@ export default {
   components: {
     AccommodationTypeSelect,
     DatePicker,
+    LocationsAutocomplete,
     TimePicker,
     TravelMethodSelect,
   },
@@ -194,19 +196,13 @@ export default {
   },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", [
-      "currentTravelAuthorizationId",
-      "destinationsByCurrentFormTravelRestriction",
-    ]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
   },
   async mounted() {
-    await this.loadDestinations()
-
     this.originStop = this.currentTravelAuthorization.stops[0]
     this.destinationStop = this.currentTravelAuthorization.stops[1]
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadDestinations"]),
     greaterThanOrEqualToDate,
     required,
   },

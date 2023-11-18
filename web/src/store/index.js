@@ -4,6 +4,7 @@ import Vuex from "vuex"
 import alerts from "./alerts"
 import auth from "./auth"
 import currentUser from "@/store/current-user"
+import locations from "@/store/locations"
 import preapproved from "./preapproved"
 import reports from "./reports"
 import traveldesk from "./traveldesk"
@@ -60,6 +61,7 @@ export default new Vuex.Store({
     alerts,
     auth,
     currentUser,
+    locations,
     preapproved,
     reports,
     travelAuthorizations,

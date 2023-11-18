@@ -18,13 +18,12 @@
         cols="12"
         md="2"
       >
-        <v-text-field
-          :value="finalDestinationText"
+        <VReadonlyLocationTextField
+          :value="finalDestination.locationId"
           label="Final Destination"
           dense
           outlined
-          readonly
-        ></v-text-field>
+        />
       </v-col>
       <v-col
         cols="12"
@@ -58,20 +57,21 @@
 
 <script>
 import { first, last } from "lodash"
-import { mapActions, mapGetters, mapState } from "vuex"
+import { mapActions, mapState } from "vuex"
+
+import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
 export default {
   name: "SummaryHeaderPanel",
-  data: () => ({
-    loadingDestinations: false,
-  }),
+  components: {
+    VReadonlyLocationTextField,
+  },
   computed: {
     ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
-    ...mapGetters("travelAuthorizations", ["destinationsByCurrentFormTravelRestriction"]),
     finalDestination() {
       return last(this.currentTravelAuthorization.stops) || {}
     },
@@ -84,23 +84,11 @@ export default {
       )
       return purpose?.purpose || ""
     },
-    finalDestinationText() {
-      const destination = this.destinationsByCurrentFormTravelRestriction.find(
-        (d) => d.value === this.finalDestination.locationId
-      )
-      return destination?.text || ""
-    },
   },
   async mounted() {
     await this.ensureTravelPurposes()
-
-    this.loadingDestinations = true
-    await this.loadDestinations().finally(() => {
-      this.loadingDestinations = false
-    })
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadDestinations"]),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }
