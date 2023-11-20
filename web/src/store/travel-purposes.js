@@ -1,6 +1,7 @@
 import travelPurposesApi from "@/api/travel-purposes-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
+import { sleep } from "@/utils/sleep"
 
 const state = {
   items: [],
@@ -9,10 +10,21 @@ const state = {
   isCached: false,
 }
 
-const getters = withGettersFromState(state, {})
+const getters = withGettersFromState(state, {
+  isReady: (state) => state.isCached && !state.isLoading && !state.isErrored,
+})
 
 const actions = {
   async ensure({ commit, state, dispatch }) {
+    while (state.isLoading) {
+      await sleep(75)
+    }
+
+    if (state.isErrored) {
+      console.error("Travel purposes store has errored, returning [].")
+      return []
+    }
+
     if (state.isCached) {
       return state.items
     }
