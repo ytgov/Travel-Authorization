@@ -49,7 +49,7 @@ router.post(
   TravelAuthorizations.Estimates.GenerateController.create
 )
 router.get("/api/locations", LocationsController.index)
-router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
+router.get("/api/pre-approved-travelers", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
 router.get("/api/users/:userId", UsersController.show)
 router.post(
