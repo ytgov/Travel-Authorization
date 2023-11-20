@@ -20,7 +20,7 @@
       </v-col>
     </v-row>
     <div class="d-flex justify-end">
-      <SaveDraftButton :validate-form="validateForm" />
+      <SaveButton :validate-form="validateForm" />
       <v-btn
         class="ml-3"
         color="secondary"
@@ -36,7 +36,7 @@ import PurposeFormCard from "@/modules/travel-authorizations/components/manage-t
 import DetailsFormCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/DetailsFormCard"
 import ApprovalsFormCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ApprovalsFormCard"
 
-import SaveDraftButton from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/SaveDraftButton"
+import SaveButton from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/SaveButton"
 
 export default {
   name: "ManageTravelAuthorizationDetailsPage",
@@ -44,7 +44,7 @@ export default {
     PurposeFormCard,
     DetailsFormCard,
     ApprovalsFormCard,
-    SaveDraftButton,
+    SaveButton,
   },
   methods: {
     validateForm() {
