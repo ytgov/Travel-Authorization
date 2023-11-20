@@ -20,7 +20,7 @@
             <v-btn
               class="mt-1"
               color="secondary"
-              @click="alert('TODO: Implement viewing page for estimates for managers')"
+              @click="goToEstimatePage"
               >View Estimate</v-btn
             >
           </v-col>
@@ -125,6 +125,9 @@ export default {
     ...mapActions("current/travelAuthorization", {
       fetchCurrentTravelAuthorizationSilently: "fetchSilently",
     }),
+    goToEstimatePage() {
+      alert("TODO: Implement viewing page for estimates for managers")
+    },
     // TODO: push this logic to a Vuex store.
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
