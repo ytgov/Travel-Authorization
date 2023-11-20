@@ -1,0 +1,212 @@
+<template>
+  <div>
+    <v-row>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <LocationsAutocomplete
+          v-model="originStop.locationId"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :rules="[required]"
+          label="From"
+          background-color="white"
+          dense
+          outlined
+          persistent-hint
+          required
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <LocationsAutocomplete
+          v-model="destinationStop.locationId"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :rules="[required]"
+          label="To"
+          background-color="white"
+          dense
+          outlined
+          persistent-hint
+          required
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <DatePicker
+          v-model="originStop.departureDate"
+          :rules="[required]"
+          label="Date"
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <TimePicker
+          v-model="originStop.departureTime"
+          :rules="[required]"
+          label="Time (24h)"
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="4"
+      >
+        <TravelMethodSelect
+          v-model="originStop.transport"
+          :rules="[required]"
+          background-color="white"
+          dense
+          persistent-hint
+          required
+          outlined
+        />
+        <AccommodationTypeSelect
+          v-model="originStop.accommodationType"
+          :rules="[required]"
+          background-color="white"
+          dense
+          outlined
+          required
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <LocationsAutocomplete
+          v-model="destinationStop.locationId"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :rules="[required]"
+          label="To"
+          background-color="white"
+          dense
+          outlined
+          persistent-hint
+          required
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <LocationsAutocomplete
+          v-model="originStop.locationId"
+          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :rules="[required]"
+          label="From"
+          background-color="white"
+          dense
+          outlined
+          persistent-hint
+          required
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <DatePicker
+          v-model="destinationStop.departureDate"
+          :min="originStop.departureDate"
+          :rules="[
+            required,
+            greaterThanOrEqualToDate(originStop.departureDate, {
+              referenceFieldLabel: 'previous departure date',
+            }),
+          ]"
+          label="Date"
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <TimePicker
+          v-model="destinationStop.departureTime"
+          :rules="[required]"
+          label="Time (24h)"
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="4"
+      >
+        <TravelMethodSelect
+          v-model="destinationStop.transport"
+          :rules="[required]"
+          background-color="white"
+          dense
+          persistent-hint
+          required
+          outlined
+        />
+        <AccommodationTypeSelect
+          v-model="destinationStop.accommodationType"
+          :default-value="null"
+          hint="Optional, set only if neccessary"
+          placeholder="N/A"
+          background-color="white"
+          clearable
+          dense
+          outlined
+          persistent-hint
+        />
+      </v-col>
+    </v-row>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from "vuex"
+
+import { required, greaterThanOrEqualToDate } from "@/utils/validators"
+
+import DatePicker from "@/components/Utils/DatePicker"
+import LocationsAutocomplete from "@/components/LocationsAutocomplete"
+import TimePicker from "@/components/Utils/TimePicker"
+import AccommodationTypeSelect from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
+import TravelMethodSelect from "@/modules/travel-authorizations/components/TravelMethodSelect"
+
+export default {
+  name: "RoundTripStopsSection",
+  components: {
+    AccommodationTypeSelect,
+    DatePicker,
+    LocationsAutocomplete,
+    TimePicker,
+    TravelMethodSelect,
+  },
+  data() {
+    return {
+      originStop: {},
+      destinationStop: {},
+    }
+  },
+  computed: {
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      currentTravelAuthorizationId: "id",
+    }),
+  },
+  async mounted() {
+    this.originStop = this.currentTravelAuthorization.stops[0]
+    this.destinationStop = this.currentTravelAuthorization.stops[1]
+  },
+  methods: {
+    greaterThanOrEqualToDate,
+    required,
+  },
+}
+</script>

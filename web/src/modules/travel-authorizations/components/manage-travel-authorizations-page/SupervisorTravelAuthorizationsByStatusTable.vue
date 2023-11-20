@@ -120,7 +120,7 @@ export default {
     goToManageTravelAuthorization(travelAuthorization) {
       const travelAuthorizationId = travelAuthorization.id
       this.$router.push({
-        name: "ManageTravelAuthorizationDetails",
+        name: "ManageTravelAuthorizationDetailsPage",
         params: { travelAuthorizationId },
       })
     },

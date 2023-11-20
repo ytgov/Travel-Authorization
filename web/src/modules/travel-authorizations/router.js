@@ -92,10 +92,10 @@ const routes = [
             redirect: "details",
           },
           {
-            name: "ManageTravelAuthorizationDetails",
+            name: "ManageTravelAuthorizationDetailsPage",
             path: "details",
             component: () =>
-              import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetails"),
+              import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetailsPage"),
             props: true,
           },
         ],
