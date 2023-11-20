@@ -70,32 +70,32 @@ export class TravelAuthorizationsController extends BaseController {
       .catch((error) => {
         return this.response
           .status(422)
-          .json({ message: `TravelAuthorization submission failed: ${error}` })
+          .json({ message: `Travel authorization submission failed: ${error}` })
       })
   }
 
   async show() {
     // TODO: make missing route params auto-404?
     if (isNil(this.params.travelAuthorizationId)) {
-      return this.response.status(404).json({ message: "TravelAuthorization not found." })
+      return this.response.status(404).json({ message: "Travel authorization not found." })
     }
 
     const travelAuthorization = await this.loadTravelAuthorization()
     if (isNil(travelAuthorization))
-      return this.response.status(404).json({ message: "TravelAuthorization not found." })
+      return this.response.status(404).json({ message: "Travel authorization not found." })
 
     const policy = this.buildPolicy(travelAuthorization)
     if (!policy.show()) {
       return this.response
         .status(403)
-        .json({ message: "You are not authorized to view this TravelAuthorization." })
+        .json({ message: "You are not authorized to view this travel authorization." })
     }
 
     return TravelAuthorization.findByPk(this.params.travelAuthorizationId, {
       include: ["expenses", "stops", "purpose", "user"],
     }).then((travelAuthorization) => {
       if (isNil(travelAuthorization)) {
-        return this.response.status(404).json({ message: "TravelAuthorization not found." })
+        return this.response.status(404).json({ message: "Travel authorization not found." })
       }
 
       const serializedTravelAuthorization =
@@ -108,18 +108,18 @@ export class TravelAuthorizationsController extends BaseController {
   async update() {
     // TODO: make missing route params auto-404?
     if (isNil(this.params.travelAuthorizationId)) {
-      return this.response.status(404).json({ message: "TravelAuthorization not found." })
+      return this.response.status(404).json({ message: "Travel authorization not found." })
     }
 
     const travelAuthorization = await this.loadTravelAuthorization()
     if (isNil(travelAuthorization))
-      return this.response.status(404).json({ message: "TravelAuthorization not found." })
+      return this.response.status(404).json({ message: "Travel authorization not found." })
 
     const policy = this.buildPolicy(travelAuthorization)
     if (!policy.update()) {
       return this.response
         .status(403)
-        .json({ message: "You are not authorized to update this travelAuthorization." })
+        .json({ message: "You are not authorized to update this travel authorization." })
     }
 
     const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
@@ -133,7 +133,7 @@ export class TravelAuthorizationsController extends BaseController {
       .catch((error) => {
         return this.response
           .status(422)
-          .json({ message: `TravelAuthorization update failed: ${error}` })
+          .json({ message: `Travel authorization update failed: ${error}` })
       })
   }
 
