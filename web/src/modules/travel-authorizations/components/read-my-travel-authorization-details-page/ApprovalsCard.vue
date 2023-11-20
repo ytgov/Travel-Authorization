@@ -67,9 +67,8 @@
 
 <script>
 import { isEmpty, sumBy } from "lodash"
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapState, mapGetters } from "vuex"
 
-import { TYPES } from "@/api/expenses-api"
 import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 export default {
@@ -81,15 +80,10 @@ export default {
   }),
   computed: {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    // TODO: Make this a getter in the store
-    estimates() {
-      return (
-        this.currentTravelAuthorization.expenses?.filter(
-          (expense) => expense.type === TYPES.ESTIMATE
-        ) || []
-      )
-    },
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      estimates: "estimates",
+    }),
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },

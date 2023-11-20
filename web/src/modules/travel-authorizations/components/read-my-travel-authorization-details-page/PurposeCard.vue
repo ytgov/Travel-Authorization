@@ -106,8 +106,10 @@ export default {
   },
   data: () => ({}),
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      currentTravelAuthorizationId: "id",
+    }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",

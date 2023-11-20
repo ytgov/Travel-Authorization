@@ -18,8 +18,8 @@
       </v-row>
 
       <component
-        v-if="tripTypeComponent"
         :is="tripTypeComponent"
+        v-if="tripTypeComponent"
       />
       <div v-else>Trip type {{ tripType }} not implemented!</div>
       <v-row>
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -81,8 +81,10 @@ export default {
     tripType: "",
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      currentTravelAuthorizationId: "id",
+    }),
     tripTypeComponent() {
       switch (this.tripType) {
         case TRIP_TYPES.ROUND_TRIP:

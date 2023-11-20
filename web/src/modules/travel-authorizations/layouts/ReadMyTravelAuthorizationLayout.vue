@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FullScreenLoadingOverlay :value="loadingCurrentForm" />
+    <FullScreenLoadingOverlay :value="!isReadyCurrentTravelAuthorization" />
 
     <Breadcrumbs />
 
@@ -34,7 +34,7 @@
       </v-btn>
     </h1>
 
-    <template v-if="!loadingCurrentForm">
+    <template v-if="isReadyCurrentTravelAuthorization">
       <SummaryHeaderPanel :travel-authorization-id="formId" />
     </template>
 
@@ -48,14 +48,14 @@
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
 
-    <template v-if="!loadingCurrentForm">
+    <template v-if="isReadyCurrentTravelAuthorization">
       <router-view></router-view>
     </template>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapState, mapGetters } from "vuex"
 
 import { ROLES as USER_ROLES } from "@/api/users-api"
 
@@ -83,20 +83,20 @@ export default {
   }),
   computed: {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
+    ...mapGetters("current/travelAuthorization", { isReadyCurrentTravelAuthorization: "isReady" }),
     isAdmin() {
       return this.currentUser?.roles?.includes(USER_ROLES.ADMIN)
     },
   },
   mounted() {
     return Promise.all([
-      this.loadCurrentTravelAuthorization(this.formId),
+      this.ensureCurrentTravelAuthorization(this.formId),
       this.initializeCurrentUser(),
     ])
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
-    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorization"]),
+    ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
     goToAdminEditPage() {
       alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)
     },
