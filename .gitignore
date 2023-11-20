@@ -108,4 +108,4 @@ dist
 .tern-port
 
 # LibreOffice
-/Design/.~lock.*
+.~lock.*
