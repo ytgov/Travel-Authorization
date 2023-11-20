@@ -18,22 +18,11 @@
             md="2"
           >
             <v-btn
-              v-if="!refreshingEstimatesSilently && hasEstimates"
-              :to="{
-                name: 'EditMyTravelAuthorizationEstimatePage',
-                params: { formId: currentTravelAuthorizationId },
-              }"
               class="mt-1"
               color="secondary"
-              >Edit Estimate</v-btn
+              @click="alert('TODO: Implement viewing page for estimates for managers')"
+              >View Estimate</v-btn
             >
-            <EstimateGenerateDialog
-              v-else
-              :form-id="currentTravelAuthorizationId"
-              button-classes="mt-1"
-              button-color="primary"
-              @created="refreshEstimatesSilently"
-            />
           </v-col>
         </v-row>
         <v-row>
@@ -58,7 +47,7 @@
             <v-select
               v-model="currentTravelAuthorization.preappId"
               :items="preApprovedTravelRequests"
-              :loading="isLoadingCurrentUser || loadingPreApprovedTravelRequests"
+              :loading="loadingPreApprovedTravelRequests"
               label="Pre-approved Travel Request?"
               no-data-text="No pre-approvals available"
               dense
@@ -80,15 +69,6 @@
               required
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <SubmitToSupervisorButton
-              :validate-form="validateForm"
-              class="mt-1"
-            />
-          </v-col>
         </v-row>
       </v-form>
     </v-card-text>
@@ -97,23 +77,18 @@
 
 <script>
 import { isEmpty } from "lodash"
-import { mapActions, mapState, mapGetters } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
-
-import EstimatedCostTextField from "./approvals-form-card/EstimatedCostTextField"
-import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"
+import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
 
 export default {
   name: "ApprovalsFormCard",
   components: {
     EstimatedCostTextField,
-    EstimateGenerateDialog,
     SearchableUserEmailCombobox,
-    SubmitToSupervisorButton,
   },
   props: {
     validateForm: {
@@ -126,10 +101,8 @@ export default {
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
     preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
-    refreshingEstimatesSilently: false,
   }),
   computed: {
-    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
       currentTravelAuthorizationId: "id",
@@ -143,29 +116,16 @@ export default {
         this.currentTravelAuthorization.travelAdvanceInCents = Math.ceil(value * 100)
       },
     },
-    hasEstimates() {
-      return this.currentTravelAuthorizationEstimates.length > 0
-    },
   },
   async mounted() {
-    const department = !isEmpty(this.currentUser.department)
-      ? this.currentUser.department
-      : await this.initializeCurrentUser().then((user) => user.department)
+    const { department } = this.currentTravelAuthorization.user
     await this.loadPreApprovedTravelRequests(department)
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     ...mapActions("current/travelAuthorization", {
       fetchCurrentTravelAuthorizationSilently: "fetchSilently",
     }),
-    refreshEstimatesSilently() {
-      this.refreshingEstimatesSilently = true
-      return this.fetchCurrentTravelAuthorizationSilently(
-        this.currentTravelAuthorizationId
-      ).finally(() => {
-        this.refreshingEstimatesSilently = false
-      })
-    },
+    // TODO: push this logic to a Vuex store.
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.
       if (isEmpty(department)) {

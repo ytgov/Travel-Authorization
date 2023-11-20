@@ -104,7 +104,7 @@ import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
 
-import EstimatedCostTextField from "./approvals-form-card/EstimatedCostTextField"
+import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
 import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"
 
 export default {
