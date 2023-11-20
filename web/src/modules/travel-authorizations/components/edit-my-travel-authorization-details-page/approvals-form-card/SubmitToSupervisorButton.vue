@@ -74,7 +74,7 @@ export default {
 
       this.SET_STATUS(STATUSES.SUBMITTED)
       return this.save()
-        .then(({ travelAuthorization }) => {
+        .then((travelAuthorization) => {
           this.$router.push({
             name: "ReadMyTravelAuthorizationDetailsPage",
             params: { formId: travelAuthorization.id },
