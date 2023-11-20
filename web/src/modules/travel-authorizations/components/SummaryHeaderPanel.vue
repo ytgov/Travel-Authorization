@@ -73,28 +73,30 @@ export default {
     },
   },
   computed: {
-    ...mapState("current/travelAuthorization", { travelAuthorization: "attributes" }),
+    ...mapState("current/travelAuthorization", { currentTravelAuthorization: "attributes" }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
     finalDestination() {
-      return last(this.travelAuthorization.stops) || {}
+      return last(this.currentTravelAuthorization.stops) || {}
     },
     initialDestination() {
-      return first(this.travelAuthorization.stops) || {}
+      return first(this.currentTravelAuthorization.stops) || {}
     },
     purposeText() {
-      const purpose = this.travelPurposes.find((p) => p.id === this.travelAuthorization.purposeId)
+      const purpose = this.travelPurposes.find(
+        (p) => p.id === this.currentTravelAuthorization.purposeId
+      )
       return purpose?.purpose || ""
     },
   },
   async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
-    ...mapActions("current/travelAuthorization", { ensureTravelAuthorization: "ensure" }),
+    ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }

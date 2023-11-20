@@ -92,7 +92,7 @@ export class TravelAuthorizationsService {
       await ExpensesService.bulkReplace(travelAuthorizationId, expenses)
     }
 
-    return travelAuthorization.reload({ include: ["expenses", "stops", "purpose"] })
+    return travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
   }
 }
 

@@ -130,11 +130,11 @@ export default {
   }),
   computed: {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", [
-      "currentTravelAuthorizationId",
-      "currentTravelAuthorizationEstimates",
-    ]),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      currentTravelAuthorizationId: "id",
+      currentTravelAuthorizationEstimates: "estimates",
+    }),
     travelAdvanceInDollars: {
       get() {
         return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0) || 0
@@ -155,14 +155,16 @@ export default {
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
-    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorizationSilently"]),
+    ...mapActions("current/travelAuthorization", {
+      fetchCurrentTravelAuthorizationSilently: "fetchSilently",
+    }),
     refreshEstimatesSilently() {
       this.refreshingEstimatesSilently = true
-      return this.loadCurrentTravelAuthorizationSilently(this.currentTravelAuthorizationId).finally(
-        () => {
-          this.refreshingEstimatesSilently = false
-        }
-      )
+      return this.fetchCurrentTravelAuthorizationSilently(
+        this.currentTravelAuthorizationId
+      ).finally(() => {
+        this.refreshingEstimatesSilently = false
+      })
     },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.

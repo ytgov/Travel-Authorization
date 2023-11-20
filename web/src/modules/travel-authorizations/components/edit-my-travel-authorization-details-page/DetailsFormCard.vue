@@ -72,7 +72,7 @@
 
 <script>
 import { isEmpty, last } from "lodash"
-import { mapState, mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
 import { ACCOMMODATION_TYPES } from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
@@ -104,8 +104,10 @@ export default {
     },
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      currentTravelAuthorizationId: "id",
+    }),
     finalDestination() {
       return last(this.currentTravelAuthorization.stops) || {}
     },

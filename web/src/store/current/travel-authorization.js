@@ -52,6 +52,27 @@ const actions = {
       throw error
     }
   },
+  async save({ commit, state, getters }) {
+    const travelAuthorizationId = getters.id
+    const attributes = state.attributes
+
+    commit("SET_IS_LOADING", true)
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.update(
+        travelAuthorizationId,
+        attributes
+      )
+      commit("SET_IS_ERRORED", false)
+      commit("SET_ATTRIBUTES", travelAuthorization)
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to update travel authorization:", error)
+      commit("SET_IS_ERRORED", true)
+      throw error
+    } finally {
+      commit("SET_IS_LOADING", false)
+    }
+  },
 }
 
 const mutations = {
@@ -66,6 +87,9 @@ const mutations = {
   },
   SET_IS_CACHED(state, value) {
     state.isCached = value
+  },
+  SET_STATUS(state, value) {
+    state.attributes.status = value
   },
 }
 

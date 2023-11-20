@@ -253,7 +253,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex"
+import { mapGetters } from "vuex"
 
 import { required, greaterThanOrEqualToDate } from "@/utils/validators"
 
@@ -281,8 +281,10 @@ export default {
     }
   },
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      currentTravelAuthorizationId: "id",
+    }),
   },
   async mounted() {
     this.stop1 = this.currentTravelAuthorization.stops[0]
