@@ -1,4 +1,5 @@
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
 
@@ -15,7 +16,10 @@ const state = {
 }
 
 const getters = withGettersFromState(state, {
+  isReady: (state) => state.isCached && !state.isLoading && !state.isErrored,
   id: (state) => state.attributes.id,
+  estimates: (state) =>
+    state.attributes.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE) || [],
 })
 
 const actions = {

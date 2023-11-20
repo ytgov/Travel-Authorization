@@ -10,6 +10,7 @@ Pattern:
 - Each object should get three additional generic stateful attributes. i.e. `attributes` -> `isLoading`, `isErrored`, and `isCached`.
 - actions should log then raise any errors, until we have a notification store or something for generic error handling.
 - Singular objects should store their attributes in `state.attributes`, plural objects should use `state.items`
+- (optional) defined an "isReady" getter that checks isCached && !isLoading && !isErrored
 
 Method patterns:
 

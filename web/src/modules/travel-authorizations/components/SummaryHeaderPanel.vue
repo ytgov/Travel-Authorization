@@ -73,7 +73,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("travelAuthorization", { travelAuthorization: "attributes" }),
+    ...mapState("current/travelAuthorization", { travelAuthorization: "attributes" }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
@@ -94,7 +94,7 @@ export default {
     await this.ensureTravelPurposes()
   },
   methods: {
-    ...mapActions("travelAuthorization", { ensureTravelAuthorization: "ensure" }),
+    ...mapActions("current/travelAuthorization", { ensureTravelAuthorization: "ensure" }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }
