@@ -6,21 +6,20 @@
   >
     <v-row>
       <v-col>
-        <PurposeFormCard />
+        <PurposeCard />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <DetailsFormCard />
+        <DetailsCard />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <ApprovalsFormCard :validate-form="validateForm" />
+        <ApprovalsCard :validate-form="validateForm" />
       </v-col>
     </v-row>
     <div class="d-flex justify-end">
-      <SaveButton :validate-form="validateForm" />
       <v-btn
         class="ml-3"
         color="secondary"
@@ -32,19 +31,16 @@
 </template>
 
 <script>
-import PurposeFormCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/PurposeFormCard"
-import DetailsFormCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/DetailsFormCard"
-import ApprovalsFormCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ApprovalsFormCard"
-
-import SaveButton from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/SaveButton"
+import PurposeCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/PurposeCard"
+import DetailsCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/DetailsCard"
+import ApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ApprovalsCard"
 
 export default {
   name: "ManageTravelAuthorizationDetailsPage",
   components: {
-    PurposeFormCard,
-    DetailsFormCard,
-    ApprovalsFormCard,
-    SaveButton,
+    PurposeCard,
+    DetailsCard,
+    ApprovalsCard,
   },
   methods: {
     validateForm() {
