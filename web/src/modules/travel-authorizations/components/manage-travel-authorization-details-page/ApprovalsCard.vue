@@ -85,6 +85,9 @@ export default {
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
+    currentTravelAuthorizationUser() {
+      return this.currentTravelAuthorization.user || {}
+    },
     preApprovedTravelRequestText() {
       const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
         (p) => p.value === this.currentTravelAuthorization.preappId
@@ -95,22 +98,27 @@ export default {
       }
 
       const { preApprovedTravelers } = preApprovedTravelRequest
-
       const travelerNames = preApprovedTravelers
         .map((traveler) => traveler.fullName)
         .filter(Boolean)
-        .join(",")
+      const { fullName: currentTravelAuthorizationUserFullname } =
+        this.currentTravelAuthorizationUser
 
-      return isEmpty(travelerNames)
-        ? `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month}`
-        : `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month} - ${travelerNames}`
+      if (
+        isEmpty(travelerNames) ||
+        !travelerNames.includes(currentTravelAuthorizationUserFullname)
+      ) {
+        return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month}`
+      }
+
+      return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month} - ${currentTravelAuthorizationUserFullname}`
     },
     travelAdvanceInDollars() {
       return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0)
     },
   },
   async mounted() {
-    const { department } = this.currentTravelAuthorization.user
+    const { department } = this.currentTravelAuthorizationUser
     await this.ensurePreApprovedTravelRequests({ where: { department } })
   },
   methods: {

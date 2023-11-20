@@ -38,7 +38,7 @@
         >
           <v-text-field
             :value="preApprovedTravelRequestText"
-            :loading="isLoadingCurrentUser || loadingPreApprovedTravelRequests"
+            :loading="isLoadingPreApprovedTravelRequests"
             label="Pre-approved Travel Request?"
             no-data-text="No pre-approvals available"
             dense
@@ -66,93 +66,65 @@
 </template>
 
 <script>
-import { isEmpty, sumBy } from "lodash"
-import { mapActions, mapState, mapGetters } from "vuex"
-
-import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
+import { isNil, isEmpty, sumBy } from "lodash"
+import { mapActions, mapGetters } from "vuex"
 
 export default {
   name: "ApprovalsCard",
   components: {},
-  data: () => ({
-    preApprovedTravelRequests: [],
-    loadingPreApprovedTravelRequests: false,
-  }),
+  data: () => ({}),
   computed: {
-    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
       estimates: "estimates",
     }),
+    ...mapGetters("preApprovedTravelRequests", {
+      preApprovedTravelRequests: "items",
+      isLoadingPreApprovedTravelRequests: "isLoading",
+    }),
     estimatedCost() {
       return sumBy(this.estimates, "cost")
+    },
+    currentTravelAuthorizationUser() {
+      return this.currentTravelAuthorization.user || {}
     },
     preApprovedTravelRequestText() {
       const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
         (p) => p.value === this.currentTravelAuthorization.preappId
       )
-      return preApprovedTravelRequest?.text || ""
+
+      if (isNil(preApprovedTravelRequest)) {
+        return ""
+      }
+
+      const { preApprovedTravelers } = preApprovedTravelRequest
+      const travelerNames = preApprovedTravelers
+        .map((traveler) => traveler.fullName)
+        .filter(Boolean)
+      const { fullName: currentTravelAuthorizationUserFullname } =
+        this.currentTravelAuthorizationUser
+
+      if (
+        isEmpty(travelerNames) ||
+        !travelerNames.includes(currentTravelAuthorizationUserFullname)
+      ) {
+        return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month}`
+      }
+
+      return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month} - ${currentTravelAuthorizationUserFullname}`
     },
     travelAdvanceInDollars() {
       return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0)
     },
   },
   async mounted() {
-    const department = !isEmpty(this.currentUser.department)
-      ? this.currentUser.department
-      : await this.initializeCurrentUser().then((user) => user.department)
-    return this.loadPreApprovedTravelRequests(department)
+    const { department } = this.currentTravelAuthorizationUser
+    await this.ensurePreApprovedTravelRequests({ where: { department } })
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
-    loadPreApprovedTravelRequests(department) {
-      // Since we can't determine if a pre-approval applies, the user doesn't get any options.
-      if (isEmpty(department)) {
-        this.preApprovedTravelRequests = []
-        return
-      }
-
-      this.loadingPreApprovedTravelRequests = true
-      return preApprovedTravelRequestsApi
-        .list({ where: { department } })
-        .then(({ preApprovedTravelRequests }) => {
-          const flatRequests = this.flattenRequests(preApprovedTravelRequests)
-          const options = flatRequests.map((request) => {
-            const text = isEmpty(request.fullName)
-              ? `${request.purpose} - ${request.month}`
-              : `${request.purpose} - ${request.month} - ${request.fullName}`
-            return {
-              text,
-              value: request.id,
-            }
-          })
-          this.preApprovedTravelRequests = options
-        })
-        .finally(() => {
-          this.loadingPreApprovedTravelRequests = false
-        })
-    },
-    flattenRequests(preApprovedTravelRequests) {
-      return preApprovedTravelRequests.flatMap(
-        ({ preApprovedTravelers, ...otherRequestAttributes }) => {
-          // If there are no travelers, return the request as is
-          if (preApprovedTravelers.length === 0) {
-            return {
-              ...otherRequestAttributes,
-              travelerID: null,
-              fullName: null,
-            }
-          }
-
-          // Otherwise, return an array of requests, one for each traveler
-          return preApprovedTravelers.map((traveler) => ({
-            ...otherRequestAttributes,
-            travelerID: traveler.travelerID,
-            fullName: traveler.fullName,
-          }))
-        }
-      )
-    },
+    ...mapActions("preApprovedTravelRequests", {
+      ensurePreApprovedTravelRequests: "ensure",
+    }),
     formatCurrency(amount) {
       const formatter = new Intl.NumberFormat("en-CA", {
         style: "currency",
