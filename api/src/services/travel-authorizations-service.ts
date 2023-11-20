@@ -1,10 +1,9 @@
 import { CreationAttributes } from "sequelize"
-import { isNil, isEmpty } from "lodash"
+import { isEmpty } from "lodash"
 import { v4 as uuid } from "uuid"
 
 import { Expense, Stop, TravelAuthorization, User } from "@/models"
 import StopsService from "./stops-service"
-import LegacyFormSerivce from "./form-service"
 import ExpensesService from "./expenses-service"
 
 import db from "@/db/db-client"
@@ -21,12 +20,11 @@ type TravelAuthorizationCreationAttributes = Omit<
 } & {
   stops?: CreationAttributes<Stop>[]
   expenses?: CreationAttributes<Expense>[]
-  estimates?: CreationAttributes<Expense>[]
 }
 
 export class TravelAuthorizationsService {
   static async create(
-    { stops = [], expenses, estimates, ...attributes }: TravelAuthorizationCreationAttributes,
+    { stops = [], expenses = [], ...attributes }: TravelAuthorizationCreationAttributes,
     currentUser: User
   ): Promise<TravelAuthorization> {
     const secureAttributes = {
@@ -48,9 +46,9 @@ export class TravelAuthorizationsService {
           await StopsService.bulkCreate(travelAuthorizationId, stops)
         }
 
-        const instance = new LegacyFormSerivce()
-        await instance.saveExpenses(travelAuthorizationId, expenses)
-        await instance.saveEstimates(travelAuthorizationId, estimates)
+        if (!isEmpty(expenses)) {
+          await ExpensesService.bulkCreate(travelAuthorizationId, expenses)
+        }
 
         auditService.log(
           currentUser.id,
@@ -59,7 +57,7 @@ export class TravelAuthorizationsService {
           "TravelAuthorization submitted successfully."
         )
 
-        return travelAuthorization
+        return travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
       })
       .catch((error) => {
         auditService.log(

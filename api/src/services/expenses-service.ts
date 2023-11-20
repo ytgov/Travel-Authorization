@@ -1,3 +1,4 @@
+import { CreationAttributes } from "sequelize"
 import { isNull } from "lodash"
 
 import db from "@/db/db-client"
@@ -28,7 +29,10 @@ export class ExpensesService extends BaseService {
     })
   }
 
-  static async bulkCreate(travelAuthorizationId: number, expenses: Expense[]): Promise<Expense[]> {
+  static async bulkCreate(
+    travelAuthorizationId: number,
+    expenses: CreationAttributes<Expense>[]
+  ): Promise<Expense[]> {
     if (!expenses.every((expense) => expense.travelAuthorizationId === travelAuthorizationId)) {
       throw new Error("All expenses must belong to the same form.")
     }
