@@ -38,19 +38,11 @@
     <v-tabs v-model="tab">
       <v-tab
         :to="{
-          name: 'ReadMyTravelAuthorizationDetailsPage',
+          name: 'ManageTravelAuthorizationDetailsPage',
           params: { formId: travelAuthorizationId },
         }"
         >Details</v-tab
       >
-      <v-tab
-        :to="{
-          name: 'ReadMyTravelAuthorizationEstimatePage',
-          params: { formId: travelAuthorizationId },
-        }"
-        >Estimate</v-tab
-      >
-      <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
 
     <template v-if="isCachedTravelAuthorization">
