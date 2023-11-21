@@ -33,6 +33,11 @@ export const travelAuthorizationsApi = {
       .patch(`/api/travel-authorizations/${travelAuthorizationId}`, attributes)
       .then(({ data }) => data)
   },
+  approve(travelAuthorizationId) {
+    return http
+      .post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)
+      .then(({ data }) => data)
+  },
 }
 
 export default travelAuthorizationsApi

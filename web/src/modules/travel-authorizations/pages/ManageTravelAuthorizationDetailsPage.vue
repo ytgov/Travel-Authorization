@@ -19,6 +19,11 @@
         <ApprovalsCard :validate-form="validateForm" />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <ManagementCard :travel-authorization-id="travelAuthorizationId" />
+      </v-col>
+    </v-row>
     <div class="d-flex justify-end">
       <v-btn
         class="ml-3"
@@ -31,16 +36,24 @@
 </template>
 
 <script>
-import PurposeCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/PurposeCard"
-import DetailsCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/DetailsCard"
 import ApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ApprovalsCard"
+import DetailsCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/DetailsCard"
+import ManagementCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ManagementCard"
+import PurposeCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/PurposeCard"
 
 export default {
   name: "ManageTravelAuthorizationDetailsPage",
   components: {
-    PurposeCard,
-    DetailsCard,
     ApprovalsCard,
+    DetailsCard,
+    ManagementCard,
+    PurposeCard,
+  },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
   },
   methods: {
     validateForm() {

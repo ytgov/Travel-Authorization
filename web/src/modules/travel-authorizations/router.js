@@ -96,7 +96,7 @@ const routes = [
             path: "details",
             component: () =>
               import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetailsPage"),
-            props: true,
+            props: cast("travelAuthorizationId", parseInt),
           },
         ],
       },
