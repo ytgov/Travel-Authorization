@@ -1,0 +1,183 @@
+<template>
+  <div>
+    <v-row>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <VReadonlyLocationTextField
+          :value="originStop.locationId"
+          label="From"
+          dense
+          outlined
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <VReadonlyLocationTextField
+          :value="destinationStop.locationId"
+          label="To"
+          dense
+          outlined
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          :value="originStop.departureDate"
+          label="Date"
+          prepend-icon="mdi-calendar"
+          dense
+          outlined
+          persistent-hint
+          readonly
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          :value="originStop.departureTime"
+          label="Time (24h)"
+          prepend-icon="mdi-clock"
+          dense
+          outlined
+          persistent-hint
+          readonly
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="4"
+      >
+        <v-text-field
+          :value="originStop.transport"
+          label="Travel Method"
+          dense
+          persistent-hint
+          outlined
+          readonly
+        />
+        <v-text-field
+          :value="originStop.accommodationType"
+          label="Type of Accommodation"
+          dense
+          outlined
+          readonly
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <VReadonlyLocationTextField
+          :value="destinationStop.locationId"
+          label="To"
+          dense
+          outlined
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <VReadonlyLocationTextField
+          :value="originStop.locationId"
+          label="From"
+          dense
+          outlined
+          persistent-hint
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          :value="destinationStop.departureDate"
+          label="Date"
+          prepend-icon="mdi-calendar"
+          dense
+          outlined
+          persistent-hint
+          readonly
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="2"
+      >
+        <v-text-field
+          :value="destinationStop.departureTime"
+          label="Time (24h)"
+          prepend-icon="mdi-clock"
+          dense
+          outlined
+          persistent-hint
+          readonly
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="4"
+      >
+        <v-text-field
+          :value="destinationStop.transport"
+          label="Travel Method"
+          dense
+          persistent-hint
+          outlined
+          readonly
+        />
+        <v-text-field
+          :value="destinationStop.accommodationType"
+          label="Type of Accommodation"
+          hint="Optional, set only if neccessary"
+          placeholder="N/A"
+          dense
+          outlined
+          persistent-hint
+          readonly
+        />
+      </v-col>
+    </v-row>
+  </div>
+</template>
+
+<script>
+import { mapState, mapGetters } from "vuex"
+
+import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
+
+export default {
+  name: "RoundTripStopsSection",
+  components: {
+    VReadonlyLocationTextField,
+  },
+  data() {
+    return {
+      originStop: {},
+      destinationStop: {},
+    }
+  },
+  computed: {
+    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
+    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
+  },
+  async mounted() {
+    this.originStop = this.currentTravelAuthorization.stops[0]
+    this.destinationStop = this.currentTravelAuthorization.stops[1]
+  },
+  methods: {},
+}
+</script>

@@ -1,5 +1,6 @@
-import { User } from "@/models"
+import { pick } from "lodash"
 
+import { User } from "@/models"
 import BaseSerializer from "./base-serializer"
 
 export class UsersSerializer extends BaseSerializer<User> {
@@ -9,8 +10,25 @@ export class UsersSerializer extends BaseSerializer<User> {
   }
 
   asDetailed(): Partial<User> & { displayName: string } {
+    // Note that "sub" (Auth0 subject attribute) is a restricted field.
     return {
-      ...this.record.dataValues,
+      ...pick(this.record.dataValues, [
+        "id",
+        "email",
+        "status",
+        "firstName",
+        "lastName",
+        "roles",
+        "department",
+        "division",
+        "branch",
+        "unit",
+        "mailcode",
+        "manager",
+        "lastEmployeeDirectorySyncAt",
+        "createdAt",
+        "updatedAt",
+      ]),
       displayName: `${this.record.firstName} ${this.record.lastName}`,
     }
   }

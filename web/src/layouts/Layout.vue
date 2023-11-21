@@ -31,7 +31,7 @@
           offset-y
           class="ml-0"
         >
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <v-btn
               text
               color="primary"
@@ -47,50 +47,54 @@
             style="min-width: 200px"
           >
             <v-list-item
-              @click="menuItemSelected('Dashboard')"
               to="/dashboard"
+              @click="menuItemSelected('Dashboard')"
             >
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
+            <!--
+              Use route literal here to avoid trailing slash which breaks breadcrumbs
+              TODO: debug why using a named route here adds a trailing slash
+            -->
             <v-list-item
-              @click="menuItemSelected('My Travel Requests')"
               to="/my-travel-requests"
+              @click="menuItemSelected('My Travel Requests')"
             >
               <v-list-item-title>My Travel Requests</v-list-item-title>
             </v-list-item>
             <v-list-item
-              @click="menuItemSelected('PreApproved')"
               to="/preapproved"
+              @click="menuItemSelected('PreApproved')"
             >
               <v-list-item-title>PreApproved</v-list-item-title>
             </v-list-item>
             <v-list-item
-              @click="menuItemSelected('Travel Desk')"
               to="/travel-desk"
+              @click="menuItemSelected('Travel Desk')"
             >
               <v-list-item-title>Travel Desk </v-list-item-title>
             </v-list-item>
             <v-list-item
-              @click="menuItemSelected('Travel Request')"
               to="/travel-request"
+              @click="menuItemSelected('Travel Request')"
             >
               <v-list-item-title>Travel Request </v-list-item-title>
             </v-list-item>
             <v-list-item
-              @click="menuItemSelected('Flight Expense')"
               to="/flight-expense"
+              @click="menuItemSelected('Flight Expense')"
             >
               <v-list-item-title>Flight Expense </v-list-item-title>
             </v-list-item>
             <v-list-item
-              @click="menuItemSelected('Reports')"
               to="/reporting-summary"
+              @click="menuItemSelected('Reports')"
             >
               <v-list-item-title>Reports </v-list-item-title>
             </v-list-item>
             <v-list-item
+              :to="{ name: 'ManageTravelAuthorizationsPage' }"
               @click="menuItemSelected('Manager View')"
-              to="/managerView"
             >
               <v-list-item-title>Manager View</v-list-item-title>
             </v-list-item>
@@ -109,7 +113,7 @@
           color="primary"
           class="mr-2"
           title="Recently visited"
-          @click="showHistory()"
+          @click="showHistory"
         >
           <v-icon>mdi-history</v-icon>
         </v-btn>
@@ -120,7 +124,7 @@
           left
           class="ml-0"
         >
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <v-btn
               icon
               color="primary"
@@ -168,7 +172,7 @@
       <!-- <v-app-bar-nav-icon @click.stop="drawerRight = !drawerRight"></v-app-bar-nav-icon> -->
     </v-app-bar>
 
-    <v-main v-bind:style="{ 'padding-left: 33px !important': !hasSidebar }">
+    <v-main :style="{ 'padding-left: 33px !important': !hasSidebar }">
       <!-- Provides the application the proper gutter -->
       <v-container
         fluid
@@ -207,6 +211,24 @@ export default {
   components: {
     RequestAlert,
   },
+  data: () => ({
+    releaseTag: config.releaseTag,
+    dialog: false,
+    drawer: null,
+    drawerRight: null,
+    headerShow: false,
+    menuShow: false,
+    loadingClass: "d-none",
+    applicationName: config.applicationName,
+    applicationIcon: config.applicationIcon,
+    sections: config.sections,
+    hasSidebar: config.hasSidebar,
+    hasSidebarClosable: config.hasSidebarClosable,
+    currentId: 0,
+    menuTitle: "Dashboard",
+
+    showOverlay: true,
+  }),
   computed: {
     ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
     username() {
@@ -229,37 +251,6 @@ export default {
       )
     },
   },
-  data: () => ({
-    releaseTag: config.releaseTag,
-    dialog: false,
-    drawer: null,
-    drawerRight: null,
-    headerShow: false,
-    menuShow: false,
-    loadingClass: "d-none",
-    applicationName: config.applicationName,
-    applicationIcon: config.applicationIcon,
-    sections: config.sections,
-    hasSidebar: config.hasSidebar,
-    hasSidebarClosable: config.hasSidebarClosable,
-    currentId: 0,
-    menuTitle: "Dashboard",
-
-    showOverlay: true,
-  }),
-  async mounted() {
-    if (auth.auth0Client) {
-      this.doInitialize()
-      return
-    }
-
-    this.interval = window.setInterval(() => {
-      if (auth.auth0Client) {
-        window.clearInterval(this.interval)
-        this.doInitialize()
-      }
-    }, 200)
-  },
   watch: {
     isAuthenticated: function (val) {
       if (!val) this.hasSidebar = false
@@ -276,14 +267,32 @@ export default {
       this.getDropdownTitle()
     },
   },
+  async mounted() {
+    if (auth.auth0Client) {
+      this.doInitialize()
+      return
+    }
+
+    this.interval = window.setInterval(() => {
+      if (auth.auth0Client) {
+        window.clearInterval(this.interval)
+        this.doInitialize()
+      }
+    }, 200)
+  },
   methods: {
     nav: function (location) {
       router.push(location)
     },
-    signOut: function () {
-      this.$auth.logout({
-        returnTo: `${window.location.origin}/sign-in`,
-      })
+    signOut() {
+      // TODO: remove development customization once we update Auth0 environment
+      if (config.environment === "development") {
+        this.$auth.logout()
+      } else {
+        this.$auth.logout({
+          returnTo: `${window.location.origin}/sign-in`,
+        })
+      }
     },
     showHistory() {
       this.$refs.historySidebar.show()
@@ -309,17 +318,17 @@ export default {
       const path = this.$route.path
       const routes = [
         { name: "Dashboard", to: "/dashboard" },
-        { name: "My Travel Requests", to: "/my-travel-requests" },
+        { name: "My Travel Requests", to: { name: "MyTravelAuthorizationsPage" } },
         { name: "PreApproved", to: "/preapproved" },
         { name: "Travel Desk", to: "/travel-desk" },
         { name: "Travel Request", to: "/travel-request" },
         { name: "Flight Expense", to: "/flight-expense" },
         { name: "Reports", to: "/reporting-summary" },
-        { name: "Manager View", to: "/managerView" },
+        { name: "Manager View", to: { name: "ManageTravelAuthorizationsPage" } },
       ]
 
       if (this.isInDevelopmentOrUserAcceptanceTesting) {
-        routes.push({ name: "QA Scenarios", to: "/qa/scenarios" })
+        routes.push({ name: "QA Scenarios", to: { name: "Qa-Scenarios" } })
       }
 
       for (const route of routes) {

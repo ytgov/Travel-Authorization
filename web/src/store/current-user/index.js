@@ -5,7 +5,9 @@ import { withGettersFromState } from "@/utils/vuex-utils"
 import travelAuthorizations from "@/store/current-user/travel-authorizations"
 
 const state = {
-  attributes: {},
+  attributes: {
+    roles: [],
+  },
   isLoading: false,
   isErrored: false,
   isInitialized: false,
@@ -35,6 +37,23 @@ const actions = {
       return state.attributes
     } catch (error) {
       console.error("Failed to load current user:", error)
+      commit("SET_IS_ERRORED", true)
+      throw error
+    } finally {
+      commit("SET_IS_LOADING", false)
+    }
+  },
+
+  async ygGovernmentDirectorySync({ state, commit }) {
+    commit("SET_IS_LOADING", true)
+    try {
+      const { user } = await usersApi.ygGovernmentDirectorySync(state.attributes.id)
+      commit("SET_IS_ERRORED", false)
+      commit("SET_ATTRIBUTES", user)
+      commit("SET_IS_INITIALIZED", true)
+      return state.attributes
+    } catch (error) {
+      console.error("Failed to sync current user with the YG government directory:", error)
       commit("SET_IS_ERRORED", true)
       throw error
     } finally {

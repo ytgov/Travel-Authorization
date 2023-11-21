@@ -4,16 +4,17 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "TravelFormList",
+        name: "MyTravelAuthorizationsPage",
         path: "",
         meta: {
           requiresAuth: true,
         },
-        component: () => import("@/modules/travel-authorizations/pages/TravelFormList"),
+        component: () => import("@/modules/travel-authorizations/pages/MyTravelAuthorizationsPage"),
       },
       {
         path: ":formId",
-        component: () => import("@/modules/travel-authorizations/pages/TravelAuthorizationRead"),
+        component: () =>
+          import("@/modules/travel-authorizations/layouts/ReadMyTravelAuthorizationLayout"),
         props: true,
         children: [
           {
@@ -22,23 +23,24 @@ const routes = [
           },
           {
             path: "details",
-            name: "TravelAuthorizationRead-DetailsTab",
+            name: "ReadMyTravelAuthorizationDetailsPage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-authorization-read/DetailsTab"),
+              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationDetailsPage"),
             props: true,
           },
           {
             path: "estimate",
-            name: "TravelAuthorizationRead-EstimateTab",
+            name: "ReadMyTravelAuthorizationEstimatePage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-authorization-read/EstimateTab"),
+              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationEstimatePage"),
             props: true,
           },
         ],
       },
       {
         path: ":formId/edit",
-        component: () => import("@/modules/travel-authorizations/pages/TravelFormEdit"),
+        component: () =>
+          import("@/modules/travel-authorizations/layouts/EditMyTravelAuthorizationLayout"),
         props: true,
         children: [
           {
@@ -47,30 +49,31 @@ const routes = [
           },
           {
             path: "details",
-            name: "TravelFormEdit-DetailsTab",
+            name: "EditMyTravelAuthorizationDetailsPage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-form-edit/DetailsTab"),
+              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage"),
             props: true,
           },
           {
             path: "estimate",
-            name: "TravelFormEdit-EstimateTab",
+            name: "EditMyTravelAuthorizationEstimatePage",
             component: () =>
-              import("@/modules/travel-authorizations/pages/travel-form-edit/EstimateTab"),
+              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationEstimatePage"),
             props: true,
           },
         ],
       },
       {
-        name: "TravelFormManagerList",
-        path: "/managerView",
+        name: "ManageTravelAuthorizationsPage",
+        path: "/manager-view",
         meta: {
           requiresAuth: true,
         },
-        component: () => import("@/modules/travel-authorizations/pages/ManagerView"),
+        component: () =>
+          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
       },
       {
-        name: "travelRequestManage",
+        name: "TravelFormManage",
         path: "request/:formId?/manage",
         meta: {
           requiresAuth: true,

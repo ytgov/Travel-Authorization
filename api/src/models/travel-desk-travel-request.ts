@@ -182,6 +182,9 @@ TravelDeskTravelRequest.init(
     busEmail: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      set(value: string) {
+        this.setDataValue("busEmail", value.toLowerCase())
+      },
     },
     status: {
       type: DataTypes.STRING(255),

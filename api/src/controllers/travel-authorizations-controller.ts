@@ -11,38 +11,42 @@ import { TravelAuthorizationsPolicy } from "@/policies"
 export class TravelAuthorizationsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<TravelAuthorization>
-    const totalCount = await TravelAuthorization.count({ where })
-    return TravelAuthorization.findAll({
-      where,
-      include: [
-        {
-          association: "stops",
-          include: ["location"],
-        },
-        "expenses",
-        "purpose",
-        "travelDeskTravelRequest",
-      ],
-      order: [
-        ["updatedAt", "ASC"],
-        ["stops", "departureDate", "ASC"],
-        ["stops", "departureTime", "ASC"],
-      ],
-      limit: this.pagination.limit,
-      offset: this.pagination.offset,
-    }).then((travelAuthorizations) => {
-      const scopedTravelAuthorizations = TravelAuthorizationsPolicy.scope(
-        travelAuthorizations,
-        this.currentUser
-      )
-      const serializedTravelAuthorizations = TravelAuthorizationsSerializer.asTable(
-        scopedTravelAuthorizations
-      )
-      return this.response.json({
-        travelAuthorizations: serializedTravelAuthorizations,
-        totalCount,
+
+    const scopedTravelAuthorizations = TravelAuthorizationsPolicy.applyScope(
+      TravelAuthorization,
+      this.currentUser
+    )
+
+    const totalCount = await scopedTravelAuthorizations.count({ where })
+    return scopedTravelAuthorizations
+      .findAll({
+        where,
+        include: [
+          {
+            association: "stops",
+            include: ["location"],
+          },
+          "expenses",
+          "purpose",
+          "travelDeskTravelRequest",
+          "user",
+        ],
+        order: [
+          ["updatedAt", "ASC"],
+          ["stops", "departureDate", "ASC"],
+          ["stops", "departureTime", "ASC"],
+        ],
+        limit: this.pagination.limit,
+        offset: this.pagination.offset,
       })
-    })
+      .then((travelAuthorizations) => {
+        const serializedTravelAuthorizations =
+          TravelAuthorizationsSerializer.asTable(travelAuthorizations)
+        return this.response.json({
+          travelAuthorizations: serializedTravelAuthorizations,
+          totalCount,
+        })
+      })
   }
 
   create() {

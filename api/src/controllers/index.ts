@@ -1,13 +1,16 @@
 export * from "./expenses-controller"
-export * from "./travel-authorizations-controller"
 export * from "./locations-controller"
 export * from "./pre-approved-travel-requests-controller"
 export * from "./pre-approved-travelers-controller"
+export * from "./travel-authorizations-controller"
+export * from "./travel-purposes-controller"
+export * from "./users-controller"
 
 // Namespaced controllers
-import * as TravelAuthorizations from "./travel-authorizations"
 import * as Qa from "./qa"
+import * as TravelAuthorizations from "./travel-authorizations"
+import * as Users from "./users"
 
-export { TravelAuthorizations, Qa }
+export { Qa, TravelAuthorizations, Users }
 
 export default undefined

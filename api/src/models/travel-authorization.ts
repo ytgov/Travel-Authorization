@@ -76,6 +76,7 @@ export class TravelAuthorization extends Model<
   declare summary: string | null
   declare benefits: string | null
   declare status: Statuses | null
+  // TODO: consider making this supervisorId?
   declare supervisorEmail: string | null
   declare approved: string | null
   declare requestChange: string | null
@@ -103,6 +104,10 @@ export class TravelAuthorization extends Model<
   >
   declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
 
+  declare getUser: BelongsToGetAssociationMixin<User>
+  declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createUser: BelongsToCreateAssociationMixin<User>
+
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
   declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
   declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["travelAuthorizationId"]>
@@ -127,6 +132,7 @@ export class TravelAuthorization extends Model<
 
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
+  declare user: NonAttribute<User>
   declare expenses?: NonAttribute<Expense[]>
   declare stops?: NonAttribute<Stop[]>
 
@@ -135,6 +141,7 @@ export class TravelAuthorization extends Model<
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
     travelDeskTravelRequest: Association<TravelAuthorization, TravelDeskTravelRequest>
+    user: Association<TravelAuthorization, User>
   }
 
   static establishAssociations() {
@@ -146,6 +153,10 @@ export class TravelAuthorization extends Model<
       as: "travelDeskTravelRequest",
       sourceKey: "id",
       foreignKey: "travelAuthorizationId",
+    })
+    this.belongsTo(User, {
+      as: "user",
+      foreignKey: "userId",
     })
     this.hasMany(Stop, {
       as: "stops",
@@ -185,10 +196,11 @@ TravelAuthorization.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "travelPurpose", // using real table name here
+        model: "travel_purposes", // using real table name here
         key: "id", // using real column name here
       },
     },
+    // TODO: consider renaming this to requestorId?
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -224,6 +236,13 @@ TravelAuthorization.init(
     email: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      set(value: string | null) {
+        if (typeof value === "string") {
+          this.setDataValue("email", value.toLowerCase())
+        } else {
+          this.setDataValue("email", null)
+        }
+      },
     },
     mailcode: {
       type: DataTypes.STRING(255),
@@ -270,6 +289,13 @@ TravelAuthorization.init(
     supervisorEmail: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      set(value: string | null) {
+        if (typeof value === "string") {
+          this.setDataValue("supervisorEmail", value.toLowerCase())
+        } else {
+          this.setDataValue("supervisorEmail", null)
+        }
+      },
     },
     approved: {
       type: DataTypes.STRING(255),
@@ -293,6 +319,9 @@ TravelAuthorization.init(
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    // TODO: make this a foreign key to the users table
+    // also non-nullable,
+    // maybe rename to creatorId
     createdBy: {
       type: DataTypes.INTEGER,
       allowNull: true,

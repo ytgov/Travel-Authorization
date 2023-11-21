@@ -13,12 +13,12 @@ export const userRouter = express.Router()
 userRouter.get("/me", async (req: Request, res: Response) => {
   const user = req.user
 
+  // See api/src/controllers/users/yg-government-directory-sync-controller.ts for force sync endpoint
   if (!user.isTimeToSyncWithEmployeeDirectory()) {
     const serializedUser = UsersSerializer.asDetailed(user)
     return res.status(200).json({ user: serializedUser })
   }
 
-  // TODO: add a force sync endpoint
   return YkGovernmentDirectorySyncService.perform(user).then((user) => {
     const serializedUser = UsersSerializer.asDetailed(user)
     return res.status(200).json({ user: serializedUser })

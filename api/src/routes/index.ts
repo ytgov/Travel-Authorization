@@ -9,13 +9,15 @@ import {
   Qa,
   TravelAuthorizations,
   TravelAuthorizationsController,
+  TravelPurposesController,
+  Users,
+  UsersController,
 } from "@/controllers"
 import { healthCheckRouter } from "./healthcheck-router"
 
 export * from "./owner-router"
 export * from "./users-router"
 export * from "./lookup-router"
-export * from "./manager-router"
 export * from "./healthcheck-router"
 export * from "./form-router"
 export * from "./preapproved-router"
@@ -49,6 +51,12 @@ router.post(
 router.get("/api/locations", LocationsController.index)
 router.get("/api/pre-approved-travels", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
+router.get("/api/users/:userId", UsersController.show)
+router.post(
+  "/api/users/:userId/yg-government-directory-sync",
+  Users.YgGovernmentDirectorySyncController.create
+)
+router.get("/api/travel-purposes", TravelPurposesController.index)
 
 // QA testing scenarios
 router.get("/api/qa/scenarios", Qa.ScenariosController.index)
