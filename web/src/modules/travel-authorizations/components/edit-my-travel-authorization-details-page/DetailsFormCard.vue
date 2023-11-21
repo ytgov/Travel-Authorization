@@ -75,8 +75,7 @@ import { isEmpty, last } from "lodash"
 import { mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
-import { ACCOMMODATION_TYPES } from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
-import { TRAVEL_METHODS } from "@/modules/travel-authorizations/components/TravelMethodSelect"
+import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/travel-authorizations-api"
 import DatePicker from "@/components/Utils/DatePicker"
 import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
 
