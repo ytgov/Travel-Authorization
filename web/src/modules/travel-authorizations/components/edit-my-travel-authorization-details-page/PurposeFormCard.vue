@@ -57,7 +57,7 @@
                 md="9"
               >
                 <LocationsAutocomplete
-                  v-model="finalDestination.locationId"
+                  :value="finalDestination.locationId"
                   :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
                   :rules="[required]"
                   clearable
@@ -67,6 +67,7 @@
                   persistent-hint
                   required
                   validate-on-blur
+                  @input="createOrUpdateFinalDestination"
                 />
               </v-col>
             </v-row>
@@ -110,7 +111,7 @@
 </template>
 
 <script>
-import { last } from "lodash"
+import { last, isEmpty, isNil } from "lodash"
 import { mapState, mapActions, mapGetters } from "vuex"
 
 import LocationsAutocomplete from "@/components/LocationsAutocomplete"
@@ -127,26 +128,14 @@ export default {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
       currentTravelAuthorizationId: "id",
+      stops: "stops",
     }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
-    finalDestination: {
-      get() {
-        return (
-          last(this.currentTravelAuthorization.stops) || {
-            travelAuthorizationId: this.currentTravelAuthorizationId,
-          }
-        )
-      },
-      set(newValue) {
-        this.$set(
-          this.currentTravelAuthorization.stops,
-          this.currentTravelAuthorization.stops.length - 1,
-          newValue
-        )
-      },
+    finalDestination() {
+      return last(this.stops) || {}
     },
   },
   async mounted() {
@@ -154,6 +143,15 @@ export default {
   },
   methods: {
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
+    ...mapActions("current/travelAuthorization", ["addStop"]),
+    createOrUpdateFinalDestination(locationId) {
+      const lastStop = last(this.stops)
+      if (isNil(lastStop) || isEmpty) {
+        this.addStop({ locationId })
+      } else {
+        lastStop.locationId = locationId
+      }
+    },
   },
 }
 </script>

@@ -1,4 +1,7 @@
-import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import travelAuthorizationsApi, {
+  ACCOMMODATION_TYPES,
+  TRAVEL_METHODS,
+} from "@/api/travel-authorizations-api"
 import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
@@ -19,7 +22,8 @@ const getters = withGettersFromState(state, {
   isReady: (state) => state.isCached && !state.isLoading && !state.isErrored,
   id: (state) => state.attributes.id,
   estimates: (state) =>
-    state.attributes.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE) || [],
+    state.attributes.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE),
+  stops: (state) => state.attributes.stops,
 })
 
 const actions = {
@@ -73,6 +77,36 @@ const actions = {
       commit("SET_IS_LOADING", false)
     }
   },
+  addStop({ commit, getters }, attributes) {
+    const newStop = {
+      travelAuthorizationId: getters.id,
+      accommodationType: ACCOMMODATION_TYPES.HOTEL,
+      transport: TRAVEL_METHODS.AIRCRAFT,
+      ...attributes,
+    }
+
+    commit("SET_ATTRIBUTES", {
+      ...getters.attributes,
+      stops: [...getters.stops, newStop],
+    })
+
+    return newStop
+  },
+  // updateStop({ commit, getters }, { stopId, attributes }) {
+  //   const stops = getters.stops.map((stop) => {
+  //     if (stop.id === stopId) {
+  //       return { ...stop, ...attributes }
+  //     }
+  //     return stop
+  //   })
+
+  //   commit("SET_ATTRIBUTES", {
+  //     ...getters.attributes,
+  //     stops,
+  //   })
+
+  //   return stops.find((stop) => stop.id === stopId)
+  // }
 }
 
 const mutations = {
