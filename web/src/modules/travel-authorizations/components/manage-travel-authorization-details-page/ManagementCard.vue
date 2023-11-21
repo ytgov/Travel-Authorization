@@ -2,6 +2,7 @@
   <v-card elevation="2">
     <v-card-title> Management</v-card-title>
     <v-card-text>
+      <!-- TODO: add support for re-assignment to another supervisor -->
       <v-row>
         <v-col class="d-flex justify-end">
           <v-btn
