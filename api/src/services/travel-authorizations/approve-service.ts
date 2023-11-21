@@ -12,8 +12,12 @@ export class ApproveService extends BaseService {
   }
 
   async perform(): Promise<TravelAuthorization> {
-    // TODO: save approver id once that exists in the database
-    await this.travelAuthorization.update({ status: TravelAuthorization.Statuses.APPROVED })
+    if (this.travelAuthorization.status !== TravelAuthorization.Statuses.SUBMITTED) {
+      throw new Error("Travel authorization must be in submitted state to approve.")
+    } else {
+      // TODO: save approver id once that exists in the database
+      await this.travelAuthorization.update({ status: TravelAuthorization.Statuses.APPROVED })
+    }
 
     return this.travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
   }
