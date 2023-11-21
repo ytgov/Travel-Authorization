@@ -25,6 +25,7 @@ export default {
   },
   methods: {
     ...mapActions("current/travelAuthorization", ["save"]),
+    // TODO: move this to a back-end state change endpoint
     ...mapMutations("current/travelAuthorization", ["SET_STATUS"]),
     saveWrapper() {
       if (!this.validateForm()) {
