@@ -52,6 +52,10 @@ router.post(
   "/api/travel-authorizations/:travelAuthorizationId/approve",
   TravelAuthorizations.ApproveController.create
 )
+router.post(
+  "/api/travel-authorizations/:travelAuthorizationId/deny",
+  TravelAuthorizations.DenyController.create
+)
 router.get("/api/locations", LocationsController.index)
 router.get("/api/pre-approved-travelers", PreApprovedTravelersController.index)
 router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)

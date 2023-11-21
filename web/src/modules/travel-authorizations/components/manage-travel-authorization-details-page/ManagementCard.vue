@@ -13,9 +13,9 @@
           <v-btn
             class="ml-2"
             color="error"
-            @click="decline"
+            @click="deny"
           >
-            Decline
+            Deny
           </v-btn>
         </v-col>
       </v-row>
@@ -48,6 +48,7 @@ export default {
   },
   methods: {
     ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
+    // TODO: move this to a store action
     approve() {
       return travelAuthorizationApi
         .approve(this.currentTravelAuthorization.id)
@@ -58,8 +59,15 @@ export default {
           this.$snack(error.message, { color: "error" })
         })
     },
-    decline() {
-      alert("TODO: decline this travel authorization")
+    deny() {
+      return travelAuthorizationApi
+        .deny(this.currentTravelAuthorization.id)
+        .then(() => {
+          this.$snack("Travel authorization denied.", { color: "success" })
+        })
+        .catch((error) => {
+          this.$snack(error.message, { color: "error" })
+        })
     },
   },
 }
