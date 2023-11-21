@@ -79,7 +79,6 @@ export class TravelAuthorization extends Model<
   declare status: Statuses | null
   // TODO: consider making this supervisorId?
   declare supervisorEmail: string | null
-  declare approved: string | null
   declare requestChange: string | null
   declare denialReason: string | null
   declare oneWayTrip: boolean | null
@@ -315,10 +314,6 @@ TravelAuthorization.init(
           this.setDataValue("supervisorEmail", null)
         }
       },
-    },
-    approved: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
     },
     requestChange: {
       type: DataTypes.STRING(255),
