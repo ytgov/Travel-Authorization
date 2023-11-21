@@ -49,9 +49,14 @@ export default {
   methods: {
     ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
     approve() {
-      return travelAuthorizationApi.approve(this.currentTravelAuthorization.id).then(() => {
-        this.$snack("Travel authorization approved!", { color: "success" })
-      })
+      return travelAuthorizationApi
+        .approve(this.currentTravelAuthorization.id)
+        .then(() => {
+          this.$snack("Travel authorization approved!", { color: "success" })
+        })
+        .catch((error) => {
+          this.$snack(error.message, { color: "error" })
+        })
     },
     decline() {
       alert("TODO: decline this travel authorization")
