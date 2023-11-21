@@ -1,5 +1,7 @@
+import db from "@/db/db-client"
+
 import BaseService from "@/services/base-service"
-import { TravelAuthorization, User } from "@/models"
+import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
 export class DenyService extends BaseService {
   private travelAuthorization: TravelAuthorization
@@ -15,12 +17,17 @@ export class DenyService extends BaseService {
     if (this.travelAuthorization.status !== TravelAuthorization.Statuses.SUBMITTED) {
       throw new Error("Travel authorization must be in submitted state to deny.")
     } else {
-      await this.travelAuthorization.update({
-        // TODO: add this in once data modeling exists
-        // deniedByUserId: this.denier.id,
-        // TODO: add support for denial reason
-        // denialReason: "???",
-        status: TravelAuthorization.Statuses.DENIED,
+      await db.transaction(async () => {
+        await this.travelAuthorization.update({
+          // TODO: add support for denial reason
+          // denialReason: "???",
+          status: TravelAuthorization.Statuses.DENIED,
+        })
+        await TravelAuthorizationActionLog.create({
+          travelAuthorizationId: this.travelAuthorization.id,
+          userId: this.denier.id,
+          action: TravelAuthorizationActionLog.Actions.DENY,
+        })
       })
     }
 
