@@ -13,8 +13,9 @@ export class ApproveController extends BaseController {
     }
 
     const travelAuthorization = await this.loadTravelAuthorization()
-    if (isNil(travelAuthorization))
+    if (isNil(travelAuthorization)) {
       return this.response.status(404).json({ message: "Travel authorization not found." })
+    }
 
     const policy = this.buildPolicy(travelAuthorization)
     if (!policy.create()) {
