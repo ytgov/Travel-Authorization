@@ -60,7 +60,6 @@ export class TravelAuthorization extends Model<
   declare userId: ForeignKey<User["id"]>
   declare preappId: ForeignKey<Preapproved["preTID"]> | null
   declare purposeId: ForeignKey<TravelPurpose["id"]> | null
-  declare approvedByUserId: ForeignKey<User["id"]> | null
   declare firstName: string | null
   declare lastName: string | null
   declare department: string | null
@@ -108,10 +107,6 @@ export class TravelAuthorization extends Model<
   declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
   declare createUser: BelongsToCreateAssociationMixin<User>
 
-  declare getApprovedByUser: BelongsToGetAssociationMixin<User>
-  declare setApprovedByUser: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createApprovedByUser: BelongsToCreateAssociationMixin<User>
-
   declare getExpenses: HasManyGetAssociationsMixin<Expense>
   declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
   declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["travelAuthorizationId"]>
@@ -134,7 +129,6 @@ export class TravelAuthorization extends Model<
   declare countStops: HasManyCountAssociationsMixin
   declare createStop: HasManyCreateAssociationMixin<Stop>
 
-  declare approvedByUser?: NonAttribute<User>
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
   declare user: NonAttribute<User>
@@ -142,7 +136,6 @@ export class TravelAuthorization extends Model<
   declare stops?: NonAttribute<Stop[]>
 
   declare static associations: {
-    approvedByUser: Association<TravelAuthorization, User>
     expenses: Association<TravelAuthorization, Expense>
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
@@ -158,10 +151,6 @@ export class TravelAuthorization extends Model<
     this.belongsTo(User, {
       as: "user",
       foreignKey: "userId",
-    })
-    this.belongsTo(User, {
-      as: "approvedByUser",
-      foreignKey: "approvedByUserId",
     })
     this.hasMany(Stop, {
       as: "stops",
@@ -214,14 +203,6 @@ TravelAuthorization.init(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: "users", // using real table name here
-        key: "id", // using real column name here
-      },
-    },
-    approvedByUserId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
       references: {
         model: "users", // using real table name here
         key: "id", // using real column name here
