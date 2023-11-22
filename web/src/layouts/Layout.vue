@@ -328,7 +328,7 @@ export default {
       }
 
       for (const route of routes) {
-        if (path.includes(route.to)) {
+        if (this.$route.name === route.to.name || path.includes(route.to)) {
           this.menuTitle = route.name
           break
         }
