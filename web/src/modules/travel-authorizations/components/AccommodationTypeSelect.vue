@@ -21,7 +21,7 @@
 <script>
 import { isNil } from "lodash"
 
-import { ACCOMMODATION_TYPES } from "@/api/travel-authorizations-api"
+import { ACCOMMODATION_TYPES } from "@/api/stops-api"
 
 export default {
   name: "AccommodationTypeSelect",

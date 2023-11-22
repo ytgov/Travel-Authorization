@@ -21,7 +21,7 @@
 <script>
 import { isNil } from "lodash"
 
-import { TRAVEL_METHODS } from "@/api/travel-authorizations-api"
+import { TRAVEL_METHODS } from "@/api/stops-api"
 
 export default {
   name: "TravelMethodSelect",

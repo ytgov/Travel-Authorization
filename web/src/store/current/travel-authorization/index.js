@@ -1,16 +1,15 @@
-import travelAuthorizationsApi, {
-  ACCOMMODATION_TYPES,
-  TRAVEL_METHODS,
-} from "@/api/travel-authorizations-api"
+import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
+
+import stops from "./stops"
 
 const state = {
   attributes: {
     expenses: [],
     purpose: {},
-    stops: [],
+    stops: [], // load from stops sub-module?
     user: {},
   },
   isLoading: false,
@@ -23,12 +22,11 @@ const getters = withGettersFromState(state, {
   id: (state) => state.attributes.id,
   estimates: (state) =>
     state.attributes.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE),
-  stops: (state) => state.attributes.stops,
 })
 
 const actions = {
   async ensure({ commit, state, dispatch, getters }, travelAuthorizationId) {
-    if (state.isCached && getters.id === travelAuthorizationId) {
+    if (getters.isCached && getters.id === travelAuthorizationId) {
       return state.attributes
     }
 
@@ -48,6 +46,7 @@ const actions = {
       const { travelAuthorization } = await travelAuthorizationsApi.get(travelAuthorizationId)
       commit("SET_IS_ERRORED", false)
       commit("SET_ATTRIBUTES", travelAuthorization)
+      // TODO: dispatch update to stops sub-module?
       commit("SET_IS_CACHED", true)
       return travelAuthorization
     } catch (error) {
@@ -77,36 +76,6 @@ const actions = {
       commit("SET_IS_LOADING", false)
     }
   },
-  addStop({ commit, getters }, attributes) {
-    const newStop = {
-      travelAuthorizationId: getters.id,
-      accommodationType: ACCOMMODATION_TYPES.HOTEL,
-      transport: TRAVEL_METHODS.AIRCRAFT,
-      ...attributes,
-    }
-
-    commit("SET_ATTRIBUTES", {
-      ...getters.attributes,
-      stops: [...getters.stops, newStop],
-    })
-
-    return newStop
-  },
-  // updateStop({ commit, getters }, { stopId, attributes }) {
-  //   const stops = getters.stops.map((stop) => {
-  //     if (stop.id === stopId) {
-  //       return { ...stop, ...attributes }
-  //     }
-  //     return stop
-  //   })
-
-  //   commit("SET_ATTRIBUTES", {
-  //     ...getters.attributes,
-  //     stops,
-  //   })
-
-  //   return stops.find((stop) => stop.id === stopId)
-  // }
 }
 
 const mutations = {
@@ -134,4 +103,7 @@ export default {
   getters,
   actions,
   mutations,
+  modules: {
+    stops,
+  },
 }

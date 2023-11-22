@@ -57,7 +57,7 @@
                 md="9"
               >
                 <LocationsAutocomplete
-                  :value="finalDestination.locationId"
+                  :value="lastStop.locationId"
                   :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
                   :rules="[required]"
                   clearable
@@ -67,7 +67,7 @@
                   persistent-hint
                   required
                   validate-on-blur
-                  @input="createOrUpdateFinalDestination"
+                  @input="createOrUpdateFinalStop"
                 />
               </v-col>
             </v-row>
@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import { last, isEmpty, isNil } from "lodash"
+import { isEmpty } from "lodash"
 import { mapState, mapActions, mapGetters } from "vuex"
 
 import LocationsAutocomplete from "@/components/LocationsAutocomplete"
@@ -128,28 +128,24 @@ export default {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
       currentTravelAuthorizationId: "id",
-      stops: "stops",
     }),
+    ...mapGetters("current/travelAuthorization/stops", { stops: "items", lastStop: "lastStop" }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
-    finalDestination() {
-      return last(this.stops) || {}
-    },
   },
   async mounted() {
     await this.ensureTravelPurposes()
   },
   methods: {
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
-    ...mapActions("current/travelAuthorization", ["addStop"]),
-    createOrUpdateFinalDestination(locationId) {
-      const lastStop = last(this.stops)
-      if (isNil(lastStop) || isEmpty) {
-        this.addStop({ locationId })
+    ...mapActions("current/travelAuthorization/stops", ["addStop", "replaceStops"]),
+    async createOrUpdateFinalStop(locationId) {
+      if (isEmpty(this.lastStop)) {
+        await this.addStop({ locationId })
       } else {
-        lastStop.locationId = locationId
+        await this.replaceStops([...this.stops.slice(0, -1), { ...this.lastStop, locationId }])
       }
     },
   },

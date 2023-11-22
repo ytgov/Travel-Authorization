@@ -10,3 +10,5 @@ export class LocationsController extends BaseController {
     })
   }
 }
+
+export default LocationsController

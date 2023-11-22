@@ -58,7 +58,7 @@
           >
             <DatePicker
               v-model="currentTravelAuthorization.dateBackToWork"
-              :min="finalDestination.departureDate"
+              :min="finalStop.departureDate"
               :rules="[required]"
               label="Expected Date return to work"
               required
@@ -72,10 +72,9 @@
 
 <script>
 import { isEmpty, last } from "lodash"
-import { mapGetters } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import { required } from "@/utils/validators"
-import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/travel-authorizations-api"
 import DatePicker from "@/components/Utils/DatePicker"
 import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
 
@@ -107,8 +106,9 @@ export default {
       currentTravelAuthorization: "attributes",
       currentTravelAuthorizationId: "id",
     }),
-    finalDestination() {
-      return last(this.currentTravelAuthorization.stops) || {}
+    ...mapGetters("current/travelAuthorization/stops", { stops: "items" }),
+    finalStop() {
+      return last(this.stops) || {}
     },
     tripTypeComponent() {
       switch (this.tripType) {
@@ -136,6 +136,7 @@ export default {
   },
   methods: {
     required,
+    ...mapActions("current/travelAuthorization/stops", ["newStop", "replaceStops"]),
     /*
       Update trip type selection, setting default stops as needed,
       or loading stops from cache if cached valued exists.
@@ -153,49 +154,35 @@ export default {
         this.currentTravelAuthorization.oneWayTrip = false
         this.currentTravelAuthorization.multiStop = false
 
-        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
-          TRIP_TYPES.ROUND_TRIP,
-          [
-            this.newStop(),
-            this.newStop({
-              ...this.finalDestination,
-              transport: TRAVEL_METHODS.AIRCRAFT,
-              accommodationType: null,
-            }),
-          ]
-        )
+        this.replaceStopsWithCacheIfExists(TRIP_TYPES.ROUND_TRIP)
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
         this.currentTravelAuthorization.multiStop = false
 
-        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
-          TRIP_TYPES.ONE_WAY,
-          [
-            this.newStop({ accommodationType: null }),
-            this.newStop({
-              ...this.finalDestination,
-              accommodationType: null,
-              transport: null,
-            }),
-          ]
-        )
+        // TODO: replacw with newer code
+        this.replaceStopsWithCacheOrAddStops(TRIP_TYPES.ONE_WAY, [
+          { accommodationType: null },
+          {
+            ...this.finalStop,
+            accommodationType: null,
+            transport: null,
+          },
+        ])
       } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
         this.currentTravelAuthorization.multiStop = true
         this.currentTravelAuthorization.oneWayTrip = false
 
-        this.currentTravelAuthorization.stops = this.getStopsFromCacheOrDefault(
-          TRIP_TYPES.MULTI_DESTINATION,
-          [
-            this.newStop(),
-            this.newStop(),
-            this.newStop({ accommodationType: null }),
-            this.newStop({
-              ...this.finalDestination,
-              accommodationType: null,
-              transport: null,
-            }),
-          ]
-        )
+        // TODO: replacw with newer code
+        this.replaceStopsWithCacheOrAddStops(TRIP_TYPES.MULTI_DESTINATION, [
+          {},
+          {},
+          { accommodationType: null },
+          {
+            ...this.finalStop,
+            accommodationType: null,
+            transport: null,
+          },
+        ])
       } else {
         throw new Error("Invalid trip type")
       }
@@ -206,19 +193,25 @@ export default {
         this.$refs.form?.resetValidation()
       })
     },
-    getStopsFromCacheOrDefault(key, defaultStops) {
+    replaceStopsWithCacheIfExists(key) {
       const cachedStops = this.stopsCache[key]
-      if (isEmpty(cachedStops)) return defaultStops
-
-      return cachedStops
-    },
-    newStop(attributes) {
-      return {
-        travelAuthorizationId: this.currentTravelAuthorizationId,
-        accommodationType: ACCOMMODATION_TYPES.HOTEL,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        ...attributes,
+      if (isEmpty(cachedStops)) {
+        return // do nothing as the cache is empty
       }
+
+      this.replaceStops(cachedStops)
+    },
+    replaceStopsWithCacheOrAddStops(key, defaultStopsAttributes) {
+      const cachedStops = this.stopsCache[key]
+      if (isEmpty(cachedStops)) {
+        this.replaceStops([])
+        const newStops = defaultStopsAttributes.map((attributes) => {
+          this.newStop(attributes)
+        })
+        this.replaceStops(newStops)
+      }
+
+      this.replaceStops(cachedStops)
     },
   },
 }

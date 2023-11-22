@@ -7,6 +7,7 @@ import {
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
   Qa,
+  StopsController,
   TravelAuthorizations,
   TravelAuthorizationsController,
   TravelPurposesController,
@@ -37,6 +38,7 @@ router.get("/api/expenses", ExpensesController.index)
 router.post("/api/expenses", ExpensesController.create)
 router.patch("/api/expenses/:expenseId", ExpensesController.update)
 router.delete("/api/expenses/:expenseId", ExpensesController.destroy)
+router.get("/api/stops", StopsController.index)
 router.get("/api/travel-authorizations", TravelAuthorizationsController.index)
 router.post("/api/travel-authorizations", TravelAuthorizationsController.create)
 router.get("/api/travel-authorizations/:travelAuthorizationId", TravelAuthorizationsController.show)
