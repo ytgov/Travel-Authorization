@@ -6,7 +6,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          v-model="stop1.locationId"
+          :value="stops[0].locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
@@ -15,6 +15,7 @@
           outlined
           persistent-hint
           required
+          @input="updateStop(0, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -22,7 +23,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          v-model="stop2.locationId"
+          :value="stops[1].locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
@@ -31,6 +32,7 @@
           outlined
           persistent-hint
           required
+          @input="updateStop(1, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -38,10 +40,11 @@
         md="2"
       >
         <DatePicker
-          v-model="stop1.departureDate"
+          :value="stops[0].departureDate"
           :rules="[required]"
           label="Date"
           persistent-hint
+          @input="updateStop(0, 'departureDate', $event)"
         />
       </v-col>
       <v-col
@@ -49,10 +52,11 @@
         md="2"
       >
         <TimePicker
-          v-model="stop1.departureTime"
+          :value="stops[0].departureTime"
           :rules="[required]"
           label="Time (24h)"
           persistent-hint
+          @input="updateStop(0, 'departureTime', $event)"
         />
       </v-col>
       <v-col
@@ -60,21 +64,23 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="stop1.transport"
+          :value="stops[0].transport"
           :rules="[required]"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
+          @input="updateStop(0, 'transport', $event)"
         />
         <AccommodationTypeSelect
-          v-model="stop1.accommodationType"
+          :value="stops[0].accommodationType"
           :rules="[required]"
           background-color="white"
           dense
           outlined
           required
+          @input="updateStop(0, 'accommodationType', $event)"
         />
       </v-col>
     </v-row>
@@ -84,7 +90,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          v-model="stop2.locationId"
+          :value="stops[1].locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
@@ -93,6 +99,7 @@
           outlined
           persistent-hint
           required
+          @input="updateStop(1, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -100,7 +107,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          v-model="stop3.locationId"
+          :value="stops[2].locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
@@ -109,6 +116,7 @@
           outlined
           persistent-hint
           required
+          @input="updateStop(2, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -116,16 +124,17 @@
         md="2"
       >
         <DatePicker
-          v-model="stop2.departureDate"
-          :min="stop1.departureDate"
+          :value="stops[1].departureDate"
+          :min="stops[0].departureDate"
           :rules="[
             required,
-            greaterThanOrEqualToDate(stop1.departureDate, {
+            greaterThanOrEqualToDate(stops[0].departureDate, {
               referenceFieldLabel: 'previous departure date',
             }),
           ]"
           label="Date"
           persistent-hint
+          @input="updateStop(1, 'departureDate', $event)"
         />
       </v-col>
       <v-col
@@ -133,10 +142,11 @@
         md="2"
       >
         <TimePicker
-          v-model="stop2.departureTime"
+          :value="stops[1].departureTime"
           :rules="[required]"
           label="Time (24 hour)"
           persistent-hint
+          @input="updateStop(1, 'departureTime', $event)"
         />
       </v-col>
       <v-col
@@ -144,21 +154,23 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="stop2.transport"
+          :value="stops[1].transport"
           :rules="[required]"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
+          @input="updateStop(1, 'transport', $event)"
         />
         <AccommodationTypeSelect
-          v-model="stop2.accommodationType"
+          :value="stops[1].accommodationType"
           :rules="[required]"
           background-color="white"
           dense
           outlined
           required
+          @input="updateStop(1, 'accommodationType', $event)"
         />
       </v-col>
     </v-row>
@@ -168,7 +180,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          v-model="stop3.locationId"
+          :value="stops[2].locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
@@ -177,6 +189,7 @@
           outlined
           persistent-hint
           required
+          @input="updateStop(2, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -184,7 +197,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          v-model="stop4.locationId"
+          :value="stops[3].locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
@@ -193,6 +206,7 @@
           outlined
           persistent-hint
           required
+          @input="updateStop(3, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -200,16 +214,17 @@
         md="2"
       >
         <DatePicker
-          v-model="stop3.departureDate"
-          :min="stop2.departureDate"
+          :value="stops[2].departureDate"
+          :min="stops[1].departureDate"
           :rules="[
             required,
-            greaterThanOrEqualToDate(stop2.departureDate, {
+            greaterThanOrEqualToDate(stops[1].departureDate, {
               referenceFieldLabel: 'previous departure date',
             }),
           ]"
           label="Date"
           persistent-hint
+          @input="updateStop(2, 'departureDate', $event)"
         />
       </v-col>
       <v-col
@@ -217,10 +232,11 @@
         md="2"
       >
         <TimePicker
-          v-model="stop3.departureTime"
+          :value="stops[2].departureTime"
           :rules="[required]"
           label="Time (24 hour)"
           persistent-hint
+          @input="updateStop(2, 'departureTime', $event)"
         />
       </v-col>
       <v-col
@@ -228,16 +244,17 @@
         md="4"
       >
         <TravelMethodSelect
-          v-model="stop3.transport"
+          :value="stops[2].transport"
           :rules="[required]"
           background-color="white"
           dense
           persistent-hint
           required
           outlined
+          @input="updateStop(2, 'transport', $event)"
         />
         <AccommodationTypeSelect
-          v-model="stop3.accommodationType"
+          :value="stops[2].accommodationType"
           :default-value="null"
           hint="Optional, set only if neccessary"
           placeholder="N/A"
@@ -246,6 +263,7 @@
           dense
           outlined
           persistent-hint
+          @input="updateStop(2, 'accommodationType', $event)"
         />
       </v-col>
     </v-row>
@@ -253,7 +271,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 
 import { required, greaterThanOrEqualToDate } from "@/utils/validators"
 
@@ -272,29 +290,22 @@ export default {
     TimePicker,
     TravelMethodSelect,
   },
-  data() {
-    return {
-      stop1: {},
-      stop2: {},
-      stop3: {},
-      stop4: {},
-    }
-  },
+  data: () => ({}),
   computed: {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+      stops: "stops",
     }),
   },
-  async mounted() {
-    this.stop1 = this.currentTravelAuthorization.stops[0]
-    this.stop2 = this.currentTravelAuthorization.stops[1]
-    this.stop3 = this.currentTravelAuthorization.stops[2]
-    this.stop4 = this.currentTravelAuthorization.stops[3]
-  },
+  async mounted() {},
   methods: {
     required,
     greaterThanOrEqualToDate,
+    ...mapActions("current/travelAuthorization", ["replaceStops"]),
+    async updateStop(index, attribute, value) {
+      this.stops.splice(index, 1, { ...this.stops[index], [attribute]: value })
+      // this.replaceStops(this.stops) might not need this?
+    },
   },
 }
 </script>
