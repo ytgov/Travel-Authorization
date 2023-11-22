@@ -6,7 +6,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          :value="stops[0].locationId"
+          :value="firstStop.locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
@@ -40,7 +40,7 @@
         md="2"
       >
         <DatePicker
-          :value="stops[0].departureDate"
+          :value="firstStop.departureDate"
           :rules="[required]"
           label="Date"
           persistent-hint
@@ -52,7 +52,7 @@
         md="2"
       >
         <TimePicker
-          :value="stops[0].departureTime"
+          :value="firstStop.departureTime"
           :rules="[required]"
           label="Time (24h)"
           persistent-hint
@@ -64,7 +64,7 @@
         md="4"
       >
         <TravelMethodSelect
-          :value="stops[0].transport"
+          :value="firstStop.transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -74,7 +74,7 @@
           @input="updateStop(0, 'transport', $event)"
         />
         <AccommodationTypeSelect
-          :value="stops[0].accommodationType"
+          :value="firstStop.accommodationType"
           :rules="[required]"
           background-color="white"
           dense
@@ -125,10 +125,10 @@
       >
         <DatePicker
           :value="stops[1].departureDate"
-          :min="stops[0].departureDate"
+          :min="firstStop.departureDate"
           :rules="[
             required,
-            greaterThanOrEqualToDate(stops[0].departureDate, {
+            greaterThanOrEqualToDate(firstStop.departureDate, {
               referenceFieldLabel: 'previous departure date',
             }),
           ]"
@@ -197,7 +197,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          :value="stops[3].locationId"
+          :value="lastStop.locationId"
           :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
@@ -295,6 +295,8 @@ export default {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
       stops: "stops",
+      firstStop: "firstStop",
+      lastStop: "lastStop",
     }),
   },
   async mounted() {},
@@ -303,8 +305,10 @@ export default {
     greaterThanOrEqualToDate,
     ...mapActions("current/travelAuthorization", ["replaceStops"]),
     async updateStop(index, attribute, value) {
-      this.stops.splice(index, 1, { ...this.stops[index], [attribute]: value })
-      // this.replaceStops(this.stops) might not need this?
+      const updatedStops = this.stops.map((stop, i) =>
+        i === index ? { ...stop, [attribute]: value } : stop
+      )
+      return this.replaceStops(updatedStops)
     },
   },
 }

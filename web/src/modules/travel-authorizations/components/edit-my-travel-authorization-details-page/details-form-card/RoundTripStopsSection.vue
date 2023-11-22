@@ -15,7 +15,7 @@
           outlined
           persistent-hint
           required
-          @input="updateFirstStop('locationId', $event)"
+          @input="updateStop(0, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -32,7 +32,7 @@
           outlined
           persistent-hint
           required
-          @input="updateLastStop('locationId', $event)"
+          @input="updateStop(1, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -44,7 +44,7 @@
           :rules="[required]"
           label="Date"
           persistent-hint
-          @input="updateFirstStop('departureDate', $event)"
+          @input="updateStop(0, 'departureDate', $event)"
         />
       </v-col>
       <v-col
@@ -56,7 +56,7 @@
           :rules="[required]"
           label="Time (24h)"
           persistent-hint
-          @input="updateFirstStop('departureTime', $event)"
+          @input="updateStop(0, 'departureTime', $event)"
         />
       </v-col>
       <v-col
@@ -71,7 +71,7 @@
           persistent-hint
           required
           outlined
-          @input="updateFirstStop('transport', $event)"
+          @input="updateStop(0, 'transport', $event)"
         />
         <AccommodationTypeSelect
           :value="firstStop.accommodationType"
@@ -80,7 +80,7 @@
           dense
           outlined
           required
-          @input="updateFirstStop('accommodationType', $event)"
+          @input="updateStop(0, 'accommodationType', $event)"
         />
       </v-col>
     </v-row>
@@ -99,7 +99,7 @@
           outlined
           persistent-hint
           required
-          @input="updateLastStop('locationId', $event)"
+          @input="updateStop(1, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -116,7 +116,7 @@
           outlined
           persistent-hint
           required
-          @input="updateFirstStop('locationId', $event)"
+          @input="updateStop(0, 'locationId', $event)"
         />
       </v-col>
       <v-col
@@ -134,7 +134,7 @@
           ]"
           label="Date"
           persistent-hint
-          @input="updateLastStop('departureDate', $event)"
+          @input="updateStop(1, 'departureDate', $event)"
         />
       </v-col>
       <v-col
@@ -146,7 +146,7 @@
           :rules="[required]"
           label="Time (24h)"
           persistent-hint
-          @input="updateLastStop('departureTime', $event)"
+          @input="updateStop(1, 'departureTime', $event)"
         />
       </v-col>
       <v-col
@@ -161,7 +161,7 @@
           persistent-hint
           required
           outlined
-          @input="updateLastStop('transport', $event)"
+          @input="updateStop(1, 'transport', $event)"
         />
         <AccommodationTypeSelect
           :value="lastStop.accommodationType"
@@ -173,7 +173,7 @@
           dense
           outlined
           persistent-hint
-          @input="updateLastStop('accommodationType', $event)"
+          @input="updateStop(1, 'accommodationType', $event)"
         />
       </v-col>
     </v-row>
@@ -204,9 +204,9 @@ export default {
   computed: {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
-      lastStop: "lastStop",
-      firstStop: "firstStop",
       stops: "stops",
+      firstStop: "firstStop",
+      lastStop: "lastStop",
     }),
   },
   async mounted() {},
@@ -214,11 +214,11 @@ export default {
     greaterThanOrEqualToDate,
     required,
     ...mapActions("current/travelAuthorization", ["replaceStops"]),
-    async updateFirstStop(attribute, value) {
-      await this.replaceStops([{ ...this.firstStop, [attribute]: value }, this.lastStop])
-    },
-    async updateLastStop(attribute, value) {
-      await this.replaceStops([this.firstStop, { ...this.lastStop, [attribute]: value }])
+    async updateStop(index, attribute, value) {
+      const updatedStops = this.stops.map((stop, i) =>
+        i === index ? { ...stop, [attribute]: value } : stop
+      )
+      return this.replaceStops(updatedStops)
     },
   },
 }
