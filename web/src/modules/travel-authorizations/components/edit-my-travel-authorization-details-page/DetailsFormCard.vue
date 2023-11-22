@@ -125,7 +125,9 @@ export default {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
 
-    await this.ensureMinimalDefaultStops(this.tripType)
+    await this.ensureMinimalDefaultStops(this.tripType, {
+      preserveOriginalTransportAndAccomodationType: true,
+    })
 
     this.$nextTick(() => {
       this.$refs.form?.resetValidation()
@@ -134,48 +136,59 @@ export default {
   methods: {
     required,
     ...mapActions("current/travelAuthorization", ["newBlankStop", "replaceStops"]),
-    async ensureMinimalDefaultStops(tripType) {
+    async ensureMinimalDefaultStops(tripType, { preserveOriginalTransportAndAccomodationType }) {
       if (tripType === TRIP_TYPES.ROUND_TRIP) {
-        return this.ensureMinimalDefaultRoundTripStops()
+        return this.ensureMinimalDefaultRoundTripStops({
+          preserveOriginalTransportAndAccomodationType,
+        })
       } else if (tripType === TRIP_TYPES.ONE_WAY) {
-        return this.ensureMinimalDefaultOneWayStops()
+        return this.ensureMinimalDefaultOneWayStops({
+          preserveOriginalTransportAndAccomodationType,
+        })
       } else if (tripType === TRIP_TYPES.MULTI_DESTINATION) {
-        return this.ensureMinimalDefaultMultiDestinationStops()
+        return this.ensureMinimalDefaultMultiDestinationStops({
+          preserveOriginalTransportAndAccomodationType,
+        })
       } else {
         throw new Error("Invalid trip type")
       }
     },
-    async ensureMinimalDefaultRoundTripStops() {
+    async ensureMinimalDefaultRoundTripStops({ preserveOriginalTransportAndAccomodationType }) {
       const newFirstStop = await this.newBlankStop({
+        ...this.firstStop,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
-        ...this.firstStop,
+        ...(preserveOriginalTransportAndAccomodationType ? this.firstStop : {}),
       })
       const newLastStop = await this.newBlankStop({
+        ...this.lastStop,
         transport: TRAVEL_METHODS.AIRCRAFT,
         accommodationType: null,
-        ...this.lastStop,
+        ...(preserveOriginalTransportAndAccomodationType ? this.lastStop : {}),
       })
       return this.replaceStops([newFirstStop, newLastStop])
     },
-    async ensureMinimalDefaultOneWayStops() {
+    async ensureMinimalDefaultOneWayStops({ preserveOriginalTransportAndAccomodationType }) {
       const newFirstStop = await this.newBlankStop({
         accommodationType: null,
         transport: TRAVEL_METHODS.AIRCRAFT,
-        ...this.firstStop,
+        ...(preserveOriginalTransportAndAccomodationType ? this.firstStop : {}),
       })
       const newLastStop = await this.newBlankStop({
         transport: null,
         accommodationType: null,
-        ...this.lastStop,
+        ...(preserveOriginalTransportAndAccomodationType ? this.lastStop : {}),
       })
       return this.replaceStops([newFirstStop, newLastStop])
     },
-    async ensureMinimalDefaultMultiDestinationStops() {
+    async ensureMinimalDefaultMultiDestinationStops({
+      preserveOriginalTransportAndAccomodationType,
+    }) {
       const newFirstStop = await this.newBlankStop({
+        ...this.firstStop,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
-        ...this.firstStop,
+        ...(preserveOriginalTransportAndAccomodationType ? this.firstStop : {}),
       })
       const newSecondStop = await this.newBlankStop({
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
@@ -186,22 +199,13 @@ export default {
         transport: TRAVEL_METHODS.AIRCRAFT,
       })
       const newLastStop = await this.newBlankStop({
+        ...this.lastStop,
         transport: null,
         accommodationType: null,
-        ...this.lastStop,
+        ...(preserveOriginalTransportAndAccomodationType ? this.lastStop : {}),
       })
       return this.replaceStops([newFirstStop, newSecondStop, newThirdStop, newLastStop])
     },
-    /*
-      Update trip type selection, setting default stops as needed,
-      or loading stops from cache if cached valued exists.
-
-      Use of a cache permits stops to have a blank accomodation or trip type,
-      against a variety of stop configurations, without wiping stop content on trip type change.
-
-      NOTE: This would probably be made irrelevant by modeling stops differently, such as by
-      using a "trip segment" model, with a departure and arrival location.
-    */
     async updateTripType(value) {
       this.tripType = value
       if (value === TRIP_TYPES.ROUND_TRIP) {
@@ -217,8 +221,9 @@ export default {
         throw new Error("Invalid trip type")
       }
 
-      await this.replaceStops([])
-      await this.ensureMinimalDefaultStops(this.tripType)
+      await this.ensureMinimalDefaultStops(this.tripType, {
+        preserveOriginalTransportAndAccomodationType: false,
+      })
 
       this.$nextTick(() => {
         this.$refs.form?.resetValidation()
