@@ -155,10 +155,9 @@ export default {
     },
     async ensureMinimalDefaultRoundTripStops({ preserveOriginalTransportAndAccomodationType }) {
       const newFirstStop = await this.newBlankStop({
-        ...this.firstStop,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
-        ...(preserveOriginalTransportAndAccomodationType ? this.firstStop : {}),
+        ...this.firstStop,
       })
       const newLastStop = await this.newBlankStop({
         ...this.lastStop,
@@ -170,11 +169,13 @@ export default {
     },
     async ensureMinimalDefaultOneWayStops({ preserveOriginalTransportAndAccomodationType }) {
       const newFirstStop = await this.newBlankStop({
+        ...this.firstStop,
         accommodationType: null,
         transport: TRAVEL_METHODS.AIRCRAFT,
         ...(preserveOriginalTransportAndAccomodationType ? this.firstStop : {}),
       })
       const newLastStop = await this.newBlankStop({
+        ...this.lastStop,
         transport: null,
         accommodationType: null,
         ...(preserveOriginalTransportAndAccomodationType ? this.lastStop : {}),
@@ -185,10 +186,9 @@ export default {
       preserveOriginalTransportAndAccomodationType,
     }) {
       const newFirstStop = await this.newBlankStop({
-        ...this.firstStop,
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
-        ...(preserveOriginalTransportAndAccomodationType ? this.firstStop : {}),
+        ...this.firstStop,
       })
       const newSecondStop = await this.newBlankStop({
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
