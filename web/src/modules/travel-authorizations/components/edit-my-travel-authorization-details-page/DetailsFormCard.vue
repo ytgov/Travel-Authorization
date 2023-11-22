@@ -26,7 +26,7 @@
 
         <component
           :is="tripTypeComponent"
-          v-if="tripTypeComponent"
+          v-if="tripTypeComponent && hasEnoughStops"
         />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
         <v-row>
@@ -115,6 +115,18 @@ export default {
           return null
       }
     },
+    hasEnoughStops() {
+      switch (this.tripType) {
+        case TRIP_TYPES.ROUND_TRIP:
+          return this.stops.length === 2
+        case TRIP_TYPES.ONE_WAY:
+          return this.stops.length === 2
+        case TRIP_TYPES.MULTI_DESTINATION:
+          return this.stops.length === 4
+        default:
+          return true
+      }
+    },
   },
   async mounted() {
     if (this.currentTravelAuthorization.oneWayTrip) {
@@ -190,13 +202,17 @@ export default {
         transport: TRAVEL_METHODS.AIRCRAFT,
         ...this.firstStop,
       })
+      const secondStop = this.stops[1] !== this.lastStop ? this.stops[1] : {}
       const newSecondStop = await this.newBlankStop({
         accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
+        ...secondStop,
       })
+      const thirdStop = this.stops[2] !== this.lastStop ? this.stops[2] : {}
       const newThirdStop = await this.newBlankStop({
         accommodationType: null,
         transport: TRAVEL_METHODS.AIRCRAFT,
+        ...(preserveOriginalTransportAndAccomodationType ? thirdStop : {}),
       })
       const newLastStop = await this.newBlankStop({
         ...this.lastStop,
