@@ -21,7 +21,7 @@
               v-if="!refreshingEstimatesSilently && hasEstimates"
               :to="{
                 name: 'EditMyTravelAuthorizationEstimatePage',
-                params: { formId: currentTravelAuthorizationId },
+                params: { travelAuthorizationId: currentTravelAuthorizationId },
               }"
               class="mt-1"
               color="secondary"

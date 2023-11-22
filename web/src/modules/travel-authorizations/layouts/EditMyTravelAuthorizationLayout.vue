@@ -13,15 +13,16 @@
     </h1>
 
     <template v-if="isReadyCurrentTravelAuthorization">
-      <SummaryHeaderPanel :travel-authorization-id="formId" />
+      <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'EditMyTravelAuthorizationDetailsPage', params: { formId } }"
+      <v-tab
+        :to="{ name: 'EditMyTravelAuthorizationDetailsPage', params: { travelAuthorizationId } }"
         >Details</v-tab
       >
       <v-tab
-        :to="{ name: 'EditMyTravelAuthorizationEstimatePage', params: { formId } }"
+        :to="{ name: 'EditMyTravelAuthorizationEstimatePage', params: { travelAuthorizationId } }"
         @click="resetActiveState"
         >Estimate</v-tab
       >
@@ -54,7 +55,7 @@ export default {
     VUserChipMenu,
   },
   props: {
-    formId: {
+    travelAuthorizationId: {
       type: Number,
       required: true,
     },
@@ -73,12 +74,12 @@ export default {
     // This does a wizard of oz style, silent, background refresh.
     $route(to) {
       if (to.name === "EditMyTravelAuthorizationDetailsPage") {
-        this.fetchCurrentTravelAuthorizationSilently(this.formId)
+        this.fetchCurrentTravelAuthorizationSilently(this.travelAuthorizationId)
       }
     },
   },
   async mounted() {
-    await this.ensureCurrentTravelAuthorization(this.formId)
+    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.initializeCurrentUser()
   },
   methods: {

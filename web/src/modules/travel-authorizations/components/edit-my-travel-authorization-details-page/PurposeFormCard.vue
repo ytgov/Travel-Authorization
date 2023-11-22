@@ -121,6 +121,12 @@ export default {
   components: {
     LocationsAutocomplete,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   data: () => ({
     required: (v) => !!v || "This field is required",
   }),

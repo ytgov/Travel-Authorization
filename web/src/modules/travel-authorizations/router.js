@@ -50,10 +50,10 @@ const routes = [
         ],
       },
       {
-        path: ":formId/edit",
+        path: ":travelAuthorizationId/edit",
         component: () =>
           import("@/modules/travel-authorizations/layouts/EditMyTravelAuthorizationLayout"),
-        props: cast("formId", parseInt),
+        props: cast("travelAuthorizationId", parseInt),
         children: [
           {
             path: "",
@@ -64,14 +64,14 @@ const routes = [
             name: "EditMyTravelAuthorizationDetailsPage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage"),
-            props: true,
+            props: cast("travelAuthorizationId", parseInt),
           },
           {
             path: "estimate",
             name: "EditMyTravelAuthorizationEstimatePage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationEstimatePage"),
-            props: true,
+            props: cast("travelAuthorizationId", parseInt),
           },
         ],
       },
