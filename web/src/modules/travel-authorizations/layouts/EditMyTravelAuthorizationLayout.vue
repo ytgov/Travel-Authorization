@@ -32,7 +32,7 @@
       <v-tab>Reporting - TODO</v-tab>
     </v-tabs>
 
-    <template v-if="isReadyCurrentTravelAuthorization">
+    <template v-if="isReadyCurrentTravelAuthorization && stops.length >= 2">
       <router-view></router-view>
     </template>
   </div>
