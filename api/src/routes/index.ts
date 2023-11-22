@@ -1,4 +1,5 @@
-import { Router, Request, Response } from "express"
+import { Router, Request, Response, NextFunction, ErrorRequestHandler } from "express"
+import { DatabaseError } from "sequelize"
 
 import { checkJwt, loadUser } from "@/middleware/authz.middleware"
 import {
@@ -88,6 +89,22 @@ router.use("/api/health-check", healthCheckRouter)
 // if no other routes match, return a 404
 router.use("/api", (req: Request, res: Response) => {
   return res.status(404).json({ message: "Not Found" })
+})
+
+// Special error handler for all api errors
+// See https://expressjs.com/en/guide/error-handling.html#writing-error-handlers
+router.use("/api", (err: ErrorRequestHandler, req: Request, res: Response, next: NextFunction) => {
+  if (res.headersSent) {
+    return next(err)
+  }
+
+  if (err instanceof DatabaseError) {
+    console.error(err)
+    return res.status(422).json({ message: "Invalid query against database." })
+  }
+
+  console.error(err)
+  return res.status(500).json({ message: "Internal Server Error" })
 })
 
 export default router

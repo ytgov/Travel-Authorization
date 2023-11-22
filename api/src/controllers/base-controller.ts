@@ -17,9 +17,9 @@ export class BaseController {
   }
 
   static get index() {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
-      return controllerInstance.index()
+      return controllerInstance.index().catch(next)
     }
   }
 
@@ -28,48 +28,48 @@ export class BaseController {
   static get create() {
     return (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
-      return controllerInstance.create()
+      return controllerInstance.create().catch(next)
     }
   }
 
   static get show() {
     return (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
-      return controllerInstance.show()
+      return controllerInstance.show().catch(next)
     }
   }
 
   static get update() {
     return (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
-      return controllerInstance.update()
+      return controllerInstance.update().catch(next)
     }
   }
 
   static get destroy() {
     return (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
-      return controllerInstance.destroy()
+      return controllerInstance.destroy().catch(next)
     }
   }
 
-  index() {
+  index(): Promise<any> {
     throw new Error("Not Implemented")
   }
 
-  create() {
+  create(): Promise<any> {
     throw new Error("Not Implemented")
   }
 
-  show() {
+  show(): Promise<any> {
     throw new Error("Not Implemented")
   }
 
-  update() {
+  update(): Promise<any> {
     throw new Error("Not Implemented")
   }
 
-  destroy() {
+  destroy(): Promise<any> {
     throw new Error("Not Implemented")
   }
 

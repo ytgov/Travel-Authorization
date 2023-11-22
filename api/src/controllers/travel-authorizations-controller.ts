@@ -49,7 +49,7 @@ export class TravelAuthorizationsController extends BaseController {
       })
   }
 
-  create() {
+  async create() {
     const travelAuthorization = this.buildTravelAuthorization()
     const policy = this.buildPolicy(travelAuthorization)
     if (!policy.create()) {
