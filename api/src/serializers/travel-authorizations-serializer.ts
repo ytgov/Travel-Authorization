@@ -3,7 +3,16 @@ import { isEmpty, isNil, last, first, pick } from "lodash"
 import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest, User } from "@/models"
 
 import BaseSerializer from "./base-serializer"
-import StopsSerializer from "./stops-serializer"
+import StopsSerializer, { StopDetailedView } from "./stops-serializer"
+import UsersSerializer, { UserDetailedView } from "./users-serializer"
+
+export type TravelAuthorizationDetailedView = Omit<
+  Partial<TravelAuthorization>,
+  "stops" | "user"
+> & {
+  stops: StopDetailedView[]
+  user: UserDetailedView
+}
 
 export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthorization> {
   static asTable(travelAuthorizations: TravelAuthorization[]) {
@@ -13,9 +22,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     })
   }
 
-  static asDetailed(
-    record: TravelAuthorization
-  ): Omit<Partial<TravelAuthorization>, "stops"> & { stops: Partial<Stop>[] } {
+  static asDetailed(record: TravelAuthorization): TravelAuthorizationDetailedView {
     const serializer = new this(record)
     return serializer.asDetailed()
   }
@@ -33,9 +40,10 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     this.user = record.user
   }
 
-  asDetailed(): Omit<Partial<TravelAuthorization>, "stops"> & { stops: Partial<Stop>[] } {
+  asDetailed(): TravelAuthorizationDetailedView {
     return {
       ...this.record.dataValues,
+      user: UsersSerializer.asDetailed(this.user),
       stops: this.record.stops?.map(StopsSerializer.asDetailed) || [],
     }
   }

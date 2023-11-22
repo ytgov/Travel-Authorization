@@ -2,10 +2,10 @@
   <div>
     <v-btn
       v-if="hasEstimates"
-      :loading="loadingCurrentForm"
+      :loading="isLoading"
       class="mt-0"
       color="primary"
-      @click="submitForm"
+      @click="saveWrapper"
     >
       Submit to Supervisor
     </v-btn>
@@ -38,7 +38,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from "vuex"
+import { mapActions, mapGetters, mapMutations } from "vuex"
+
+import { STATUSES } from "@/api/travel-authorizations-api"
 
 export default {
   name: "SubmitToSupervisorButton",
@@ -49,10 +51,9 @@ export default {
     },
   },
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "loadingCurrentForm"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationEstimates"]),
+    ...mapGetters("current/travelAuthorization", ["estimates", "isLoading"]),
     hasEstimates() {
-      return this.currentTravelAuthorizationEstimates.length > 0
+      return this.estimates.length > 0
     },
     buttonColor() {
       if (this.hasEstimates) {
@@ -63,19 +64,21 @@ export default {
     },
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["updateCurrentForm"]),
-    submitForm() {
+    ...mapActions("current/travelAuthorization", ["save"]),
+    // TODO: move this to a back-end state change endpoint
+    ...mapMutations("current/travelAuthorization", ["SET_STATUS"]),
+    saveWrapper() {
       if (!this.validateForm()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
         return
       }
 
-      this.currentTravelAuthorization.status = "submitted"
-      return this.updateCurrentForm()
-        .then(() => {
+      this.SET_STATUS(STATUSES.SUBMITTED)
+      return this.save()
+        .then((travelAuthorization) => {
           this.$router.push({
             name: "ReadMyTravelAuthorizationDetailsPage",
-            params: { formId: this.currentTravelAuthorization.id },
+            params: { formId: travelAuthorization.id },
           })
         })
         .catch((error) => {

@@ -56,8 +56,7 @@
 </template>
 
 <script>
-import { first, last } from "lodash"
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
@@ -66,18 +65,22 @@ export default {
   components: {
     VReadonlyLocationTextField,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
-    ...mapState("travelPurposes", {
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      initialDestination: "firstStop",
+      finalDestination: "lastStop",
+    }),
+    ...mapGetters("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
-    finalDestination() {
-      return last(this.currentTravelAuthorization.stops) || {}
-    },
-    initialDestination() {
-      return first(this.currentTravelAuthorization.stops) || {}
-    },
     purposeText() {
       const purpose = this.travelPurposes.find(
         (p) => p.id === this.currentTravelAuthorization.purposeId
@@ -86,9 +89,11 @@ export default {
     },
   },
   async mounted() {
+    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
+    ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }

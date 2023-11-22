@@ -8,7 +8,8 @@
     clearable
     persistent-hint
     v-bind="$attrs"
-    @input="input"
+    @input="onInput"
+    @blur="onBlur"
     @update:search-input="debouncedSearch"
   ></v-combobox>
 </template>
@@ -41,6 +42,7 @@ export default {
   },
   data: () => ({
     emails: [],
+    potentialInput: "",
     loading: false,
   }),
   computed: {
@@ -53,6 +55,7 @@ export default {
   },
   methods: {
     search(token) {
+      this.potentialInput = token
       this.loading = true
       return usersApi
         .search({ email: token })
@@ -63,8 +66,14 @@ export default {
           this.loading = false
         })
     },
-    input(value) {
+    onInput(value) {
+      this.potentialInput = value
       this.$emit("input", value)
+    },
+    // Use blur event to trigger save if you click away from this field.
+    // Otherwise if you click save directly from this field, the input does not get saved
+    onBlur() {
+      this.$emit("input", this.potentialInput)
     },
   },
 }

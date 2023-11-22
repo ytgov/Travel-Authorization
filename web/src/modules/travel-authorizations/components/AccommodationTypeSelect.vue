@@ -21,13 +21,7 @@
 <script>
 import { isNil } from "lodash"
 
-// TODO: fetch accommodation types from backend,
-// until then, keep in sync with src/api/services/estimates/bulk-generate.ts
-export const ACCOMMODATION_TYPES = Object.freeze({
-  HOTEL: "Hotel",
-  PRIVATE: "Private",
-  OTHER: "Other:",
-})
+import { ACCOMMODATION_TYPES } from "@/api/stops-api"
 
 export default {
   name: "AccommodationTypeSelect",

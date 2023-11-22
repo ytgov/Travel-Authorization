@@ -21,6 +21,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
 
   update(): boolean {
     if (this.user.roles.includes(User.Roles.ADMIN)) return true
+    if (this.record.supervisorEmail === this.user.email) return true
     if (
       this.record.userId === this.user.id &&
       this.record.status === TravelAuthorization.Statuses.DRAFT

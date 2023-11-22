@@ -8,7 +8,7 @@ export enum ScenarioTypes {
 }
 
 export class ScenariosController extends BaseController {
-  index() {
+  async index() {
     return this.response.status(200).json({
       scenarios: Object.values(ScenarioTypes),
     })

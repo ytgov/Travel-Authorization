@@ -40,7 +40,7 @@ export default {
   mounted() {},
   methods: {
     refresh() {
-      this.$refs.table.refreshForms()
+      this.$refs.table.refresh()
     },
   },
 }

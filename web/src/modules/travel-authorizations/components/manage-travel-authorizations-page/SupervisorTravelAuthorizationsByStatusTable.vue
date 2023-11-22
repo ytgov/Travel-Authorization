@@ -118,8 +118,11 @@ export default {
       return date.toFormat("dd-LLL-yyyy")
     },
     goToManageTravelAuthorization(travelAuthorization) {
-      const formId = travelAuthorization.id
-      this.$router.push({ name: "TravelFormManage", params: { formId } })
+      const travelAuthorizationId = travelAuthorization.id
+      this.$router.push({
+        name: "ManageTravelAuthorizationDetailsPage",
+        params: { travelAuthorizationId },
+      })
     },
   },
 }

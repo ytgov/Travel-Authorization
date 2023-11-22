@@ -1,21 +1,33 @@
+import { cast } from "@/utils/vue-router-utils"
+
 const routes = [
+  {
+    path: "/",
+    component: () => import("@/layouts/Layout"),
+    children: [
+      {
+        name: "MyTravelAuthorizationsPage",
+        path: "my-travel-requests",
+        component: () => import("@/modules/travel-authorizations/pages/MyTravelAuthorizationsPage"),
+      },
+
+      {
+        name: "ManageTravelAuthorizationsPage",
+        path: "manager-view",
+        component: () =>
+          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
+      },
+    ],
+  },
   {
     path: "/my-travel-requests",
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "MyTravelAuthorizationsPage",
-        path: "",
-        meta: {
-          requiresAuth: true,
-        },
-        component: () => import("@/modules/travel-authorizations/pages/MyTravelAuthorizationsPage"),
-      },
-      {
         path: ":formId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ReadMyTravelAuthorizationLayout"),
-        props: true,
+        props: cast("formId", parseInt),
         children: [
           {
             path: "",
@@ -38,10 +50,10 @@ const routes = [
         ],
       },
       {
-        path: ":formId/edit",
+        path: ":travelAuthorizationId/edit",
         component: () =>
           import("@/modules/travel-authorizations/layouts/EditMyTravelAuthorizationLayout"),
-        props: true,
+        props: cast("travelAuthorizationId", parseInt),
         children: [
           {
             path: "",
@@ -52,33 +64,41 @@ const routes = [
             name: "EditMyTravelAuthorizationDetailsPage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage"),
-            props: true,
+            props: cast("travelAuthorizationId", parseInt),
           },
           {
             path: "estimate",
             name: "EditMyTravelAuthorizationEstimatePage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationEstimatePage"),
-            props: true,
+            props: cast("travelAuthorizationId", parseInt),
           },
         ],
       },
+    ],
+  },
+  {
+    path: "/travel-requests",
+    component: () => import("@/layouts/Layout"),
+    children: [
       {
-        name: "ManageTravelAuthorizationsPage",
-        path: "/manager-view",
-        meta: {
-          requiresAuth: true,
-        },
+        path: ":travelAuthorizationId/manage",
         component: () =>
-          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
-      },
-      {
-        name: "TravelFormManage",
-        path: "request/:formId?/manage",
-        meta: {
-          requiresAuth: true,
-        },
-        component: () => import("@/modules/travel-authorizations/pages/TravelFormManage"),
+          import("@/modules/travel-authorizations/layouts/ManageTravelAuthorizationLayout"),
+        props: cast("travelAuthorizationId", parseInt),
+        children: [
+          {
+            path: "",
+            redirect: "details",
+          },
+          {
+            name: "ManageTravelAuthorizationDetailsPage",
+            path: "details",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetailsPage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+        ],
       },
     ],
   },
