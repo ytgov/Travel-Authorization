@@ -67,7 +67,7 @@
                   persistent-hint
                   required
                   validate-on-blur
-                  @input="updateFinalStop"
+                  @input="updateLastStopLocationId"
                 />
               </v-col>
             </v-row>
@@ -132,9 +132,9 @@ export default {
   computed: {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+      stops: "stops",
+      lastStop: "lastStop",
     }),
-    ...mapGetters("current/travelAuthorization/stops", { stops: "items", lastStop: "lastStop" }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
@@ -142,28 +142,22 @@ export default {
   },
   async mounted() {
     await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
-    await this.ensureCurrentTravelAuthorizationStops(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
     ...mapActions("current/travelAuthorization", {
       ensureCurrentTravelAuthorization: "ensure",
-    }),
-    ...mapActions("current/travelAuthorization/stops", {
-      ensureCurrentTravelAuthorizationStops: "ensure",
-      newStop: "newStop",
       replaceStops: "replaceStops",
     }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
-    async updateFinalStop(locationId) {
-      const updateFirstStop = await this.newStop({
-        ...this.firstStop,
-      })
-      const updatedLastStop = await this.newStop({
-        ...this.lastStop,
-        locationId,
-      })
-      await this.replaceStops([updateFirstStop, ...this.stops.slice(1, -1), updatedLastStop])
+    async updateLastStopLocationId(locationId) {
+      await this.replaceStops([
+        ...this.stops.slice(0, -1),
+        {
+          ...this.lastStop,
+          locationId,
+        },
+      ])
     },
   },
 }

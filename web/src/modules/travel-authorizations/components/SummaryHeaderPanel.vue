@@ -72,9 +72,8 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", { currentTravelAuthorization: "attributes" }),
-    ...mapGetters("current/travelAuthorization/stops", {
-      currentTravelAuthorizationStops: "items",
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
       initialDestination: "firstStop",
       finalDestination: "lastStop",
     }),
@@ -91,14 +90,10 @@ export default {
   },
   async mounted() {
     await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
-    await this.ensureCurrentTravelAuthorizationStops(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
     ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
-    ...mapActions("current/travelAuthorization/stops", {
-      ensureCurrentTravelAuthorizationStops: "ensure",
-    }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }

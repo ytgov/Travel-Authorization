@@ -58,7 +58,7 @@
           >
             <DatePicker
               v-model="currentTravelAuthorization.dateBackToWork"
-              :min="finalStop.departureDate"
+              :min="lastStop.departureDate"
               :rules="[required]"
               label="Expected Date return to work"
               required
@@ -71,9 +71,9 @@
 </template>
 
 <script>
-import { isEmpty, last } from "lodash"
 import { mapActions, mapGetters } from "vuex"
 
+import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import { required } from "@/utils/validators"
 import DatePicker from "@/components/Utils/DatePicker"
 import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
@@ -95,21 +95,14 @@ export default {
     tripTypes: Object.values(TRIP_TYPES),
     tripType: "",
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
-    stopsCache: {
-      [TRIP_TYPES.ROUND_TRIP]: [],
-      [TRIP_TYPES.ONE_WAY]: [],
-      [TRIP_TYPES.MULTI_DESTINATION]: [],
-    },
   }),
   computed: {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+      stops: "stops",
+      firstStop: "firstStop",
+      lastStop: "lastStop",
     }),
-    ...mapGetters("current/travelAuthorization/stops", { stops: "items" }),
-    finalStop() {
-      return last(this.stops) || {}
-    },
     tripTypeComponent() {
       switch (this.tripType) {
         case TRIP_TYPES.ROUND_TRIP:
@@ -123,7 +116,7 @@ export default {
       }
     },
   },
-  mounted() {
+  async mounted() {
     if (this.currentTravelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
     } else if (this.currentTravelAuthorization.multiStop) {
@@ -132,11 +125,73 @@ export default {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
 
-    this.updateTripType(this.tripType)
+    await this.ensureMinimalDefaultStops(this.tripType)
+
+    this.$nextTick(() => {
+      this.$refs.form?.resetValidation()
+    })
   },
   methods: {
     required,
-    ...mapActions("current/travelAuthorization/stops", ["newStop", "replaceStops"]),
+    ...mapActions("current/travelAuthorization", ["newBlankStop", "replaceStops"]),
+    async ensureMinimalDefaultStops(tripType) {
+      if (tripType === TRIP_TYPES.ROUND_TRIP) {
+        return this.ensureMinimalDefaultRoundTripStops()
+      } else if (tripType === TRIP_TYPES.ONE_WAY) {
+        return this.ensureMinimalDefaultOneWayStops()
+      } else if (tripType === TRIP_TYPES.MULTI_DESTINATION) {
+        return this.ensureMinimalDefaultMultiDestinationStops()
+      } else {
+        throw new Error("Invalid trip type")
+      }
+    },
+    async ensureMinimalDefaultRoundTripStops() {
+      const newFirstStop = await this.newBlankStop({
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...this.firstStop,
+      })
+      const newLastStop = await this.newBlankStop({
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        accommodationType: null,
+        ...this.lastStop,
+      })
+      return this.replaceStops([newFirstStop, newLastStop])
+    },
+    async ensureMinimalDefaultOneWayStops() {
+      const newFirstStop = await this.newBlankStop({
+        accommodationType: null,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...this.firstStop,
+      })
+      const newLastStop = await this.newBlankStop({
+        transport: null,
+        accommodationType: null,
+        ...this.lastStop,
+      })
+      return this.replaceStops([newFirstStop, newLastStop])
+    },
+    async ensureMinimalDefaultMultiDestinationStops() {
+      const newFirstStop = await this.newBlankStop({
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...this.firstStop,
+      })
+      const newSecondStop = await this.newBlankStop({
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+      })
+      const newThirdStop = await this.newBlankStop({
+        accommodationType: null,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+      })
+      const newLastStop = await this.newBlankStop({
+        transport: null,
+        accommodationType: null,
+        ...this.lastStop,
+      })
+      return this.replaceStops([newFirstStop, newSecondStop, newThirdStop, newLastStop])
+    },
     /*
       Update trip type selection, setting default stops as needed,
       or loading stops from cache if cached valued exists.
@@ -147,71 +202,27 @@ export default {
       NOTE: This would probably be made irrelevant by modeling stops differently, such as by
       using a "trip segment" model, with a departure and arrival location.
     */
-    updateTripType(value) {
-      this.stopsCache[this.tripType] = this.currentTravelAuthorization.stops
-
+    async updateTripType(value) {
+      this.tripType = value
       if (value === TRIP_TYPES.ROUND_TRIP) {
         this.currentTravelAuthorization.oneWayTrip = false
         this.currentTravelAuthorization.multiStop = false
-
-        this.replaceStopsWithCacheIfExists(TRIP_TYPES.ROUND_TRIP)
       } else if (value === TRIP_TYPES.ONE_WAY) {
         this.currentTravelAuthorization.oneWayTrip = true
         this.currentTravelAuthorization.multiStop = false
-
-        // TODO: replacw with newer code
-        this.replaceStopsWithCacheOrAddStops(TRIP_TYPES.ONE_WAY, [
-          { accommodationType: null },
-          {
-            ...this.finalStop,
-            accommodationType: null,
-            transport: null,
-          },
-        ])
       } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
         this.currentTravelAuthorization.multiStop = true
         this.currentTravelAuthorization.oneWayTrip = false
-
-        // TODO: replacw with newer code
-        this.replaceStopsWithCacheOrAddStops(TRIP_TYPES.MULTI_DESTINATION, [
-          {},
-          {},
-          { accommodationType: null },
-          {
-            ...this.finalStop,
-            accommodationType: null,
-            transport: null,
-          },
-        ])
       } else {
         throw new Error("Invalid trip type")
       }
 
-      this.tripType = value
+      await this.replaceStops([])
+      await this.ensureMinimalDefaultStops(this.tripType)
 
       this.$nextTick(() => {
         this.$refs.form?.resetValidation()
       })
-    },
-    replaceStopsWithCacheIfExists(key) {
-      const cachedStops = this.stopsCache[key]
-      if (isEmpty(cachedStops)) {
-        return // do nothing as the cache is empty
-      }
-
-      this.replaceStops(cachedStops)
-    },
-    replaceStopsWithCacheOrAddStops(key, defaultStopsAttributes) {
-      const cachedStops = this.stopsCache[key]
-      if (isEmpty(cachedStops)) {
-        this.replaceStops([])
-        const newStops = defaultStopsAttributes.map((attributes) => {
-          this.newStop(attributes)
-        })
-        this.replaceStops(newStops)
-      }
-
-      this.replaceStops(cachedStops)
     },
   },
 }

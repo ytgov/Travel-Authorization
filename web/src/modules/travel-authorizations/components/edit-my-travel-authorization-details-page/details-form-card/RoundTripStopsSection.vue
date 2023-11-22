@@ -181,11 +181,9 @@
 </template>
 
 <script>
-import { isEmpty } from "lodash"
 import { mapGetters, mapActions } from "vuex"
 
 import { required, greaterThanOrEqualToDate } from "@/utils/validators"
-import { TRAVEL_METHODS } from "@/api/stops-api"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import LocationsAutocomplete from "@/components/LocationsAutocomplete"
@@ -206,42 +204,21 @@ export default {
   computed: {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
-    }),
-    ...mapGetters("current/travelAuthorization/stops", {
       lastStop: "lastStop",
       firstStop: "firstStop",
-      stops: "items",
+      stops: "stops",
     }),
   },
   async mounted() {},
   methods: {
     greaterThanOrEqualToDate,
     required,
-    ...mapActions("current/travelAuthorization/stops", ["newStop", "replaceStops"]),
+    ...mapActions("current/travelAuthorization", ["replaceStops"]),
     async updateFirstStop(attribute, value) {
-      if (isEmpty(this.firstStop)) {
-        const firstStop = await this.newStop({
-          [attribute]: value,
-        })
-
-        await this.replaceStops([firstStop, this.lastStop])
-      } else {
-        await this.replaceStops([{ ...this.firstStop, [attribute]: value }, this.lastStop])
-      }
+      await this.replaceStops([{ ...this.firstStop, [attribute]: value }, this.lastStop])
     },
     async updateLastStop(attribute, value) {
-      if (isEmpty(this.lastStop)) {
-        const lastStop = await this.newStop({
-          transport: TRAVEL_METHODS.AIRCRAFT,
-          accommodationType: null,
-          [attribute]: value,
-        })
-
-        await this.replaceStops([this.firstStop, lastStop])
-      } else {
-        await this.replaceStops([this.firstStop, { ...this.lastStop, [attribute]: value }])
-      }
+      await this.replaceStops([this.firstStop, { ...this.lastStop, [attribute]: value }])
     },
   },
 }

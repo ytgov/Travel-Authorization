@@ -3,8 +3,6 @@ import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
 
-import stops from "./stops"
-
 const state = {
   attributes: {
     expenses: [],
@@ -22,6 +20,9 @@ const getters = withGettersFromState(state, {
   id: (state) => state.attributes.id,
   estimates: (state) =>
     state.attributes.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE),
+  stops: (state) => state.attributes.stops,
+  firstStop: (state) => state.attributes.stops[0] || {},
+  lastStop: (state) => state.attributes.stops[state.attributes.stops.length - 1] || {},
 })
 
 const actions = {
@@ -75,6 +76,20 @@ const actions = {
       commit("SET_IS_LOADING", false)
     }
   },
+  newBlankStop({ getters }, attributes) {
+    return {
+      travelAuthorizationId: getters.id,
+      ...attributes,
+    }
+  },
+  replaceStops({ commit, getters }, stops) {
+    commit("SET_ATTRIBUTES", {
+      ...getters.attributes,
+      stops,
+    })
+
+    return stops
+  },
 }
 
 const mutations = {
@@ -102,7 +117,4 @@ export default {
   getters,
   actions,
   mutations,
-  modules: {
-    stops,
-  },
 }
