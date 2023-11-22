@@ -9,7 +9,7 @@ const state = {
   attributes: {
     expenses: [],
     purpose: {},
-    stops: [], // load from stops sub-module?
+    stops: [],
     user: {},
   },
   isLoading: false,
@@ -46,7 +46,6 @@ const actions = {
       const { travelAuthorization } = await travelAuthorizationsApi.get(travelAuthorizationId)
       commit("SET_IS_ERRORED", false)
       commit("SET_ATTRIBUTES", travelAuthorization)
-      // TODO: dispatch update to stops sub-module?
       commit("SET_IS_CACHED", true)
       return travelAuthorization
     } catch (error) {

@@ -67,7 +67,7 @@
                   persistent-hint
                   required
                   validate-on-blur
-                  @input="createOrUpdateFinalStop"
+                  @input="updateFinalStop"
                 />
               </v-col>
             </v-row>
@@ -111,7 +111,6 @@
 </template>
 
 <script>
-import { isEmpty } from "lodash"
 import { mapState, mapActions, mapGetters } from "vuex"
 
 import LocationsAutocomplete from "@/components/LocationsAutocomplete"
@@ -142,17 +141,29 @@ export default {
     }),
   },
   async mounted() {
+    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
+    await this.ensureCurrentTravelAuthorizationStops(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
+    ...mapActions("current/travelAuthorization", {
+      ensureCurrentTravelAuthorization: "ensure",
+    }),
+    ...mapActions("current/travelAuthorization/stops", {
+      ensureCurrentTravelAuthorizationStops: "ensure",
+      newStop: "newStop",
+      replaceStops: "replaceStops",
+    }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
-    ...mapActions("current/travelAuthorization/stops", ["addStop", "replaceStops"]),
-    async createOrUpdateFinalStop(locationId) {
-      if (isEmpty(this.lastStop)) {
-        await this.addStop({ locationId })
-      } else {
-        await this.replaceStops([...this.stops.slice(0, -1), { ...this.lastStop, locationId }])
-      }
+    async updateFinalStop(locationId) {
+      const updateFirstStop = await this.newStop({
+        ...this.firstStop,
+      })
+      const updatedLastStop = await this.newStop({
+        ...this.lastStop,
+        locationId,
+      })
+      await this.replaceStops([updateFirstStop, ...this.stops.slice(1, -1), updatedLastStop])
     },
   },
 }

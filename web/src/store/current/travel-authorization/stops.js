@@ -52,13 +52,6 @@ const actions = {
       ...attributes,
     }
   },
-  addStop({ commit, getters, dispatch }, attributes) {
-    const newStop = dispatch("newStop", attributes)
-
-    commit("SET_ITEMS", [...getters.items, newStop])
-
-    return newStop
-  },
   replaceStops({ commit }, stops) {
     commit("SET_ITEMS", stops)
 
