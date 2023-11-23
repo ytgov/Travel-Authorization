@@ -1,4 +1,13 @@
 {
   "eslint.workingDirectories": ["./api", "./web"],
-  "eslint.validate": ["javascript", "vue"]
+  "eslint.validate": ["javascript", "vue"],
+  "[plantuml]": {
+    "editor.defaultFormatter": "jebbs.plantuml"
+  },
+  "plantuml.exportOutDir": "./",
+  "plantuml.server": "http://localhost:9999/",
+  "plantuml.render": "PlantUMLServer",
+  "plantuml.exportFormat": "png",
+  "plantuml.diagramsRoot": "./",
+  "plantuml.exportSubFolder": false
 }
