@@ -43,7 +43,7 @@
         md="2"
       >
         <v-text-field
-          :value="finalDestination.departureDate"
+          :value="finalDestinationDepartureDate"
           label="End Date"
           prepend-icon="mdi-calendar"
           dense
@@ -74,6 +74,7 @@ export default {
   computed: {
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
+      stops: "stops",
       initialDestination: "firstStop",
       finalDestination: "lastStop",
     }),
@@ -86,6 +87,13 @@ export default {
         (p) => p.id === this.currentTravelAuthorization.purposeId
       )
       return purpose?.purpose || ""
+    },
+    finalDestinationDepartureDate() {
+      if (this.currentTravelAuthorization.multiStop) {
+        return this.stops[this.stops.length - 2].departureDate
+      }
+
+      return this.finalDestination.departureDate
     },
   },
   async mounted() {
