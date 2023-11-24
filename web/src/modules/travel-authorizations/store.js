@@ -1,39 +1,18 @@
-import { isString, pick } from "lodash"
+import { isString } from "lodash"
 
-import { FORM_URL, LOOKUP_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+import { LOOKUP_URL } from "@/urls"
+import { secureGet } from "@/store/jwt"
 
 import expensesApi from "@/api/expenses-api"
-import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 
 const state = {
   departments: [],
   emails: [],
   estimates: [],
-  currentTravelAuthorization: {
-    expenses: [],
-    purpose: {},
-    stops: [],
-  },
-  loadingCurrentForm: true,
   loadingEstimates: true,
 }
 
-// Shim to support refering to form as request for legacy code
-state.request = state.currentTravelAuthorization
-
-const getters = {
-  currentTravelAuthorizationId(state) {
-    return state.currentTravelAuthorization.id
-  },
-  currentTravelAuthorizationEstimates(state) {
-    return (
-      state.currentTravelAuthorization.expenses?.filter(
-        (expense) => expense.type === expensesApi.TYPES.ESTIMATE
-      ) || []
-    )
-  },
-}
+const getters = {}
 
 const actions = {
   async initialize(store) {
@@ -71,11 +50,6 @@ const actions = {
 const mutations = {
   SET_EMAILS(store, value) {
     store.emails = value
-  },
-  SET_FORM(store, value) {
-    store.currentTravelAuthorization = value
-    // propagates to store.request object, for legacy code
-    store.request = store.currentTravelAuthorization
   },
   SET_DEPARTMENTS(store, value) {
     store.departments = value
