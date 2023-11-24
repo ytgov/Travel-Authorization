@@ -54,7 +54,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
 
   permittedAttributes(): string[] {
     return [
-      "userId",
+      "userId", // Permit but don't let non-admins create travel auths for anyone but themselves via policy
       "preappId",
       "purposeId",
       "status", // Permit status changes until we have a state management system.
