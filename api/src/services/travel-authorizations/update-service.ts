@@ -4,7 +4,7 @@ import { isEmpty } from "lodash"
 import db from "@/db/db-client"
 import BaseService from "@/services/base-service"
 
-import { Expense, Stop, TravelAuthorization, User } from "@/models"
+import { Expense, Stop, TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 import { StopsService, ExpensesService } from "@/services"
 
 type StopsCreationAttributes = CreationAttributes<Stop>[]
@@ -47,6 +47,12 @@ export class UpdateService extends BaseService {
       if (!isEmpty(this.expenses)) {
         await ExpensesService.bulkReplace(travelAuthorizationId, this.expenses)
       }
+
+      await TravelAuthorizationActionLog.create({
+        travelAuthorizationId: this.travelAuthorization.id,
+        userId: this.currentUser.id,
+        action: TravelAuthorizationActionLog.Actions.UPDATE,
+      })
 
       return this.travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
     })
