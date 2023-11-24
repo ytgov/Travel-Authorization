@@ -178,9 +178,9 @@ export default {
     },
     async ensureMinimalDefaultRoundTripStops() {
       const newFirstStop = await this.newBlankStop({
-        accommodationType: ACCOMMODATION_TYPES.HOTEL,
         transport: TRAVEL_METHODS.AIRCRAFT,
         ...this.firstStop,
+        accommodationType: this.firstStop.accommodationType || ACCOMMODATION_TYPES.HOTEL,
       })
       const newLastStop = await this.newBlankStop({
         ...this.lastStop,
