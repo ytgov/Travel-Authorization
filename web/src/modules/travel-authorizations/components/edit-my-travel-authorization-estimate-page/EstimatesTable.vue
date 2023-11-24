@@ -101,7 +101,6 @@ export default {
     ...mapActions("travelAuthorizations", ["loadEstimates"]),
     ...mapActions("current/travelAuthorization", {
       ensureCurrentTravelAuthorization: "ensure",
-      replaceCurrentTravelAuthorizationExpenses: "replaceExpenses",
     }),
     formatDate(date) {
       return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
@@ -114,9 +113,7 @@ export default {
       return formatter.format(amount)
     },
     refresh() {
-      return this.loadEstimates({ formId: this.formId }).then((expenses) => {
-        return this.replaceCurrentTravelAuthorizationExpenses(expenses)
-      })
+      return this.loadEstimates({ formId: this.formId })
     },
     showDeleteDialog(item) {
       this.$refs.deleteDialog.show(item)

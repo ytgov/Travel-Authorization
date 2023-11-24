@@ -55,6 +55,21 @@ const actions = {
       throw error
     }
   },
+  async fetchExpensesSilently({ commit }, travelAuthorizationId) {
+    try {
+      const {
+        travelAuthorization: { expenses },
+      } = await travelAuthorizationsApi.get(travelAuthorizationId)
+      commit("SET_IS_ERRORED", false)
+      commit("SET_EXPENSES", expenses)
+      commit("SET_IS_CACHED", true)
+      return expenses
+    } catch (error) {
+      console.error("Failed to load travel authorization:", error)
+      commit("SET_IS_ERRORED", true)
+      throw error
+    }
+  },
   async create({ commit }, attributes) {
     commit("SET_IS_LOADING", true)
     try {
@@ -106,14 +121,6 @@ const actions = {
 
     return stops
   },
-  replaceExpenses({ commit, getters }, expenses) {
-    commit("SET_ATTRIBUTES", {
-      ...getters.attributes,
-      expenses,
-    })
-
-    return expenses
-  },
 }
 
 const mutations = {
@@ -132,6 +139,9 @@ const mutations = {
   // TODO: replace this with back-end state management
   SET_STATUS(state, value) {
     state.attributes.status = value
+  },
+  SET_EXPENSES(state, value) {
+    state.attributes.expenses = value
   },
 }
 
