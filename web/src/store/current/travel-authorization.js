@@ -90,6 +90,14 @@ const actions = {
 
     return stops
   },
+  replaceExpenses({ commit, getters }, expenses) {
+    commit("SET_ATTRIBUTES", {
+      ...getters.attributes,
+      expenses,
+    })
+
+    return expenses
+  },
 }
 
 const mutations = {

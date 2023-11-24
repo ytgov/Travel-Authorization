@@ -69,15 +69,7 @@ export default {
       isReadyCurrentTravelAuthorization: "isReady",
     }),
   },
-  watch: {
-    // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
-    // This does a wizard of oz style, silent, background refresh.
-    $route(to) {
-      if (to.name === "EditMyTravelAuthorizationDetailsPage") {
-        this.fetchCurrentTravelAuthorizationSilently(this.travelAuthorizationId)
-      }
-    },
-  },
+  watch: {},
   async mounted() {
     await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.initializeCurrentUser()
