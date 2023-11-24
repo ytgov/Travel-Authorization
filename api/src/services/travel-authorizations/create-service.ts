@@ -61,7 +61,7 @@ export class CreateService extends BaseService {
         )
 
         const travelAuthorizationId = travelAuthorization.id
-        await this.createStops(travelAuthorizationId, this.stopsAttributes)
+        await this.createStops(travelAuthorization, this.stopsAttributes)
 
         if (!isEmpty(this.expensesAttributes)) {
           await ExpensesService.bulkCreate(travelAuthorizationId, this.expensesAttributes)
@@ -87,22 +87,108 @@ export class CreateService extends BaseService {
       })
   }
 
-  async createStops(travelAuthorizationId: number, stopsAttributes: StopsCreationAttributes) {
-    const minimalStopsAttributes = this.ensureMinimalStopsAttributes(stopsAttributes)
+  async createStops(
+    travelAuthorization: TravelAuthorization,
+    stopsAttributes: StopsCreationAttributes
+  ) {
+    const minimalStopsAttributesWithDefaults = this.ensureMinimalDefaultStopsAttributes(
+      travelAuthorization,
+      stopsAttributes
+    )
 
-    minimalStopsAttributes.forEach((stopAttributes) => {
-      stopAttributes.travelAuthorizationId = travelAuthorizationId
-    })
-
-    return StopsService.bulkCreate(travelAuthorizationId, minimalStopsAttributes)
+    return StopsService.bulkCreate(travelAuthorization.id, minimalStopsAttributesWithDefaults)
   }
 
-  ensureMinimalStopsAttributes(stopsAttributes: StopsCreationAttributes) {
-    while (stopsAttributes.length < 2) {
-      stopsAttributes.push({})
+  // TODO: might want to make this a validator against updates as well?
+  ensureMinimalDefaultStopsAttributes(
+    travelAuthorization: TravelAuthorization,
+    stopsAttributes: StopsCreationAttributes
+  ): StopsCreationAttributes {
+    if (travelAuthorization.multiStop) {
+      return this.ensureMinimalDefaultMultiDestinationStopsAttributes(
+        travelAuthorization.id,
+        stopsAttributes
+      )
+    } else if (travelAuthorization.oneWayTrip) {
+      return this.ensureMinimalDefaultOneWayStopsAttributes(travelAuthorization.id, stopsAttributes)
+    } else {
+      return this.ensureMinimalDefaultRoundTripStopsAttributes(
+        travelAuthorization.id,
+        stopsAttributes
+      )
     }
+  }
 
-    return stopsAttributes
+  ensureMinimalDefaultMultiDestinationStopsAttributes(
+    travelAuthorizationId: number,
+    stopsAttributes: StopsCreationAttributes
+  ): StopsCreationAttributes {
+    return [
+      {
+        travelAuthorizationId,
+        accommodationType: Stop.AccommodationTypes.HOTEL,
+        transport: Stop.TravelMethods.AIRCRAFT,
+        ...stopsAttributes[0],
+      },
+      {
+        travelAuthorizationId,
+        accommodationType: Stop.AccommodationTypes.HOTEL,
+        transport: Stop.TravelMethods.AIRCRAFT,
+        ...stopsAttributes[1],
+      },
+      {
+        travelAuthorizationId,
+        accommodationType: null,
+        transport: Stop.TravelMethods.AIRCRAFT,
+        ...stopsAttributes[2],
+      },
+      {
+        travelAuthorizationId,
+        transport: null,
+        accommodationType: null,
+        ...stopsAttributes[3],
+      },
+    ]
+  }
+
+  ensureMinimalDefaultOneWayStopsAttributes(
+    travelAuthorizationId: number,
+    stopsAttributes: StopsCreationAttributes
+  ): StopsCreationAttributes {
+    return [
+      {
+        travelAuthorizationId,
+        accommodationType: null,
+        transport: Stop.TravelMethods.AIRCRAFT,
+        ...stopsAttributes[0],
+      },
+      {
+        travelAuthorizationId,
+        accommodationType: null,
+        transport: null,
+        ...stopsAttributes[1],
+      },
+    ]
+  }
+
+  ensureMinimalDefaultRoundTripStopsAttributes(
+    travelAuthorizationId: number,
+    stopsAttributes: StopsCreationAttributes
+  ): StopsCreationAttributes {
+    return [
+      {
+        travelAuthorizationId,
+        accommodationType: Stop.AccommodationTypes.HOTEL,
+        transport: Stop.TravelMethods.AIRCRAFT,
+        ...stopsAttributes[0],
+      },
+      {
+        travelAuthorizationId,
+        accommodationType: null,
+        transport: Stop.TravelMethods.AIRCRAFT,
+        ...stopsAttributes[1],
+      },
+    ]
   }
 }
 

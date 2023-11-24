@@ -11,6 +11,8 @@
 <script>
 import { mapActions, mapGetters } from "vuex"
 
+import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
+
 export default {
   name: "CreateTravelAuthorizationButton",
   data: () => ({
@@ -34,7 +36,19 @@ export default {
     },
     createAndGoToFormDetails() {
       this.loadingCreatingForm = true
-      return this.create({ userId: this.currentUserId, stopsAttributes: [{}, {}] })
+      return this.create({
+        userId: this.currentUserId,
+        stopsAttributes: [
+          {
+            accommodationType: ACCOMMODATION_TYPES.HOTEL,
+            transport: TRAVEL_METHODS.AIRCRAFT,
+          },
+          {
+            transport: TRAVEL_METHODS.AIRCRAFT,
+            accommodationType: null,
+          },
+        ],
+      })
         .then((form) => {
           return this.goToFormDetails(form)
         })
