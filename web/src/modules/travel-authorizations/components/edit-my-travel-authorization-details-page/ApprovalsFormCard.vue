@@ -21,7 +21,7 @@
               v-if="!refreshingEstimatesSilently && hasEstimates"
               :to="{
                 name: 'EditMyTravelAuthorizationEstimatePage',
-                params: { formId: currentTravelAuthorizationId },
+                params: { travelAuthorizationId: currentTravelAuthorizationId },
               }"
               class="mt-1"
               color="secondary"
@@ -102,9 +102,9 @@ import { mapActions, mapState, mapGetters } from "vuex"
 import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
 
-import EstimatedCostTextField from "./approvals-form-card/EstimatedCostTextField"
+import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
+import EstimateGenerateDialog from "./approvals-form-card/EstimateGenerateDialog"
 import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"
 
 export default {
@@ -130,11 +130,11 @@ export default {
   }),
   computed: {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", [
-      "currentTravelAuthorizationId",
-      "currentTravelAuthorizationEstimates",
-    ]),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      currentTravelAuthorizationId: "id",
+      currentTravelAuthorizationEstimates: "estimates",
+    }),
     travelAdvanceInDollars: {
       get() {
         return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0) || 0
@@ -152,17 +152,20 @@ export default {
       ? this.currentUser.department
       : await this.initializeCurrentUser().then((user) => user.department)
     await this.loadPreApprovedTravelRequests(department)
+    await this.refreshEstimatesSilently()
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
-    ...mapActions("travelAuthorizations", ["loadCurrentTravelAuthorizationSilently"]),
+    ...mapActions("current/travelAuthorization", {
+      fetchCurrentTravelAuthorizationExpensesSilently: "fetchExpensesSilently",
+    }),
     refreshEstimatesSilently() {
       this.refreshingEstimatesSilently = true
-      return this.loadCurrentTravelAuthorizationSilently(this.currentTravelAuthorizationId).finally(
-        () => {
-          this.refreshingEstimatesSilently = false
-        }
-      )
+      return this.fetchCurrentTravelAuthorizationExpensesSilently(
+        this.currentTravelAuthorizationId
+      ).finally(() => {
+        this.refreshingEstimatesSilently = false
+      })
     },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.

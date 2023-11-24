@@ -21,6 +21,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
 
   update(): boolean {
     if (this.user.roles.includes(User.Roles.ADMIN)) return true
+    if (this.record.supervisorEmail === this.user.email) return true
     if (
       this.record.userId === this.user.id &&
       this.record.status === TravelAuthorization.Statuses.DRAFT
@@ -53,6 +54,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
 
   permittedAttributes(): string[] {
     return [
+      "userId", // Permit but don't let non-admins create travel auths for anyone but themselves via policy
       "preappId",
       "purposeId",
       "status", // Permit status changes until we have a state management system.

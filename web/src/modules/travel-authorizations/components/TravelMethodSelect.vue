@@ -21,15 +21,7 @@
 <script>
 import { isNil } from "lodash"
 
-// TODO: load from back-end?
-export const TRAVEL_METHODS = Object.freeze({
-  AIRCRAFT: "Aircraft",
-  POOL_VEHICLE: "Pool Vehicle",
-  PERSONAL_VEHICLE: "Personal Vehicle",
-  RENTAL_VEHICLE: "Rental Vehicle",
-  BUS: "Bus",
-  OTHER: "Other:",
-})
+import { TRAVEL_METHODS } from "@/api/stops-api"
 
 export default {
   name: "TravelMethodSelect",

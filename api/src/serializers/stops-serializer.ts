@@ -4,13 +4,15 @@ import { Stop } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 
+export type StopDetailedView = Partial<Stop>
+
 export class StopsSerializer extends BaseSerializer<Stop> {
-  static asDetailed(stop: Stop): Partial<Stop> {
+  static asDetailed(stop: Stop): StopDetailedView {
     const serializer = new StopsSerializer(stop)
     return serializer.asDetailed()
   }
 
-  asDetailed(): Partial<Stop> {
+  asDetailed(): StopDetailedView {
     return {
       ...this.record.dataValues,
       departureTime: this.formatTimeToHHmm(),

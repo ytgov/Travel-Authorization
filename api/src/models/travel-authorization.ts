@@ -33,7 +33,7 @@ import User from "./user"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+// Avoid exporting here, and instead expose via the model to avoid naming conflicts
 enum Statuses {
   // TODO: might want replace DELETED status with `deleted_at` field from Sequelize paranoid feature.
   // See https://sequelize.org/docs/v6/core-concepts/paranoid/
@@ -78,7 +78,6 @@ export class TravelAuthorization extends Model<
   declare status: Statuses | null
   // TODO: consider making this supervisorId?
   declare supervisorEmail: string | null
-  declare approved: string | null
   declare requestChange: string | null
   declare denialReason: string | null
   declare oneWayTrip: boolean | null
@@ -149,17 +148,17 @@ export class TravelAuthorization extends Model<
       as: "purpose",
       foreignKey: "purposeId",
     })
-    this.hasOne(TravelDeskTravelRequest, {
-      as: "travelDeskTravelRequest",
-      sourceKey: "id",
-      foreignKey: "travelAuthorizationId",
-    })
     this.belongsTo(User, {
       as: "user",
       foreignKey: "userId",
     })
     this.hasMany(Stop, {
       as: "stops",
+      sourceKey: "id",
+      foreignKey: "travelAuthorizationId",
+    })
+    this.hasOne(TravelDeskTravelRequest, {
+      as: "travelDeskTravelRequest",
       sourceKey: "id",
       foreignKey: "travelAuthorizationId",
     })
@@ -296,10 +295,6 @@ TravelAuthorization.init(
           this.setDataValue("supervisorEmail", null)
         }
       },
-    },
-    approved: {
-      type: DataTypes.STRING(255),
-      allowNull: true,
     },
     requestChange: {
       type: DataTypes.STRING(255),

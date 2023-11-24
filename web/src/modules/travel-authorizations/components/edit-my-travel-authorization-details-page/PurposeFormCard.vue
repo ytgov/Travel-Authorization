@@ -57,7 +57,7 @@
                 md="9"
               >
                 <LocationsAutocomplete
-                  v-model="finalDestination.locationId"
+                  :value="lastStop.locationId"
                   :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
                   :rules="[required]"
                   clearable
@@ -67,6 +67,7 @@
                   persistent-hint
                   required
                   validate-on-blur
+                  @input="updateLastStopLocationId"
                 />
               </v-col>
             </v-row>
@@ -110,7 +111,6 @@
 </template>
 
 <script>
-import { last } from "lodash"
 import { mapState, mapActions, mapGetters } from "vuex"
 
 import LocationsAutocomplete from "@/components/LocationsAutocomplete"
@@ -120,38 +120,45 @@ export default {
   components: {
     LocationsAutocomplete,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   data: () => ({
     required: (v) => !!v || "This field is required",
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization"]),
-    ...mapGetters("travelAuthorizations", ["currentTravelAuthorizationId"]),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      stops: "stops",
+      lastStop: "lastStop",
+    }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
-    finalDestination: {
-      get() {
-        return (
-          last(this.currentTravelAuthorization.stops) || {
-            travelAuthorizationId: this.currentTravelAuthorizationId,
-          }
-        )
-      },
-      set(newValue) {
-        this.$set(
-          this.currentTravelAuthorization.stops,
-          this.currentTravelAuthorization.stops.length - 1,
-          newValue
-        )
-      },
-    },
   },
   async mounted() {
+    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
+    ...mapActions("current/travelAuthorization", {
+      ensureCurrentTravelAuthorization: "ensure",
+      replaceStops: "replaceStops",
+    }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
+    async updateLastStopLocationId(locationId) {
+      await this.replaceStops([
+        ...this.stops.slice(0, -1),
+        {
+          ...this.lastStop,
+          locationId,
+        },
+      ])
+    },
   },
 }
 </script>

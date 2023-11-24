@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FullScreenLoadingOverlay :value="loadingCurrentForm" />
+    <FullScreenLoadingOverlay :value="!isReadyCurrentTravelAuthorization" />
 
     <Breadcrumbs />
 
@@ -12,16 +12,17 @@
       />
     </h1>
 
-    <template v-if="!loadingCurrentForm">
-      <SummaryHeaderPanel />
+    <template v-if="isReadyCurrentTravelAuthorization">
+      <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
     </template>
 
     <v-tabs v-model="tab">
-      <v-tab :to="{ name: 'EditMyTravelAuthorizationDetailsPage', params: { formId } }"
+      <v-tab
+        :to="{ name: 'EditMyTravelAuthorizationDetailsPage', params: { travelAuthorizationId } }"
         >Details</v-tab
       >
       <v-tab
-        :to="{ name: 'EditMyTravelAuthorizationEstimatePage', params: { formId } }"
+        :to="{ name: 'EditMyTravelAuthorizationEstimatePage', params: { travelAuthorizationId } }"
         @click="resetActiveState"
         >Estimate</v-tab
       >
@@ -31,14 +32,14 @@
       <v-tab>Reporting - TODO</v-tab>
     </v-tabs>
 
-    <template v-if="!loadingCurrentForm">
+    <template v-if="isReadyCurrentTravelAuthorization">
       <router-view></router-view>
     </template>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters, mapState } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
@@ -54,8 +55,8 @@ export default {
     VUserChipMenu,
   },
   props: {
-    formId: {
-      type: [Number, String],
+    travelAuthorizationId: {
+      type: Number,
       required: true,
     },
   },
@@ -64,27 +65,21 @@ export default {
   }),
   computed: {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("travelAuthorizations", ["loadingCurrentForm"]),
+    ...mapGetters("current/travelAuthorization", {
+      isReadyCurrentTravelAuthorization: "isReady",
+    }),
   },
-  watch: {
-    // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
-    // This does a wizard of oz style, silent, background refresh.
-    $route(to) {
-      if (to.name === "EditMyTravelAuthorizationDetailsPage") {
-        this.loadCurrentTravelAuthorizationSilently(this.formId)
-      }
-    },
-  },
+  watch: {},
   async mounted() {
-    await this.loadCurrentTravelAuthorization(this.formId)
+    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.initializeCurrentUser()
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
-    ...mapActions("travelAuthorizations", [
-      "loadCurrentTravelAuthorization",
-      "loadCurrentTravelAuthorizationSilently",
-    ]),
+    ...mapActions("current/travelAuthorization", {
+      ensureCurrentTravelAuthorization: "ensure",
+      fetchCurrentTravelAuthorizationSilently: "fetchSilently",
+    }),
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
     resetActiveState() {

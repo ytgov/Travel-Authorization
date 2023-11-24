@@ -6,7 +6,7 @@
   >
     <v-row>
       <v-col>
-        <PurposeFormCard />
+        <PurposeFormCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
@@ -45,6 +45,12 @@ export default {
     DetailsFormCard,
     ApprovalsFormCard,
     SaveDraftButton,
+  },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
   },
   methods: {
     validateForm() {

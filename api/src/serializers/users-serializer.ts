@@ -3,13 +3,15 @@ import { pick } from "lodash"
 import { User } from "@/models"
 import BaseSerializer from "./base-serializer"
 
+export type UserDetailedView = Partial<User> & { displayName: string }
+
 export class UsersSerializer extends BaseSerializer<User> {
-  static asDetailed(user: User): Partial<User> & { displayName: string } {
+  static asDetailed(user: User): UserDetailedView {
     const serializer = new this(user)
     return serializer.asDetailed()
   }
 
-  asDetailed(): Partial<User> & { displayName: string } {
+  asDetailed(): UserDetailedView {
     // Note that "sub" (Auth0 subject attribute) is a restricted field.
     return {
       ...pick(this.record.dataValues, [

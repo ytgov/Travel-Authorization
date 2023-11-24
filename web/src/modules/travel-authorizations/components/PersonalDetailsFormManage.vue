@@ -174,7 +174,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex"
+import { mapState, mapActions, mapGetters } from "vuex"
 
 export default {
   name: "PersonalDetailsFormManage",
@@ -195,7 +195,10 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["departments", "request", "emails"]),
+    ...mapGetters("current/travelAuthorization", {
+      request: "attributes",
+    }),
+    ...mapState("travelAuthorizations", ["departments", "emails"]),
     divisions() {
       const department = this.departments.find((d) => d.name == this.request.department)
       return department?.divisions || []

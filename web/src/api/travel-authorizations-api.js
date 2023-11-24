@@ -33,6 +33,17 @@ export const travelAuthorizationsApi = {
       .patch(`/api/travel-authorizations/${travelAuthorizationId}`, attributes)
       .then(({ data }) => data)
   },
+  // State Management Actions
+  approve(travelAuthorizationId) {
+    return http
+      .post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)
+      .then(({ data }) => data)
+  },
+  deny(travelAuthorizationId) {
+    return http
+      .post(`/api/travel-authorizations/${travelAuthorizationId}/deny`)
+      .then(({ data }) => data)
+  },
 }
 
 export default travelAuthorizationsApi

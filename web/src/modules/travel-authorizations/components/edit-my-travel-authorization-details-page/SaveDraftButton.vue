@@ -1,14 +1,16 @@
 <template>
   <v-btn
-    :loading="loadingCurrentForm"
+    :loading="isLoading"
     color="green"
-    @click="saveForm"
+    @click="saveWrapper"
     >Save Draft
   </v-btn>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters, mapMutations } from "vuex"
+
+import { STATUSES } from "@/api/travel-authorizations-api"
 
 export default {
   name: "SaveDraftButton",
@@ -19,18 +21,20 @@ export default {
     },
   },
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "loadingCurrentForm"]),
+    ...mapGetters("current/travelAuthorization", ["isLoading"]),
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["updateCurrentForm"]),
-    saveForm() {
+    ...mapActions("current/travelAuthorization", ["save"]),
+    // TODO: move this to a back-end state change endpoint
+    ...mapMutations("current/travelAuthorization", ["SET_STATUS"]),
+    saveWrapper() {
       if (!this.validateForm()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
         return
       }
 
-      this.currentTravelAuthorization.status = "draft"
-      return this.updateCurrentForm()
+      this.SET_STATUS(STATUSES.DRAFT)
+      return this.save()
         .then(() => {
           this.$snack("Form saved as a draft", { color: "success" })
         })

@@ -43,7 +43,7 @@
         md="2"
       >
         <v-text-field
-          :value="finalDestination.departureDate"
+          :value="finalDestinationDepartureDate"
           label="End Date"
           prepend-icon="mdi-calendar"
           dense
@@ -56,8 +56,7 @@
 </template>
 
 <script>
-import { first, last } from "lodash"
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
@@ -66,29 +65,43 @@ export default {
   components: {
     VReadonlyLocationTextField,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   computed: {
-    ...mapState("travelAuthorizations", ["currentTravelAuthorization", "purposes"]),
-    ...mapState("travelPurposes", {
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      stops: "stops",
+      initialDestination: "firstStop",
+      finalDestination: "lastStop",
+    }),
+    ...mapGetters("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
     }),
-    finalDestination() {
-      return last(this.currentTravelAuthorization.stops) || {}
-    },
-    initialDestination() {
-      return first(this.currentTravelAuthorization.stops) || {}
-    },
     purposeText() {
       const purpose = this.travelPurposes.find(
         (p) => p.id === this.currentTravelAuthorization.purposeId
       )
       return purpose?.purpose || ""
     },
+    finalDestinationDepartureDate() {
+      if (this.currentTravelAuthorization.multiStop) {
+        return this.stops[this.stops.length - 2].departureDate
+      }
+
+      return this.finalDestination.departureDate
+    },
   },
   async mounted() {
+    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.ensureTravelPurposes()
   },
   methods: {
+    ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }

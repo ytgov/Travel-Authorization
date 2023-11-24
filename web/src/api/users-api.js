@@ -2,7 +2,17 @@ import { isString } from "lodash"
 
 import http from "@/api/http-client"
 
+// Must match roles in api/src/models/user.ts
+export const ROLES = Object.freeze({
+  ADMIN: "admin",
+  USER: "user",
+  PAT_ADMIN: "pat_admin",
+  DEPT_ADMIN: "dept_admin",
+  TD_USER: "td_user",
+})
+
 export const usersApi = {
+  ROLES,
   me() {
     return http.get("/api/user/me").then(({ data }) => data)
   },

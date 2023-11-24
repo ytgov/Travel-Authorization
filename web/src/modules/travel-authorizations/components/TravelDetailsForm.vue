@@ -156,7 +156,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex"
+import { mapState, mapActions, mapGetters } from "vuex"
 
 export default {
   name: "TravelDetailsForm",
@@ -169,7 +169,9 @@ export default {
     numberRules: [(v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number"],
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["request"]),
+    ...mapGetters("current/travelAuthorization", {
+      request: "attributes",
+    }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
       isLoadingTravelPurposes: "isLoading",
