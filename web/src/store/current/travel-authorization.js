@@ -86,11 +86,18 @@ const actions = {
       commit("SET_IS_LOADING", false)
     }
   },
-  async save({ commit, state, getters }) {
+  async save({ commit, dispatch }) {
+    commit("SET_IS_LOADING", true)
+    try {
+      return dispatch("saveSilently")
+    } finally {
+      commit("SET_IS_LOADING", false)
+    }
+  },
+  async saveSilently({ commit, state, getters }) {
     const travelAuthorizationId = getters.id
     const attributes = state.attributes
 
-    commit("SET_IS_LOADING", true)
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.update(
         travelAuthorizationId,
@@ -103,8 +110,6 @@ const actions = {
       console.error("Failed to update travel authorization:", error)
       commit("SET_IS_ERRORED", true)
       throw error
-    } finally {
-      commit("SET_IS_LOADING", false)
     }
   },
   newBlankStop({ getters }, attributes) {
