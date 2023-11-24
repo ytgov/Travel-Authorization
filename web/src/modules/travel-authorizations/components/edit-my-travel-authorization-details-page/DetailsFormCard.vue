@@ -144,6 +144,27 @@ export default {
   methods: {
     required,
     ...mapActions("current/travelAuthorization", ["newBlankStop", "replaceStops"]),
+    async updateTripType(value) {
+      this.tripType = value
+      if (value === TRIP_TYPES.ROUND_TRIP) {
+        this.currentTravelAuthorization.oneWayTrip = false
+        this.currentTravelAuthorization.multiStop = false
+      } else if (value === TRIP_TYPES.ONE_WAY) {
+        this.currentTravelAuthorization.oneWayTrip = true
+        this.currentTravelAuthorization.multiStop = false
+      } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
+        this.currentTravelAuthorization.multiStop = true
+        this.currentTravelAuthorization.oneWayTrip = false
+      } else {
+        throw new Error("Invalid trip type")
+      }
+
+      await this.ensureMinimalDefaultStops(this.tripType)
+
+      this.$nextTick(() => {
+        this.$refs.form?.resetValidation()
+      })
+    },
     async ensureMinimalDefaultStops(tripType) {
       if (tripType === TRIP_TYPES.ROUND_TRIP) {
         return this.ensureMinimalDefaultRoundTripStops()
@@ -203,27 +224,6 @@ export default {
         accommodationType: null,
       })
       return this.replaceStops([newFirstStop, newSecondStop, newThirdStop, newLastStop])
-    },
-    async updateTripType(value) {
-      this.tripType = value
-      if (value === TRIP_TYPES.ROUND_TRIP) {
-        this.currentTravelAuthorization.oneWayTrip = false
-        this.currentTravelAuthorization.multiStop = false
-      } else if (value === TRIP_TYPES.ONE_WAY) {
-        this.currentTravelAuthorization.oneWayTrip = true
-        this.currentTravelAuthorization.multiStop = false
-      } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
-        this.currentTravelAuthorization.multiStop = true
-        this.currentTravelAuthorization.oneWayTrip = false
-      } else {
-        throw new Error("Invalid trip type")
-      }
-
-      await this.ensureMinimalDefaultStops(this.tripType)
-
-      this.$nextTick(() => {
-        this.$refs.form?.resetValidation()
-      })
     },
   },
 }
