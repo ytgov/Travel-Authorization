@@ -1,7 +1,7 @@
 <template>
   <v-btn
-    :disabled="loadingCreatingForm"
-    :loading="loadingCreatingForm"
+    :disabled="isLoadingTravelAuthorization"
+    :loading="isLoadingTravelAuthorization"
     color="primary"
     @click="createAndGoToFormDetails"
   >
@@ -15,18 +15,17 @@ import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 
 export default {
   name: "CreateTravelAuthorizationButton",
-  data: () => ({
-    loadingCreatingForm: false,
-  }),
+  data: () => ({}),
   computed: {
     ...mapGetters("currentUser", { currentUserId: "id" }),
+    ...mapGetters("current/travelAuthorization", { isLoadingTravelAuthorization: "isLoading" }),
   },
   mounted() {
     this.ensureCurrentUser()
   },
   methods: {
     ...mapActions("currentUser", { ensureCurrentUser: "initialize" }),
-    ...mapActions("travelAuthorizations", ["create"]),
+    ...mapActions("current/travelAuthorization", ["create"]),
     goToFormDetails(form) {
       const formId = form.id
       this.$router.push({
@@ -35,7 +34,6 @@ export default {
       })
     },
     createAndGoToFormDetails() {
-      this.loadingCreatingForm = true
       return this.create({
         userId: this.currentUserId,
         stopsAttributes: [
@@ -54,9 +52,6 @@ export default {
         })
         .catch((error) => {
           this.$snack(error.message, { color: "error" })
-        })
-        .finally(() => {
-          this.loadingCreatingForm = false
         })
     },
   },

@@ -55,6 +55,22 @@ const actions = {
       throw error
     }
   },
+  async create({ commit }, attributes) {
+    commit("SET_IS_LOADING", true)
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.create(attributes)
+      commit("SET_IS_ERRORED", false)
+      commit("SET_ATTRIBUTES", travelAuthorization)
+      commit("SET_IS_CACHED", true)
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to create travel authorization:", error)
+      commit("SET_IS_ERRORED", true)
+      throw error
+    } finally {
+      commit("SET_IS_LOADING", false)
+    }
+  },
   async save({ commit, state, getters }) {
     const travelAuthorizationId = getters.id
     const attributes = state.attributes

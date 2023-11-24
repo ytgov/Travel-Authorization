@@ -66,18 +66,6 @@ const actions = {
         state.loadingEstimates = false
       })
   },
-  create({ commit, state }, attributes) {
-    state.loadingCurrentForm = true
-    return travelAuthorizationsApi
-      .create(attributes)
-      .then(({ travelAuthorization: form }) => {
-        commit("SET_FORM", form)
-        return form
-      })
-      .finally(() => {
-        state.loadingCurrentForm = false
-      })
-  },
 }
 
 const mutations = {
