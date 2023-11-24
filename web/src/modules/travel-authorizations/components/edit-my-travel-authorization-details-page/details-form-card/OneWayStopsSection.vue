@@ -32,7 +32,7 @@
           outlined
           persistent-hint
           required
-          @input="updateStop('locationId', $event)"
+          @input="updateStop(1, 'locationId', $event)"
         />
       </v-col>
       <v-col

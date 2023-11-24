@@ -32,7 +32,7 @@
       <v-tab>Reporting - TODO</v-tab>
     </v-tabs>
 
-    <template v-if="isReadyCurrentTravelAuthorization && stops.length >= 2">
+    <template v-if="isReadyCurrentTravelAuthorization">
       <router-view></router-view>
     </template>
   </div>
@@ -67,42 +67,19 @@ export default {
     ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", {
       isReadyCurrentTravelAuthorization: "isReady",
-      stops: "stops",
-      firstStop: "firstStop",
-      lastStop: "lastStop",
     }),
   },
-  watch: {
-    // Hacky thing to refresh travel authorization after user edits the estimates in the Estimate tab.
-    // This does a wizard of oz style, silent, background refresh.
-    $route(to) {
-      if (to.name === "EditMyTravelAuthorizationDetailsPage") {
-        this.fetchCurrentTravelAuthorizationSilently(this.travelAuthorizationId)
-      }
-    },
-  },
+  watch: {},
   async mounted() {
     await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
     await this.initializeCurrentUser()
-    await this.ensureMinimalStopCount()
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     ...mapActions("current/travelAuthorization", {
       ensureCurrentTravelAuthorization: "ensure",
       fetchCurrentTravelAuthorizationSilently: "fetchSilently",
-      newBlankStop: "newBlankStop",
-      replaceStops: "replaceStops",
     }),
-    async ensureMinimalStopCount() {
-      const updatedFirstStop = await this.newBlankStop({
-        ...this.firstStop,
-      })
-      const updatedLastStop = await this.newBlankStop({
-        ...this.lastStop,
-      })
-      await this.replaceStops([updatedFirstStop, ...this.stops.slice(1, -1), updatedLastStop])
-    },
     // This will be unnecessary once all tabs are router links
     // This fixes a bug where the active state of the tabs is not reset, because url is not changed
     resetActiveState() {

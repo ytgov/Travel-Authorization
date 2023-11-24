@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapGetters } from "vuex"
 
 import DatePicker from "@/components/Utils/DatePicker"
 import LocationsAutocomplete from "@/components/LocationsAutocomplete"
@@ -176,7 +176,9 @@ export default {
     requiredRules: [(v) => !!v || "This field is required"],
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["request"]),
+    ...mapGetters("current/travelAuthorization", {
+      request: "attributes",
+    }),
     miminumStops() {
       if (this.request.multiStop) return 2
 

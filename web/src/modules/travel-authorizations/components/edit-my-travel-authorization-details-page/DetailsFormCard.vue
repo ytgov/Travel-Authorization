@@ -137,10 +137,6 @@ export default {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
 
-    await this.ensureMinimalDefaultStops(this.tripType, {
-      preserveOriginalTransportAndAccomodationType: true,
-    })
-
     this.$nextTick(() => {
       this.$refs.form?.resetValidation()
     })
@@ -148,80 +144,6 @@ export default {
   methods: {
     required,
     ...mapActions("current/travelAuthorization", ["newBlankStop", "replaceStops"]),
-    async ensureMinimalDefaultStops(tripType, { preserveOriginalTransportAndAccomodationType }) {
-      if (tripType === TRIP_TYPES.ROUND_TRIP) {
-        return this.ensureMinimalDefaultRoundTripStops({
-          preserveOriginalTransportAndAccomodationType,
-        })
-      } else if (tripType === TRIP_TYPES.ONE_WAY) {
-        return this.ensureMinimalDefaultOneWayStops({
-          preserveOriginalTransportAndAccomodationType,
-        })
-      } else if (tripType === TRIP_TYPES.MULTI_DESTINATION) {
-        return this.ensureMinimalDefaultMultiDestinationStops({
-          preserveOriginalTransportAndAccomodationType,
-        })
-      } else {
-        throw new Error("Invalid trip type")
-      }
-    },
-    async ensureMinimalDefaultRoundTripStops({ preserveOriginalTransportAndAccomodationType }) {
-      const newFirstStop = await this.newBlankStop({
-        accommodationType: ACCOMMODATION_TYPES.HOTEL,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        ...this.firstStop,
-      })
-      const newLastStop = await this.newBlankStop({
-        ...this.lastStop,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        accommodationType: null,
-        ...(preserveOriginalTransportAndAccomodationType ? this.lastStop : {}),
-      })
-      return this.replaceStops([newFirstStop, newLastStop])
-    },
-    async ensureMinimalDefaultOneWayStops({ preserveOriginalTransportAndAccomodationType }) {
-      const newFirstStop = await this.newBlankStop({
-        ...this.firstStop,
-        accommodationType: null,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        ...(preserveOriginalTransportAndAccomodationType ? this.firstStop : {}),
-      })
-      const newLastStop = await this.newBlankStop({
-        ...this.lastStop,
-        transport: null,
-        accommodationType: null,
-        ...(preserveOriginalTransportAndAccomodationType ? this.lastStop : {}),
-      })
-      return this.replaceStops([newFirstStop, newLastStop])
-    },
-    async ensureMinimalDefaultMultiDestinationStops({
-      preserveOriginalTransportAndAccomodationType,
-    }) {
-      const newFirstStop = await this.newBlankStop({
-        accommodationType: ACCOMMODATION_TYPES.HOTEL,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        ...this.firstStop,
-      })
-      const secondStop = this.stops[1] !== this.lastStop ? this.stops[1] : {}
-      const newSecondStop = await this.newBlankStop({
-        accommodationType: ACCOMMODATION_TYPES.HOTEL,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        ...secondStop,
-      })
-      const thirdStop = this.stops[2] !== this.lastStop ? this.stops[2] : {}
-      const newThirdStop = await this.newBlankStop({
-        accommodationType: null,
-        transport: TRAVEL_METHODS.AIRCRAFT,
-        ...(preserveOriginalTransportAndAccomodationType ? thirdStop : {}),
-      })
-      const newLastStop = await this.newBlankStop({
-        ...this.lastStop,
-        transport: null,
-        accommodationType: null,
-        ...(preserveOriginalTransportAndAccomodationType ? this.lastStop : {}),
-      })
-      return this.replaceStops([newFirstStop, newSecondStop, newThirdStop, newLastStop])
-    },
     async updateTripType(value) {
       this.tripType = value
       if (value === TRIP_TYPES.ROUND_TRIP) {
@@ -237,13 +159,71 @@ export default {
         throw new Error("Invalid trip type")
       }
 
-      await this.ensureMinimalDefaultStops(this.tripType, {
-        preserveOriginalTransportAndAccomodationType: false,
-      })
+      await this.ensureMinimalDefaultStops(this.tripType)
 
       this.$nextTick(() => {
         this.$refs.form?.resetValidation()
       })
+    },
+    async ensureMinimalDefaultStops(tripType) {
+      if (tripType === TRIP_TYPES.ROUND_TRIP) {
+        return this.ensureMinimalDefaultRoundTripStops()
+      } else if (tripType === TRIP_TYPES.ONE_WAY) {
+        return this.ensureMinimalDefaultOneWayStops()
+      } else if (tripType === TRIP_TYPES.MULTI_DESTINATION) {
+        return this.ensureMinimalDefaultMultiDestinationStops()
+      } else {
+        throw new Error("Invalid trip type")
+      }
+    },
+    async ensureMinimalDefaultRoundTripStops() {
+      const newFirstStop = await this.newBlankStop({
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...this.firstStop,
+        accommodationType: this.firstStop.accommodationType || ACCOMMODATION_TYPES.HOTEL,
+      })
+      const newLastStop = await this.newBlankStop({
+        ...this.lastStop,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        accommodationType: null,
+      })
+      return this.replaceStops([newFirstStop, newLastStop])
+    },
+    async ensureMinimalDefaultOneWayStops() {
+      const newFirstStop = await this.newBlankStop({
+        ...this.firstStop,
+        accommodationType: null,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+      })
+      const newLastStop = await this.newBlankStop({
+        ...this.lastStop,
+        transport: null,
+        accommodationType: null,
+      })
+      return this.replaceStops([newFirstStop, newLastStop])
+    },
+    async ensureMinimalDefaultMultiDestinationStops() {
+      const newFirstStop = await this.newBlankStop({
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...this.firstStop,
+        accommodationType: this.firstStop.accommodationType || ACCOMMODATION_TYPES.HOTEL,
+      })
+      const secondStop = this.stops[1] !== this.lastStop ? this.stops[1] : {}
+      const newSecondStop = await this.newBlankStop({
+        accommodationType: ACCOMMODATION_TYPES.HOTEL,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+        ...secondStop,
+      })
+      const newThirdStop = await this.newBlankStop({
+        accommodationType: null,
+        transport: TRAVEL_METHODS.AIRCRAFT,
+      })
+      const newLastStop = await this.newBlankStop({
+        ...this.lastStop,
+        transport: null,
+        accommodationType: null,
+      })
+      return this.replaceStops([newFirstStop, newSecondStop, newThirdStop, newLastStop])
     },
   },
 }

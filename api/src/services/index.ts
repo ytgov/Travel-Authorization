@@ -2,7 +2,6 @@ export * from "./audit-service"
 export * from "./distance-matrix-service"
 export * from "./expenses-service"
 export * from "./form-service"
-export * from "./travel-authorizations-service"
 export * from "./stops-service"
 export * from "./yk-government-directory-sync-service"
 

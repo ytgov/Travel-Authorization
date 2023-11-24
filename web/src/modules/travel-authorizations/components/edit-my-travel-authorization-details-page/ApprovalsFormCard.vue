@@ -152,15 +152,16 @@ export default {
       ? this.currentUser.department
       : await this.initializeCurrentUser().then((user) => user.department)
     await this.loadPreApprovedTravelRequests(department)
+    await this.refreshEstimatesSilently()
   },
   methods: {
     ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
     ...mapActions("current/travelAuthorization", {
-      fetchCurrentTravelAuthorizationSilently: "fetchSilently",
+      fetchCurrentTravelAuthorizationExpensesSilently: "fetchExpensesSilently",
     }),
     refreshEstimatesSilently() {
       this.refreshingEstimatesSilently = true
-      return this.fetchCurrentTravelAuthorizationSilently(
+      return this.fetchCurrentTravelAuthorizationExpensesSilently(
         this.currentTravelAuthorizationId
       ).finally(() => {
         this.refreshingEstimatesSilently = false

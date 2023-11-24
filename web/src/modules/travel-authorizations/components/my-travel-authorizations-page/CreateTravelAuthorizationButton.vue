@@ -1,7 +1,7 @@
 <template>
   <v-btn
-    :disabled="loadingCreatingForm"
-    :loading="loadingCreatingForm"
+    :disabled="isLoadingTravelAuthorization"
+    :loading="isLoadingTravelAuthorization"
     color="primary"
     @click="createAndGoToFormDetails"
   >
@@ -9,15 +9,23 @@
   </v-btn>
 </template>
 <script>
-import { mapActions } from "vuex"
+import { mapActions, mapGetters } from "vuex"
+
+import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 
 export default {
   name: "CreateTravelAuthorizationButton",
-  data: () => ({
-    loadingCreatingForm: false,
-  }),
+  data: () => ({}),
+  computed: {
+    ...mapGetters("currentUser", { currentUserId: "id" }),
+    ...mapGetters("current/travelAuthorization", { isLoadingTravelAuthorization: "isLoading" }),
+  },
+  mounted() {
+    this.ensureCurrentUser()
+  },
   methods: {
-    ...mapActions("travelAuthorizations", ["create"]),
+    ...mapActions("currentUser", { ensureCurrentUser: "initialize" }),
+    ...mapActions("current/travelAuthorization", ["create"]),
     goToFormDetails(form) {
       const formId = form.id
       this.$router.push({
@@ -26,16 +34,24 @@ export default {
       })
     },
     createAndGoToFormDetails() {
-      this.loadingCreatingForm = true
-      return this.create({ status: "draft" })
+      return this.create({
+        userId: this.currentUserId,
+        stopsAttributes: [
+          {
+            accommodationType: ACCOMMODATION_TYPES.HOTEL,
+            transport: TRAVEL_METHODS.AIRCRAFT,
+          },
+          {
+            transport: TRAVEL_METHODS.AIRCRAFT,
+            accommodationType: null,
+          },
+        ],
+      })
         .then((form) => {
           return this.goToFormDetails(form)
         })
         .catch((error) => {
           this.$snack(error.message, { color: "error" })
-        })
-        .finally(() => {
-          this.loadingCreatingForm = false
         })
     },
   },

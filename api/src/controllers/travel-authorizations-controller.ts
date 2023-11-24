@@ -3,7 +3,7 @@ import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
-import { TravelAuthorizationsService } from "@/services"
+import { UpdateService, CreateService } from "@/services/travel-authorizations"
 import { TravelAuthorization } from "@/models"
 import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
@@ -59,7 +59,7 @@ export class TravelAuthorizationsController extends BaseController {
     }
 
     const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
-    return TravelAuthorizationsService.create(permittedAttributes, this.currentUser)
+    return CreateService.perform(permittedAttributes, this.currentUser)
       .then((travelAuthorization) => {
         const serializedTravelAuthorization =
           TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
@@ -123,7 +123,7 @@ export class TravelAuthorizationsController extends BaseController {
     }
 
     const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
-    return TravelAuthorizationsService.update(travelAuthorization, permittedAttributes)
+    return UpdateService.perform(travelAuthorization, permittedAttributes, this.currentUser)
       .then((travelAuthorization) => {
         const serializedTravelAuthorization =
           TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
