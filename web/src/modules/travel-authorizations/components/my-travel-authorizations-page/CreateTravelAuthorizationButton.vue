@@ -9,14 +9,21 @@
   </v-btn>
 </template>
 <script>
-import { mapActions } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 export default {
   name: "CreateTravelAuthorizationButton",
   data: () => ({
     loadingCreatingForm: false,
   }),
+  computed: {
+    ...mapGetters("currentUser", { currentUserId: "id" }),
+  },
+  mounted() {
+    this.ensureCurrentUser()
+  },
   methods: {
+    ...mapActions("currentUser", { ensureCurrentUser: "initialize" }),
     ...mapActions("travelAuthorizations", ["create"]),
     goToFormDetails(form) {
       const formId = form.id
@@ -27,7 +34,7 @@ export default {
     },
     createAndGoToFormDetails() {
       this.loadingCreatingForm = true
-      return this.create({ status: "draft" })
+      return this.create({ userId: this.currentUserId, stopsAttributes: [{}, {}] })
         .then((form) => {
           return this.goToFormDetails(form)
         })
