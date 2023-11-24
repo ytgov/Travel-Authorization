@@ -66,33 +66,6 @@ const actions = {
         state.loadingEstimates = false
       })
   },
-  loadCurrentTravelAuthorization({ state, dispatch }, formId) {
-    state.loadingCurrentForm = true
-    return dispatch("loadCurrentTravelAuthorizationSilently", formId).finally(() => {
-      state.loadingCurrentForm = false
-    })
-  },
-  async loadCurrentTravelAuthorizationSilently({ commit, dispatch }, formId) {
-    const currentUser = await dispatch("currentUser/initialize", null, { root: true })
-
-    return travelAuthorizationsApi.get(formId).then(({ travelAuthorization: form }) => {
-      commit("SET_FORM", {
-        ...form,
-        ...pick(currentUser, [
-          "firstName",
-          "lastName",
-          "email",
-          "department",
-          "division",
-          "branch",
-          "unit",
-          "mailcode",
-        ]),
-      })
-      commit("SET_FORM", form)
-      return form
-    })
-  },
   create({ commit, state }, attributes) {
     state.loadingCurrentForm = true
     return travelAuthorizationsApi
@@ -104,29 +77,6 @@ const actions = {
       .finally(() => {
         state.loadingCurrentForm = false
       })
-  },
-  updateCurrentForm({ commit, state }) {
-    const formId = state.currentTravelAuthorization.id
-    const attributes = state.currentTravelAuthorization
-    state.loadingCurrentForm = true
-    return travelAuthorizationsApi
-      .update(formId, attributes)
-      .then(({ travelAuthorization: form }) => {
-        commit("SET_FORM", form)
-        return form
-      })
-      .finally(() => {
-        state.loadingCurrentForm = false
-      })
-  },
-  update({ dispatch }) {
-    console.warn("Deprecated: use updateCurrentForm instead.")
-    return dispatch("updateCurrentForm")
-  },
-  delete(store, { id }) {
-    return securePost(`${FORM_URL}/${id}`).then((resp) => {
-      return resp.data
-    })
   },
 }
 
