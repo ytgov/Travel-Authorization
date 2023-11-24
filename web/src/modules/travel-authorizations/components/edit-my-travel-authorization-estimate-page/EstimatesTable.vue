@@ -90,8 +90,7 @@ export default {
       return sumBy(this.estimates, "cost")
     },
   },
-  async mounted() {
-    await this.ensureCurrentTravelAuthorization(this.formId)
+  mounted() {
     return this.loadEstimates({ travelAuthorizationId: this.formId }).then(() => {
       this.showEditDialogForRouteQuery()
       this.showDeleteDialogForRouteQuery()
@@ -99,9 +98,6 @@ export default {
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadEstimates"]),
-    ...mapActions("current/travelAuthorization", {
-      ensureCurrentTravelAuthorization: "ensure",
-    }),
     formatDate(date) {
       return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
     },
