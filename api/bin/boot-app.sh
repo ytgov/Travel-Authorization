@@ -12,5 +12,5 @@ fi
 if [ "$NODE_ENV" != "production" ]; then
   npm run start
 else
-  node ./dist/index.js
+  node ./dist/server.js
 fi

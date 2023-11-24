@@ -95,6 +95,4 @@ app.use((req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "web") + "/index.html")
 })
 
-app.listen(config.API_PORT, () => {
-  console.log(`API listening on port ${config.API_PORT}`)
-})
+export default app
