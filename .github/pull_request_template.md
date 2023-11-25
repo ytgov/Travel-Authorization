@@ -1,20 +1,20 @@
-Fixes xxxx
+Fixes TODO
 
 Relates to:
 
-- yyyy
+- TODO
 
 # Context
 
-aaaa
+TODO
 
 # Implementation
 
-bbbb
+TODO
 
 # Screenshots
 
-cccc
+TODO
 
 # Testing Instructions
 
