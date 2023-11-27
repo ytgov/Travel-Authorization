@@ -74,7 +74,7 @@ export class BulkGenerate extends BaseService {
       })
       estimates.push(travelMethodEstimate)
 
-      const accommodationType = toStop.accommodationType
+      const accommodationType = fromStop.accommodationType
       const nextSegment = tripSegments[index + 1]
       if (!isNil(accommodationType) && !isNil(nextSegment)) {
         const [nextFromStop, _] = nextSegment
