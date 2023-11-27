@@ -60,10 +60,12 @@ app.use(
 
 app.use(fileupload()) // Add FormData support
 
-console.log("host: ", process.env.DB_HOST)
-console.log("user: ", process.env.DB_USER)
-console.log("psss: ", "*********")
-console.log("db name: ", process.env.DB_NAME)
+if (config.NODE_ENV !== "test") {
+  console.log("host: ", process.env.DB_HOST)
+  console.log("user: ", process.env.DB_USER)
+  console.log("psss: ", "*********")
+  console.log("db name: ", process.env.DB_NAME)
+}
 
 // TODO: move these to the routes file
 app.use("/api", databaseHealthCheckMiddleware)
