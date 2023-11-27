@@ -1,7 +1,7 @@
 import { BulkGenerate } from "@/services/estimates"
 
-import { travelAuthorizationFactory } from "@/factories"
-import { Expense } from "@/models"
+import { travelAuthorizationFactory, stopFactory, locationFactory } from "@/factories"
+import { Expense, Stop } from "@/models"
 
 describe("api/src/services/estimates/bulk-generate.ts", () => {
   describe("BulkGenerate", () => {
@@ -9,11 +9,32 @@ describe("api/src/services/estimates/bulk-generate.ts", () => {
       test("creates some new estimates against the travel authorization", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create()
 
-        expect(await Expense.count()).toBe(0)
-        const expenses = await BulkGenerate.perform(travelAuthorization.id)
+        const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
+        await stopFactory.create(
+          {
+            departureDate: new Date("2022-06-05"),
+            departureTime: Stop.BEGINNING_OF_DAY,
+            transport: Stop.TravelMethods.AIRCRAFT,
+            accommodationType: Stop.AccommodationTypes.HOTEL,
+          },
+          { associations: { travelAuthorization, location: whitehorse } }
+        )
 
-        expect(expenses.length).toBe(99999) // TODO: replace with real number.
-        expect(await Expense.count()).toBe(99999) // TODO: replace with real number.
+        const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
+        await stopFactory.create(
+          {
+            travelAuthorizationId: travelAuthorization.id,
+            departureDate: new Date("2022-06-07"),
+            departureTime: Stop.BEGINNING_OF_DAY,
+            transport: Stop.TravelMethods.AIRCRAFT,
+            accommodationType: null,
+          },
+          { associations: { travelAuthorization, location: vancouver } }
+        )
+
+        expect(await Expense.count()).toBe(0)
+        await BulkGenerate.perform(travelAuthorization.id)
+        expect(await Expense.count()).toBe(7)
       })
     })
   })
