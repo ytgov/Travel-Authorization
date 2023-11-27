@@ -1,34 +1,27 @@
 import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
+import { isNil } from "lodash"
 
-import { TravelAuthorization } from "@/models"
+import { TravelAuthorization, TravelPurpose } from "@/models"
 import { travelPurposeFactory, POSTGRES_INT_4_MAX } from "@/factories"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
   ({ sequence, associations, onCreate }) => {
     onCreate(async (travelAuthorization) => {
-      associations.purpose ||= travelPurposeFactory.build()
+      if (isNil(travelAuthorization.purposeId)) {
+        const purpose = associations.purpose || travelPurposeFactory.build()
+        await purpose.save()
+        travelAuthorization.purposeId = purpose.id
+      }
 
-      const purpose = await associations.purpose.save().catch((error) => {
-        console.error(error)
-        throw error
-      })
-      travelAuthorization.purposeId = purpose.id
-
-      return travelAuthorization.save().catch((error) => {
-        console.error(error)
-        throw error
-      })
+      return travelAuthorization.save()
     })
-
-    associations.purpose ||= travelPurposeFactory.build()
 
     return TravelAuthorization.build({
       id: sequence,
       slug: faker.string.uuid(),
-      preappId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }),
-      purposeId: associations.purpose.id,
-      userId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }),
+      preappId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
+      userId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       department: faker.commerce.department(),
@@ -45,13 +38,13 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
       summary: faker.lorem.sentence(),
       benefits: faker.lorem.sentence(),
       status: faker.helpers.arrayElement(Object.values(TravelAuthorization.Statuses)),
-      supervisorEmail: faker.internet.exampleEmail(),
+      supervisorEmail: faker.internet.exampleEmail(), // TODO: add factories once foreign key constraint exists
       requestChange: faker.lorem.sentence(),
       denialReason: faker.lorem.sentence(),
       oneWayTrip: faker.datatype.boolean(),
       multiStop: faker.datatype.boolean(),
       createdBy: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }),
-      travelAdvanceInCents: faker.number.int({ min: 0, max: 3000 * 100 }),
+      travelAdvanceInCents: faker.number.int({ min: 0, max: 3000 * 100 }), // TODO: add factories once foreign key constraint exists
       allTravelWithinTerritory: faker.datatype.boolean(),
     })
   }
