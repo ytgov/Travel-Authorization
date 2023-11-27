@@ -29,7 +29,7 @@ describe("api/src/services/estimates/bulk-generate.ts", () => {
           {
             travelAuthorizationId: travelAuthorization.id,
             departureDate: new Date("2022-06-07"),
-            departureTime: Stop.BEGINNING_OF_DAY,
+            departureTime: "12:00:00",
             transport: Stop.TravelMethods.AIRCRAFT,
             accommodationType: null,
           },
@@ -37,8 +37,74 @@ describe("api/src/services/estimates/bulk-generate.ts", () => {
         )
 
         expect(await Expense.count()).toBe(0)
-        await BulkGenerate.perform(travelAuthorization.id)
+        const expenses = await BulkGenerate.perform(travelAuthorization.id)
         expect(await Expense.count()).toBe(7)
+
+        expect(expenses).toEqual([
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Aircraft from Whitehorse to Vancouver",
+            date: "2022-06-05",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Hotel in Vancouver",
+            date: "2022-06-05",
+            cost: 250.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Accomodations",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Hotel in Vancouver",
+            date: "2022-06-06",
+            cost: 250.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Accomodations",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Maximum Daily",
+            date: "2022-06-05",
+            cost: 123.4,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Meals & Incidentals",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Maximum Daily",
+            date: "2022-06-06",
+            cost: 123.4,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Meals & Incidentals",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Aircraft from Vancouver to Whitehorse",
+            date: "2022-06-07",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Breakfast/Lunch",
+            date: "2022-06-07",
+            cost: 46.7,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Meals & Incidentals",
+          }),
+        ])
       })
     })
   })
