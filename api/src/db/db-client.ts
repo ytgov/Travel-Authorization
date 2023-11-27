@@ -20,7 +20,7 @@ export const SEQUELIZE_CONFIG: Options = {
   host: DB_HOST,
   port: DB_PORT,
   schema: "public",
-  logging: NODE_ENV === "development" ? console.log : false,
+  logging: NODE_ENV === "development" || NODE_ENV === "test" ? console.log : false,
   // Non-standard tables must now declare their customizations
   // If possible to standardize new tables, rather than customizing them.
   define: {
