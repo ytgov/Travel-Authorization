@@ -1,14 +1,14 @@
-import { isNil } from "lodash"
-import { Factory, GeneratorFnOptions } from "fishery"
+import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 
-import { TravelAuthorization, TravelPurpose } from "@/models"
+import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, POSTGRES_INT_4_MAX } from "@/factories"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
   ({ sequence, associations, onCreate }) => {
     onCreate(async (travelAuthorization) => {
-      //@ts-expect-error
+      associations.purpose ||= travelPurposeFactory.build()
+
       const purpose = await associations.purpose.save().catch((error) => {
         console.error(error)
         throw error
