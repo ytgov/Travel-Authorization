@@ -4,14 +4,18 @@ import { Request, Response, NextFunction } from "express"
 import app from "@/app"
 import { travelAuthorizationFactory, userFactory } from "@/factories"
 import { checkJwt, loadUser } from "@/middleware/authz.middleware"
+import { BulkGenerate } from "@/services/estimates"
 
 jest.mock("@/middleware/authz.middleware", () => ({
   checkJwt: jest.fn(),
   loadUser: jest.fn(),
 }))
 
+jest.mock("@/services/estimates", () => ({ BulkGenerate: { perform: jest.fn() } }))
+
 const mockedCheckJwt = checkJwt as unknown as jest.Mock
 const mockedLoadUser = loadUser as unknown as jest.Mock
+const mockedBulkGeneratePerform = BulkGenerate.perform as unknown as jest.Mock
 
 describe("api/src/controllers/travel-authorizations/estimates/generate-controller.ts", () => {
   beforeEach(() => {
@@ -29,13 +33,15 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
 
       const travelAuthorization = await travelAuthorizationFactory.create({ user: user })
 
-      // TODO: mock out the bulk generate service
-      const mockBulkGenerateResponse = "mock bulk generate response"
+      const mockBulkGeneratePerformResponse = "mock bulk generate response"
+      mockedBulkGeneratePerform.mockImplementation(() => {
+        return Promise.resolve(mockBulkGeneratePerformResponse)
+      })
 
       return request(app)
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
-        .expect(201, { estimates: mockBulkGenerateResponse, message: "Generated estimates" })
+        .expect(201, { estimates: mockBulkGeneratePerformResponse, message: "Generated estimates" })
     })
   })
 })
