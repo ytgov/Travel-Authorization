@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker"
 import { isNil } from "lodash"
 
 import { TravelAuthorization, TravelPurpose } from "@/models"
-import { travelPurposeFactory, POSTGRES_INT_4_MAX } from "@/factories"
+import { travelPurposeFactory, POSTGRES_INT_4_MAX, userFactory } from "@/factories"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
   ({ sequence, associations, onCreate }) => {
@@ -14,6 +14,13 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
         travelAuthorization.purposeId = purpose.id
       }
 
+      if (isNil(travelAuthorization.userId)) {
+        const user = associations.user || userFactory.build()
+        await user.save()
+        travelAuthorization.userId = user.id
+      }
+
+
       return travelAuthorization.save()
     })
 
@@ -21,7 +28,6 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
       id: sequence,
       slug: faker.string.uuid(),
       preappId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
-      userId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       department: faker.commerce.department(),
