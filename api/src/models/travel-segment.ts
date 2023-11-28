@@ -11,6 +11,7 @@ import {
   Model,
   NonAttribute,
 } from "sequelize"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
@@ -110,6 +111,14 @@ export class TravelSegment extends Model<
       foreignKey: "arrivalLocationId",
       onDelete: "RESTRICT",
     })
+  }
+
+  get departureAt(): NonAttribute<Date | null> {
+    const departureOn = this.departureOn
+    if (isNil(departureOn)) return null
+
+    const timePart = this.departureTime || BEGINNING_OF_DAY
+    return new Date(`${departureOn}T${timePart}`)
   }
 }
 
