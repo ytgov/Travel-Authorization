@@ -46,6 +46,7 @@ enum AccommodationTypes {
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
   static TravelMethods = TravelMethods
   static AccommodationTypes = AccommodationTypes
+  static BEGINNING_OF_DAY = BEGINNING_OF_DAY
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>

@@ -111,6 +111,12 @@ If you are getting a bunch of "Login required" errors in the console, make sure 
 Auth0 use third-party cookies for authentication, and they get blocked by all major browsers
 by default.
 
+## Testing
+
+1. Run the api test suite via `dev test_api`.
+
+See [api/tests/README.md](./api/tests/README.md) for more detailed info.
+
 ## Migrations
 
 You can generate migrations via the api service code. Currently uses [knex Migration CLI](https://knexjs.org/guide/migrations.html#migration-cli) using `dev knex ...` or `cd api && npm run knex ...`.
