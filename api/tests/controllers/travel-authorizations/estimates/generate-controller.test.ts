@@ -85,5 +85,13 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
         .expect("Content-Type", /json/)
         .expect(403, { message: "You are not authorized to create this expense." })
     })
+
+    test("when travel authorization does not exist", async () => {
+      const invalidTravelAuthorizationId = -1
+      return request(app)
+        .post(`/api/travel-authorizations/${invalidTravelAuthorizationId}/estimates/generate`)
+        .expect("Content-Type", /json/)
+        .expect(404, { message: "Travel authorization not found." })
+    })
   })
 })
