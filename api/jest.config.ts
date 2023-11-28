@@ -10,10 +10,10 @@ export const jestConfig: JestConfigWithTsJest = {
   globalSetup: "<rootDir>/tests/global-setup.ts", // Runs once before all tests
   // Make jest as much like RSpec as possible, add these if I get confused when
   // testing with mocks.
-  // clearMocks: true,
-  // resetMocks: true,
-  // restoreMocks: true,
-  // resetModules: true,
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
+  resetModules: true,
 }
 
 export default jestConfig
