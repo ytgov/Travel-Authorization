@@ -43,6 +43,12 @@ enum AccommodationTypes {
   // OTHER = "Other:",
 }
 
+/*
+DEPRECATED: Whenever you use this model, try and figure out how to migrate
+the functionality to the TravelSegment model instead.
+It was too large a project to migrate to the TravelSegment model all at once,
+so we're doing it piecemeal.
+*/
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
   static TravelMethods = TravelMethods
   static AccommodationTypes = AccommodationTypes
