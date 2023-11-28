@@ -17,10 +17,41 @@ import sequelize from "@/db/db-client"
 import Location from "./location"
 import TravelAuthorization from "./travel-authorization"
 
+const BEGINNING_OF_DAY = "00:00:00"
+const END_OF_DAY = "23:59:59"
+
+// Keep in sync with web/src/api/stops-api.js
+// Until both are using a shared location
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum TravelMethods {
+  AIRCRAFT = "Aircraft",
+  POOL_VEHICLE = "Pool Vehicle",
+  PERSONAL_VEHICLE = "Personal Vehicle",
+  RENTAL_VEHICLE = "Rental Vehicle",
+  BUS = "Bus",
+  // TODO: replace other type with specific values
+  // OTHER = "Other:"
+}
+
+// Keep in sync with web/src/api/stops-api.js
+// Until both are using a shared location
+// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+enum AccommodationTypes {
+  HOTEL = "Hotel",
+  PRIVATE = "Private",
+  // TODO: replace other type with specific values
+  // OTHER = "Other:",
+}
+
 export class TravelSegment extends Model<
   InferAttributes<TravelSegment>,
   InferCreationAttributes<TravelSegment>
 > {
+  static TravelMethods = TravelMethods
+  static AccommodationTypes = AccommodationTypes
+  static BEGINNING_OF_DAY = BEGINNING_OF_DAY
+  static END_OF_DAY = END_OF_DAY
+
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare departureLocationId: ForeignKey<Location["id"]> | null

@@ -17,31 +17,7 @@ import sequelize from "@/db/db-client"
 
 import Location from "./location"
 import TravelAuthorization from "./travel-authorization"
-
-const BEGINNING_OF_DAY = "00:00:00"
-
-// Keep in sync with web/src/modules/travel-authorizations/components/TravelMethodSelect.vue
-// Until both are using a shared location
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
-enum TravelMethods {
-  AIRCRAFT = "Aircraft",
-  POOL_VEHICLE = "Pool Vehicle",
-  PERSONAL_VEHICLE = "Personal Vehicle",
-  RENTAL_VEHICLE = "Rental Vehicle",
-  BUS = "Bus",
-  // TODO: replace other type with specific values
-  // OTHER = "Other:"
-}
-
-// Keep in sync with web/src/modules/travel-authorizations/components/AccommodationTypeSelect.vue
-// Until both are using a shared location
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
-enum AccommodationTypes {
-  HOTEL = "Hotel",
-  PRIVATE = "Private",
-  // TODO: replace other type with specific values
-  // OTHER = "Other:",
-}
+import TravelSegment from "./travel-segment"
 
 /*
 DEPRECATED: Whenever you use this model, try and figure out how to migrate
@@ -50,9 +26,10 @@ It was too large a project to migrate to the TravelSegment model all at once,
 so we're doing it piecemeal.
 */
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
-  static TravelMethods = TravelMethods
-  static AccommodationTypes = AccommodationTypes
-  static BEGINNING_OF_DAY = BEGINNING_OF_DAY
+  static TravelMethods = TravelSegment.TravelMethods
+  static AccommodationTypes = TravelSegment.AccommodationTypes
+  static BEGINNING_OF_DAY = TravelSegment.BEGINNING_OF_DAY
+  static END_OF_DAY = TravelSegment.END_OF_DAY
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
@@ -101,7 +78,7 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
     const departureDate = this.departureDate
     if (isNil(departureDate)) return null
 
-    const timePart = this.departureTime || BEGINNING_OF_DAY
+    const timePart = this.departureTime || Stop.BEGINNING_OF_DAY
     const departureDateTime = new Date(`${departureDate}T${timePart}`)
     return departureDateTime
   }
