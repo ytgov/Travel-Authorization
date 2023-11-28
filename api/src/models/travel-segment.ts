@@ -22,25 +22,23 @@ const END_OF_DAY = "23:59:59"
 
 // Keep in sync with web/src/api/stops-api.js
 // Until both are using a shared location
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+// Avoid exporting here, and instead expose via the model to avoid naming conflicts
 enum TravelMethods {
   AIRCRAFT = "Aircraft",
   POOL_VEHICLE = "Pool Vehicle",
   PERSONAL_VEHICLE = "Personal Vehicle",
   RENTAL_VEHICLE = "Rental Vehicle",
   BUS = "Bus",
-  // TODO: replace other type with specific values
-  // OTHER = "Other:"
+  OTHER = "Other", // value stored in modeOfTransportOther
 }
 
 // Keep in sync with web/src/api/stops-api.js
 // Until both are using a shared location
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
+// Avoid exporting here, and instead expose via the model to avoid naming conflicts
 enum AccommodationTypes {
   HOTEL = "Hotel",
   PRIVATE = "Private",
-  // TODO: replace other type with specific values
-  // OTHER = "Other:",
+  OTHER = "Other", // value stored in accommodationTypeOther
 }
 
 export class TravelSegment extends Model<
@@ -148,6 +146,12 @@ TravelSegment.init(
     modeOfTransport: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      validate: {
+        isIn: {
+          args: [Object.values(TravelMethods)],
+          msg: "Invalid travel method value",
+        },
+      },
     },
     modeOfTransportOther: {
       type: DataTypes.STRING(255),
@@ -156,10 +160,32 @@ TravelSegment.init(
     accommodationType: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      validate: {
+        isIn: {
+          args: [Object.values(AccommodationTypes)],
+          msg: "Invalid accommodation type value",
+        },
+        accommodationTypeOtherIsNull(value: string) {
+          if (this.accommodationTypeOther !== null && value !== AccommodationTypes.OTHER) {
+            throw new Error(
+              `accommodationType must be ${AccommodationTypes.OTHER} when accommodationTypeOther is set`
+            )
+          }
+        },
+      },
     },
     accommodationTypeOther: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      validate: {
+        accommodationTypeIsOther(value: string | null) {
+          if (value !== null && this.accommodationType !== AccommodationTypes.OTHER) {
+            throw new Error(
+              `accommodationTypeOther can only have a value if accommodationType is ${AccommodationTypes.OTHER}`
+            )
+          }
+        },
+      }
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -174,6 +200,30 @@ TravelSegment.init(
   },
   {
     sequelize,
+    validate: {
+      modeOfTransportOtherConsistency() {
+        if (this.modeOfTransportOther !== null && this.modeOfTransport !== TravelMethods.OTHER) {
+          throw new Error(
+            `modeOfTransport must be ${TravelMethods.OTHER} when modeOfTransportOther is set`
+          )
+        } else if (this.modeOfTransport === TravelMethods.OTHER && this.modeOfTransportOther === null) {
+          throw new Error(
+            `modeOfTransportOther can only have a value if modeOfTransport is ${TravelMethods.OTHER}`
+          )
+        }
+      },
+      accommodationTypeOtherConsistency() {
+        if (this.accommodationTypeOther !== null && this.accommodationType !== AccommodationTypes.OTHER) {
+          throw new Error(
+            `accommodationType must be ${AccommodationTypes.OTHER} when accommodationTypeOther is set`
+          )
+        } else if (this.accommodationType === AccommodationTypes.OTHER && this.accommodationTypeOther === null) {
+          throw new Error(
+            `accommodationTypeOther can only have a value if accommodationType is ${AccommodationTypes.OTHER}`
+          )
+        }
+      }
+    },
   }
 )
 
