@@ -43,7 +43,7 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
       eventName: faker.company.catchPhrase(),
       summary: faker.lorem.sentence(),
       benefits: faker.lorem.sentence(),
-      status: faker.helpers.arrayElement(Object.values(TravelAuthorization.Statuses)),
+      status: faker.helpers.enumValue(TravelAuthorization.Statuses),
       supervisorEmail: faker.internet.exampleEmail(), // TODO: add factories once foreign key constraint exists
       requestChange: faker.lorem.sentence(),
       denialReason: faker.lorem.sentence(),
