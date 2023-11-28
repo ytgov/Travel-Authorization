@@ -38,6 +38,7 @@ describe("api/src/services/estimates/bulk-generate.ts", () => {
 
         expect(await Expense.count()).toBe(0)
         const expenses = await BulkGenerate.perform(travelAuthorization.id)
+        // TODO: fix bulk generation so it builds the correct number of estimates
         expect(await Expense.count()).toBe(7)
 
         expect(expenses).toEqual([
