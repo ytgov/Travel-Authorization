@@ -23,6 +23,7 @@ const END_OF_DAY = "23:59:59"
 // Keep in sync with web/src/api/stops-api.js
 // Until both are using a shared location
 // Avoid exporting here, and instead expose via the model to avoid naming conflicts
+// TODO: normalize casing of these to snake_case, and add UI localization
 enum TravelMethods {
   AIRCRAFT = "Aircraft",
   POOL_VEHICLE = "Pool Vehicle",
@@ -35,6 +36,7 @@ enum TravelMethods {
 // Keep in sync with web/src/api/stops-api.js
 // Until both are using a shared location
 // Avoid exporting here, and instead expose via the model to avoid naming conflicts
+// TODO: normalize casing of these to snake_case, and add UI localization
 enum AccommodationTypes {
   HOTEL = "Hotel",
   PRIVATE = "Private",
