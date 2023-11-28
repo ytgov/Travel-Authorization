@@ -33,7 +33,7 @@ Test initialization goes like this:
    ```typescript
    describe("api/src/services/centre-services.ts", () => { // references file under test
      describe("CentreServices", () => { // references class or model under test
-       describe(".create", () => { // referneces a specific method on the class or model
+       describe(".create", () => { // references a specific method on the class or model
        test("creates a new centre in the database", async () => { // descriptive message about the specific behaviour under test
        })
      })
@@ -43,7 +43,7 @@ Test initialization goes like this:
 
    It requires this config (in your workspace or `.vscode/settings.json`).
 
-   > Note that if this is in your worspace config must be inside the "settings" entry. i.e. `{ "settings": { // these settings } }`.
+   > Note that if this is in your workspace config must be inside the "settings" entry. i.e. `{ "settings": { // these settings } }`.
 
    ```json
    {
