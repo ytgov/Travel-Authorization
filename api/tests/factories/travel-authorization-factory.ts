@@ -2,7 +2,7 @@ import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 import { isNil } from "lodash"
 
-import { TravelAuthorization, TravelPurpose } from "@/models"
+import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, POSTGRES_INT_4_MAX, userFactory } from "@/factories"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
@@ -44,7 +44,7 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
       summary: faker.lorem.sentence(),
       benefits: faker.lorem.sentence(),
       status: faker.helpers.enumValue(TravelAuthorization.Statuses),
-      supervisorEmail: faker.internet.exampleEmail(), // TODO: add factories once foreign key constraint exists
+      supervisorEmail: `supervisor-${faker.internet.exampleEmail()}`, // TODO: add factories once foreign key constraint exists
       requestChange: faker.lorem.sentence(),
       denialReason: faker.lorem.sentence(),
       oneWayTrip: faker.datatype.boolean(),
