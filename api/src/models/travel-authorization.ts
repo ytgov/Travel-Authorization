@@ -130,17 +130,51 @@ export class TravelAuthorization extends Model<
   declare countStops: HasManyCountAssociationsMixin
   declare createStop: HasManyCreateAssociationMixin<Stop>
 
+  declare getTravelSegments: HasManyGetAssociationsMixin<TravelSegment>
+  declare setTravelSegments: HasManySetAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare hasTravelSegment: HasManyHasAssociationMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare hasTravelSegments: HasManyHasAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare addTravelSegment: HasManyAddAssociationMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare addTravelSegments: HasManyAddAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare removeTravelSegment: HasManyRemoveAssociationMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare removeTravelSegments: HasManyRemoveAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare countTravelSegments: HasManyCountAssociationsMixin
+  declare createTravelSegment: HasManyCreateAssociationMixin<TravelSegment>
+
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
   declare user: NonAttribute<User>
   declare expenses?: NonAttribute<Expense[]>
   declare stops?: NonAttribute<Stop[]>
+  declare travelSegments?: NonAttribute<TravelSegment[]>
 
   declare static associations: {
     expenses: Association<TravelAuthorization, Expense>
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
     travelDeskTravelRequest: Association<TravelAuthorization, TravelDeskTravelRequest>
+    travelSegments: Association<TravelAuthorization, TravelSegment>
     user: Association<TravelAuthorization, User>
   }
 
@@ -153,11 +187,6 @@ export class TravelAuthorization extends Model<
       as: "user",
       foreignKey: "userId",
     })
-    this.hasMany(Stop, {
-      as: "stops",
-      sourceKey: "id",
-      foreignKey: "travelAuthorizationId",
-    })
     this.hasOne(TravelDeskTravelRequest, {
       as: "travelDeskTravelRequest",
       sourceKey: "id",
@@ -165,6 +194,16 @@ export class TravelAuthorization extends Model<
     })
     this.hasMany(Expense, {
       as: "expenses",
+      sourceKey: "id",
+      foreignKey: "travelAuthorizationId",
+    })
+    this.hasMany(Stop, {
+      as: "stops",
+      sourceKey: "id",
+      foreignKey: "travelAuthorizationId",
+    })
+    this.hasMany(TravelSegment, {
+      as: "travelSegments",
       sourceKey: "id",
       foreignKey: "travelAuthorizationId",
     })

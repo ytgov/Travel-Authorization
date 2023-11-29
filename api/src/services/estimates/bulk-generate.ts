@@ -53,7 +53,14 @@ export class BulkGenerate extends BaseService {
     const travelSegmentsAttributes = travelAuthorization
       .buildTravelSegmentsFromStops()
       .map((t) => t.dataValues)
-    const travelSegments = await TravelSegments.BulkReplaceService.perform(this.travelAuthorizationId, travelSegmentsAttributes)
+    await TravelSegments.BulkReplaceService.perform(
+      this.travelAuthorizationId,
+      travelSegmentsAttributes
+    )
+    const travelSegments = await travelAuthorization.getTravelSegments({
+      include: ["departureLocation", "arrivalLocation"],
+      order: [["segmentNumber", "ASC"]],
+    })
 
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
@@ -71,7 +78,6 @@ export class BulkGenerate extends BaseService {
         throw new Error(`Missing departure date on TravelSegment#${travelSegment.id}`)
       }
 
-      // TODO: debug location assertions so they don't trigger error below
       const travelMethodEstimate = await this.buildTravelMethodEstimate({
         modeOfTransport: travelSegment.modeOfTransport,
         departureCity: travelSegment.departureLocation.city,
