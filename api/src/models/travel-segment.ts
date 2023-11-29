@@ -16,6 +16,7 @@ import { isNil } from "lodash"
 import sequelize from "@/db/db-client"
 
 import Location from "./location"
+import Stop from "./stop"
 import TravelAuthorization from "./travel-authorization"
 
 const BEGINNING_OF_DAY = "00:00:00"
@@ -113,6 +114,52 @@ export class TravelSegment extends Model<
     })
   }
 
+  // Shim until Stop model is fully removed
+  static buildFromStops({
+    travelAuthorizationId,
+    segmentNumber,
+    departureStop,
+    arrivalStop,
+  }: {
+    travelAuthorizationId: number
+    segmentNumber: number
+    departureStop: Stop
+    arrivalStop: Stop
+  }) {
+    if (isNil(departureStop.transport)) {
+      throw new Error(`Missing transport on Stop#${departureStop.id}`)
+    }
+
+    const modeOfTransport = (Object.values(TravelMethods) as string[]).includes(
+      departureStop.transport as any
+    )
+      ? departureStop.transport
+      : TravelMethods.OTHER
+    const modeOfTransportOther =
+      modeOfTransport === TravelMethods.OTHER ? departureStop.transport : null
+
+    const accommodationType = (Object.values(AccommodationTypes) as string[]).includes(
+      departureStop.accommodationType as any
+    )
+      ? departureStop.accommodationType
+      : AccommodationTypes.OTHER
+    const accommodationTypeOther =
+      accommodationType === AccommodationTypes.OTHER ? departureStop.accommodationType : null
+
+    return TravelSegment.build({
+      travelAuthorizationId: travelAuthorizationId,
+      segmentNumber,
+      departureLocationId: departureStop.locationId,
+      arrivalLocationId: arrivalStop.locationId,
+      departureOn: departureStop.departureDate,
+      departureTime: departureStop.departureTime,
+      modeOfTransport,
+      modeOfTransportOther,
+      accommodationType,
+      accommodationTypeOther,
+    })
+  }
+
   get departureAt(): NonAttribute<Date | null> {
     const departureOn = this.departureOn
     if (isNil(departureOn)) return null
@@ -196,7 +243,7 @@ TravelSegment.init(
             )
           }
         },
-      }
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -217,23 +264,32 @@ TravelSegment.init(
           throw new Error(
             `modeOfTransport must be ${TravelMethods.OTHER} when modeOfTransportOther is set`
           )
-        } else if (this.modeOfTransport === TravelMethods.OTHER && this.modeOfTransportOther === null) {
+        } else if (
+          this.modeOfTransport === TravelMethods.OTHER &&
+          this.modeOfTransportOther === null
+        ) {
           throw new Error(
             `modeOfTransportOther can only have a value if modeOfTransport is ${TravelMethods.OTHER}`
           )
         }
       },
       accommodationTypeOtherConsistency() {
-        if (this.accommodationTypeOther !== null && this.accommodationType !== AccommodationTypes.OTHER) {
+        if (
+          this.accommodationTypeOther !== null &&
+          this.accommodationType !== AccommodationTypes.OTHER
+        ) {
           throw new Error(
             `accommodationType must be ${AccommodationTypes.OTHER} when accommodationTypeOther is set`
           )
-        } else if (this.accommodationType === AccommodationTypes.OTHER && this.accommodationTypeOther === null) {
+        } else if (
+          this.accommodationType === AccommodationTypes.OTHER &&
+          this.accommodationTypeOther === null
+        ) {
           throw new Error(
             `accommodationTypeOther can only have a value if accommodationType is ${AccommodationTypes.OTHER}`
           )
         }
-      }
+      },
     },
   }
 )
