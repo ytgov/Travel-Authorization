@@ -7,11 +7,12 @@ describe("api/src/services/estimates/bulk-generate.ts", () => {
   describe("BulkGenerate", () => {
     describe(".perform", () => {
       test("creates some new estimates against the travel authorization", async () => {
-        const travelAuthorization = await travelAuthorizationFactory.create({
-          // round trip
-          oneWayTrip: false,
-          multiStop: false,
-        })
+        const travelAuthorization = await travelAuthorizationFactory.create(
+          {},
+          {
+            transient: { roundTrip: true },
+          }
+        )
 
         const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
         await stopFactory.create(
