@@ -20,12 +20,13 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
         travelAuthorization.userId = user.id
       }
 
-
       return travelAuthorization.save()
     })
 
-    let oneWayTrip = faker.datatype.boolean()
-    let multiStop = !oneWayTrip
+    let oneWayTrip =
+      "oneWayTrip" in params ? params.oneWayTrip : !params.multiStop && faker.datatype.boolean()
+    let multiStop =
+      "multiStop" in params ? params.multiStop : !oneWayTrip && faker.datatype.boolean()
     if (transientParams.roundTrip === true) {
       if (params.oneWayTrip === true) {
         throw new Error("roundTrip transient param conflicts with oneWayTrip param")
