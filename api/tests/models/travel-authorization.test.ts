@@ -47,6 +47,7 @@ describe("api/src/models/travel-authorization.ts", () => {
       test("when has 2 stops, and is a one-way trip, builds the correct travel segment", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
           oneWayTrip: true,
+          multiStop: false,
         })
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
