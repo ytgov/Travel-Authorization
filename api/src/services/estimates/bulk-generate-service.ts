@@ -10,6 +10,7 @@ import {
   PerDiem,
   Stop,
   TravelAuthorization,
+  TravelSegment,
 } from "@/models"
 
 import BaseService from "@/services/base-service"
@@ -105,7 +106,9 @@ export class BulkGenerateService extends BaseService {
       }
 
       if (!isNil(nextTravelSegment)) {
-        const departureAt = nextTravelSegment.departureAt
+        const departureAt = nextTravelSegment.departureAtWithTimeFallback(
+          TravelSegment.FallbackTimes.END_OF_DAY
+        )
         if (isNil(departureAt)) {
           throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
         }

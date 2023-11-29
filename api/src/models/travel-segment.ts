@@ -19,8 +19,10 @@ import Location from "./location"
 import Stop from "./stop"
 import TravelAuthorization from "./travel-authorization"
 
-const BEGINNING_OF_DAY = "00:00:00"
-const END_OF_DAY = "23:59:59"
+enum FallbackTimes {
+  BEGINNING_OF_DAY = "00:00:00",
+  END_OF_DAY = "23:59:59",
+}
 
 // Keep in sync with web/src/api/stops-api.js
 // Until both are using a shared location
@@ -51,8 +53,7 @@ export class TravelSegment extends Model<
 > {
   static TravelMethods = TravelMethods
   static AccommodationTypes = AccommodationTypes
-  static BEGINNING_OF_DAY = BEGINNING_OF_DAY
-  static END_OF_DAY = END_OF_DAY
+  static FallbackTimes = FallbackTimes
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
@@ -161,10 +162,16 @@ export class TravelSegment extends Model<
   }
 
   get departureAt(): NonAttribute<Date | null> {
+    return this.departureAtWithTimeFallback(FallbackTimes.BEGINNING_OF_DAY)
+  }
+
+  departureAtWithTimeFallback(
+    fallbackTime: FallbackTimes
+  ): NonAttribute<Date | null> {
     const departureOn = this.departureOn
     if (isNil(departureOn)) return null
 
-    const timePart = this.departureTime || BEGINNING_OF_DAY
+    const timePart = this.departureTime || fallbackTime
     return new Date(`${departureOn}T${timePart}`)
   }
 }

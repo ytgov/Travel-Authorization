@@ -28,8 +28,8 @@ so we're doing it piecemeal.
 export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<Stop>> {
   static TravelMethods = TravelSegment.TravelMethods
   static AccommodationTypes = TravelSegment.AccommodationTypes
-  static BEGINNING_OF_DAY = TravelSegment.BEGINNING_OF_DAY
-  static END_OF_DAY = TravelSegment.END_OF_DAY
+  static BEGINNING_OF_DAY = TravelSegment.FallbackTimes.BEGINNING_OF_DAY
+  static END_OF_DAY = TravelSegment.FallbackTimes.END_OF_DAY
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
