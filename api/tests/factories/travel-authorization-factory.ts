@@ -6,7 +6,7 @@ import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, POSTGRES_INT_4_MAX, userFactory } from "@/factories"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
-  ({ sequence, associations, onCreate }) => {
+  ({ sequence, associations, params, transientParams, onCreate }) => {
     onCreate(async (travelAuthorization) => {
       if (isNil(travelAuthorization.purposeId)) {
         const purpose = associations.purpose || travelPurposeFactory.build()
@@ -23,6 +23,19 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
 
       return travelAuthorization.save()
     })
+
+    let oneWayTrip = faker.datatype.boolean()
+    let multiStop = faker.datatype.boolean()
+    if (transientParams.roundTrip === true) {
+      if (params.oneWayTrip === true) {
+        throw new Error("roundTrip transient param conflicts with oneWayTrip param")
+      } else if (params.multiStop === true) {
+        throw new Error("roundTrip transient param conflicts with multiStop param")
+      }
+
+      oneWayTrip = false
+      multiStop = false
+    }
 
     return TravelAuthorization.build({
       id: sequence,
@@ -47,8 +60,8 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
       supervisorEmail: `supervisor-${faker.internet.exampleEmail()}`, // TODO: add factories once foreign key constraint exists
       requestChange: faker.lorem.sentence(),
       denialReason: faker.lorem.sentence(),
-      oneWayTrip: faker.datatype.boolean(),
-      multiStop: faker.datatype.boolean(),
+      oneWayTrip,
+      multiStop,
       createdBy: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }),
       travelAdvanceInCents: faker.number.int({ min: 0, max: 3000 * 100 }), // TODO: add factories once foreign key constraint exists
       allTravelWithinTerritory: faker.datatype.boolean(),
