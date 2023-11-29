@@ -80,33 +80,31 @@ export class BulkGenerate extends BaseService {
       })
       estimates.push(travelMethodEstimate)
 
-      const accommodationType = fromStop.accommodationType
-      const nextSegment = travelSegments[index + 1]
-      if (!isNil(accommodationType) && !isNil(nextSegment)) {
-        const [nextFromStop, _] = nextSegment
-        const accommodationDepartureAt = nextFromStop.departureAt
+      const accommodationType = travelSegment.accommodationType
+      const nextTravelSegment = travelSegments[index + 1]
+      if (!isNil(accommodationType) && !isNil(nextTravelSegment)) {
+        const accommodationDepartureAt = nextTravelSegment.departureAt
         if (isNil(accommodationDepartureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextFromStop.id}`)
+          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
         }
 
         const accommodationEstimates = this.buildAccommodationEstimates({
-          location: toLocation,
+          location: travelSegment.arrivalLocation,
           accommodationType,
-          arrivalAt: fromDepartureAt,
+          arrivalAt: travelSegment.departureAt,
           departureAt: accommodationDepartureAt,
         })
         estimates.push(...accommodationEstimates)
       }
 
-      if (!isNil(nextSegment)) {
-        const [nextFromStop, _] = nextSegment
-        const departureAt = nextFromStop.departureAt
+      if (!isNil(nextTravelSegment)) {
+        const departureAt = nextTravelSegment.departureAt
         if (isNil(departureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextFromStop.id}`)
+          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
         }
         const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates({
-          location: toLocation,
-          arrivalAt: fromDepartureAt,
+          location: travelSegment.arrivalLocation,
+          arrivalAt: travelSegment.departureAt,
           departureAt,
         })
         estimates.push(...mealsAndIncidentalsEstimates)
