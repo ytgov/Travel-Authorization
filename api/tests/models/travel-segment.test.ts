@@ -149,11 +149,40 @@ describe("api/src/models/travel-segment.ts", () => {
         const travelSegment = travelSegmentFactory.build({
           departureOn: new Date("2021-01-01"),
           departureTime: null,
-          segmentNumber: 0,
         })
 
         expect(travelSegment.departureAt).toEqual(new Date("2021-01-01T00:00:00"))
       })
+    })
+  })
+
+  describe("#departureAtWithTimeFallback", () => {
+    test("when the departureOn is null, departureAt is null", () => {
+      const travelSegment = travelSegmentFactory.build({ departureOn: null })
+
+      expect(travelSegment.departureAtWithTimeFallback(TravelSegment.FallbackTimes.BEGINNING_OF_DAY)).toBeNull()
+    })
+
+    test("when the departure time is null, time falls back to the beginning of the day", () => {
+      const travelSegment = travelSegmentFactory.build({
+        departureOn: new Date("2021-01-01"),
+        departureTime: null,
+      })
+
+      expect(travelSegment.departureAtWithTimeFallback(TravelSegment.FallbackTimes.BEGINNING_OF_DAY)).toEqual(
+        new Date("2021-01-01T00:00:00")
+      )
+    })
+
+    test("when the departure time is null, time falls back to the end of the day", () => {
+      const travelSegment = travelSegmentFactory.build({
+        departureOn: new Date("2021-01-01"),
+        departureTime: null,
+      })
+
+      expect(travelSegment.departureAtWithTimeFallback(TravelSegment.FallbackTimes.END_OF_DAY)).toEqual(
+        new Date("2021-01-01T23:59:59")
+      )
     })
   })
 })
