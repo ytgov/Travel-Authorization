@@ -344,6 +344,13 @@ TravelAuthorization.init(
     sequelize,
     tableName: "travel_authorizations",
     modelName: "TravelAuthorization",
+    validate: {
+      tripTypeConsistency() {
+        if (this.oneWayTrip === true && this.multiStop === true) {
+          throw new Error("oneWayTrip and multiStop cannot both be true")
+        }
+      },
+    },
   }
 )
 
