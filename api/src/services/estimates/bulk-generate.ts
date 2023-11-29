@@ -10,9 +10,10 @@ import {
   PerDiem,
   Stop,
   TravelAuthorization,
-  TravelSegment,
 } from "@/models"
+
 import BaseService from "@/services/base-service"
+import { TravelSegments } from "@/services"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
@@ -49,9 +50,10 @@ export class BulkGenerate extends BaseService {
       throw new Error(`TravelAuthorization not found for id=${this.travelAuthorizationId}`)
     }
 
-    // TODO: I think I might need to make this an ensure/findOrCreate action?
-    // It'll be easier to debug if I'm persisting the travel segments.
-    const travelSegments = travelAuthorization.buildTravelSegmentsFromStops()
+    const travelSegmentsAttributes = travelAuthorization
+      .buildTravelSegmentsFromStops()
+      .map((t) => t.dataValues)
+    const travelSegments = await TravelSegments.BulkReplaceService.perform(this.travelAuthorizationId, travelSegmentsAttributes)
 
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
