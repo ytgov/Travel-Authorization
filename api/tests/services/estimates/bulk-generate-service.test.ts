@@ -114,9 +114,9 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Breakfast/Lunch",
+            description: "Maximum Daily", // in future will be "Breakfast/Lunch" see https://github.com/icefoganalytics/travel-authorization/issues/121
             date: "2022-06-07",
-            cost: 46.7,
+            cost: 123.4, //  in future will be 46.7 see https://github.com/icefoganalytics/travel-authorization/issues/121
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
