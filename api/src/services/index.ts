@@ -10,8 +10,9 @@ import * as Estimates from "./estimates"
 import * as Qa from "./qa"
 import * as TravelAuthorizations from "./travel-authorizations"
 import * as TravelSegments from "./travel-segments"
+import * as Stops from "./stops"
 
-export { Estimates, Qa, TravelAuthorizations, TravelSegments }
+export { Estimates, Qa, TravelAuthorizations, TravelSegments, Stops }
 
 // TODO: move these to their own files, or deprecate and remove them completely
 export interface QueryStatement {

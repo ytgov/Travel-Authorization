@@ -9,12 +9,10 @@ import {
   LocationTypes,
   PerDiem,
   Stop,
-  TravelAuthorization,
   TravelSegment,
 } from "@/models"
 
 import BaseService from "@/services/base-service"
-import { TravelSegments } from "@/services"
 import { BulkGenerate } from "@/services/estimates"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
@@ -25,48 +23,20 @@ const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
 export class BulkGenerateService extends BaseService {
   private travelAuthorizationId: number
+  private travelSegments: TravelSegment[]
   private aircraftAllowanceRemaining: number
 
-  constructor(travelAuthorizationId: number) {
+  constructor(travelAuthorizationId: number, travelSegments: TravelSegment[]) {
     super()
     this.travelAuthorizationId = travelAuthorizationId
+    this.travelSegments = travelSegments
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
   async perform(): Promise<Expense[]> {
-    const travelAuthorization = await TravelAuthorization.findByPk(this.travelAuthorizationId, {
-      // TODO: consider performing travel segment creation before this service gets called?
-      // that way we could include travel segments, and this whole file could be stop free.
-      include: [
-        {
-          association: "stops",
-          include: ["location"],
-        },
-      ],
-      order: [
-        ["stops", "departureDate", "ASC"],
-        ["stops", "departureTime", "ASC"],
-      ],
-    })
-    if (isNil(travelAuthorization)) {
-      throw new Error(`TravelAuthorization not found for id=${this.travelAuthorizationId}`)
-    }
-
-    const travelSegmentsAttributes = travelAuthorization
-      .buildTravelSegmentsFromStops()
-      .map((t) => t.dataValues)
-    await TravelSegments.BulkReplaceService.perform(
-      this.travelAuthorizationId,
-      travelSegmentsAttributes
-    )
-    const travelSegments = await travelAuthorization.getTravelSegments({
-      include: ["departureLocation", "arrivalLocation"],
-      order: [["segmentNumber", "ASC"]],
-    })
-
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
-    for (const travelSegment of travelSegments) {
+    for (const travelSegment of this.travelSegments) {
       if (isNil(travelSegment.departureLocation)) {
         throw new Error(`Missing departure location on TravelSegment#${travelSegment.id}`)
       }
@@ -89,7 +59,7 @@ export class BulkGenerateService extends BaseService {
       estimates.push(travelMethodEstimate)
 
       const accommodationType = travelSegment.accommodationType
-      const nextTravelSegment = travelSegments[index + 1]
+      const nextTravelSegment = this.travelSegments[index + 1]
       if (!isNil(accommodationType) && !isNil(nextTravelSegment)) {
         const accommodationDepartureAt = nextTravelSegment.departureAt
         if (isNil(accommodationDepartureAt)) {

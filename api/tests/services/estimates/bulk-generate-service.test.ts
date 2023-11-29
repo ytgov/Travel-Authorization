@@ -6,7 +6,8 @@ import {
   stopFactory,
   travelAuthorizationFactory,
 } from "@/factories"
-import { PerDiem, Stop } from "@/models"
+import { PerDiem, Stop, TravelSegment } from "@/models"
+import { TravelSegments } from "@/services"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
@@ -66,8 +67,10 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           },
           { associations: { travelAuthorization, location: vancouver } }
         )
+        // TODO: replace stops code above with travel segment code
+        const travelSegments: TravelSegment[] = []
 
-        const expenses = await BulkGenerateService.perform(travelAuthorization.id).catch(
+        const expenses = await BulkGenerateService.perform(travelAuthorization.id, travelSegments).catch(
           (error) => {
             console.error(error)
             throw error
@@ -169,8 +172,10 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           },
           { associations: { travelAuthorization, location: vancouver } }
         )
+        // TODO: replace stops code above with travel segment code
+        const travelSegments: TravelSegment[] = []
 
-        const expenses = await BulkGenerateService.perform(travelAuthorization.id).catch(
+        const expenses = await BulkGenerateService.perform(travelAuthorization.id, travelSegments).catch(
           (error) => {
             console.error(error)
             throw error
