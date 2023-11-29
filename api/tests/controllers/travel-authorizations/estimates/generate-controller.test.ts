@@ -2,7 +2,7 @@ import request from "supertest"
 import { Request, Response, NextFunction } from "express"
 
 import app from "@/app"
-import { BulkGenerate } from "@/services/estimates"
+import { BulkGenerateService } from "@/services/estimates"
 import { checkJwt, loadUser } from "@/middleware/authz.middleware"
 import { TravelAuthorization, User } from "@/models"
 import { travelAuthorizationFactory, userFactory } from "@/factories"
@@ -12,11 +12,11 @@ jest.mock("@/middleware/authz.middleware", () => ({
   checkJwt: jest.fn(),
   loadUser: jest.fn(),
 }))
-jest.mock("@/services/estimates", () => ({ BulkGenerate: { perform: jest.fn() } }))
+jest.mock("@/services/estimates", () => ({ BulkGenerateService: { perform: jest.fn() } }))
 
 const mockedCheckJwt = checkJwt as unknown as jest.Mock
 const mockedLoadUser = loadUser as unknown as jest.Mock
-const mockedBulkGeneratePerform = BulkGenerate.perform as unknown as jest.Mock
+const mockedBulkGenerateServicePerform = BulkGenerateService.perform as unknown as jest.Mock
 
 describe("api/src/controllers/travel-authorizations/estimates/generate-controller.ts", () => {
   let user: User
@@ -42,15 +42,15 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
         { associations: { user } }
       )
 
-      const mockBulkGeneratePerformResponse = "mock bulk generate response"
-      mockedBulkGeneratePerform.mockImplementation(() => {
-        return Promise.resolve(mockBulkGeneratePerformResponse)
+      const mockBulkGenerateServicePerformResponse = "mock bulk generate response"
+      mockedBulkGenerateServicePerform.mockImplementation(() => {
+        return Promise.resolve(mockBulkGenerateServicePerformResponse)
       })
 
       return request(app)
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
-        .expect(201, { estimates: mockBulkGeneratePerformResponse, message: "Generated estimates" })
+        .expect(201, { estimates: mockBulkGenerateServicePerformResponse, message: "Generated estimates" })
     })
 
     test("when authorized and bulk generation not is successful", async () => {
@@ -61,15 +61,15 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
         { associations: { user } }
       )
 
-      const mockBulkGeneratePerformResponse = "mock bulk generate response"
-      mockedBulkGeneratePerform.mockImplementation(() => {
-        return Promise.reject(mockBulkGeneratePerformResponse)
+      const mockBulkGenerateServicePerformResponse = "mock bulk generate response"
+      mockedBulkGenerateServicePerform.mockImplementation(() => {
+        return Promise.reject(mockBulkGenerateServicePerformResponse)
       })
 
       return request(app)
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
-        .expect(422, { message: `Failed to generate estimate: ${mockBulkGeneratePerformResponse}` })
+        .expect(422, { message: `Failed to generate estimate: ${mockBulkGenerateServicePerformResponse}` })
     })
 
     test("when not authorized", async () => {

@@ -21,7 +21,7 @@ const DISTANCE_ALLOWANCE_PER_KILOMETER = 0.605
 const HOTEL_ALLOWANCE_PER_NIGHT = 250
 const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
-export class BulkGenerate extends BaseService {
+export class BulkGenerateService extends BaseService {
   private travelAuthorizationId: number
   private aircraftAllowanceRemaining: number
 
@@ -342,4 +342,4 @@ export class BulkGenerate extends BaseService {
   }
 }
 
-export default BulkGenerate
+export default BulkGenerateService

@@ -1,10 +1,10 @@
-import { BulkGenerate } from "@/services/estimates"
+import { BulkGenerateService } from "@/services/estimates"
 
 import { travelAuthorizationFactory, stopFactory, locationFactory } from "@/factories"
 import { Expense, Stop } from "@/models"
 
-describe("api/src/services/estimates/bulk-generate.ts", () => {
-  describe("BulkGenerate", () => {
+describe("api/src/services/estimates/bulk-generate-service.ts", () => {
+  describe("BulkGenerateService", () => {
     describe(".perform", () => {
       test("creates some new estimates against the travel authorization", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create(
@@ -38,7 +38,7 @@ describe("api/src/services/estimates/bulk-generate.ts", () => {
         )
 
         expect(await Expense.count()).toBe(0)
-        const expenses = await BulkGenerate.perform(travelAuthorization.id)
+        const expenses = await BulkGenerateService.perform(travelAuthorization.id)
         // TODO: fix bulk generation so it builds the correct number of estimates
         expect(await Expense.count()).toBe(7)
 

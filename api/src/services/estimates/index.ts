@@ -1,3 +1,3 @@
-export * from './bulk-generate'
+export * from './bulk-generate-service'
 
 export default undefined

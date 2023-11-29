@@ -4,7 +4,7 @@ import BaseController from "@/controllers/base-controller"
 
 import { Expense, TravelAuthorization } from "@/models"
 import { ExpensesPolicy } from "@/policies"
-import { BulkGenerate } from "@/services/estimates"
+import { BulkGenerateService } from "@/services/estimates"
 
 export class GenerateController extends BaseController {
   async create() {
@@ -21,7 +21,7 @@ export class GenerateController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return BulkGenerate.perform(travelAuthorization.id)
+    return BulkGenerateService.perform(travelAuthorization.id)
       .then((estimates) => {
         return this.response.status(201).json({
           estimates,
