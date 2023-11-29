@@ -128,6 +128,32 @@ describe("api/src/models/travel-segment.ts", () => {
           })
         )
       })
+
+      test("when accommodation type is null, sets accommodationType and accommodationTypeOther correctly", async () => {
+        const travelAuthorization = await travelAuthorizationFactory.create()
+        const departureStop = await stopFactory.create({
+          travelAuthorizationId: travelAuthorization.id,
+          accommodationType: null,
+        })
+        const arrivalStop = await stopFactory.create({
+          travelAuthorizationId: travelAuthorization.id,
+        })
+        const segmentNumber = faker.number.int({ min: 0, max: 10 })
+
+        const travelSegment = TravelSegment.buildFromStops({
+          travelAuthorizationId: travelAuthorization.id,
+          segmentNumber,
+          departureStop,
+          arrivalStop,
+        })
+
+        expect(travelSegment).toEqual(
+          expect.objectContaining({
+            accommodationType: null,
+            accommodationTypeOther: null,
+          })
+        )
+      })
     })
   })
 })

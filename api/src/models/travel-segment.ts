@@ -131,18 +131,18 @@ export class TravelSegment extends Model<
     }
 
     const modeOfTransport = (Object.values(TravelMethods) as string[]).includes(
-      departureStop.transport as any
+      departureStop.transport
     )
       ? departureStop.transport
       : TravelMethods.OTHER
     const modeOfTransportOther =
       modeOfTransport === TravelMethods.OTHER ? departureStop.transport : null
 
-    const accommodationType = (Object.values(AccommodationTypes) as string[]).includes(
-      departureStop.accommodationType as any
-    )
-      ? departureStop.accommodationType
-      : AccommodationTypes.OTHER
+    const accommodationType =
+      isNil(departureStop.accommodationType) ||
+      (Object.values(AccommodationTypes) as string[]).includes(departureStop.accommodationType)
+        ? departureStop.accommodationType
+        : AccommodationTypes.OTHER
     const accommodationTypeOther =
       accommodationType === AccommodationTypes.OTHER ? departureStop.accommodationType : null
 
