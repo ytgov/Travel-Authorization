@@ -5,7 +5,7 @@ import { isNil } from "lodash"
 import { Stop } from "@/models"
 import { anytime, locationFactory, travelAuthorizationFactory } from "@/factories"
 
-export const stopFactory = Factory.define<Stop>(({ sequence, associations, onCreate }) => {
+export const stopFactory = Factory.define<Stop>(({ associations, onCreate }) => {
   onCreate(async (stop) => {
     if (isNil(stop.travelAuthorizationId)) {
       const travelAuthorization =
@@ -24,7 +24,6 @@ export const stopFactory = Factory.define<Stop>(({ sequence, associations, onCre
   })
 
   return Stop.build({
-    id: sequence,
     departureDate: faker.date.soon(),
     departureTime: anytime(),
     transport: faker.helpers.arrayElement(Object.values(Stop.TravelMethods)),

@@ -6,7 +6,7 @@ import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, POSTGRES_INT_4_MAX, userFactory } from "@/factories"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
-  ({ sequence, associations, params, transientParams, onCreate }) => {
+  ({ associations, params, transientParams, onCreate }) => {
     onCreate(async (travelAuthorization) => {
       if (isNil(travelAuthorization.purposeId)) {
         const purpose = associations.purpose || travelPurposeFactory.build()
@@ -38,7 +38,6 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
     }
 
     return TravelAuthorization.build({
-      id: sequence,
       slug: faker.string.uuid(),
       preappId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
       firstName: faker.person.firstName(),
