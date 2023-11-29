@@ -207,6 +207,9 @@ export class BulkGenerateService extends BaseService {
       const claims = this.determineClaimTypes(stayedAt, departureAt)
       const description = claims.join("/")
       const cost = await this.determinePerDiemCost(province, claims)
+      if (isNil(cost)) {
+        throw new Error(`Missing per diem cost for province=${province} and claims=${claims}`)
+      }
 
       estimates.push({
         type: Expense.Types.ESTIMATE,
