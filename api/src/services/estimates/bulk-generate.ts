@@ -10,6 +10,7 @@ import {
   PerDiem,
   Stop,
   TravelAuthorization,
+  TravelSegment,
 } from "@/models"
 import BaseService from "@/services/base-service"
 
@@ -30,52 +31,55 @@ export class BulkGenerate extends BaseService {
   }
 
   async perform(): Promise<Expense[]> {
-    const travelAuthorization = await TravelAuthorization.findByPk(this.travelAuthorizationId)
+    const travelAuthorization = await TravelAuthorization.findByPk(this.travelAuthorizationId, {
+      // TODO: consider performing travel segment creation before this service gets called?
+      // that way we could include travel segments, and this whole file could be stop free.
+      include: [
+        {
+          association: "stops",
+          include: ["location"],
+        },
+      ],
+      order: [
+        ["stops", "departureDate", "ASC"],
+        ["stops", "departureTime", "ASC"],
+      ],
+    })
     if (isNil(travelAuthorization)) {
       throw new Error(`TravelAuthorization not found for id=${this.travelAuthorizationId}`)
     }
 
-    const stops = await Stop.findAll({
-      where: { travelAuthorizationId: this.travelAuthorizationId },
-      order: [
-        ["departureDate", "ASC"],
-        ["departureTime", "ASC"],
-      ],
-      include: ["location"],
-    })
-    const tripSegments = await this.buildTripSegments({ travelAuthorization, stops })
+    // TODO: I think I might need to make this an ensure/findOrCreate action?
+    // It'll be easier to debug if I'm persisting the travel segments.
+    const travelSegments = travelAuthorization.buildTravelSegmentsFromStops()
 
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
-    for (const [fromStop, toStop] of tripSegments) {
-      const fromDepartureAt = fromStop.departureAt
-      const fromLocation = fromStop.location
-      const fromTransport = fromStop.transport
-      const toLocation = toStop.location
-
-      if (isNil(fromLocation)) {
-        throw new Error(`Missing location on Stop#${fromStop.id}`)
+    for (const travelSegment of travelSegments) {
+      if (isNil(travelSegment.departureLocation)) {
+        throw new Error(`Missing departure location on TravelSegment#${travelSegment.id}`)
       }
-      if (isNil(fromTransport)) {
-        throw new Error(`Missing transport on Stop#${fromStop.id}`)
+      if (isNil(travelSegment.arrivalLocation)) {
+        throw new Error(`Missing arrival location on TravelSegment#${travelSegment.id}`)
       }
-      if (isNil(fromDepartureAt)) {
-        throw new Error(`Missing departure date on Stop#${fromStop.id}`)
+      if (isNil(travelSegment.modeOfTransport)) {
+        throw new Error(`Missing mode of transport on TravelSegment#${travelSegment.id}`)
       }
-      if (isNil(toLocation)) {
-        throw new Error(`Missing location on Stop#${toStop.id}`)
+      if (isNil(travelSegment.departureOn) || isNil(travelSegment.departureAt)) {
+        throw new Error(`Missing departure date on TravelSegment#${travelSegment.id}`)
       }
 
+      // TODO: debug location assertions so they don't trigger error below
       const travelMethodEstimate = await this.buildTravelMethodEstimate({
-        fromDepartureAt,
-        fromLocation,
-        fromTransport,
-        toLocation,
+        modeOfTransport: travelSegment.modeOfTransport,
+        departureCity: travelSegment.departureLocation.city,
+        arrivalCity: travelSegment.arrivalLocation.city,
+        departureAt: travelSegment.departureAt,
       })
       estimates.push(travelMethodEstimate)
 
       const accommodationType = fromStop.accommodationType
-      const nextSegment = tripSegments[index + 1]
+      const nextSegment = travelSegments[index + 1]
       if (!isNil(accommodationType) && !isNil(nextSegment)) {
         const [nextFromStop, _] = nextSegment
         const accommodationDepartureAt = nextFromStop.departureAt
@@ -112,58 +116,20 @@ export class BulkGenerate extends BaseService {
     return Expense.bulkCreate(estimates)
   }
 
-  // TODO: investigate having a tripSegments model in the database
-  private async buildTripSegments({
-    travelAuthorization,
-    stops,
-  }: {
-    travelAuthorization: TravelAuthorization
-    stops: Stop[]
-  }): Promise<[Stop, Stop][]> {
-    if (stops.length < 2) {
-      throw new Error("Must have at least 2 stops to build a trip segment")
-    }
-
-    const isRoundTrip = travelAuthorization.oneWayTrip !== true && travelAuthorization.multiStop !== true
-    if (isRoundTrip) {
-      return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
-        const isLastStop = index === stops.length - 1
-        if (isLastStop) {
-          tripSegments.push([stop, stops[0]])
-        } else {
-          tripSegments.push([stop, stops[index + 1]])
-        }
-        return tripSegments
-      }, [])
-    }
-
-    return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
-      const isLastStop = index === stops.length - 1
-      if (isLastStop) {
-        // noop
-      } else {
-        tripSegments.push([stop, stops[index + 1]])
-      }
-      return tripSegments
-    }, [])
-  }
-
   private async buildTravelMethodEstimate({
-    fromDepartureAt,
-    fromLocation,
-    fromTransport,
-    toLocation,
+    modeOfTransport,
+    departureCity,
+    arrivalCity,
+    departureAt,
   }: {
-    fromDepartureAt: Date
-    fromLocation: Location
-    fromTransport: string
-    toLocation: Location
+    modeOfTransport: string
+    departureCity: string
+    arrivalCity: string
+    departureAt: Date
   }): Promise<CreationAttributes<Expense>> {
-    const fromCity = fromLocation.city
-    const toCity = toLocation.city
-    const description = `${fromTransport} from ${fromCity} to ${toCity}`
+    const description = `${modeOfTransport} from ${departureCity} to ${arrivalCity}`
 
-    const cost = await this.determineTravelMethodCost(fromTransport, fromCity, toCity)
+    const cost = await this.determineTravelMethodCost(modeOfTransport, departureCity, arrivalCity)
 
     return {
       type: Expense.Types.ESTIMATE,
@@ -172,7 +138,7 @@ export class BulkGenerate extends BaseService {
       expenseType: Expense.ExpenseTypes.TRANSPORTATION,
       description,
       cost,
-      date: fromDepartureAt,
+      date: departureAt,
     }
   }
 
