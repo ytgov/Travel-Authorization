@@ -14,6 +14,7 @@ import {
 
 import BaseService from "@/services/base-service"
 import { TravelSegments } from "@/services"
+import { BulkGenerate } from "@/services/estimates"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
@@ -162,7 +163,7 @@ export class BulkGenerateService extends BaseService {
     const city = location.city
     const description = `${accommodationType} in ${city}`
 
-    const numberOfNights = this.calculateNumberOfNights(arrivalAt, departureAt)
+    const numberOfNights = BulkGenerate.calculateNumberOfNights(arrivalAt, departureAt)
     return times(numberOfNights, (index) => {
       let stayedAt = clone(arrivalAt)
       stayedAt.setDate(arrivalAt.getDate() + index)
@@ -189,10 +190,10 @@ export class BulkGenerateService extends BaseService {
     arrivalAt: Date
     departureAt: Date
   }): Promise<CreationAttributes<Expense>[]> {
-    const numberOfNights = this.calculateNumberOfNights(arrivalAt, departureAt)
+    const numberOfDays = BulkGenerate.calculateNumberOfDays(arrivalAt, departureAt)
 
     let estimates = []
-    for (let index = 0; index < numberOfNights; index += 1) {
+    for (let index = 0; index < numberOfDays; index += 1) {
       let stayedAtStartOfDay = clone(arrivalAt)
       stayedAtStartOfDay.setDate(arrivalAt.getDate() + index)
       stayedAtStartOfDay.setHours(0, 0, 0, 0)
@@ -271,14 +272,6 @@ export class BulkGenerateService extends BaseService {
       default:
         return 0
     }
-  }
-
-  private calculateNumberOfNights(checkInAt: Date, checkOutAt: Date): number {
-    const differenceInMs = checkOutAt.getTime() - checkInAt.getTime()
-    const differenceInDaysAsFloat = differenceInMs / (1000 * 3600 * 24)
-    const differenceInDays = Math.floor(differenceInDaysAsFloat)
-
-    return max([0, differenceInDays]) as number
   }
 
   // Assuming a meal every 4 hours

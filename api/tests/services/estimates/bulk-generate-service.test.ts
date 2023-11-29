@@ -6,7 +6,7 @@ import {
   stopFactory,
   travelAuthorizationFactory,
 } from "@/factories"
-import { Expense, PerDiem, Stop } from "@/models"
+import { PerDiem, Stop } from "@/models"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
@@ -47,12 +47,25 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           amount: 123.4,
           currency: PerDiem.CurrencyTypes.CAD,
         })
+        await perDiemFactory.create({
+          claim: PerDiem.ClaimTypes.BREAKFAST,
+          location: PerDiem.LocationTypes.CANADA,
+          amount: 23.6,
+          currency: PerDiem.CurrencyTypes.CAD,
+        })
+        await perDiemFactory.create({
+          claim: PerDiem.ClaimTypes.LUNCH,
+          location: PerDiem.LocationTypes.CANADA,
+          amount: 23.9,
+          currency: PerDiem.CurrencyTypes.CAD,
+        })
 
-        expect(await Expense.count()).toBe(0)
-        const expenses = await BulkGenerateService.perform(travelAuthorization.id)
-        // TODO: fix bulk generation so it builds the correct number of estimates
-        expect(await Expense.count()).toBe(7)
-
+        const expenses = await BulkGenerateService.perform(travelAuthorization.id).catch(
+          (error) => {
+            console.error(error)
+            throw error
+          }
+        )
         expect(expenses).toEqual([
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
@@ -101,21 +114,21 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Aircraft from Vancouver to Whitehorse",
-            date: "2022-06-07",
-            cost: 350.0,
-            currency: "CAD",
-            type: "Estimate",
-            expenseType: "Transportation",
-          }),
-          expect.objectContaining({
-            travelAuthorizationId: travelAuthorization.id,
             description: "Breakfast/Lunch",
             date: "2022-06-07",
             cost: 46.7,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Aircraft from Vancouver to Whitehorse",
+            date: "2022-06-07",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
           }),
         ])
       })
