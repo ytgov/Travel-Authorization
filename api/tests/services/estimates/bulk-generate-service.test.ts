@@ -1,7 +1,12 @@
 import { BulkGenerateService } from "@/services/estimates"
 
-import { travelAuthorizationFactory, stopFactory, locationFactory } from "@/factories"
-import { Expense, Stop } from "@/models"
+import {
+  locationFactory,
+  perDiemFactory,
+  stopFactory,
+  travelAuthorizationFactory,
+} from "@/factories"
+import { Expense, PerDiem, Stop } from "@/models"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
@@ -36,6 +41,12 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           },
           { associations: { travelAuthorization, location: vancouver } }
         )
+        await perDiemFactory.create({
+          claim: PerDiem.ClaimTypes.MAXIMUM_DAILY,
+          location: PerDiem.LocationTypes.CANADA,
+          amount: 123.4,
+          currency: PerDiem.CurrencyTypes.CAD,
+        })
 
         expect(await Expense.count()).toBe(0)
         const expenses = await BulkGenerateService.perform(travelAuthorization.id)
