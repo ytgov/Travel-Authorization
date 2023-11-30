@@ -2,10 +2,10 @@ import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 
 import { TravelSegment } from "@/models"
-import { anytime, locationFactory, travelAuthorizationFactory } from "@/factories"
+import { anytime, locationFactory, presence, travelAuthorizationFactory } from "@/factories"
 
 export const travelSegmentFactory = Factory.define<TravelSegment>(
-  ({ associations, onCreate }) => {
+  ({ associations, params, onCreate }) => {
     onCreate(async (travelSegment) => {
       if (travelSegment.travelAuthorizationId === undefined) {
         const travelAuthorization =
@@ -29,8 +29,14 @@ export const travelSegmentFactory = Factory.define<TravelSegment>(
       return travelSegment.save()
     })
 
-    const modeOfTransport = faker.helpers.enumValue(TravelSegment.TravelMethods)
-    const accommodationType = faker.helpers.enumValue(TravelSegment.AccommodationTypes)
+    const modeOfTransport = presence(
+      params.modeOfTransport,
+      faker.helpers.enumValue(TravelSegment.TravelMethods)
+    )
+    const accommodationType = presence(
+      params.accommodationType,
+      faker.helpers.enumValue(TravelSegment.AccommodationTypes)
+    )
 
     return TravelSegment.build({
       segmentNumber: faker.number.int({ min: 0, max: 3 }),

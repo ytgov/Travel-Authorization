@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker"
 import { isNil } from "lodash"
 
 import { TravelAuthorization } from "@/models"
-import { travelPurposeFactory, POSTGRES_INT_4_MAX, userFactory } from "@/factories"
+import { travelPurposeFactory, POSTGRES_INT_4_MAX, userFactory, presence } from "@/factories"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
   ({ associations, params, transientParams, onCreate }) => {
@@ -23,10 +23,8 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
       return travelAuthorization.save()
     })
 
-    let oneWayTrip =
-      "oneWayTrip" in params ? params.oneWayTrip : !params.multiStop && faker.datatype.boolean()
-    let multiStop =
-      "multiStop" in params ? params.multiStop : !oneWayTrip && faker.datatype.boolean()
+    let oneWayTrip = presence(params.oneWayTrip, !params.multiStop && faker.datatype.boolean())
+    let multiStop = presence(params.multiStop, !oneWayTrip && faker.datatype.boolean())
     if (transientParams.roundTrip === true) {
       if (params.oneWayTrip === true) {
         throw new Error("roundTrip transient param conflicts with oneWayTrip param")
