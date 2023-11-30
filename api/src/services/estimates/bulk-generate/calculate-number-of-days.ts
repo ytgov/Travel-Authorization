@@ -1,5 +1,7 @@
 import { clone, max } from "lodash"
 
+// This calculates the number of days you would need to request per-diems for
+// as a result the function can't use the time difference alone
 export function calculateNumberOfDays(arrivalAt: Date, departureAt: Date): number {
   const arrivalAtStartOfDay = clone(arrivalAt)
   arrivalAtStartOfDay.setHours(0, 0, 0, 0)
