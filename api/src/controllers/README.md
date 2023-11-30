@@ -52,16 +52,12 @@ export { GenerateController } from "./generate-controller"
 
 ```typescript
 // api/src/controllers/forms/index.ts
-import * as Estimates from "./estimates"
-
-export { Estimates }
+export * as Estimates from "./estimates"
 ```
 
 ```typescript
 // api/src/controllers/index.ts
-import * as Forms from "./forms"
-
-export { Forms }
+export * as Forms from "./forms"
 ```
 
 ```typescript

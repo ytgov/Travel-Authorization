@@ -72,9 +72,7 @@ Imported in services as
 ```typescript
 // services/index.ts
 // Namespaced services
-import * as estimates from "./estimates"
-
-export { estimates }
+export * as estimates from "./estimates"
 ```
 
 The usages of this would be
