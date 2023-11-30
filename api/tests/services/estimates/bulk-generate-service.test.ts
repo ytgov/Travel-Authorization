@@ -5,9 +5,9 @@ import {
   perDiemFactory,
   stopFactory,
   travelAuthorizationFactory,
+  travelSegmentFactory,
 } from "@/factories"
 import { PerDiem, Stop, TravelSegment } from "@/models"
-import { TravelSegments } from "@/services"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
@@ -47,35 +47,42 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }
         )
         const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
-        await stopFactory.create(
+        const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
+        const travelSegment1 = await travelSegmentFactory.create(
           {
-            departureDate: new Date("2022-06-05"),
+            departureOn: new Date("2022-06-05"),
             departureTime: Stop.BEGINNING_OF_DAY,
-            transport: Stop.TravelMethods.AIRCRAFT,
+            modeOfTransport: Stop.TravelMethods.AIRCRAFT,
             accommodationType: Stop.AccommodationTypes.HOTEL,
           },
-          { associations: { travelAuthorization, location: whitehorse } }
-        )
-        const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
-        await stopFactory.create(
           {
-            travelAuthorizationId: travelAuthorization.id,
-            departureDate: new Date("2022-06-07"),
-            departureTime: "12:00:00",
-            transport: Stop.TravelMethods.AIRCRAFT,
-            accommodationType: null,
-          },
-          { associations: { travelAuthorization, location: vancouver } }
-        )
-        // TODO: replace stops code above with travel segment code
-        const travelSegments: TravelSegment[] = []
-
-        const expenses = await BulkGenerateService.perform(travelAuthorization.id, travelSegments).catch(
-          (error) => {
-            console.error(error)
-            throw error
+            associations: {
+              travelAuthorization,
+              departureLocation: whitehorse,
+              arrivalLocation: vancouver,
+            },
           }
         )
+        const travelSegment2 = await travelSegmentFactory.create(
+          {
+            departureOn: new Date("2022-06-07"),
+            departureTime: "12:00:00",
+            modeOfTransport: Stop.TravelMethods.AIRCRAFT,
+            accommodationType: null,
+          },
+          {
+            associations: {
+              travelAuthorization,
+              departureLocation: vancouver,
+              arrivalLocation: whitehorse,
+            },
+          }
+        )
+
+        const expenses = await BulkGenerateService.perform(travelAuthorization.id, [
+          travelSegment1,
+          travelSegment2,
+        ])
 
         expect(expenses).toEqual([
           expect.objectContaining({
@@ -152,35 +159,42 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }
         )
         const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
-        await stopFactory.create(
+        const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
+        const travelSegment1 = await travelSegmentFactory.create(
           {
-            departureDate: new Date("2022-06-05"),
+            departureOn: new Date("2022-06-05"),
             departureTime: null,
-            transport: Stop.TravelMethods.AIRCRAFT,
+            modeOfTransport: Stop.TravelMethods.AIRCRAFT,
             accommodationType: Stop.AccommodationTypes.HOTEL,
           },
-          { associations: { travelAuthorization, location: whitehorse } }
-        )
-        const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
-        await stopFactory.create(
           {
-            travelAuthorizationId: travelAuthorization.id,
-            departureDate: new Date("2022-06-07"),
-            departureTime: null,
-            transport: Stop.TravelMethods.AIRCRAFT,
-            accommodationType: null,
-          },
-          { associations: { travelAuthorization, location: vancouver } }
-        )
-        // TODO: replace stops code above with travel segment code
-        const travelSegments: TravelSegment[] = []
-
-        const expenses = await BulkGenerateService.perform(travelAuthorization.id, travelSegments).catch(
-          (error) => {
-            console.error(error)
-            throw error
+            associations: {
+              travelAuthorization,
+              departureLocation: whitehorse,
+              arrivalLocation: vancouver,
+            },
           }
         )
+        const travelSegment2 = await travelSegmentFactory.create(
+          {
+            departureOn: new Date("2022-06-07"),
+            departureTime: null,
+            modeOfTransport: Stop.TravelMethods.AIRCRAFT,
+            accommodationType: null,
+          },
+          {
+            associations: {
+              travelAuthorization,
+              departureLocation: vancouver,
+              arrivalLocation: whitehorse,
+            },
+          }
+        )
+
+        const expenses = await BulkGenerateService.perform(travelAuthorization.id, [
+          travelSegment1,
+          travelSegment2,
+        ])
 
         expect(expenses).toEqual([
           expect.objectContaining({
