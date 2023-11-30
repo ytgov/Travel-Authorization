@@ -18,6 +18,7 @@ TODO
 
 # Testing Instructions
 
-1. Boot the app via `dev up`
-2. Log in to the app at http://localhost:8080
-3.
+1. Run the test suite via `dev test` (or `dev test_api`)
+2. Boot the app via `dev up`
+3. Log in to the app at http://localhost:8080
+4.
