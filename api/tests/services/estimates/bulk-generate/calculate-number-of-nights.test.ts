@@ -1,4 +1,4 @@
-import { BulkGenerate } from "@/services/estimates"
+import { calculateNumberOfNights } from "@/services/estimates/bulk-generate"
 
 describe("api/src/services/estimates/bulk-generate/calculate-number-of-nights.ts", () => {
   describe(".calculateNumberOfNights", () => {
@@ -16,8 +16,17 @@ describe("api/src/services/estimates/bulk-generate/calculate-number-of-nights.ts
     ])(
       "calculateNumberOfNights($arrivalAt, $departureAt)",
       ({ arrivalAt, departureAt, expected }) => {
-        expect(BulkGenerate.calculateNumberOfNights(arrivalAt, departureAt)).toBe(expected)
+        expect(calculateNumberOfNights(arrivalAt, departureAt)).toBe(expected)
       }
     )
+  })
+
+  test("when arrivalAt is after departureAt, errors informatively", () => {
+    expect(() => {
+      calculateNumberOfNights(
+        new Date("2022-06-07 12:00:00"),
+        new Date("2022-06-05 00:00:00")
+      )
+    }).toThrow("arrivalAt must be less than or equal to departureAt")
   })
 })
