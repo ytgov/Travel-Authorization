@@ -31,6 +31,10 @@ export enum CurrencyTypes {
 }
 
 export class PerDiem extends Model<InferAttributes<PerDiem>, InferCreationAttributes<PerDiem>> {
+  static ClaimTypes = ClaimTypes
+  static LocationTypes = LocationTypes
+  static CurrencyTypes = CurrencyTypes
+
   declare id: CreationOptional<number>
   declare claim: ClaimTypes | null
   declare location: LocationTypes | null

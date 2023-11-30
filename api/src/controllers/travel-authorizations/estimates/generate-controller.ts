@@ -4,7 +4,7 @@ import BaseController from "@/controllers/base-controller"
 
 import { Expense, TravelAuthorization } from "@/models"
 import { ExpensesPolicy } from "@/policies"
-import { BulkGenerate } from "@/services/estimates"
+import { BulkGenerateService } from "@/services/estimates"
 
 export class GenerateController extends BaseController {
   async create() {
@@ -21,7 +21,8 @@ export class GenerateController extends BaseController {
         .json({ message: "You are not authorized to create this expense." })
     }
 
-    return BulkGenerate.perform(travelAuthorization.id)
+    const travelSegments = travelAuthorization.travelSegments || []
+    return BulkGenerateService.perform(travelAuthorization.id, travelSegments)
       .then((estimates) => {
         return this.response.status(201).json({
           estimates,
@@ -36,7 +37,15 @@ export class GenerateController extends BaseController {
   }
 
   private async loadTravelAuthorization() {
-    return TravelAuthorization.findByPk(this.params.travelAuthorizationId)
+    return TravelAuthorization.findByPk(this.params.travelAuthorizationId, {
+      include: [
+        {
+          association: "travelSegments",
+          include: ["departureLocation", "arrivalLocation"],
+        },
+      ],
+      order: [["travelSegments", "segmentNumber", "ASC"]],
+    })
   }
 
   private async buildExpense(travelAuthorization: TravelAuthorization) {

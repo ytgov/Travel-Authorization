@@ -9,9 +9,11 @@ import {
   LocationTypes,
   PerDiem,
   Stop,
-  TravelAuthorization,
+  TravelSegment,
 } from "@/models"
+
 import BaseService from "@/services/base-service"
+import { BulkGenerate } from "@/services/estimates"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
@@ -19,88 +21,70 @@ const DISTANCE_ALLOWANCE_PER_KILOMETER = 0.605
 const HOTEL_ALLOWANCE_PER_NIGHT = 250
 const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
-export class BulkGenerate extends BaseService {
+export class BulkGenerateService extends BaseService {
   private travelAuthorizationId: number
+  private travelSegments: TravelSegment[]
   private aircraftAllowanceRemaining: number
 
-  constructor(travelAuthorizationId: number) {
+  constructor(travelAuthorizationId: number, travelSegments: TravelSegment[]) {
     super()
     this.travelAuthorizationId = travelAuthorizationId
+    this.travelSegments = travelSegments
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
   async perform(): Promise<Expense[]> {
-    const travelAuthorization = await TravelAuthorization.findByPk(this.travelAuthorizationId)
-    if (isNil(travelAuthorization)) {
-      throw new Error(`TravelAuthorization not found for id=${this.travelAuthorizationId}`)
-    }
-
-    const stops = await Stop.findAll({
-      where: { travelAuthorizationId: this.travelAuthorizationId },
-      order: [
-        ["departureDate", "ASC"],
-        ["departureTime", "ASC"],
-      ],
-      include: ["location"],
-    })
-    const tripSegments = await this.buildTripSegments({ travelAuthorization, stops })
-
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
-    for (const [fromStop, toStop] of tripSegments) {
-      const fromDepartureAt = fromStop.departureAt
-      const fromLocation = fromStop.location
-      const fromTransport = fromStop.transport
-      const toLocation = toStop.location
-
-      if (isNil(fromLocation)) {
-        throw new Error(`Missing location on Stop#${fromStop.id}`)
+    for (const travelSegment of this.travelSegments) {
+      if (isNil(travelSegment.departureLocation)) {
+        throw new Error(`Missing departure location on TravelSegment#${travelSegment.id}`)
       }
-      if (isNil(fromTransport)) {
-        throw new Error(`Missing transport on Stop#${fromStop.id}`)
+      if (isNil(travelSegment.arrivalLocation)) {
+        throw new Error(`Missing arrival location on TravelSegment#${travelSegment.id}`)
       }
-      if (isNil(fromDepartureAt)) {
-        throw new Error(`Missing departure date on Stop#${fromStop.id}`)
+      if (isNil(travelSegment.modeOfTransport)) {
+        throw new Error(`Missing mode of transport on TravelSegment#${travelSegment.id}`)
       }
-      if (isNil(toLocation)) {
-        throw new Error(`Missing location on Stop#${toStop.id}`)
+      if (isNil(travelSegment.departureOn) || isNil(travelSegment.departureAt)) {
+        throw new Error(`Missing departure date on TravelSegment#${travelSegment.id}`)
       }
 
       const travelMethodEstimate = await this.buildTravelMethodEstimate({
-        fromDepartureAt,
-        fromLocation,
-        fromTransport,
-        toLocation,
+        modeOfTransport: travelSegment.modeOfTransport,
+        departureCity: travelSegment.departureLocation.city,
+        arrivalCity: travelSegment.arrivalLocation.city,
+        departureAt: travelSegment.departureAt,
       })
       estimates.push(travelMethodEstimate)
 
-      const accommodationType = fromStop.accommodationType
-      const nextSegment = tripSegments[index + 1]
-      if (!isNil(accommodationType) && !isNil(nextSegment)) {
-        const [nextFromStop, _] = nextSegment
-        const accommodationDepartureAt = nextFromStop.departureAt
+      const accommodationType = travelSegment.accommodationType
+      const nextTravelSegment = this.travelSegments[index + 1]
+      if (!isNil(accommodationType) && !isNil(nextTravelSegment)) {
+        const accommodationDepartureAt = nextTravelSegment.departureAt
         if (isNil(accommodationDepartureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextFromStop.id}`)
+          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
         }
 
         const accommodationEstimates = this.buildAccommodationEstimates({
-          location: toLocation,
+          location: travelSegment.arrivalLocation,
           accommodationType,
-          arrivalAt: fromDepartureAt,
+          arrivalAt: travelSegment.departureAt,
           departureAt: accommodationDepartureAt,
         })
         estimates.push(...accommodationEstimates)
       }
 
-      if (!isNil(nextSegment)) {
-        const [nextFromStop, _] = nextSegment
-        const departureAt = nextFromStop.departureAt
+      if (!isNil(nextTravelSegment)) {
+        const departureAt = nextTravelSegment.departureAtWithTimeFallback(
+          TravelSegment.FallbackTimes.END_OF_DAY
+        )
         if (isNil(departureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextFromStop.id}`)
+          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
         }
         const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates({
-          location: toLocation,
-          arrivalAt: fromDepartureAt,
+          location: travelSegment.arrivalLocation,
+          arrivalAt: travelSegment.departureAt,
           departureAt,
         })
         estimates.push(...mealsAndIncidentalsEstimates)
@@ -112,58 +96,20 @@ export class BulkGenerate extends BaseService {
     return Expense.bulkCreate(estimates)
   }
 
-  // TODO: investigate having a tripSegments model in the database
-  private async buildTripSegments({
-    travelAuthorization,
-    stops,
-  }: {
-    travelAuthorization: TravelAuthorization
-    stops: Stop[]
-  }): Promise<[Stop, Stop][]> {
-    if (stops.length < 2) {
-      throw new Error("Must have at least 2 stops to build a trip segment")
-    }
-
-    const isRoundTrip = travelAuthorization.oneWayTrip !== true && travelAuthorization.multiStop !== true
-    if (isRoundTrip) {
-      return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
-        const isLastStop = index === stops.length - 1
-        if (isLastStop) {
-          tripSegments.push([stop, stops[0]])
-        } else {
-          tripSegments.push([stop, stops[index + 1]])
-        }
-        return tripSegments
-      }, [])
-    }
-
-    return stops.reduce((tripSegments: [Stop, Stop][], stop, index) => {
-      const isLastStop = index === stops.length - 1
-      if (isLastStop) {
-        // noop
-      } else {
-        tripSegments.push([stop, stops[index + 1]])
-      }
-      return tripSegments
-    }, [])
-  }
-
   private async buildTravelMethodEstimate({
-    fromDepartureAt,
-    fromLocation,
-    fromTransport,
-    toLocation,
+    modeOfTransport,
+    departureCity,
+    arrivalCity,
+    departureAt,
   }: {
-    fromDepartureAt: Date
-    fromLocation: Location
-    fromTransport: string
-    toLocation: Location
+    modeOfTransport: string
+    departureCity: string
+    arrivalCity: string
+    departureAt: Date
   }): Promise<CreationAttributes<Expense>> {
-    const fromCity = fromLocation.city
-    const toCity = toLocation.city
-    const description = `${fromTransport} from ${fromCity} to ${toCity}`
+    const description = `${modeOfTransport} from ${departureCity} to ${arrivalCity}`
 
-    const cost = await this.determineTravelMethodCost(fromTransport, fromCity, toCity)
+    const cost = await this.determineTravelMethodCost(modeOfTransport, departureCity, arrivalCity)
 
     return {
       type: Expense.Types.ESTIMATE,
@@ -172,7 +118,7 @@ export class BulkGenerate extends BaseService {
       expenseType: Expense.ExpenseTypes.TRANSPORTATION,
       description,
       cost,
-      date: fromDepartureAt,
+      date: departureAt,
     }
   }
 
@@ -190,7 +136,7 @@ export class BulkGenerate extends BaseService {
     const city = location.city
     const description = `${accommodationType} in ${city}`
 
-    const numberOfNights = this.calculateNumberOfNights(arrivalAt, departureAt)
+    const numberOfNights = BulkGenerate.calculateNumberOfNights(arrivalAt, departureAt)
     return times(numberOfNights, (index) => {
       let stayedAt = clone(arrivalAt)
       stayedAt.setDate(arrivalAt.getDate() + index)
@@ -217,10 +163,10 @@ export class BulkGenerate extends BaseService {
     arrivalAt: Date
     departureAt: Date
   }): Promise<CreationAttributes<Expense>[]> {
-    const numberOfNights = this.calculateNumberOfNights(arrivalAt, departureAt)
+    const numberOfDays = BulkGenerate.calculateNumberOfDays(arrivalAt, departureAt)
 
     let estimates = []
-    for (let index = 0; index < numberOfNights; index += 1) {
+    for (let index = 0; index < numberOfDays; index += 1) {
       let stayedAtStartOfDay = clone(arrivalAt)
       stayedAtStartOfDay.setDate(arrivalAt.getDate() + index)
       stayedAtStartOfDay.setHours(0, 0, 0, 0)
@@ -234,6 +180,9 @@ export class BulkGenerate extends BaseService {
       const claims = this.determineClaimTypes(stayedAt, departureAt)
       const description = claims.join("/")
       const cost = await this.determinePerDiemCost(province, claims)
+      if (isNil(cost)) {
+        throw new Error(`Missing per diem cost for province=${province} and claims=${claims}`)
+      }
 
       estimates.push({
         type: Expense.Types.ESTIMATE,
@@ -301,14 +250,6 @@ export class BulkGenerate extends BaseService {
     }
   }
 
-  private calculateNumberOfNights(checkInAt: Date, checkOutAt: Date): number {
-    const differenceInMs = checkOutAt.getTime() - checkInAt.getTime()
-    const differenceInDaysAsFloat = differenceInMs / (1000 * 3600 * 24)
-    const differenceInDays = Math.floor(differenceInDaysAsFloat)
-
-    return max([0, differenceInDays]) as number
-  }
-
   // Assuming a meal every 4 hours
   // e.g 0, 4, 8 so any 8 hour period is a "full day"
   // Assuming you can only claim the max daily after 12 hours
@@ -370,4 +311,4 @@ export class BulkGenerate extends BaseService {
   }
 }
 
-export default BulkGenerate
+export default BulkGenerateService
