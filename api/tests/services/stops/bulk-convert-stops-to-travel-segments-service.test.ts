@@ -159,7 +159,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
         })
 
         expect.assertions(1)
-        expect(
+        await expect(
           BulkConvertStopsToTravelSegmentsService.perform(travelAuthorization)
         ).rejects.toThrow("Must have at least 2 stops to build a travel segments")
       })
@@ -176,7 +176,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
         })
 
         expect.assertions(1)
-        expect(
+        await expect(
           BulkConvertStopsToTravelSegmentsService.perform(travelAuthorization)
         ).rejects.toThrow("Must have at least 2 stops to build a travel segments")
       })
@@ -203,7 +203,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
         })
 
         expect.assertions(1)
-        expect(
+        await expect(
           BulkConvertStopsToTravelSegmentsService.perform(travelAuthorization)
         ).rejects.toThrow("Must have at least 4 stops to build a multi-stop travel segments")
       })
