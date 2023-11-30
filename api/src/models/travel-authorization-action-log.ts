@@ -17,8 +17,7 @@ import sequelize from "@/db/db-client"
 import User from "./user"
 import TravelAuthorization from "./travel-authorization"
 
-// Avoid exporting here, and instead expose via the model to avoid naming conflicts
-enum Actions {
+export enum Actions {
   APPROVE = "approve",
   DENY = "deny",
   UPDATE = "update"
