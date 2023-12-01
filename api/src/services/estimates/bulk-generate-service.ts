@@ -1,18 +1,12 @@
 import { clone, isNil, max, min, times } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
-import {
-  DistanceMatrix,
-  Expense,
-  Location,
-  PerDiem,
-  Stop,
-  TravelSegment,
-} from "@/models"
+import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from "@/models"
 
 import BaseService from "@/services/base-service"
 import { BulkGenerate } from "@/services/estimates"
 import { ClaimTypes, LocationTypes } from "@/models/per-diem"
+import { middleDayClaimTypes } from "./bulk-generate/determine-claims-per-day"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
@@ -62,7 +56,7 @@ export class BulkGenerateService extends BaseService {
       if (!isNil(accommodationType) && !isNil(nextTravelSegment)) {
         const accommodationDepartureAt = nextTravelSegment.departureAt
         if (isNil(accommodationDepartureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
+          throw new Error(`Missing departure date on TravelSegment#${nextTravelSegment.id}`)
         }
 
         const accommodationEstimates = this.buildAccommodationEstimates({
@@ -75,16 +69,23 @@ export class BulkGenerateService extends BaseService {
       }
 
       if (!isNil(nextTravelSegment)) {
-        const departureAt = nextTravelSegment.departureAtWithTimeFallback(
+        const segmentStartAt = travelSegment.departureAtWithTimeFallback(
+          TravelSegment.FallbackTimes.BEGINNING_OF_DAY
+        )
+        const segmentEndAt = nextTravelSegment.departureAtWithTimeFallback(
           TravelSegment.FallbackTimes.END_OF_DAY
         )
-        if (isNil(departureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
+        if (isNil(segmentStartAt)) {
+          throw new Error(`Missing departure date on TravelSegment#${nextTravelSegment.id}`)
         }
+        if (isNil(segmentEndAt)) {
+          throw new Error(`Missing departure date on TravelSegment#${nextTravelSegment.id}`)
+        }
+        // TODO: accommodate first day and last day claims ...
         const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates({
           location: travelSegment.arrivalLocation,
-          arrivalAt: travelSegment.departureAt,
-          departureAt,
+          segmentStartAt,
+          segmentEndAt,
         })
         estimates.push(...mealsAndIncidentalsEstimates)
       }
@@ -155,28 +156,18 @@ export class BulkGenerateService extends BaseService {
 
   private async buildMealsAndIncidentalsEstimates({
     location,
-    arrivalAt,
-    departureAt,
+    segmentStartAt,
+    segmentEndAt,
   }: {
     location: Location
-    arrivalAt: Date
-    departureAt: Date
+    segmentStartAt: Date
+    segmentEndAt: Date
   }): Promise<CreationAttributes<Expense>[]> {
-    const numberOfDays = BulkGenerate.calculateNumberOfDays(arrivalAt, departureAt)
+    const claimsPerDay = BulkGenerate.determineClaimsPerDay(segmentStartAt, segmentEndAt)
 
     let estimates = []
-    for (let index = 0; index < numberOfDays; index += 1) {
-      let stayedAtStartOfDay = clone(arrivalAt)
-      stayedAtStartOfDay.setDate(arrivalAt.getDate() + index)
-      stayedAtStartOfDay.setHours(0, 0, 0, 0)
-      const stayedAt = max([arrivalAt, stayedAtStartOfDay]) as Date
-
-      if (stayedAt.getTime() > departureAt.getTime()) {
-        throw new Error("Stayed at date cannot be after departure date")
-      }
-
+    for (let { date, claims } of claimsPerDay) {
       const province = location.province
-      const claims = BulkGenerate.determineClaimTypes(stayedAt, departureAt)
       const description = claims.join("/")
       const cost = await this.determinePerDiemCost(province, claims)
       if (isNil(cost)) {
@@ -190,7 +181,7 @@ export class BulkGenerateService extends BaseService {
         expenseType: Expense.ExpenseTypes.MEALS_AND_INCIDENTALS,
         description,
         cost,
-        date: stayedAt,
+        date,
       })
     }
 

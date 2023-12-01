@@ -3,11 +3,10 @@ import { BulkGenerateService } from "@/services/estimates"
 import {
   locationFactory,
   perDiemFactory,
-  stopFactory,
   travelAuthorizationFactory,
   travelSegmentFactory,
 } from "@/factories"
-import { PerDiem, Stop, TravelSegment } from "@/models"
+import { PerDiem, Stop } from "@/models"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
@@ -114,16 +113,16 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Breakfast/Lunch/Dinner",
             date: "2022-06-05",
-            cost: 123.4,
+            cost: 106.1,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Breakfast/Lunch/Dinner/Incidentals",
             date: "2022-06-06",
             cost: 123.4,
             currency: "CAD",
@@ -132,9 +131,9 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily", // in future will be "Breakfast/Lunch" see https://github.com/icefoganalytics/travel-authorization/issues/121
+            description: "Breakfast/Incidentals", // in future will be "Breakfast/Lunch" see https://github.com/icefoganalytics/travel-authorization/issues/121
             date: "2022-06-07",
-            cost: 123.4, //  in future will be 46.7 see https://github.com/icefoganalytics/travel-authorization/issues/121
+            cost: 40.9, //  in future will be 46.7 see https://github.com/icefoganalytics/travel-authorization/issues/121
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
@@ -226,16 +225,16 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Breakfast/Lunch/Dinner",
             date: "2022-06-05",
-            cost: 123.4,
+            cost: 106.1,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Breakfast/Lunch/Dinner/Incidentals",
             date: "2022-06-06",
             cost: 123.4,
             currency: "CAD",
@@ -244,9 +243,9 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily", // in future will be "Breakfast/Lunch" see https://github.com/icefoganalytics/travel-authorization/issues/121
+            description: "Breakfast/Lunch/Dinner/Incidentals",
             date: "2022-06-07",
-            cost: 123.4, //  in future will be 46.7 see https://github.com/icefoganalytics/travel-authorization/issues/121
+            cost: 123.4,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
