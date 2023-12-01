@@ -41,7 +41,8 @@ export function determineClaimsPerDay(travelStartAt: Date, travelEndAt: Date): C
       const startHour = currentDate.getHours()
       dayClaims = firstDayClaimTypes(startHour)
     } else if (isLastDay) {
-      const endHour = travelEndAt.getHours()
+      currentDate = new Date(travelEndAt)
+      const endHour = currentDate.getHours()
       dayClaims = lastDayClaimTypes(endHour)
     } else {
       dayClaims = middleDayClaimTypes()

@@ -47,7 +47,7 @@ describe("api/src/services/estimates/bulk-generate/determine-claims-per-day.ts",
           ],
         },
         {
-          date: new Date("2022-06-07"),
+          date: new Date("2022-06-07 15:00"),
           claims: [ClaimTypes.BREAKFAST, ClaimTypes.LUNCH, ClaimTypes.INCIDENTALS],
         },
       ])
@@ -66,7 +66,7 @@ describe("api/src/services/estimates/bulk-generate/determine-claims-per-day.ts",
       },
       {
         travelStartAt: new Date("2021-01-01"),
-        travelEndAt: new Date("2021-01-01 23:59:59"),
+        travelEndAt: new Date("2021-01-01 23:59"),
         expected: [
           {
             date: new Date("2021-01-01"),
@@ -90,14 +90,14 @@ describe("api/src/services/estimates/bulk-generate/determine-claims-per-day.ts",
       },
       {
         travelStartAt: new Date("2021-01-01"),
-        travelEndAt: new Date("2021-01-02 23:59:59"),
+        travelEndAt: new Date("2021-01-02 23:59"),
         expected: [
           {
             date: new Date("2021-01-01"),
             claims: firstDayClaimTypes(0),
           },
           {
-            date: new Date("2021-01-02"),
+            date: new Date("2021-01-02 23:59"),
             claims: lastDayClaimTypes(23),
           },
         ],
@@ -152,7 +152,7 @@ describe("api/src/services/estimates/bulk-generate/determine-claims-per-day.ts",
     test("when given a random start time, maps to start hour", () => {
       const startTime = anytime()
       const travelStartAt = new Date(`2021-01-01 ${startTime}`)
-      const travelEndAt = new Date("2021-01-01 23:59:59")
+      const travelEndAt = new Date("2021-01-01 23:59")
 
       expect(determineClaimsPerDay(travelStartAt, travelEndAt)).toEqual([
         {
@@ -173,7 +173,7 @@ describe("api/src/services/estimates/bulk-generate/determine-claims-per-day.ts",
           claims: firstDayClaimTypes(0),
         },
         {
-          date: new Date("2021-01-02"),
+          date: travelEndAt,
           claims: lastDayClaimTypes(travelEndAt.getHours()),
         },
       ])
