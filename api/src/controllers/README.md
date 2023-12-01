@@ -47,9 +47,7 @@ export class GenerateController extends BaseController {
 
 ```typescript
 // api/src/controllers/forms/estimates/index.ts
-export * from "./generate-controller"
-
-export default undefined
+export { GenerateController } from "./generate-controller"
 ```
 
 ```typescript

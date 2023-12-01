@@ -1,10 +1,8 @@
-export * from "./expenses-policy"
-export * from "./travel-authorizations-policy"
-export * from "./users-policy"
+export { ExpensesPolicy } from "./expenses-policy"
+export { TravelAuthorizationsPolicy } from "./travel-authorizations-policy"
+export { UsersPolicy } from "./users-policy"
 
 // Namespaced policies
 import * as TravelAuthorizations from "./travel-authorizations"
 
 export { TravelAuthorizations }
-
-export default undefined

@@ -1,6 +1,4 @@
-export * from './expenses-serializer'
-export * from './stops-serializer'
-export * from './travel-authorizations-serializer'
-export * from './users-serializer'
-
-export default undefined
+export { ExpensesSerializer } from "./expenses-serializer"
+export { StopsSerializer } from "./stops-serializer"
+export { TravelAuthorizationsSerializer } from "./travel-authorizations-serializer"
+export { UsersSerializer } from "./users-serializer"

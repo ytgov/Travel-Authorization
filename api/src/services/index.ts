@@ -1,9 +1,9 @@
-export * from "./audit-service"
-export * from "./distance-matrix-service"
-export * from "./expenses-service"
-export * from "./form-service"
-export * from "./stops-service"
-export * from "./yk-government-directory-sync-service"
+export { AuditService } from "./audit-service"
+export { DistanceMatrixService } from "./distance-matrix-service"
+export { ExpensesService } from "./expenses-service"
+export { FormService } from "./form-service"
+export { StopsService } from "./stops-service"
+export { YkGovernmentDirectorySyncService } from "./yk-government-directory-sync-service"
 
 // Namespaced services
 import * as Estimates from "./estimates"
@@ -30,5 +30,3 @@ export enum SortDirection {
   ASCENDING = "asc",
   DESCENDING = "desc",
 }
-
-export default undefined

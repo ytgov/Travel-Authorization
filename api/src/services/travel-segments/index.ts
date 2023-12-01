@@ -1,3 +1,1 @@
-export * from "./bulk-replace-service"
-
-export default undefined
+export { BulkReplaceService } from "./bulk-replace-service"

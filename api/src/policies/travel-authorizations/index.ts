@@ -1,4 +1,2 @@
-export * from "./approve-policy"
-export * from "./deny-policy"
-
-export default undefined
+export { ApprovePolicy } from "./approve-policy"
+export { DenyPolicy } from "./deny-policy"

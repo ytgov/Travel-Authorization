@@ -1,4 +1,2 @@
-export * from "./calculate-number-of-days"
-export * from "./calculate-number-of-nights"
-
-export default undefined
+export { calculateNumberOfDays } from "./calculate-number-of-days"
+export { calculateNumberOfNights } from "./calculate-number-of-nights"

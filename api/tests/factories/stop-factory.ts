@@ -3,7 +3,8 @@ import { faker } from "@faker-js/faker"
 import { isNil } from "lodash"
 
 import { Stop } from "@/models"
-import { anytime, locationFactory, travelAuthorizationFactory } from "@/factories"
+import { locationFactory, travelAuthorizationFactory } from "@/factories"
+import { anytime } from "./helpers"
 
 export const stopFactory = Factory.define<Stop>(({ associations, onCreate }) => {
   onCreate(async (stop) => {
