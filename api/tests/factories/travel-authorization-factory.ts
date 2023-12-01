@@ -3,7 +3,8 @@ import { faker } from "@faker-js/faker"
 import { isNil } from "lodash"
 
 import { TravelAuthorization } from "@/models"
-import { travelPurposeFactory, POSTGRES_INT_4_MAX, userFactory, presence } from "@/factories"
+import { travelPurposeFactory, userFactory } from "@/factories"
+import { POSTGRES_INT_4_MAX, presence } from "./helpers"
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
   ({ associations, params, transientParams, onCreate }) => {

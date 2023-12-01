@@ -2,7 +2,8 @@ import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 
 import { TravelSegment } from "@/models"
-import { anytime, locationFactory, presence, travelAuthorizationFactory } from "@/factories"
+import { locationFactory, travelAuthorizationFactory } from "@/factories"
+import { anytime, presence } from "./helpers"
 
 export const travelSegmentFactory = Factory.define<TravelSegment>(
   ({ associations, params, onCreate }) => {

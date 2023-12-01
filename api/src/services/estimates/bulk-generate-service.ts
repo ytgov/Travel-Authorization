@@ -2,11 +2,9 @@ import { clone, isNil, max, min, times } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
 import {
-  ClaimTypes,
   DistanceMatrix,
   Expense,
   Location,
-  LocationTypes,
   PerDiem,
   Stop,
   TravelSegment,
@@ -14,6 +12,7 @@ import {
 
 import BaseService from "@/services/base-service"
 import { BulkGenerate } from "@/services/estimates"
+import { ClaimTypes, LocationTypes } from "@/models/per-diem"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350

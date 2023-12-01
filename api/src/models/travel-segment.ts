@@ -19,16 +19,15 @@ import Location from "./location"
 import Stop from "./stop"
 import TravelAuthorization from "./travel-authorization"
 
-enum FallbackTimes {
+export enum FallbackTimes {
   BEGINNING_OF_DAY = "00:00:00",
   END_OF_DAY = "23:59:59",
 }
 
 // Keep in sync with web/src/api/stops-api.js
 // Until both are using a shared location
-// Avoid exporting here, and instead expose via the model to avoid naming conflicts
 // TODO: normalize casing of these to snake_case, and add UI localization
-enum TravelMethods {
+export enum TravelMethods {
   AIRCRAFT = "Aircraft",
   POOL_VEHICLE = "Pool Vehicle",
   PERSONAL_VEHICLE = "Personal Vehicle",
@@ -39,9 +38,8 @@ enum TravelMethods {
 
 // Keep in sync with web/src/api/stops-api.js
 // Until both are using a shared location
-// Avoid exporting here, and instead expose via the model to avoid naming conflicts
 // TODO: normalize casing of these to snake_case, and add UI localization
-enum AccommodationTypes {
+export enum AccommodationTypes {
   HOTEL = "Hotel",
   PRIVATE = "Private",
   OTHER = "Other", // value stored in accommodationTypeOther

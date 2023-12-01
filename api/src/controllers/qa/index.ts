@@ -1,7 +1,4 @@
-export * from "./scenarios-controller"
+export { ScenariosController } from "./scenarios-controller"
+export { ScenarioTypes } from "./scenario-types"
 
-import * as Scenarios from "./scenarios"
-
-export { Scenarios }
-
-export default undefined
+export * as Scenarios from "./scenarios"

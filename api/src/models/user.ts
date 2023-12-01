@@ -23,8 +23,7 @@ import moment from "moment"
 import sequelize from "@/db/db-client"
 import TravelAuthorization from "./travel-authorization"
 
-// Avoid exporting here, and instead expose via the User model to avoid naming conflicts
-enum Roles {
+export enum Roles {
   ADMIN = "admin",
   USER = "user",
   PAT_ADMIN = "pat_admin",
@@ -32,8 +31,7 @@ enum Roles {
   TD_USER = "td_user",
 }
 
-// Avoid exporting here, and instead expose via the User model to avoid naming conflicts
-enum Statuses {
+export enum Statuses {
   ACTIVE = "active",
   INACTIVE = "inactive",
 }

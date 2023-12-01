@@ -1,3 +1,1 @@
-export * from "./my-travel-requests-service"
-
-export default undefined
+export { MyTravelRequestsService } from "./my-travel-requests-service"

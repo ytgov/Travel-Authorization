@@ -1,3 +1,1 @@
-export * from "./bulk-convert-stops-to-travel-segments-service"
-
-export default undefined
+export { BulkConvertStopsToTravelSegmentsService } from "./bulk-convert-stops-to-travel-segments-service"
