@@ -14,25 +14,25 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
       await perDiemFactory.create({
         claim: PerDiem.ClaimTypes.INCIDENTALS,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 17.30,
+        amount: 17.3,
         currency: PerDiem.CurrencyTypes.CAD,
       })
       await perDiemFactory.create({
         claim: PerDiem.ClaimTypes.BREAKFAST,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 23.60,
+        amount: 23.6,
         currency: PerDiem.CurrencyTypes.CAD,
       })
       await perDiemFactory.create({
         claim: PerDiem.ClaimTypes.LUNCH,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 23.90,
+        amount: 23.9,
         currency: PerDiem.CurrencyTypes.CAD,
       })
       await perDiemFactory.create({
         claim: PerDiem.ClaimTypes.DINNER,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 58.60,
+        amount: 58.6,
         currency: PerDiem.CurrencyTypes.CAD,
       })
     })
@@ -67,7 +67,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           {
             segmentNumber: 2,
             departureOn: new Date("2022-06-07"),
-            departureTime: "12:00:00",
+            departureTime: "15:00:00",
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
             accommodationType: null,
           },
@@ -115,6 +115,15 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
+            description: "Aircraft from Vancouver to Whitehorse",
+            date: "2022-06-07",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
             description: "Breakfast/Lunch/Dinner",
             date: "2022-06-05",
             cost: 106.1,
@@ -133,21 +142,12 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Breakfast/Incidentals", // in future will be "Breakfast/Lunch" see https://github.com/icefoganalytics/travel-authorization/issues/121
+            description: "Breakfast/Lunch/Incidentals",
             date: "2022-06-07",
-            cost: 40.9, //  in future will be 46.7 see https://github.com/icefoganalytics/travel-authorization/issues/121
+            cost: 64.8,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
-          }),
-          expect.objectContaining({
-            travelAuthorizationId: travelAuthorization.id,
-            description: "Aircraft from Vancouver to Whitehorse",
-            date: "2022-06-07",
-            cost: 350.0,
-            currency: "CAD",
-            type: "Estimate",
-            expenseType: "Transportation",
           }),
         ])
       })
@@ -229,6 +229,15 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
+            description: "Aircraft from Vancouver to Whitehorse",
+            date: "2022-06-07",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
             description: "Breakfast/Lunch/Dinner",
             date: "2022-06-05",
             cost: 106.1,
@@ -253,15 +262,6 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
-          }),
-          expect.objectContaining({
-            travelAuthorizationId: travelAuthorization.id,
-            description: "Aircraft from Vancouver to Whitehorse",
-            date: "2022-06-07",
-            cost: 350.0,
-            currency: "CAD",
-            type: "Estimate",
-            expenseType: "Transportation",
           }),
         ])
       })

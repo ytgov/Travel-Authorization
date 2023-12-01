@@ -6,7 +6,6 @@ import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from 
 import BaseService from "@/services/base-service"
 import { BulkGenerate } from "@/services/estimates"
 import { ClaimTypes, LocationTypes } from "@/models/per-diem"
-import { middleDayClaimTypes } from "./bulk-generate/determine-claims-per-day"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
@@ -17,12 +16,16 @@ const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 export class BulkGenerateService extends BaseService {
   private travelAuthorizationId: number
   private travelSegments: TravelSegment[]
+  private firstTravelSegment: TravelSegment
+  private lastTravelSegment: TravelSegment
   private aircraftAllowanceRemaining: number
 
   constructor(travelAuthorizationId: number, travelSegments: TravelSegment[]) {
     super()
     this.travelAuthorizationId = travelAuthorizationId
     this.travelSegments = travelSegments
+    this.firstTravelSegment = this.travelSegments[0]
+    this.lastTravelSegment = this.travelSegments[this.travelSegments.length - 1]
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
@@ -68,30 +71,11 @@ export class BulkGenerateService extends BaseService {
         estimates.push(...accommodationEstimates)
       }
 
-      if (!isNil(nextTravelSegment)) {
-        const segmentStartAt = travelSegment.departureAtWithTimeFallback(
-          TravelSegment.FallbackTimes.BEGINNING_OF_DAY
-        )
-        const segmentEndAt = nextTravelSegment.departureAtWithTimeFallback(
-          TravelSegment.FallbackTimes.END_OF_DAY
-        )
-        if (isNil(segmentStartAt)) {
-          throw new Error(`Missing departure date on TravelSegment#${nextTravelSegment.id}`)
-        }
-        if (isNil(segmentEndAt)) {
-          throw new Error(`Missing departure date on TravelSegment#${nextTravelSegment.id}`)
-        }
-        // TODO: accommodate first day and last day claims ...
-        const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates({
-          location: travelSegment.arrivalLocation,
-          segmentStartAt,
-          segmentEndAt,
-        })
-        estimates.push(...mealsAndIncidentalsEstimates)
-      }
-
       index += 1
     }
+
+    const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates()
+    estimates.push(...mealsAndIncidentalsEstimates)
 
     return Expense.bulkCreate(estimates)
   }
@@ -154,19 +138,30 @@ export class BulkGenerateService extends BaseService {
     })
   }
 
-  private async buildMealsAndIncidentalsEstimates({
-    location,
-    segmentStartAt,
-    segmentEndAt,
-  }: {
-    location: Location
-    segmentStartAt: Date
-    segmentEndAt: Date
-  }): Promise<CreationAttributes<Expense>[]> {
-    const claimsPerDay = BulkGenerate.determineClaimsPerDay(segmentStartAt, segmentEndAt)
+  private async buildMealsAndIncidentalsEstimates(): Promise<CreationAttributes<Expense>[]> {
+    const travelStartAt = this.firstTravelSegment.departureAtWithTimeFallback(
+      TravelSegment.FallbackTimes.BEGINNING_OF_DAY
+    )
+    const travelEndAt = this.lastTravelSegment.departureAtWithTimeFallback(
+      TravelSegment.FallbackTimes.END_OF_DAY
+    )
+    if (isNil(travelStartAt)) {
+      throw new Error(`Missing departure date on TravelSegment#${this.firstTravelSegment.id}`)
+    }
+    if (isNil(travelEndAt)) {
+      throw new Error(`Missing departure date on TravelSegment#${this.lastTravelSegment.id}`)
+    }
+
+    const claimsPerDay = BulkGenerate.determineClaimsPerDay(travelStartAt, travelEndAt)
 
     let estimates = []
     for (let { date, claims } of claimsPerDay) {
+      // trueEndDate is a hack because my brain is fried
+      // I'm probably doing something conceptually wrong here
+      // maybe I should be setting the fallback time travel segment separately?
+      const trueEndDate = min([date, this.lastTravelSegment.departureAt]) as Date
+
+      const location = BulkGenerate.determineLocationFromDate(this.travelSegments, trueEndDate)
       const province = location.province
       const description = claims.join("/")
       const cost = await this.determinePerDiemCost(province, claims)
