@@ -176,7 +176,7 @@ export class BulkGenerateService extends BaseService {
       }
 
       const province = location.province
-      const claims = this.determineClaimTypes(stayedAt, departureAt)
+      const claims = BulkGenerate.determineClaimTypes(stayedAt, departureAt)
       const description = claims.join("/")
       const cost = await this.determinePerDiemCost(province, claims)
       if (isNil(cost)) {
@@ -249,34 +249,6 @@ export class BulkGenerateService extends BaseService {
     }
   }
 
-  // Assuming a meal every 4 hours
-  // e.g 0, 4, 8 so any 8 hour period is a "full day"
-  // Assuming you can only claim the max daily after 12 hours
-  private determineClaimTypes(stayedAt: Date, departureAt: Date): ClaimTypes[] {
-    let leftAtEndOfDay = clone(stayedAt)
-    leftAtEndOfDay.setHours(23, 59, 59, 999)
-    const leftAt = min([leftAtEndOfDay, departureAt]) as Date
-
-    const startAtHour = stayedAt.getHours()
-    const hoursBetweenDates = this.calculateHoursBetweenDates(stayedAt, leftAt)
-
-    if (hoursBetweenDates >= 12) {
-      return [ClaimTypes.MAXIMUM_DAILY]
-    } else if (hoursBetweenDates >= 8) {
-      return [ClaimTypes.BREAKFAST, ClaimTypes.LUNCH, ClaimTypes.DINNER]
-    } else if (startAtHour < 11 && hoursBetweenDates >= 4) {
-      return [ClaimTypes.BREAKFAST, ClaimTypes.LUNCH]
-    } else if (startAtHour < 11) {
-      return [ClaimTypes.BREAKFAST]
-    } else if (startAtHour < 16 && hoursBetweenDates >= 4) {
-      return [ClaimTypes.LUNCH, ClaimTypes.DINNER]
-    } else if (startAtHour < 16) {
-      return [ClaimTypes.LUNCH]
-    } else {
-      return [ClaimTypes.DINNER]
-    }
-  }
-
   private async determinePerDiemCost(province: string, claims: ClaimTypes[]): Promise<number> {
     const location = this.determineLocationFromProvince(province)
 
@@ -288,24 +260,18 @@ export class BulkGenerateService extends BaseService {
     })
   }
 
-  private calculateHoursBetweenDates(startDate: Date, endDate: Date): number {
-    const millisecondsPerHour = 1000 * 60 * 60
-    const differenceInMilliseconds = endDate.getTime() - startDate.getTime()
-    return differenceInMilliseconds / millisecondsPerHour
-  }
-
   private determineLocationFromProvince(province: string): LocationTypes {
     switch (province) {
       case "YT":
-        return LocationTypes.YUKON
+        return PerDiem.LocationTypes.YUKON
       case "NT":
-        return LocationTypes.NWT
+        return PerDiem.LocationTypes.NWT
       case "NU":
-        return LocationTypes.NUNAVUT
+        return PerDiem.LocationTypes.NUNAVUT
       // TODO: Handle Alaska and the US in the future
       // I don't see any destination data for this yet, so leaving for now.
       default:
-        return LocationTypes.CANADA
+        return PerDiem.LocationTypes.CANADA
     }
   }
 }

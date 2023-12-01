@@ -11,6 +11,7 @@ import sequelize from "@/db/db-client"
 export enum ClaimTypes {
   LUNCH = "Lunch",
   MAXIMUM_DAILY = "Maximum Daily",
+  // TODO: add incidentals into the dataset??
   PRIVATE_ACCOMMODATIONS = "Private Accommodations",
   DINNER = "Dinner",
   BREAKFAST = "Breakfast",
