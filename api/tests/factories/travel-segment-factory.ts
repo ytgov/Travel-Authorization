@@ -40,7 +40,7 @@ export const travelSegmentFactory = Factory.define<TravelSegment>(
     )
 
     return TravelSegment.build({
-      segmentNumber: faker.number.int({ min: 0, max: 3 }),
+      segmentNumber: faker.number.int({ min: 0, max: 100 }),
       departureOn: faker.date.soon(),
       departureTime: anytime(),
       modeOfTransport,
