@@ -49,6 +49,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
         const travelSegment1 = await travelSegmentFactory.create(
           {
+            segmentNumber: 1,
             departureOn: new Date("2022-06-05"),
             departureTime: Stop.BEGINNING_OF_DAY,
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
@@ -64,6 +65,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         )
         const travelSegment2 = await travelSegmentFactory.create(
           {
+            segmentNumber: 2,
             departureOn: new Date("2022-06-07"),
             departureTime: "12:00:00",
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
@@ -161,6 +163,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
         const travelSegment1 = await travelSegmentFactory.create(
           {
+            segmentNumber: 1,
             departureOn: new Date("2022-06-05"),
             departureTime: null,
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
@@ -176,6 +179,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         )
         const travelSegment2 = await travelSegmentFactory.create(
           {
+            segmentNumber: 2,
             departureOn: new Date("2022-06-07"),
             departureTime: null,
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
