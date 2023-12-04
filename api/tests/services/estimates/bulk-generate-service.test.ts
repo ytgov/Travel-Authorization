@@ -13,27 +13,27 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
     beforeEach(async () => {
       await perDiemFactory.create({
-        claim: PerDiem.ClaimTypes.MAXIMUM_DAILY,
+        claim: PerDiem.ClaimTypes.INCIDENTALS,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 123.4,
+        amount: 17.30,
         currency: PerDiem.CurrencyTypes.CAD,
       })
       await perDiemFactory.create({
         claim: PerDiem.ClaimTypes.BREAKFAST,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 23.6,
+        amount: 23.60,
         currency: PerDiem.CurrencyTypes.CAD,
       })
       await perDiemFactory.create({
         claim: PerDiem.ClaimTypes.LUNCH,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 23.9,
+        amount: 23.90,
         currency: PerDiem.CurrencyTypes.CAD,
       })
       await perDiemFactory.create({
         claim: PerDiem.ClaimTypes.DINNER,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 58.6,
+        amount: 58.60,
         currency: PerDiem.CurrencyTypes.CAD,
       })
     })

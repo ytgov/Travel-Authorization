@@ -4,7 +4,7 @@ import Papa from "papaparse"
 
 import { Location } from "@/models"
 
-export async function seedUp() {
+export async function locationsSeeds() {
   const fileName = path.resolve(__dirname, "./locations-seeds.csv")
   const fileContent = fs.readFileSync(fileName, "utf8")
   const { data } = Papa.parse<{ province: string; city: string }>(fileContent, {
@@ -15,3 +15,5 @@ export async function seedUp() {
   await Location.destroy({ where: {} })
   await Location.bulkCreate(data)
 }
+
+export default locationsSeeds
