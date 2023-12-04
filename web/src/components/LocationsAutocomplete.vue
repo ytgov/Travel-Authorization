@@ -3,6 +3,7 @@
     :value="value"
     :items="locationsAsSelectorListByRestriction"
     :loading="isLoading"
+    auto-select-first
     v-bind="$attrs"
     @input="onInput"
   />

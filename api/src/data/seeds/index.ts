@@ -4,7 +4,8 @@ import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose, User
 
 import dbLegacy from "@/db/db-client-legacy"
 
-import { seedUp as locationsSeedUp } from "./locations-seeds"
+import { locationsSeeds } from "./locations-seeds"
+import { perDiemSeeds } from "./per-diem-seeds"
 
 export async function seedUp() {
   await User.update({ roles: [User.Roles.USER] }, { where: {} })
@@ -64,7 +65,7 @@ export async function seedUp() {
     },
   ])
 
-  await locationsSeedUp()
+  await locationsSeeds()
 
   // INSERT INTO public.forms ("userId","firstName","lastName",department,division,branch,unit,email,mailcode,"daysOffTravelStatus","dateBackToWork","travelDuration",purpose,"travelAdvance","eventName",summary,benefits,status,"formId","supervisorEmail","preappId",approved,"requestChange","denialReason","oneWayTrip","multiStop","createdBy") VALUES
   //  (2,'Max','Parker','Highways and Public Works',NULL,NULL,NULL,'max.parker@yukon.ca',NULL,NULL,'2023-03-18',10,'Conference',1,'Global Biotechnology Summit',NULL,NULL,'Approved','1',NULL,1,NULL,NULL,NULL,false,true,NULL),
@@ -2402,165 +2403,7 @@ export async function seedUp() {
     },
   ])
 
-  await dbLegacy("perDiems").delete().whereRaw("1=1")
-  await dbLegacy("perDiems").insert([
-    {
-      claim: "Maximum Daily",
-      location: "Yukon",
-      amount: 128.45,
-      currency: "CAD",
-    },
-    {
-      claim: "Maximum Daily",
-      location: "NWT",
-      amount: 146.24,
-      currency: "CAD",
-    },
-    {
-      claim: "Maximum Daily",
-      location: "Nunavut",
-      amount: 178.45,
-      currency: "CAD",
-    },
-    {
-      claim: "Maximum Daily",
-      location: "Canada",
-      amount: 123.4,
-      currency: "CAD",
-    },
-    {
-      claim: "Maximum Daily",
-      location: "Alaska",
-      amount: 128.45,
-      currency: "USD",
-    },
-    {
-      claim: "Maximum Daily",
-      location: "US",
-      amount: 178.45,
-      currency: "USD",
-    },
-    {
-      claim: "Breakfast",
-      location: "Yukon",
-      amount: 24.35,
-      currency: "CAD",
-    },
-    {
-      claim: "Breakfast",
-      location: "NWT",
-      amount: 26.8,
-      currency: "CAD",
-    },
-    {
-      claim: "Breakfast",
-      location: "Nunavut",
-      amount: 29.6,
-      currency: "CAD",
-    },
-    {
-      claim: "Breakfast",
-      location: "Canada",
-      amount: 23.6,
-      currency: "CAD",
-    },
-    {
-      claim: "Breakfast",
-      location: "Alaska",
-      amount: 24.35,
-      currency: "USD",
-    },
-    {
-      claim: "Breakfast",
-      location: "US",
-      amount: 23.6,
-      currency: "USD",
-    },
-    {
-      claim: "Lunch",
-      location: "Yukon",
-      amount: 22.35,
-      currency: "CAD",
-    },
-    {
-      claim: "Lunch",
-      location: "NWT",
-      amount: 32.25,
-      currency: "CAD",
-    },
-    {
-      claim: "Lunch",
-      location: "Nunavut",
-      amount: 35.9,
-      currency: "CAD",
-    },
-    {
-      claim: "Lunch",
-      location: "Canada",
-      amount: 23.9,
-      currency: "CAD",
-    },
-    {
-      claim: "Lunch",
-      location: "Alaska",
-      amount: 22.35,
-      currency: "USD",
-    },
-    {
-      claim: "Lunch",
-      location: "US",
-      amount: 23.9,
-      currency: "USD",
-    },
-    {
-      claim: "Dinner",
-      location: "Yukon",
-      amount: 64.45,
-      currency: "CAD",
-    },
-    {
-      claim: "Dinner",
-      location: "NWT",
-      amount: 69.3,
-      currency: "CAD",
-    },
-    {
-      claim: "Dinner",
-      location: "Nunavut",
-      amount: 95.65,
-      currency: "CAD",
-    },
-    {
-      claim: "Dinner",
-      location: "Canada",
-      amount: 58.6,
-      currency: "CAD",
-    },
-    {
-      claim: "Dinner",
-      location: "Alaska",
-      amount: 64.45,
-      currency: "USD",
-    },
-    {
-      claim: "Dinner",
-      location: "US",
-      amount: 58.6,
-      currency: "USD",
-    },
-    {
-      claim: "Private Accommodations",
-      location: "Canada",
-      amount: 50.0,
-      currency: "CAD",
-    },
-    {
-      claim: "Private Accommodations",
-      location: "US",
-      amount: 50.0,
-      currency: "USD",
-    },
-  ])
+  await perDiemSeeds()
 
   await TravelDeskTravelRequest.destroy({ where: {} })
 

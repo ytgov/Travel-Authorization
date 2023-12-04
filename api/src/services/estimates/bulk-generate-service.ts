@@ -1,14 +1,7 @@
 import { clone, isNil, max, min, times } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
-import {
-  DistanceMatrix,
-  Expense,
-  Location,
-  PerDiem,
-  Stop,
-  TravelSegment,
-} from "@/models"
+import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from "@/models"
 
 import BaseService from "@/services/base-service"
 import { BulkGenerate } from "@/services/estimates"
@@ -23,12 +16,16 @@ const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 export class BulkGenerateService extends BaseService {
   private travelAuthorizationId: number
   private travelSegments: TravelSegment[]
+  private firstTravelSegment: TravelSegment
+  private lastTravelSegment: TravelSegment
   private aircraftAllowanceRemaining: number
 
   constructor(travelAuthorizationId: number, travelSegments: TravelSegment[]) {
     super()
     this.travelAuthorizationId = travelAuthorizationId
     this.travelSegments = travelSegments
+    this.firstTravelSegment = this.travelSegments[0]
+    this.lastTravelSegment = this.travelSegments[this.travelSegments.length - 1]
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
@@ -62,7 +59,7 @@ export class BulkGenerateService extends BaseService {
       if (!isNil(accommodationType) && !isNil(nextTravelSegment)) {
         const accommodationDepartureAt = nextTravelSegment.departureAt
         if (isNil(accommodationDepartureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
+          throw new Error(`Missing departure date on TravelSegment#${nextTravelSegment.id}`)
         }
 
         const accommodationEstimates = this.buildAccommodationEstimates({
@@ -74,23 +71,11 @@ export class BulkGenerateService extends BaseService {
         estimates.push(...accommodationEstimates)
       }
 
-      if (!isNil(nextTravelSegment)) {
-        const departureAt = nextTravelSegment.departureAtWithTimeFallback(
-          TravelSegment.FallbackTimes.END_OF_DAY
-        )
-        if (isNil(departureAt)) {
-          throw new Error(`Missing departure date on Stop#${nextTravelSegment.id}`)
-        }
-        const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates({
-          location: travelSegment.arrivalLocation,
-          arrivalAt: travelSegment.departureAt,
-          departureAt,
-        })
-        estimates.push(...mealsAndIncidentalsEstimates)
-      }
-
       index += 1
     }
+
+    const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates()
+    estimates.push(...mealsAndIncidentalsEstimates)
 
     return Expense.bulkCreate(estimates)
   }
@@ -153,30 +138,31 @@ export class BulkGenerateService extends BaseService {
     })
   }
 
-  private async buildMealsAndIncidentalsEstimates({
-    location,
-    arrivalAt,
-    departureAt,
-  }: {
-    location: Location
-    arrivalAt: Date
-    departureAt: Date
-  }): Promise<CreationAttributes<Expense>[]> {
-    const numberOfDays = BulkGenerate.calculateNumberOfDays(arrivalAt, departureAt)
+  private async buildMealsAndIncidentalsEstimates(): Promise<CreationAttributes<Expense>[]> {
+    const travelStartAt = this.firstTravelSegment.departureAtWithTimeFallback(
+      TravelSegment.FallbackTimes.BEGINNING_OF_DAY
+    )
+    const travelEndAt = this.lastTravelSegment.departureAtWithTimeFallback(
+      TravelSegment.FallbackTimes.END_OF_DAY
+    )
+    if (isNil(travelStartAt)) {
+      throw new Error(`Missing departure date on TravelSegment#${this.firstTravelSegment.id}`)
+    }
+    if (isNil(travelEndAt)) {
+      throw new Error(`Missing departure date on TravelSegment#${this.lastTravelSegment.id}`)
+    }
+
+    const claimsPerDay = BulkGenerate.determineClaimsPerDay(travelStartAt, travelEndAt)
 
     let estimates = []
-    for (let index = 0; index < numberOfDays; index += 1) {
-      let stayedAtStartOfDay = clone(arrivalAt)
-      stayedAtStartOfDay.setDate(arrivalAt.getDate() + index)
-      stayedAtStartOfDay.setHours(0, 0, 0, 0)
-      const stayedAt = max([arrivalAt, stayedAtStartOfDay]) as Date
+    for (let { date, claims } of claimsPerDay) {
+      // trueEndDate is a hack because my brain is fried
+      // I'm probably doing something conceptually wrong here
+      // maybe I should be setting the fallback time travel segment separately?
+      const trueEndDate = min([date, this.lastTravelSegment.departureAt]) as Date
 
-      if (stayedAt.getTime() > departureAt.getTime()) {
-        throw new Error("Stayed at date cannot be after departure date")
-      }
-
+      const location = BulkGenerate.determineLocationFromDate(this.travelSegments, trueEndDate)
       const province = location.province
-      const claims = this.determineClaimTypes(stayedAt, departureAt)
       const description = claims.join("/")
       const cost = await this.determinePerDiemCost(province, claims)
       if (isNil(cost)) {
@@ -190,7 +176,7 @@ export class BulkGenerateService extends BaseService {
         expenseType: Expense.ExpenseTypes.MEALS_AND_INCIDENTALS,
         description,
         cost,
-        date: stayedAt,
+        date,
       })
     }
 
@@ -249,34 +235,6 @@ export class BulkGenerateService extends BaseService {
     }
   }
 
-  // Assuming a meal every 4 hours
-  // e.g 0, 4, 8 so any 8 hour period is a "full day"
-  // Assuming you can only claim the max daily after 12 hours
-  private determineClaimTypes(stayedAt: Date, departureAt: Date): ClaimTypes[] {
-    let leftAtEndOfDay = clone(stayedAt)
-    leftAtEndOfDay.setHours(23, 59, 59, 999)
-    const leftAt = min([leftAtEndOfDay, departureAt]) as Date
-
-    const startAtHour = stayedAt.getHours()
-    const hoursBetweenDates = this.calculateHoursBetweenDates(stayedAt, leftAt)
-
-    if (hoursBetweenDates >= 12) {
-      return [ClaimTypes.MAXIMUM_DAILY]
-    } else if (hoursBetweenDates >= 8) {
-      return [ClaimTypes.BREAKFAST, ClaimTypes.LUNCH, ClaimTypes.DINNER]
-    } else if (startAtHour < 11 && hoursBetweenDates >= 4) {
-      return [ClaimTypes.BREAKFAST, ClaimTypes.LUNCH]
-    } else if (startAtHour < 11) {
-      return [ClaimTypes.BREAKFAST]
-    } else if (startAtHour < 16 && hoursBetweenDates >= 4) {
-      return [ClaimTypes.LUNCH, ClaimTypes.DINNER]
-    } else if (startAtHour < 16) {
-      return [ClaimTypes.LUNCH]
-    } else {
-      return [ClaimTypes.DINNER]
-    }
-  }
-
   private async determinePerDiemCost(province: string, claims: ClaimTypes[]): Promise<number> {
     const location = this.determineLocationFromProvince(province)
 
@@ -288,24 +246,18 @@ export class BulkGenerateService extends BaseService {
     })
   }
 
-  private calculateHoursBetweenDates(startDate: Date, endDate: Date): number {
-    const millisecondsPerHour = 1000 * 60 * 60
-    const differenceInMilliseconds = endDate.getTime() - startDate.getTime()
-    return differenceInMilliseconds / millisecondsPerHour
-  }
-
   private determineLocationFromProvince(province: string): LocationTypes {
     switch (province) {
       case "YT":
-        return LocationTypes.YUKON
+        return PerDiem.LocationTypes.YUKON
       case "NT":
-        return LocationTypes.NWT
+        return PerDiem.LocationTypes.NWT
       case "NU":
-        return LocationTypes.NUNAVUT
+        return PerDiem.LocationTypes.NUNAVUT
       // TODO: Handle Alaska and the US in the future
       // I don't see any destination data for this yet, so leaving for now.
       default:
-        return LocationTypes.CANADA
+        return PerDiem.LocationTypes.CANADA
     }
   }
 }

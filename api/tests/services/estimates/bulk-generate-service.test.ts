@@ -3,19 +3,18 @@ import { BulkGenerateService } from "@/services/estimates"
 import {
   locationFactory,
   perDiemFactory,
-  stopFactory,
   travelAuthorizationFactory,
   travelSegmentFactory,
 } from "@/factories"
-import { PerDiem, Stop, TravelSegment } from "@/models"
+import { PerDiem, Stop } from "@/models"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
     beforeEach(async () => {
       await perDiemFactory.create({
-        claim: PerDiem.ClaimTypes.MAXIMUM_DAILY,
+        claim: PerDiem.ClaimTypes.INCIDENTALS,
         location: PerDiem.LocationTypes.CANADA,
-        amount: 123.4,
+        amount: 17.3,
         currency: PerDiem.CurrencyTypes.CAD,
       })
       await perDiemFactory.create({
@@ -50,6 +49,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
         const travelSegment1 = await travelSegmentFactory.create(
           {
+            segmentNumber: 1,
             departureOn: new Date("2022-06-05"),
             departureTime: Stop.BEGINNING_OF_DAY,
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
@@ -65,8 +65,9 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         )
         const travelSegment2 = await travelSegmentFactory.create(
           {
+            segmentNumber: 2,
             departureOn: new Date("2022-06-07"),
-            departureTime: "12:00:00",
+            departureTime: "15:00:00",
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
             accommodationType: null,
           },
@@ -114,16 +115,25 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Aircraft from Vancouver to Whitehorse",
+            date: "2022-06-07",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Breakfast/Lunch/Dinner",
             date: "2022-06-05",
-            cost: 123.4,
+            cost: 106.1,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Breakfast/Lunch/Dinner/Incidentals",
             date: "2022-06-06",
             cost: 123.4,
             currency: "CAD",
@@ -132,21 +142,12 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily", // in future will be "Breakfast/Lunch" see https://github.com/icefoganalytics/travel-authorization/issues/121
+            description: "Breakfast/Lunch/Incidentals",
             date: "2022-06-07",
-            cost: 123.4, //  in future will be 46.7 see https://github.com/icefoganalytics/travel-authorization/issues/121
+            cost: 64.8,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
-          }),
-          expect.objectContaining({
-            travelAuthorizationId: travelAuthorization.id,
-            description: "Aircraft from Vancouver to Whitehorse",
-            date: "2022-06-07",
-            cost: 350.0,
-            currency: "CAD",
-            type: "Estimate",
-            expenseType: "Transportation",
           }),
         ])
       })
@@ -162,6 +163,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
         const travelSegment1 = await travelSegmentFactory.create(
           {
+            segmentNumber: 1,
             departureOn: new Date("2022-06-05"),
             departureTime: null,
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
@@ -177,6 +179,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         )
         const travelSegment2 = await travelSegmentFactory.create(
           {
+            segmentNumber: 2,
             departureOn: new Date("2022-06-07"),
             departureTime: null,
             modeOfTransport: Stop.TravelMethods.AIRCRAFT,
@@ -226,16 +229,25 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Aircraft from Vancouver to Whitehorse",
+            date: "2022-06-07",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Breakfast/Lunch/Dinner",
             date: "2022-06-05",
-            cost: 123.4,
+            cost: 106.1,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily",
+            description: "Breakfast/Lunch/Dinner/Incidentals",
             date: "2022-06-06",
             cost: 123.4,
             currency: "CAD",
@@ -244,21 +256,12 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            description: "Maximum Daily", // in future will be "Breakfast/Lunch" see https://github.com/icefoganalytics/travel-authorization/issues/121
+            description: "Breakfast/Lunch/Dinner/Incidentals",
             date: "2022-06-07",
-            cost: 123.4, //  in future will be 46.7 see https://github.com/icefoganalytics/travel-authorization/issues/121
+            cost: 123.4,
             currency: "CAD",
             type: "Estimate",
             expenseType: "Meals & Incidentals",
-          }),
-          expect.objectContaining({
-            travelAuthorizationId: travelAuthorization.id,
-            description: "Aircraft from Vancouver to Whitehorse",
-            date: "2022-06-07",
-            cost: 350.0,
-            currency: "CAD",
-            type: "Estimate",
-            expenseType: "Transportation",
           }),
         ])
       })
