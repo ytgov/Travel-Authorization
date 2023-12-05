@@ -1,9 +1,7 @@
 import { CreationAttributes } from "sequelize"
-import { sumBy } from "lodash"
+import { sortBy, reverse } from "lodash"
 
 import { Expense } from "@/models"
-
-const HOTEL_ALLOWANCE_PER_NIGHT = 250
 
 export function buildNonTravelStatusDaysCorrectingLine({
   estimates,
@@ -16,31 +14,53 @@ export function buildNonTravelStatusDaysCorrectingLine({
   travelAuthorizationId: number
   travelEndAt: Date
 }): CreationAttributes<Expense> {
-  const accommodationCostTotal = sumBy(estimates, (estimate) => {
-    if (estimate.expenseType === Expense.ExpenseTypes.ACCOMODATIONS) {
-      return estimate.cost
+  const estimatesByDateReversed = reverse(sortBy(estimates, "date"))
+
+  const accommodationEstimates = estimatesByDateReversed.filter(
+    (estimate) => estimate.expenseType === Expense.ExpenseTypes.ACCOMODATIONS
+  )
+  let accommodationReduction = 0
+  let accommodationReductionDays = 0
+  accommodationEstimates.forEach((estimate) => {
+    if (accommodationReductionDays >= daysOffTravelStatus) {
+      return
     }
-    return 0
-  })
-  const perDiemCostTotal = sumBy(estimates, (estimate) => {
-    if (estimate.expenseType === Expense.ExpenseTypes.MEALS_AND_INCIDENTALS) {
-      return estimate.cost
-    }
-    return 0
+
+    accommodationReduction += estimate.cost
+    accommodationReductionDays += 1
   })
 
-  const accommodationReduction = Math.min(
-    accommodationCostTotal,
-    daysOffTravelStatus * HOTEL_ALLOWANCE_PER_NIGHT
+  const perDiemEstimates = estimatesByDateReversed.filter(
+    (estimate) => estimate.expenseType === Expense.ExpenseTypes.MEALS_AND_INCIDENTALS
   )
-  const perDiemReduction = Math.min(perDiemCostTotal, daysOffTravelStatus * 777)
+  let perDiemReduction = 0
+  let perDiemReductionDays = 0
+  perDiemEstimates.forEach((estimate) => {
+    if (perDiemReductionDays >= daysOffTravelStatus) {
+      return
+    }
+
+    perDiemReduction += estimate.cost
+    perDiemReductionDays += 1
+  })
+
+  const formatter = new Intl.NumberFormat("en-CA", {
+    style: "decimal",
+    currency: "CAD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+  const perDiemReductionFormatted = formatter.format(perDiemReduction)
+  const perDiemReductionDetails = `${perDiemReductionDays} day @ non-travel status per diem = -${perDiemReductionFormatted}`
+  const accommodationReductionFormatted = formatter.format(accommodationReduction)
+  const accommodationReductionDetails = `${accommodationReductionDays} day @ non-travel status accomodation = -${accommodationReductionFormatted}`
 
   return {
     type: Expense.Types.ESTIMATE,
     expenseType: Expense.ExpenseTypes.NON_TRAVEL_STATUS,
     travelAuthorizationId,
     currency: "CAD",
-    description: `${daysOffTravelStatus} day @ non-travel status per diem = -${perDiemCostTotal} and ${daysOffTravelStatus} day @ non-travel status accomodation = -${accommodationReduction}`,
+    description: [perDiemReductionDetails, accommodationReductionDetails].join(" and "),
     cost: -(accommodationReduction + perDiemReduction),
     date: travelEndAt,
   }
