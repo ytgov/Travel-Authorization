@@ -44,6 +44,7 @@ export function buildNonTravelStatusDaysCorrectingLine({
     perDiemReductionDays += 1
   })
 
+  // CONSIDER: moving this to the front-end or a serializer?
   const formatter = new Intl.NumberFormat("en-CA", {
     style: "decimal",
     currency: "CAD",
@@ -51,9 +52,9 @@ export function buildNonTravelStatusDaysCorrectingLine({
     maximumFractionDigits: 2,
   })
   const perDiemReductionFormatted = formatter.format(perDiemReduction)
-  const perDiemReductionDetails = `${perDiemReductionDays} day @ non-travel status per diem = -${perDiemReductionFormatted}`
+  const perDiemReductionDetails = `${perDiemReductionDays} day @ non-travel status per diem -${perDiemReductionFormatted}`
   const accommodationReductionFormatted = formatter.format(accommodationReduction)
-  const accommodationReductionDetails = `${accommodationReductionDays} day @ non-travel status accomodation = -${accommodationReductionFormatted}`
+  const accommodationReductionDetails = `${accommodationReductionDays} day @ non-travel status accomodation -${accommodationReductionFormatted}`
 
   return {
     type: Expense.Types.ESTIMATE,
