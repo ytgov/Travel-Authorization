@@ -58,7 +58,7 @@ describe("api/src/services/estimates/bulk-generate/build-non-travel-status-days-
         travelAuthorizationId,
         currency: "CAD",
         cost: -677.1,
-        description: `2 day @ non-travel status per diem -177.10 and 2 day @ non-travel status accomodation -500.00`,
+        description: `2 day @ non-travel status per diem -177.10 and 2 day @ non-travel status accommodation -500.00`,
         date: travelEndAt,
       })
     })
@@ -114,7 +114,7 @@ describe("api/src/services/estimates/bulk-generate/build-non-travel-status-days-
         travelAuthorizationId,
         currency: "CAD",
         cost: -311.35,
-        description: `1 day @ non-travel status per diem -61.35 and 1 day @ non-travel status accomodation -250.00`,
+        description: `1 day @ non-travel status per diem -61.35 and 1 day @ non-travel status accommodation -250.00`,
         date: travelEndAt,
       })
     })
@@ -170,7 +170,7 @@ describe("api/src/services/estimates/bulk-generate/build-non-travel-status-days-
         travelAuthorizationId,
         currency: "CAD",
         cost: -775.55,
-        description: `3 day @ non-travel status per diem -275.55 and 2 day @ non-travel status accomodation -500.00`,
+        description: `3 day @ non-travel status per diem -275.55 and 2 day @ non-travel status accommodation -500.00`,
         date: travelEndAt,
       })
     })

@@ -54,7 +54,7 @@ export function buildNonTravelStatusDaysCorrectingLine({
   const perDiemReductionFormatted = formatter.format(perDiemReduction)
   const perDiemReductionDetails = `${perDiemReductionDays} day @ non-travel status per diem -${perDiemReductionFormatted}`
   const accommodationReductionFormatted = formatter.format(accommodationReduction)
-  const accommodationReductionDetails = `${accommodationReductionDays} day @ non-travel status accomodation -${accommodationReductionFormatted}`
+  const accommodationReductionDetails = `${accommodationReductionDays} day @ non-travel status accommodation -${accommodationReductionFormatted}`
 
   return {
     type: Expense.Types.ESTIMATE,
