@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import { ROLES as USER_ROLES } from "@/api/users-api"
 
@@ -82,7 +82,7 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", { isReadyCurrentTravelAuthorization: "isReady" }),
     isAdmin() {
       return this.currentUser?.roles?.includes(USER_ROLES.ADMIN)
@@ -91,11 +91,11 @@ export default {
   mounted() {
     return Promise.all([
       this.ensureCurrentTravelAuthorization(this.formId),
-      this.initializeCurrentUser(),
+      this.ensureCurrentUser(),
     ])
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
     ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
     goToAdminEditPage() {
       alert(`TODO: redirect user to admin edit interface for TravelAuthorization#${this.formId}`)
