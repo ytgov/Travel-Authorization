@@ -35,12 +35,9 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
 
   describe("POST /api/travel-authorizations/:travelAuthorizationId/estimates/generate", () => {
     test("when authorized and bulk generation is successful", async () => {
-      const travelAuthorization = await travelAuthorizationFactory.create(
-        {
-          status: TravelAuthorization.Statuses.DRAFT,
-        },
-        { associations: { user } }
-      )
+      const travelAuthorization = await travelAuthorizationFactory.associations({ user }).create({
+        status: TravelAuthorization.Statuses.DRAFT,
+      })
 
       const mockBulkGenerateServicePerformResponse = "mock bulk generate response"
       mockedBulkGenerateServicePerform.mockImplementation(() => {
@@ -50,16 +47,16 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
       return request(app)
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
-        .expect(201, { estimates: mockBulkGenerateServicePerformResponse, message: "Generated estimates" })
+        .expect(201, {
+          estimates: mockBulkGenerateServicePerformResponse,
+          message: "Generated estimates",
+        })
     })
 
     test("when authorized and bulk generation not is successful", async () => {
-      const travelAuthorization = await travelAuthorizationFactory.create(
-        {
-          status: TravelAuthorization.Statuses.DRAFT,
-        },
-        { associations: { user } }
-      )
+      const travelAuthorization = await travelAuthorizationFactory.associations({ user }).create({
+        status: TravelAuthorization.Statuses.DRAFT,
+      })
 
       const mockBulkGenerateServicePerformResponse = "mock bulk generate response"
       mockedBulkGenerateServicePerform.mockImplementation(() => {
@@ -69,16 +66,15 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
       return request(app)
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
-        .expect(422, { message: `Failed to generate estimate: ${mockBulkGenerateServicePerformResponse}` })
+        .expect(422, {
+          message: `Failed to generate estimate: ${mockBulkGenerateServicePerformResponse}`,
+        })
     })
 
     test("when not authorized", async () => {
-      const travelAuthorization = await travelAuthorizationFactory.create(
-        {
-          status: TravelAuthorization.Statuses.SUBMITTED,
-        },
-        { associations: { user } }
-      )
+      const travelAuthorization = await travelAuthorizationFactory.associations({ user }).create({
+        status: TravelAuthorization.Statuses.SUBMITTED,
+      })
 
       return request(app)
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)

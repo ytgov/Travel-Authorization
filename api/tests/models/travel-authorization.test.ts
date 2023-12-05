@@ -5,10 +5,9 @@ describe("api/src/models/travel-authorization.ts", () => {
   describe("TravelAuthorization", () => {
     describe("#buildTravelSegmentsFromStops", () => {
       test("when has 2 stops, and is a round trip, builds the correct travel segment", async () => {
-        const travelAuthorization = await travelAuthorizationFactory.create(
-          {},
-          { transient: { roundTrip: true } }
-        )
+        const travelAuthorization = await travelAuthorizationFactory
+          .transient({ roundTrip: true })
+          .create()
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: TravelSegment.TravelMethods.AIRCRAFT,
@@ -135,15 +134,10 @@ describe("api/src/models/travel-authorization.ts", () => {
       })
 
       test("when stops length is less than 2 for round trip type, errors informatively", async () => {
-        const travelAuthorization = await travelAuthorizationFactory.create(
-          {},
-          {
-            transient: {
-              roundTrip: true,
-            },
-          }
-        )
-       await stopFactory.create({
+        const travelAuthorization = await travelAuthorizationFactory
+          .transient({ roundTrip: true })
+          .create()
+        await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: TravelSegment.TravelMethods.AIRCRAFT,
           accommodationType: TravelSegment.AccommodationTypes.HOTEL,

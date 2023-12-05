@@ -13,17 +13,27 @@ const DISTANCE_ALLOWANCE_PER_KILOMETER = 0.605
 const HOTEL_ALLOWANCE_PER_NIGHT = 250
 const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
+type BulkGenerateServiceOptions = {
+  daysOffTravelStatus: number
+}
+
 export class BulkGenerateService extends BaseService {
   private travelAuthorizationId: number
   private travelSegments: TravelSegment[]
+  private daysOffTravelStatus: number
   private firstTravelSegment: TravelSegment
   private lastTravelSegment: TravelSegment
   private aircraftAllowanceRemaining: number
 
-  constructor(travelAuthorizationId: number, travelSegments: TravelSegment[]) {
+  constructor(
+    travelAuthorizationId: number,
+    travelSegments: TravelSegment[],
+    { daysOffTravelStatus }: BulkGenerateServiceOptions
+  ) {
     super()
     this.travelAuthorizationId = travelAuthorizationId
     this.travelSegments = travelSegments
+    this.daysOffTravelStatus = daysOffTravelStatus
     this.firstTravelSegment = this.travelSegments[0]
     this.lastTravelSegment = this.travelSegments[this.travelSegments.length - 1]
     this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
@@ -76,6 +86,21 @@ export class BulkGenerateService extends BaseService {
 
     const mealsAndIncidentalsEstimates = await this.buildMealsAndIncidentalsEstimates()
     estimates.push(...mealsAndIncidentalsEstimates)
+
+    if (this.daysOffTravelStatus > 0) {
+      if (isNil(this.lastTravelSegment.departureAt)) {
+        throw new Error(`Missing departure date on TravelSegment#${this.lastTravelSegment.id}`)
+      }
+      const nonTravelStatusDaysCorrectingLine = BulkGenerate.buildNonTravelStatusDaysCorrectingLine(
+        {
+          estimates,
+          daysOffTravelStatus: this.daysOffTravelStatus,
+          travelAuthorizationId: this.travelAuthorizationId,
+          travelEndAt: this.lastTravelSegment.departureAt,
+        }
+      )
+      estimates.push(nonTravelStatusDaysCorrectingLine)
+    }
 
     return Expense.bulkCreate(estimates)
   }

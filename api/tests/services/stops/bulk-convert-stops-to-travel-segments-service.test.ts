@@ -6,10 +6,9 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
   describe("BulkConvertStopsToTravelSegmentsService", () => {
     describe(".perform", () => {
       test("when has 2 stops, and is a round trip, builds the correct travel segment", async () => {
-        const travelAuthorization = await travelAuthorizationFactory.create(
-          {},
-          { transient: { roundTrip: true } }
-        )
+        const travelAuthorization = await travelAuthorizationFactory
+          .transient({ roundTrip: true })
+          .create()
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           departureDate: new Date("2023-11-29"),

@@ -6,7 +6,11 @@ import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, userFactory } from "@/factories"
 import { POSTGRES_INT_4_MAX, presence } from "./helpers"
 
-export const travelAuthorizationFactory = Factory.define<TravelAuthorization>(
+type TransientParam = {
+  roundTrip?: boolean
+}
+
+export const travelAuthorizationFactory = Factory.define<TravelAuthorization, TransientParam>(
   ({ associations, params, transientParams, onCreate }) => {
     onCreate(async (travelAuthorization) => {
       if (isNil(travelAuthorization.purposeId)) {

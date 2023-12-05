@@ -13,7 +13,7 @@ export class ExpensesController extends BaseController {
     const where = this.query.where as WhereOptions<Expense>
     return Expense.findAll({
       where,
-      order: ["date"],
+      order: ["date", "expenseType"],
     }).then((expenses) => {
       const serializedExpenses = ExpensesSerializer.asTable(expenses)
       return this.response.json({ expenses: serializedExpenses })
@@ -84,7 +84,8 @@ export class ExpensesController extends BaseController {
     const attributes = this.request.body
     const { travelAuthorizationId } = attributes
     const expense = Expense.build(attributes)
-    expense.travelAuthorization = (await TravelAuthorization.findByPk(travelAuthorizationId)) || undefined
+    expense.travelAuthorization =
+      (await TravelAuthorization.findByPk(travelAuthorizationId)) || undefined
     return expense
   }
 

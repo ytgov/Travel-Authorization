@@ -22,7 +22,9 @@ export class GenerateController extends BaseController {
     }
 
     const travelSegments = travelAuthorization.travelSegments || []
-    return BulkGenerateService.perform(travelAuthorization.id, travelSegments)
+    return BulkGenerateService.perform(travelAuthorization.id, travelSegments, {
+      daysOffTravelStatus: travelAuthorization.daysOffTravelStatus || 0,
+    })
       .then((estimates) => {
         return this.response.status(201).json({
           estimates,
