@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapState, mapGetters } from "vuex"
 
 import { ROLES as USER_ROLES } from "@/api/users-api"
 
@@ -79,7 +79,7 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapState("current/travelAuthorization", {
       travelAuthorization: "attributes",
       isLoadingTravelAuthorization: "isLoading",
@@ -94,10 +94,10 @@ export default {
   },
   async mounted() {
     await this.ensureTravelAuthorization(this.travelAuthorizationId)
-    await this.initializeCurrentUser()
+    await this.ensureCurrentUser()
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
     ...mapActions("current/travelAuthorization", {
       ensureTravelAuthorization: "ensure",
     }),

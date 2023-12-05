@@ -62,6 +62,10 @@ export default {
         .then(({ emails }) => {
           this.emails = emails
         })
+        .catch((error) => {
+          console.error(error)
+          this.emails = []
+        })
         .finally(() => {
           this.loading = false
         })

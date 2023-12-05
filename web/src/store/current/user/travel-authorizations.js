@@ -7,16 +7,16 @@ const state = {
   totalCount: 0,
   isLoading: false,
   isErrored: false,
-  isInitialized: false,
+  isCached: false,
 }
 
 const getters = withGettersFromState(state, {})
 
 const actions = {
-  async initialize({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
+  async ensure({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
     commit("SET_IS_LOADING", true)
     try {
-      const { id: currentUserId } = await dispatch("currentUser/initialize", null, { root: true })
+      const { id: currentUserId } = await dispatch("current/user/ensure", null, { root: true })
       const { travelAuthorizations, totalCount } = await travelAuthorizationsApi.list({
         page,
         perPage,
@@ -26,7 +26,7 @@ const actions = {
       commit("SET_IS_ERRORED", false)
       commit("SET_ITEMS", travelAuthorizations)
       commit("SET_TOTAL_COUNT", totalCount)
-      commit("SET_IS_INITIALIZED", true)
+      commit("SET_IS_ENSURE", true)
 
       return {
         items: state.items,
@@ -52,8 +52,8 @@ const mutations = {
   SET_IS_ERRORED(state, value) {
     state.isErrored = value
   },
-  SET_IS_INITIALIZED(state, value) {
-    state.isInitialized = value
+  SET_IS_ENSURE(state, value) {
+    state.isCached = value
   },
   SET_TOTAL_COUNT(state, value) {
     state.totalCount = value

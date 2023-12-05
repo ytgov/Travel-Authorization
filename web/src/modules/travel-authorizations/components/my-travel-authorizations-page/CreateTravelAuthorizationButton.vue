@@ -17,14 +17,14 @@ export default {
   name: "CreateTravelAuthorizationButton",
   data: () => ({}),
   computed: {
-    ...mapGetters("currentUser", { currentUserId: "id" }),
+    ...mapGetters("current/user", { currentUserId: "id" }),
     ...mapGetters("current/travelAuthorization", { isLoadingTravelAuthorization: "isLoading" }),
   },
   mounted() {
     this.ensureCurrentUser()
   },
   methods: {
-    ...mapActions("currentUser", { ensureCurrentUser: "initialize" }),
+    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
     ...mapActions("current/travelAuthorization", ["create"]),
     goToFormDetails(form) {
       const formId = form.id

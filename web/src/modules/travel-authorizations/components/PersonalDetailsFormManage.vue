@@ -12,13 +12,13 @@
             class="pb-0 mb-0"
           >
             <v-text-field
-              dense
               v-model="request.firstName"
+              dense
               label="First name"
               required
               outlined
               background-color="white"
-              :loading="loadingUser"
+              :loading="isLoadingCurrentUser"
               :rules="firstNameRules"
             ></v-text-field>
           </v-col>
@@ -28,13 +28,13 @@
             class="pb-0 mb-0"
           >
             <v-text-field
-              dense
               v-model="request.lastName"
+              dense
               label="Last name"
               required
               outlined
               background-color="white"
-              :loading="loadingUser"
+              :loading="isLoadingCurrentUser"
               :rules="lastNameRules"
             ></v-text-field>
           </v-col>
@@ -51,7 +51,7 @@
               background-color="white"
               label="Email"
               required
-              :loading="loadingUser"
+              :loading="isLoadingCurrentUser"
               :rules="emailRules"
             ></v-text-field>
           </v-col>
@@ -67,7 +67,7 @@
               background-color="white"
               label="Mailcode"
               required
-              :loading="loadingUser"
+              :loading="isLoadingCurrentUser"
               :rules="requiredRules"
             ></v-text-field>
           </v-col>
@@ -87,10 +87,10 @@
               :items="emails"
               required
               clearable
-              :loading="loadingUser"
+              :loading="isLoadingCurrentUser"
               :rules="emailRules"
-              @update:search-input="searchEmail"
               :return-object="false"
+              @update:search-input="searchEmail"
             ></v-combobox>
           </v-col>
 
@@ -100,8 +100,8 @@
             class="pb-0 mb-0"
           >
             <v-select
-              :items="departments"
               v-model="request.department"
+              :items="departments"
               label="Department"
               dense
               outlined
@@ -121,8 +121,8 @@
             class="pb-0 mb-0"
           >
             <v-select
-              :items="divisions"
               v-model="request.division"
+              :items="divisions"
               item-text="name"
               item-value="name"
               label="Division"
@@ -139,9 +139,9 @@
             class="pb-0 mb-0"
           >
             <v-select
+              v-model="request.branch"
               :items="branches"
               item-text="name"
-              v-model="request.branch"
               label="Branch"
               dense
               clearable
@@ -156,8 +156,8 @@
             class="pb-0 mb-0"
           >
             <v-select
-              :items="units"
               v-model="request.unit"
+              :items="units"
               item-value="name"
               item-text="name"
               label="Unit"
@@ -180,7 +180,6 @@ export default {
   name: "PersonalDetailsFormManage",
   data: () => ({
     loadingDepartments: false,
-    loadingUser: false,
 
     //Rules
     firstNameRules: [(v) => !!v || "First name is required"],
@@ -198,6 +197,9 @@ export default {
     ...mapGetters("current/travelAuthorization", {
       request: "attributes",
     }),
+    ...mapGetters("current/user", {
+      isLoadingCurrentUser: "isLoading",
+    }),
     ...mapState("travelAuthorizations", ["departments", "emails"]),
     divisions() {
       const department = this.departments.find((d) => d.name == this.request.department)
@@ -214,26 +216,20 @@ export default {
   },
   async mounted() {
     this.loadingDepartments = true
-    this.loadingUser = true
     await Promise.all([
       this.loadDepartments().finally(() => {
         this.loadingDepartments = false
       }),
-      this.initializeCurrentUserWrapper().finally(() => {
-        this.loadingUser = false
+      this.ensureCurrentUserWrapper().catch((error) => {
+        this.$snack(error.message, { color: "error" })
       }),
     ])
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
     ...mapActions("travelAuthorizations", ["loadDepartments", "emailSearch"]),
     searchEmail(token) {
       return this.emailSearch(token)
-    },
-    initializeCurrentUserWrapper() {
-      return this.initializeCurrentUser().catch((error) => {
-        this.$snack(error.message, { color: "error" })
-      })
     },
   },
 }

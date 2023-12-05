@@ -27,7 +27,7 @@
 <script>
 import { isNil } from "lodash"
 import { DateTime } from "luxon"
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 
@@ -69,7 +69,7 @@ export default {
     page: 1,
   }),
   computed: {
-    ...mapState("currentUser", { currentUser: "attributes" }),
+    ...mapGetters("current/user", { currentUser: "attributes" }),
   },
   watch: {
     page() {
@@ -80,12 +80,11 @@ export default {
     },
   },
   async mounted() {
-    // TODO: move current user initialization to a higher level
-    await this.initializeCurrentUser()
+    await this.ensureCurrentUser()
     await this.refresh()
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
     refresh() {
       this.isLoading = true
       return travelAuthorizationsApi
