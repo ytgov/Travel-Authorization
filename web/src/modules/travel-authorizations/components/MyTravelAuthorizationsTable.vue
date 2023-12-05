@@ -110,7 +110,7 @@ export default {
     page: 1,
   }),
   computed: {
-    ...mapState("currentUser/travelAuthorizations", ["items", "totalCount", "isLoading"]),
+    ...mapState("current/user/travelAuthorizations", ["items", "totalCount", "isLoading"]),
   },
   watch: {
     page() {
@@ -124,10 +124,10 @@ export default {
     await this.refresh()
   },
   methods: {
-    ...mapActions("currentUser/travelAuthorizations", ["initialize"]),
+    ...mapActions("current/user/travelAuthorizations", ["ensure"]),
     isEmpty,
     refresh() {
-      return this.initialize({ page: this.page, perPage: this.perPage })
+      return this.ensure({ page: this.page, perPage: this.perPage })
     },
     goToFormDetails(form) {
       const formId = form.id
