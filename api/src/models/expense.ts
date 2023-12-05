@@ -21,6 +21,7 @@ export enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",
   TRANSPORTATION = "Transportation",
   MEALS_AND_INCIDENTALS = "Meals & Incidentals",
+  NON_TRAVEL_STATUS = "Non-Travel Status",
 }
 
 // TODO: replace this with a boolean of isEstimate or

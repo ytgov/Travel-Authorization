@@ -71,10 +71,11 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
             accommodationType: null,
           })
 
-        const expenses = await BulkGenerateService.perform(travelAuthorization.id, [
-          travelSegment1,
-          travelSegment2,
-        ])
+        const expenses = await BulkGenerateService.perform(
+          travelAuthorization.id,
+          [travelSegment1, travelSegment2],
+          { daysOffTravelStatus: 0 }
+        )
 
         expect(expenses).toEqual([
           expect.objectContaining({
@@ -176,10 +177,13 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
             accommodationType: null,
           })
 
-        const expenses = await BulkGenerateService.perform(travelAuthorization.id, [
-          travelSegment1,
-          travelSegment2,
-        ])
+        const expenses = await BulkGenerateService.perform(
+          travelAuthorization.id,
+          [travelSegment1, travelSegment2],
+          {
+            daysOffTravelStatus: 0,
+          }
+        )
 
         expect(expenses).toEqual([
           expect.objectContaining({
