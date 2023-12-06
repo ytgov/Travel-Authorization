@@ -67,7 +67,7 @@ WORKDIR /home/node/app
 COPY --from=api-build-stage --chown=node:node /usr/src/api/package*.json ./
 RUN npm install && npm cache clean --force --loglevel=error
 
-COPY --from=api-build-stage --chown=node:node /usr/src/api/dist ./dist
+COPY --from=api-build-stage --chown=node:node /usr/src/api/dist/src ./dist
 COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./dist/web
 
 EXPOSE 3000
