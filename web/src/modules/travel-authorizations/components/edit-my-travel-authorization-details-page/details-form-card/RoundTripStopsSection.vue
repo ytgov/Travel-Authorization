@@ -53,7 +53,6 @@
       >
         <TimePicker
           :value="firstStop.departureTime"
-          :rules="[required]"
           label="Time (24h)"
           persistent-hint
           @input="updateStop(0, 'departureTime', $event)"
@@ -143,7 +142,6 @@
       >
         <TimePicker
           :value="lastStop.departureTime"
-          :rules="[required]"
           label="Time (24h)"
           persistent-hint
           @input="updateStop(1, 'departureTime', $event)"

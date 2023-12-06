@@ -7,6 +7,7 @@ import TravelAuthorizationActionLog from "./travel-authorization-action-log"
 import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import User from "./user"
+import TravelSegment from "./travel-segment"
 
 // Order matters here, though may be somewhat flexible
 Stop.establishAssociations()
@@ -16,22 +17,25 @@ TravelDeskPassengerNameRecordDocument.establishAssociations()
 TravelDeskTravelRequest.establishAssociations()
 User.establishAssociations()
 TravelAuthorizationActionLog.establishAssociations()
+TravelSegment.establishAssociations()
 
 // Alphabetically - order does not matter
-export * from "./distance-matrix"
-export * from "./expense"
-export * from "./location"
-export * from "./per-diem"
-export * from "./preapproved-traveler"
-export * from "./preapproved"
-export * from "./stop"
-export * from "./travel-authorization"
-export * from "./travel-authorization-action-log"
-export * from "./travel-desk-passenger-name-record-document"
-export * from "./travel-desk-travel-agent"
-export * from "./travel-desk-travel-request"
-export * from "./travel-purpose"
-export * from "./user"
+export { DistanceMatrix } from "./distance-matrix"
+export { Location } from "./location"
+export { PerDiem } from "./per-diem"
+export { Preapproved } from "./preapproved"
+export { PreapprovedTraveler } from "./preapproved-traveler"
+export { TravelPurpose } from "./travel-purpose"
+export {
+  Expense,
+  Stop,
+  TravelAuthorization,
+  TravelAuthorizationActionLog,
+  TravelDeskPassengerNameRecordDocument,
+  TravelDeskTravelRequest,
+  TravelSegment,
+  User,
+}
 
 // special db instance that has access to all models.
 export default db

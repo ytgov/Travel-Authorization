@@ -1,3 +1,1 @@
-export * from "./generate-controller"
-
-export default undefined
+export { GenerateController } from "./generate-controller"

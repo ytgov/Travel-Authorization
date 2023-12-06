@@ -3,7 +3,7 @@ import * as path from "path"
 
 const NON_INITIALIZER_REGEX = /^index\.(ts|js)$/
 
-async function importAndExecuteInitializers() {
+export async function importAndExecuteInitializers() {
   const files = await fs.readdir(__dirname)
 
   return files.reduce(async (previousInitializerAction, file) => {
@@ -23,10 +23,12 @@ async function importAndExecuteInitializers() {
   }, Promise.resolve())
 }
 
-// TODO: add some kind of middleware that 503s? if initialization failed?
-importAndExecuteInitializers()
-  .then(() => process.exit(0))
-  .catch(() => {
-    console.log("Failed to complete initialization!")
-    return process.exit(0)
-  })
+if (require.main === module) {
+  // TODO: add some kind of middleware that 503s? if initialization failed?
+  importAndExecuteInitializers()
+    .then(() => process.exit(0))
+    .catch(() => {
+      console.log("Failed to complete initialization!")
+      return process.exit(0)
+    })
+}

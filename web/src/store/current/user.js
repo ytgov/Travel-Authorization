@@ -1,8 +1,9 @@
 import usersApi from "@/api/users-api"
 
+import { sleep } from "@/utils/sleep"
 import { withGettersFromState } from "@/utils/vuex-utils"
 
-import travelAuthorizations from "@/store/current-user/travel-authorizations"
+import travelAuthorizations from "@/store/current/user/travel-authorizations"
 
 const state = {
   attributes: {
@@ -10,10 +11,11 @@ const state = {
   },
   isLoading: false,
   isErrored: false,
-  isInitialized: false,
+  isCached: false,
 }
 
 const getters = withGettersFromState(state, {
+  isReady: (state) => state.isCached && !state.isLoading && !state.isErrored,
   id: (state) => state.attributes.id,
   fullName: (state) => {
     const { firstName, lastName } = state.attributes
@@ -22,19 +24,29 @@ const getters = withGettersFromState(state, {
 })
 
 const actions = {
-  async initialize({ state, dispatch }) {
-    if (state.isInitialized) return state.attributes
+  async ensure({ commit, getters, dispatch }) {
+    while (state.isLoading) {
+      await sleep(75)
+    }
 
+    if (state.isErrored) {
+      console.error("User store has errored, returning {}.")
+      return {}
+    }
+
+    if (getters.isCached) return getters.attributes
+
+    commit("SET_IS_CACHED", false)
     return dispatch("fetch")
   },
-  async fetch({ state, commit }) {
+  async fetch({ commit }) {
     commit("SET_IS_LOADING", true)
     try {
       const { user } = await usersApi.me()
       commit("SET_IS_ERRORED", false)
       commit("SET_ATTRIBUTES", user)
-      commit("SET_IS_INITIALIZED", true)
-      return state.attributes
+      commit("SET_IS_CACHED", true)
+      return user
     } catch (error) {
       console.error("Failed to load current user:", error)
       commit("SET_IS_ERRORED", true)
@@ -44,14 +56,14 @@ const actions = {
     }
   },
 
-  async ygGovernmentDirectorySync({ state, commit }) {
+  async ygGovernmentDirectorySync({ getters, commit }) {
     commit("SET_IS_LOADING", true)
     try {
-      const { user } = await usersApi.ygGovernmentDirectorySync(state.attributes.id)
+      const { user } = await usersApi.ygGovernmentDirectorySync(getters.id)
       commit("SET_IS_ERRORED", false)
       commit("SET_ATTRIBUTES", user)
-      commit("SET_IS_INITIALIZED", true)
-      return state.attributes
+      commit("SET_IS_CACHED", true)
+      return user
     } catch (error) {
       console.error("Failed to sync current user with the YG government directory:", error)
       commit("SET_IS_ERRORED", true)
@@ -72,8 +84,8 @@ const mutations = {
   SET_IS_ERRORED(state, value) {
     state.isErrored = value
   },
-  SET_IS_INITIALIZED(state, value) {
-    state.isInitialized = value
+  SET_IS_CACHED(state, value) {
+    state.isCached = value
   },
 }
 

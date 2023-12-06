@@ -1,0 +1,27 @@
+location,claim,amount,currency
+Yukon,Breakfast,23.20,CAD
+Yukon,Lunch,21.30,CAD
+Yukon,Dinner,61.45,CAD
+Yukon,Incidentals,17.30,CAD
+NWT,Breakfast,25.10,CAD
+NWT,Lunch,30.45,CAD
+NWT,Dinner,65.15,CAD
+NWT,Incidentals,17.30,CAD
+Nunavut,Breakfast,28.35,CAD
+Nunavut,Lunch,34.45,CAD
+Nunavut,Dinner,91.75,CAD
+Nunavut,Incidentals,17.30,CAD
+Canada,Breakfast,21.90,CAD
+Canada,Lunch,22.15,CAD
+Canada,Dinner,54.40,CAD
+Canada,Incidentals,17.30,CAD
+Canada,Private Accommodations,50.00,CAD
+Alaska,Breakfast,23.20,USD
+Alaska,Lunch,21.30,USD
+Alaska,Dinner,61.45,USD
+Alaska,Incidentals,17.30,USD
+US,Breakfast,21.90,USD
+US,Lunch,22.15,USD
+US,Dinner,54.40,USD
+US,Incidentals,17.30,USD
+US,Private Accommodations,50.00,USD

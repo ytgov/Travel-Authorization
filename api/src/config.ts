@@ -16,7 +16,9 @@ dotenv.config({
   path: dotEnvPath,
 })
 
-console.log("Loading env: ", dotEnvPath)
+if (process.env.NODE_ENV !== "test") {
+  console.log("Loading env: ", dotEnvPath)
+}
 
 let obj = process.env
 let pattern = "VUE_APP_"

@@ -4,7 +4,6 @@ import Vuex from "vuex"
 import alerts from "./alerts"
 import auth from "./auth"
 import current from "./current"
-import currentUser from "@/store/current-user"
 import locations from "@/store/locations"
 import preapproved from "./preapproved" // TODO: replace "preapproved" usage with pre-approved-travel-requests store.
 import preApprovedTravelRequests from "@/store/pre-approved-travel-requests"
@@ -64,7 +63,6 @@ export default new Vuex.Store({
     alerts,
     auth,
     current,
-    currentUser,
     locations,
     preapproved,
     preApprovedTravelRequests,

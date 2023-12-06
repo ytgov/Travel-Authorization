@@ -72,6 +72,12 @@ class DevHelper
     run(*%w[web], *args, **kwargs)
   end
 
+  def test_api(*args, **kwargs)
+    run(*%w[test_api npm run test], *args, **kwargs)
+  end
+
+  alias_method :test, :test_api
+
   def psql(*args, **kwargs)
     # TODO: use environment variables for this instead
     db(*%w[psql "postgresql://app:itsallgood@localhost:5432/travel_development"], *args, **kwargs)

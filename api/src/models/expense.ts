@@ -17,19 +17,18 @@ import sequelize from "@/db/db-client"
 import TravelAuthorization from "./travel-authorization"
 
 // Keep in sync with web/src/modules/travel-authorizations/components/ExpenseTypeSelect.vue
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
-enum ExpenseTypes {
+export enum ExpenseTypes {
   ACCOMODATIONS = "Accomodations",
   TRANSPORTATION = "Transportation",
   MEALS_AND_INCIDENTALS = "Meals & Incidentals",
+  NON_TRAVEL_STATUS = "Non-Travel Status",
 }
 
 // TODO: replace this with a boolean of isEstimate or
 // move estimates to there own table.
 // It's also possible that this is a single table inheritance model,
 // and there should be two models, one for each "type".
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
-enum Types {
+export enum Types {
   ESTIMATE = "Estimate",
   EXPENSE = "Expense",
 }

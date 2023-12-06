@@ -97,7 +97,7 @@
 
 <script>
 import { isEmpty } from "lodash"
-import { mapActions, mapState, mapGetters } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
@@ -129,7 +129,7 @@ export default {
     refreshingEstimatesSilently: false,
   }),
   computed: {
-    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", {
       currentTravelAuthorization: "attributes",
       currentTravelAuthorizationId: "id",
@@ -150,12 +150,12 @@ export default {
   async mounted() {
     const department = !isEmpty(this.currentUser.department)
       ? this.currentUser.department
-      : await this.initializeCurrentUser().then((user) => user.department)
+      : await this.ensureCurrentUser().then((user) => user.department)
     await this.loadPreApprovedTravelRequests(department)
     await this.refreshEstimatesSilently()
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
     ...mapActions("current/travelAuthorization", {
       fetchCurrentTravelAuthorizationExpensesSilently: "fetchExpensesSilently",
     }),

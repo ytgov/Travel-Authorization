@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
@@ -64,7 +64,7 @@ export default {
     tab: null,
   }),
   computed: {
-    ...mapState("currentUser", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
+    ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", {
       isReadyCurrentTravelAuthorization: "isReady",
     }),
@@ -72,10 +72,10 @@ export default {
   watch: {},
   async mounted() {
     await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
-    await this.initializeCurrentUser()
+    await this.ensureCurrentUser()
   },
   methods: {
-    ...mapActions("currentUser", { initializeCurrentUser: "initialize" }),
+    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
     ...mapActions("current/travelAuthorization", {
       ensureCurrentTravelAuthorization: "ensure",
       fetchCurrentTravelAuthorizationSilently: "fetchSilently",

@@ -43,6 +43,24 @@ services:
     depends_on:
       - api
 
+  test_api:
+    build:
+      context: ./api
+      dockerfile: development.Dockerfile
+    command: /bin/true
+    env_file:
+      - ./api/.env.development
+    environment:
+      <<: *default-environment
+      NODE_ENV: test
+      DB_NAME: travel_test
+    tty: true
+    volumes:
+      - ./api:/usr/src/api
+      - ./api/.env.development:/usr/src/api/.env.test
+    depends_on:
+      - db
+
   db:
     image: "postgres:14.4"
     environment:

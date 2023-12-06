@@ -9,11 +9,11 @@ import {
 import sequelize from "@/db/db-client"
 
 export enum ClaimTypes {
-  LUNCH = "Lunch",
-  MAXIMUM_DAILY = "Maximum Daily",
-  PRIVATE_ACCOMMODATIONS = "Private Accommodations",
-  DINNER = "Dinner",
   BREAKFAST = "Breakfast",
+  LUNCH = "Lunch",
+  DINNER = "Dinner",
+  INCIDENTALS = "Incidentals",
+  PRIVATE_ACCOMMODATIONS = "Private Accommodations",
 }
 
 export enum LocationTypes {
@@ -31,6 +31,10 @@ export enum CurrencyTypes {
 }
 
 export class PerDiem extends Model<InferAttributes<PerDiem>, InferCreationAttributes<PerDiem>> {
+  static ClaimTypes = ClaimTypes
+  static LocationTypes = LocationTypes
+  static CurrencyTypes = CurrencyTypes
+
   declare id: CreationOptional<number>
   declare claim: ClaimTypes | null
   declare location: LocationTypes | null

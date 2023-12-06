@@ -5,7 +5,7 @@ import db from "@/db/db-client"
 import BaseService from "@/services/base-service"
 
 import { Expense, Stop, TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
-import { StopsService, ExpensesService } from "@/services"
+import { StopsService, ExpensesService, Stops } from "@/services"
 
 type StopsCreationAttributes = CreationAttributes<Stop>[]
 
@@ -42,6 +42,8 @@ export class UpdateService extends BaseService {
       const travelAuthorizationId = this.travelAuthorization.id
       if (!isEmpty(this.stops)) {
         await StopsService.bulkReplace(travelAuthorizationId, this.stops)
+        // TODO: remove this once travel segments fully replace stops
+        await Stops.BulkConvertStopsToTravelSegmentsService.perform(this.travelAuthorization)
       }
 
       if (!isEmpty(this.expenses)) {

@@ -29,12 +29,12 @@ import Preapproved from "./preapproved"
 import Stop from "./stop"
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelPurpose from "./travel-purpose"
+import TravelSegment from "./travel-segment"
 import User from "./user"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
-// Avoid exporting here, and instead expose via the model to avoid naming conflicts
-enum Statuses {
+export enum Statuses {
   // TODO: might want replace DELETED status with `deleted_at` field from Sequelize paranoid feature.
   // See https://sequelize.org/docs/v6/core-concepts/paranoid/
   DELETED = "deleted",
@@ -129,17 +129,51 @@ export class TravelAuthorization extends Model<
   declare countStops: HasManyCountAssociationsMixin
   declare createStop: HasManyCreateAssociationMixin<Stop>
 
+  declare getTravelSegments: HasManyGetAssociationsMixin<TravelSegment>
+  declare setTravelSegments: HasManySetAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare hasTravelSegment: HasManyHasAssociationMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare hasTravelSegments: HasManyHasAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare addTravelSegment: HasManyAddAssociationMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare addTravelSegments: HasManyAddAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare removeTravelSegment: HasManyRemoveAssociationMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare removeTravelSegments: HasManyRemoveAssociationsMixin<
+    TravelSegment,
+    TravelSegment["travelAuthorizationId"]
+  >
+  declare countTravelSegments: HasManyCountAssociationsMixin
+  declare createTravelSegment: HasManyCreateAssociationMixin<TravelSegment>
+
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
   declare user: NonAttribute<User>
   declare expenses?: NonAttribute<Expense[]>
   declare stops?: NonAttribute<Stop[]>
+  declare travelSegments?: NonAttribute<TravelSegment[]>
 
   declare static associations: {
     expenses: Association<TravelAuthorization, Expense>
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
     travelDeskTravelRequest: Association<TravelAuthorization, TravelDeskTravelRequest>
+    travelSegments: Association<TravelAuthorization, TravelSegment>
     user: Association<TravelAuthorization, User>
   }
 
@@ -152,11 +186,6 @@ export class TravelAuthorization extends Model<
       as: "user",
       foreignKey: "userId",
     })
-    this.hasMany(Stop, {
-      as: "stops",
-      sourceKey: "id",
-      foreignKey: "travelAuthorizationId",
-    })
     this.hasOne(TravelDeskTravelRequest, {
       as: "travelDeskTravelRequest",
       sourceKey: "id",
@@ -167,6 +196,58 @@ export class TravelAuthorization extends Model<
       sourceKey: "id",
       foreignKey: "travelAuthorizationId",
     })
+    this.hasMany(Stop, {
+      as: "stops",
+      sourceKey: "id",
+      foreignKey: "travelAuthorizationId",
+    })
+    this.hasMany(TravelSegment, {
+      as: "travelSegments",
+      sourceKey: "id",
+      foreignKey: "travelAuthorizationId",
+    })
+  }
+
+  // Shim until Stop model is fully removed
+  buildTravelSegmentsFromStops(): TravelSegment[] {
+    if (this.stops === undefined || this.stops.length < 2) {
+      throw new Error("Must have at least 2 stops to build a travel segments")
+    }
+
+    if (this.multiStop === true && this.stops.length < 4) {
+      throw new Error("Must have at least 4 stops to build a multi-stop travel segments")
+    }
+
+    const isRoundTrip = this.oneWayTrip !== true && this.multiStop !== true
+    if (isRoundTrip) {
+      return this.stops.reduce((travelSegments: TravelSegment[], stop, index, stops) => {
+        const isLastStop = index === stops.length - 1
+        const arrivalStop = isLastStop ? stops[0] : stops[index + 1]
+
+        const travelSegment = TravelSegment.buildFromStops({
+          travelAuthorizationId: this.id,
+          departureStop: stop,
+          arrivalStop,
+          segmentNumber: index,
+        })
+        travelSegments.push(travelSegment)
+        return travelSegments
+      }, [])
+    }
+
+    return this.stops.reduce((travelSegments: TravelSegment[], stop, index, stops) => {
+      const isLastStop = index === stops.length - 1
+      if (isLastStop) return travelSegments
+
+      const travelSegment = TravelSegment.buildFromStops({
+        travelAuthorizationId: this.id,
+        departureStop: stop,
+        arrivalStop: stops[index + 1],
+        segmentNumber: index,
+      })
+      travelSegments.push(travelSegment)
+      return travelSegments
+    }, [])
   }
 
   get estimates(): NonAttribute<Expense[] | undefined> {
@@ -342,8 +423,13 @@ TravelAuthorization.init(
   },
   {
     sequelize,
-    tableName: "travel_authorizations",
-    modelName: "TravelAuthorization",
+    validate: {
+      tripTypeConsistency() {
+        if (this.oneWayTrip === true && this.multiStop === true) {
+          throw new Error("oneWayTrip and multiStop cannot both be true")
+        }
+      },
+    },
   }
 )
 

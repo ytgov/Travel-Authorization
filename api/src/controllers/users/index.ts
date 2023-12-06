@@ -1,3 +1,1 @@
-export * from "./yg-government-directory-sync-controller"
-
-export default undefined
+export { YgGovernmentDirectorySyncController } from "./yg-government-directory-sync-controller"

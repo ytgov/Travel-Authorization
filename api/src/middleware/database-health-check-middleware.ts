@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express"
 
+import { NODE_ENV } from "@/config"
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
 
@@ -12,10 +13,14 @@ export async function databaseHealthCheckMiddleware(
 ) {
   try {
     await dbLegacy.raw("SELECT 1")
-    console.log("Legacy knex database connection has been established successfully.")
+    if (NODE_ENV !== "test") {
+      console.log("Legacy knex database connection has been established successfully.")
+    }
 
     await db.authenticate()
-    console.log("Sequelize database connection has been established successfully.")
+    if (NODE_ENV !== "test") {
+      console.log("Sequelize database connection has been established successfully.")
+    }
 
     return next()
   } catch (error) {

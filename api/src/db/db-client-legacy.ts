@@ -8,6 +8,8 @@ export const db = knex(DB_CONFIG)
 db.on("query", (query) => {
   if (NODE_ENV === "production") {
     console.log(`Executing: ${query.sql}`)
+  } else if (NODE_ENV === "test") {
+    // don't log anything
   } else {
     console.log(`Executing (default): ${query.sql} ${JSON.stringify(query.bindings)}`)
   }

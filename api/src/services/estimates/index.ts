@@ -1,3 +1,4 @@
-export * from './bulk-generate'
+export { BulkGenerateService } from "./bulk-generate-service"
 
-export default undefined
+// Namespaced exports
+export * as BulkGenerate from "./bulk-generate"

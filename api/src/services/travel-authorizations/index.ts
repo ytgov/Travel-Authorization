@@ -1,8 +1,6 @@
-export * from "./create-service"
-export * from "./update-service"
+export { CreateService } from "./create-service"
+export { UpdateService } from "./update-service"
 
 // State management services
-export * from "./approve-service"
-export * from "./deny-service"
-
-export default undefined
+export { ApproveService } from "./approve-service"
+export { DenyService } from "./deny-service"
