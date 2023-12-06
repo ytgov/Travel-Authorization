@@ -98,6 +98,13 @@ const routes = [
               import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetailsPage"),
             props: cast("travelAuthorizationId", parseInt),
           },
+          {
+            path: "estimate",
+            name: "ManageTravelAuthorizationEstimatePage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationEstimatePage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
         ],
       },
     ],
