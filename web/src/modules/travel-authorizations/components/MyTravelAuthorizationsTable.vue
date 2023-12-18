@@ -29,6 +29,10 @@
         <template v-if="isEmpty(actions)">
           <!-- no action: this is a valid state -->
         </template>
+        <DeleteTravelAuthorizationDialog
+          v-else-if="actions.includes('delete')"
+          :travel-authorization-id="item.id"
+        />
         <SubmitTravelDeskRequestButton
           v-else-if="actions.includes('submit_travel_desk_request')"
           :travel-authorization-id="item.id"
@@ -61,6 +65,7 @@ import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
 import AddExpenseButton from "./my-travel-authorizations-table/AddExpenseButton"
+import DeleteTravelAuthorizationDialog from "./my-travel-authorizations-table/DeleteTravelAuthorizationDialog"
 import SubmitExpenseClaimButton from "./my-travel-authorizations-table/SubmitExpenseClaimButton"
 import SubmitPoolVehicleRequestButton from "./my-travel-authorizations-table/SubmitPoolVehicleRequestButton"
 import SubmitTravelDeskRequestButton from "./my-travel-authorizations-table/SubmitTravelDeskRequestButton"
@@ -70,6 +75,7 @@ export default {
   name: "MyTravelAuthorizationsTable",
   components: {
     AddExpenseButton,
+    DeleteTravelAuthorizationDialog,
     SubmitExpenseClaimButton,
     SubmitPoolVehicleRequestButton,
     SubmitTravelDeskRequestButton,
