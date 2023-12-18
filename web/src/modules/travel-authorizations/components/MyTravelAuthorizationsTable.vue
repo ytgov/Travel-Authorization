@@ -10,6 +10,12 @@
       class="elevation-2"
       @click:row="goToFormDetails"
     >
+      <template #top>
+        <DeleteTravelAuthorizationDialog
+          ref="deleteDialog"
+          @deleted="refresh"
+        />
+      </template>
       <template #item.phase="{ value }">
         <span>{{ formatPhase(value) }}</span>
       </template>
@@ -29,10 +35,13 @@
         <template v-if="isEmpty(actions)">
           <!-- no action: this is a valid state -->
         </template>
-        <DeleteTravelAuthorizationDialog
+        <v-btn
           v-else-if="actions.includes('delete')"
-          :travel-authorization-id="item.id"
-        />
+          class="ml-2"
+          color="error"
+          @click.stop="showDeleteDialog(item)"
+          >Delete</v-btn
+        >
         <SubmitTravelDeskRequestButton
           v-else-if="actions.includes('submit_travel_desk_request')"
           :travel-authorization-id="item.id"
@@ -128,6 +137,7 @@ export default {
   },
   async mounted() {
     await this.refresh()
+    this.showDeleteDialogForRouteQuery()
   },
   methods: {
     ...mapActions("current/user/travelAuthorizations", ["ensure"]),
@@ -148,6 +158,18 @@ export default {
           params: { formId },
         })
       }
+    },
+    showDeleteDialog(item) {
+      this.$refs.deleteDialog.show(item)
+    },
+    showDeleteDialogForRouteQuery() {
+      const itemId = parseInt(this.$route.query.showDelete)
+      if (isNaN(itemId)) return
+
+      const item = this.items.find((item) => item.id === itemId)
+      if (!item) return
+
+      this.showDeleteDialog(item)
     },
     formatDate(value) {
       if (isNil(value)) return "Unknown"
