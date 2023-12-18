@@ -45,7 +45,7 @@
       >
       <v-tab
         :to="{
-          name: 'ReadMyTravelAuthorizationEstimatePage',
+          name: 'ManageTravelAuthorizationEstimatePage',
           params: { travelAuthorizationId },
         }"
         >Estimate</v-tab

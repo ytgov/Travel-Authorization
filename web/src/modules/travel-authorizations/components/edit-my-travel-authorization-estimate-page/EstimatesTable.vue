@@ -109,7 +109,7 @@ export default {
       return formatter.format(amount)
     },
     refresh() {
-      return this.loadEstimates({ formId: this.formId })
+      return this.loadEstimates({ travelAuthorizationId: this.formId })
     },
     showDeleteDialog(item) {
       this.$refs.deleteDialog.show(item)

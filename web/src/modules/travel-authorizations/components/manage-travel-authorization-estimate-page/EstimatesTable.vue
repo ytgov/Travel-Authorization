@@ -35,7 +35,7 @@ export default {
   name: "EstimatesTable",
   components: {},
   props: {
-    formId: {
+    travelAuthorizationId: {
       type: Number,
       required: true,
     },
@@ -58,7 +58,7 @@ export default {
     },
   },
   mounted() {
-    return this.loadEstimates({ travelAuthorizationId: this.formId })
+    return this.loadEstimates({ travelAuthorizationId: this.travelAuthorizationId })
   },
   methods: {
     ...mapActions("travelAuthorizations", ["loadEstimates"]),
