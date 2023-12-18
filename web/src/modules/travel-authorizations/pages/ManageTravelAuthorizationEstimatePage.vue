@@ -2,7 +2,7 @@
   <div class="mt-4">
     <EstimatesTable
       ref="estimatesTable"
-      :form-id="travelAuthorizationId"
+      :travel-authorization-id="travelAuthorizationId"
     />
   </div>
 </template>
