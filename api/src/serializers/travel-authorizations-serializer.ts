@@ -93,7 +93,9 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   // TODO: double check the order of these conditions
   determineAction() {
-    if (this.isApproved() && this.anyTransportTypeIsAircraft()) {
+    if (this.isDraft()) {
+      return ["delete"]
+    } else if (this.isApproved() && this.anyTransportTypeIsAircraft()) {
       return ["submit_travel_desk_request"]
     } else if (this.travellingComplete()) {
       return ["submit_expense_claim"]
