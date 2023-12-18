@@ -21,7 +21,6 @@ export enum Actions {
   APPROVE = "approve",
   DENY = "deny",
   UPDATE = "update",
-  DELETE = "delete",
 }
 
 export class TravelAuthorizationActionLog extends Model<

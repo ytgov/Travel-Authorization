@@ -1,7 +1,7 @@
 import db from "@/db/db-client"
 import BaseService from "@/services/base-service"
 
-import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
+import { TravelAuthorization, User } from "@/models"
 
 export class DestroyService extends BaseService {
   private travelAuthorization: TravelAuthorization
@@ -14,20 +14,11 @@ export class DestroyService extends BaseService {
   }
 
   async perform(): Promise<void> {
-    return db.transaction(async () => {
-      const travelAuthorizationId = this.travelAuthorization.id
-      await this.travelAuthorization.destroy().catch((error) => {
-        throw new Error(`Could not delete TravelAuthorization: ${error}`)
-      })
-
-      await TravelAuthorizationActionLog.create({
-        travelAuthorizationId,
-        userId: this.currentUser.id,
-        action: TravelAuthorizationActionLog.Actions.DELETE,
-      })
-
-      return
+    await this.travelAuthorization.destroy().catch((error) => {
+      throw new Error(`Could not delete TravelAuthorization: ${error}`)
     })
+
+    return
   }
 }
 
