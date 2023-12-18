@@ -47,6 +47,10 @@ router.patch(
   "/api/travel-authorizations/:travelAuthorizationId",
   TravelAuthorizationsController.update
 )
+router.delete(
+  "/api/travel-authorizations/:travelAuthorizationId",
+  TravelAuthorizationsController.destroy
+)
 router.post(
   "/api/travel-authorizations/:travelAuthorizationId/estimates/generate",
   TravelAuthorizations.Estimates.GenerateController.create

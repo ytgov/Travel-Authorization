@@ -32,6 +32,21 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     return false
   }
 
+  // Currently the same as the update policy, but this is likely to change in the future
+  // so opted for duplication over premature abstraction.
+  destroy(): boolean {
+    if (this.user.roles.includes(User.Roles.ADMIN)) return true
+    if (this.record.supervisorEmail === this.user.email) return true
+    if (
+      this.record.userId === this.user.id &&
+      this.record.status === TravelAuthorization.Statuses.DRAFT
+    ) {
+      return true
+    }
+
+    return false
+  }
+
   static applyScope(
     modelClass: ModelStatic<TravelAuthorization>,
     currentUser: User

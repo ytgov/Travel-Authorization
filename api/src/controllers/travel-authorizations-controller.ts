@@ -3,7 +3,7 @@ import { WhereOptions } from "sequelize"
 
 import BaseController from "./base-controller"
 
-import { UpdateService, CreateService } from "@/services/travel-authorizations"
+import { UpdateService, CreateService, DestroyService } from "@/services/travel-authorizations"
 import { TravelAuthorization } from "@/models"
 import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
@@ -134,6 +134,29 @@ export class TravelAuthorizationsController extends BaseController {
         return this.response
           .status(422)
           .json({ message: `Travel authorization update failed: ${error}` })
+      })
+  }
+
+  async destroy() {
+    const travelAuthorization = await this.loadTravelAuthorization()
+    if (isNil(travelAuthorization))
+      return this.response.status(404).json({ message: "TravelAuthorization not found." })
+
+    const policy = this.buildPolicy(travelAuthorization)
+    if (!policy.destroy()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to delete this travel authorization." })
+    }
+
+    return DestroyService.perform(travelAuthorization, this.currentUser)
+      .then(() => {
+        return this.response.status(204).end()
+      })
+      .catch((error) => {
+        return this.response
+          .status(422)
+          .json({ message: `Travel authorization deletion failed: ${error}` })
       })
   }
 
