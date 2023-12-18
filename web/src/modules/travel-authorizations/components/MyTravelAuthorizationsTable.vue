@@ -49,7 +49,7 @@
           v-else-if="actions.includes('submit_pool_vehicle_request')"
           :travel-authorization-id="item.id"
         />
-        <span v-else> ERROR: unknown action: {{ value }}</span>
+        <span v-else> ERROR: unknown actions: {{ actions }}</span>
       </template>
     </v-data-table>
   </div>
