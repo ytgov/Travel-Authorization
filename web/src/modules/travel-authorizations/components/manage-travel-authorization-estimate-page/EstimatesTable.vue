@@ -56,7 +56,7 @@ export default {
     ...mapGetters("expenses", ["items", "isLoading"]),
     // Will need to be calculated in the back-end if data is multi-page.
     totalAmount() {
-      return sumBy(this.estimates, "cost")
+      return sumBy(this.items, "cost")
     },
   },
   async mounted() {
