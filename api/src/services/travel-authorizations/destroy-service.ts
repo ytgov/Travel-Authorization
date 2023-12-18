@@ -15,12 +15,13 @@ export class DestroyService extends BaseService {
 
   async perform(): Promise<void> {
     return db.transaction(async () => {
+      const travelAuthorizationId = this.travelAuthorization.id
       await this.travelAuthorization.destroy().catch((error) => {
         throw new Error(`Could not delete TravelAuthorization: ${error}`)
       })
 
       await TravelAuthorizationActionLog.create({
-        travelAuthorizationId: this.travelAuthorization.id,
+        travelAuthorizationId,
         userId: this.currentUser.id,
         action: TravelAuthorizationActionLog.Actions.DELETE,
       })
