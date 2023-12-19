@@ -129,7 +129,7 @@ dev knex migrate:make migration-name
 
 This will generate a migration of the form:
 
-- `api/src/data/migrations/20231013235256_migration-name.ts`
+- `api/src/db/migrations/20231013235256_migration-name.ts`
 
 Ideally the full name would be dash cased but that would require switching to `umzug/Sequelize`.
 
