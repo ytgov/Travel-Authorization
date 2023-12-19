@@ -1,19 +1,20 @@
 <template>
   <div class="mt-4">
+    TODO: rebuild all components to support expenses instead of estimates
     <div class="d-flex justify-end">
-      <EstimateCreateDialog
+      <ExpenseCreateDialog
         v-if="hasExpenses"
         :form-id="travelAuthorizationId"
-        @created="refreshEstimates"
+        @created="refreshExpenses"
       />
-      <EstimateGenerateDialog
+      <ExpensePrefillDialog
         v-else
-        :form-id="travelAuthorizationId"
-        @created="refreshEstimates"
+        :travel-authorization-id="travelAuthorizationId"
+        @created="refreshExpenses"
       />
     </div>
 
-    <EstimatesTable
+    <ExpensesTable
       ref="expensesTable"
       :form-id="travelAuthorizationId"
     />
@@ -25,16 +26,16 @@ import { mapActions, mapGetters } from "vuex"
 
 import { TYPES } from "@/api/expenses-api"
 
-import EstimateCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateCreateDialog"
-import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
-import EstimatesTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimatesTable"
+import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
+import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
+import ExpensesTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensesTable"
 
 export default {
   name: "EditMyTravelAuthorizationExpensePage",
   components: {
-    EstimateCreateDialog,
-    EstimateGenerateDialog,
-    EstimatesTable,
+    ExpenseCreateDialog,
+    ExpensePrefillDialog,
+    ExpensesTable,
   },
   props: {
     travelAuthorizationId: {
@@ -59,7 +60,7 @@ export default {
   },
   methods: {
     ...mapActions("expenses", ["ensure"]),
-    refreshEstimates() {
+    refreshExpenses() {
       this.$refs.expensesTable.refresh()
     },
   },
