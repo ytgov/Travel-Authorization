@@ -10,6 +10,12 @@
       class="elevation-2"
       @click:row="goToFormDetails"
     >
+      <template #top>
+        <DeleteTravelAuthorizationDialog
+          ref="deleteDialog"
+          @deleted="refresh"
+        />
+      </template>
       <template #item.phase="{ value }">
         <span>{{ formatPhase(value) }}</span>
       </template>
@@ -29,6 +35,13 @@
         <template v-if="isEmpty(actions)">
           <!-- no action: this is a valid state -->
         </template>
+        <v-btn
+          v-else-if="actions.includes('delete')"
+          class="ml-2"
+          color="error"
+          @click.stop="showDeleteDialog(item)"
+          >Delete</v-btn
+        >
         <SubmitTravelDeskRequestButton
           v-else-if="actions.includes('submit_travel_desk_request')"
           :travel-authorization-id="item.id"
@@ -49,7 +62,7 @@
           v-else-if="actions.includes('submit_pool_vehicle_request')"
           :travel-authorization-id="item.id"
         />
-        <span v-else> ERROR: unknown action: {{ value }}</span>
+        <span v-else> ERROR: unknown actions: {{ actions }}</span>
       </template>
     </v-data-table>
   </div>
@@ -61,6 +74,7 @@ import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
 import AddExpenseButton from "./my-travel-authorizations-table/AddExpenseButton"
+import DeleteTravelAuthorizationDialog from "./my-travel-authorizations-table/DeleteTravelAuthorizationDialog"
 import SubmitExpenseClaimButton from "./my-travel-authorizations-table/SubmitExpenseClaimButton"
 import SubmitPoolVehicleRequestButton from "./my-travel-authorizations-table/SubmitPoolVehicleRequestButton"
 import SubmitTravelDeskRequestButton from "./my-travel-authorizations-table/SubmitTravelDeskRequestButton"
@@ -70,6 +84,7 @@ export default {
   name: "MyTravelAuthorizationsTable",
   components: {
     AddExpenseButton,
+    DeleteTravelAuthorizationDialog,
     SubmitExpenseClaimButton,
     SubmitPoolVehicleRequestButton,
     SubmitTravelDeskRequestButton,
@@ -122,6 +137,7 @@ export default {
   },
   async mounted() {
     await this.refresh()
+    this.showDeleteDialogForRouteQuery()
   },
   methods: {
     ...mapActions("current/user/travelAuthorizations", ["ensure"]),
@@ -142,6 +158,18 @@ export default {
           params: { formId },
         })
       }
+    },
+    showDeleteDialog(item) {
+      this.$refs.deleteDialog.show(item)
+    },
+    showDeleteDialogForRouteQuery() {
+      const itemId = parseInt(this.$route.query.showDelete)
+      if (isNaN(itemId)) return
+
+      const item = this.items.find((item) => item.id === itemId)
+      if (!item) return
+
+      this.showDeleteDialog(item)
     },
     formatDate(value) {
       if (isNil(value)) return "Unknown"

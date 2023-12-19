@@ -35,6 +35,7 @@ router.use("/api", checkJwt)
 router.use("/api", loadUser)
 
 // TODO: move all routing logic to this file, and move all route actions into controllers
+// TODO: convert all routes to use the router.route(/path).action(...).action(...) syntax
 router.get("/api/expenses", ExpensesController.index)
 router.post("/api/expenses", ExpensesController.create)
 router.patch("/api/expenses/:expenseId", ExpensesController.update)
@@ -46,6 +47,10 @@ router.get("/api/travel-authorizations/:travelAuthorizationId", TravelAuthorizat
 router.patch(
   "/api/travel-authorizations/:travelAuthorizationId",
   TravelAuthorizationsController.update
+)
+router.delete(
+  "/api/travel-authorizations/:travelAuthorizationId",
+  TravelAuthorizationsController.destroy
 )
 router.post(
   "/api/travel-authorizations/:travelAuthorizationId/estimates/generate",

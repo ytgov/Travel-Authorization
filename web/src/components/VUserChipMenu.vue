@@ -1,6 +1,7 @@
 <template>
   <v-menu
     v-model="menu"
+    :close-on-content-click="false"
     bottom
     right
     transition="scale-transition"
@@ -22,7 +23,10 @@
           color="white"
           indeterminate
         ></v-progress-circular>
-        <template v-else> {{ user.firstName }} {{ user.lastName }} </template>
+        <template v-else>
+          {{ user.firstName }} {{ user.lastName }}
+          <v-icon right>mdi-menu-down</v-icon>
+        </template>
       </v-chip>
     </template>
 

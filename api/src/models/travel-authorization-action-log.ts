@@ -20,7 +20,7 @@ import TravelAuthorization from "./travel-authorization"
 export enum Actions {
   APPROVE = "approve",
   DENY = "deny",
-  UPDATE = "update"
+  UPDATE = "update",
 }
 
 export class TravelAuthorizationActionLog extends Model<
