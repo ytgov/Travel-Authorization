@@ -11,17 +11,19 @@
         v-bind="attrs"
         v-on="on"
       >
-        Generate Estimates
+        Prefill Expenses
       </v-btn>
     </template>
     <v-form @submit.prevent="createAndClose">
       <v-card :loading="loading">
-        <v-card-title class="text-h5"> Generate Estimates? </v-card-title>
+        <v-card-title class="text-h5"> Prefill Expenses? </v-card-title>
 
         <v-card-text>
           <p>
-            By proceeding, initial cost estimates will be pre-populated for this travel request.
-            You'll have the opportunity to review and modify them afterward.
+            By proceeding, initial expenses will be pre-populated from estimates. You'll have the
+            opportunity to review and modify them afterward.
+            <br />
+            Note: Flight estimates will be excluded, as will meals and incidentals.
           </p>
           <p>
             <em>This might take a some time...</em>
@@ -42,7 +44,7 @@
             color="primary"
             type="submit"
           >
-            Generate
+            Prefill
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -53,7 +55,7 @@
 <script>
 import { required } from "@/utils/validators"
 
-import generateApi from "@/api/travel-authorizations/estimates/generate-api"
+import prefillApi from "@/api/travel-authorizations/expenses/prefill-api"
 
 export default {
   name: "ExpensePrefillDialog",
@@ -74,16 +76,16 @@ export default {
   },
   data() {
     return {
-      showDialog: this.$route.query.showGenerate === "true",
+      showDialog: this.$route.query.showPrefill === "true",
       loading: false,
     }
   },
   watch: {
     showDialog(value) {
       if (value) {
-        this.$router.push({ query: { showGenerate: value } })
+        this.$router.push({ query: { showPrefill: value } })
       } else {
-        this.$router.push({ query: { showGenerate: undefined } })
+        this.$router.push({ query: { showPrefill: undefined } })
       }
     },
   },
@@ -94,7 +96,7 @@ export default {
     },
     createAndClose() {
       this.loading = true
-      return generateApi
+      return prefillApi
         .create(this.travelAuthorizationId)
         .then(() => {
           this.$emit("created")
