@@ -4,12 +4,12 @@ import path from "path"
 import helmet from "helmet"
 
 import * as config from "./config"
-import { CreateMigrationRoutes } from "./data"
 
 import {
   userRouter,
   lookupRouter,
   formRouter,
+  migrateRouter,
   preapprovedRouter,
   travelDeskRouter,
   travComRouter,
@@ -70,9 +70,7 @@ if (config.NODE_ENV !== "test") {
 // TODO: move these to the routes file
 app.use("/api", databaseHealthCheckMiddleware)
 app.use("/migrate", databaseHealthCheckMiddleware)
-
- // TODO: make this a router/controller and hide it behind the /api namespace
-CreateMigrationRoutes(app)
+app.use(migrateRouter)
 
 app.use("/api/form", checkJwt, loadUser, formRouter)
 app.use("/api/user", checkJwt, loadUser, userRouter)
