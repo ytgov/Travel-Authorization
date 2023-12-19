@@ -26,10 +26,10 @@
         @click="resetActiveState"
         >Estimate</v-tab
       >
-      <v-tab>Request - TODO</v-tab>
-      <v-tab>Itinerary - TODO</v-tab>
-      <v-tab>Expense - TODO</v-tab>
-      <v-tab>Reporting - TODO</v-tab>
+      <v-tab
+        :to="{ name: 'EditMyTravelAuthorizationExpensePage', params: { travelAuthorizationId } }"
+        >Expense</v-tab
+      >
     </v-tabs>
 
     <template v-if="isReadyCurrentTravelAuthorization">
