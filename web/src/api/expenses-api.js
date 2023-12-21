@@ -22,6 +22,17 @@ export const expensesApi = {
   delete(expenseId) {
     return http.delete(`/api/expenses/${expenseId}`).then(({ data }) => data)
   },
+  upload(expenseId, file) {
+    const formData = new FormData()
+    formData.append("file", file)
+    return http
+      .post(`/api/expenses/${expenseId}/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then(({ data }) => data)
+  },
 }
 
 export default expensesApi

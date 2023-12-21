@@ -39,6 +39,11 @@
         >
       </div>
     </template>
+    <template #item.receipts="{ item }">
+      <div class="d-flex justify-end">
+        <AddReceiptButton :expense-id="item.id" />
+      </div>
+    </template>
     <template #foot>
       <tfoot>
         <tr>
@@ -60,12 +65,14 @@ import { DateTime } from "luxon"
 
 import { TYPES } from "@/api/expenses-api"
 
+import AddReceiptButton from "./AddReceiptButton"
 import ExpenseDeleteDialog from "./ExpenseDeleteDialog"
 import ExpenseEditDialog from "./ExpenseEditDialog"
 
 export default {
   name: "ExpensesTable",
   components: {
+    AddReceiptButton,
     ExpenseDeleteDialog,
     ExpenseEditDialog,
   },
@@ -82,6 +89,7 @@ export default {
       { text: "Date", value: "date" },
       { text: "Amount", value: "cost" },
       { text: "", value: "actions" },
+      { text: "", value: "receipts" },
     ],
     totalRowClasses: "text-start font-weight-bold text-uppercase",
   }),
