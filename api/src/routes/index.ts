@@ -17,7 +17,6 @@ import {
   UsersController,
 } from "@/controllers"
 import { healthCheckRouter } from "./healthcheck-router"
-import { uploadMiddleware } from "@/middleware"
 
 export * from "./owner-router"
 export * from "./users-router"
@@ -45,7 +44,6 @@ router
   .delete(ExpensesController.destroy)
 router
   .route("/api/expenses/:expenseId/upload")
-  .all(uploadMiddleware.single("receipt")) // must match name of field in web/src/api/expenses-api.js#upload
   .post(Expenses.UploadController.create)
 
 router.route("/api/stops").get(StopsController.index)
