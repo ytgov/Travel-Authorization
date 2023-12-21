@@ -30,18 +30,19 @@
           @click="showEditDialog(item)"
           >Edit</v-btn
         >
+        <AddReceiptButton
+          :expense-id="item.id"
+          class="ml-12"
+        />
         <v-btn
           v-if="actions.includes('delete')"
+          icon
           class="ml-2"
           color="error"
           @click="showDeleteDialog(item)"
-          >Delete</v-btn
         >
-      </div>
-    </template>
-    <template #item.receipts="{ item }">
-      <div class="d-flex justify-end">
-        <AddReceiptButton :expense-id="item.id" />
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </div>
     </template>
     <template #foot>
@@ -55,7 +56,7 @@
           <td :class="totalRowClasses">{{ formatCurrency(totalAmount) }}</td>
           <td
             :class="totalRowClasses"
-            colspan="2"
+            colspan="1"
           ></td>
         </tr>
       </tfoot>
@@ -94,7 +95,6 @@ export default {
       { text: "Date", value: "date" },
       { text: "Amount", value: "cost" },
       { text: "", value: "actions" },
-      { text: "", value: "receipts" },
     ],
     totalRowClasses: "text-start font-weight-bold text-uppercase",
   }),
