@@ -54,15 +54,18 @@ router
   .patch(TravelAuthorizationsController.update)
   .delete(TravelAuthorizationsController.destroy)
 router
-  .route("/api/travel-authorizations/:travelAuthorizationId/estimates/generate")
-  .post(TravelAuthorizations.Estimates.GenerateController.create)
-
-router
   .route("/api/travel-authorizations/:travelAuthorizationId/approve")
   .post(TravelAuthorizations.ApproveController.create)
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/deny")
   .post(TravelAuthorizations.DenyController.create)
+
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId/estimates/generate")
+  .post(TravelAuthorizations.Estimates.GenerateController.create)
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId/expenses/prefill")
+  .post(TravelAuthorizations.Expenses.PrefillController.create)
 
 router.route("/api/locations").get(LocationsController.index)
 router.route("/api/pre-approved-travelers").get(PreApprovedTravelersController.index)
