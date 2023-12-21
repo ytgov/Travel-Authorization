@@ -8,6 +8,7 @@
     />
     <v-btn
       color="primary"
+      :loading="isLoading"
       @click="triggerFileInput"
     >
       Add Receipt
@@ -28,6 +29,7 @@ export default {
   data() {
     return {
       file: null,
+      isLoading: false,
     }
   },
   methods: {
@@ -38,17 +40,17 @@ export default {
       this.file = event.target.files[0]
       this.uploadFile()
     },
-    uploadFile() {
-      expensesApi
-        .upload(this.expenseId, this.file)
-        .then((response) => {
-          // Handle response
-          console.log(response.data)
-        })
-        .catch((error) => {
-          // Handle error
-          console.error(error)
-        })
+    async uploadFile() {
+      this.isLoading = true
+      try {
+        await expensesApi.upload(this.expenseId, this.file)
+        this.$snack("Receipt added", { color: "success" })
+      } catch (error) {
+        console.error(error)
+        this.$snack(`Failed to add receipt: ${error}`, { color: "error" })
+      } finally {
+        this.isLoading = false
+      }
     },
   },
 }

@@ -47,11 +47,16 @@
     <template #foot>
       <tfoot>
         <tr>
-          <td :class="totalRowClasses"></td>
-          <td :class="totalRowClasses"></td>
+          <td
+            :class="totalRowClasses"
+            colspan="2"
+          ></td>
           <td :class="totalRowClasses">Total</td>
           <td :class="totalRowClasses">{{ formatCurrency(totalAmount) }}</td>
-          <td :class="totalRowClasses"></td>
+          <td
+            :class="totalRowClasses"
+            colspan="2"
+          ></td>
         </tr>
       </tfoot>
     </template>
