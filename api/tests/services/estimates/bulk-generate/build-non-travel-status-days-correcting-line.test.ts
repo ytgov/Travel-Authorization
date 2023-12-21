@@ -10,10 +10,10 @@ describe("api/src/services/estimates/bulk-generate/build-non-travel-status-days-
     test("when given some estimates and 2 days off travel status, returns the expected correcting entry", () => {
       // Arrange
       const accommodation1 = expenseFactory
-        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMODATIONS })
+        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMMODATIONS })
         .build({ cost: 250, date: new Date("2022-06-05") })
       const accommodation2 = expenseFactory
-        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMODATIONS })
+        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMMODATIONS })
         .build({ cost: 250, date: new Date("2022-06-06") })
       const transportation1 = expenseFactory
         .estimate({ expenseType: Expense.ExpenseTypes.TRANSPORTATION })
@@ -66,10 +66,10 @@ describe("api/src/services/estimates/bulk-generate/build-non-travel-status-days-
     test("when given some estimates and 1 day off travel status, assumes non travel status day is final day", () => {
       // Arrange
       const accommodation1 = expenseFactory
-        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMODATIONS })
+        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMMODATIONS })
         .build({ cost: 250, date: new Date("2022-06-05") })
       const accommodation2 = expenseFactory
-        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMODATIONS })
+        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMMODATIONS })
         .build({ cost: 250, date: new Date("2022-06-06") })
       const transportation1 = expenseFactory
         .estimate({ expenseType: Expense.ExpenseTypes.TRANSPORTATION })
@@ -122,10 +122,10 @@ describe("api/src/services/estimates/bulk-generate/build-non-travel-status-days-
     test("when no travel status days are longer than trip, maxes out at number or relevant entries per expense type", () => {
       // Arrange
       const accommodation1 = expenseFactory
-        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMODATIONS })
+        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMMODATIONS })
         .build({ cost: 250, date: new Date("2022-06-05") })
       const accommodation2 = expenseFactory
-        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMODATIONS })
+        .estimate({ expenseType: Expense.ExpenseTypes.ACCOMMODATIONS })
         .build({ cost: 250, date: new Date("2022-06-06") })
       const transportation1 = expenseFactory
         .estimate({ expenseType: Expense.ExpenseTypes.TRANSPORTATION })

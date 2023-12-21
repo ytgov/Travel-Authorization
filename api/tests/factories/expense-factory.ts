@@ -9,7 +9,7 @@ class ExpenseFactory extends Factory<Expense> {
   estimate(params: Pick<DeepPartial<Expense>, "expenseType">) {
     let description: string
     const expenseType = params.expenseType || faker.helpers.enumValue(Expense.ExpenseTypes)
-    if (expenseType === Expense.ExpenseTypes.ACCOMODATIONS) {
+    if (expenseType === Expense.ExpenseTypes.ACCOMMODATIONS) {
       const accommodationType = faker.helpers.enumValue(TravelSegment.AccommodationTypes)
       const city = faker.location.city()
       description = `${accommodationType} in ${city}`

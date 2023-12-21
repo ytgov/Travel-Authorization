@@ -94,7 +94,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
             cost: 250.0,
             currency: "CAD",
             type: "Estimate",
-            expenseType: "Accomodations",
+            expenseType: "Accommodations",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
@@ -103,7 +103,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
             cost: 250.0,
             currency: "CAD",
             type: "Estimate",
-            expenseType: "Accomodations",
+            expenseType: "Accommodations",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
@@ -202,7 +202,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
             cost: 250.0,
             currency: "CAD",
             type: "Estimate",
-            expenseType: "Accomodations",
+            expenseType: "Accommodations",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
@@ -211,7 +211,7 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
             cost: 250.0,
             currency: "CAD",
             type: "Estimate",
-            expenseType: "Accomodations",
+            expenseType: "Accommodations",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,

@@ -18,7 +18,7 @@ import TravelAuthorization from "./travel-authorization"
 
 // Keep in sync with web/src/modules/travel-authorizations/components/ExpenseTypeSelect.vue
 export enum ExpenseTypes {
-  ACCOMODATIONS = "Accomodations",
+  ACCOMMODATIONS = "Accommodations",
   TRANSPORTATION = "Transportation",
   MEALS_AND_INCIDENTALS = "Meals & Incidentals",
   NON_TRAVEL_STATUS = "Non-Travel Status",

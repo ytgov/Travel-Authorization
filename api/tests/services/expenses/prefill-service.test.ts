@@ -28,7 +28,7 @@ describe("api/src/services/expenses/prefill-service.ts", () => {
           cost: 250.0,
           currency: "CAD",
           type: Expense.Types.ESTIMATE,
-          expenseType: Expense.ExpenseTypes.ACCOMODATIONS,
+          expenseType: Expense.ExpenseTypes.ACCOMMODATIONS,
         })
         await expenseFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -37,7 +37,7 @@ describe("api/src/services/expenses/prefill-service.ts", () => {
           cost: 250.0,
           currency: "CAD",
           type: Expense.Types.ESTIMATE,
-          expenseType: Expense.ExpenseTypes.ACCOMODATIONS,
+          expenseType: Expense.ExpenseTypes.ACCOMMODATIONS,
         })
         await expenseFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -91,7 +91,7 @@ describe("api/src/services/expenses/prefill-service.ts", () => {
             cost: 250.0,
             currency: "CAD",
             type: "Expense",
-            expenseType: "Accomodations",
+            expenseType: "Accommodations",
           }),
           expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
@@ -100,7 +100,7 @@ describe("api/src/services/expenses/prefill-service.ts", () => {
             cost: 250.0,
             currency: "CAD",
             type: "Expense",
-            expenseType: "Accomodations",
+            expenseType: "Accommodations",
           }),
         ])
       })
