@@ -39,10 +39,12 @@ export class UploadService extends BaseService {
 
   async perform(): Promise<Expense> {
     const { name, size, data } = this.file
-    return this.expense.update({
+    await this.expense.update({
       fileName: name,
       fileSize: size,
       receiptImage: data,
     })
+
+    return this.expense.reload()
   }
 }

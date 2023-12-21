@@ -55,7 +55,10 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
   declare getTravelAuthorization: BelongsToGetAssociationMixin<TravelAuthorization>
-  declare setTravelAuthorization: BelongsToSetAssociationMixin<TravelAuthorization, TravelAuthorization["id"]>
+  declare setTravelAuthorization: BelongsToSetAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["id"]
+  >
   declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
@@ -139,6 +142,16 @@ Expense.init(
     sequelize,
     modelName: "Expense",
     tableName: "expenses",
+    // TODO: consider whether it would be better to use a separate table for uploads
+    // e.g. Rails https://guides.rubyonrails.org/active_storage_overview.html
+    defaultScope: {
+      attributes: { exclude: ["receiptImage"] },
+    },
+    scopes: {
+      withReceiptImage: {
+        attributes: { include: ["receiptImage"] },
+      },
+    },
   }
 )
 
