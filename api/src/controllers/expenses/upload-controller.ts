@@ -18,8 +18,7 @@ export class UploadController extends BaseController {
         .json({ message: "You are not authorized to upload receipts to this expense." })
     }
 
-    console.log("this.request.files:", this.request.files)
-    const file = this.request.files?.["receipt"]
+    const file = this.request.files?.["receipt"] // must match field name in web/src/api/expenses-api.js#upload
     if (isNil(file)) {
       return this.response.status(422).json({ message: "No receipt was uploaded." })
     }
