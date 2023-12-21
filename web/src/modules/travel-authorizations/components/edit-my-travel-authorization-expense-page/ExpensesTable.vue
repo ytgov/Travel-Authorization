@@ -116,8 +116,10 @@ export default {
     },
     refresh() {
       return this.fetch({
-        travelAuthorizationId: this.travelAuthorizationId,
-        type: TYPES.EXPENSE,
+        where: {
+          travelAuthorizationId: this.travelAuthorizationId,
+          type: TYPES.EXPENSE,
+        },
       })
     },
     showDeleteDialog(item) {
