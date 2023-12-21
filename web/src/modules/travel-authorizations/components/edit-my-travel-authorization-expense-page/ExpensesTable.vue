@@ -23,26 +23,35 @@
       {{ formatCurrency(value) }}
     </template>
     <template #item.actions="{ value: actions, item }">
-      <div class="d-flex justify-end">
-        <v-btn
-          v-if="actions.includes('edit')"
-          color="secondary"
-          @click="showEditDialog(item)"
-          >Edit</v-btn
-        >
-        <AddReceiptButton
-          :expense-id="item.id"
-          class="ml-12"
-        />
-        <v-btn
-          v-if="actions.includes('delete')"
-          icon
-          class="ml-2"
-          color="error"
-          @click="showDeleteDialog(item)"
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+      <div class="d-flex">
+        <v-col class="d-flex justify-end">
+          <v-btn
+            v-if="actions.includes('edit')"
+            color="secondary"
+            @click="showEditDialog(item)"
+            >Edit</v-btn
+          >
+        </v-col>
+        <v-col class="d-flex justify-end">
+          <AddReceiptButton
+            v-if="item.fileSize === null"
+            :expense-id="item.id"
+          />
+          <ViewRecieptLink
+            v-else
+            :expense-id="item.id"
+          />
+
+          <v-btn
+            v-if="actions.includes('delete')"
+            icon
+            class="ml-2"
+            color="error"
+            @click="showDeleteDialog(item)"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-col>
       </div>
     </template>
     <template #foot>
@@ -74,6 +83,7 @@ import { TYPES } from "@/api/expenses-api"
 import AddReceiptButton from "./AddReceiptButton"
 import ExpenseDeleteDialog from "./ExpenseDeleteDialog"
 import ExpenseEditDialog from "./ExpenseEditDialog"
+import ViewRecieptLink from "./ViewRecieptLink"
 
 export default {
   name: "ExpensesTable",
@@ -81,6 +91,7 @@ export default {
     AddReceiptButton,
     ExpenseDeleteDialog,
     ExpenseEditDialog,
+    ViewRecieptLink,
   },
   props: {
     travelAuthorizationId: {
