@@ -8,8 +8,8 @@
     dense
     outlined
     required
-    @input="input"
     v-bind="$attrs"
+    @input="input"
   ></v-select>
 </template>
 
@@ -21,6 +21,7 @@ export default {
   props: {
     value: {
       type: String,
+      default: () => null,
     },
   },
   data: () => ({
