@@ -9,14 +9,14 @@
     >
       <v-card>
         <v-card-title>
-          <span class="text-h5">Edit Estimate</span>
+          <span class="text-h5">Edit Expense</span>
         </v-card-title>
 
         <v-card-text :loading="loading">
           <v-row>
             <v-col>
               <ExpenseTypeSelect
-                v-model="estimate.expenseType"
+                v-model="expense.expenseType"
                 :rules="[required]"
                 label="Expense Type"
                 required
@@ -26,7 +26,7 @@
           <v-row>
             <v-col>
               <v-text-field
-                v-model="estimate.description"
+                v-model="expense.description"
                 :rules="[required]"
                 label="Description"
                 required
@@ -36,7 +36,7 @@
           <v-row>
             <v-col>
               <DatePicker
-                v-model="estimate.date"
+                v-model="expense.date"
                 :rules="[required]"
                 label="Date"
                 required
@@ -46,7 +46,7 @@
           <v-row>
             <v-col>
               <CurrencyTextField
-                v-model="estimate.cost"
+                v-model="expense.cost"
                 :rules="[required]"
                 label="Amount"
                 required
@@ -96,21 +96,21 @@ export default {
     ExpenseTypeSelect,
   },
   data: () => ({
-    estimate: {},
+    expense: {},
     showDialog: false,
     loading: false,
   }),
   computed: {
-    estimateId() {
-      return this.estimate.id
+    expenseId() {
+      return this.expense.id
     },
   },
   watch: {
     showDialog(value) {
       if (value) {
-        if (this.$route.query.showEdit === this.estimate.id.toString()) return
+        if (this.$route.query.showEdit === this.expense.id.toString()) return
 
-        this.$router.push({ query: { showEdit: this.estimate.id } })
+        this.$router.push({ query: { showEdit: this.expense.id } })
       } else {
         this.$router.push({ query: { showEdit: undefined } })
       }
@@ -118,21 +118,21 @@ export default {
   },
   methods: {
     required,
-    show(estimate) {
-      this.estimate = cloneDeep(estimate)
+    show(expense) {
+      this.expense = cloneDeep(expense)
       this.showDialog = true
     },
     close() {
       this.showDialog = false
       this.$nextTick(() => {
-        this.estimate = {}
+        this.expense = {}
         this.$refs.form.resetValidation()
       })
     },
     updateAndClose() {
       this.loading = true
       return expensesApi
-        .update(this.estimateId, this.estimate)
+        .update(this.expenseId, this.expense)
         .then(() => {
           this.$emit("saved")
           this.close()
