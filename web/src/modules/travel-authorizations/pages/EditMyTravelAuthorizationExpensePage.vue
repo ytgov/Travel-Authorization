@@ -16,7 +16,7 @@
 
     <ExpensesTable
       ref="expensesTable"
-      :form-id="travelAuthorizationId"
+      :travel-authorization-id="travelAuthorizationId"
     />
   </div>
 </template>
