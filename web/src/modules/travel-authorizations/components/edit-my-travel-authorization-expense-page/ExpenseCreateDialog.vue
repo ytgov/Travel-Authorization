@@ -11,7 +11,7 @@
         v-bind="attrs"
         v-on="on"
       >
-        Add Estimate
+        Add Expense
       </v-btn>
     </template>
     <v-form
@@ -20,14 +20,14 @@
     >
       <v-card :loading="loading">
         <v-card-title>
-          <span class="text-h5">Create Estimate</span>
+          <span class="text-h5">Create Expense</span>
         </v-card-title>
 
         <v-card-text>
           <v-row>
             <v-col>
               <ExpenseTypeSelect
-                v-model="estimate.expenseType"
+                v-model="expense.expenseType"
                 :rules="[required]"
                 label="Expense Type"
                 required
@@ -37,7 +37,7 @@
           <v-row>
             <v-col>
               <v-text-field
-                v-model="estimate.description"
+                v-model="expense.description"
                 :rules="[required]"
                 label="Description"
                 required
@@ -47,7 +47,7 @@
           <v-row>
             <v-col>
               <DatePicker
-                v-model="estimate.date"
+                v-model="expense.date"
                 :rules="[required]"
                 label="Date"
                 required
@@ -57,7 +57,7 @@
           <v-row>
             <v-col>
               <CurrencyTextField
-                v-model="estimate.cost"
+                v-model="expense.cost"
                 :rules="[required]"
                 label="Amount"
                 required
@@ -112,7 +112,7 @@ export default {
   },
   data() {
     return {
-      estimate: this.newEstimate(),
+      expense: this.newExpense(),
       showDialog: this.$route.query.showCreate === "true",
       loading: false,
     }
@@ -128,22 +128,22 @@ export default {
   },
   methods: {
     required,
-    newEstimate() {
+    newExpense() {
       return {
         travelAuthorizationId: this.formId,
-        type: expensesApi.TYPES.ESTIMATE,
+        type: expensesApi.TYPES.EXPENSE,
         currency: "CAD",
       }
     },
     close() {
       this.showDialog = false
-      this.estimate = this.newEstimate()
+      this.expense = this.newExpense()
       this.$refs.form.resetValidation()
     },
     createAndClose() {
       this.loading = true
       return expensesApi
-        .create(this.estimate)
+        .create(this.expense)
         .then(() => {
           this.close()
           this.$nextTick(() => {
