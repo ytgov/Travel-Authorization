@@ -32,63 +32,59 @@ export * from "./lookup-tables-router"
 
 const router = Router()
 
-router.use("/api", checkJwt)
-router.use("/api", loadUser)
+router.use("/api", checkJwt, loadUser)
 
 // TODO: move all routing logic to this file, and move all route actions into controllers
 // TODO: convert all routes to use the router.route(/path).action(...).action(...) syntax
-router.get("/api/expenses", ExpensesController.index)
-router.post("/api/expenses", ExpensesController.create)
-router.patch("/api/expenses/:expenseId", ExpensesController.update)
-router.delete("/api/expenses/:expenseId", ExpensesController.destroy)
-router.get("/api/stops", StopsController.index)
-router.get("/api/travel-authorizations", TravelAuthorizationsController.index)
-router.post("/api/travel-authorizations", TravelAuthorizationsController.create)
-router.get("/api/travel-authorizations/:travelAuthorizationId", TravelAuthorizationsController.show)
-router.patch(
-  "/api/travel-authorizations/:travelAuthorizationId",
-  TravelAuthorizationsController.update
-)
-router.delete(
-  "/api/travel-authorizations/:travelAuthorizationId",
-  TravelAuthorizationsController.destroy
-)
-router.post(
-  "/api/travel-authorizations/:travelAuthorizationId/estimates/generate",
-  TravelAuthorizations.Estimates.GenerateController.create
-)
-router.post(
-  "/api/travel-authorizations/:travelAuthorizationId/approve",
-  TravelAuthorizations.ApproveController.create
-)
-router.post(
-  "/api/travel-authorizations/:travelAuthorizationId/deny",
-  TravelAuthorizations.DenyController.create
-)
-router.get("/api/locations", LocationsController.index)
-router.get("/api/pre-approved-travelers", PreApprovedTravelersController.index)
-router.get("/api/pre-approved-travel-requests", PreApprovedTravelRequestsController.index)
-router.get("/api/users/:userId", UsersController.show)
-router.post(
-  "/api/users/:userId/yg-government-directory-sync",
-  Users.YgGovernmentDirectorySyncController.create
-)
-router.get("/api/travel-purposes", TravelPurposesController.index)
+router.route("/api/expenses").get(ExpensesController.index).post(ExpensesController.create)
+router
+  .route("/api/expenses/:expenseId")
+  .patch(ExpensesController.update)
+  .delete(ExpensesController.destroy)
+
+router.route("/api/stops").get(StopsController.index)
+
+router
+  .route("/api/travel-authorizations")
+  .get(TravelAuthorizationsController.index)
+  .post(TravelAuthorizationsController.create)
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId")
+  .get(TravelAuthorizationsController.show)
+  .patch(TravelAuthorizationsController.update)
+  .delete(TravelAuthorizationsController.destroy)
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId/estimates/generate")
+  .post(TravelAuthorizations.Estimates.GenerateController.create)
+
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId/approve")
+  .post(TravelAuthorizations.ApproveController.create)
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId/deny")
+  .post(TravelAuthorizations.DenyController.create)
+
+router.route("/api/locations").get(LocationsController.index)
+router.route("/api/pre-approved-travelers").get(PreApprovedTravelersController.index)
+router.route("/api/pre-approved-travel-requests").get(PreApprovedTravelRequestsController.index)
+
+router.route("/api/users/:userId").get(UsersController.show)
+router
+  .route("/api/users/:userId/yg-government-directory-sync")
+  .post(Users.YgGovernmentDirectorySyncController.create)
+router.route("/api/travel-purposes").get(TravelPurposesController.index)
 
 // QA testing scenarios
-router.get("/api/qa/scenarios", Qa.ScenariosController.index)
-router.post(
-  `/api/qa/scenarios/${Qa.ScenarioTypes.MY_TRAVEL_REQUESTS}`,
-  Qa.Scenarios.MyTravelRequestsController.create
-)
-router.post(
-  `/api/qa/scenarios/${Qa.ScenarioTypes.BECOME_ADMIN_ROLE}`,
-  Qa.Scenarios.BecomeAdminRoleController.create
-)
-router.post(
-  `/api/qa/scenarios/${Qa.ScenarioTypes.BECOME_USER_ROLE}`,
-  Qa.Scenarios.BecomeUserRoleController.create
-)
+router.route("/api/qa/scenarios").get(Qa.ScenariosController.index)
+router
+  .route(`/api/qa/scenarios/${Qa.ScenarioTypes.MY_TRAVEL_REQUESTS}`)
+  .post(Qa.Scenarios.MyTravelRequestsController.create)
+router
+  .route(`/api/qa/scenarios/${Qa.ScenarioTypes.BECOME_ADMIN_ROLE}`)
+  .post(Qa.Scenarios.BecomeAdminRoleController.create)
+router
+  .route(`/api/qa/scenarios/${Qa.ScenarioTypes.BECOME_USER_ROLE}`)
+  .post(Qa.Scenarios.BecomeUserRoleController.create)
 
 router.use("/api/health-check", healthCheckRouter)
 
