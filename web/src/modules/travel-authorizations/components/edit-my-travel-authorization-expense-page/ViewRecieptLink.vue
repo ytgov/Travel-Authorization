@@ -1,16 +1,12 @@
 <template>
-  <!-- <a
-    :href="`/api/expenses/${expenseId}/upload`"
-    target="_blank"
-  >
-    view receipt
-  </a> -->
   <v-btn
     :href="`/api/expenses/${expenseId}/upload`"
     target="_blank"
-    color="secondary"
+    color="primary"
+    text
   >
-    View Receipt
+    <span class="text-decoration-underline">View Receipt</span>
+    <v-icon right>mdi-open-in-new</v-icon>
   </v-btn>
 </template>
 
