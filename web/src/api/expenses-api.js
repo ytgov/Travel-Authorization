@@ -24,7 +24,7 @@ export const expensesApi = {
   },
   upload(expenseId, file) {
     const formData = new FormData()
-    formData.append("file", file)
+    formData.append("receipt", file)
     return http
       .post(`/api/expenses/${expenseId}/upload`, formData, {
         headers: {
