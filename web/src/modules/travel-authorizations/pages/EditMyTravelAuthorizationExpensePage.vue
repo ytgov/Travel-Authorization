@@ -1,6 +1,5 @@
 <template>
   <div class="mt-4">
-    TODO: rebuild all components to support expenses instead of estimates
     <div class="d-flex justify-end">
       <ExpenseCreateDialog
         v-if="hasExpenses"

@@ -5,28 +5,28 @@
   >
     <v-card>
       <v-card-title class="text-h5">
-        Are you sure you want to delete the following estimate?
+        Are you sure you want to delete the following expense?
       </v-card-title>
       <v-card-text>
-        <v-container v-if="hasEstimate">
+        <v-container v-if="hasExpense">
           <v-row no-gutters>
             <v-col class="text-center">
-              {{ estimate.expenseType }}
+              {{ expense.expenseType }}
             </v-col>
           </v-row>
           <v-row no-gutters>
             <v-col class="text-center">
-              {{ estimate.description }}
+              {{ expense.description }}
             </v-col>
           </v-row>
           <v-row no-gutters>
             <v-col class="text-center">
-              {{ formatDate(estimate.date) }}
+              {{ formatDate(expense.date) }}
             </v-col>
           </v-row>
           <v-row no-gutters>
             <v-col class="text-center">
-              {{ formatCurrency(estimate.cost) }}
+              {{ formatCurrency(expense.cost) }}
             </v-col>
           </v-row>
         </v-container>
@@ -60,32 +60,32 @@ import expensesApi from "@/api/expenses-api"
 export default {
   name: "ExpenseDeleteDialog",
   data: () => ({
-    estimate: {},
+    expense: {},
     showDialog: false,
     loading: false,
   }),
   computed: {
-    estimateId() {
-      return this.estimate.id
+    expenseId() {
+      return this.expense.id
     },
-    hasEstimate() {
-      return !isEmpty(this.estimate)
+    hasExpense() {
+      return !isEmpty(this.expense)
     },
   },
   watch: {
     showDialog(value) {
       if (value) {
-        if (this.$route.query.showDelete === this.estimate.id.toString()) return
+        if (this.$route.query.showDelete === this.expense.id.toString()) return
 
-        this.$router.push({ query: { showDelete: this.estimate.id } })
+        this.$router.push({ query: { showDelete: this.expense.id } })
       } else {
         this.$router.push({ query: { showDelete: undefined } })
       }
     },
   },
   methods: {
-    show(estimate) {
-      this.estimate = estimate
+    show(expense) {
+      this.expense = expense
       this.showDialog = true
     },
     close() {
@@ -94,7 +94,7 @@ export default {
     deleteAndClose() {
       this.loading = true
       return expensesApi
-        .delete(this.estimateId)
+        .delete(this.expenseId)
         .then(() => {
           this.$emit("deleted")
           this.close()
