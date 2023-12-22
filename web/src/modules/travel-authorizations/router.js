@@ -24,6 +24,39 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
+        path: ":travelAuthorizationId",
+        component: () =>
+          import("@/modules/travel-authorizations/layouts/MyTravelAuthorizationLayout"),
+        props: cast("travelAuthorizationId", parseInt),
+        children: [
+          // {
+          //   path: "",
+          //   redirect: "details",
+          // },
+          // {
+          //   path: "details",
+          //   name: "MyTravelAuthorizationDetailsPage",
+          //   component: () =>
+          //     import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationDetailsPage"),
+          //   props: true,
+          // },
+          // {
+          //   path: "estimate",
+          //   name: "MyTravelAuthorizationEstimatePage",
+          //   component: () =>
+          //     import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationEstimatePage"),
+          //   props: true,
+          // },
+        ],
+      },
+    ],
+  },
+  // TODO: replace all the following routes with the new pattern
+  {
+    path: "/my-travel-requests",
+    component: () => import("@/layouts/Layout"),
+    children: [
+      {
         path: ":formId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ReadMyTravelAuthorizationLayout"),
