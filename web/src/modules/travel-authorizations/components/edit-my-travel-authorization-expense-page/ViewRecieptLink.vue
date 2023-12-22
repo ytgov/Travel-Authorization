@@ -5,7 +5,6 @@
     @click="downloadFile"
   >
     View Receipt
-    <v-icon right>mdi-download</v-icon>
   </v-btn>
 </template>
 
