@@ -11,7 +11,7 @@
             cols="12"
             md="2"
           >
-            <EstimatedCostTextField :estimates="currentTravelAuthorizationEstimates" />
+            <EstimatedCostTextField :estimates="travelAuthorizationEstimates" />
           </v-col>
           <v-col
             cols="12"
@@ -21,7 +21,7 @@
               v-if="!refreshingEstimatesSilently && hasEstimates"
               :to="{
                 name: 'EditMyTravelAuthorizationEstimatePage',
-                params: { travelAuthorizationId: currentTravelAuthorizationId },
+                params: { travelAuthorizationId: travelAuthorizationId },
               }"
               class="mt-1"
               color="secondary"
@@ -29,7 +29,7 @@
             >
             <EstimateGenerateDialog
               v-else
-              :form-id="currentTravelAuthorizationId"
+              :travel-authorization-id="travelAuthorizationId"
               button-classes="mt-1"
               button-color="primary"
               @created="refreshEstimatesSilently"
@@ -56,7 +56,7 @@
             md="4"
           >
             <v-select
-              v-model="currentTravelAuthorization.preappId"
+              v-model="travelAuthorization.preappId"
               :items="preApprovedTravelRequests"
               :loading="isLoadingCurrentUser || loadingPreApprovedTravelRequests"
               label="Pre-approved Travel Request?"
@@ -72,7 +72,7 @@
             md="3"
           >
             <SearchableUserEmailCombobox
-              v-model="currentTravelAuthorization.supervisorEmail"
+              v-model="travelAuthorization.supervisorEmail"
               :rules="[required]"
               label="Submit to"
               dense
@@ -104,8 +104,8 @@ import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
 
 import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
-import EstimateGenerateDialog from "./approvals-form-card/EstimateGenerateDialog"
-import SubmitToSupervisorButton from "./approvals-form-card/SubmitToSupervisorButton"
+import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/approvals-form-card/EstimateGenerateDialog"
+import SubmitToSupervisorButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/approvals-form-card/SubmitToSupervisorButton"
 
 export default {
   name: "ApprovalsFormCard",
@@ -116,6 +116,10 @@ export default {
     SubmitToSupervisorButton,
   },
   props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
     validateForm: {
       type: Function,
       required: true,
@@ -130,42 +134,45 @@ export default {
   }),
   computed: {
     ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
-      currentTravelAuthorizationEstimates: "estimates",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
+      travelAuthorizationEstimates: "estimates",
     }),
     travelAdvanceInDollars: {
       get() {
-        return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0) || 0
+        return Math.ceil(this.travelAuthorization.travelAdvanceInCents / 100.0) || 0
       },
       set(value) {
-        this.currentTravelAuthorization.travelAdvanceInCents = Math.ceil(value * 100)
+        this.travelAuthorization.travelAdvanceInCents = Math.ceil(value * 100)
       },
     },
     hasEstimates() {
-      return this.currentTravelAuthorizationEstimates.length > 0
+      return this.travelAuthorizationEstimates.length > 0
     },
   },
   async mounted() {
-    const department = !isEmpty(this.currentUser.department)
-      ? this.currentUser.department
-      : await this.ensureCurrentUser().then((user) => user.department)
+    await Promise.all([
+      this.ensureCurrentUser(),
+      this.ensureTravelAuthorization(this.travelAuthorizationId),
+      this.refreshEstimatesSilently(),
+    ])
+
+    const department = this.currentUser.department
     await this.loadPreApprovedTravelRequests(department)
-    await this.refreshEstimatesSilently()
   },
   methods: {
     ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
-    ...mapActions("current/travelAuthorization", {
-      fetchCurrentTravelAuthorizationExpensesSilently: "fetchExpensesSilently",
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
+      fetchTravelAuthorizationExpensesSilently: "fetchExpensesSilently",
     }),
     refreshEstimatesSilently() {
       this.refreshingEstimatesSilently = true
-      return this.fetchCurrentTravelAuthorizationExpensesSilently(
-        this.currentTravelAuthorizationId
-      ).finally(() => {
-        this.refreshingEstimatesSilently = false
-      })
+      return this.fetchTravelAuthorizationExpensesSilently(this.travelAuthorizationId).finally(
+        () => {
+          this.refreshingEstimatesSilently = false
+        }
+      )
     },
     loadPreApprovedTravelRequests(department) {
       // Since we can't determine if a pre-approval applies, the user doesn't get any options.

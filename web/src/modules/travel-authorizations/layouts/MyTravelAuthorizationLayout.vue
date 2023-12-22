@@ -19,10 +19,13 @@
     <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
 
     <v-tabs>
-      <v-tab :to="{ name: 'MyTravelAuthorizationDetailsPage', params: { travelAuthorizationId } }">
-        Details
-      </v-tab>
-      <v-tab :to="{ name: 'MyTravelAuthorizationEstimatePage', params: { travelAuthorizationId } }">
+      <DetailsTab :travel-authorization-id="travelAuthorizationId" />
+      <v-tab
+        :to="{
+          name: 'EditMyTravelAuthorizationEstimatePage',
+          params: { travelAuthorizationId },
+        }"
+      >
         Estimate
       </v-tab>
       <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
@@ -40,12 +43,14 @@ import Breadcrumbs from "@/components/Breadcrumbs"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
+import DetailsTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/DetailsTab"
 import ExpenseTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/ExpenseTab"
 
 export default {
   name: "MyTravelAuthorizationLayout",
   components: {
     Breadcrumbs,
+    DetailsTab,
     ExpenseTab,
     SummaryHeaderPanel,
     VUserChipMenu,
@@ -65,10 +70,6 @@ export default {
       this.ensureCurrentUser(),
       this.ensureTravelAuthorization(this.travelAuthorizationId),
     ])
-    console.log(
-      "this.isReadyTravelAuthorization:",
-      JSON.stringify(this.isReadyTravelAuthorization, null, 2)
-    )
   },
   methods: {
     ...mapActions("current/user", { ensureCurrentUser: "ensure" }),

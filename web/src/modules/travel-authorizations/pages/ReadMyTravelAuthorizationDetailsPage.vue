@@ -38,5 +38,11 @@ export default {
     DetailsCard,
     ApprovalsCard,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
 }
 </script>

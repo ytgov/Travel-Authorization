@@ -29,17 +29,24 @@ const routes = [
           import("@/modules/travel-authorizations/layouts/MyTravelAuthorizationLayout"),
         props: cast("travelAuthorizationId", parseInt),
         children: [
-          // {
-          //   path: "",
-          //   redirect: "details",
-          // },
-          // {
-          //   path: "details",
-          //   name: "MyTravelAuthorizationDetailsPage",
-          //   component: () =>
-          //     import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationDetailsPage"),
-          //   props: true,
-          // },
+          {
+            path: "",
+            redirect: "details",
+          },
+          {
+            path: "details",
+            name: "ReadMyTravelAuthorizationDetailsPage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationDetailsPage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+          {
+            path: "details/edit",
+            name: "EditMyTravelAuthorizationDetailsPage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
           // {
           //   path: "estimate",
           //   name: "MyTravelAuthorizationEstimatePage",

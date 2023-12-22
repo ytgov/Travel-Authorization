@@ -11,16 +11,22 @@
     </v-row>
     <v-row>
       <v-col>
-        <DetailsFormCard />
+        <DetailsFormCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <ApprovalsFormCard :validate-form="validateForm" />
+        <ApprovalsFormCard
+          :travel-authorization-id="travelAuthorizationId"
+          :validate-form="validateForm"
+        />
       </v-col>
     </v-row>
     <div class="d-flex justify-end">
-      <SaveDraftButton :validate-form="validateForm" />
+      <SaveDraftButton
+        :travel-authorization-id="travelAuthorizationId"
+        :validate-form="validateForm"
+      />
       <v-btn
         class="ml-3"
         color="secondary"

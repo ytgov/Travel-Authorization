@@ -35,8 +35,8 @@
             md="1"
           >
             <TravelDurationTextField
-              v-model="currentTravelAuthorization.travelDuration"
-              :stops="currentTravelAuthorization.stops"
+              v-model="travelAuthorization.travelDuration"
+              :stops="travelAuthorization.stops"
             />
           </v-col>
           <v-col
@@ -44,7 +44,7 @@
             md="2"
           >
             <v-text-field
-              v-model="currentTravelAuthorization.daysOffTravelStatus"
+              v-model="travelAuthorization.daysOffTravelStatus"
               :rules="[isNumber]"
               label="Days on non-travel status"
               dense
@@ -57,7 +57,7 @@
             md="3"
           >
             <DatePicker
-              v-model="currentTravelAuthorization.dateBackToWork"
+              v-model="travelAuthorization.dateBackToWork"
               :min="lastStop.departureDate"
               :rules="[required]"
               label="Expected Date return to work"
@@ -90,6 +90,12 @@ export default {
     DatePicker,
     TravelDurationTextField,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   data: () => ({
     TRIP_TYPES,
     tripTypes: Object.values(TRIP_TYPES),
@@ -97,8 +103,8 @@ export default {
     isNumber: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
   }),
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
       stops: "stops",
       firstStop: "firstStop",
       lastStop: "lastStop",
@@ -129,9 +135,11 @@ export default {
     },
   },
   async mounted() {
-    if (this.currentTravelAuthorization.oneWayTrip) {
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+
+    if (this.travelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
-    } else if (this.currentTravelAuthorization.multiStop) {
+    } else if (this.travelAuthorization.multiStop) {
       this.tripType = TRIP_TYPES.MULTI_DESTINATION
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP
@@ -143,18 +151,22 @@ export default {
   },
   methods: {
     required,
-    ...mapActions("current/travelAuthorization", ["newBlankStop", "replaceStops"]),
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
+      newBlankStop: "newBlankStop",
+      replaceStops: "replaceStops",
+    }),
     async updateTripType(value) {
       this.tripType = value
       if (value === TRIP_TYPES.ROUND_TRIP) {
-        this.currentTravelAuthorization.oneWayTrip = false
-        this.currentTravelAuthorization.multiStop = false
+        this.travelAuthorization.oneWayTrip = false
+        this.travelAuthorization.multiStop = false
       } else if (value === TRIP_TYPES.ONE_WAY) {
-        this.currentTravelAuthorization.oneWayTrip = true
-        this.currentTravelAuthorization.multiStop = false
+        this.travelAuthorization.oneWayTrip = true
+        this.travelAuthorization.multiStop = false
       } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
-        this.currentTravelAuthorization.multiStop = true
-        this.currentTravelAuthorization.oneWayTrip = false
+        this.travelAuthorization.multiStop = true
+        this.travelAuthorization.oneWayTrip = false
       } else {
         throw new Error("Invalid trip type")
       }
