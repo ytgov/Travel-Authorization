@@ -74,7 +74,9 @@ export class CreateService extends BaseService {
           "TravelAuthorization submitted successfully."
         )
 
-        return travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
+        return travelAuthorization.reload({
+          include: ["expenses", "stops", "purpose", "user", "travelSegments"],
+        })
       })
       .catch((error) => {
         auditService.log(

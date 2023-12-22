@@ -26,7 +26,36 @@
         @click="resetActiveState"
         >Estimate</v-tab
       >
+
+      <v-tooltip
+        v-if="isExpenseTabDisabled"
+        bottom
+      >
+        <template #activator="{ on }">
+          <div
+            class="d-flex align-center"
+            v-on="on"
+          >
+            <v-tab
+              class="d-flex align-start"
+              disabled
+            >
+              Expense
+              <v-icon
+                class="ml-1"
+                small
+              >
+                mdi-help-circle-outline
+              </v-icon>
+            </v-tab>
+          </div>
+        </template>
+        <span>
+          Expenses are locked until request is approved, and travel start date has passed.
+        </span>
+      </v-tooltip>
       <v-tab
+        v-else
         :to="{ name: 'EditMyTravelAuthorizationExpensePage', params: { travelAuthorizationId } }"
         >Expense</v-tab
       >
@@ -40,6 +69,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+
+import { STATUSES } from "@/api/travel-authorizations-api"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
@@ -66,8 +97,19 @@ export default {
   computed: {
     ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
       isReadyCurrentTravelAuthorization: "isReady",
     }),
+    isTravelAuthorizationApproved() {
+      return this.currentTravelAuthorization.status === STATUSES.APPROVED
+    },
+    isAfterTravelStartDate() {
+      const firstTravelSegment = this.currentTravelAuthorization.travelSegments[0]
+      return new Date(firstTravelSegment) < new Date()
+    },
+    isExpenseTabDisabled() {
+      return !this.isTravelAuthorizationApproved || !this.isAfterTravelStartDate
+    },
   },
   watch: {},
   async mounted() {
