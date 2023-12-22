@@ -61,8 +61,9 @@
       <v-tab
         v-else
         :to="{ name: 'EditMyTravelAuthorizationExpensePage', params: { travelAuthorizationId } }"
-        >Expense</v-tab
       >
+        Expense
+      </v-tab>
     </v-tabs>
 
     <template v-if="isReadyCurrentTravelAuthorization">

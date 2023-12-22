@@ -44,6 +44,7 @@ export default {
       this.isLoading = true
       try {
         await expensesApi.upload(this.expenseId, this.file)
+        this.$emit("uploaded")
         this.$snack("Receipt added", { color: "success" })
       } catch (error) {
         console.error(error)

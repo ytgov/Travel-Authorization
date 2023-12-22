@@ -36,6 +36,7 @@
           <AddReceiptButton
             v-if="item.fileSize === null"
             :expense-id="item.id"
+            @uploaded="refresh"
           />
           <ViewRecieptLink
             v-else

@@ -45,6 +45,45 @@
       <v-tab :to="{ name: 'ReadMyTravelAuthorizationEstimatePage', params: { formId } }"
         >Estimate</v-tab
       >
+
+      <v-tooltip
+        v-if="isExpenseTabDisabled"
+        bottom
+      >
+        <template #activator="{ on }">
+          <div
+            class="d-flex align-center"
+            v-on="on"
+          >
+            <v-tab
+              class="d-flex align-start"
+              disabled
+            >
+              Expense
+              <v-icon
+                class="ml-1"
+                small
+              >
+                mdi-help-circle-outline
+              </v-icon>
+            </v-tab>
+          </div>
+        </template>
+        <span>
+          Expenses are locked until request is approved, and travel start date has passed. Locked
+          reason(s):
+          <ul>
+            <li v-if="!isTravelAuthorizationApproved">not approved</li>
+            <li v-if="!isAfterTravelStartDate">start date has not passed</li>
+          </ul>
+        </span>
+      </v-tooltip>
+      <v-tab
+        v-else
+        :to="{ name: 'EditMyTravelAuthorizationExpensePage', params: { travelAuthorizationId } }"
+      >
+        Expense
+      </v-tab>
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
 
@@ -56,8 +95,10 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+import { isNil } from "lodash"
 
 import { ROLES as USER_ROLES } from "@/api/users-api"
+import { STATUSES } from "@/api/travel-authorizations-api"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
@@ -83,9 +124,27 @@ export default {
   }),
   computed: {
     ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapGetters("current/travelAuthorization", { isReadyCurrentTravelAuthorization: "isReady" }),
+    ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
+      isReadyCurrentTravelAuthorization: "isReady",
+    }),
+    travelAuthorizationId() {
+      return this.formId
+    },
     isAdmin() {
       return this.currentUser?.roles?.includes(USER_ROLES.ADMIN)
+    },
+    isTravelAuthorizationApproved() {
+      return this.currentTravelAuthorization.status === STATUSES.APPROVED
+    },
+    isAfterTravelStartDate() {
+      const firstTravelSegment = this.currentTravelAuthorization.travelSegments[0]
+      if (isNil(firstTravelSegment)) return false
+
+      return new Date(firstTravelSegment.departureOn) < new Date()
+    },
+    isExpenseTabDisabled() {
+      return !this.isTravelAuthorizationApproved || !this.isAfterTravelStartDate
     },
   },
   mounted() {

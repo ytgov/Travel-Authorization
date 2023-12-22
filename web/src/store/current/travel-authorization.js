@@ -8,6 +8,7 @@ const state = {
     expenses: [],
     purpose: {},
     stops: [],
+    travelSegments: [],
     user: {},
   },
   isLoading: false,
