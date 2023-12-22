@@ -1,4 +1,4 @@
-import { seedUp } from "@/data/seeds"
+import { seedUp } from "@/db/seeds"
 import { TravelAuthorization } from "@/models"
 
 async function runSeeds(): Promise<void> {

@@ -63,10 +63,10 @@ export const DB_CONFIG = {
     // getNewMigrationName: (name) => {
     //   return `${someDateFormat(...)}-${name}.ts`;
     // }
-    directory: path.resolve(__dirname, "./data/migrations"),
+    directory: path.resolve(__dirname, "./db/migrations"),
   },
   seeds: {
-    directory: path.resolve(__dirname, "./data/seeds"),
+    directory: path.resolve(__dirname, "./db/seeds"),
   },
 }
 
