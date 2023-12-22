@@ -73,6 +73,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+import { isNil } from "lodash"
 
 import { STATUSES } from "@/api/travel-authorizations-api"
 
@@ -109,6 +110,8 @@ export default {
     },
     isAfterTravelStartDate() {
       const firstTravelSegment = this.currentTravelAuthorization.travelSegments[0]
+      if (isNil(firstTravelSegment)) return false
+
       return new Date(firstTravelSegment.departureOn) < new Date()
     },
     isExpenseTabDisabled() {
