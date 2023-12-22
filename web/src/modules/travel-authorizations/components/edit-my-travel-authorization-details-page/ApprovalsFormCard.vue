@@ -85,6 +85,7 @@
             md="3"
           >
             <SubmitToSupervisorButton
+              :travel-authorization-id="travelAuthorizationId"
               :validate-form="validateForm"
               class="mt-1"
             />

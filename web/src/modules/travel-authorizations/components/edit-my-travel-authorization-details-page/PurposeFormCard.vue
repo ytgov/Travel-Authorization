@@ -17,7 +17,7 @@
                 md="6"
               >
                 <v-select
-                  v-model="currentTravelAuthorization.purposeId"
+                  v-model="travelAuthorization.purposeId"
                   :items="travelPurposes"
                   :loading="isLoadingTravelPurposes"
                   :rules="[required]"
@@ -31,7 +31,7 @@
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  v-model="currentTravelAuthorization.eventName"
+                  v-model="travelAuthorization.eventName"
                   :rules="[required]"
                   dense
                   label="Name of meeting/conference, mission, trade fair or course"
@@ -45,7 +45,7 @@
               >
                 <!-- Depending on in territory flag we will load a different list of destinations -->
                 <v-checkbox
-                  v-model="currentTravelAuthorization.allTravelWithinTerritory"
+                  v-model="travelAuthorization.allTravelWithinTerritory"
                   label="In Territory?"
                   dense
                   required
@@ -58,7 +58,7 @@
               >
                 <LocationsAutocomplete
                   :value="lastStop.locationId"
-                  :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+                  :in-territory="travelAuthorization.allTravelWithinTerritory"
                   :rules="[required]"
                   clearable
                   dense
@@ -92,7 +92,7 @@
                 md="9"
               >
                 <v-textarea
-                  v-model="currentTravelAuthorization.benefits"
+                  v-model="travelAuthorization.benefits"
                   :rules="[required]"
                   auto-grow
                   dense
@@ -130,8 +130,8 @@ export default {
     required: (v) => !!v || "This field is required",
   }),
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
       stops: "stops",
       lastStop: "lastStop",
     }),
@@ -141,12 +141,14 @@ export default {
     }),
   },
   async mounted() {
-    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
-    await this.ensureTravelPurposes()
+    await Promise.all([
+      await this.ensureTravelAuthorization(this.travelAuthorizationId),
+      await this.ensureTravelPurposes(),
+    ])
   },
   methods: {
-    ...mapActions("current/travelAuthorization", {
-      ensureCurrentTravelAuthorization: "ensure",
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
       replaceStops: "replaceStops",
     }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
