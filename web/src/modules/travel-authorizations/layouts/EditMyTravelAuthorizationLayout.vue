@@ -23,7 +23,6 @@
       >
       <v-tab
         :to="{ name: 'EditMyTravelAuthorizationEstimatePage', params: { travelAuthorizationId } }"
-        @click="resetActiveState"
         >Estimate</v-tab
       >
 
@@ -122,11 +121,6 @@ export default {
       ensureCurrentTravelAuthorization: "ensure",
       fetchCurrentTravelAuthorizationSilently: "fetchSilently",
     }),
-    // This will be unnecessary once all tabs are router links
-    // This fixes a bug where the active state of the tabs is not reset, because url is not changed
-    resetActiveState() {
-      this.tab = this.$route.path
-    },
   },
 }
 </script>
