@@ -44,6 +44,7 @@ router
   .delete(ExpensesController.destroy)
 router
   .route("/api/expenses/:expenseId/upload")
+  .get(Expenses.UploadController.show)
   .post(Expenses.UploadController.create)
 
 router.route("/api/stops").get(StopsController.index)
