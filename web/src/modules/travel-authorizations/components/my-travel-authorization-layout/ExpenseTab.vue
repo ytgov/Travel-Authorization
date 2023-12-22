@@ -47,6 +47,7 @@ import { mapActions, mapGetters } from "vuex"
 import { STATUSES } from "@/api/travel-authorizations-api"
 
 export default {
+  name: "ExpenseTab",
   props: {
     travelAuthorizationId: {
       type: Number,

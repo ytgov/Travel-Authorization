@@ -5,7 +5,7 @@
       params: { travelAuthorizationId },
     }"
   >
-    Details
+    Estimate
   </v-tab>
 </template>
 
@@ -14,7 +14,7 @@ import { mapActions, mapGetters } from "vuex"
 import { STATUSES } from "@/api/travel-authorizations-api"
 
 export default {
-  name: "DetailsTab",
+  name: "EstimateTab",
   props: {
     travelAuthorizationId: {
       type: Number,
@@ -26,10 +26,10 @@ export default {
     ...mapGetters("travelAuthorization", { travelAuthorization: "attributes" }),
     componentName() {
       if (this.isEditable) {
-        return "EditMyTravelAuthorizationDetailsPage"
+        return "EditMyTravelAuthorizationEstimatePage"
       }
 
-      return "ReadMyTravelAuthorizationDetailsPage"
+      return "ReadMyTravelAuthorizationEstimatePage"
     },
     // TODO: probably load from back-end policy in the future to avoid duplication of complex logic
     isEditable() {
@@ -48,9 +48,9 @@ export default {
       await this.ensureTravelAuthorization(this.travelAuthorizationId),
     ])
 
-    if (this.isEditable && this.$route.name !== "EditMyTravelAuthorizationDetailsPage") {
+    if (this.isEditable && this.$route.name !== "EditMyTravelAuthorizationEstimatePage") {
       this.$router.push({
-        name: "EditMyTravelAuthorizationDetailsPage",
+        name: "EditMyTravelAuthorizationEstimatePage",
         params: { travelAuthorizationId: this.travelAuthorizationId },
       })
     }

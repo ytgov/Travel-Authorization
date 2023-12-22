@@ -20,14 +20,7 @@
 
     <v-tabs>
       <DetailsTab :travel-authorization-id="travelAuthorizationId" />
-      <v-tab
-        :to="{
-          name: 'EditMyTravelAuthorizationEstimatePage',
-          params: { travelAuthorizationId },
-        }"
-      >
-        Estimate
-      </v-tab>
+      <EstimateTab :travel-authorization-id="travelAuthorizationId" />
       <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
       <!-- TODO: add in any tabs that you can normally see in read-only mode -->
     </v-tabs>
@@ -44,6 +37,7 @@ import SummaryHeaderPanel from "@/modules/travel-authorizations/components/Summa
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 import DetailsTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/DetailsTab"
+import EstimateTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/EstimateTab"
 import ExpenseTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/ExpenseTab"
 
 export default {
@@ -51,6 +45,7 @@ export default {
   components: {
     Breadcrumbs,
     DetailsTab,
+    EstimateTab,
     ExpenseTab,
     SummaryHeaderPanel,
     VUserChipMenu,
