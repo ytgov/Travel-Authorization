@@ -23,13 +23,46 @@
       >
       <v-tab
         :to="{ name: 'EditMyTravelAuthorizationEstimatePage', params: { travelAuthorizationId } }"
-        @click="resetActiveState"
         >Estimate</v-tab
       >
-      <v-tab>Request - TODO</v-tab>
-      <v-tab>Itinerary - TODO</v-tab>
-      <v-tab>Expense - TODO</v-tab>
-      <v-tab>Reporting - TODO</v-tab>
+
+      <v-tooltip
+        v-if="isExpenseTabDisabled"
+        bottom
+      >
+        <template #activator="{ on }">
+          <div
+            class="d-flex align-center"
+            v-on="on"
+          >
+            <v-tab
+              class="d-flex align-start"
+              disabled
+            >
+              Expense
+              <v-icon
+                class="ml-1"
+                small
+              >
+                mdi-help-circle-outline
+              </v-icon>
+            </v-tab>
+          </div>
+        </template>
+        <span>
+          Expenses are locked until request is approved, and travel start date has passed. Locked
+          reason(s):
+          <ul>
+            <li v-if="!isTravelAuthorizationApproved">not approved</li>
+            <li v-if="!isAfterTravelStartDate">start date has not passed</li>
+          </ul>
+        </span>
+      </v-tooltip>
+      <v-tab
+        v-else
+        :to="{ name: 'EditMyTravelAuthorizationExpensePage', params: { travelAuthorizationId } }"
+        >Expense</v-tab
+      >
     </v-tabs>
 
     <template v-if="isReadyCurrentTravelAuthorization">
@@ -40,6 +73,9 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex"
+import { isNil } from "lodash"
+
+import { STATUSES } from "@/api/travel-authorizations-api"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
@@ -66,8 +102,21 @@ export default {
   computed: {
     ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
     ...mapGetters("current/travelAuthorization", {
+      currentTravelAuthorization: "attributes",
       isReadyCurrentTravelAuthorization: "isReady",
     }),
+    isTravelAuthorizationApproved() {
+      return this.currentTravelAuthorization.status === STATUSES.APPROVED
+    },
+    isAfterTravelStartDate() {
+      const firstTravelSegment = this.currentTravelAuthorization.travelSegments[0]
+      if (isNil(firstTravelSegment)) return false
+
+      return new Date(firstTravelSegment.departureOn) < new Date()
+    },
+    isExpenseTabDisabled() {
+      return !this.isTravelAuthorizationApproved || !this.isAfterTravelStartDate
+    },
   },
   watch: {},
   async mounted() {
@@ -80,11 +129,6 @@ export default {
       ensureCurrentTravelAuthorization: "ensure",
       fetchCurrentTravelAuthorizationSilently: "fetchSilently",
     }),
-    // This will be unnecessary once all tabs are router links
-    // This fixes a bug where the active state of the tabs is not reset, because url is not changed
-    resetActiveState() {
-      this.tab = this.$route.path
-    },
   },
 }
 </script>

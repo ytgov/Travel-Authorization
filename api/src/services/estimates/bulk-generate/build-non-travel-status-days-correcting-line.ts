@@ -17,7 +17,7 @@ export function buildNonTravelStatusDaysCorrectingLine({
   const estimatesByDateReversed = reverse(sortBy(estimates, "date"))
 
   const accommodationEstimates = estimatesByDateReversed.filter(
-    (estimate) => estimate.expenseType === Expense.ExpenseTypes.ACCOMODATIONS
+    (estimate) => estimate.expenseType === Expense.ExpenseTypes.ACCOMMODATIONS
   )
   let accommodationReduction = 0
   let accommodationReductionDays = 0

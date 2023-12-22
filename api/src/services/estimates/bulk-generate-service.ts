@@ -155,7 +155,7 @@ export class BulkGenerateService extends BaseService {
         type: Expense.Types.ESTIMATE,
         travelAuthorizationId: this.travelAuthorizationId,
         currency: "CAD",
-        expenseType: Expense.ExpenseTypes.ACCOMODATIONS,
+        expenseType: Expense.ExpenseTypes.ACCOMMODATIONS,
         description,
         cost,
         date: stayedAt,

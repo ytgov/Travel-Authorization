@@ -82,10 +82,14 @@ export class ExpensesController extends BaseController {
 
   private async buildExpense() {
     const attributes = this.request.body
-    const { travelAuthorizationId } = attributes
     const expense = Expense.build(attributes)
-    expense.travelAuthorization =
-      (await TravelAuthorization.findByPk(travelAuthorizationId)) || undefined
+
+    const { travelAuthorizationId } = attributes
+    const travelAuthorization = await TravelAuthorization.findByPk(travelAuthorizationId)
+    if (!isNil(travelAuthorization)) {
+      expense.travelAuthorization = travelAuthorization
+    }
+
     return expense
   }
 

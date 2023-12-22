@@ -76,7 +76,7 @@ export default {
   data: () => ({
     headers: [
       { text: "Expense Type", value: "expenseType" },
-      { test: "Description", value: "description" },
+      { text: "Description", value: "description" },
       { text: "Date", value: "date" },
       { text: "Amount", value: "cost" },
       { text: "", value: "actions" },

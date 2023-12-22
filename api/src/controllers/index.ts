@@ -8,6 +8,7 @@ export { TravelPurposesController } from "./travel-purposes-controller"
 export { UsersController } from "./users-controller"
 
 // Namespaced controllers
+export * as Expenses from "./expenses"
 export * as Qa from "./qa"
 export * as TravelAuthorizations from "./travel-authorizations"
 export * as Users from "./users"

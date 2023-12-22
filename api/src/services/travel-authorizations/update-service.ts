@@ -56,7 +56,9 @@ export class UpdateService extends BaseService {
         action: TravelAuthorizationActionLog.Actions.UPDATE,
       })
 
-      return this.travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
+      return this.travelAuthorization.reload({
+        include: ["expenses", "stops", "purpose", "user", "travelSegments"],
+      })
     })
   }
 

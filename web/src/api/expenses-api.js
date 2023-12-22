@@ -3,6 +3,7 @@ import http from "@/api/http-client"
 // Must match types in src/api/models/expense.ts
 export const TYPES = Object.freeze({
   ESTIMATE: "Estimate",
+  EXPENSE: "Expense",
 })
 
 export const expensesApi = {
@@ -20,6 +21,35 @@ export const expensesApi = {
   },
   delete(expenseId) {
     return http.delete(`/api/expenses/${expenseId}`).then(({ data }) => data)
+  },
+  upload(expenseId, file) {
+    const formData = new FormData()
+    formData.append("receipt", file)
+    return http
+      .post(`/api/expenses/${expenseId}/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then(({ data }) => data)
+  },
+  download(expenseId) {
+    return http
+      .get(`/api/expenses/${expenseId}/upload`, {
+        responseType: "blob",
+      })
+      .then((response) => {
+        // NOTE: requires exposing Content-Disposition header in api response or CORS config.
+        // Matches format set in api/src/controllers/expenses/upload-controller.ts
+        const fileName = response.headers["content-disposition"].split("filename=")[1]
+        return {
+          expense: {
+            id: expenseId,
+            receiptImage: response.data,
+            fileName,
+          },
+        }
+      })
   },
 }
 

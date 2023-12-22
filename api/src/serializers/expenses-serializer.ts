@@ -14,7 +14,15 @@ export class ExpensesSerializer extends BaseSerializer<Expense> {
 
   asTableRow() {
     return {
-      ...pick(this.record, ["id", "expenseType", "description", "date", "cost"]),
+      ...pick(this.record, [
+        "id",
+        "expenseType",
+        "description",
+        "date",
+        "cost",
+        "fileSize",
+        "fileName",
+      ]),
       actions: this.actions(),
     }
   }
