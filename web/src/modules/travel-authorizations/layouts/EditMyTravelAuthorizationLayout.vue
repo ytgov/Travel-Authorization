@@ -50,7 +50,12 @@
           </div>
         </template>
         <span>
-          Expenses are locked until request is approved, and travel start date has passed.
+          Expenses are locked until request is approved, and travel start date has passed. Locked
+          reason(s):
+          <ul>
+            <li v-if="!isTravelAuthorizationApproved">not approved</li>
+            <li v-if="!isAfterTravelStartDate">start date has not passed</li>
+          </ul>
         </span>
       </v-tooltip>
       <v-tab
@@ -104,7 +109,7 @@ export default {
     },
     isAfterTravelStartDate() {
       const firstTravelSegment = this.currentTravelAuthorization.travelSegments[0]
-      return new Date(firstTravelSegment) < new Date()
+      return new Date(firstTravelSegment.departureOn) < new Date()
     },
     isExpenseTabDisabled() {
       return !this.isTravelAuthorizationApproved || !this.isAfterTravelStartDate
