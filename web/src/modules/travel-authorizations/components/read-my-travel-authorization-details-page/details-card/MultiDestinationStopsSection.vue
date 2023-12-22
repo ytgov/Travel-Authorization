@@ -226,7 +226,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 
 import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
@@ -234,6 +234,12 @@ export default {
   name: "MultiDestinationStopsSection",
   components: {
     VReadonlyLocationTextField,
+  },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
@@ -244,17 +250,22 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
     }),
   },
   async mounted() {
-    this.stop1 = this.currentTravelAuthorization.stops[0]
-    this.stop2 = this.currentTravelAuthorization.stops[1]
-    this.stop3 = this.currentTravelAuthorization.stops[2]
-    this.stop4 = this.currentTravelAuthorization.stops[3]
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+
+    this.stop1 = this.travelAuthorization.stops[0]
+    this.stop2 = this.travelAuthorization.stops[1]
+    this.stop3 = this.travelAuthorization.stops[2]
+    this.stop4 = this.travelAuthorization.stops[3]
   },
-  methods: {},
+  methods: {
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
+    }),
+  },
 }
 </script>

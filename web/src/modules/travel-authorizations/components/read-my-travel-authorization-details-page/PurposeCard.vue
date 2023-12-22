@@ -23,7 +23,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                :value="currentTravelAuthorization.eventName"
+                :value="travelAuthorization.eventName"
                 label="Name of meeting/conference, mission, trade fair or course"
                 dense
                 outlined
@@ -36,7 +36,7 @@
             >
               <!-- Depending on in territory flag we will load a different list of destinations -->
               <v-checkbox
-                :value="currentTravelAuthorization.allTravelWithinTerritory"
+                :value="travelAuthorization.allTravelWithinTerritory"
                 label="In Territory?"
                 dense
                 readonly
@@ -76,7 +76,7 @@
               md="9"
             >
               <v-textarea
-                :value="currentTravelAuthorization.benefits"
+                :value="travelAuthorization.benefits"
                 label="Objectives"
                 rows="10"
                 auto-grow
@@ -104,11 +104,15 @@ export default {
   components: {
     VReadonlyLocationTextField,
   },
-  data: () => ({}),
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
     }),
     ...mapState("travelPurposes", {
       travelPurposes: "items",
@@ -116,23 +120,27 @@ export default {
     }),
     finalDestination() {
       return (
-        last(this.currentTravelAuthorization.stops) || {
-          travelAuthorizationId: this.currentTravelAuthorizationId,
+        last(this.travelAuthorization.stops) || {
+          travelAuthorizationId: this.travelAuthorizationId,
         }
       )
     },
     purposeText() {
-      const purpose = this.travelPurposes.find(
-        (p) => p.id === this.currentTravelAuthorization.purposeId
-      )
+      const purpose = this.travelPurposes.find((p) => p.id === this.travelAuthorization.purposeId)
       return purpose?.purpose || ""
     },
   },
   async mounted() {
-    await this.ensureTravelPurposes()
+    await Promise.all([
+      this.ensureTravelPurposes(),
+      this.ensureTravelAuthorization(this.travelAuthorizationId),
+    ])
   },
   methods: {
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
+    }),
   },
 }
 </script>

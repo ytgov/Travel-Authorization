@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 
 import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
@@ -88,6 +88,12 @@ export default {
   components: {
     VReadonlyLocationTextField,
   },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       originStop: {},
@@ -95,15 +101,20 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
     }),
   },
   async mounted() {
-    this.originStop = this.currentTravelAuthorization.stops[0]
-    this.destinationStop = this.currentTravelAuthorization.stops[1]
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+
+    this.originStop = this.travelAuthorization.stops[0]
+    this.destinationStop = this.travelAuthorization.stops[1]
   },
-  methods: {},
+  methods: {
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
+    }),
+  },
 }
 </script>

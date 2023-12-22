@@ -28,7 +28,7 @@
           md="1"
         >
           <v-text-field
-            :value="currentTravelAuthorization.travelDuration"
+            :value="travelAuthorization.travelDuration"
             label="# Days"
             dense
             outlined
@@ -40,7 +40,7 @@
           md="2"
         >
           <v-text-field
-            :value="currentTravelAuthorization.daysOffTravelStatus"
+            :value="travelAuthorization.daysOffTravelStatus"
             label="Days on non-travel status"
             dense
             outlined
@@ -52,7 +52,7 @@
           md="3"
         >
           <v-text-field
-            :value="currentTravelAuthorization.dateBackToWork"
+            :value="travelAuthorization.dateBackToWork"
             label="Expected Date return to work"
             prepend-icon="mdi-calendar"
             dense
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -77,35 +77,56 @@ const TRIP_TYPES = Object.freeze({
 export default {
   name: "DetailsCard",
   components: {},
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   data: () => ({
     tripType: "",
   }),
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
     }),
     tripTypeComponent() {
       switch (this.tripType) {
         case TRIP_TYPES.ROUND_TRIP:
-          return () => import("./details-card/RoundTripStopsSection")
+          return () =>
+            import(
+              "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/details-card/RoundTripStopsSection"
+            )
         case TRIP_TYPES.ONE_WAY:
-          return () => import("./details-card/OneWayStopsSection")
+          return () =>
+            import(
+              "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/details-card/OneWayStopsSection"
+            )
         case TRIP_TYPES.MULTI_DESTINATION:
-          return () => import("./details-card/MultiDestinationStopsSection")
+          return () =>
+            import(
+              "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/details-card/MultiDestinationStopsSection"
+            )
         default:
           return null
       }
     },
   },
-  mounted() {
-    if (this.currentTravelAuthorization.oneWayTrip) {
+  async mounted() {
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+
+    if (this.travelAuthorization.oneWayTrip) {
       this.tripType = TRIP_TYPES.ONE_WAY
-    } else if (this.currentTravelAuthorization.multiStop) {
+    } else if (this.travelAuthorization.multiStop) {
       this.tripType = TRIP_TYPES.MULTI_DESTINATION
     } else {
       this.tripType = TRIP_TYPES.ROUND_TRIP
     }
+  },
+  methods: {
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
+    }),
   },
 }
 </script>
