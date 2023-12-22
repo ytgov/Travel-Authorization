@@ -114,10 +114,24 @@ Expense.init(
     receiptImage: {
       type: DataTypes.BLOB,
       allowNull: true,
+      validate: {
+        hasFileSize(value: Buffer | null) {
+          if (value !== null && this.fileSize === null) {
+            throw new Error("fileSize must be set when receiptImage is set")
+          }
+        },
+      },
     },
     fileSize: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      validate: {
+        hasReceiptImage(value: number | null) {
+          if (value !== null && this.receiptImage === null) {
+            throw new Error("receiptImage must be set when fileSize is set")
+          }
+        },
+      },
     },
     fileName: {
       type: DataTypes.STRING(255),
