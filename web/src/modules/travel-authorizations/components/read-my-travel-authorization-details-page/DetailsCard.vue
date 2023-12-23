@@ -20,6 +20,7 @@
       <component
         :is="tripTypeComponent"
         v-if="tripTypeComponent"
+        :travel-authorization-id="travelAuthorizationId"
       />
       <div v-else>Trip type {{ tripType }} not implemented!</div>
       <v-row>
