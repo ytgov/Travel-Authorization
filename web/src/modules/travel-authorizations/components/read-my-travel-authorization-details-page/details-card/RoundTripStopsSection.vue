@@ -165,8 +165,8 @@ export default {
     VReadonlyLocationTextField,
   },
   props: {
-    travelAuthorization: {
-      type: Object,
+    travelAuthorizationId: {
+      type: Number,
       required: true,
     },
   },
