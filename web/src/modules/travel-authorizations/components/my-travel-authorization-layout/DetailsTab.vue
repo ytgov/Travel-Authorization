@@ -48,6 +48,7 @@ export default {
       await this.ensureTravelAuthorization(this.travelAuthorizationId),
     ])
 
+    // TODO: consider pushing this to the EditMyTravelAuthorizationDetailsPage as a route guard?
     if (!this.isEditable && this.$route.name === "EditMyTravelAuthorizationDetailsPage") {
       this.$router.push({
         name: "ReadMyTravelAuthorizationDetailsPage",
