@@ -34,7 +34,7 @@
   <!-- TODO: this will need updating if there is ever a read-only expense view -->
   <v-tab
     v-else
-    :to="{ name: 'MyTravelAuthorizationExpensePage', params: { travelAuthorizationId } }"
+    :to="{ name: 'EditMyTravelAuthorizationExpensePage', params: { travelAuthorizationId } }"
   >
     Expense
   </v-tab>
