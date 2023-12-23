@@ -48,9 +48,9 @@ export default {
       await this.ensureTravelAuthorization(this.travelAuthorizationId),
     ])
 
-    if (this.isEditable && this.$route.name !== "EditMyTravelAuthorizationEstimatePage") {
+    if (!this.isEditable && this.$route.name === "EditMyTravelAuthorizationEstimatePage") {
       this.$router.push({
-        name: "EditMyTravelAuthorizationEstimatePage",
+        name: "ReadMyTravelAuthorizationEstimatePage",
         params: { travelAuthorizationId: this.travelAuthorizationId },
       })
     }
