@@ -1,10 +1,17 @@
 <template>
-  <v-skeleton-loader
+  <v-layout
     v-if="!isReadyTravelAuthorization"
-    class="mx-auto"
-    max-width="300"
-    type="card"
-  ></v-skeleton-loader>
+    fill-height
+    align-center
+    justify-center
+    class="min-vh-70"
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="64"
+    ></v-progress-circular>
+  </v-layout>
   <div v-else>
     <Breadcrumbs />
 
@@ -72,3 +79,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.min-vh-70 {
+  min-height: 70vh;
+}
+</style>
