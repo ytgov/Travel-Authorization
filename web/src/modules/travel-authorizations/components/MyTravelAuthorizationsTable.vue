@@ -145,17 +145,17 @@ export default {
     refresh() {
       return this.ensure({ page: this.page, perPage: this.perPage })
     },
-    goToFormDetails(form) {
-      const formId = form.id
-      if (form.status === "draft") {
+    goToFormDetails(travelAuthorization) {
+      const travelAuthorizationId = travelAuthorization.id
+      if (travelAuthorization.status === "draft") {
         this.$router.push({
           name: "EditMyTravelAuthorizationDetailsPage",
-          params: { travelAuthorizationId: formId },
+          params: { travelAuthorizationId },
         })
       } else {
         this.$router.push({
           name: "ReadMyTravelAuthorizationDetailsPage",
-          params: { formId },
+          params: { travelAuthorizationId },
         })
       }
     },
