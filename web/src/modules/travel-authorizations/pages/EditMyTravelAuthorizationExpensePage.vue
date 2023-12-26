@@ -1,22 +1,37 @@
 <template>
   <div class="mt-4">
-    <div class="d-flex justify-end">
-      <ExpenseCreateDialog
-        v-if="hasExpenses"
-        :form-id="travelAuthorizationId"
-        @created="refreshExpenses"
-      />
-      <ExpensePrefillDialog
-        v-else
-        :travel-authorization-id="travelAuthorizationId"
-        @created="refreshExpenses"
-      />
-    </div>
+    <v-row>
+      <v-col>
+        <div class="d-flex justify-space-between align-end">
+          <h3>Traveler Expenses</h3>
 
-    <ExpensesTable
-      ref="expensesTable"
-      :travel-authorization-id="travelAuthorizationId"
-    />
+          <ExpenseCreateDialog
+            v-if="hasExpenses"
+            :form-id="travelAuthorizationId"
+            @created="refreshExpenses"
+          />
+          <ExpensePrefillDialog
+            v-else
+            :travel-authorization-id="travelAuthorizationId"
+            @created="refreshExpenses"
+          />
+        </div>
+
+        <ExpensesTable
+          ref="expensesTable"
+          :travel-authorization-id="travelAuthorizationId"
+        />
+        * Meals and Incidentals will be calculated by the system; do not add these expenses.
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <h3>Meals and Incidentals</h3>
+        <MealsAndIncidentalsTable :travel-authorization-id="travelAuthorizationId" />
+      </v-col>
+      <v-col></v-col>
+    </v-row>
   </div>
 </template>
 
@@ -28,6 +43,7 @@ import { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
 import ExpensesTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensesTable"
+import MealsAndIncidentalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/MealsAndIncidentalsTable.vue"
 
 export default {
   name: "EditMyTravelAuthorizationExpensePage",
@@ -35,6 +51,7 @@ export default {
     ExpenseCreateDialog,
     ExpensePrefillDialog,
     ExpensesTable,
+    MealsAndIncidentalsTable,
   },
   props: {
     travelAuthorizationId: {
