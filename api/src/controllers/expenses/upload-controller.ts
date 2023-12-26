@@ -70,6 +70,7 @@ export class UploadController extends BaseController {
         {
           association: "travelAuthorization",
           include: ["travelSegments"],
+          order: [["travelSegments", "segmentNumber", "ASC"]],
         },
       ],
     })
