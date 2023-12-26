@@ -2,17 +2,17 @@
   <div class="mt-4">
     <v-row>
       <v-col>
-        <PurposeCard />
+        <PurposeCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <DetailsCard />
+        <DetailsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <ApprovalsCard />
+        <ApprovalsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <div class="d-flex justify-end">
@@ -37,6 +37,12 @@ export default {
     PurposeCard,
     DetailsCard,
     ApprovalsCard,
+  },
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
   },
 }
 </script>

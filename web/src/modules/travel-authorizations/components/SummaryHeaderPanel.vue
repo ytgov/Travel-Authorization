@@ -72,8 +72,8 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
       stops: "stops",
       initialDestination: "firstStop",
       finalDestination: "lastStop",
@@ -83,13 +83,11 @@ export default {
       isLoadingTravelPurposes: "isLoading",
     }),
     purposeText() {
-      const purpose = this.travelPurposes.find(
-        (p) => p.id === this.currentTravelAuthorization.purposeId
-      )
+      const purpose = this.travelPurposes.find((p) => p.id === this.travelAuthorization.purposeId)
       return purpose?.purpose || ""
     },
     finalDestinationDepartureDate() {
-      if (this.currentTravelAuthorization.multiStop) {
+      if (this.travelAuthorization.multiStop) {
         return this.stops[this.stops.length - 2].departureDate
       }
 
@@ -97,11 +95,13 @@ export default {
     },
   },
   async mounted() {
-    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
-    await this.ensureTravelPurposes()
+    await Promise.all([
+      this.ensureTravelPurposes(),
+      this.ensureTravelAuthorization(this.travelAuthorizationId),
+    ])
   },
   methods: {
-    ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
+    ...mapActions("travelAuthorization", { ensureTravelAuthorization: "ensure" }),
     ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
   },
 }

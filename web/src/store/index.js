@@ -9,11 +9,10 @@ import locations from "@/store/locations"
 import preapproved from "./preapproved" // TODO: replace "preapproved" usage with pre-approved-travel-requests store.
 import preApprovedTravelRequests from "@/store/pre-approved-travel-requests"
 import reports from "./reports"
+import travelAuthorization from "@/store/travel-authorization"
+import travelAuthorizations from "@/store/travel-authorizations"
 import traveldesk from "./traveldesk"
 import travelPurposes from "@/store/travel-purposes"
-
-// TODO: replace this legacy store with the new pattern
-import travelAuthorizations from "@/modules/travel-authorizations/store"
 
 Vue.use(Vuex)
 
@@ -69,6 +68,7 @@ export default new Vuex.Store({
     preapproved,
     preApprovedTravelRequests,
     reports,
+    travelAuthorization,
     travelAuthorizations,
     traveldesk,
     travelPurposes,

@@ -2,7 +2,7 @@ import { isNil } from "lodash"
 
 import BaseController from "@/controllers/base-controller"
 
-import { Expense, TravelAuthorization } from "@/models"
+import { Expense, PerDiem, TravelAuthorization } from "@/models"
 import { ExpensesPolicy } from "@/policies"
 import { PrefillService } from "@/services/expenses"
 
@@ -45,13 +45,23 @@ export class PrefillController extends BaseController {
             type: Expense.Types.ESTIMATE,
           },
         },
+        {
+          association: "travelSegments",
+          order: [["segmentNumber", "ASC"]],
+        }
       ],
       order: [["expenses", "date", "ASC"]],
     })
   }
 
   private async buildExpense(travelAuthorization: TravelAuthorization) {
-    const expense = Expense.build()
+    const expense = Expense.build({
+      type: Expense.Types.EXPENSE,
+      description: "Generated expense",
+      cost: 0,
+      currency: PerDiem.CurrencyTypes.CAD,
+      expenseType: Expense.ExpenseTypes.ACCOMMODATIONS,
+    })
     expense.travelAuthorization = travelAuthorization
     return expense
   }

@@ -65,7 +65,15 @@ export class UploadController extends BaseController {
   }
 
   private loadExpense(): Promise<Expense | null> {
-    return Expense.findByPk(this.params.expenseId, { include: ["travelAuthorization"] })
+    return Expense.findByPk(this.params.expenseId, {
+      include: [
+        {
+          association: "travelAuthorization",
+          include: ["travelSegments"],
+          order: [["travelSegments", "segmentNumber", "ASC"]],
+        },
+      ],
+    })
   }
 
   private buildPolicy(record: Expense): ExpensesPolicy {

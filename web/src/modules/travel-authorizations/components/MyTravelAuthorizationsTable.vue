@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
@@ -125,7 +125,10 @@ export default {
     page: 1,
   }),
   computed: {
-    ...mapState("current/user/travelAuthorizations", ["items", "totalCount", "isLoading"]),
+    ...mapGetters("current/user", {
+      currentUserId: "id",
+    }),
+    ...mapGetters("travelAuthorizations", ["items", "totalCount", "isLoading"]),
   },
   watch: {
     page() {
@@ -136,26 +139,34 @@ export default {
     },
   },
   async mounted() {
+    await this.ensureCurrentUser()
     await this.refresh()
     this.showDeleteDialogForRouteQuery()
   },
   methods: {
-    ...mapActions("current/user/travelAuthorizations", ["ensure"]),
+    ...mapActions("current/user", {
+      ensureCurrentUser: "ensure",
+    }),
+    ...mapActions("travelAuthorizations", ["ensure"]),
     isEmpty,
     refresh() {
-      return this.ensure({ page: this.page, perPage: this.perPage })
+      return this.ensure({
+        where: { userId: this.currentUserId },
+        page: this.page,
+        perPage: this.perPage,
+      })
     },
-    goToFormDetails(form) {
-      const formId = form.id
-      if (form.status === "draft") {
+    goToFormDetails(travelAuthorization) {
+      const travelAuthorizationId = travelAuthorization.id
+      if (travelAuthorization.status === "draft") {
         this.$router.push({
           name: "EditMyTravelAuthorizationDetailsPage",
-          params: { travelAuthorizationId: formId },
+          params: { travelAuthorizationId },
         })
       } else {
         this.$router.push({
           name: "ReadMyTravelAuthorizationDetailsPage",
-          params: { formId },
+          params: { travelAuthorizationId },
         })
       }
     },

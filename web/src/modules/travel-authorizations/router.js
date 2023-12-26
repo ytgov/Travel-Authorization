@@ -24,10 +24,10 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        path: ":formId",
+        path: ":travelAuthorizationId",
         component: () =>
-          import("@/modules/travel-authorizations/layouts/ReadMyTravelAuthorizationLayout"),
-        props: cast("formId", parseInt),
+          import("@/modules/travel-authorizations/layouts/MyTravelAuthorizationLayout"),
+        props: cast("travelAuthorizationId", parseInt),
         children: [
           {
             path: "",
@@ -38,29 +38,10 @@ const routes = [
             name: "ReadMyTravelAuthorizationDetailsPage",
             component: () =>
               import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationDetailsPage"),
-            props: true,
+            props: cast("travelAuthorizationId", parseInt),
           },
           {
-            path: "estimate",
-            name: "ReadMyTravelAuthorizationEstimatePage",
-            component: () =>
-              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationEstimatePage"),
-            props: true,
-          },
-        ],
-      },
-      {
-        path: ":travelAuthorizationId/edit",
-        component: () =>
-          import("@/modules/travel-authorizations/layouts/EditMyTravelAuthorizationLayout"),
-        props: cast("travelAuthorizationId", parseInt),
-        children: [
-          {
-            path: "",
-            redirect: "details",
-          },
-          {
-            path: "details",
+            path: "details/edit",
             name: "EditMyTravelAuthorizationDetailsPage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage"),
@@ -68,13 +49,20 @@ const routes = [
           },
           {
             path: "estimate",
+            name: "ReadMyTravelAuthorizationEstimatePage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationEstimatePage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+          {
+            path: "estimate/edit",
             name: "EditMyTravelAuthorizationEstimatePage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationEstimatePage"),
             props: cast("travelAuthorizationId", parseInt),
           },
           {
-            path: "expense",
+            path: "expense/edit",
             name: "EditMyTravelAuthorizationExpensePage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationExpensePage"),

@@ -1,9 +1,9 @@
-import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
 
-// DEPRECATED: 2023-12-26, replace with web/src/store/travel-authorization.js
+// FUTURE: make state per-id. i.e state[travelAuthorizationId] = { ... }
 const state = {
   attributes: {
     expenses: [],
@@ -25,6 +25,18 @@ const getters = withGettersFromState(state, {
   stops: (state) => state.attributes.stops,
   firstStop: (state) => state.attributes.stops[0] || {},
   lastStop: (state) => state.attributes.stops[state.attributes.stops.length - 1] || {},
+  // TODO: probably load from back-end policy in the future to avoid duplication of complex logic
+  isEditableByUser: (state) => (userId) => {
+    if (state.attributes.userId === userId && state.attributes.status === STATUSES.DRAFT) {
+      return true
+    }
+
+    return false
+  },
+  isEditable: (_state, getters, _rootState, rootGetters) => {
+    const currentUserId = rootGetters["current/user/id"]
+    return getters.isEditableByUser(currentUserId)
+  },
 })
 
 const actions = {

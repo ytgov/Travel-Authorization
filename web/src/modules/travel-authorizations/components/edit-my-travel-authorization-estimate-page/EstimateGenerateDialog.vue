@@ -59,7 +59,7 @@ export default {
   name: "EstimateGenerateDialog",
   components: {},
   props: {
-    formId: {
+    travelAuthorizationId: {
       type: Number,
       required: true,
     },
@@ -95,7 +95,7 @@ export default {
     createAndClose() {
       this.loading = true
       return generateApi
-        .create(this.formId)
+        .create(this.travelAuthorizationId)
         .then(() => {
           this.$emit("created")
           this.close()

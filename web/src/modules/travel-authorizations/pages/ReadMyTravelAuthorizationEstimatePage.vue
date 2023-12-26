@@ -2,7 +2,7 @@
   <div class="mt-4">
     <EstimatesTable
       ref="estimatesTable"
-      :form-id="formIdAsNumber"
+      :travel-authorization-id="travelAuthorizationId"
     />
   </div>
 </template>
@@ -16,17 +16,13 @@ export default {
     EstimatesTable,
   },
   props: {
-    formId: {
-      type: [Number, String],
+    travelAuthorizationId: {
+      type: Number,
       required: true,
     },
   },
   data: () => ({}),
-  computed: {
-    formIdAsNumber() {
-      return parseInt(this.formId)
-    },
-  },
+  computed: {},
   async mounted() {},
   methods: {},
 }

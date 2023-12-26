@@ -45,13 +45,17 @@ import { STATUSES } from "@/api/travel-authorizations-api"
 export default {
   name: "SubmitToSupervisorButton",
   props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
     validateForm: {
       type: Function,
       required: true,
     },
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", ["estimates", "isLoading"]),
+    ...mapGetters("travelAuthorization", ["estimates", "isLoading"]),
     hasEstimates() {
       return this.estimates.length > 0
     },
@@ -63,10 +67,13 @@ export default {
       return "secondary"
     },
   },
+  async mounted() {
+    await this.ensure(this.travelAuthorizationId)
+  },
   methods: {
-    ...mapActions("current/travelAuthorization", ["save"]),
+    ...mapActions("travelAuthorization", ["ensure", "save"]),
     // TODO: move this to a back-end state change endpoint
-    ...mapMutations("current/travelAuthorization", ["SET_STATUS"]),
+    ...mapMutations("travelAuthorization", ["SET_STATUS"]),
     saveWrapper() {
       if (!this.validateForm()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
@@ -75,10 +82,10 @@ export default {
 
       this.SET_STATUS(STATUSES.SUBMITTED)
       return this.save()
-        .then((travelAuthorization) => {
+        .then(() => {
           this.$router.push({
             name: "ReadMyTravelAuthorizationDetailsPage",
-            params: { formId: travelAuthorization.id },
+            params: { travelAuthorizationId: this.travelAuthorizationId },
           })
         })
         .catch((error) => {

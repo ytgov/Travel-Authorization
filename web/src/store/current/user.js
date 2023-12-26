@@ -3,8 +3,6 @@ import usersApi from "@/api/users-api"
 import { sleep } from "@/utils/sleep"
 import { withGettersFromState } from "@/utils/vuex-utils"
 
-import travelAuthorizations from "@/store/current/user/travel-authorizations"
-
 const state = {
   attributes: {
     roles: [],
@@ -95,7 +93,4 @@ export default {
   getters,
   actions,
   mutations,
-  modules: {
-    travelAuthorizations,
-  },
 }
