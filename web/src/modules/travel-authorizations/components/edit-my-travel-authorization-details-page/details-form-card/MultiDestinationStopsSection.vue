@@ -7,7 +7,7 @@
       >
         <LocationsAutocomplete
           :value="firstStop.locationId"
-          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :in-territory="travelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -24,7 +24,7 @@
       >
         <LocationsAutocomplete
           :value="stops[1].locationId"
-          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :in-territory="travelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -90,7 +90,7 @@
       >
         <LocationsAutocomplete
           :value="stops[1].locationId"
-          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :in-territory="travelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -107,7 +107,7 @@
       >
         <LocationsAutocomplete
           :value="stops[2].locationId"
-          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :in-territory="travelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -179,7 +179,7 @@
       >
         <LocationsAutocomplete
           :value="stops[2].locationId"
-          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :in-territory="travelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -196,7 +196,7 @@
       >
         <LocationsAutocomplete
           :value="lastStop.locationId"
-          :in-territory="currentTravelAuthorization.allTravelWithinTerritory"
+          :in-territory="travelAuthorization.allTravelWithinTerritory"
           :rules="[required]"
           label="To"
           background-color="white"
@@ -287,20 +287,30 @@ export default {
     TimePicker,
     TravelMethodSelect,
   },
-  data: () => ({}),
+  props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
+  },
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
       stops: "stops",
       firstStop: "firstStop",
       lastStop: "lastStop",
     }),
   },
-  async mounted() {},
+  async mounted() {
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+  },
   methods: {
     required,
     greaterThanOrEqualToDate,
-    ...mapActions("current/travelAuthorization", ["replaceStops"]),
+    ...mapActions("travelAuthorization", {
+      replaceStops: "replaceStops",
+      ensureTravelAuthorization: "ensure",
+    }),
     async updateStop(index, attribute, value) {
       const updatedStops = this.stops.map((stop, i) =>
         i === index ? { ...stop, [attribute]: value } : stop

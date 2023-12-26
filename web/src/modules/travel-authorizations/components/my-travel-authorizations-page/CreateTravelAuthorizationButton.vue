@@ -18,19 +18,19 @@ export default {
   data: () => ({}),
   computed: {
     ...mapGetters("current/user", { currentUserId: "id" }),
-    ...mapGetters("current/travelAuthorization", { isLoadingTravelAuthorization: "isLoading" }),
+    ...mapGetters("travelAuthorization", { isLoadingTravelAuthorization: "isLoading" }),
   },
   mounted() {
     this.ensureCurrentUser()
   },
   methods: {
     ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
-    ...mapActions("current/travelAuthorization", ["create"]),
-    goToFormDetails(form) {
-      const formId = form.id
+    ...mapActions("travelAuthorization", ["create"]),
+    goToFormDetails(travelAuthorization) {
+      const travelAuthorizationId = travelAuthorization.id
       this.$router.push({
         name: "EditMyTravelAuthorizationDetailsPage",
-        params: { travelAuthorizationId: formId },
+        params: { travelAuthorizationId },
       })
     },
     createAndGoToFormDetails() {
