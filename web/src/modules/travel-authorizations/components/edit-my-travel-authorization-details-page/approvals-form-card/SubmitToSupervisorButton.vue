@@ -85,7 +85,7 @@ export default {
         .then(() => {
           this.$router.push({
             name: "ReadMyTravelAuthorizationDetailsPage",
-            params: { travelAuthorizationId: this.travelAuthorization },
+            params: { travelAuthorizationId: this.travelAuthorizationId },
           })
         })
         .catch((error) => {
