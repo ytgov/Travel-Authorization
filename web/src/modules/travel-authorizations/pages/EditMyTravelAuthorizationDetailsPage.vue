@@ -70,7 +70,7 @@ export default {
 
     next({
       name: "ReadMyTravelAuthorizationDetailsPage",
-      params: { travelAuthorizationId: this.travelAuthorizationId },
+      params: { travelAuthorizationId: store.getters["travelAuthorization/id"] },
     })
   },
   props: {
