@@ -12,6 +12,24 @@ import {
 describe("api/src/policies/expenses-policy.ts", () => {
   describe("ExpensesPolicy", () => {
     describe("create", () => {
+      test("when travel authorization is draft and user is the owner, returns true", () => {
+        const user = userFactory.build({
+          roles: [User.Roles.USER],
+        })
+        const travelAuthorization = travelAuthorizationFactory.build({
+          status: TravelAuthorization.Statuses.DRAFT,
+          userId: user.id,
+        })
+        const expense = expenseFactory.build({
+          travelAuthorization,
+          type: Expense.Types.ESTIMATE,
+        })
+
+        const policy = new ExpensesPolicy(user, expense)
+
+        expect(policy.create()).toBe(true)
+      })
+
       test("when travel authorization is approved and current date is after travel start date, returns true", () => {
         const user = userFactory.build({
           roles: [User.Roles.USER],
