@@ -23,7 +23,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex"
 
-import { TYPES } from "@/api/expenses-api"
+import { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
@@ -54,6 +54,7 @@ export default {
       where: {
         travelAuthorizationId: this.travelAuthorizationId,
         type: TYPES.EXPENSE,
+        expenseType: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
       },
     })
   },

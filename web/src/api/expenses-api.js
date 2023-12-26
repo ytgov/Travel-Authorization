@@ -6,8 +6,16 @@ export const TYPES = Object.freeze({
   EXPENSE: "Expense",
 })
 
+export const EXPENSE_TYPES = Object.freeze({
+  ACCOMMODATIONS: "Accommodations",
+  TRANSPORTATION: "Transportation",
+  MEALS_AND_INCIDENTALS: "Meals & Incidentals",
+  NON_TRAVEL_STATUS: "Non-Travel Status",
+})
+
 export const expensesApi = {
   TYPES,
+  EXPENSE_TYPES,
   list({ where, page, perPage, ...otherParams } = {}) {
     return http
       .get("/api/expenses", { params: { where, page, perPage, ...otherParams } })

@@ -19,9 +19,10 @@ export class PrefillService extends BaseService {
     return Expense.bulkCreate(expenses)
   }
 
+  // TODO: it might make sense to re-generate the meals and incidentals,
+  // rather than cloning them from expenses as they might have been edited by the user.
   private buildExpenses(): CreationAttributes<Expense>[] {
     const expensableEstimates = this.estimates
-      .filter((estimate) => estimate.expenseType !== Expense.ExpenseTypes.MEALS_AND_INCIDENTALS)
       .filter(
         (estimate) =>
           estimate.expenseType !== Expense.ExpenseTypes.TRANSPORTATION &&

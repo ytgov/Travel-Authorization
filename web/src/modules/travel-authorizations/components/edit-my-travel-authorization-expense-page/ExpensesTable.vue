@@ -79,7 +79,7 @@ import { sumBy } from "lodash"
 import { mapActions, mapGetters } from "vuex"
 import { DateTime } from "luxon"
 
-import { TYPES } from "@/api/expenses-api"
+import { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
 
 import AddReceiptButton from "./AddReceiptButton"
 import ExpenseDeleteDialog from "./ExpenseDeleteDialog"
@@ -122,6 +122,7 @@ export default {
       where: {
         travelAuthorizationId: this.travelAuthorizationId,
         type: TYPES.EXPENSE,
+        expenseType: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
       },
     })
     this.showEditDialogForRouteQuery()
@@ -144,6 +145,7 @@ export default {
         where: {
           travelAuthorizationId: this.travelAuthorizationId,
           type: TYPES.EXPENSE,
+          expenseType: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
         },
       })
     },
