@@ -10,11 +10,9 @@ import preapproved from "./preapproved" // TODO: replace "preapproved" usage wit
 import preApprovedTravelRequests from "@/store/pre-approved-travel-requests"
 import reports from "./reports"
 import travelAuthorization from "@/store/travel-authorization"
+import travelAuthorizations from "@/store/travel-authorizations"
 import traveldesk from "./traveldesk"
 import travelPurposes from "@/store/travel-purposes"
-
-// TODO: replace this legacy store with the new pattern
-import travelAuthorizations from "@/modules/travel-authorizations/store"
 
 Vue.use(Vuex)
 
