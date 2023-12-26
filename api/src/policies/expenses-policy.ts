@@ -15,15 +15,24 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
   }
 
   create(): boolean {
-    // state checks, that supersede roles
-    // maybe shouldn't be in a policy?
-    if (this.travelAuthorization?.status !== TravelAuthorization.Statuses.APPROVED) return false
-    if (!this.isAfterTravelStartDate) return false
+    if (this.record.type === Expense.Types.ESTIMATE) {
+      if (this.travelAuthorizationPolicy?.update()) return true
 
-    if (this.user.roles.includes(User.Roles.ADMIN)) return true
-    if (this.travelAuthorization.supervisorEmail === this.user.email) return true
+      return false
+    } else if (this.record.type === Expense.Types.EXPENSE) {
+      // state checks, that supersede roles
+      // maybe shouldn't be in a policy?
+      if (this.travelAuthorization?.status !== TravelAuthorization.Statuses.APPROVED) return false
+      if (!this.isAfterTravelStartDate) return false
 
-    return this.travelAuthorization.userId === this.user.id
+      if (this.user.roles.includes(User.Roles.ADMIN)) return true
+      if (this.travelAuthorization.supervisorEmail === this.user.email) return true
+      if (this.travelAuthorization.userId === this.user.id) return true
+
+      return false
+    } else {
+      return false
+    }
   }
 
   update(): boolean {

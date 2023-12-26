@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 
 import { ExpensesPolicy } from "@/policies"
-import { TravelAuthorization, User } from "@/models"
+import { Expense, TravelAuthorization, User } from "@/models"
 import {
   expenseFactory,
   travelAuthorizationFactory,
@@ -27,6 +27,7 @@ describe("api/src/policies/expenses-policy.ts", () => {
         travelAuthorization.travelSegments = [travelSegment]
         const expense = expenseFactory.build({
           travelAuthorization,
+          type: Expense.Types.EXPENSE,
         })
 
         const policy = new ExpensesPolicy(user, expense)
@@ -49,6 +50,7 @@ describe("api/src/policies/expenses-policy.ts", () => {
         travelAuthorization.travelSegments = [travelSegment]
         const expense = expenseFactory.build({
           travelAuthorization,
+          type: Expense.Types.EXPENSE,
         })
 
         const policy = new ExpensesPolicy(user, expense)
@@ -71,6 +73,7 @@ describe("api/src/policies/expenses-policy.ts", () => {
         travelAuthorization.travelSegments = [travelSegment]
         const expense = expenseFactory.build({
           travelAuthorization,
+          type: Expense.Types.EXPENSE,
         })
 
         const policy = new ExpensesPolicy(user, expense)
