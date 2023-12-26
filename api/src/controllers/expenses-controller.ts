@@ -85,7 +85,7 @@ export class ExpensesController extends BaseController {
     const expense = Expense.build(attributes)
 
     const { travelAuthorizationId } = attributes
-    const travelAuthorization = await TravelAuthorization.findByPk(travelAuthorizationId)
+    const travelAuthorization = await this.loadTravelAuthorization(travelAuthorizationId)
     if (!isNil(travelAuthorization)) {
       expense.travelAuthorization = travelAuthorization
     }
@@ -93,8 +93,25 @@ export class ExpensesController extends BaseController {
     return expense
   }
 
+  private loadTravelAuthorization(
+    travelAuthorizationId: number
+  ): Promise<TravelAuthorization | null> {
+    return TravelAuthorization.findByPk(travelAuthorizationId, {
+      include: ["travelSegments"],
+      order: [["travelSegments", "segmentNumber", "ASC"]],
+    })
+  }
+
   private loadExpense(): Promise<Expense | null> {
-    return Expense.findByPk(this.params.expenseId, { include: ["travelAuthorization"] })
+    return Expense.findByPk(this.params.expenseId, {
+      include: [
+        {
+          association: "travelAuthorization",
+          include: ["travelSegments"],
+          order: [["travelSegments", "segmentNumber", "ASC"]],
+        },
+      ],
+    })
   }
 
   private buildPolicy(record: Expense): ExpensesPolicy {
