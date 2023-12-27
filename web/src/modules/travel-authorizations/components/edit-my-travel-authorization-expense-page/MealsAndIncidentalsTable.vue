@@ -53,6 +53,7 @@ const headers = ref([
 
 const totalRowClasses = ref("text-start font-weight-bold text-uppercase")
 
+// Will need to be calculated in the back-end if data is multi-page.
 const totalAmount = computed(() => sumBy(expenses.value, "cost"))
 
 onMounted(async () => {
