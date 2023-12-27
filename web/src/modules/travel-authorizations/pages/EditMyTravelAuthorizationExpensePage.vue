@@ -33,7 +33,13 @@
           :travel-authorization-id="travelAuthorizationId"
         />
       </v-col>
-      <v-col></v-col>
+      <v-col>
+        <h3>Totals</h3>
+        <TotalsTable
+          ref="totalsTable"
+          :travel-authorization-id="travelAuthorizationId"
+        />
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -46,6 +52,7 @@ import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
 import ExpensesTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensesTable"
 import MealsAndIncidentalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/MealsAndIncidentalsTable.vue"
+import TotalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/TotalsTable.vue"
 
 export default {
   name: "EditMyTravelAuthorizationExpensePage",
@@ -54,6 +61,7 @@ export default {
     ExpensePrefillDialog,
     ExpensesTable,
     MealsAndIncidentalsTable,
+    TotalsTable,
   },
   props: {
     travelAuthorizationId: {
@@ -92,6 +100,7 @@ export default {
         this.refresh(),
         this.$refs.expensesTable.refresh(),
         this.$refs.mealsAndIncidentalsTable.refresh(),
+        this.$refs.totalsTable.refresh(),
       ])
     },
   },
