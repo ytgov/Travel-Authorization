@@ -47,10 +47,11 @@
 
 <script setup>
 import { sumBy } from "lodash"
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted } from "vue"
 
 import { TYPES } from "@/api/expenses-api"
 import useExpenses from "@/use/expenses"
+import useTravelAuthorization from "@/use/travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -63,11 +64,17 @@ defineExpose({
   refresh,
 })
 
-const { expenses, isLoading, fetch } = useExpenses()
+const { expenses, isLoading: isLoadingExpenses, fetch: fetchExpenses } = useExpenses()
+const {
+  travelAuthorization,
+  isLoading: isLoadingTravelAuthorization,
+  fetch: fetchTravelAuthorization,
+} = useTravelAuthorization()
 
+const isLoading = computed(() => isLoadingExpenses.value || isLoadingTravelAuthorization.value)
 // Will need to be calculated in the back-end if data is multi-page.
 const subTotalClaim = computed(() => sumBy(expenses.value, "cost"))
-const travelAdvance = ref(0) // TODO: load this from the travel authorization
+const travelAdvance = computed(() => travelAuthorization.value.travelAdvanceInCents / 100.0)
 const totalClaim = computed(() => subTotalClaim.value - travelAdvance.value)
 
 onMounted(async () => {
@@ -75,12 +82,15 @@ onMounted(async () => {
 })
 
 async function refresh() {
-  await fetch({
-    where: {
-      travelAuthorizationId: props.travelAuthorizationId,
-      type: TYPES.EXPENSE,
-    },
-  })
+  await Promise.all([
+    await fetchExpenses({
+      where: {
+        travelAuthorizationId: props.travelAuthorizationId,
+        type: TYPES.EXPENSE,
+      },
+    }),
+    await fetchTravelAuthorization(props.travelAuthorizationId),
+  ])
 }
 
 function formatCurrency(amount) {
