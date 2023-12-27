@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="items"
+    :items="expenses"
     :items-per-page="10"
     :loading="isLoading"
     class="elevation-2"
@@ -10,10 +10,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue"
+import { onMounted, ref } from "vue"
 
 import { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
-import store from "@/store"
+import useExpenses from "@/use/expenses"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -22,8 +22,8 @@ const props = defineProps({
   },
 })
 
-const items = computed(() => store.getters["expenses/items"])
-const isLoading = computed(() => store.getters["expenses/isLoading"])
+const { expenses, isLoading, ensure } = useExpenses()
+
 const headers = ref([
   { text: "Date", value: "date" },
   { text: "Description", value: "description" },
@@ -31,7 +31,7 @@ const headers = ref([
 ])
 
 onMounted(async () => {
-  await store.dispatch("expenses/ensure", {
+  await ensure({
     where: {
       travelAuthorizationId: props.travelAuthorizationId,
       type: TYPES.EXPENSE,
