@@ -22,7 +22,11 @@ const props = defineProps({
   },
 })
 
-const { expenses, isLoading, ensure } = useExpenses()
+defineExpose({
+  refresh,
+})
+
+const { expenses, isLoading, fetch } = useExpenses()
 
 const headers = ref([
   { text: "Date", value: "date" },
@@ -31,12 +35,16 @@ const headers = ref([
 ])
 
 onMounted(async () => {
-  await ensure({
+  await refresh()
+})
+
+async function refresh() {
+  await fetch({
     where: {
       travelAuthorizationId: props.travelAuthorizationId,
       type: TYPES.EXPENSE,
       expenseType: EXPENSE_TYPES.MEALS_AND_INCIDENTALS,
     },
   })
-})
+}
 </script>

@@ -28,7 +28,10 @@
     <v-row>
       <v-col>
         <h3>Meals and Incidentals</h3>
-        <MealsAndIncidentalsTable :travel-authorization-id="travelAuthorizationId" />
+        <MealsAndIncidentalsTable
+          ref="mealsAndIncidentalsTable"
+          :travel-authorization-id="travelAuthorizationId"
+        />
       </v-col>
       <v-col></v-col>
     </v-row>
@@ -36,9 +39,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex"
-
 import { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
+import { useExpenses } from "@/use/expenses"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
@@ -59,11 +61,20 @@ export default {
       required: true,
     },
   },
-  data: () => ({}),
+  data() {
+    const { expenses, isLoading, ensure } = useExpenses()
+
+    return {
+      expenses,
+      isLoading,
+      ensure,
+      TYPES,
+      EXPENSE_TYPES,
+    }
+  },
   computed: {
-    ...mapGetters("expenses", ["items", "isLoading"]),
     hasExpenses() {
-      return this.isLoading === false && this.items.length > 0
+      return this.isLoading === false && this.expenses.length > 0
     },
   },
   async mounted() {
@@ -76,9 +87,11 @@ export default {
     })
   },
   methods: {
-    ...mapActions("expenses", ["ensure"]),
-    refreshExpenses() {
-      this.$refs.expensesTable.refresh()
+    async refreshExpenses() {
+      await Promise.all([
+        this.$refs.expensesTable.refresh(),
+        this.$refs.mealsAndIncidentalsTable.refresh(),
+      ])
     },
   },
 }
