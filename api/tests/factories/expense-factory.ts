@@ -1,15 +1,16 @@
-import { DeepPartial, Factory } from "fishery"
+import { DeepPartial } from "fishery"
 import { faker } from "@faker-js/faker"
 import { isNil } from "lodash"
 
 import { Expense, PerDiem, TravelSegment } from "@/models"
 import { travelAuthorizationFactory } from "@/factories"
+import BaseFactory from "@/factories/base-factory"
 
-class ExpenseFactory extends Factory<Expense> {
+class ExpenseFactory extends BaseFactory<Expense> {
   estimate(params: Pick<DeepPartial<Expense>, "expenseType">) {
     let description: string
     const expenseType = params.expenseType || faker.helpers.enumValue(Expense.ExpenseTypes)
-    if (expenseType === Expense.ExpenseTypes.ACCOMODATIONS) {
+    if (expenseType === Expense.ExpenseTypes.ACCOMMODATIONS) {
       const accommodationType = faker.helpers.enumValue(TravelSegment.AccommodationTypes)
       const city = faker.location.city()
       description = `${accommodationType} in ${city}`

@@ -105,7 +105,7 @@ export default {
     ExpenseTypeSelect,
   },
   props: {
-    formId: {
+    travelAuthorizationId: {
       type: Number,
       required: true,
     },
@@ -130,7 +130,7 @@ export default {
     required,
     newEstimate() {
       return {
-        travelAuthorizationId: this.formId,
+        travelAuthorizationId: this.travelAuthorizationId,
         type: expensesApi.TYPES.ESTIMATE,
         currency: "CAD",
       }

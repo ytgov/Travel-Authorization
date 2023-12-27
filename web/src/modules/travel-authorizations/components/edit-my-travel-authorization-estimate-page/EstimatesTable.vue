@@ -1,9 +1,9 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="estimates"
+    :items="items"
     :items-per-page="10"
-    :loading="loadingEstimates"
+    :loading="isLoading"
     class="elevation-2"
   >
     <template #top>
@@ -55,11 +55,13 @@
 
 <script>
 import { sumBy } from "lodash"
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 import { DateTime } from "luxon"
 
-import EstimateDeleteDialog from "./EstimateDeleteDialog"
-import EstimateEditDialog from "./EstimateEditDialog"
+import { TYPES } from "@/api/expenses-api"
+
+import EstimateDeleteDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateDeleteDialog"
+import EstimateEditDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateEditDialog"
 
 export default {
   name: "EstimatesTable",
@@ -68,7 +70,7 @@ export default {
     EstimateEditDialog,
   },
   props: {
-    formId: {
+    travelAuthorizationId: {
       type: Number,
       required: true,
     },
@@ -76,7 +78,7 @@ export default {
   data: () => ({
     headers: [
       { text: "Expense Type", value: "expenseType" },
-      { test: "Description", value: "description" },
+      { text: "Description", value: "description" },
       { text: "Date", value: "date" },
       { text: "Amount", value: "cost" },
       { text: "", value: "actions" },
@@ -84,20 +86,25 @@ export default {
     totalRowClasses: "text-start font-weight-bold text-uppercase",
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["estimates", "loadingEstimates"]),
+    ...mapGetters("expenses", ["items", "isLoading"]),
     // Will need to be calculated in the back-end if data is multi-page.
     totalAmount() {
-      return sumBy(this.estimates, "cost")
+      return sumBy(this.items, "cost")
     },
   },
   mounted() {
-    return this.loadEstimates({ travelAuthorizationId: this.formId }).then(() => {
+    return this.ensure({
+      where: {
+        travelAuthorizationId: this.travelAuthorizationId,
+        type: TYPES.ESTIMATE,
+      },
+    }).then(() => {
       this.showEditDialogForRouteQuery()
       this.showDeleteDialogForRouteQuery()
     })
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadEstimates"]),
+    ...mapActions("expenses", ["ensure", "fetch"]),
     formatDate(date) {
       return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
     },
@@ -109,7 +116,12 @@ export default {
       return formatter.format(amount)
     },
     refresh() {
-      return this.loadEstimates({ travelAuthorizationId: this.formId })
+      return this.fetch({
+        where: {
+          travelAuthorizationId: this.travelAuthorizationId,
+          type: TYPES.ESTIMATE,
+        },
+      })
     },
     showDeleteDialog(item) {
       this.$refs.deleteDialog.show(item)
@@ -121,7 +133,7 @@ export default {
       const estimateId = parseInt(this.$route.query.showEdit)
       if (isNaN(estimateId)) return
 
-      const estimate = this.estimates.find((estimate) => estimate.id === estimateId)
+      const estimate = this.items.find((estimate) => estimate.id === estimateId)
       if (!estimate) return
 
       this.showEditDialog(estimate)
@@ -130,7 +142,7 @@ export default {
       const estimateId = parseInt(this.$route.query.showDelete)
       if (isNaN(estimateId)) return
 
-      const estimate = this.estimates.find((estimate) => estimate.id === estimateId)
+      const estimate = this.items.find((estimate) => estimate.id === estimateId)
       if (!estimate) return
 
       this.showDeleteDialog(estimate)

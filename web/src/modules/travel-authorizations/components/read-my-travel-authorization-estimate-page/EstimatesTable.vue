@@ -1,9 +1,9 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="estimates"
+    :items="items"
     :items-per-page="10"
-    :loading="loadingEstimates"
+    :loading="isLoading"
     class="elevation-2"
   >
     <template #item.date="{ value }">
@@ -31,11 +31,13 @@ import { sumBy } from "lodash"
 import { mapActions, mapState } from "vuex"
 import { DateTime } from "luxon"
 
+import { TYPES } from "@/api/expenses-api"
+
 export default {
   name: "EstimatesTable",
   components: {},
   props: {
-    formId: {
+    travelAuthorizationId: {
       type: Number,
       required: true,
     },
@@ -51,17 +53,22 @@ export default {
     totalRowClasses: "text-start font-weight-bold text-uppercase",
   }),
   computed: {
-    ...mapState("travelAuthorizations", ["estimates", "loadingEstimates"]),
+    ...mapState("expenses", ["items", "isLoading"]),
     // Will need to be calculated in the back-end if data is multi-page.
     totalAmount() {
-      return sumBy(this.estimates, "cost")
+      return sumBy(this.items, "cost")
     },
   },
   mounted() {
-    return this.loadEstimates({ travelAuthorizationId: this.formId })
+    return this.ensure({
+      where: {
+        travelAuthorizationId: this.travelAuthorizationId,
+        type: TYPES.ESTIMATE,
+      },
+    })
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadEstimates"]),
+    ...mapActions("expenses", ["ensure"]),
     formatDate(date) {
       return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
     },

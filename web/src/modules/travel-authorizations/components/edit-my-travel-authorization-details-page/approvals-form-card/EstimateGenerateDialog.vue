@@ -61,7 +61,7 @@ export default {
   name: "EstimateGenerateDialog",
   components: {},
   props: {
-    formId: {
+    travelAuthorizationId: {
       type: Number,
       required: true,
     },
@@ -89,10 +89,14 @@ export default {
       }
     },
   },
+  async mounted() {
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+  },
   methods: {
     required,
-    ...mapActions("current/travelAuthorization", {
-      saveCurrentTravelAuthorizationSilently: "saveSilently",
+    ...mapActions("travelAuthorization", {
+      ensureTravelAuthorization: "ensure",
+      saveTravelAuthorizationSilently: "saveSilently",
     }),
     close() {
       this.showDialog = false
@@ -100,8 +104,8 @@ export default {
     async createAndClose() {
       this.loading = true
       try {
-        await this.saveCurrentTravelAuthorizationSilently()
-        await generateApi.create(this.formId)
+        await this.saveTravelAuthorizationSilently()
+        await generateApi.create(this.travelAuthorizationId)
         this.$emit("created")
         this.close()
       } catch (error) {

@@ -5,5 +5,8 @@ namespace Express {
     oidc?: any;
 
     isAuthenticated(): boolean;
+
+    // express-fileupload
+    files?: Record<string, any>;
   }
 }

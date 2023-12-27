@@ -15,18 +15,25 @@ import { STATUSES } from "@/api/travel-authorizations-api"
 export default {
   name: "SaveDraftButton",
   props: {
+    travelAuthorizationId: {
+      type: Number,
+      required: true,
+    },
     validateForm: {
       type: Function,
       required: true,
     },
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", ["isLoading"]),
+    ...mapGetters("travelAuthorization", ["isLoading"]),
+  },
+  async mounted() {
+    await this.ensure(this.travelAuthorizationId)
   },
   methods: {
-    ...mapActions("current/travelAuthorization", ["save"]),
+    ...mapActions("travelAuthorization", ["ensure", "save"]),
     // TODO: move this to a back-end state change endpoint
-    ...mapMutations("current/travelAuthorization", ["SET_STATUS"]),
+    ...mapMutations("travelAuthorization", ["SET_STATUS"]),
     saveWrapper() {
       if (!this.validateForm()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })

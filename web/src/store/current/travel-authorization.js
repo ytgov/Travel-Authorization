@@ -3,11 +3,13 @@ import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
 
+// DEPRECATED: 2023-12-26, replace with web/src/store/travel-authorization.js
 const state = {
   attributes: {
     expenses: [],
     purpose: {},
     stops: [],
+    travelSegments: [],
     user: {},
   },
   isLoading: false,

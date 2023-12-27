@@ -7,26 +7,27 @@ const state = {
   totalCount: 0,
   isLoading: false,
   isErrored: false,
-  isCached: false,
+  // isCached: false, // Caching is not implemented as it would need to invalidate on query params changes.
 }
 
 const getters = withGettersFromState(state, {})
 
 const actions = {
-  async ensure({ commit, dispatch }, { page, perPage, ...otherParams } = {}) {
+  async ensure({ dispatch }, { where, page, perPage, ...otherParams } = {}) {
+    return dispatch("fetch", { where, page, perPage, otherParams })
+  },
+  async fetch({ commit }, { where, page, perPage, ...otherParams } = {}) {
     commit("SET_IS_LOADING", true)
     try {
-      const { id: currentUserId } = await dispatch("current/user/ensure", null, { root: true })
       const { travelAuthorizations, totalCount } = await travelAuthorizationsApi.list({
+        where,
         page,
         perPage,
-        ...otherParams,
-        where: { userId: currentUserId },
+        otherParams,
       })
       commit("SET_IS_ERRORED", false)
       commit("SET_ITEMS", travelAuthorizations)
       commit("SET_TOTAL_COUNT", totalCount)
-      commit("SET_IS_ENSURE", true)
 
       return {
         items: state.items,
@@ -51,9 +52,6 @@ const mutations = {
   },
   SET_IS_ERRORED(state, value) {
     state.isErrored = value
-  },
-  SET_IS_ENSURE(state, value) {
-    state.isCached = value
   },
   SET_TOTAL_COUNT(state, value) {
     state.totalCount = value

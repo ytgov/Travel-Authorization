@@ -46,6 +46,8 @@ export class UpdateService extends BaseService {
         await Stops.BulkConvertStopsToTravelSegmentsService.perform(this.travelAuthorization)
       }
 
+      // TODO: might need to tweak this, or any updates to a travel authorization will
+      // blow away all estimates and expenses.
       if (!isEmpty(this.expenses)) {
         await ExpensesService.bulkReplace(travelAuthorizationId, this.expenses)
       }
@@ -56,7 +58,9 @@ export class UpdateService extends BaseService {
         action: TravelAuthorizationActionLog.Actions.UPDATE,
       })
 
-      return this.travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
+      return this.travelAuthorization.reload({
+        include: ["expenses", "stops", "purpose", "user", "travelSegments"],
+      })
     })
   }
 

@@ -3,25 +3,28 @@
     <div class="d-flex justify-end">
       <EstimateCreateDialog
         v-if="hasEstimates"
-        :form-id="travelAuthorizationId"
+        :travel-authorization-id="travelAuthorizationId"
         @created="refreshEstimates"
       />
       <EstimateGenerateDialog
         v-else
-        :form-id="travelAuthorizationId"
+        :travel-authorization-id="travelAuthorizationId"
         @created="refreshEstimates"
       />
     </div>
 
     <EstimatesTable
       ref="estimatesTable"
-      :form-id="travelAuthorizationId"
+      :travel-authorization-id="travelAuthorizationId"
     />
   </div>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex"
+import { mapActions, mapGetters } from "vuex"
+
+import { TYPES } from "@/api/expenses-api"
+import store from "@/store"
 
 import EstimateCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateCreateDialog"
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
@@ -34,6 +37,25 @@ export default {
     EstimateGenerateDialog,
     EstimatesTable,
   },
+  // CONSIDER: Should I just put this in the mounted hook?
+  // Or if if I should controll this problem by never showing the edit link to a user if they can't edit?
+  async beforeRouteEnter(to, _from, next) {
+    if (to.name !== "EditMyTravelAuthorizationEstimatePage") {
+      return next()
+    }
+
+    await store.dispatch("current/user/ensure")
+    await store.dispatch("travelAuthorization/ensure", to.params.travelAuthorizationId)
+
+    if (store.getters["travelAuthorization/isEditable"]) {
+      return next()
+    }
+
+    next({
+      name: "ReadMyTravelAuthorizationEstimatePage",
+      params: { travelAuthorizationId: store.getters["travelAuthorization/id"] },
+    })
+  },
   props: {
     travelAuthorizationId: {
       type: Number,
@@ -42,16 +64,21 @@ export default {
   },
   data: () => ({}),
   computed: {
-    ...mapState("travelAuthorizations", ["estimates", "loadingEstimates"]),
+    ...mapGetters("expenses", ["items", "isLoading"]),
     hasEstimates() {
-      return this.loadingEstimates === false && this.estimates.length > 0
+      return this.isLoading === false && this.items.length > 0
     },
   },
   async mounted() {
-    await this.loadEstimates({ travelAuthorizationId: this.travelAuthorizationId })
+    await this.ensure({
+      where: {
+        travelAuthorizationId: this.travelAuthorizationId,
+        type: TYPES.ESTIMATE,
+      },
+    })
   },
   methods: {
-    ...mapActions("travelAuthorizations", ["loadEstimates"]),
+    ...mapActions("expenses", ["ensure"]),
     refreshEstimates() {
       this.$refs.estimatesTable.refresh()
     },

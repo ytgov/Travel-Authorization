@@ -82,15 +82,36 @@ export class ExpensesController extends BaseController {
 
   private async buildExpense() {
     const attributes = this.request.body
-    const { travelAuthorizationId } = attributes
     const expense = Expense.build(attributes)
-    expense.travelAuthorization =
-      (await TravelAuthorization.findByPk(travelAuthorizationId)) || undefined
+
+    const { travelAuthorizationId } = attributes
+    const travelAuthorization = await this.loadTravelAuthorization(travelAuthorizationId)
+    if (!isNil(travelAuthorization)) {
+      expense.travelAuthorization = travelAuthorization
+    }
+
     return expense
   }
 
+  private loadTravelAuthorization(
+    travelAuthorizationId: number
+  ): Promise<TravelAuthorization | null> {
+    return TravelAuthorization.findByPk(travelAuthorizationId, {
+      include: ["travelSegments"],
+      order: [["travelSegments", "segmentNumber", "ASC"]],
+    })
+  }
+
   private loadExpense(): Promise<Expense | null> {
-    return Expense.findByPk(this.params.expenseId, { include: ["travelAuthorization"] })
+    return Expense.findByPk(this.params.expenseId, {
+      include: [
+        {
+          association: "travelAuthorization",
+          include: ["travelSegments"],
+          order: [["travelSegments", "segmentNumber", "ASC"]],
+        },
+      ],
+    })
   }
 
   private buildPolicy(record: Expense): ExpensesPolicy {

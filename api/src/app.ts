@@ -55,6 +55,7 @@ app.use(
     origin: config.FRONTEND_URL,
     optionsSuccessStatus: 200,
     credentials: true,
+    exposedHeaders: "Content-Disposition",
   })
 )
 
