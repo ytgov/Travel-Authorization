@@ -64,6 +64,8 @@ GeneralLedgerCoding.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    // See https://www.tpsgc-pwgsc.gc.ca/recgen/pceaf-gwcoa/2223/2-eng.html
+    // Department / Agency 	Financial Reporting Account (FRA) 	Authority 	Program 	Object 	Transaction Type
     code: {
       type: DataTypes.STRING(25),
       allowNull: false,
