@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
+import { TYPES } from "@/api/expenses-api"
 import { useExpenses } from "@/use/expenses"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
@@ -62,14 +62,12 @@ export default {
     },
   },
   data() {
-    const { expenses, isLoading, ensure } = useExpenses()
+    const { expenses, isLoading, fetch } = useExpenses()
 
     return {
       expenses,
       isLoading,
-      ensure,
-      TYPES,
-      EXPENSE_TYPES,
+      fetch,
     }
   },
   computed: {
@@ -78,17 +76,20 @@ export default {
     },
   },
   async mounted() {
-    await this.ensure({
-      where: {
-        travelAuthorizationId: this.travelAuthorizationId,
-        type: TYPES.EXPENSE,
-        expenseType: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
-      },
-    })
+    await this.refresh()
   },
   methods: {
+    async refresh() {
+      await this.fetch({
+        where: {
+          travelAuthorizationId: this.travelAuthorizationId,
+          type: TYPES.EXPENSE,
+        },
+      })
+    },
     async refreshExpenses() {
       await Promise.all([
+        this.refresh(),
         this.$refs.expensesTable.refresh(),
         this.$refs.mealsAndIncidentalsTable.refresh(),
       ])
