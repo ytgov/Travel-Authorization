@@ -1,3 +1,4 @@
+import { isEmpty } from "lodash"
 import { reactive, computed, toRefs } from "vue"
 
 import expensesApi, { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
@@ -24,7 +25,7 @@ export const useExpenses = () => {
       const { expenses } = await expensesApi.list({ where, page, perPage, ...otherParams })
       state.isErrored = false
       state.expenses = expenses
-      state.isCached = true
+      state.isCached = !isEmpty(expenses)
       return expenses
     } catch (error) {
       console.error("Failed to fetch expenses:", error)
