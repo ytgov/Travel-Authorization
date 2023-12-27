@@ -6,11 +6,28 @@
     :loading="isLoading"
     class="elevation-2"
   >
+    <template #item.date="{ value }">
+      {{ formatDate(value) }}
+    </template>
+    <template #item.cost="{ value }">
+      {{ formatCurrency(value) }}
+    </template>
+    <template #foot>
+      <tfoot>
+        <tr>
+          <td :class="totalRowClasses"></td>
+          <td :class="totalRowClasses">Total</td>
+          <td :class="totalRowClasses">{{ formatCurrency(totalAmount) }}</td>
+        </tr>
+      </tfoot>
+    </template>
   </v-data-table>
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue"
+import { sumBy } from "lodash"
+import { computed, onMounted, ref } from "vue"
+import { DateTime } from "luxon"
 
 import { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
 import useExpenses from "@/use/expenses"
@@ -34,6 +51,10 @@ const headers = ref([
   { text: "Amount", value: "cost" },
 ])
 
+const totalRowClasses = ref("text-start font-weight-bold text-uppercase")
+
+const totalAmount = computed(() => sumBy(expenses.value, "cost"))
+
 onMounted(async () => {
   await refresh()
 })
@@ -46,5 +67,17 @@ async function refresh() {
       expenseType: EXPENSE_TYPES.MEALS_AND_INCIDENTALS,
     },
   })
+}
+
+function formatDate(date) {
+  return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")
+}
+
+function formatCurrency(amount) {
+  const formatter = new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency: "CAD",
+  })
+  return formatter.format(amount)
 }
 </script>
