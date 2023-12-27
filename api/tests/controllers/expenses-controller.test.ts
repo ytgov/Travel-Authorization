@@ -38,7 +38,7 @@ describe("api/src/controllers/expenses-controller.ts", () => {
         })
         const newExpenseAttributes = expenseFactory.attributesFor({
           travelAuthorizationId: travelAuthorization.id,
-          type: Expense.Types.EXPENSE,
+          type: Expense.Types.ESTIMATE,
           currency: "CAD",
           expenseType: Expense.ExpenseTypes.ACCOMMODATIONS,
           description: "Hotel in Vancouver",
@@ -56,7 +56,7 @@ describe("api/src/controllers/expenses-controller.ts", () => {
         expect(response.body).toEqual({
           expense: expect.objectContaining({
             travelAuthorizationId: travelAuthorization.id,
-            type: Expense.Types.EXPENSE,
+            type: Expense.Types.ESTIMATE,
             currency: "CAD",
             expenseType: Expense.ExpenseTypes.ACCOMMODATIONS,
             description: "Hotel in Vancouver",
