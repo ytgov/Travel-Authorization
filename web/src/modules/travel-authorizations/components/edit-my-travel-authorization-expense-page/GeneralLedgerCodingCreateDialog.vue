@@ -5,7 +5,7 @@
   >
     <template #activator="{ on, attrs }">
       <v-btn
-        color="secondary"
+        color="primary"
         dark
         class="mb-2"
         v-bind="attrs"
