@@ -83,7 +83,10 @@ router
   .post(Users.YgGovernmentDirectorySyncController.create)
 router.route("/api/travel-purposes").get(TravelPurposesController.index)
 
-router.route("/api/general-ledger-codings").get(GeneralLedgerCodingsController.index)
+router
+  .route("/api/general-ledger-codings")
+  .get(GeneralLedgerCodingsController.index)
+  .post(GeneralLedgerCodingsController.create)
 router
   .route("/api/general-ledger-codings/:generalLedgerCodingId")
   .get(GeneralLedgerCodingsController.show)
