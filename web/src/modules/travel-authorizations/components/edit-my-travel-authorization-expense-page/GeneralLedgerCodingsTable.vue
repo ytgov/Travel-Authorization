@@ -7,12 +7,11 @@
     class="elevation-2"
   >
     <template #top>
-      <!-- TODO -->
-      <ExpenseEditDialog
+      <GeneralLedgerCodingEditDialog
         ref="editDialog"
         @saved="refresh"
       />
-      <ExpenseDeleteDialog
+      <GeneralLedgerCodingDeleteDialog
         ref="deleteDialog"
         @deleted="refresh"
       />
@@ -31,6 +30,7 @@
           icon
           class="ml-2"
           color="error"
+          title="Delete"
           @click="showDeleteDialog(item)"
         >
           <v-icon>mdi-close</v-icon>
@@ -56,8 +56,8 @@ import { useRoute } from "vue2-helpers/vue-router"
 
 import useGeneralLedgerCodings from "@/use/general-ledger-codings"
 
-import ExpenseDeleteDialog from "./ExpenseDeleteDialog"
-import ExpenseEditDialog from "./ExpenseEditDialog"
+import GeneralLedgerCodingDeleteDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingDeleteDialog"
+import GeneralLedgerCodingEditDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingEditDialog"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -69,6 +69,9 @@ const props = defineProps({
 defineExpose({
   refresh,
 })
+
+const editDialog = ref(null)
+const deleteDialog = ref(null)
 
 const route = useRoute()
 const { generalLedgerCodings, isLoading, fetch } = useGeneralLedgerCodings()
@@ -104,11 +107,11 @@ async function refresh() {
 }
 
 function showDeleteDialog(item) {
-  this.$refs.deleteDialog.show(item)
+  deleteDialog.value.show(item)
 }
 
 function showEditDialog(item) {
-  this.$refs.editDialog.show(item)
+  editDialog.value.show(item)
 }
 
 function showEditDialogForRouteQuery() {
