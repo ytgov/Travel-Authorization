@@ -70,9 +70,17 @@ GeneralLedgerCoding.init(
       type: DataTypes.STRING(25),
       allowNull: false,
     },
+    // Postgres decimal types are represented as strings, so much be converted to numbers JS side.
+    // See https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
     amount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      get() {
+        const value = this.getDataValue("amount")
+        if (value === null) return null
+
+        return Number(value)
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
