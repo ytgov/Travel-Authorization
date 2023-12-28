@@ -57,6 +57,7 @@
           :travel-authorization-id="travelAuthorizationId"
         />
       </v-col>
+      <v-col cols="4"></v-col>
     </v-row>
   </div>
 </template>
