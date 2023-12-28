@@ -17,7 +17,7 @@ export class GeneralLedgerCodingsSerializer extends BaseSerializer<GeneralLedger
       ...pick(this.record, [
         "id",
         "travelAuthorizationId",
-        "coding",
+        "code",
         "amount",
         "createdAt",
         "updatedAt",

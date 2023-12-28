@@ -108,7 +108,7 @@ watch(showDialog, (value) => {
 function build() {
   return {
     travelAuthorizationId: props.travelAuthorizationId,
-    coding: "",
+    code: "",
     amount: 0.0,
   }
 }
