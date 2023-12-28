@@ -3,7 +3,7 @@ import http from "@/api/http-client"
 export const generalLedgerCodingsApi = {
   list({ where, page, perPage, ...otherParams } = {}) {
     return http
-      .get("/api/generalLedgerCodings", { params: { where, page, perPage, ...otherParams } })
+      .get("/api/general-ledger-codings", { params: { where, page, perPage, ...otherParams } })
       .then(({ data }) => data)
   },
   create(attributes) {
