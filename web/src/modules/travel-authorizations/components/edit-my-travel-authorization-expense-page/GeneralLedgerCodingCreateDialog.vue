@@ -120,6 +120,8 @@ function close() {
 }
 
 async function createAndClose() {
+  if (!form.value.validate()) return
+
   isLoading.value = true
   try {
     await generalLedgerCodingsApi.create(generalLedgerCoding.value)

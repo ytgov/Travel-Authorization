@@ -116,6 +116,8 @@ function close() {
 }
 
 async function updateAndClose() {
+  if (!form.value.validate()) return
+
   isLoading.value = true
   try {
     await generalLedgerCodingsApi.update(generalLedgerCodingId.value, generalLedgerCoding.value)
