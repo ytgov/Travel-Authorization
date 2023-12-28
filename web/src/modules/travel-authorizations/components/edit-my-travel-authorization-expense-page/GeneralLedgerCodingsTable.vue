@@ -69,7 +69,7 @@
 <script setup>
 import { sumBy } from "lodash"
 import { computed, onMounted, ref } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute } from "vue2-helpers/vue-router"
 
 import useGeneralLedgerCodings from "@/use/general-ledger-codings"
 
