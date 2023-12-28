@@ -41,6 +41,24 @@
         />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <div class="d-flex justify-space-between align-end">
+          <h3>Coding</h3>
+
+          <GeneralLedgerCodingCreateDialog
+            :travel-authorization-id="travelAuthorizationId"
+            @created="refreshCodings"
+          />
+        </div>
+
+        <GeneralLedgerCodingsTable
+          ref="codingsTable"
+          :travel-authorization-id="travelAuthorizationId"
+        />
+      </v-col>
+      <v-col cols="4"></v-col>
+    </v-row>
   </div>
 </template>
 
@@ -51,6 +69,8 @@ import { useExpenses } from "@/use/expenses"
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
 import ExpensesTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensesTable"
+import GeneralLedgerCodingCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingCreateDialog.vue"
+import GeneralLedgerCodingsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingsTable.vue"
 import MealsAndIncidentalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/MealsAndIncidentalsTable.vue"
 import TotalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/TotalsTable.vue"
 
@@ -60,6 +80,8 @@ export default {
     ExpenseCreateDialog,
     ExpensePrefillDialog,
     ExpensesTable,
+    GeneralLedgerCodingCreateDialog,
+    GeneralLedgerCodingsTable,
     MealsAndIncidentalsTable,
     TotalsTable,
   },
@@ -102,6 +124,9 @@ export default {
         this.$refs.mealsAndIncidentalsTable.refresh(),
         this.$refs.totalsTable.refresh(),
       ])
+    },
+    refreshCodings() {
+      this.$refs.codingsTable.refresh()
     },
   },
 }

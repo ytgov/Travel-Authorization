@@ -48,6 +48,7 @@
             icon
             class="ml-2"
             color="error"
+            title="Delete"
             @click="showDeleteDialog(item)"
           >
             <v-icon>mdi-close</v-icon>
