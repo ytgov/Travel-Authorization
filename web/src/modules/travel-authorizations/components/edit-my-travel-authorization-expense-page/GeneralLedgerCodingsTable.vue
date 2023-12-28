@@ -66,6 +66,10 @@ const props = defineProps({
   },
 })
 
+defineExpose({
+  refresh,
+})
+
 const route = useRoute()
 const { generalLedgerCodings, isLoading, fetch } = useGeneralLedgerCodings()
 const totalAmount = computed(() => sumBy(generalLedgerCodings.value, "amount"))
