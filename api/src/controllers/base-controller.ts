@@ -26,28 +26,28 @@ export class BaseController {
   // Usage app.post("/api/users", UsersController.create)
   // maps /api/users to UsersController#create()
   static get create() {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.create().catch(next)
     }
   }
 
   static get show() {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.show().catch(next)
     }
   }
 
   static get update() {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.update().catch(next)
     }
   }
 
   static get destroy() {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
       const controllerInstance = new this(req, res, next)
       return controllerInstance.destroy().catch(next)
     }

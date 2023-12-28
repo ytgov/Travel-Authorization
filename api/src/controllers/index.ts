@@ -1,4 +1,5 @@
 export { ExpensesController } from "./expenses-controller"
+export { GeneralLedgerCodingsController } from "./general-ledger-codings-controller"
 export { LocationsController } from "./locations-controller"
 export { PreApprovedTravelRequestsController } from "./pre-approved-travel-requests-controller"
 export { PreApprovedTravelersController } from "./pre-approved-travelers-controller"

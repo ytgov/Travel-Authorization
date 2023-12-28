@@ -5,6 +5,7 @@ import { checkJwt, loadUser } from "@/middleware/authz.middleware"
 import {
   Expenses,
   ExpensesController,
+  GeneralLedgerCodingsController,
   LocationsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
@@ -81,6 +82,13 @@ router
   .route("/api/users/:userId/yg-government-directory-sync")
   .post(Users.YgGovernmentDirectorySyncController.create)
 router.route("/api/travel-purposes").get(TravelPurposesController.index)
+
+router.route("/api/general-ledger-codings").get(GeneralLedgerCodingsController.index)
+router
+  .route("/api/general-ledger-codings/:generalLedgerCodingId")
+  .get(GeneralLedgerCodingsController.show)
+  .patch(GeneralLedgerCodingsController.update)
+  .delete(GeneralLedgerCodingsController.destroy)
 
 // QA testing scenarios
 router.route("/api/qa/scenarios").get(Qa.ScenariosController.index)
