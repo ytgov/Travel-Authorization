@@ -108,7 +108,9 @@ export class GeneralLedgerCodingsController extends BaseController {
   }
 
   private loadGeneralLedgerCoding(): Promise<GeneralLedgerCoding | null> {
-    return GeneralLedgerCoding.findByPk(this.params.generalLedgerCodingId)
+    return GeneralLedgerCoding.findByPk(this.params.generalLedgerCodingId, {
+      include: "travelAuthorization",
+    })
   }
 
   private buildPolicy(record: GeneralLedgerCoding): GeneralLedgerCodingsPolicy {
