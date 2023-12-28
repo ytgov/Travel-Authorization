@@ -20,38 +20,21 @@
     <template #item.amount="{ value }">
       {{ formatCurrency(value) }}
     </template>
-    <template #item.actions="{ value: actions, item }">
-      <!-- TODO -->
-      <div class="d-flex">
-        <v-col class="d-flex justify-end">
-          <v-btn
-            v-if="actions.includes('edit')"
-            color="secondary"
-            @click="showEditDialog(item)"
-            >Edit</v-btn
-          >
-        </v-col>
-        <v-col class="d-flex justify-end">
-          <AddReceiptButton
-            v-if="item.fileSize === null"
-            :expense-id="item.id"
-            @uploaded="refresh"
-          />
-          <ViewRecieptLink
-            v-else
-            :expense-id="item.id"
-          />
-
-          <v-btn
-            v-if="actions.includes('delete')"
-            icon
-            class="ml-2"
-            color="error"
-            @click="showDeleteDialog(item)"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-col>
+    <template #item.actions="{ item }">
+      <div class="d-flex justify-end">
+        <v-btn
+          color="secondary"
+          @click="showEditDialog(item)"
+          >Edit</v-btn
+        >
+        <v-btn
+          icon
+          class="ml-2"
+          color="error"
+          @click="showDeleteDialog(item)"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </div>
     </template>
     <template #foot>
@@ -73,10 +56,8 @@ import { useRoute } from "vue2-helpers/vue-router"
 
 import useGeneralLedgerCodings from "@/use/general-ledger-codings"
 
-import AddReceiptButton from "./AddReceiptButton"
 import ExpenseDeleteDialog from "./ExpenseDeleteDialog"
 import ExpenseEditDialog from "./ExpenseEditDialog"
-import ViewRecieptLink from "./ViewRecieptLink"
 
 const props = defineProps({
   travelAuthorizationId: {
