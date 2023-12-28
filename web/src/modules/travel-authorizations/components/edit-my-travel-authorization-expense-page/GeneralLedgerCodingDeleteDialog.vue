@@ -3,44 +3,41 @@
     v-model="showDialog"
     max-width="500px"
   >
-    <v-form @submit.prevent="deleteAndClose">
-      <v-card :loading="isLoading">
-        <v-card-title class="text-h5">
-          Are you sure you want to delete the following coding?
-        </v-card-title>
-        <v-card-text>
-          <v-container v-if="hasGeneralLedgerCoding">
-            <v-row no-gutters>
-              <v-col class="text-center">
-                {{ generalLedgerCoding.code }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col class="text-center">
-                {{ formatCurrency(generalLedgerCoding.amount) }}
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="secondary"
-            :loading="isLoading"
-            @click="close"
-            >Cancel</v-btn
-          >
-          <v-btn
-            color="error"
-            :loading="isLoading"
-            type="submit"
-            @click="deleteAndClose"
-            >OK</v-btn
-          >
-          <v-spacer></v-spacer>
-        </v-card-actions>
-      </v-card>
-    </v-form>
+    <v-card :loading="isLoading">
+      <v-card-title class="text-h5">
+        Are you sure you want to delete the following coding?
+      </v-card-title>
+      <v-card-text>
+        <v-container v-if="hasGeneralLedgerCoding">
+          <v-row no-gutters>
+            <v-col class="text-center">
+              {{ generalLedgerCoding.code }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col class="text-center">
+              {{ formatCurrency(generalLedgerCoding.amount) }}
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="secondary"
+          :loading="isLoading"
+          @click="close"
+          >Cancel</v-btn
+        >
+        <v-btn
+          color="error"
+          :loading="isLoading"
+          @click="deleteAndClose"
+          >OK</v-btn
+        >
+        <v-spacer></v-spacer>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
 </template>
 
