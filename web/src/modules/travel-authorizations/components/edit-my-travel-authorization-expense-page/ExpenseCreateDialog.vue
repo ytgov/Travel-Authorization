@@ -113,9 +113,7 @@ export default {
   },
   data() {
     return {
-      expenseTypes: Object.values(EXPENSE_TYPES).filter(
-        (type) => type !== EXPENSE_TYPES.MEALS_AND_INCIDENTALS
-      ),
+      expenseTypes: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
       expense: this.newExpense(),
       showDialog: this.$route.query.showCreate === "true",
       loading: false,
