@@ -75,6 +75,7 @@
 <script>
 import { TYPES } from "@/api/expenses-api"
 import { useExpenses } from "@/use/expenses"
+import store from "@/store"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
@@ -96,6 +97,24 @@ export default {
     MealsAndIncidentalsTable,
     RequestApprovalForm,
     TotalsTable,
+  },
+  // CONSIDER: Should I just put this in the mounted hook?
+  // Or if if I should controll this problem by never showing the edit link to a user if they can't edit?
+  async beforeRouteEnter(to, _from, next) {
+    if (to.name !== "EditMyTravelAuthorizationExpensePage") {
+      return next()
+    }
+
+    await store.dispatch("travelAuthorization/ensure", to.params.travelAuthorizationId)
+
+    if (store.getters["travelAuthorization/isExpenseEditable"]) {
+      return next()
+    }
+
+    next({
+      name: "ReadMyTravelAuthorizationExpensePage",
+      params: { travelAuthorizationId: to.params.travelAuthorizationId },
+    })
   },
   props: {
     travelAuthorizationId: {

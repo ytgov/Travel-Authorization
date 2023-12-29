@@ -65,6 +65,7 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue"
+import { useRouter } from "vue2-helpers/vue-router"
 
 import { required } from "@/utils/validators"
 
@@ -88,17 +89,18 @@ defineExpose({
 
 const form = ref(null)
 const snack = useSnack()
+const router = useRouter()
 
 const {
   travelAuthorization,
   isLoading: isLoadingTravelAuthorization,
   fetch: fetchTravelAuthorization,
+  expenseClaim,
 } = useTravelAuthorization()
 const {
   generalLedgerCodings,
   isLoading: isLoadingGeneralLedgerCodings,
   fetch: fetchGeneralLedgerCodings,
-  expenseClaim,
 } = useGeneralLedgerCodings()
 const {
   expenses,
@@ -151,13 +153,11 @@ async function requestApprovalForExpenseClaim() {
     await expenseClaim(props.travelAuthorizationId, {
       supervisorEmail: travelAuthorization.value.supervisorEmail,
     })
-    // TODO: build out read only view of Expenses page.
-    // import { useRouter } from "vue2-helpers/vue-router"
-    // const router = useRouter()
-    // router.push({
-    //   name: "ReadMyTravelAuthorizationExpensesPage",
-    //   params: { travelAuthorizationId: this.travelAuthorizationId },
-    // })
+    snack("Expense claim submitted for approval.", { color: "success" })
+    router.push({
+      name: "ReadMyTravelAuthorizationExpensePage",
+      params: { travelAuthorizationId: props.travelAuthorizationId },
+    })
   } catch (error) {
     snack(error.message, { color: "error" })
   }
