@@ -140,6 +140,27 @@ const actions = {
       throw error
     }
   },
+  async submit({ commit, getters }) {
+    const travelAuthorizationId = getters.id
+    const attributes = getters.attributes
+
+    commit("SET_IS_LOADING", true)
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.submit(
+        travelAuthorizationId,
+        attributes
+      )
+      commit("SET_IS_ERRORED", false)
+      commit("SET_ATTRIBUTES", travelAuthorization)
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to update travel authorization:", error)
+      commit("SET_IS_ERRORED", true)
+      throw error
+    } finally {
+      commit("SET_IS_LOADING", false)
+    }
+  },
   newBlankStop({ getters }, attributes) {
     return {
       travelAuthorizationId: getters.id,
@@ -168,10 +189,6 @@ const mutations = {
   },
   SET_IS_CACHED(state, value) {
     state.isCached = value
-  },
-  // TODO: replace this with back-end state management
-  SET_STATUS(state, value) {
-    state.attributes.status = value
   },
   SET_EXPENSES(state, value) {
     state.attributes.expenses = value

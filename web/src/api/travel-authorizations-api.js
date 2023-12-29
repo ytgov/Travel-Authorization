@@ -39,6 +39,11 @@ export const travelAuthorizationsApi = {
       .then(({ data }) => data)
   },
   // State Management Actions
+  submit(travelAuthorizationId, attributes) {
+    return http
+      .post(`/api/travel-authorizations/${travelAuthorizationId}/submit`, attributes)
+      .then(({ data }) => data)
+  },
   approve(travelAuthorizationId) {
     return http
       .post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)

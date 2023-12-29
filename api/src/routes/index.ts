@@ -63,6 +63,9 @@ router
 
 // Stateful routes for travel authorizations
 router
+  .route("/api/travel-authorizations/:travelAuthorizationId/submit")
+  .post(TravelAuthorizations.SubmitController.create)
+router
   .route("/api/travel-authorizations/:travelAuthorizationId/approve")
   .post(TravelAuthorizations.ApproveController.create)
 router
