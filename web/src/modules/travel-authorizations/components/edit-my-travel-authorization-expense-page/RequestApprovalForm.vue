@@ -67,7 +67,6 @@
 import { onMounted, ref, computed } from "vue"
 
 import { required } from "@/utils/validators"
-import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import { useTravelAuthorization } from "@/use/travel-authorization"
@@ -99,8 +98,15 @@ const {
   generalLedgerCodings,
   isLoading: isLoadingGeneralLedgerCodings,
   fetch: fetchGeneralLedgerCodings,
+  expenseClaim,
 } = useGeneralLedgerCodings()
-const { expenses, isLoading: isLoadingExpenses, fetch: fetchExpenses } = useExpenses()
+const {
+  expenses,
+  isLoading: isLoadingExpenses,
+  fetch: fetchExpenses,
+  TYPES,
+  EXPENSE_TYPES,
+} = useExpenses()
 
 const isLoading = computed(
   () =>
@@ -110,11 +116,13 @@ const isLoading = computed(
 )
 
 const hasGeneralLedgerCodings = computed(() => generalLedgerCodings.value.length > 0)
-const allExpensesHaveReceipts = computed(() =>
-  expenses.value.every((expense) => expense.fileSize > 0)
+const allRelevantExpensesHaveReceipts = computed(() =>
+  expenses.value
+    .filter((expense) => expense.expenseType !== EXPENSE_TYPES.MEALS_AND_INCIDENTALS)
+    .every((expense) => expense.fileSize > 0)
 )
 const isReadyToSubmit = computed(
-  () => hasGeneralLedgerCodings.value && allExpensesHaveReceipts.value
+  () => hasGeneralLedgerCodings.value && allRelevantExpensesHaveReceipts.value
 )
 
 onMounted(async () => {
@@ -132,6 +140,7 @@ async function refresh() {
     await fetchExpenses({
       where: {
         travelAuthorizationId: props.travelAuthorizationId,
+        type: TYPES.EXPENSE,
       },
     }),
   ])
@@ -139,7 +148,7 @@ async function refresh() {
 
 async function requestApprovalForExpenseClaim() {
   try {
-    await travelAuthorizationsApi.expenseClaim(props.travelAuthorizationId, {
+    await expenseClaim(props.travelAuthorizationId, {
       supervisorEmail: travelAuthorization.value.supervisorEmail,
     })
     // TODO: build out read only view of Expenses page.
