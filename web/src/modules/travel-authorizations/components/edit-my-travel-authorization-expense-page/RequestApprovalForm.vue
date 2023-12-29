@@ -114,6 +114,7 @@ const isReadyToSubmit = computed(
 )
 
 onMounted(async () => {
+  // TODO: refresh this when user updates/adds expenses or when they add/remove codings rows
   await Promise.all([
     await fetchTravelAuthorization(props.travelAuthorizationId),
     await fetchGeneralLedgerCodings({
