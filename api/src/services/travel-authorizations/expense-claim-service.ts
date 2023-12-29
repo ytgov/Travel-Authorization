@@ -31,7 +31,6 @@ export class ExpenseClaimService extends BaseService {
       throw new Error("Supervisor email is required to submit and expense claim.")
     }
 
-
     await db.transaction(async () => {
       await this.travelAuthorization.update({
         supervisorEmail: this.supervisorEmail,
@@ -44,7 +43,9 @@ export class ExpenseClaimService extends BaseService {
       })
     })
 
-    return this.travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
+    return this.travelAuthorization.reload({
+      include: ["expenses", "stops", "purpose", "user", "travelSegments"],
+    })
   }
 }
 
