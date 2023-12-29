@@ -59,12 +59,17 @@ router
   .get(TravelAuthorizationsController.show)
   .patch(TravelAuthorizationsController.update)
   .delete(TravelAuthorizationsController.destroy)
+
+// Stateful routes for travel authorizations
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/approve")
   .post(TravelAuthorizations.ApproveController.create)
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/deny")
   .post(TravelAuthorizations.DenyController.create)
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId/expense-claim")
+  .post(TravelAuthorizations.ExpenseClaimController.create)
 
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/estimates/generate")

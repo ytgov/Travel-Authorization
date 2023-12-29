@@ -9,11 +9,11 @@
     <template #top>
       <GeneralLedgerCodingEditDialog
         ref="editDialog"
-        @saved="refresh"
+        @saved="emitChangedAndRefresh"
       />
       <GeneralLedgerCodingDeleteDialog
         ref="deleteDialog"
-        @deleted="refresh"
+        @deleted="emitChangedAndRefresh"
       />
     </template>
     <template #item.amount="{ value }">
@@ -66,6 +66,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["changed"])
+
 defineExpose({
   refresh,
 })
@@ -104,6 +106,11 @@ async function refresh() {
       travelAuthorizationId: props.travelAuthorizationId,
     },
   })
+}
+
+async function emitChangedAndRefresh() {
+  emit("changed")
+  await refresh()
 }
 
 function showDeleteDialog(item) {

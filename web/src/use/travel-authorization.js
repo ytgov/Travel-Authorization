@@ -34,9 +34,29 @@ export function useTravelAuthorization() {
     }
   }
 
+  async function expenseClaim(travelAuthorizationId, attributes) {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.expenseClaim(
+        travelAuthorizationId,
+        attributes
+      )
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to submit expense claim for travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   return {
     ...toRefs(state),
     fetch,
+    expenseClaim,
   }
 }
 

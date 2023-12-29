@@ -17,6 +17,7 @@
             <v-col>
               <ExpenseTypeSelect
                 v-model="expense.expenseType"
+                :expense-types="expenseTypes"
                 :rules="[required]"
                 label="Expense Type"
                 required
@@ -86,7 +87,7 @@ import CurrencyTextField from "@/components/Utils/CurrencyTextField"
 import DatePicker from "@/components/Utils/DatePicker"
 import ExpenseTypeSelect from "@/modules/travel-authorizations/components/ExpenseTypeSelect"
 
-import expensesApi from "@/api/expenses-api"
+import expensesApi, { EXPENSE_TYPES } from "@/api/expenses-api"
 
 export default {
   name: "ExpenseEditDialog",
@@ -96,6 +97,7 @@ export default {
     ExpenseTypeSelect,
   },
   data: () => ({
+    expenseTypes: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
     expense: {},
     showDialog: false,
     loading: false,

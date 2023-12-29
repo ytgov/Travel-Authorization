@@ -21,6 +21,7 @@ export enum Actions {
   APPROVE = "approve",
   DENY = "deny",
   UPDATE = "update",
+  EXPENSE_CLAIM = "expense_claim",
 }
 
 export class TravelAuthorizationActionLog extends Model<

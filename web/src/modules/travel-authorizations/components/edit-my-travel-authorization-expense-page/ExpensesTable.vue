@@ -9,11 +9,11 @@
     <template #top>
       <ExpenseEditDialog
         ref="editDialog"
-        @saved="refresh"
+        @saved="emitChangedAndRefresh"
       />
       <ExpenseDeleteDialog
         ref="deleteDialog"
-        @deleted="refresh"
+        @deleted="emitChangedAndRefresh"
       />
     </template>
     <template #item.date="{ value }">
@@ -36,7 +36,7 @@
           <AddReceiptButton
             v-if="item.fileSize === null"
             :expense-id="item.id"
-            @uploaded="refresh"
+            @uploaded="emitChangedAndRefresh"
           />
           <ViewRecieptLink
             v-else
@@ -149,6 +149,10 @@ export default {
           expenseType: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
         },
       })
+    },
+    emitChangedAndRefresh() {
+      this.$emit("changed")
+      return this.refresh()
     },
     showDeleteDialog(item) {
       this.$refs.deleteDialog.show(item)

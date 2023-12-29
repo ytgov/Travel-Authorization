@@ -49,6 +49,11 @@ export const travelAuthorizationsApi = {
       .post(`/api/travel-authorizations/${travelAuthorizationId}/deny`)
       .then(({ data }) => data)
   },
+  expenseClaim(travelAuthorizationId, attributes) {
+    return http
+      .post(`/api/travel-authorizations/${travelAuthorizationId}/expense-claim`, attributes)
+      .then(({ data }) => data)
+  },
 }
 
 export default travelAuthorizationsApi

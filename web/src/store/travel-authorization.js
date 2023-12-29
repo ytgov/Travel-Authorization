@@ -1,3 +1,5 @@
+import { isNil } from "lodash"
+
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 
@@ -36,6 +38,18 @@ const getters = withGettersFromState(state, {
   isEditable: (_state, getters, _rootState, rootGetters) => {
     const currentUserId = rootGetters["current/user/id"]
     return getters.isEditableByUser(currentUserId)
+  },
+  isBeforeTravelStartDate(state) {
+    const firstTravelSegment = state.attributes.travelSegments[0]
+    if (isNil(firstTravelSegment)) return false
+
+    return new Date(firstTravelSegment.departureOn) > new Date()
+  },
+  isAfterTravelStartDate(_state, getters) {
+    return !getters.isBeforeTravelStartDate
+  },
+  isExpenseEditable: (state, getters) => {
+    return state.attributes.status === STATUSES.APPROVED && getters.isAfterTravelStartDate
   },
 })
 
