@@ -12,8 +12,8 @@ export class TravelAuthorizationActionLogsController extends BaseController {
     return TravelAuthorizationActionLog.findAll({
       where,
       order: [["createdAt", "ASC"]],
-    }).then((travelAuthorizationActionLog) => {
-      return this.response.json({ travelAuthorizationActionLog })
+    }).then((travelAuthorizationActionLogs) => {
+      return this.response.json({ travelAuthorizationActionLogs })
     })
   }
 }
