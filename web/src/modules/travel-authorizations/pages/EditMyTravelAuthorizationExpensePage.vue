@@ -8,18 +8,19 @@
           <ExpenseCreateDialog
             v-if="hasExpenses"
             :form-id="travelAuthorizationId"
-            @created="refreshExpenses"
+            @created="refreshExpenseCreationDependencies"
           />
           <ExpensePrefillDialog
             v-else
             :travel-authorization-id="travelAuthorizationId"
-            @created="refreshExpenses"
+            @created="refreshExpenseCreationDependencies"
           />
         </div>
 
         <ExpensesTable
           ref="expensesTable"
           :travel-authorization-id="travelAuthorizationId"
+          @changed="refreshExpenseChangedDependencies"
         />
         * Meals and Incidentals will be calculated by the system; do not add these expenses.
       </v-col>
@@ -48,20 +49,24 @@
 
           <GeneralLedgerCodingCreateDialog
             :travel-authorization-id="travelAuthorizationId"
-            @created="refreshCodings"
+            @created="refreshCodingsCreatedDependencies"
           />
         </div>
 
         <GeneralLedgerCodingsTable
           ref="codingsTable"
           :travel-authorization-id="travelAuthorizationId"
+          @changed="refreshCodingsChangedDependencies"
         />
       </v-col>
       <v-col cols="4"></v-col>
     </v-row>
     <v-row class="mt-12">
       <v-col>
-        <RequestApprovalForm :travel-authorization-id="travelAuthorizationId" />
+        <RequestApprovalForm
+          ref="requestApprovalForm"
+          :travel-authorization-id="travelAuthorizationId"
+        />
       </v-col>
     </v-row>
   </div>
@@ -124,16 +129,29 @@ export default {
         },
       })
     },
-    async refreshExpenses() {
+    async refreshExpenseCreationDependencies() {
       await Promise.all([
         this.refresh(),
         this.$refs.expensesTable.refresh(),
         this.$refs.mealsAndIncidentalsTable.refresh(),
         this.$refs.totalsTable.refresh(),
+        await this.$refs.requestApprovalForm.refresh(),
       ])
     },
-    refreshCodings() {
-      this.$refs.codingsTable.refresh()
+    async refreshExpenseChangedDependencies() {
+      await Promise.all([
+        this.$refs.totalsTable.refresh(),
+        await this.$refs.requestApprovalForm.refresh(),
+      ])
+    },
+    async refreshCodingsCreatedDependencies() {
+      await Promise.all([
+        await this.$refs.codingsTable.refresh(),
+        await this.$refs.requestApprovalForm.refresh(),
+      ])
+    },
+    async refreshCodingsChangedDependencies() {
+      await this.$refs.requestApprovalForm.refresh()
     },
   },
 }

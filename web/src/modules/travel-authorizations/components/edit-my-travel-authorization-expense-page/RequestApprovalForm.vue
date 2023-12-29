@@ -66,6 +66,7 @@
 <script setup>
 import { onMounted, ref, computed } from "vue"
 
+import { required } from "@/utils/validators"
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 
 import { useSnack } from "@/plugins/snack-plugin"
@@ -80,6 +81,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+})
+
+defineExpose({
+  refresh,
 })
 
 const form = ref(null)
@@ -105,16 +110,18 @@ const isLoading = computed(
 )
 
 const hasGeneralLedgerCodings = computed(() => generalLedgerCodings.value.length > 0)
-const expensesWithReceipts = computed(() =>
-  expenses.value.filter((expense) => expense.fileSize > 0)
+const allExpensesHaveReceipts = computed(() =>
+  expenses.value.every((expense) => expense.fileSize > 0)
 )
-const hasExpensesWithReceipts = computed(() => expensesWithReceipts.value.length > 0)
 const isReadyToSubmit = computed(
-  () => hasGeneralLedgerCodings.value && hasExpensesWithReceipts.value
+  () => hasGeneralLedgerCodings.value && allExpensesHaveReceipts.value
 )
 
 onMounted(async () => {
-  // TODO: refresh this when user updates/adds expenses or when they add/remove codings rows
+  await refresh()
+})
+
+async function refresh() {
   await Promise.all([
     await fetchTravelAuthorization(props.travelAuthorizationId),
     await fetchGeneralLedgerCodings({
@@ -128,7 +135,7 @@ onMounted(async () => {
       },
     }),
   ])
-})
+}
 
 async function requestApprovalForExpenseClaim() {
   try {
