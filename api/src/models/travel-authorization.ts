@@ -34,19 +34,20 @@ import User from "./user"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
+// Statuses are sorted by presumed order of progression
 export enum Statuses {
   // TODO: might want replace DELETED status with `deleted_at` field from Sequelize paranoid feature.
   // See https://sequelize.org/docs/v6/core-concepts/paranoid/
-  DELETED = "deleted",
-  APPROVED = "approved",
-  AWAITING_DIRECTOR_APPROVAL = "awaiting_director_approval",
-  BOOKED = "booked",
-  CHANGE_REQUESTED = "change_requested",
-  DENIED = "denied",
   DRAFT = "draft",
+  SUBMITTED = "submitted",
+  CHANGE_REQUESTED = "change_requested",
+  APPROVED = "approved",
+  BOOKED = "booked",
+  DENIED = "denied",
   EXPENSE_CLAIM = "expense_claim",
   EXPENSED = "expensed",
-  SUBMITTED = "submitted",
+  AWAITING_DIRECTOR_APPROVAL = "awaiting_director_approval",
+  DELETED = "deleted",
 }
 
 export class TravelAuthorization extends Model<
