@@ -25,8 +25,9 @@ export class DenyService extends BaseService {
         })
         await TravelAuthorizationActionLog.create({
           travelAuthorizationId: this.travelAuthorization.id,
-          userId: this.denier.id,
-          action: TravelAuthorizationActionLog.Actions.DENY,
+          actorId: this.denier.id,
+          assigneeId: this.travelAuthorization.userId,
+          action: TravelAuthorizationActionLog.Actions.DENIED,
         })
       })
     }

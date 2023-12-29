@@ -27,9 +27,11 @@ export class ExpenseClaimService extends BaseService {
         "Travel authorization must be in an approved state to submit an expense claim."
       )
     }
-    if (isNil(this.supervisorEmail) || isEmpty(this.supervisorEmail)) {
-      throw new Error("Supervisor email is required to submit and expense claim.")
+    const supervisor = await User.findOne({ where: { email: this.supervisorEmail } })
+    if (isNil(supervisor)) {
+      throw new Error("Supervisor submitted to does not exist.")
     }
+
 
     await db.transaction(async () => {
       await this.travelAuthorization.update({
@@ -38,7 +40,8 @@ export class ExpenseClaimService extends BaseService {
       })
       await TravelAuthorizationActionLog.create({
         travelAuthorizationId: this.travelAuthorization.id,
-        userId: this.currentUser.id,
+        actorId: this.currentUser.id,
+        assigneeId: supervisor.id,
         action: TravelAuthorizationActionLog.Actions.EXPENSE_CLAIM,
       })
     })
