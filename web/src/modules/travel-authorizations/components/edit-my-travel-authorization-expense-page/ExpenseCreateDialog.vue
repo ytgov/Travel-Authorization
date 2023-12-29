@@ -28,6 +28,7 @@
             <v-col>
               <ExpenseTypeSelect
                 v-model="expense.expenseType"
+                :expense-types="expenseTypes"
                 :rules="[required]"
                 label="Expense Type"
                 required
@@ -91,11 +92,11 @@
 <script>
 import { required } from "@/utils/validators"
 
+import expensesApi, { EXPENSE_TYPES } from "@/api/expenses-api"
+
 import CurrencyTextField from "@/components/Utils/CurrencyTextField"
 import DatePicker from "@/components/Utils/DatePicker"
 import ExpenseTypeSelect from "@/modules/travel-authorizations/components/ExpenseTypeSelect"
-
-import expensesApi from "@/api/expenses-api"
 
 export default {
   name: "ExpenseCreateDialog",
@@ -112,6 +113,9 @@ export default {
   },
   data() {
     return {
+      expenseTypes: Object.values(EXPENSE_TYPES).filter(
+        (type) => type !== EXPENSE_TYPES.MEALS_AND_INCIDENTALS
+      ),
       expense: this.newExpense(),
       showDialog: this.$route.query.showCreate === "true",
       loading: false,
