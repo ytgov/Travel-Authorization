@@ -15,14 +15,9 @@ import {
 import sequelize from "@/db/db-client"
 
 import User from "./user"
-import TravelAuthorization from "./travel-authorization"
+import TravelAuthorization, { Statuses as Actions } from "./travel-authorization"
 
-export enum Actions {
-  APPROVE = "approve",
-  DENY = "deny",
-  UPDATE = "update",
-  EXPENSE_CLAIM = "expense_claim",
-}
+export { Actions }
 
 export class TravelAuthorizationActionLog extends Model<
   InferAttributes<TravelAuthorizationActionLog>,
