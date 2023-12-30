@@ -7,15 +7,28 @@
     <template #item.action="{ value }">
       {{ formatAction(value) }}
     </template>
+    <template #item.actorId="{ value }">
+      <VUserChipMenu :user-id="value" />
+    </template>
+    <template #item.assigneeId="{ value }">
+      <VUserChipMenu :user-id="value" />
+    </template>
+    <template #item.createdAt="{ value }">
+      {{ formatDate(value) }}
+    </template>
   </v-data-table>
 </template>
 
 <script setup>
 import { startCase } from "lodash"
+import { DateTime } from "luxon"
 import { onMounted } from "vue"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { useTravelAuthorizationActionLogs } from "@/use/travel-authorization-action-logs"
+
+import VUserChipMenu from "@/components/VUserChipMenu.vue"
+
 const props = defineProps({
   travelAuthorizationId: {
     type: Number,
@@ -61,5 +74,12 @@ onMounted(async () => {
 function formatAction(value) {
   const fallback = startCase(value.replace("_", " "))
   return t(`global.status.${value}`, { $default: fallback })
+}
+
+function formatDate(value) {
+  // TODO: fix the backend so that it returns the date in ISO 8601 format
+  const iso8601Value = value.replace(" ", "T")
+  const date = DateTime.fromISO(iso8601Value, { zone: "utc" })
+  return date.toFormat("LLLL-dd-yyyy")
 }
 </script>
