@@ -5,6 +5,7 @@ import { checkJwt, loadUser } from "@/middleware/authz.middleware"
 import {
   Expenses,
   ExpensesController,
+  GeneralLedgerCodingsController,
   LocationsController,
   PreApprovedTravelersController,
   PreApprovedTravelRequestsController,
@@ -58,12 +59,17 @@ router
   .get(TravelAuthorizationsController.show)
   .patch(TravelAuthorizationsController.update)
   .delete(TravelAuthorizationsController.destroy)
+
+// Stateful routes for travel authorizations
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/approve")
   .post(TravelAuthorizations.ApproveController.create)
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/deny")
   .post(TravelAuthorizations.DenyController.create)
+router
+  .route("/api/travel-authorizations/:travelAuthorizationId/expense-claim")
+  .post(TravelAuthorizations.ExpenseClaimController.create)
 
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/estimates/generate")
@@ -81,6 +87,16 @@ router
   .route("/api/users/:userId/yg-government-directory-sync")
   .post(Users.YgGovernmentDirectorySyncController.create)
 router.route("/api/travel-purposes").get(TravelPurposesController.index)
+
+router
+  .route("/api/general-ledger-codings")
+  .get(GeneralLedgerCodingsController.index)
+  .post(GeneralLedgerCodingsController.create)
+router
+  .route("/api/general-ledger-codings/:generalLedgerCodingId")
+  .get(GeneralLedgerCodingsController.show)
+  .patch(GeneralLedgerCodingsController.update)
+  .delete(GeneralLedgerCodingsController.destroy)
 
 // QA testing scenarios
 router.route("/api/qa/scenarios").get(Qa.ScenariosController.index)

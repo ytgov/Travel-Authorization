@@ -1,40 +1,29 @@
 import {
-  Model,
-  DataTypes,
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  ForeignKey,
   Association,
+  BelongsToCreateAssociationMixin,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  BelongsToCreateAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  ForeignKey,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
   NonAttribute,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
 
-import User from "./user"
 import TravelAuthorization from "./travel-authorization"
 
-export enum Actions {
-  APPROVE = "approve",
-  DENY = "deny",
-  UPDATE = "update",
-  EXPENSE_CLAIM = "expense_claim",
-}
-
-export class TravelAuthorizationActionLog extends Model<
-  InferAttributes<TravelAuthorizationActionLog>,
-  InferCreationAttributes<TravelAuthorizationActionLog>
+export class GeneralLedgerCoding extends Model<
+  InferAttributes<GeneralLedgerCoding>,
+  InferCreationAttributes<GeneralLedgerCoding>
 > {
-  static Actions = Actions
-
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
-  declare userId: ForeignKey<User["id"]>
-  declare action: string
-  declare note: string | null
+  declare code: string
+  declare amount: number
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
@@ -48,31 +37,22 @@ export class TravelAuthorizationActionLog extends Model<
   >
   declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
-  declare getUser: BelongsToGetAssociationMixin<User>
-  declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createUser: BelongsToCreateAssociationMixin<User>
-
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
-  declare user?: NonAttribute<User>
 
   declare static associations: {
-    travelAuthorization: Association<TravelAuthorizationActionLog, TravelAuthorization>
-    user: Association<TravelAuthorizationActionLog, User>
+    travelAuthorization: Association<GeneralLedgerCoding, TravelAuthorization>
   }
 
   static establishAssociations() {
     this.belongsTo(TravelAuthorization, {
       as: "travelAuthorization",
       foreignKey: "travelAuthorizationId",
-    })
-    this.belongsTo(User, {
-      as: "user",
-      foreignKey: "userId",
+      onDelete: "CASCADE",
     })
   }
 }
 
-TravelAuthorizationActionLog.init(
+GeneralLedgerCoding.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -83,28 +63,24 @@ TravelAuthorizationActionLog.init(
     travelAuthorizationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      references: {
-        model: "travel_authorizations", // using real table name here
-        key: "id", // using real column name here
-      },
-      onDelete: "CASCADE",
     },
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "users", // using real table name here
-        key: "id", // using real column name here
-      },
-      onDelete: "RESTRICT",
-    },
-    action: {
-      type: DataTypes.STRING,
+    // See https://www.tpsgc-pwgsc.gc.ca/recgen/pceaf-gwcoa/2223/2-eng.html
+    // Department / Agency 	Financial Reporting Account (FRA) 	Authority 	Program 	Object 	Transaction Type
+    code: {
+      type: DataTypes.STRING(25),
       allowNull: false,
     },
-    note: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    // Postgres decimal types are represented as strings, so much be converted to numbers JS side.
+    // See https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
+    amount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      get() {
+        const value = this.getDataValue("amount")
+        if (value === null) return null
+
+        return Number(value)
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -119,9 +95,7 @@ TravelAuthorizationActionLog.init(
   },
   {
     sequelize,
-    modelName: "TravelAuthorizationActionLog",
-    tableName: "travel_authorization_action_logs",
   }
 )
 
-export default TravelAuthorizationActionLog
+export default GeneralLedgerCoding

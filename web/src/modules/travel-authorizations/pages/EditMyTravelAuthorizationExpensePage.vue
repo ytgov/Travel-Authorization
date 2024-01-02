@@ -8,18 +8,19 @@
           <ExpenseCreateDialog
             v-if="hasExpenses"
             :form-id="travelAuthorizationId"
-            @created="refreshExpenses"
+            @created="refreshExpenseCreationDependencies"
           />
           <ExpensePrefillDialog
             v-else
             :travel-authorization-id="travelAuthorizationId"
-            @created="refreshExpenses"
+            @created="refreshExpenseCreationDependencies"
           />
         </div>
 
         <ExpensesTable
           ref="expensesTable"
           :travel-authorization-id="travelAuthorizationId"
+          @changed="refreshExpenseChangedDependencies"
         />
         * Meals and Incidentals will be calculated by the system; do not add these expenses.
       </v-col>
@@ -33,7 +34,40 @@
           :travel-authorization-id="travelAuthorizationId"
         />
       </v-col>
-      <v-col></v-col>
+      <v-col>
+        <h3>Totals</h3>
+        <TotalsTable
+          ref="totalsTable"
+          :travel-authorization-id="travelAuthorizationId"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <div class="d-flex justify-space-between align-end">
+          <h3>Coding</h3>
+
+          <GeneralLedgerCodingCreateDialog
+            :travel-authorization-id="travelAuthorizationId"
+            @created="refreshCodingsCreatedDependencies"
+          />
+        </div>
+
+        <GeneralLedgerCodingsTable
+          ref="codingsTable"
+          :travel-authorization-id="travelAuthorizationId"
+          @changed="refreshCodingsChangedDependencies"
+        />
+      </v-col>
+      <v-col cols="4"></v-col>
+    </v-row>
+    <v-row class="mt-12">
+      <v-col>
+        <RequestApprovalForm
+          ref="requestApprovalForm"
+          :travel-authorization-id="travelAuthorizationId"
+        />
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -41,11 +75,16 @@
 <script>
 import { TYPES } from "@/api/expenses-api"
 import { useExpenses } from "@/use/expenses"
+import store from "@/store"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
 import ExpensesTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensesTable"
+import GeneralLedgerCodingCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingCreateDialog.vue"
+import GeneralLedgerCodingsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingsTable.vue"
 import MealsAndIncidentalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/MealsAndIncidentalsTable.vue"
+import RequestApprovalForm from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/RequestApprovalForm.vue"
+import TotalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/TotalsTable.vue"
 
 export default {
   name: "EditMyTravelAuthorizationExpensePage",
@@ -53,7 +92,29 @@ export default {
     ExpenseCreateDialog,
     ExpensePrefillDialog,
     ExpensesTable,
+    GeneralLedgerCodingCreateDialog,
+    GeneralLedgerCodingsTable,
     MealsAndIncidentalsTable,
+    RequestApprovalForm,
+    TotalsTable,
+  },
+  // CONSIDER: Should I just put this in the mounted hook?
+  // Or if if I should controll this problem by never showing the edit link to a user if they can't edit?
+  async beforeRouteEnter(to, _from, next) {
+    if (to.name !== "EditMyTravelAuthorizationExpensePage") {
+      return next()
+    }
+
+    await store.dispatch("travelAuthorization/ensure", to.params.travelAuthorizationId)
+
+    if (store.getters["travelAuthorization/isExpenseEditable"]) {
+      return next()
+    }
+
+    next({
+      name: "ReadMyTravelAuthorizationExpensePage",
+      params: { travelAuthorizationId: to.params.travelAuthorizationId },
+    })
   },
   props: {
     travelAuthorizationId: {
@@ -87,12 +148,29 @@ export default {
         },
       })
     },
-    async refreshExpenses() {
+    async refreshExpenseCreationDependencies() {
       await Promise.all([
         this.refresh(),
         this.$refs.expensesTable.refresh(),
         this.$refs.mealsAndIncidentalsTable.refresh(),
+        this.$refs.totalsTable.refresh(),
+        await this.$refs.requestApprovalForm.refresh(),
       ])
+    },
+    async refreshExpenseChangedDependencies() {
+      await Promise.all([
+        this.$refs.totalsTable.refresh(),
+        await this.$refs.requestApprovalForm.refresh(),
+      ])
+    },
+    async refreshCodingsCreatedDependencies() {
+      await Promise.all([
+        await this.$refs.codingsTable.refresh(),
+        await this.$refs.requestApprovalForm.refresh(),
+      ])
+    },
+    async refreshCodingsChangedDependencies() {
+      await this.$refs.requestApprovalForm.refresh()
     },
   },
 }

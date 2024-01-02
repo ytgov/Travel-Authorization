@@ -62,6 +62,13 @@ const routes = [
             props: cast("travelAuthorizationId", parseInt),
           },
           {
+            path: "expense",
+            name: "ReadMyTravelAuthorizationExpensePage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationExpensePage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+          {
             path: "expense/edit",
             name: "EditMyTravelAuthorizationExpensePage",
             component: () =>

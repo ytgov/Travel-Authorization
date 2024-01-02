@@ -16,6 +16,8 @@
 <script>
 import { required } from "@/utils/validators"
 
+import { EXPENSE_TYPES } from "@/api/expenses-api"
+
 export default {
   inheritAttrs: false,
   props: {
@@ -23,16 +25,15 @@ export default {
       type: String,
       default: () => null,
     },
+    expenseTypes: {
+      type: Array,
+      default: () => Object.values(EXPENSE_TYPES),
+    },
   },
   data: () => ({
-    expenseTypes: [],
     loading: true,
   }),
   mounted() {
-    this.loading = true
-    // TODO: fetch expense types from backend,
-    // until then, keep in sync with src/api/models/expense.ts
-    this.expenseTypes = ["Transportation", "Accommodations", "Meals & Incidentals"]
     this.loading = false
   },
   methods: {
