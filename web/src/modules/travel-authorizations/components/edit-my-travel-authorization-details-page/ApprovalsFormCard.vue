@@ -95,7 +95,7 @@
 
       <v-row>
         <v-col>
-          <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorization.id" />
+          <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorizationId" />
         </v-col>
       </v-row>
     </v-card-text>
