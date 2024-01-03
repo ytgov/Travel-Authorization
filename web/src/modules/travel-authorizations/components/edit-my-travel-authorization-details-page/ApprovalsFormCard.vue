@@ -92,6 +92,12 @@
           </v-col>
         </v-row>
       </v-form>
+
+      <v-row>
+        <v-col>
+          <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorizationId" />
+        </v-col>
+      </v-row>
     </v-card-text>
   </v-card>
 </template>
@@ -103,8 +109,9 @@ import { mapActions, mapGetters } from "vuex"
 import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-
 import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
+import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
+
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/approvals-form-card/EstimateGenerateDialog"
 import SubmitToSupervisorButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/approvals-form-card/SubmitToSupervisorButton"
 
@@ -115,6 +122,7 @@ export default {
     EstimateGenerateDialog,
     SearchableUserEmailCombobox,
     SubmitToSupervisorButton,
+    TravelAuthorizationActionLogsTable,
   },
   props: {
     travelAuthorizationId: {

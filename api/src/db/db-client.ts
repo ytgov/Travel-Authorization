@@ -22,7 +22,7 @@ export const SEQUELIZE_CONFIG: Options = {
   schema: "public",
   logging: NODE_ENV === "development" ? console.log : false,
   // Non-standard tables must now declare their customizations
-  // If possible to standardize new tables, rather than customizing them.
+  // If possible, standardize new tables, rather than customizing them.
   define: {
     underscored: true,
     timestamps: true,

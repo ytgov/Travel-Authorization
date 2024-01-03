@@ -61,6 +61,11 @@
           />
         </v-col>
       </v-row>
+      <v-row>
+        <v-col>
+          <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorizationId" />
+        </v-col>
+      </v-row>
     </v-card-text>
   </v-card>
 </template>
@@ -69,9 +74,13 @@
 import { isNil, isEmpty, sumBy } from "lodash"
 import { mapActions, mapGetters } from "vuex"
 
+import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
+
 export default {
   name: "ApprovalsCard",
-  components: {},
+  components: {
+    TravelAuthorizationActionLogsTable,
+  },
   props: {
     travelAuthorizationId: {
       type: Number,

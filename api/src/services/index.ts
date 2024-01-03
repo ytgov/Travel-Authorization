@@ -9,9 +9,10 @@ export { YkGovernmentDirectorySyncService } from "./yk-government-directory-sync
 export * as Estimates from "./estimates"
 export * as GeneralLedgerCodings from "./general-ledger-codings"
 export * as Qa from "./qa"
+export * as Stops from "./stops"
 export * as TravelAuthorizations from "./travel-authorizations"
 export * as TravelSegments from "./travel-segments"
-export * as Stops from "./stops"
+export * as Users from "./users"
 
 // TODO: move these to their own files, or deprecate and remove them completely
 export interface QueryStatement {

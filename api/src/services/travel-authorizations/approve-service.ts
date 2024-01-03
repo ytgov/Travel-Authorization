@@ -23,8 +23,9 @@ export class ApproveService extends BaseService {
         })
         await TravelAuthorizationActionLog.create({
           travelAuthorizationId: this.travelAuthorization.id,
-          userId: this.approver.id,
-          action: TravelAuthorizationActionLog.Actions.APPROVE,
+          actorId: this.approver.id,
+          assigneeId: this.travelAuthorization.userId,
+          action: TravelAuthorizationActionLog.Actions.APPROVED,
         })
       })
     }

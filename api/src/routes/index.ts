@@ -11,6 +11,7 @@ import {
   PreApprovedTravelRequestsController,
   Qa,
   StopsController,
+  TravelAuthorizationActionLogsController,
   TravelAuthorizations,
   TravelAuthorizationsController,
   TravelPurposesController,
@@ -62,6 +63,9 @@ router
 
 // Stateful routes for travel authorizations
 router
+  .route("/api/travel-authorizations/:travelAuthorizationId/submit")
+  .post(TravelAuthorizations.SubmitController.create)
+router
   .route("/api/travel-authorizations/:travelAuthorizationId/approve")
   .post(TravelAuthorizations.ApproveController.create)
 router
@@ -97,6 +101,10 @@ router
   .get(GeneralLedgerCodingsController.show)
   .patch(GeneralLedgerCodingsController.update)
   .delete(GeneralLedgerCodingsController.destroy)
+
+router
+  .route("/api/travel-authorization-action-logs")
+  .get(TravelAuthorizationActionLogsController.index)
 
 // QA testing scenarios
 router.route("/api/qa/scenarios").get(Qa.ScenariosController.index)

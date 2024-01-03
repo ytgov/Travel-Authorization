@@ -5,7 +5,7 @@
       :loading="isLoading"
       class="mt-0"
       color="primary"
-      @click="saveWrapper"
+      @click="submitAndRedirect"
     >
       Submit to Supervisor
     </v-btn>
@@ -38,9 +38,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex"
-
-import { STATUSES } from "@/api/travel-authorizations-api"
+import { mapActions, mapGetters } from "vuex"
 
 export default {
   name: "SubmitToSupervisorButton",
@@ -71,26 +69,22 @@ export default {
     await this.ensure(this.travelAuthorizationId)
   },
   methods: {
-    ...mapActions("travelAuthorization", ["ensure", "save"]),
-    // TODO: move this to a back-end state change endpoint
-    ...mapMutations("travelAuthorization", ["SET_STATUS"]),
-    saveWrapper() {
+    ...mapActions("travelAuthorization", ["ensure", "submit"]),
+    async submitAndRedirect() {
       if (!this.validateForm()) {
         this.$snack("Form submission can't be sent until the form is complete.", { color: "error" })
         return
       }
 
-      this.SET_STATUS(STATUSES.SUBMITTED)
-      return this.save()
-        .then(() => {
-          this.$router.push({
-            name: "ReadMyTravelAuthorizationDetailsPage",
-            params: { travelAuthorizationId: this.travelAuthorizationId },
-          })
+      try {
+        await this.submit()
+        this.$router.push({
+          name: "ReadMyTravelAuthorizationDetailsPage",
+          params: { travelAuthorizationId: this.travelAuthorizationId },
         })
-        .catch((error) => {
-          this.$snack(error.message, { color: "error" })
-        })
+      } catch (error) {
+        this.$snack(error.message, { color: "error" })
+      }
     },
   },
 }

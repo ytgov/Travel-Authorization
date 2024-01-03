@@ -17,10 +17,7 @@
 
     <h1>
       Travel -
-      <VUserChipMenu
-        :user-id="currentUser.id"
-        :is-current-user="true"
-      />
+      <VUserChipMenu :user-id="currentUser.id" />
     </h1>
 
     <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />

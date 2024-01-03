@@ -77,6 +77,7 @@
 <script>
 import MD5 from "md5.js"
 import { isNil } from "lodash"
+import { mapActions, mapGetters } from "vuex"
 
 import usersApi from "@/api/users-api"
 
@@ -89,10 +90,6 @@ export default {
       type: Number,
       default: UNSET_USER_ID,
     },
-    isCurrentUser: {
-      type: Boolean,
-      default: false,
-    },
   },
   data: () => ({
     menu: false,
@@ -103,6 +100,9 @@ export default {
     fields: ["manager", "mailcode", "department", "division", "branch", "unit"],
   }),
   computed: {
+    ...mapGetters("current/user", {
+      currentUserId: "id",
+    }),
     gravatarUrl() {
       if (isNil(this.user.email)) {
         return ""
@@ -111,6 +111,9 @@ export default {
       const normalizedEmail = this.user.email.trim().toLowerCase()
       const hash = new MD5().update(normalizedEmail).digest("hex")
       return `https://www.gravatar.com/avatar/${hash}`
+    },
+    isCurrentUser() {
+      return this.currentUserId === this.userId
     },
     userProfileLink() {
       return this.isCurrentUser ? "/profile" : `/users/${this.userId}`
@@ -128,7 +131,13 @@ export default {
       immediate: true,
     },
   },
+  async mounted() {
+    await this.ensureCurrentUser()
+  },
   methods: {
+    ...mapActions("current/user", {
+      ensureCurrentUser: "ensure",
+    }),
     async fetchUser(userId) {
       this.isLoading = true
       try {
