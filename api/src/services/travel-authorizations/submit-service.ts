@@ -29,7 +29,7 @@ export class SubmitService extends BaseService {
       throw new Error("Travel authorization must be in draft state to submit.")
     }
 
-    const supervisorEmail = this.travelAuthorization.supervisorEmail
+    const { supervisorEmail } = this.attributes
     if (isNil(supervisorEmail)) {
       throw new Error("Supervisor email is required for travel authorization submission.")
     }
