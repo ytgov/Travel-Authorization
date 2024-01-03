@@ -12,7 +12,7 @@ export class UsersController extends BaseController {
     if (isNil(user)) return this.response.status(404).json({ message: "User not found." })
 
     const policy = this.buildPolicy(user)
-    if (!policy.update()) {
+    if (!policy.show()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to view this user." })
