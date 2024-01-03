@@ -99,7 +99,7 @@ export default {
     TotalsTable,
   },
   // CONSIDER: Should I just put this in the mounted hook?
-  // Or if if I should controll this problem by never showing the edit link to a user if they can't edit?
+  // Alterntively, should control this situation by never showing the edit link to a user if they can't edit?
   async beforeRouteEnter(to, _from, next) {
     if (to.name !== "EditMyTravelAuthorizationExpensePage") {
       return next()
