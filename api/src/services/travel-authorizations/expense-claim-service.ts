@@ -3,6 +3,7 @@ import { isEmpty, isNil } from "lodash"
 import db from "@/db/db-client"
 
 import BaseService from "@/services/base-service"
+import { EnsureService } from "@/services/users"
 import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
 export class ExpenseClaimService extends BaseService {
@@ -27,13 +28,21 @@ export class ExpenseClaimService extends BaseService {
         "Travel authorization must be in an approved state to submit an expense claim."
       )
     }
-    const supervisor = await User.findOne({ where: { email: this.supervisorEmail } })
-    if (isNil(supervisor)) {
-      throw new Error("Supervisor submitted to does not exist.")
+
+    if (isNil(this.supervisorEmail)) {
+      throw new Error("Supervisor email is required for expense claim submission.")
     }
 
-
     await db.transaction(async () => {
+      const supervisor = await EnsureService.perform(
+        {
+          email: this.supervisorEmail,
+        },
+        this.currentUser
+      ).catch((error) => {
+        throw new Error(`Failed to ensure supervisor: ${error}`)
+      })
+
       await this.travelAuthorization.update({
         supervisorEmail: this.supervisorEmail,
         status: TravelAuthorization.Statuses.EXPENSE_CLAIM,
