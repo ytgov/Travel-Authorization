@@ -3,7 +3,7 @@ import { isEmpty, isNil } from "lodash"
 import db from "@/db/db-client"
 
 import BaseService from "@/services/base-service"
-import { EnsureService } from "@/services/users"
+import { Users } from "@/services"
 import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
 export class ExpenseClaimService extends BaseService {
@@ -34,7 +34,7 @@ export class ExpenseClaimService extends BaseService {
     }
 
     await db.transaction(async () => {
-      const supervisor = await EnsureService.perform(
+      const supervisor = await Users.EnsureService.perform(
         {
           email: this.supervisorEmail,
         },

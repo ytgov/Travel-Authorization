@@ -3,8 +3,8 @@ import { isNil } from "lodash"
 import db from "@/db/db-client"
 
 import BaseService from "@/services/base-service"
+import { Users } from "@/services"
 import { UpdateService } from "@/services/travel-authorizations"
-import { EnsureService } from "@/services/users"
 
 import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
@@ -44,7 +44,7 @@ export class SubmitService extends BaseService {
         this.currentUser
       )
 
-      const supervisor = await EnsureService.perform(
+      const supervisor = await Users.EnsureService.perform(
         {
           email: supervisorEmail,
         },
