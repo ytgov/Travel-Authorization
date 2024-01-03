@@ -69,10 +69,9 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
 
   permittedAttributes(): string[] {
     return [
-      "userId", // Permit but don't let non-admins create travel auths for anyone but themselves via policy
+      "userId", // TODO: Permit but don't let non-admins create travel authorizations for anyone but themselves via policy
       "preappId",
       "purposeId",
-      "status", // Permit status changes until we have a state management system.
       "firstName", // all this user information should probably be restricted?
       "lastName",
       "department",
@@ -97,7 +96,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
       "travelAdvanceInCents",
       "allTravelWithinTerritory",
 
-      // TODO: limit these using the appropriate policy
+      // TODO: support limiting nested attributes using the appropriate policy
       // association attributes
       "stops",
       "expenses",

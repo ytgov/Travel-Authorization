@@ -143,10 +143,6 @@ const mutations = {
   SET_IS_CACHED(state, value) {
     state.isCached = value
   },
-  // TODO: replace this with back-end state management
-  SET_STATUS(state, value) {
-    state.attributes.status = value
-  },
   SET_EXPENSES(state, value) {
     state.attributes.expenses = value
   },

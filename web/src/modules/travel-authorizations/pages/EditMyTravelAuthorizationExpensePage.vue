@@ -69,6 +69,11 @@
         />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorizationId" />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -85,6 +90,7 @@ import GeneralLedgerCodingsTable from "@/modules/travel-authorizations/component
 import MealsAndIncidentalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/MealsAndIncidentalsTable.vue"
 import RequestApprovalForm from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/RequestApprovalForm.vue"
 import TotalsTable from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/TotalsTable.vue"
+import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
 export default {
   name: "EditMyTravelAuthorizationExpensePage",
@@ -97,9 +103,10 @@ export default {
     MealsAndIncidentalsTable,
     RequestApprovalForm,
     TotalsTable,
+    TravelAuthorizationActionLogsTable,
   },
   // CONSIDER: Should I just put this in the mounted hook?
-  // Or if if I should controll this problem by never showing the edit link to a user if they can't edit?
+  // Alterntively, should control this situation by never showing the edit link to a user if they can't edit?
   async beforeRouteEnter(to, _from, next) {
     if (to.name !== "EditMyTravelAuthorizationExpensePage") {
       return next()

@@ -52,12 +52,6 @@ export class UpdateService extends BaseService {
         await ExpensesService.bulkReplace(travelAuthorizationId, this.expenses)
       }
 
-      await TravelAuthorizationActionLog.create({
-        travelAuthorizationId: this.travelAuthorization.id,
-        userId: this.currentUser.id,
-        action: TravelAuthorizationActionLog.Actions.UPDATE,
-      })
-
       return this.travelAuthorization.reload({
         include: ["expenses", "stops", "purpose", "user", "travelSegments"],
       })

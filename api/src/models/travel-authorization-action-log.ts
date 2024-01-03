@@ -15,14 +15,9 @@ import {
 import sequelize from "@/db/db-client"
 
 import User from "./user"
-import TravelAuthorization from "./travel-authorization"
+import TravelAuthorization, { Statuses as Actions } from "./travel-authorization"
 
-export enum Actions {
-  APPROVE = "approve",
-  DENY = "deny",
-  UPDATE = "update",
-  EXPENSE_CLAIM = "expense_claim",
-}
+export { Actions }
 
 export class TravelAuthorizationActionLog extends Model<
   InferAttributes<TravelAuthorizationActionLog>,
@@ -32,7 +27,8 @@ export class TravelAuthorizationActionLog extends Model<
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
-  declare userId: ForeignKey<User["id"]>
+  declare actorId: ForeignKey<User["id"]>
+  declare assigneeId: ForeignKey<User["id"]>
   declare action: string
   declare note: string | null
   declare createdAt: CreationOptional<Date>
@@ -48,16 +44,22 @@ export class TravelAuthorizationActionLog extends Model<
   >
   declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
 
-  declare getUser: BelongsToGetAssociationMixin<User>
-  declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createUser: BelongsToCreateAssociationMixin<User>
+  declare getActor: BelongsToGetAssociationMixin<User>
+  declare setActor: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createActor: BelongsToCreateAssociationMixin<User>
+
+  declare getAssignee: BelongsToGetAssociationMixin<User>
+  declare setAssignee: BelongsToSetAssociationMixin<User, User["id"]>
+  declare createAssignee: BelongsToCreateAssociationMixin<User>
 
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
-  declare user?: NonAttribute<User>
+  declare actor?: NonAttribute<User>
+  declare assignee?: NonAttribute<User>
 
   declare static associations: {
     travelAuthorization: Association<TravelAuthorizationActionLog, TravelAuthorization>
-    user: Association<TravelAuthorizationActionLog, User>
+    actor: Association<TravelAuthorizationActionLog, User>
+    assignee: Association<TravelAuthorizationActionLog, User>
   }
 
   static establishAssociations() {
@@ -66,8 +68,12 @@ export class TravelAuthorizationActionLog extends Model<
       foreignKey: "travelAuthorizationId",
     })
     this.belongsTo(User, {
-      as: "user",
-      foreignKey: "userId",
+      as: "actor",
+      foreignKey: "actorId",
+    })
+    this.belongsTo(User, {
+      as: "assignee",
+      foreignKey: "assigneeId",
     })
   }
 }
@@ -89,7 +95,16 @@ TravelAuthorizationActionLog.init(
       },
       onDelete: "CASCADE",
     },
-    userId: {
+    actorId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "users", // using real table name here
+        key: "id", // using real column name here
+      },
+      onDelete: "RESTRICT",
+    },
+    assigneeId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -119,8 +134,6 @@ TravelAuthorizationActionLog.init(
   },
   {
     sequelize,
-    modelName: "TravelAuthorizationActionLog",
-    tableName: "travel_authorization_action_logs",
   }
 )
 
