@@ -45,13 +45,13 @@ export class ExpenseClaimService extends BaseService {
 
       await this.travelAuthorization.update({
         supervisorEmail: this.supervisorEmail,
-        status: TravelAuthorization.Statuses.EXPENSE_CLAIM,
+        status: TravelAuthorization.Statuses.EXPENSE_CLAIM_SUBMITTED,
       })
       await TravelAuthorizationActionLog.create({
         travelAuthorizationId: this.travelAuthorization.id,
         actorId: this.currentUser.id,
         assigneeId: supervisor.id,
-        action: TravelAuthorizationActionLog.Actions.EXPENSE_CLAIM,
+        action: TravelAuthorizationActionLog.Actions.EXPENSE_CLAIM_SUBMITTED,
       })
     })
 

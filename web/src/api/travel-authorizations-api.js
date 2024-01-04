@@ -8,7 +8,7 @@ export const STATUSES = Object.freeze({
   CHANGE_REQUESTED: "change_requested",
   DENIED: "denied",
   DRAFT: "draft",
-  EXPENSE_CLAIM: "expense_claim",
+  EXPENSE_CLAIM_SUBMITTED: "expense_claim_submitted",
   EXPENSED: "expensed",
   SUBMITTED: "submitted",
 })
