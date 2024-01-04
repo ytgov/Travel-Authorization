@@ -14,7 +14,6 @@
         <tr>
           <td :class="totalRowClasses">Total</td>
           <td :class="totalRowClasses">{{ formatCurrency(totalAmount) }}</td>
-          <td :class="totalRowClasses"></td>
         </tr>
       </tfoot>
     </template>
