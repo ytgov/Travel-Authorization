@@ -49,11 +49,18 @@
 <script>
 import { applicationName } from "@/config";
 
+import useCurrentUser from "@/use/current-user"
+
+const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
+
 export default {
   name: "SignIn",
   data: () => ({
     title: `${applicationName}`,
   }),
+  mounted() {
+    unsetCurrentUser()
+  },
   methods: {
     async login() {
       this.$auth.loginWithRedirect();

@@ -60,7 +60,7 @@ export function useCurrentUser({ eager = true } = {}) {
     }
   }
 
-  function reset() {
+  function unset() {
     state.currentUser = {
       roles: [],
     }
@@ -80,7 +80,7 @@ export function useCurrentUser({ eager = true } = {}) {
     // actions
     ensure,
     fetch,
-    reset,
+    unset,
   }
 }
 
