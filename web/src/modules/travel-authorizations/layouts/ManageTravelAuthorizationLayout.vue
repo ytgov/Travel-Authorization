@@ -1,7 +1,18 @@
 <template>
-  <div>
-    <FullScreenLoadingOverlay :value="isLoadingTravelAuthorization" />
-
+  <v-layout
+    v-if="!isReadyTravelAuthorization"
+    fill-height
+    align-center
+    justify-center
+    class="min-vh-70"
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="64"
+    ></v-progress-circular>
+  </v-layout>
+  <div v-else>
     <Breadcrumbs />
 
     <h1 class="d-flex justify-space-between">
@@ -31,50 +42,41 @@
       </v-btn>
     </h1>
 
-    <template v-if="isCachedTravelAuthorization">
-      <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
-    </template>
+    <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
 
-    <v-tabs v-model="tab">
-      <v-tab
-        :to="{
-          name: 'ManageTravelAuthorizationDetailsPage',
-          params: { travelAuthorizationId },
-        }"
-        >Details</v-tab
-      >
-      <v-tab
-        :to="{
-          name: 'ManageTravelAuthorizationEstimatePage',
-          params: { travelAuthorizationId },
-        }"
-        >Estimate</v-tab
-      >
+    <v-tabs>
+      <DetailsTab :travel-authorization-id="travelAuthorizationId" />
+      <EstimateTab :travel-authorization-id="travelAuthorizationId" />
+      <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
+      <!-- TODO: add in any tabs that you can normally see in manage mode -->
     </v-tabs>
 
-    <template v-if="isCachedTravelAuthorization">
-      <router-view></router-view>
-    </template>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex"
+import { mapActions, mapGetters } from "vuex"
 
 import { ROLES as USER_ROLES } from "@/api/users-api"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
-import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
+
+import DetailsTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/DetailsTab"
+import EstimateTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/EstimateTab"
+import ExpenseTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/ExpenseTab"
 
 export default {
   name: "ManageTravelAuthorizationLayout",
   components: {
     Breadcrumbs,
-    FullScreenLoadingOverlay,
     SummaryHeaderPanel,
     VUserChipMenu,
+    DetailsTab,
+    EstimateTab,
+    ExpenseTab,
   },
   props: {
     travelAuthorizationId: {
@@ -87,10 +89,10 @@ export default {
   }),
   computed: {
     ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("travelAuthorization", {
+    ...mapGetters("travelAuthorization", {
       travelAuthorization: "attributes",
       isLoadingTravelAuthorization: "isLoading",
-      isCachedTravelAuthorization: "isCached",
+      isReadyTravelAuthorization: "isReady",
     }),
     travelAuthorizationUser() {
       return this.travelAuthorization.user

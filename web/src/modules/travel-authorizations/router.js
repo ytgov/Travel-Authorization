@@ -84,7 +84,7 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        path: ":travelAuthorizationId/manage",
+        path: ":travelAuthorizationId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ManageTravelAuthorizationLayout"),
         props: cast("travelAuthorizationId", parseInt),
@@ -95,16 +95,23 @@ const routes = [
           },
           {
             name: "ManageTravelAuthorizationDetailsPage",
-            path: "details",
+            path: "details/manage",
             component: () =>
               import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationDetailsPage"),
             props: cast("travelAuthorizationId", parseInt),
           },
           {
-            path: "estimate",
+            path: "estimate/manage",
             name: "ManageTravelAuthorizationEstimatePage",
             component: () =>
               import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationEstimatePage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+          {
+            path: "expense/manage",
+            name: "ManageTravelAuthorizationExpensePage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationExpensePage"),
             props: cast("travelAuthorizationId", parseInt),
           },
         ],
