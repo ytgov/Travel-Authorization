@@ -57,23 +57,24 @@ function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
 
       const { email, given_name: firstName, family_name: lastName } = data
 
-      const user = await User.findOne({ where: { sub } })
-      if (!isNil(user)) {
-        return user
+      const fallbackEmail = `${firstName}.${lastName}@yukon-no-email.ca`
+      const [user, created] = await User.findOrCreate({
+        where: { sub },
+        defaults: {
+          sub,
+          email: email || fallbackEmail,
+          firstName,
+          lastName,
+          roles: [User.Roles.USER],
+          status: User.Statuses.ACTIVE,
+        },
+      })
+
+      if (created) {
+        console.log(`CREATED USER FOR ${email}: ${JSON.stringify(user.dataValues)}`)
       }
 
-      const fallbackEmail = `${firstName}.${lastName}@yukon-no-email.ca`
-      const newUser = await User.create({
-        sub,
-        email: email || fallbackEmail,
-        firstName,
-        lastName,
-        roles: [User.Roles.USER],
-        status: User.Statuses.ACTIVE,
-      })
-      console.log(`CREATED USER FOR ${email}: ${JSON.stringify(newUser.dataValues)}`)
-
-      return newUser
+      return user
     })
 }
 
