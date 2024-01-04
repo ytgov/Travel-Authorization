@@ -3,7 +3,6 @@
     <v-row>
       <v-col>
         <h3>Traveler Expenses</h3>
-
         <ExpensesTable :travel-authorization-id="travelAuthorizationId" />
         * Meals and Incidentals are not included in this table.
       </v-col>
@@ -18,7 +17,13 @@
         <TotalsTable :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
-    <!-- TODO: add the rest of the components -->
+    <v-row>
+      <v-col>
+        <h3>Coding</h3>
+        <GeneralLedgerCodingsTable :travel-authorization-id="travelAuthorizationId" />
+      </v-col>
+      <v-col cols="4"></v-col>
+    </v-row>
     <v-row>
       <v-col>
         <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorizationId" />
@@ -28,10 +33,12 @@
 </template>
 
 <script setup>
+import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
+
 import ExpensesTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/ExpensesTable"
+import GeneralLedgerCodingsTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/GeneralLedgerCodingsTable"
 import MealsAndIncidentalsTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/MealsAndIncidentalsTable"
 import TotalsTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/TotalsTable"
-import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
 defineProps({
   travelAuthorizationId: {
