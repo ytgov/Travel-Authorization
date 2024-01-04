@@ -31,26 +31,17 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import PurposeCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/PurposeCard"
 import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard"
 import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard"
 
 import ManagementCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ManagementCard"
 
-export default {
-  name: "ManageTravelAuthorizationDetailsPage",
-  components: {
-    ApprovalsCard,
-    DetailsCard,
-    ManagementCard,
-    PurposeCard,
+defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-}
+})
 </script>
