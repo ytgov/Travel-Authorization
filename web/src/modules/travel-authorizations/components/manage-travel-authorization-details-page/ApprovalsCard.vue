@@ -53,7 +53,7 @@
           md="3"
         >
           <v-text-field
-            :value="currentTravelAuthorization.supervisorEmail"
+            :value="travelAuthorization.supervisorEmail"
             label="Submit to"
             dense
             outlined
@@ -74,8 +74,8 @@ export default {
   components: {},
   data: () => ({}),
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
       estimates: "estimates",
     }),
     ...mapGetters("preApprovedTravelRequests", {
@@ -85,12 +85,12 @@ export default {
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
-    currentTravelAuthorizationUser() {
-      return this.currentTravelAuthorization.user || {}
+    travelAuthorizationUser() {
+      return this.travelAuthorization.user || {}
     },
     preApprovedTravelRequestText() {
       const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
-        (p) => p.value === this.currentTravelAuthorization.preappId
+        (p) => p.value === this.travelAuthorization.preappId
       )
 
       if (isNil(preApprovedTravelRequest)) {
@@ -101,24 +101,20 @@ export default {
       const travelerNames = preApprovedTravelers
         .map((traveler) => traveler.fullName)
         .filter(Boolean)
-      const { fullName: currentTravelAuthorizationUserFullname } =
-        this.currentTravelAuthorizationUser
+      const { fullName: travelAuthorizationUserFullname } = this.travelAuthorizationUser
 
-      if (
-        isEmpty(travelerNames) ||
-        !travelerNames.includes(currentTravelAuthorizationUserFullname)
-      ) {
+      if (isEmpty(travelerNames) || !travelerNames.includes(travelAuthorizationUserFullname)) {
         return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month}`
       }
 
-      return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month} - ${currentTravelAuthorizationUserFullname}`
+      return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month} - ${travelAuthorizationUserFullname}`
     },
     travelAdvanceInDollars() {
-      return Math.ceil(this.currentTravelAuthorization.travelAdvanceInCents / 100.0)
+      return Math.ceil(this.travelAuthorization.travelAdvanceInCents / 100.0)
     },
   },
   async mounted() {
-    const { department } = this.currentTravelAuthorizationUser
+    const { department } = this.travelAuthorizationUser
     await this.ensurePreApprovedTravelRequests({ where: { department } })
   },
   methods: {

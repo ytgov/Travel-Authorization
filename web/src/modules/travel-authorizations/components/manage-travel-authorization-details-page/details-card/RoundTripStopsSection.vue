@@ -171,14 +171,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
+      travelAuthorizationId: "id",
     }),
   },
   async mounted() {
-    this.originStop = this.currentTravelAuthorization.stops[0]
-    this.destinationStop = this.currentTravelAuthorization.stops[1]
+    this.originStop = this.travelAuthorization.stops[0]
+    this.destinationStop = this.travelAuthorization.stops[1]
   },
   methods: {},
 }

@@ -40,19 +40,19 @@ export default {
   },
   data: () => ({}),
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
     }),
   },
   async mounted() {
-    await this.ensureCurrentTravelAuthorization(this.travelAuthorizationId)
+    await this.ensureTravelAuthorization(this.travelAuthorizationId)
   },
   methods: {
-    ...mapActions("current/travelAuthorization", { ensureCurrentTravelAuthorization: "ensure" }),
+    ...mapActions("travelAuthorization", { ensureTravelAuthorization: "ensure" }),
     // TODO: move this to a store action
     approve() {
       return travelAuthorizationApi
-        .approve(this.currentTravelAuthorization.id)
+        .approve(this.travelAuthorization.id)
         .then(() => {
           this.$snack("Travel authorization approved!", { color: "success" })
         })
@@ -62,7 +62,7 @@ export default {
     },
     deny() {
       return travelAuthorizationApi
-        .deny(this.currentTravelAuthorization.id)
+        .deny(this.travelAuthorization.id)
         .then(() => {
           this.$snack("Travel authorization denied.", { color: "success" })
         })

@@ -87,7 +87,7 @@ export default {
   }),
   computed: {
     ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("current/travelAuthorization", {
+    ...mapState("travelAuthorization", {
       travelAuthorization: "attributes",
       isLoadingTravelAuthorization: "isLoading",
       isCachedTravelAuthorization: "isCached",
@@ -105,7 +105,7 @@ export default {
   },
   methods: {
     ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
-    ...mapActions("current/travelAuthorization", {
+    ...mapActions("travelAuthorization", {
       ensureTravelAuthorization: "ensure",
     }),
     goToAdminEditPage() {

@@ -244,16 +244,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("current/travelAuthorization", {
-      currentTravelAuthorization: "attributes",
-      currentTravelAuthorizationId: "id",
+    ...mapGetters("travelAuthorization", {
+      travelAuthorization: "attributes",
+      travelAuthorizationId: "id",
     }),
   },
   async mounted() {
-    this.stop1 = this.currentTravelAuthorization.stops[0]
-    this.stop2 = this.currentTravelAuthorization.stops[1]
-    this.stop3 = this.currentTravelAuthorization.stops[2]
-    this.stop4 = this.currentTravelAuthorization.stops[3]
+    this.stop1 = this.travelAuthorization.stops[0]
+    this.stop2 = this.travelAuthorization.stops[1]
+    this.stop3 = this.travelAuthorization.stops[2]
+    this.stop4 = this.travelAuthorization.stops[3]
   },
   methods: {},
 }
