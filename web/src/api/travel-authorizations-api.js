@@ -9,6 +9,7 @@ export const STATUSES = Object.freeze({
   DENIED: "denied",
   DRAFT: "draft",
   EXPENSE_CLAIM_SUBMITTED: "expense_claim_submitted",
+  EXPENSE_CLAIM_APPROVED: "expense_claim_approved",
   EXPENSED: "expensed",
   SUBMITTED: "submitted",
 })

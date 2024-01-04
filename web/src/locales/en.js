@@ -10,6 +10,7 @@ export default {
       denied: "Denied",
       draft: "Draft",
       expense_claim_submitted: "Expense Claim Submitted",
+      expense_claim_approved: "Expense Claim Approved",
       expensed: "Expensed",
       inactive: "Inactive",
       submitted: "Submitted",

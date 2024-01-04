@@ -45,6 +45,7 @@ export enum Statuses {
   BOOKED = "booked",
   DENIED = "denied",
   EXPENSE_CLAIM_SUBMITTED = "expense_claim_submitted",
+  EXPENSE_CLAIM_APPROVED = "expense_claim_approved",
   EXPENSED = "expensed",
   AWAITING_DIRECTOR_APPROVAL = "awaiting_director_approval",
   DELETED = "deleted",
