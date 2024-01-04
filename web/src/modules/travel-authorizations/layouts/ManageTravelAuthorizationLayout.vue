@@ -1,6 +1,6 @@
 <template>
   <v-layout
-    v-if="!isReadyTravelAuthorization"
+    v-if="isLoadingTravelAuthorization"
     fill-height
     align-center
     justify-center
@@ -55,10 +55,11 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex"
+<script setup>
+import { computed, watch } from "vue"
 
-import { ROLES as USER_ROLES } from "@/api/users-api"
+import useCurrentUser from "@/use/current-user"
+import useTravelAuthorization from "@/use/travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
@@ -68,53 +69,32 @@ import DetailsTab from "@/modules/travel-authorizations/components/manage-travel
 import EstimateTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/EstimateTab"
 import ExpenseTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/ExpenseTab"
 
-export default {
-  name: "ManageTravelAuthorizationLayout",
-  components: {
-    Breadcrumbs,
-    SummaryHeaderPanel,
-    VUserChipMenu,
-    DetailsTab,
-    EstimateTab,
-    ExpenseTab,
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
+})
+
+const { isAdmin } = useCurrentUser()
+const {
+  travelAuthorization,
+  isLoading: isLoadingTravelAuthorization,
+  fetch: fetchTravelAuthorization,
+} = useTravelAuthorization()
+const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
+
+watch(
+  () => props.travelAuthorizationId,
+  async () => {
+    await fetchTravelAuthorization(props.travelAuthorizationId)
   },
-  data: () => ({
-    tab: null,
-  }),
-  computed: {
-    ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-      isLoadingTravelAuthorization: "isLoading",
-      isReadyTravelAuthorization: "isReady",
-    }),
-    travelAuthorizationUser() {
-      return this.travelAuthorization.user
-    },
-    isAdmin() {
-      return this.currentUser?.roles?.includes(USER_ROLES.ADMIN)
-    },
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
-    await this.ensureCurrentUser()
-  },
-  methods: {
-    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-    }),
-    goToAdminEditPage() {
-      alert(
-        `TODO: redirect user to admin edit interface for TravelAuthorization#${this.travelAuthorizationId}`
-      )
-    },
-  },
+  { immediate: true }
+)
+
+function goToAdminEditPage() {
+  alert(
+    `TODO: redirect user to admin edit interface for TravelAuthorization#${props.travelAuthorizationId}`
+  )
 }
 </script>
