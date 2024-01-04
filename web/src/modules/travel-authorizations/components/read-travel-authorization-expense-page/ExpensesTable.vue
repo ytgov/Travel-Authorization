@@ -12,6 +12,17 @@
     <template #item.cost="{ value }">
       {{ formatCurrency(value) }}
     </template>
+    <template #item.actions="{ item }">
+      <ViewRecieptLink
+        v-if="item.fileSize"
+        :expense-id="item.id"
+      />
+      <span
+        v-else
+        class="text-error"
+        >Receipt is missing</span
+      >
+    </template>
     <template #foot>
       <tfoot>
         <tr>
@@ -38,6 +49,8 @@ import { computed, ref, watch } from "vue"
 
 import useExpenses from "@/use/expenses"
 
+import ViewRecieptLink from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ViewRecieptLink.vue"
+
 const props = defineProps({
   travelAuthorizationId: {
     type: Number,
@@ -50,6 +63,7 @@ const headers = ref([
   { text: "Description", value: "description" },
   { text: "Date", value: "date" },
   { text: "Amount", value: "cost" },
+  { text: "", value: "actions" },
 ])
 const totalRowClasses = ref("text-start font-weight-bold text-uppercase")
 
