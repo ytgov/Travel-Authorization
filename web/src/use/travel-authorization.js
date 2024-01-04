@@ -1,6 +1,6 @@
 import { reactive, toRefs } from "vue"
 
-import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
 export function useTravelAuthorization() {
   const state = reactive({
@@ -74,6 +74,7 @@ export function useTravelAuthorization() {
   }
 
   return {
+    STATUSES,
     ...toRefs(state),
     fetch,
     save,
