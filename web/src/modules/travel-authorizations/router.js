@@ -13,7 +13,7 @@ const routes = [
 
       {
         name: "ManageTravelAuthorizationsPage",
-        path: "manager-view",
+        path: "manage-travel-requests",
         component: () =>
           import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
       },
