@@ -52,11 +52,18 @@ export enum Statuses {
   DELETED = "deleted",
 }
 
+export enum TripTypes {
+  ROUND_TRIP = "round_trip",
+  ONE_WAY = "one_way",
+  MULTI_DESTINATION = "multi_destination",
+}
+
 export class TravelAuthorization extends Model<
   InferAttributes<TravelAuthorization>,
   InferCreationAttributes<TravelAuthorization>
 > {
   static Statuses = Statuses
+  static TripTypes = TripTypes
 
   declare id: CreationOptional<number>
   declare slug: string
@@ -388,11 +395,13 @@ TravelAuthorization.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    // TODO: replace with string enum field using TripTypes
     // TODO: set default to false in the database
     oneWayTrip: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
     },
+    // TODO: replace with string enum field using TripTypes
     // TODO: set default to false in the database
     multiStop: {
       type: DataTypes.BOOLEAN,

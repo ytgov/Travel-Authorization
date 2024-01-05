@@ -181,12 +181,7 @@ export class BulkGenerateService extends BaseService {
 
     let estimates = []
     for (let { date, claims } of claimsPerDay) {
-      // trueEndDate is a hack because my brain is fried
-      // I'm probably doing something conceptually wrong here
-      // maybe I should be setting the fallback time travel segment separately?
-      const trueEndDate = min([date, this.lastTravelSegment.departureAt]) as Date
-
-      const location = BulkGenerate.determineLocationFromDate(this.travelSegments, trueEndDate)
+      const location = BulkGenerate.determineFinalDestination(this.travelSegments)
       const province = location.province
       const description = claims.join("/")
       const cost = await this.determinePerDiemCost(province, claims)
