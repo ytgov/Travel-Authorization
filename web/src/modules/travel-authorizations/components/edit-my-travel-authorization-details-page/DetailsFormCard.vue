@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import { pick } from "lodash"
 import { mapActions, mapGetters } from "vuex"
 
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
@@ -228,11 +229,12 @@ export default {
         ...secondStop,
       })
       const newThirdStop = await this.newBlankStop({
+        ...pick(this.lastStop, "departureDate", "departureTime"),
         accommodationType: null,
         transport: TRAVEL_METHODS.AIRCRAFT,
       })
       const newLastStop = await this.newBlankStop({
-        ...this.lastStop,
+        ...pick(this.lastStop, "locationId"),
         transport: null,
         accommodationType: null,
       })
