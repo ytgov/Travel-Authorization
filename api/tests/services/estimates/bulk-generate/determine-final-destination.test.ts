@@ -78,9 +78,9 @@ describe("api/src/services/estimates/bulk-generate/determine-location-from-date.
         .create({ multiStop: true })
       const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
       const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
-      const losAngelos = await locationFactory.create({
-        city: "Los Angelos",
-        province: "California",
+      const grandePrairie = await locationFactory.create({
+        city: "Grande Prairie",
+        province: "AB",
       })
       const travelSegment1 = await travelSegmentFactory
         .associations({
@@ -98,7 +98,7 @@ describe("api/src/services/estimates/bulk-generate/determine-location-from-date.
         .associations({
           travelAuthorization,
           departureLocation: vancouver,
-          arrivalLocation: losAngelos,
+          arrivalLocation: grandePrairie,
         })
         .create({
           segmentNumber: 2,
@@ -112,7 +112,7 @@ describe("api/src/services/estimates/bulk-generate/determine-location-from-date.
       const finalLocation = determineFinalDestination(travelSegments)
 
       // assert
-      expect(finalLocation).toEqual(losAngelos)
+      expect(finalLocation).toEqual(grandePrairie)
     })
   })
 })
