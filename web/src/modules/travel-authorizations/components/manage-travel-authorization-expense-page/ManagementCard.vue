@@ -1,0 +1,71 @@
+<template>
+  <v-card elevation="2">
+    <v-card-text>
+      <ReassignApprovalForm :travel-authorization-id="travelAuthorizationId" />
+      <v-row>
+        <v-col class="d-flex justify-end">
+          <v-btn
+            color="success"
+            @click="approve"
+          >
+            Approve
+          </v-btn>
+          <v-btn
+            class="ml-2"
+            color="error"
+            @click="deny"
+          >
+            Deny
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card-text>
+  </v-card>
+</template>
+
+<script setup>
+import { watch } from "vue"
+
+import { useSnack } from "@/plugins/snack-plugin"
+import travelAuthorizationApi from "@/api/travel-authorizations-api"
+
+import ReassignApprovalForm from "@/modules/travel-authorizations/components/manage-travel-authorization-expense-page/ReassignApprovalForm"
+
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
+  },
+})
+
+const snack = useSnack()
+
+watch(
+  () => props.travelAuthorizationId,
+  async () => {
+    // TODO
+  },
+  { immediate: true }
+)
+
+function approve() {
+  return travelAuthorizationApi
+    .approve(props.travelAuthorizationId)
+    .then(() => {
+      snack("Travel authorization approved!", { color: "success" })
+    })
+    .catch((error) => {
+      snack(error.message, { color: "error" })
+    })
+}
+function deny() {
+  return travelAuthorizationApi
+    .deny(props.travelAuthorizationId)
+    .then(() => {
+      snack("Travel authorization denied.", { color: "success" })
+    })
+    .catch((error) => {
+      snack(error.message, { color: "error" })
+    })
+}
+</script>

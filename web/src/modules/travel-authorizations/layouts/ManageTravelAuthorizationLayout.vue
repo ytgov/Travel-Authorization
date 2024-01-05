@@ -1,7 +1,18 @@
 <template>
-  <div>
-    <FullScreenLoadingOverlay :value="isLoadingTravelAuthorization" />
-
+  <v-layout
+    v-if="isLoadingTravelAuthorization"
+    fill-height
+    align-center
+    justify-center
+    class="min-vh-70"
+  >
+    <v-progress-circular
+      indeterminate
+      color="primary"
+      size="64"
+    ></v-progress-circular>
+  </v-layout>
+  <div v-else>
     <Breadcrumbs />
 
     <h1 class="d-flex justify-space-between">
@@ -31,88 +42,59 @@
       </v-btn>
     </h1>
 
-    <template v-if="isCachedTravelAuthorization">
-      <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
-    </template>
+    <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
 
-    <v-tabs v-model="tab">
-      <v-tab
-        :to="{
-          name: 'ManageTravelAuthorizationDetailsPage',
-          params: { travelAuthorizationId },
-        }"
-        >Details</v-tab
-      >
-      <v-tab
-        :to="{
-          name: 'ManageTravelAuthorizationEstimatePage',
-          params: { travelAuthorizationId },
-        }"
-        >Estimate</v-tab
-      >
+    <v-tabs>
+      <DetailsTab :travel-authorization-id="travelAuthorizationId" />
+      <EstimateTab :travel-authorization-id="travelAuthorizationId" />
+      <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
+      <!-- TODO: add in any tabs that you can normally see in manage mode -->
     </v-tabs>
 
-    <template v-if="isCachedTravelAuthorization">
-      <router-view></router-view>
-    </template>
+    <router-view></router-view>
   </div>
 </template>
 
-<script>
-import { mapActions, mapState, mapGetters } from "vuex"
+<script setup>
+import { computed, watch } from "vue"
 
-import { ROLES as USER_ROLES } from "@/api/users-api"
+import useCurrentUser from "@/use/current-user"
+import useTravelAuthorization from "@/use/travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
-import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
-export default {
-  name: "ManageTravelAuthorizationLayout",
-  components: {
-    Breadcrumbs,
-    FullScreenLoadingOverlay,
-    SummaryHeaderPanel,
-    VUserChipMenu,
+import DetailsTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/DetailsTab"
+import EstimateTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/EstimateTab"
+import ExpenseTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/ExpenseTab"
+
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
+})
+
+const { isAdmin } = useCurrentUser()
+const {
+  travelAuthorization,
+  isLoading: isLoadingTravelAuthorization,
+  fetch: fetchTravelAuthorization,
+} = useTravelAuthorization()
+const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
+
+watch(
+  () => props.travelAuthorizationId,
+  async () => {
+    await fetchTravelAuthorization(props.travelAuthorizationId)
   },
-  data: () => ({
-    tab: null,
-  }),
-  computed: {
-    ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapState("current/travelAuthorization", {
-      travelAuthorization: "attributes",
-      isLoadingTravelAuthorization: "isLoading",
-      isCachedTravelAuthorization: "isCached",
-    }),
-    travelAuthorizationUser() {
-      return this.travelAuthorization.user
-    },
-    isAdmin() {
-      return this.currentUser?.roles?.includes(USER_ROLES.ADMIN)
-    },
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
-    await this.ensureCurrentUser()
-  },
-  methods: {
-    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
-    ...mapActions("current/travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-    }),
-    goToAdminEditPage() {
-      alert(
-        `TODO: redirect user to admin edit interface for TravelAuthorization#${this.travelAuthorizationId}`
-      )
-    },
-  },
+  { immediate: true }
+)
+
+function goToAdminEditPage() {
+  alert(
+    `TODO: redirect user to admin edit interface for TravelAuthorization#${props.travelAuthorizationId}`
+  )
 }
 </script>

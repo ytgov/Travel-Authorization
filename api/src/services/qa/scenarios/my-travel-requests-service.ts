@@ -196,13 +196,13 @@ export class MyTravelRequestsService extends BaseService {
       where: {
         userId: this.user.id,
         slug: uuid(),
-        status: TravelAuthorization.Statuses.EXPENSE_CLAIM,
+        status: TravelAuthorization.Statuses.EXPENSE_CLAIM_SUBMITTED,
         eventName: "FN Finance meeting #1",
       },
       defaults: {
         userId: this.user.id,
         slug: uuid(),
-        status: TravelAuthorization.Statuses.EXPENSE_CLAIM,
+        status: TravelAuthorization.Statuses.EXPENSE_CLAIM_SUBMITTED,
         eventName: "FN Finance meeting #1",
       },
     })

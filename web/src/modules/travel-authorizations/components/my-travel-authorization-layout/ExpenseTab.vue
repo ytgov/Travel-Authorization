@@ -39,69 +39,57 @@
   </v-tab>
 </template>
 
-<script>
+<script setup>
 import { isNil } from "lodash"
-import { mapActions, mapGetters } from "vuex"
+import { computed, watch, onMounted } from "vue"
 
-import { STATUSES } from "@/api/travel-authorizations-api"
+import useTravelAuthorization from "@/use/travel-authorization"
 
-export default {
-  name: "ExpenseTab",
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  computed: {
-    ...mapGetters("travelAuthorization", { travelAuthorization: "attributes" }),
-    componentName() {
-      if (this.isEditable) {
-        return "EditMyTravelAuthorizationExpensePage"
-      }
+})
 
-      return "ReadMyTravelAuthorizationExpensePage"
-    },
-    isEditable() {
-      return this.travelAuthorization.status === STATUSES.APPROVED && this.isAfterTravelStartDate
-    },
-    isInPreExpensingStates() {
-      return (
-        this.travelAuthorization.status === STATUSES.DRAFT ||
-        this.travelAuthorization.status === STATUSES.SUBMITTED
-      )
-    },
-    isBeforeTravelStartDate() {
-      const firstTravelSegment = this.travelAuthorization.travelSegments[0]
-      if (isNil(firstTravelSegment)) return false
+const { travelAuthorization, fetch, isLoading, STATUSES } = useTravelAuthorization()
+const isInPreExpensingStates = computed(
+  () =>
+    travelAuthorization.value.status === STATUSES.DRAFT ||
+    travelAuthorization.value.status === STATUSES.SUBMITTED
+)
+const isBeforeTravelStartDate = computed(() => {
+  const firstTravelSegment = travelAuthorization.value.travelSegments[0]
+  if (isNil(firstTravelSegment)) return false
 
-      return new Date(firstTravelSegment.departureOn) > new Date()
-    },
-    isAfterTravelStartDate() {
-      return !this.isBeforeTravelStartDate
-    },
-    isExpenseTabDisabled() {
-      return this.isInPreExpensingStates || this.isBeforeTravelStartDate
-    },
+  return new Date(firstTravelSegment.departureOn) > new Date()
+})
+const isAfterTravelStartDate = computed(() => !isBeforeTravelStartDate.value)
+const isExpenseTabDisabled = computed(
+  () => isInPreExpensingStates.value || isBeforeTravelStartDate.value
+)
+const isEditable = computed(
+  () => travelAuthorization.value.status === STATUSES.APPROVED && isAfterTravelStartDate.value
+)
+const componentName = computed(() => {
+  if (isEditable.value) {
+    return "EditMyTravelAuthorizationExpensePage"
+  }
+
+  return "ReadMyTravelAuthorizationExpensePage"
+})
+
+watch(
+  () => props.travelAuthorizationId,
+  async () => {
+    await fetch(props.travelAuthorizationId)
   },
-  watch: {
-    async $route(to, from) {
-      if (
-        to.name === "ReadMyTravelAuthorizationExpensePage" &&
-        from.name === "EditMyTravelAuthorizationExpensePage"
-      ) {
-        await this.fetchTravelAuthorization(this.travelAuthorizationId)
-      }
-    },
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
-  },
-  methods: {
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-      fetchTravelAuthorization: "fetch",
-    }),
-  },
-}
+  { immediate: true }
+)
+
+onMounted(async () => {
+  if (!isLoading.value) {
+    await fetch(props.travelAuthorizationId)
+  }
+})
 </script>

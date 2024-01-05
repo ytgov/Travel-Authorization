@@ -1,6 +1,6 @@
 import { reactive, toRefs } from "vue"
 
-import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
 export function useTravelAuthorization() {
   const state = reactive({
@@ -34,6 +34,26 @@ export function useTravelAuthorization() {
     }
   }
 
+  async function save() {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.update(
+        state.travelAuthorization.id,
+        state.travelAuthorization
+      )
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to update travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
+  // Stateful actions
   async function expenseClaim(travelAuthorizationId, attributes) {
     state.isLoading = true
     try {
@@ -54,8 +74,10 @@ export function useTravelAuthorization() {
   }
 
   return {
+    STATUSES,
     ...toRefs(state),
     fetch,
+    save,
     expenseClaim,
   }
 }

@@ -10,7 +10,7 @@
     <v-card-text>
       <SupervisorTravelAuthorizationsByStatusTable
         ref="table"
-        :status="STATUSES.EXPENSE_CLAIM"
+        :status="STATUSES.EXPENSE_CLAIM_SUBMITTED"
       />
     </v-card-text>
   </v-card>

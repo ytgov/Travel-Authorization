@@ -12,7 +12,7 @@ export class UploadController extends BaseController {
     if (isNil(expense)) return this.response.status(404).json({ message: "Expense not found." })
 
     const policy = this.buildPolicy(expense)
-    if (!policy.update()) {
+    if (!policy.show()) {
       return this.response
         .status(403)
         .json({ message: "You are not authorized to view receipts on this expense." })

@@ -200,7 +200,10 @@ import * as config from "@/config"
 import RequestAlert from "@/components/RequestAlert.vue"
 import { getInstance } from "@/auth"
 
+import useCurrentUser from "@/use/current-user"
+
 const auth = getInstance()
+const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
 
 export default {
   name: "App",
@@ -281,6 +284,8 @@ export default {
       router.push(location)
     },
     signOut() {
+      unsetCurrentUser()
+
       // TODO: remove development customization once we update Auth0 environment
       if (config.environment === "development") {
         this.$auth.logout()

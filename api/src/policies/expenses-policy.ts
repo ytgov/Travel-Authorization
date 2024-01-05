@@ -14,6 +14,14 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
     this.travelSegments = this.travelAuthorization?.travelSegments
   }
 
+  show(): boolean {
+    if (this.user.roles.includes(User.Roles.ADMIN)) return true
+    if (this.travelAuthorization?.supervisorEmail === this.user.email) return true
+    if (this.travelAuthorization?.userId === this.user.id) return true
+
+    return false
+  }
+
   create(): boolean {
     if (this.record.type === Expense.Types.ESTIMATE) {
       if (this.travelAuthorizationPolicy?.update()) return true
@@ -55,12 +63,6 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
     if (this.travelAuthorization === undefined) return null
 
     return new TravelAuthorizationsPolicy(this.user, this.travelAuthorization)
-  }
-
-  private get isTravelAuthorizationApproved(): boolean {
-    if (this.travelAuthorization === undefined) return false
-
-    return this.travelAuthorization.status === TravelAuthorization.Statuses.APPROVED
   }
 
   private get isAfterTravelStartDate(): boolean {

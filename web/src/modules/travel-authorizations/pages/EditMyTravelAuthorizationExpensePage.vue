@@ -112,7 +112,7 @@ export default {
       return next()
     }
 
-    await store.dispatch("travelAuthorization/ensure", to.params.travelAuthorizationId)
+    await store.dispatch("travelAuthorization/fetch", to.params.travelAuthorizationId)
 
     if (store.getters["travelAuthorization/isExpenseEditable"]) {
       return next()
