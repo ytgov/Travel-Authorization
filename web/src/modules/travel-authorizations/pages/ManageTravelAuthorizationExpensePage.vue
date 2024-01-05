@@ -26,6 +26,12 @@
     </v-row>
     <v-row>
       <v-col>
+        <h3>Management</h3>
+        <ManagementCard :travel-authorization-id="travelAuthorizationId" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
@@ -39,6 +45,8 @@ import ExpensesTable from "@/modules/travel-authorizations/components/read-trave
 import GeneralLedgerCodingsTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/GeneralLedgerCodingsTable"
 import MealsAndIncidentalsTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/MealsAndIncidentalsTable"
 import TotalsTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/TotalsTable"
+
+import ManagementCard from "@/modules/travel-authorizations/components/manage-travel-authorization-expense-page/ManagementCard"
 
 defineProps({
   travelAuthorizationId: {

@@ -1,22 +1,18 @@
 <template>
-  <v-form
-    ref="form"
-    class="mt-4"
-    lazy-validation
-  >
+  <div class="mt-4">
     <v-row>
       <v-col>
-        <PurposeCard />
+        <PurposeCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <DetailsCard />
+        <DetailsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <ApprovalsCard :validate-form="validateForm" />
+        <ApprovalsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
@@ -32,35 +28,20 @@
         >Back</v-btn
       >
     </div>
-  </v-form>
+  </div>
 </template>
 
-<script>
-import ApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ApprovalsCard"
-import DetailsCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/DetailsCard"
+<script setup>
+import PurposeCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/PurposeCard"
+import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard"
+import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard"
+
 import ManagementCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ManagementCard"
-import PurposeCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/PurposeCard"
 
-export default {
-  name: "ManageTravelAuthorizationDetailsPage",
-  components: {
-    ApprovalsCard,
-    DetailsCard,
-    ManagementCard,
-    PurposeCard,
+defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  methods: {
-    validateForm() {
-      if (this.$refs.form.validate()) return true
-
-      return false
-    },
-  },
-}
+})
 </script>

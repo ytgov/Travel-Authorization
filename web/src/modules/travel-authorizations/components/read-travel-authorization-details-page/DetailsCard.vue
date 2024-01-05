@@ -96,17 +96,17 @@ export default {
         case TRIP_TYPES.ROUND_TRIP:
           return () =>
             import(
-              "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/details-card/RoundTripStopsSection"
+              "@/modules/travel-authorizations/components/read-travel-authorization-details-page/details-card/RoundTripStopsSection"
             )
         case TRIP_TYPES.ONE_WAY:
           return () =>
             import(
-              "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/details-card/OneWayStopsSection"
+              "@/modules/travel-authorizations/components/read-travel-authorization-details-page/details-card/OneWayStopsSection"
             )
         case TRIP_TYPES.MULTI_DESTINATION:
           return () =>
             import(
-              "@/modules/travel-authorizations/components/read-my-travel-authorization-details-page/details-card/MultiDestinationStopsSection"
+              "@/modules/travel-authorizations/components/read-travel-authorization-details-page/details-card/MultiDestinationStopsSection"
             )
         default:
           return null

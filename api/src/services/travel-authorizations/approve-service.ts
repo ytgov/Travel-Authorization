@@ -14,9 +14,7 @@ export class ApproveService extends BaseService {
   }
 
   async perform(): Promise<TravelAuthorization> {
-    if (this.travelAuthorization.status !== TravelAuthorization.Statuses.SUBMITTED) {
-      throw new Error("Travel authorization must be in submitted state to approve.")
-    } else {
+    if (this.travelAuthorization.status === TravelAuthorization.Statuses.SUBMITTED) {
       await db.transaction(async () => {
         await this.travelAuthorization.update({
           status: TravelAuthorization.Statuses.APPROVED,
@@ -28,6 +26,20 @@ export class ApproveService extends BaseService {
           action: TravelAuthorizationActionLog.Actions.APPROVED,
         })
       })
+    } else if (this.travelAuthorization.status === TravelAuthorization.Statuses.EXPENSE_CLAIM_SUBMITTED) {
+      await db.transaction(async () => {
+        await this.travelAuthorization.update({
+          status: TravelAuthorization.Statuses.EXPENSE_CLAIM_APPROVED,
+        })
+        await TravelAuthorizationActionLog.create({
+          travelAuthorizationId: this.travelAuthorization.id,
+          actorId: this.approver.id,
+          assigneeId: this.travelAuthorization.userId,
+          action: TravelAuthorizationActionLog.Actions.EXPENSE_CLAIM_APPROVED,
+        })
+      })
+    } else {
+      throw new Error("Travel authorization must be in submitted or expense claim submitted state to approve.")
     }
 
     return this.travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
