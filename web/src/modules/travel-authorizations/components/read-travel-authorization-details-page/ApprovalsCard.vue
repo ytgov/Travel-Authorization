@@ -63,7 +63,10 @@
       </v-row>
       <v-row>
         <v-col>
-          <TravelAuthorizationActionLogsTable :travel-authorization-id="travelAuthorizationId" />
+          <TravelAuthorizationActionLogsTable
+            ref="travelAuthorizationActionLogsTable"
+            :travel-authorization-id="travelAuthorizationId"
+          />
         </v-col>
       </v-row>
     </v-card-text>
@@ -140,6 +143,9 @@ export default {
     ...mapActions("travelAuthorization", {
       ensureTravelAuthorization: "ensure",
     }),
+    refresh() {
+      this.$refs.travelAuthorizationActionLogsTable.refresh()
+    },
     formatCurrency(amount) {
       const formatter = new Intl.NumberFormat("en-CA", {
         style: "currency",

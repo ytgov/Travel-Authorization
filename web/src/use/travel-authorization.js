@@ -1,8 +1,8 @@
-import { reactive, toRefs } from "vue"
+import { reactive, toRefs, unref } from "vue"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
-export function useTravelAuthorization() {
+export function useTravelAuthorization(travelAuthorizationId) {
   const state = reactive({
     travelAuthorization: {
       expenses: [],
@@ -15,11 +15,11 @@ export function useTravelAuthorization() {
     isErrored: false,
   })
 
-  async function fetch(travelAuthorizationId, params = {}) {
+  async function fetch(params = {}) {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.get(
-        travelAuthorizationId,
+        unref(travelAuthorizationId),
         params
       )
       state.isErrored = false
@@ -38,7 +38,7 @@ export function useTravelAuthorization() {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.update(
-        state.travelAuthorization.id,
+        unref(travelAuthorizationId),
         state.travelAuthorization
       )
       state.isErrored = false
@@ -54,11 +54,47 @@ export function useTravelAuthorization() {
   }
 
   // Stateful actions
-  async function expenseClaim(travelAuthorizationId, attributes) {
+  async function approve() {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.approve(
+        unref(travelAuthorizationId)
+      )
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to approve for travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
+  async function deny() {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.deny(
+        unref(travelAuthorizationId)
+      )
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to deny for travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
+  async function expenseClaim(attributes) {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.expenseClaim(
-        travelAuthorizationId,
+        unref(travelAuthorizationId),
         attributes
       )
       state.isErrored = false
@@ -73,11 +109,16 @@ export function useTravelAuthorization() {
     }
   }
 
+  // TODO: switch to auto-fetching by adding a watch immediate here
+
   return {
     STATUSES,
     ...toRefs(state),
     fetch,
     save,
+    // stateful action
+    approve,
+    deny,
     expenseClaim,
   }
 }

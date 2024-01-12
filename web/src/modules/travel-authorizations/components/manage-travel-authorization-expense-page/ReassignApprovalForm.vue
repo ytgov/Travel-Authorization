@@ -56,12 +56,14 @@ const form = ref(null)
 const snack = useSnack()
 const router = useRouter()
 
-const { travelAuthorization, isLoading, fetch, save } = useTravelAuthorization()
+const { travelAuthorization, isLoading, fetch, save } = useTravelAuthorization(
+  props.travelAuthorizationId
+)
 
 watch(
   () => props.travelAuthorizationId,
   async () => {
-    await fetch(props.travelAuthorizationId)
+    await fetch()
   },
   { immediate: true }
 )

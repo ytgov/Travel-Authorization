@@ -96,7 +96,7 @@ const {
   isLoading: isLoadingTravelAuthorization,
   fetch: fetchTravelAuthorization,
   expenseClaim,
-} = useTravelAuthorization()
+} = useTravelAuthorization(props.travelAuthorizationId)
 const {
   generalLedgerCodings,
   isLoading: isLoadingGeneralLedgerCodings,
@@ -133,7 +133,7 @@ onMounted(async () => {
 
 async function refresh() {
   await Promise.all([
-    await fetchTravelAuthorization(props.travelAuthorizationId),
+    await fetchTravelAuthorization(),
     await fetchGeneralLedgerCodings({
       where: {
         travelAuthorizationId: props.travelAuthorizationId,
@@ -150,7 +150,7 @@ async function refresh() {
 
 async function requestApprovalForExpenseClaim() {
   try {
-    await expenseClaim(props.travelAuthorizationId, {
+    await expenseClaim({
       supervisorEmail: travelAuthorization.value.supervisorEmail,
     })
     snack("Expense claim submitted for approval.", { color: "success" })
