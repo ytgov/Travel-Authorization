@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid"
 import db from "@/db/db-client"
 
 import BaseService from "@/services/base-service"
-import { StopsService, ExpensesService } from "@/services"
+import { Stops, StopsService, ExpensesService } from "@/services"
 import { AuditService } from "@/services/audit-service"
 import { Expense, Stop, TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
@@ -62,6 +62,8 @@ export class CreateService extends BaseService {
 
         const travelAuthorizationId = travelAuthorization.id
         await this.createStops(travelAuthorization, this.stopsAttributes)
+        // TODO: remove this once travel segments fully replace stops
+        await Stops.BulkConvertStopsToTravelSegmentsService.perform(travelAuthorization)
 
         if (!isEmpty(this.expensesAttributes)) {
           await ExpensesService.bulkCreate(travelAuthorizationId, this.expensesAttributes)
