@@ -54,6 +54,7 @@ defineProps({
   },
 })
 
+/** @type {import('vue').Ref<InstanceType<typeof ApprovalsCard> | null>} */
 const approvalsCard = ref(null)
 
 function refresh() {
