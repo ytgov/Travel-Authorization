@@ -1,12 +1,14 @@
+import { Includeable } from "sequelize"
 import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
-import { isNil } from "lodash"
+import { isEmpty, isNil } from "lodash"
 
-import { TravelAuthorization } from "@/models"
+import { TravelAuthorization, TravelSegment } from "@/models"
 import { travelPurposeFactory, userFactory } from "@/factories"
 import { POSTGRES_INT_4_MAX, presence } from "./helpers"
 
 type TransientParam = {
+  include?: Includeable | Includeable[]
   roundTrip?: boolean
 }
 
@@ -25,7 +27,25 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
         travelAuthorization.userId = user.id
       }
 
-      return travelAuthorization.save()
+      await travelAuthorization.save()
+
+      if (associations.travelSegments) {
+        const travelSegmentAttributes = associations.travelSegments.map((travelSegment) => {
+          return {
+            ...travelSegment.dataValues,
+            travelAuthorizationId: travelAuthorization.id,
+          }
+        })
+        await TravelSegment.bulkCreate(travelSegmentAttributes)
+      }
+
+      if (transientParams.include === undefined) {
+        return travelAuthorization
+      }
+
+      return travelAuthorization.reload({
+        include: transientParams.include,
+      })
     })
 
     let oneWayTrip = presence(params.oneWayTrip, !params.multiStop && faker.datatype.boolean())

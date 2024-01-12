@@ -1,6 +1,6 @@
 import { CreationAttributes } from "sequelize"
 
-import db from "@/db/db-client"
+import { transaction } from "@/db/db-utils"
 import BaseService from "@/services/base-service"
 
 import { TravelSegment } from "@/models"
@@ -28,7 +28,7 @@ export class BulkReplaceService extends BaseService {
       throw new Error("All travelSegments must belong to the same form.")
     }
 
-    return db.transaction(async () => {
+    return transaction(async () => {
       await TravelSegment.destroy({ where: { travelAuthorizationId: this.travelAuthorizationId } })
       return TravelSegment.bulkCreate(this.travelSegmentsAttributes)
     })

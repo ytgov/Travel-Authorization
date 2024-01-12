@@ -3,8 +3,8 @@ import { createNamespace } from "cls-hooked"
 
 import { DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, NODE_ENV } from "@/config"
 
-const namespace = createNamespace("sequelize-transaction-context")
-Sequelize.useCLS(namespace)
+export const transactionManager = createNamespace('transaction-manager');
+Sequelize.useCLS(transactionManager)
 
 if (DB_NAME === undefined) throw new Error("database name is unset.")
 if (DB_USER === undefined) throw new Error("database username is unset.")

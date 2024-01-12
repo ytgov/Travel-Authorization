@@ -1,6 +1,6 @@
 import { isEmpty, isNil, last, first, pick } from "lodash"
 
-import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest, User } from "@/models"
+import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest, TravelSegment, User } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 import StopsSerializer, { StopDetailedView } from "./stops-serializer"
@@ -29,6 +29,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   private firstStop: Stop | undefined
   private lastStop: Stop | undefined
+  private lastTravelSegment: TravelSegment | undefined
   private currentDate: Date
   private user: User
 
@@ -36,6 +37,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     super(record)
     this.firstStop = first(this.record.stops)
     this.lastStop = last(this.record.stops)
+    this.lastTravelSegment = last(this.record.travelSegments)
     this.currentDate = new Date()
     this.user = record.user
   }
@@ -66,7 +68,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   // TODO: double check the order of these conditions
   determinePhase() {
-    if (this.isDraft() || this.awaitingDirectorApproval()) {
+    if (this.isDraft() || this.awaitingApproval()) {
       return "travel_approval"
     } else if (this.beforeTravelling() && (this.isApproved() || this.isBooked())) {
       return "travel_planning"
@@ -97,7 +99,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       return ["delete"]
     } else if (this.isApproved() && this.anyTransportTypeIsAircraft()) {
       return ["submit_travel_desk_request"]
-    } else if (this.travellingComplete()) {
+    } else if (this.isApproved () && this.travellingComplete()) {
       return ["submit_expense_claim"]
     } else if (this.travelDeskRequestIsComplete()) {
       return ["view_itinerary"]
@@ -126,8 +128,8 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     return this.record.status === TravelAuthorization.Statuses.APPROVED
   }
 
-  awaitingDirectorApproval() {
-    return this.record.status === TravelAuthorization.Statuses.AWAITING_DIRECTOR_APPROVAL
+  awaitingApproval() {
+    return this.record.status === TravelAuthorization.Statuses.SUBMITTED
   }
 
   beforeTravelling() {
@@ -163,6 +165,18 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   }
 
   travellingComplete() {
+    if (isNil(this.lastTravelSegment) || isNil(this.lastTravelSegment.departureAt)) {
+      return this.legacyTravellingComplete() // Replace with false when Stop model is removed
+    }
+
+    if (this.currentDate > this.lastTravelSegment.departureAt) {
+      return true
+    }
+
+    return false
+  }
+
+  legacyTravellingComplete() {
     if (isNil(this.lastStop) || isNil(this.lastStop.departureAt)) {
       return false
     }
