@@ -1,6 +1,6 @@
 import { isEmpty, isNil, last, first, pick } from "lodash"
 
-import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest, User } from "@/models"
+import { Expense, Stop, TravelAuthorization, TravelDeskTravelRequest, TravelSegment, User } from "@/models"
 
 import BaseSerializer from "./base-serializer"
 import StopsSerializer, { StopDetailedView } from "./stops-serializer"
@@ -29,6 +29,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   private firstStop: Stop | undefined
   private lastStop: Stop | undefined
+  private lastTravelSegment: TravelSegment | undefined
   private currentDate: Date
   private user: User
 
@@ -36,6 +37,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     super(record)
     this.firstStop = first(this.record.stops)
     this.lastStop = last(this.record.stops)
+    this.lastTravelSegment = last(this.record.travelSegments)
     this.currentDate = new Date()
     this.user = record.user
   }
@@ -97,7 +99,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
       return ["delete"]
     } else if (this.isApproved() && this.anyTransportTypeIsAircraft()) {
       return ["submit_travel_desk_request"]
-    } else if (this.travellingComplete()) {
+    } else if (this.isApproved () && this.travellingComplete()) {
       return ["submit_expense_claim"]
     } else if (this.travelDeskRequestIsComplete()) {
       return ["view_itinerary"]
@@ -163,11 +165,11 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   }
 
   travellingComplete() {
-    if (isNil(this.lastStop) || isNil(this.lastStop.departureAt)) {
+    if (isNil(this.lastTravelSegment) || isNil(this.lastTravelSegment.departureAt)) {
       return false
     }
 
-    if (this.currentDate > this.lastStop.departureAt) {
+    if (this.currentDate > this.lastTravelSegment.departureAt) {
       return true
     }
 

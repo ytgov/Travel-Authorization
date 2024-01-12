@@ -7,10 +7,16 @@ import { TravelAuthorizationsSerializer } from "@/serializers"
 describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
   describe("TravelAuthorizationsSerializer", () => {
     describe("#asTableRow", () => {
-      test("when travel authorization is pending approval, the travel action is blank", async () => {
+      test("when travel authorization is pending approval, and travelling is complete the travel action is blank", async () => {
+        const travelSegment = travelSegmentFactory.build({
+          departureOn: faker.date.past(),
+        })
         const travelAuthorization = await travelAuthorizationFactory
+          .associations({
+            travelSegments: [travelSegment],
+          })
           .transient({
-            include: ["user"],
+            include: ["user", "travelSegments"],
           })
           .create({
             status: TravelAuthorization.Statuses.SUBMITTED,
@@ -26,7 +32,7 @@ describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
         )
       })
 
-      test("when travel authorization is approved, traveling is complete, the travel action includes submit_expense_claim", async () => {
+      test("when travel authorization is approved, and travelling is complete, the travel action includes submit_expense_claim", async () => {
         const travelSegment = travelSegmentFactory.build({
           departureOn: faker.date.past(),
         })
