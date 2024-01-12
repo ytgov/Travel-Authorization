@@ -1,8 +1,8 @@
-import { reactive, toRefs } from "vue"
+import { reactive, toRefs, unref } from "vue"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
-export function useTravelAuthorization() {
+export function useTravelAuthorization(travelAuthorizationId) {
   const state = reactive({
     travelAuthorization: {
       expenses: [],
@@ -15,11 +15,11 @@ export function useTravelAuthorization() {
     isErrored: false,
   })
 
-  async function fetch(travelAuthorizationId, params = {}) {
+  async function fetch(params = {}) {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.get(
-        travelAuthorizationId,
+        unref(travelAuthorizationId),
         params
       )
       state.isErrored = false
@@ -38,7 +38,7 @@ export function useTravelAuthorization() {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.update(
-        state.travelAuthorization.id,
+        unref(travelAuthorizationId),
         state.travelAuthorization
       )
       state.isErrored = false
@@ -54,11 +54,11 @@ export function useTravelAuthorization() {
   }
 
   // Stateful actions
-  async function expenseClaim(travelAuthorizationId, attributes) {
+  async function expenseClaim(attributes) {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.expenseClaim(
-        travelAuthorizationId,
+        unref(travelAuthorizationId),
         attributes
       )
       state.isErrored = false

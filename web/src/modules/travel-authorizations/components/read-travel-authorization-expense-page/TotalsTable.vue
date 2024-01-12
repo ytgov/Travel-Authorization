@@ -64,7 +64,7 @@ const {
   travelAuthorization,
   isLoading: isLoadingTravelAuthorization,
   fetch: fetchTravelAuthorization,
-} = useTravelAuthorization()
+} = useTravelAuthorization(props.travelAuthorizationId)
 
 const isLoading = computed(() => isLoadingExpenses.value || isLoadingTravelAuthorization.value)
 // Will need to be calculated in the back-end if data is multi-page.
@@ -82,7 +82,7 @@ watch(
           type: TYPES.EXPENSE,
         },
       }),
-      await fetchTravelAuthorization(props.travelAuthorizationId),
+      await fetchTravelAuthorization(),
     ])
   },
   { immediate: true }

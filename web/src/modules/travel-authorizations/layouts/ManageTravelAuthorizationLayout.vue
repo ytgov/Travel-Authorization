@@ -81,13 +81,13 @@ const {
   travelAuthorization,
   isLoading: isLoadingTravelAuthorization,
   fetch: fetchTravelAuthorization,
-} = useTravelAuthorization()
+} = useTravelAuthorization(props.travelAuthorizationId)
 const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
 
 watch(
   () => props.travelAuthorizationId,
   async () => {
-    await fetchTravelAuthorization(props.travelAuthorizationId)
+    await fetchTravelAuthorization()
   },
   { immediate: true }
 )
