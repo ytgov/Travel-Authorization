@@ -7,14 +7,14 @@
         <v-col class="d-flex justify-end">
           <v-btn
             color="success"
-            @click="approve"
+            @click="approveWrapper"
           >
             Approve
           </v-btn>
           <v-btn
             class="ml-2"
             color="error"
-            @click="deny"
+            @click="denyWrapper"
           >
             Deny
           </v-btn>
@@ -24,54 +24,59 @@
   </v-card>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex"
+<script setup>
+import { computed, watch, onMounted } from "vue"
 
-import travelAuthorizationApi from "@/api/travel-authorizations-api"
+import { useSnack } from "@/plugins/snack-plugin"
+import { useTravelAuthorization } from "@/use/travel-authorization"
 
-export default {
-  name: "ManagementCard",
-  components: {},
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  data: () => ({}),
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-    }),
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
-  },
-  methods: {
-    ...mapActions("travelAuthorization", { ensureTravelAuthorization: "ensure" }),
-    // TODO: move this to a store action
-    approve() {
-      return travelAuthorizationApi
-        .approve(this.travelAuthorizationId)
-        .then(() => {
-          this.$snack("Travel authorization approved!", { color: "success" })
-          this.$emit("approved")
-        })
-        .catch((error) => {
-          this.$snack(error.message, { color: "error" })
-        })
-    },
-    deny() {
-      return travelAuthorizationApi
-        .deny(this.travelAuthorizationId)
-        .then(() => {
-          this.$snack("Travel authorization denied.", { color: "success" })
-          this.$emit("denied")
-        })
-        .catch((error) => {
-          this.$snack(error.message, { color: "error" })
-        })
-    },
-  },
+})
+
+const emit = defineEmits(["approved", "denied"])
+
+const snack = useSnack()
+const { travelAuthorization, isLoading, fetch, approve, deny, STATUSES } = useTravelAuthorization(
+  props.travelAuthorizationId
+)
+
+async function approveWrapper() {
+  return approve()
+    .then(() => {
+      snack("Travel authorization approved!", { color: "success" })
+      emit("approved")
+    })
+    .catch((error) => {
+      snack(error.message, { color: "error" })
+    })
 }
+
+async function denyWrapper() {
+  return deny()
+    .then(() => {
+      snack("Travel authorization denied.", { color: "success" })
+      emit("denied")
+    })
+    .catch((error) => {
+      snack(error.message, { color: "error" })
+    })
+}
+
+watch(
+  () => props.travelAuthorizationId,
+  async () => {
+    await fetch(props.travelAuthorizationId)
+  },
+  { immediate: true }
+)
+
+onMounted(async () => {
+  if (!isLoading.value) {
+    await fetch()
+  }
+})
 </script>

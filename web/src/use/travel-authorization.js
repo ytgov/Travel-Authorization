@@ -54,6 +54,42 @@ export function useTravelAuthorization(travelAuthorizationId) {
   }
 
   // Stateful actions
+  async function approve() {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.approve(
+        unref(travelAuthorizationId)
+      )
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to approve for travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
+  async function deny() {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.deny(
+        unref(travelAuthorizationId)
+      )
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to deny for travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   async function expenseClaim(attributes) {
     state.isLoading = true
     try {
@@ -73,11 +109,16 @@ export function useTravelAuthorization(travelAuthorizationId) {
     }
   }
 
+  // TODO: switch to auto-fetching by adding a watch immediate here
+
   return {
     STATUSES,
     ...toRefs(state),
     fetch,
     save,
+    // stateful action
+    approve,
+    deny,
     expenseClaim,
   }
 }
