@@ -69,7 +69,7 @@ export class CreateService extends BaseService {
           await ExpensesService.bulkCreate(travelAuthorizationId, this.expensesAttributes)
         }
 
-        auditService.log(
+        await auditService.log(
           this.currentUser.id,
           travelAuthorization.id,
           "Submit",
