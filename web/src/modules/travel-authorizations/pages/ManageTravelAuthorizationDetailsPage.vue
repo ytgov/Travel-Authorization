@@ -12,12 +12,19 @@
     </v-row>
     <v-row>
       <v-col>
-        <ApprovalsCard :travel-authorization-id="travelAuthorizationId" />
+        <ApprovalsCard
+          ref="approvalsCard"
+          :travel-authorization-id="travelAuthorizationId"
+        />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <ManagementCard :travel-authorization-id="travelAuthorizationId" />
+        <ManagementCard
+          :travel-authorization-id="travelAuthorizationId"
+          @approved="refresh"
+          @denied="refresh"
+        />
       </v-col>
     </v-row>
     <div class="d-flex justify-end">
@@ -32,6 +39,8 @@
 </template>
 
 <script setup>
+import { ref } from "vue"
+
 import PurposeCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/PurposeCard"
 import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard"
 import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard"
@@ -44,4 +53,10 @@ defineProps({
     required: true,
   },
 })
+
+const approvalsCard = ref(null)
+
+function refresh() {
+  approvalsCard.value.refresh()
+}
 </script>

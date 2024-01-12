@@ -52,9 +52,10 @@ export default {
     // TODO: move this to a store action
     approve() {
       return travelAuthorizationApi
-        .approve(this.travelAuthorization.id)
+        .approve(this.travelAuthorizationId)
         .then(() => {
           this.$snack("Travel authorization approved!", { color: "success" })
+          this.$emit("approved")
         })
         .catch((error) => {
           this.$snack(error.message, { color: "error" })
@@ -62,9 +63,10 @@ export default {
     },
     deny() {
       return travelAuthorizationApi
-        .deny(this.travelAuthorization.id)
+        .deny(this.travelAuthorizationId)
         .then(() => {
           this.$snack("Travel authorization denied.", { color: "success" })
+          this.$emit("denied")
         })
         .catch((error) => {
           this.$snack(error.message, { color: "error" })
