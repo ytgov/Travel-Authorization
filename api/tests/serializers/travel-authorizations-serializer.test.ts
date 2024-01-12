@@ -5,7 +5,7 @@ import { TravelAuthorizationsSerializer } from "@/serializers"
 describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
   describe("TravelAuthorizationsSerializer", () => {
     describe("#asTableRow", () => {
-      test("when travel authorization is pending approval, and traveling is complete, the travel action is blank", async () => {
+      test("when travel authorization is pending approval, the travel action is blank", async () => {
         const travelAuthorization = await travelAuthorizationFactory
           .transient({
             include: ["user"],
@@ -18,7 +18,7 @@ describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
 
         expect(serializer.asTableRow()).toEqual(
           expect.objectContaining({
-            phase: "travel_planning",
+            phase: "travel_approval",
             action: [],
           })
         )

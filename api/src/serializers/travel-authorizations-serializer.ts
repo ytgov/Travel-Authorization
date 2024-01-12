@@ -127,7 +127,7 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   }
 
   awaitingDirectorApproval() {
-    return this.record.status === TravelAuthorization.Statuses.AWAITING_DIRECTOR_APPROVAL
+    return this.record.status === TravelAuthorization.Statuses.SUBMITTED
   }
 
   beforeTravelling() {
