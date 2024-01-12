@@ -166,10 +166,22 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
 
   travellingComplete() {
     if (isNil(this.lastTravelSegment) || isNil(this.lastTravelSegment.departureAt)) {
-      return false
+      return this.legacyTravellingComplete() // Replace with false when Stop model is removed
     }
 
     if (this.currentDate > this.lastTravelSegment.departureAt) {
+      return true
+    }
+
+    return false
+  }
+
+  legacyTravellingComplete() {
+    if (isNil(this.lastStop) || isNil(this.lastStop.departureAt)) {
+      return false
+    }
+
+    if (this.currentDate > this.lastStop.departureAt) {
       return true
     }
 
