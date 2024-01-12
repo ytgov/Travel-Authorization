@@ -6,12 +6,16 @@
       <v-row>
         <v-col class="d-flex justify-end">
           <v-btn
+            :loading="isLoading"
+            :disabled="isDisabled"
             color="success"
             @click="approveWrapper"
           >
             Approve
           </v-btn>
           <v-btn
+            :loading="isLoading"
+            :disabled="isDisabled"
             class="ml-2"
             color="error"
             @click="denyWrapper"
@@ -43,6 +47,10 @@ const snack = useSnack()
 const { travelAuthorization, isLoading, fetch, approve, deny, STATUSES } = useTravelAuthorization(
   props.travelAuthorizationId
 )
+
+const isDisabled = computed(() => {
+  return isLoading.value || travelAuthorization.value.status !== STATUSES.SUBMITTED
+})
 
 async function approveWrapper() {
   return approve()
