@@ -31,6 +31,7 @@
               <v-text-field
                 v-model="generalLedgerCoding.code"
                 :rules="[isGeneralLedgerCode]"
+                validate-on-blur
                 dense
                 outlined
                 required
