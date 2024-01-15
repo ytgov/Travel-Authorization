@@ -71,8 +71,8 @@ GeneralLedgerCoding.init(
       allowNull: false,
       validate: {
         is: {
-          args: /^[a-zA-Z0-9]{3}-[a-zA-Z0-9]{6}-\d{4}-[a-zA-Z0-9]{0,4}-[a-zA-Z0-9]{0,5}$/,
-          msg: "Code must be in the format 'vote (3 characters) - Program (6 characters) - object code (4 digits) - subledger-1 (0-4 characters) - subleger-2 (0-5 characters)'",
+          args: /^[a-zA-Z0-9]{3}-[a-zA-Z0-9]{6}-\d{4}(?:-[a-zA-Z0-9]{1,4}(?:-[a-zA-Z0-9]{1,5})?)?$/,
+          msg: "Code must be in the format: vote (3 characters) - Program (6 characters) - object code (4 digits) - subledger-1 (0-4 characters) - subleger-2 (0-5 characters)",
         },
       },
     },
