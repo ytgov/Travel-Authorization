@@ -67,8 +67,14 @@ GeneralLedgerCoding.init(
     // See https://www.tpsgc-pwgsc.gc.ca/recgen/pceaf-gwcoa/2223/2-eng.html
     // Department / Agency 	Financial Reporting Account (FRA) 	Authority 	Program 	Object 	Transaction Type
     code: {
-      type: DataTypes.STRING(25),
+      type: DataTypes.STRING(26),
       allowNull: false,
+      validate: {
+        is: {
+          args: /^[a-zA-Z0-9]{3}-[a-zA-Z0-9]{6}-\d{4}-[a-zA-Z0-9]{0,4}-[a-zA-Z0-9]{0,5}$/,
+          msg: "Code must be in the format 'vote (3 characters) - Program (6 characters) - object code (4 digits) - subledger-1 (0-4 characters) - subleger-2 (0-5 characters)'",
+        },
+      },
     },
     // Postgres decimal types are represented as strings, so much be converted to numbers JS side.
     // See https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL
