@@ -1,7 +1,9 @@
 <template>
   <v-dialog
     v-model="showDialog"
+    persistent
     max-width="500px"
+    @keydown.esc="close"
   >
     <template #activator="{ on, attrs }">
       <v-btn
