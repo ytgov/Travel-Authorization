@@ -1,8 +1,8 @@
 <template>
   <v-dialog
     v-model="showDialog"
-    persistent
     max-width="500px"
+    persistent
     @keydown.esc="close"
   >
     <template #activator="{ on, attrs }">

@@ -2,6 +2,8 @@
   <v-dialog
     v-model="showDialog"
     max-width="500px"
+    persistent
+    @keydown.esc="close"
   >
     <v-form
       ref="form"
