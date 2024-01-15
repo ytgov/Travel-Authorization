@@ -2,25 +2,21 @@
   <v-btn
     class="ma-0"
     color="secondary"
-    @click.stop="submitExpenseClaim"
+    :to="{
+      name: 'EditMyTravelAuthorizationExpensePage',
+      params: { travelAuthorizationId },
+    }"
+    @click.stop
   >
     Submit Expense Claim
   </v-btn>
 </template>
 
-<script>
-export default {
-  name: "SubmitExpenseClaimButton",
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
+<script setup>
+defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  methods: {
-    submitExpenseClaim() {
-      alert("TODO: submit expense claim for travel authorization " + this.travelAuthorizationId)
-    },
-  },
-}
+})
 </script>

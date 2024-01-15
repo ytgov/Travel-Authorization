@@ -22,7 +22,7 @@
 <script setup>
 import { startCase } from "lodash"
 import { DateTime } from "luxon"
-import { onMounted } from "vue"
+import { watch } from "vue"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { useTravelAuthorizationActionLogs } from "@/use/travel-authorization-action-logs"
@@ -67,9 +67,15 @@ const headers = [
   },
 ]
 
-onMounted(async () => {
-  await fetch()
-})
+watch(
+  () => props.travelAuthorizationId,
+  async () => {
+    await fetch()
+  },
+  {
+    immediate: true,
+  }
+)
 
 function formatAction(value) {
   const fallback = startCase(value.replace("_", " "))
@@ -82,4 +88,8 @@ function formatDate(value) {
   const date = DateTime.fromISO(iso8601Value, { zone: "utc" })
   return date.toFormat("LLLL-dd-yyyy")
 }
+
+defineExpose({
+  refresh: fetch,
+})
 </script>

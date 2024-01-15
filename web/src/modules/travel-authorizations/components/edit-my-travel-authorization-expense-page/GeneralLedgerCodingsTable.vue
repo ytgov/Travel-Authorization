@@ -16,6 +16,23 @@
         @deleted="emitChangedAndRefresh"
       />
     </template>
+    <template #header.code="{ header }">
+      <!-- See https://github.com/icefoganalytics/travel-authorization/issues/156#issuecomment-1890047168 -->
+      <v-tooltip bottom>
+        <template #activator="{ on }">
+          <span v-on="on">
+            {{ header.text }}
+            <v-icon small> mdi-help-circle-outline </v-icon>
+          </span>
+        </template>
+        <span>
+          e.g. 552-123456-2015-1234-12345
+          <br />
+          The format is vote (3 characters) - Program (6 characters) - object code (4 digits) -
+          subledger-1 (0-4 characters) - subleger-2 (0-5 characters).</span
+        >
+      </v-tooltip>
+    </template>
     <template #item.amount="{ value }">
       {{ formatCurrency(value) }}
     </template>
@@ -80,7 +97,7 @@ const { generalLedgerCodings, isLoading, fetch } = useGeneralLedgerCodings()
 const totalAmount = computed(() => sumBy(generalLedgerCodings.value, "amount"))
 
 const headers = ref([
-  { text: "Vote/Program/Object/Sub1/Sub2", value: "code" },
+  { text: "G/L code", value: "code" },
   { text: "Amount", value: "amount" },
   { text: "", value: "actions" },
 ])

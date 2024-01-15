@@ -12,7 +12,7 @@ async function runMigrations(): Promise<void> {
     .reduce(async (previousMigration, migration) => {
       await previousMigration
 
-      console.log(`Running migration: ${migration}`)
+      console.log(`Running migration:`, migration)
       return knex.migrate.up()
     }, Promise.resolve())
     .then(() => {

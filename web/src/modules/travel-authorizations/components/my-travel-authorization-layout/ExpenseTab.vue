@@ -52,7 +52,9 @@ const props = defineProps({
   },
 })
 
-const { travelAuthorization, fetch, isLoading, STATUSES } = useTravelAuthorization()
+const { travelAuthorization, fetch, isLoading, STATUSES } = useTravelAuthorization(
+  props.travelAuthorizationId
+)
 const isInPreExpensingStates = computed(
   () =>
     travelAuthorization.value.status === STATUSES.DRAFT ||
@@ -82,14 +84,14 @@ const componentName = computed(() => {
 watch(
   () => props.travelAuthorizationId,
   async () => {
-    await fetch(props.travelAuthorizationId)
+    await fetch()
   },
   { immediate: true }
 )
 
 onMounted(async () => {
   if (!isLoading.value) {
-    await fetch(props.travelAuthorizationId)
+    await fetch()
   }
 })
 </script>

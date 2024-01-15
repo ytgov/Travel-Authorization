@@ -2,6 +2,7 @@ version: "3"
 
 x-default-environment: &default-environment
   NODE_ENV: development
+  TZ: "UTC"
   AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com"
   AUTH0_AUDIENCE: testing
   DB_HOST: db
