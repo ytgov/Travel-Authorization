@@ -30,7 +30,7 @@
             <v-col>
               <v-text-field
                 v-model="generalLedgerCoding.code"
-                :rules="[required]"
+                :rules="[isGeneralLedgerCode]"
                 dense
                 outlined
                 required
@@ -95,7 +95,7 @@ import { ref, watch, nextTick } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import { required } from "@/utils/validators"
+import { required, isGeneralLedgerCode } from "@/utils/validators"
 
 import generalLedgerCodingsApi from "@/api/general-ledger-codings-api"
 
