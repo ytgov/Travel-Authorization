@@ -17,6 +17,7 @@
       />
     </template>
     <template #header.code="{ header }">
+      <!-- See https://github.com/icefoganalytics/travel-authorization/issues/156#issuecomment-1890047168 -->
       <v-tooltip bottom>
         <template #activator="{ on }">
           <span v-on="on">

@@ -28,6 +28,7 @@
         <v-card-text>
           <v-row>
             <v-col>
+              <!-- See https://github.com/icefoganalytics/travel-authorization/issues/156#issuecomment-1890047168 -->
               <v-text-field
                 v-model="generalLedgerCoding.code"
                 :rules="[isGeneralLedgerCode]"
