@@ -56,6 +56,11 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
+# Persists TZ=UTC effect after container build and into container run
+# Ensures dates/times are consistently formated as UTC
+# Conversion to local time should happen in the UI
+ENV TZ=UTC
+
 ENV NODE_ENV=production
 USER node
 
