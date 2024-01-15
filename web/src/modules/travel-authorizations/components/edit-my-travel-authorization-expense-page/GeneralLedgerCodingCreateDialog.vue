@@ -29,9 +29,27 @@
               <v-text-field
                 v-model="generalLedgerCoding.code"
                 :rules="[required]"
-                label="Vote/Program/Object/Sub1/Sub2"
+                dense
+                outlined
                 required
-              ></v-text-field>
+              >
+                <template #label>
+                  <v-tooltip bottom>
+                    <template #activator="{ on }">
+                      <div v-on="on">
+                        G/L code
+                        <v-icon small> mdi-help-circle-outline </v-icon>
+                      </div>
+                    </template>
+                    <span>
+                      e.g. 552-123456-2015-1234-12345
+                      <br />
+                      The format is vote (3 characters) - Program (6 characters) - object code (4
+                      digits) - subledger-1 (0-4 characters) - subleger-2 (0-5 characters).</span
+                    >
+                  </v-tooltip>
+                </template>
+              </v-text-field>
             </v-col>
           </v-row>
           <v-row>
@@ -40,6 +58,8 @@
                 v-model="generalLedgerCoding.amount"
                 :rules="[required]"
                 label="Amount"
+                dense
+                outlined
                 required
               />
             </v-col>
