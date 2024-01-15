@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express"
-import jwt from "express-jwt"
+import { NextFunction, Response } from "express"
+import { expressjwt as jwt, type Request } from "express-jwt"
 import axios from "axios"
-import jwksRsa from "jwks-rsa"
+import jwksRsa, { type GetVerificationKey } from "jwks-rsa"
 
 import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config"
 import { User } from "@/models"
@@ -15,7 +15,7 @@ export const checkJwt = jwt({
     rateLimit: true,
     jwksRequestsPerMinute: 5,
     jwksUri: `${AUTH0_DOMAIN}/.well-known/jwks.json`,
-  }),
+  }) as GetVerificationKey,
 
   // Validate the audience and the issuer.
   audience: AUTH0_AUDIENCE,
@@ -79,7 +79,7 @@ function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
 }
 
 export async function loadUser(req: Request, res: Response, next: NextFunction) {
-  const sub = req.user.sub
+  const sub = req.auth?.sub // from express-jwt
 
   const user = await User.findOne({ where: { sub } })
   if (user !== null) {
