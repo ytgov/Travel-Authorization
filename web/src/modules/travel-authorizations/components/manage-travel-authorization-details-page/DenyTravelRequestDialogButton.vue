@@ -1,0 +1,106 @@
+<template>
+  <v-dialog
+    v-model="showDialog"
+    width="500"
+  >
+    <template #activator="{ on, attrs }">
+      <v-btn
+        :loading="isLoading"
+        :disabled="isDisabled"
+        :class="buttonClasses"
+        color="error"
+        v-bind="attrs"
+        v-on="on"
+      >
+        Deny
+      </v-btn>
+    </template>
+
+    <v-card>
+      <v-card-title class="text-h5"> Deny Request </v-card-title>
+
+      <v-card-text :loading="isLoading">
+        <p>Please provide a reason for denying this request.</p>
+        <v-row>
+          <v-col>
+            <v-textarea
+              v-model="denialReason"
+              :rules="[required]"
+              label="Denial reason"
+              rows="5"
+              required
+              outlined
+            />
+          </v-col>
+        </v-row>
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="secondary"
+          :loading="isLoading"
+          @click="close"
+          >Cancel</v-btn
+        >
+        <v-btn
+          color="error"
+          :loading="isLoading"
+          @click="denyAndClose"
+          >Deny</v-btn
+        >
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script setup>
+import { ref } from "vue"
+
+import { required } from "@/utils/validators"
+
+import { useSnack } from "@/plugins/snack-plugin"
+import { useTravelAuthorization } from "@/use/travel-authorization"
+
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
+  },
+  isDisabled: {
+    type: Boolean,
+    default: false,
+  },
+  buttonClasses: {
+    type: [String, Array, Object],
+    default: null,
+  },
+})
+
+const emit = defineEmits(["denied"])
+
+const snack = useSnack()
+const { isLoading, deny } = useTravelAuthorization(props.travelAuthorizationId)
+
+const showDialog = ref(false)
+const denialReason = ref(null)
+
+function close() {
+  showDialog.value = false
+}
+
+async function denyAndClose() {
+  try {
+    await deny({
+      denialReason: denialReason.value,
+    })
+    close()
+    snack("Travel authorization denied.", { color: "success" })
+    emit("denied")
+  } catch (error) {
+    snack(error.message, { color: "error" })
+  }
+}
+</script>

@@ -13,15 +13,12 @@
           >
             Approve
           </v-btn>
-          <v-btn
-            :loading="isLoading"
-            :disabled="isDisabled"
-            class="ml-2"
-            color="error"
-            @click="denyWrapper"
-          >
-            Deny
-          </v-btn>
+          <DenyTravelRequestDialogButton
+            :travel-authorization-id="props.travelAuthorizationId"
+            :is-disabled="isDisabled"
+            button-classes="ml-2"
+            @denied="emit('denied')"
+          />
         </v-col>
       </v-row>
     </v-card-text>
@@ -30,6 +27,8 @@
 
 <script setup>
 import { computed, watch, onMounted } from "vue"
+
+import DenyTravelRequestDialogButton from "./DenyTravelRequestDialogButton.vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import { useTravelAuthorization } from "@/use/travel-authorization"
@@ -44,7 +43,7 @@ const props = defineProps({
 const emit = defineEmits(["approved", "denied"])
 
 const snack = useSnack()
-const { travelAuthorization, isLoading, fetch, approve, deny, STATUSES } = useTravelAuthorization(
+const { travelAuthorization, isLoading, fetch, approve, STATUSES } = useTravelAuthorization(
   props.travelAuthorizationId
 )
 
@@ -57,17 +56,6 @@ async function approveWrapper() {
     .then(() => {
       snack("Travel authorization approved!", { color: "success" })
       emit("approved")
-    })
-    .catch((error) => {
-      snack(error.message, { color: "error" })
-    })
-}
-
-async function denyWrapper() {
-  return deny()
-    .then(() => {
-      snack("Travel authorization denied.", { color: "success" })
-      emit("denied")
     })
     .catch((error) => {
       snack(error.message, { color: "error" })
