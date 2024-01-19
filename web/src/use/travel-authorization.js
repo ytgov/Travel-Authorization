@@ -72,11 +72,12 @@ export function useTravelAuthorization(travelAuthorizationId) {
     }
   }
 
-  async function deny() {
+  async function deny({ denialReason } = {}) {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.deny(
-        unref(travelAuthorizationId)
+        unref(travelAuthorizationId),
+        { denialReason }
       )
       state.isErrored = false
       state.travelAuthorization = travelAuthorization

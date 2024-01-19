@@ -24,7 +24,12 @@ export class DenyController extends BaseController {
         .json({ message: "You are not authorized to deny this travel authorization." })
     }
 
-    return TravelAuthorizations.DenyService.perform(travelAuthorization, this.currentUser)
+    const { denialReason } = this.request.body
+    return TravelAuthorizations.DenyService.perform(
+      travelAuthorization,
+      denialReason,
+      this.currentUser
+    )
       .then((travelAuthorization) => {
         const serializedTravelAuthorization =
           TravelAuthorizationsSerializer.asDetailed(travelAuthorization)

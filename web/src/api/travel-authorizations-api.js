@@ -51,10 +51,11 @@ export const travelAuthorizationsApi = {
       .post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)
       .then(({ data }) => data)
   },
-  deny(travelAuthorizationId) {
-    return http
-      .post(`/api/travel-authorizations/${travelAuthorizationId}/deny`)
-      .then(({ data }) => data)
+  async deny(travelAuthorizationId, { denialReason } = {}) {
+    const { data } = await http.post(`/api/travel-authorizations/${travelAuthorizationId}/deny`, {
+      denialReason,
+    })
+    return data
   },
   expenseClaim(travelAuthorizationId, attributes) {
     return http

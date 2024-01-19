@@ -5,11 +5,13 @@ import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/model
 
 export class DenyService extends BaseService {
   private travelAuthorization: TravelAuthorization
+  private denialReason: string | null
   private denier: User
 
-  constructor(travelAuthorization: TravelAuthorization, denier: User) {
+  constructor(travelAuthorization: TravelAuthorization, denialReason: string | null, denier: User) {
     super()
     this.travelAuthorization = travelAuthorization
+    this.denialReason = denialReason
     this.denier = denier
   }
 
@@ -17,8 +19,7 @@ export class DenyService extends BaseService {
     if (this.travelAuthorization.status === TravelAuthorization.Statuses.SUBMITTED) {
       await db.transaction(async () => {
         await this.travelAuthorization.update({
-          // TODO: add support for denial reason
-          // denialReason: "???",
+          denialReason: this.denialReason,
           status: TravelAuthorization.Statuses.DENIED,
         })
         await TravelAuthorizationActionLog.create({
@@ -33,8 +34,7 @@ export class DenyService extends BaseService {
     ) {
       await db.transaction(async () => {
         await this.travelAuthorization.update({
-          // TODO: add support for denial reason
-          // denialReason: "???",
+          denialReason: this.denialReason,
           status: TravelAuthorization.Statuses.EXPENSE_CLAIM_DENIED,
         })
         await TravelAuthorizationActionLog.create({
