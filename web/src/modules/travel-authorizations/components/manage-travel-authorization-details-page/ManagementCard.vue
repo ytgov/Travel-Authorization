@@ -15,13 +15,13 @@
             :requestor-display-name="requestorDisplayName"
             :is-disabled="isDisabled"
             :travel-location-id="travelLocationId"
-            @approved="emit('approved')"
+            @approved="refreshAndEmit('approved')"
           />
           <DenyTravelRequestDialogButton
             :travel-authorization-id="props.travelAuthorizationId"
             :is-disabled="isDisabled"
             button-classes="ml-2"
-            @denied="emit('denied')"
+            @denied="refreshAndEmit('denied')"
           />
         </v-col>
       </v-row>
@@ -71,8 +71,13 @@ const requestorDisplayName = computed(() => {
 watch(
   () => props.travelAuthorizationId,
   async () => {
-    await fetch(props.travelAuthorizationId)
+    await fetch()
   },
   { immediate: true }
 )
+
+async function refreshAndEmit(eventName) {
+  await fetch()
+  emit(eventName)
+}
 </script>
