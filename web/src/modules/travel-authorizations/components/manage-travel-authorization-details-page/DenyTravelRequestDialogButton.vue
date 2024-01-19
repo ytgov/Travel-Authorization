@@ -62,7 +62,8 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, nextTick, watch } from "vue"
+import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 import { required } from "@/utils/validators"
 
@@ -86,11 +87,13 @@ const props = defineProps({
 
 const emit = defineEmits(["denied"])
 
+const route = useRoute()
+const router = useRouter()
 const snack = useSnack()
 const { isLoading, deny } = useTravelAuthorization(props.travelAuthorizationId)
 
 const form = ref(null)
-const showDialog = ref(false)
+const showDialog = ref(route.query.showDeny === "true")
 const denialReason = ref(null)
 
 function close() {
@@ -105,9 +108,22 @@ async function denyAndClose() {
     })
     close()
     snack("Travel authorization denied.", { color: "success" })
-    emit("denied")
+    nextTick(() => {
+      emit("denied")
+    })
   } catch (error) {
     snack(error.message, { color: "error" })
   }
 }
+
+watch(
+  () => showDialog.value,
+  (newShowDialog) => {
+    if (newShowDialog) {
+      router.push({ query: { showDeny: newShowDialog } })
+    } else {
+      router.push({ query: { showDeny: undefined } })
+    }
+  }
+)
 </script>
