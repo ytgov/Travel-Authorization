@@ -392,7 +392,7 @@ TravelAuthorization.init(
       allowNull: true,
     },
     denialReason: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(2000),
       allowNull: true,
     },
     // TODO: replace with string enum field using TripTypes

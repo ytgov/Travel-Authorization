@@ -31,7 +31,7 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
       // state checks, that supersede roles
       // maybe shouldn't be in a policy?
       if (this.travelAuthorization?.status !== TravelAuthorization.Statuses.APPROVED) return false
-      if (!this.isAfterTravelStartDate) return false
+      if (!this.isAfterTravelStartDate()) return false
 
       if (this.user.roles.includes(User.Roles.ADMIN)) return true
       if (this.travelAuthorization.supervisorEmail === this.user.email) return true
@@ -65,7 +65,7 @@ export class ExpensesPolicy extends BasePolicy<Expense> {
     return new TravelAuthorizationsPolicy(this.user, this.travelAuthorization)
   }
 
-  private get isAfterTravelStartDate(): boolean {
+  private isAfterTravelStartDate(): boolean {
     if (this.travelSegments === undefined) return false
 
     const firstTravelSegment = this.travelSegments[0]
