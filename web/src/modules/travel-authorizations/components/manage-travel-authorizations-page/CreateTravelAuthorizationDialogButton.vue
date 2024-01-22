@@ -2,6 +2,7 @@
   <v-dialog
     v-model="showDialog"
     width="500"
+    @keydown.esc="close"
   >
     <template #activator="{ on, attrs }">
       <v-btn
@@ -26,7 +27,8 @@
           <p>Create travel request for:</p>
 
           <SearchableUserEmailCombobox
-            v-model="userEmail"
+            v-model="travelerEmail"
+            label="Traveler Email"
             outlined
             required
           />
@@ -42,8 +44,28 @@
             @click="close"
             >Cancel</v-btn
           >
+
+          <v-tooltip
+            v-if="isDisabled"
+            bottom
+          >
+            <template #activator="{ on }">
+              <span v-on="on">
+                <v-btn
+                  class="ml-2"
+                  color="success"
+                  type="submit"
+                  disabled
+                  >Create (?)</v-btn
+                >
+              </span>
+            </template>
+            <span>Traveler email required.</span>
+          </v-tooltip>
           <v-btn
+            v-else
             :loading="isLoading"
+            class="ml-2"
             color="success"
             type="submit"
             >Create</v-btn
@@ -55,8 +77,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
+import { isEmpty } from "lodash"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
 
@@ -70,8 +93,10 @@ const router = useRouter()
 const { create, isLoading } = useTravelAuthorization()
 
 const form = ref(null)
-const showDialog = ref(route.query.showApprove === "true")
-const userEmail = ref(null)
+const showDialog = ref(route.query.showCreate === "true")
+const travelerEmail = ref(null)
+
+const isDisabled = computed(() => isEmpty(travelerEmail.value))
 
 function goToFormDetails(travelAuthorizationId) {
   this.$router.push({
@@ -84,7 +109,7 @@ async function createAndGoToFormDetails() {
   try {
     const { travelAuthorization } = await create({
       userAttributes: {
-        email: userEmail.value,
+        email: travelerEmail.value,
       },
       stopsAttributes: [
         {
@@ -114,17 +139,10 @@ watch(
   () => showDialog.value,
   (newShowDialog) => {
     if (newShowDialog) {
-      router.push({ query: { showApprove: newShowDialog } })
+      router.push({ query: { showCreate: newShowDialog } })
     } else {
-      router.push({ query: { showApprove: undefined } })
+      router.push({ query: { showCreate: undefined } })
     }
-  }
-)
-
-watch(
-  () => userEmail.value,
-  (value) => {
-    console.log("value:", value)
   }
 )
 </script>
