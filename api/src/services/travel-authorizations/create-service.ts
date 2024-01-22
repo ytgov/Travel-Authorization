@@ -5,8 +5,9 @@ import { v4 as uuid } from "uuid"
 import db from "@/db/db-client"
 
 import BaseService from "@/services/base-service"
-import { Stops, StopsService, ExpensesService } from "@/services"
+import { Stops, StopsService, ExpensesService, Users } from "@/services"
 import { AuditService } from "@/services/audit-service"
+import { UserCreationAttributes } from "@/services/users/create-service"
 import { Expense, Stop, TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
 type StopsCreationAttributes = CreationAttributes<Stop>[]
@@ -18,6 +19,7 @@ type TravelAuthorizationCreationAttributes = Omit<
 } & {
   stopsAttributes?: StopsCreationAttributes
   expensesAttributes?: CreationAttributes<Expense>[]
+  userAttributes?: UserCreationAttributes
 }
 
 // TODO: upgrade this to the enhanced service pattern.
@@ -27,10 +29,12 @@ export class CreateService extends BaseService {
   private stopsAttributes: StopsCreationAttributes
   private expensesAttributes: CreationAttributes<Expense>[]
   private attributes: TravelAuthorizationCreationAttributes
+  private userAttributes?: UserCreationAttributes
   private currentUser: User
 
   constructor(
     {
+      userAttributes,
       stopsAttributes = [],
       expensesAttributes = [],
       ...attributes
@@ -39,21 +43,28 @@ export class CreateService extends BaseService {
   ) {
     super()
     this.attributes = attributes
+    this.userAttributes = userAttributes
     this.stopsAttributes = stopsAttributes
     this.expensesAttributes = expensesAttributes
     this.currentUser = currentUser
   }
 
   async perform(): Promise<TravelAuthorization> {
-    const secureAttributes = {
-      ...this.attributes,
-      status: TravelAuthorization.Statuses.DRAFT,
-      slug: this.attributes.slug || uuid(),
-      createdBy: this.currentUser.id,
-    }
-
     return db
       .transaction(async () => {
+        const secureAttributes = {
+          ...this.attributes,
+          status: TravelAuthorization.Statuses.DRAFT,
+          slug: this.attributes.slug || uuid(),
+          createdBy: this.currentUser.id,
+        }
+
+        secureAttributes.userId = await this.determineSecureUserId(
+          this.currentUser,
+          this.attributes.userId,
+          this.userAttributes
+        )
+
         const travelAuthorization = await TravelAuthorization.create(secureAttributes).catch(
           (error) => {
             throw new Error(`Could not create TravelAuthorization: ${error}`)
@@ -91,7 +102,33 @@ export class CreateService extends BaseService {
       })
   }
 
-  async createStops(
+  private async determineSecureUserId(
+    currentUser: User,
+    userId: number | undefined,
+    userAttributes: UserCreationAttributes | undefined
+  ): Promise<number> {
+    // This pattern is a bit off, but I can't think of a better place to put this logic.
+    // If the user is not an admin, the userId must come from the current user.
+    // TODO: consider putting this code in the policy?
+    if (!this.currentUser.roles.includes(User.Roles.ADMIN)) {
+      return this.currentUser.id
+    }
+
+    if (userId !== undefined && userAttributes !== undefined) {
+      throw new Error("Cannot specify both userId and userAttributes.")
+    } else if (userId === undefined && userAttributes === undefined) {
+      throw new Error("Must specify either userId or userAttributes.")
+    } else if (userId !== undefined) {
+      return userId
+    } else if (userAttributes !== undefined) {
+      const user = await Users.EnsureService.perform(userAttributes, this.currentUser)
+      return user.id
+    } else {
+      throw new Error("This should never be reached, but it makes TypeScript happy.")
+    }
+  }
+
+  private async createStops(
     travelAuthorization: TravelAuthorization,
     stopsAttributes: StopsCreationAttributes
   ) {
@@ -104,7 +141,7 @@ export class CreateService extends BaseService {
   }
 
   // TODO: might want to make this a validator against updates as well?
-  ensureMinimalDefaultStopsAttributes(
+  private ensureMinimalDefaultStopsAttributes(
     travelAuthorization: TravelAuthorization,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
@@ -123,7 +160,7 @@ export class CreateService extends BaseService {
     }
   }
 
-  ensureMinimalDefaultMultiDestinationStopsAttributes(
+  private ensureMinimalDefaultMultiDestinationStopsAttributes(
     travelAuthorizationId: number,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
@@ -155,7 +192,7 @@ export class CreateService extends BaseService {
     ]
   }
 
-  ensureMinimalDefaultOneWayStopsAttributes(
+  private ensureMinimalDefaultOneWayStopsAttributes(
     travelAuthorizationId: number,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
@@ -175,7 +212,7 @@ export class CreateService extends BaseService {
     ]
   }
 
-  ensureMinimalDefaultRoundTripStopsAttributes(
+  private ensureMinimalDefaultRoundTripStopsAttributes(
     travelAuthorizationId: number,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {

@@ -84,6 +84,13 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
+        path: ":travelAuthorizationId/details/edit",
+        name: "EditTravelAuthorizationDetailsPage",
+        component: () =>
+          import("@/modules/travel-authorizations/pages/EditTravelAuthorizationDetailsPage"),
+        props: cast("travelAuthorizationId", parseInt),
+      },
+      {
         path: ":travelAuthorizationId",
         component: () =>
           import("@/modules/travel-authorizations/layouts/ManageTravelAuthorizationLayout"),

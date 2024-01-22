@@ -49,7 +49,7 @@
 <script>
 import { applicationName } from "@/config";
 
-import useCurrentUser from "@/use/current-user"
+import useCurrentUser from "@/use/use-current-user"
 
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
 

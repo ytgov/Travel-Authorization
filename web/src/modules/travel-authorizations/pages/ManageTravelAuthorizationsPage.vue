@@ -2,7 +2,10 @@
   <div>
     <Breadcrumbs class="mb-2" />
 
-    <h1>Manage Submissions</h1>
+    <div class="d-flex justify-space-between align-baseline">
+      <h1>Manage Submissions</h1>
+      <CreateTravelAuthorizationDialogButton />
+    </div>
     <v-row>
       <v-col>
         <PendingApprovalsCard />
@@ -22,24 +25,12 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import Breadcrumbs from "@/components/Breadcrumbs"
 
 import ApprovedTripsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/ApprovedTripsCard"
 import AwaitingChangesCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingChangesCard"
 import AwaitingExpenseApprovalCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingExpenseApprovalCard"
+import CreateTravelAuthorizationDialogButton from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/CreateTravelAuthorizationDialogButton"
 import PendingApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/PendingApprovalsCard"
-
-export default {
-  name: "ManageTravelAuthorizationsPage",
-  components: {
-    ApprovedTripsCard,
-    AwaitingChangesCard,
-    AwaitingExpenseApprovalCard,
-    Breadcrumbs,
-    PendingApprovalsCard,
-  },
-  data: () => ({}),
-  methods: {},
-}
 </script>

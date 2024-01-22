@@ -58,7 +58,7 @@
 <script setup>
 import { computed, watch } from "vue"
 
-import useCurrentUser from "@/use/current-user"
+import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorization from "@/use/travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
