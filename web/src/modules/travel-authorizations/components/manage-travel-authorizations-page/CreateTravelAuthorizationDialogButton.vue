@@ -99,15 +99,15 @@ const travelerEmail = ref(null)
 const isDisabled = computed(() => isEmpty(travelerEmail.value))
 
 function goToFormDetails(travelAuthorizationId) {
-  this.$router.push({
-    name: "EditMyTravelAuthorizationDetailsPage",
+  router.push({
+    name: "EditTravelAuthorizationDetailsPage",
     params: { travelAuthorizationId },
   })
 }
 
 async function createAndGoToFormDetails() {
   try {
-    const { travelAuthorization } = await create({
+    const travelAuthorization = await create({
       userAttributes: {
         email: travelerEmail.value,
       },
@@ -123,7 +123,7 @@ async function createAndGoToFormDetails() {
       ],
     })
     snack("Travel authorization created.", { color: "success" })
-    close()
+    // close() is not relevant due to redirect.
     return goToFormDetails(travelAuthorization.id)
   } catch (error) {
     snack(error.message, { color: "error" })
