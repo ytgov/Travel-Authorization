@@ -52,21 +52,19 @@ export class CreateService extends BaseService {
   async perform(): Promise<TravelAuthorization> {
     return db
       .transaction(async () => {
-        if (this.userAttributes) {
-          try {
-            const user = await Users.EnsureService.perform(this.userAttributes, this.currentUser)
-            this.attributes.userId = user.id
-          } catch (error) {
-            throw new Error(`Could not ensure User: ${error}`)
-          }
-        }
-
         const secureAttributes = {
           ...this.attributes,
           status: TravelAuthorization.Statuses.DRAFT,
           slug: this.attributes.slug || uuid(),
           createdBy: this.currentUser.id,
         }
+
+        secureAttributes.userId = await this.determineSecureUserId(
+          this.currentUser,
+          this.attributes.userId,
+          this.userAttributes
+        )
+
         const travelAuthorization = await TravelAuthorization.create(secureAttributes).catch(
           (error) => {
             throw new Error(`Could not create TravelAuthorization: ${error}`)
@@ -104,7 +102,33 @@ export class CreateService extends BaseService {
       })
   }
 
-  async createStops(
+  private async determineSecureUserId(
+    currentUser: User,
+    userId: number | undefined,
+    userAttributes: UserCreationAttributes | undefined
+  ): Promise<number> {
+    // This pattern is a bit off, but I can't think of a better place to put this logic.
+    // If the user is not an admin, the userId must come from the current user.
+    // TODO: consider putting this code in the policy?
+    if (!this.currentUser.roles.includes(User.Roles.ADMIN)) {
+      return this.currentUser.id
+    }
+
+    if (userId !== undefined && userAttributes !== undefined) {
+      throw new Error("Cannot specify both userId and userAttributes.")
+    } else if (userId === undefined && userAttributes === undefined) {
+      throw new Error("Must specify either userId or userAttributes.")
+    } else if (userId !== undefined) {
+      return userId
+    } else if (userAttributes !== undefined) {
+      const user = await Users.EnsureService.perform(userAttributes, this.currentUser)
+      return user.id
+    } else {
+      throw new Error("This should never be reached, but it makes TypeScript happy.")
+    }
+  }
+
+  private async createStops(
     travelAuthorization: TravelAuthorization,
     stopsAttributes: StopsCreationAttributes
   ) {
@@ -117,7 +141,7 @@ export class CreateService extends BaseService {
   }
 
   // TODO: might want to make this a validator against updates as well?
-  ensureMinimalDefaultStopsAttributes(
+  private ensureMinimalDefaultStopsAttributes(
     travelAuthorization: TravelAuthorization,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
@@ -136,7 +160,7 @@ export class CreateService extends BaseService {
     }
   }
 
-  ensureMinimalDefaultMultiDestinationStopsAttributes(
+  private ensureMinimalDefaultMultiDestinationStopsAttributes(
     travelAuthorizationId: number,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
@@ -168,7 +192,7 @@ export class CreateService extends BaseService {
     ]
   }
 
-  ensureMinimalDefaultOneWayStopsAttributes(
+  private ensureMinimalDefaultOneWayStopsAttributes(
     travelAuthorizationId: number,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
@@ -188,7 +212,7 @@ export class CreateService extends BaseService {
     ]
   }
 
-  ensureMinimalDefaultRoundTripStopsAttributes(
+  private ensureMinimalDefaultRoundTripStopsAttributes(
     travelAuthorizationId: number,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
