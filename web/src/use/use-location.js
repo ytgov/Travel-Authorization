@@ -1,4 +1,5 @@
 import { reactive, toRefs, unref, watch } from "vue"
+import { isNumber } from "lodash"
 
 import locationsApi from "@/api/locations-api"
 
@@ -27,7 +28,9 @@ export function useLocation(locationId) {
 
   watch(
     () => unref(locationId),
-    async () => {
+    async (newLocationId) => {
+      if (!isNumber(newLocationId)) return
+
       await fetch()
     },
     {

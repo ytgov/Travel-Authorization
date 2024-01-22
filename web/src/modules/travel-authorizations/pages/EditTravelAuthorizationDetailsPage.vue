@@ -4,7 +4,6 @@ import travelAuthorization from '@/store/travel-authorization';
     TODO: add edit page for travel authorization details also add layout for this page
     <pre>
       {{ travelAuthorization }}
-
     </pre>
   </v-container>
 </template>
@@ -15,7 +14,7 @@ import { watch } from "vue"
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: String,
+    type: Number,
     required: true,
   },
 })
