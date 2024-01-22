@@ -1,5 +1,4 @@
 import { isNil } from "lodash"
-import { CreationAttributes } from "sequelize"
 
 import BaseService from "@/services/base-service"
 import { CreateService, type UserCreationAttributes } from "@/services/users/create-service"
