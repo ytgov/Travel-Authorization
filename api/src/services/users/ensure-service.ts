@@ -17,9 +17,12 @@ export class EnsureService extends BaseService {
   async perform(): Promise<User> {
     const { email } = this.attributes
 
-    const user = await User.findOne({
-      where: { email },
-    })
+    let user: User | null = null
+    if (email !== undefined) {
+      user = await User.findOne({
+        where: { email },
+      })
+    }
 
     if (!isNil(user)) {
       return user

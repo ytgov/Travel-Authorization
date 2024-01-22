@@ -5,8 +5,9 @@ import { v4 as uuid } from "uuid"
 import db from "@/db/db-client"
 
 import BaseService from "@/services/base-service"
-import { Stops, StopsService, ExpensesService } from "@/services"
+import { Stops, StopsService, ExpensesService, Users } from "@/services"
 import { AuditService } from "@/services/audit-service"
+import { UserCreationAttributes } from "@/services/users/create-service"
 import { Expense, Stop, TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
 type StopsCreationAttributes = CreationAttributes<Stop>[]
@@ -18,6 +19,7 @@ type TravelAuthorizationCreationAttributes = Omit<
 } & {
   stopsAttributes?: StopsCreationAttributes
   expensesAttributes?: CreationAttributes<Expense>[]
+  userAttributes?: UserCreationAttributes
 }
 
 // TODO: upgrade this to the enhanced service pattern.
@@ -27,10 +29,12 @@ export class CreateService extends BaseService {
   private stopsAttributes: StopsCreationAttributes
   private expensesAttributes: CreationAttributes<Expense>[]
   private attributes: TravelAuthorizationCreationAttributes
+  private userAttributes?: UserCreationAttributes
   private currentUser: User
 
   constructor(
     {
+      userAttributes,
       stopsAttributes = [],
       expensesAttributes = [],
       ...attributes
@@ -39,21 +43,30 @@ export class CreateService extends BaseService {
   ) {
     super()
     this.attributes = attributes
+    this.userAttributes = userAttributes
     this.stopsAttributes = stopsAttributes
     this.expensesAttributes = expensesAttributes
     this.currentUser = currentUser
   }
 
   async perform(): Promise<TravelAuthorization> {
-    const secureAttributes = {
-      ...this.attributes,
-      status: TravelAuthorization.Statuses.DRAFT,
-      slug: this.attributes.slug || uuid(),
-      createdBy: this.currentUser.id,
-    }
-
     return db
       .transaction(async () => {
+        if (this.userAttributes) {
+          try {
+            const user = await Users.EnsureService.perform(this.userAttributes, this.currentUser)
+            this.attributes.userId = user.id
+          } catch (error) {
+            throw new Error(`Could not ensure User: ${error}`)
+          }
+        }
+
+        const secureAttributes = {
+          ...this.attributes,
+          status: TravelAuthorization.Statuses.DRAFT,
+          slug: this.attributes.slug || uuid(),
+          createdBy: this.currentUser.id,
+        }
         const travelAuthorization = await TravelAuthorization.create(secureAttributes).catch(
           (error) => {
             throw new Error(`Could not create TravelAuthorization: ${error}`)

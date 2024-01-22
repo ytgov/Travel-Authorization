@@ -83,7 +83,9 @@ function goToFormDetails(travelAuthorizationId) {
 async function createAndGoToFormDetails() {
   try {
     const { travelAuthorization } = await create({
-      // userId: currentUserId,
+      userAttributes: {
+        email: userEmail.value,
+      },
       stopsAttributes: [
         {
           accommodationType: ACCOMMODATION_TYPES.HOTEL,
