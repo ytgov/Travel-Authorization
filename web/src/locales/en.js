@@ -29,7 +29,7 @@ export default {
       admin: "Admin",
       user: "User",
       pat_admin: "Pat Admin",
-      dept_admin: "Dept Admin",
+      department_admin: "Department Admin",
       td_user: "Td User",
     },
   },

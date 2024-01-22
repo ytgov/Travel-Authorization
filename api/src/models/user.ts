@@ -27,7 +27,7 @@ export enum Roles {
   ADMIN = "admin",
   USER = "user",
   PAT_ADMIN = "pat_admin",
-  DEPT_ADMIN = "dept_admin",
+  DEPARTMENT_ADMIN = "department_admin",
   TD_USER = "td_user",
 }
 
