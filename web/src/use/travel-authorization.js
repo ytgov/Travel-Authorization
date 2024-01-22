@@ -53,6 +53,22 @@ export function useTravelAuthorization(travelAuthorizationId) {
     }
   }
 
+  async function create(attributes) {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.create(attributes)
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to create travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   // Stateful actions
   async function approve() {
     state.isLoading = true
@@ -117,6 +133,7 @@ export function useTravelAuthorization(travelAuthorizationId) {
     ...toRefs(state),
     fetch,
     save,
+    create,
     // stateful action
     approve,
     deny,
