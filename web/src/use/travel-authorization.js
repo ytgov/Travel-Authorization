@@ -3,6 +3,22 @@ import { isNumber } from "lodash"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
+/*
+  TODO: consider using Map for global state to handle multiple global travel authorizations
+  e.g.
+  const globalState = new Map()
+
+  // would need to handle unref-ing of travelAuthorizationId
+  function useGlobalTravelAuthorization(travelAuthorizationId) {
+    if (globalState.has(travelAuthorizationId)) {
+      return globalState.get(travelAuthorizationId)
+    }
+
+    const localState = useTravelAuthorization(travelAuthorizationId)
+    globalState.set(travelAuthorizationId, localState)
+    return localState
+  }
+*/
 let globalState
 
 /**
