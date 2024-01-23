@@ -1,7 +1,27 @@
-import { reactive, toRefs, unref } from "vue"
+import { computed, reactive, toRefs, unref, watch } from "vue"
+import { isNumber } from "lodash"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
+let globalState
+
+/**
+ * This stores a global travel authorization state.
+ *
+ * @param {import('vue').Ref<number>} travelAuthorizationId
+ */
+export function useGlobalTravelAuthorization(travelAuthorizationId) {
+  if (globalState) return globalState
+
+  globalState = useTravelAuthorization(travelAuthorizationId)
+  return globalState
+}
+
+/**
+ * This function retrieves and processes travel authorization data based on a given travel authorization ID.
+ *
+ * @param {import('vue').Ref<number>} travelAuthorizationId
+ */
 export function useTravelAuthorization(travelAuthorizationId) {
   const state = reactive({
     travelAuthorization: {
@@ -126,14 +146,42 @@ export function useTravelAuthorization(travelAuthorizationId) {
     }
   }
 
-  // TODO: switch to auto-fetching by adding a watch immediate here
+  watch(
+    () => unref(travelAuthorizationId),
+    async (newTravelAuthorizationId) => {
+      if (!isNumber(newTravelAuthorizationId)) return
+
+      await fetch()
+    },
+    { immediate: true }
+  )
+
+  const stops = computed(() => state.travelAuthorization.stops)
+  const firstStop = computed(() => stops.value[0] || {})
+  const lastStop = computed(() => stops.value[stops.value.length - 1] || {})
+
+  // In the future it might make sense to directly update stops in the back-end
+  function replaceStops(stops) {
+    state.travelAuthorization = {
+      ...state.travelAuthorization,
+      stops,
+    }
+
+    return stops
+  }
 
   return {
     STATUSES,
     ...toRefs(state),
+    // computed attributes
+    stops,
+    firstStop,
+    lastStop,
+    // methods
     fetch,
     save,
     create,
+    replaceStops,
     // stateful action
     approve,
     deny,
