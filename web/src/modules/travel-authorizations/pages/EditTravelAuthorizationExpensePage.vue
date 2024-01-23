@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    TODO: Build out details page for travel authorization.
+    TODO: Build out expense page for travel authorization.
     <pre>
       {{ travelAuthorization }}
     </pre>
