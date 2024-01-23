@@ -18,14 +18,14 @@
       <v-col>
         <ApprovalsFormCard
           :travel-authorization-id="travelAuthorizationId"
-          :validate-form="validateForm"
+          :validate="validate"
         />
       </v-col>
     </v-row>
     <div class="d-flex justify-end">
       <SaveDraftButton
         :travel-authorization-id="travelAuthorizationId"
-        :validate-form="validateForm"
+        :validate="validate"
       />
       <!-- TODO: re-add back button once travel authorizatons page exists -->
       <!-- <v-btn
@@ -57,9 +57,7 @@ defineProps({
 /** @type {import('vue').Ref<{ validate: () => boolean } | null>} */
 const form = ref(null)
 
-function validateForm() {
-  if (form.value.validate()) return true
-
-  return false
+function validate() {
+  return form.value.validate()
 }
 </script>

@@ -16,7 +16,7 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  validateForm: {
+  validate: {
     type: Function,
     required: true,
   },
@@ -26,7 +26,7 @@ const snack = useSnack()
 const { isLoading, save } = useGlobalTravelAuthorization(props.travelAuthorizationId)
 
 async function saveWrapper() {
-  if (!props.validateForm()) {
+  if (!props.validate()) {
     snack("Form submission can't be sent until the form is complete.", { color: "error" })
     return
   }
