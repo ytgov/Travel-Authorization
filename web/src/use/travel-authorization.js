@@ -160,6 +160,13 @@ export function useTravelAuthorization(travelAuthorizationId) {
   const firstStop = computed(() => stops.value[0] || {})
   const lastStop = computed(() => stops.value[stops.value.length - 1] || {})
 
+  function newBlankStop(attributes) {
+    return {
+      travelAuthorizationId: state.travelAuthorization.id,
+      ...attributes,
+    }
+  }
+
   // In the future it might make sense to directly update stops in the back-end
   function replaceStops(stops) {
     state.travelAuthorization = {
@@ -181,6 +188,7 @@ export function useTravelAuthorization(travelAuthorizationId) {
     fetch,
     save,
     create,
+    newBlankStop,
     replaceStops,
     // stateful action
     approve,
