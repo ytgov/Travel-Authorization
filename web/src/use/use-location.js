@@ -3,6 +3,11 @@ import { isNumber } from "lodash"
 
 import locationsApi from "@/api/locations-api"
 
+/**
+ * This function retrieves and processes location data based on a given location ID.
+ *
+ * @param {import('vue').Ref<number>} locationId
+ */
 export function useLocation(locationId) {
   const state = reactive({
     location: {},
