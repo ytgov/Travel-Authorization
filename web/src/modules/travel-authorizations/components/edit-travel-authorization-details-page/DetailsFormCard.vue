@@ -24,10 +24,19 @@
           </v-col>
         </v-row>
 
+        <!-- TODO: convert other 2 trip type components to newer form -->
         <component
           :is="tripTypeComponent"
-          v-if="tripTypeComponent && hasEnoughStops"
+          v-if="tripTypeComponent && hasEnoughStops && tripType === TRIP_TYPES.ROUND_TRIP"
+          :value="stops"
+          @input="replaceStops"
+        />
+        <component
+          :is="tripTypeComponent"
+          v-else-if="tripTypeComponent && hasEnoughStops"
           :travel-authorization-id="travelAuthorizationId"
+          :value="stops"
+          @input="replaceStops"
         />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
         <v-row>
@@ -108,7 +117,7 @@ const tripTypeComponent = computed(() => {
     case TRIP_TYPES.ROUND_TRIP:
       return () =>
         import(
-          "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/details-form-card/RoundTripStopsSection"
+          "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/RoundTripStopsSection"
         )
     case TRIP_TYPES.ONE_WAY:
       return () =>
