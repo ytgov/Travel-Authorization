@@ -2,6 +2,8 @@ import { reactive, toRefs } from "vue"
 
 import expensesApi, { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
 
+export { TYPES, EXPENSE_TYPES }
+
 export function useExpenses() {
   const state = reactive({
     expenses: [],
