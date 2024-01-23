@@ -45,7 +45,7 @@ import PurposeFormCard from "@/modules/travel-authorizations/components/edit-tra
 import DetailsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/DetailsFormCard"
 import ApprovalsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/ApprovalsFormCard"
 
-import SaveDraftButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/SaveDraftButton"
+import SaveDraftButton from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/SaveDraftButton"
 
 defineProps({
   travelAuthorizationId: {
