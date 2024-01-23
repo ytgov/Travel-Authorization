@@ -113,7 +113,7 @@ import LocationsAutocomplete from "@/components/LocationsAutocomplete"
 import TravelPurposeSelect from "@/components/TravelPurposeSelect"
 
 import { required } from "@/utils/validators"
-import { useGlobalTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -122,8 +122,9 @@ const props = defineProps({
   },
 })
 
-const { travelAuthorization, stops, lastStop, replaceStops, isLoading } =
-  useGlobalTravelAuthorization(props.travelAuthorizationId)
+const { travelAuthorization, stops, lastStop, replaceStops, isLoading } = useTravelAuthorization(
+  props.travelAuthorizationId
+)
 
 /** @type {import('vue').Ref<HTMLInputElement & { validate: () => boolean } | null>} */
 const form = ref(null)

@@ -5,24 +5,12 @@ import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-a
 
 import { asGlobalUse } from "@/use/helper-utils"
 
-const globalState = new Map()
-
-/**
- * This stores a global travel authorization state per id.
- *
- * @param {import('vue').Ref<number>} travelAuthorizationId
- */
-export function useGlobalTravelAuthorization(travelAuthorizationId) {
-  const useGlobalUserFunction = asGlobalUse(globalState, useTravelAuthorization)
-  return useGlobalUserFunction(travelAuthorizationId)
-}
-
 /**
  * This function retrieves and processes travel authorization data based on a given travel authorization ID.
  *
  * @param {import('vue').Ref<number>} travelAuthorizationId
  */
-export function useTravelAuthorization(travelAuthorizationId) {
+function useLocalTravelAuthorization(travelAuthorizationId) {
   const state = reactive({
     travelAuthorization: {
       expenses: [],
@@ -195,6 +183,18 @@ export function useTravelAuthorization(travelAuthorizationId) {
     deny,
     expenseClaim,
   }
+}
+
+const globalState = new Map()
+
+/**
+ * This stores a global travel authorization state per id.
+ *
+ * @param {import('vue').Ref<number>} travelAuthorizationId
+ */
+export function useTravelAuthorization(travelAuthorizationId) {
+  const useGlobalUserFunction = asGlobalUse(globalState, useLocalTravelAuthorization)
+  return useGlobalUserFunction(travelAuthorizationId)
 }
 
 export default useTravelAuthorization

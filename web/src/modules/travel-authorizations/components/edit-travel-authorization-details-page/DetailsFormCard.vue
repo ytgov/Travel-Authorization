@@ -83,7 +83,7 @@ import { required, isInteger } from "@/utils/validators"
 import DatePicker from "@/components/Utils/DatePicker"
 // TODO: make local component?
 import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
-import { useGlobalTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/travel-authorization"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -99,7 +99,7 @@ const props = defineProps({
 })
 
 const { travelAuthorization, stops, firstStop, lastStop, newBlankStop, replaceStops } =
-  useGlobalTravelAuthorization(props.travelAuthorizationId)
+  useTravelAuthorization(props.travelAuthorizationId)
 
 /** @type {import('vue').Ref<HTMLInputElement & { resetValidation: () => void } | null>} */
 const form = ref(null)

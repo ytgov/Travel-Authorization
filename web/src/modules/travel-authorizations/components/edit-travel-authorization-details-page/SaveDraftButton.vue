@@ -9,7 +9,7 @@
 
 <script setup>
 import { useSnack } from "@/plugins/snack-plugin"
-import { useGlobalTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -23,7 +23,7 @@ const props = defineProps({
 })
 
 const snack = useSnack()
-const { isLoading, save } = useGlobalTravelAuthorization(props.travelAuthorizationId)
+const { isLoading, save } = useTravelAuthorization(props.travelAuthorizationId)
 
 async function saveWrapper() {
   if (!props.validate()) {
