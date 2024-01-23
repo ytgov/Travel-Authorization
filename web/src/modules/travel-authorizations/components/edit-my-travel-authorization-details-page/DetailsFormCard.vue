@@ -78,7 +78,7 @@ import { mapActions, mapGetters } from "vuex"
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import { required } from "@/utils/validators"
 import DatePicker from "@/components/Utils/DatePicker"
-import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
+import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
