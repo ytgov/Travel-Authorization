@@ -21,7 +21,7 @@ export function useGlobalUser(userId) {
  *
  * @param {import('vue').Ref<number>} userId
  */
-export function useUser(userId) {
+export function useLocalUser(userId) {
   const state = reactive({
     user: {},
     isLoading: false,
@@ -60,6 +60,14 @@ export function useUser(userId) {
     ...toRefs(state),
     fetch,
     refresh: fetch,
+  }
+}
+
+export function useUser(userId, { global = false } = {}) {
+  if (global) {
+    return useGlobalUser(userId)
+  } else {
+    return useLocalUser(userId)
   }
 }
 
