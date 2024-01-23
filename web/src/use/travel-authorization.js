@@ -3,34 +3,18 @@ import { isNumber } from "lodash"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
-/*
-  TODO: consider using Map for global state to handle multiple global travel authorizations
-  e.g.
-  const globalState = new Map()
+import { useGlobalFactory } from "@/use/helper-utils"
 
-  // would need to handle unref-ing of travelAuthorizationId
-  function useGlobalTravelAuthorization(travelAuthorizationId) {
-    if (globalState.has(travelAuthorizationId)) {
-      return globalState.get(travelAuthorizationId)
-    }
-
-    const localState = useTravelAuthorization(travelAuthorizationId)
-    globalState.set(travelAuthorizationId, localState)
-    return localState
-  }
-*/
-let globalState
+const globalState = new Map()
 
 /**
- * This stores a global travel authorization state.
+ * This stores a global travel authorization state per id.
  *
  * @param {import('vue').Ref<number>} travelAuthorizationId
  */
 export function useGlobalTravelAuthorization(travelAuthorizationId) {
-  if (globalState) return globalState
-
-  globalState = useTravelAuthorization(travelAuthorizationId)
-  return globalState
+  const useGlobalUserFunction = useGlobalFactory(globalState, useTravelAuthorization)
+  return useGlobalUserFunction(travelAuthorizationId)
 }
 
 /**
