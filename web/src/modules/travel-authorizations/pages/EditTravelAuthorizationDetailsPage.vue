@@ -1,4 +1,3 @@
-import travelAuthorization from '@/store/travel-authorization';
 <template>
   <v-container>
     TODO: add edit page for travel authorization details also add layout for this page
@@ -9,8 +8,9 @@ import travelAuthorization from '@/store/travel-authorization';
 </template>
 
 <script setup>
-import { useTravelAuthorization } from "@/use/travel-authorization"
 import { watch } from "vue"
+
+import { useTravelAuthorization } from "@/use/travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {
