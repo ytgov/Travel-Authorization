@@ -49,7 +49,7 @@
           >
             <v-text-field
               v-model="travelAuthorization.daysOffTravelStatus"
-              :rules="[isNumber]"
+              :rules="[isInteger]"
               label="Days on non-travel status"
               dense
               required
@@ -79,7 +79,7 @@ import { computed, ref, nextTick, onMounted } from "vue"
 import { pick } from "lodash"
 
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
-import { required, isNumber } from "@/utils/validators"
+import { required, isInteger } from "@/utils/validators"
 import DatePicker from "@/components/Utils/DatePicker"
 // TODO: make local component?
 import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
