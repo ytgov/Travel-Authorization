@@ -31,7 +31,7 @@ export function useUser(userId) {
   async function fetch() {
     state.isLoading = true
     try {
-      const { user } = await usersApi.fetch(unref(userId))
+      const { user } = await usersApi.get(unref(userId))
       state.isErrored = false
       state.user = user
       return user
