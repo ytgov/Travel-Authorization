@@ -16,4 +16,6 @@ defineProps({
     required: true,
   },
 })
+
+// TODO: make link dynamic and also show read-only view?
 </script>
