@@ -15,7 +15,12 @@ function ensureStateFor(globalState, useFunction, id) {
   }
 }
 
-export function useGlobalFactory(globalState, useFunction) {
+/**
+ *
+ * @param {typeof Map} globalState - a Map instance for storing global state
+ * @param {() => any} useFunction - use function that returns a reactive state object
+ */
+export function asGlobalUse(globalState, useFunction) {
   return (id) => {
     watch(
       () => unref(id),

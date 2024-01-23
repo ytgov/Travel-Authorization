@@ -3,7 +3,7 @@ import { isNumber } from "lodash"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
-import { useGlobalFactory } from "@/use/helper-utils"
+import { asGlobalUse } from "@/use/helper-utils"
 
 const globalState = new Map()
 
@@ -13,7 +13,7 @@ const globalState = new Map()
  * @param {import('vue').Ref<number>} travelAuthorizationId
  */
 export function useGlobalTravelAuthorization(travelAuthorizationId) {
-  const useGlobalUserFunction = useGlobalFactory(globalState, useTravelAuthorization)
+  const useGlobalUserFunction = asGlobalUse(globalState, useTravelAuthorization)
   return useGlobalUserFunction(travelAuthorizationId)
 }
 
