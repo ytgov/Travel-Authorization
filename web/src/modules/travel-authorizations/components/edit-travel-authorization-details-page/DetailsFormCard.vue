@@ -79,7 +79,7 @@ import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import { required, isNumber } from "@/utils/validators"
 import DatePicker from "@/components/Utils/DatePicker"
 // TODO: make local component?
-import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/details-form-card/TravelDurationTextField"
+import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
 import { useGlobalTravelAuthorization } from "@/use/travel-authorization"
 
 const TRIP_TYPES = Object.freeze({
