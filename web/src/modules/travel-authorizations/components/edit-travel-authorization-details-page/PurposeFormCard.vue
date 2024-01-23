@@ -107,6 +107,8 @@
 </template>
 
 <script setup>
+import { ref, watch } from "vue"
+
 import LocationsAutocomplete from "@/components/LocationsAutocomplete"
 import TravelPurposeSelect from "@/components/TravelPurposeSelect"
 
@@ -120,8 +122,20 @@ const props = defineProps({
   },
 })
 
-const { travelAuthorization, stops, lastStop, replaceStops } = useGlobalTravelAuthorization(
-  props.travelAuthorizationId
+const { travelAuthorization, stops, lastStop, replaceStops, isLoading } =
+  useGlobalTravelAuthorization(props.travelAuthorizationId)
+
+/** @type {import('vue').Ref<HTMLInputElement & { validate: () => boolean } | null>} */
+const form = ref(null)
+
+watch(
+  () => [isLoading.value],
+  () => {
+    if (form.value) {
+      form.value.resetValidation()
+    }
+  },
+  { immediate: true }
 )
 
 async function updateLastStopLocationId(locationId) {
