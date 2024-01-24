@@ -5,6 +5,12 @@ import expensesApi, { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
 export { TYPES, EXPENSE_TYPES }
 
 /**
+ * TODO: add other fields
+ * @typedef {Object} Expense
+ * @property {number} id
+ */
+
+/**
  * Fetches and manages expenses data based on the provided options.
  *
  * @param {import('vue').Ref<{
@@ -12,6 +18,13 @@ export { TYPES, EXPENSE_TYPES }
  *   page: number,
  *   perPage: number,
  * }>} [options={}] - The configuration options for fetching expenses, wrapped in a Vue ref.
+ * @returns {{
+ *   expenses: import('vue').Ref<Expense[]>,
+ *   isLoading: import('vue').Ref<boolean>,
+ *   isErrored: import('vue').Ref<boolean>,
+ *   isCached: import('vue').Ref<boolean>,
+ *   fetch: () => Promise<Expense[]>,
+ * }}
  */
 export function useExpenses(options = {}) {
   const state = reactive({
