@@ -11,14 +11,14 @@
           />
           <ApproveTravelRequestDialogButton
             v-else
-            :travel-authorization-id="props.travelAuthorizationId"
+            :travel-authorization-id="travelAuthorizationId"
             :requestor-display-name="requestorDisplayName"
             :is-disabled="isDisabled"
             :travel-location-id="travelLocationId"
             @approved="refreshAndEmit('approved')"
           />
           <DenyTravelRequestDialogButton
-            :travel-authorization-id="props.travelAuthorizationId"
+            :travel-authorization-id="travelAuthorizationId"
             :is-disabled="isDisabled"
             button-classes="ml-2"
             @denied="refreshAndEmit('denied')"

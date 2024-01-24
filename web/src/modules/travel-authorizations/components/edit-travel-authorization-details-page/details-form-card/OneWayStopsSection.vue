@@ -7,7 +7,7 @@
       >
         <LocationsAutocomplete
           :value="firstStop.locationId"
-          :in-territory="props.allTravelWithinTerritory"
+          :in-territory="allTravelWithinTerritory"
           :rules="[required]"
           label="From"
           background-color="white"
@@ -24,7 +24,7 @@
       >
         <LocationsAutocomplete
           :value="lastStop.locationId"
-          :in-territory="props.allTravelWithinTerritory"
+          :in-territory="allTravelWithinTerritory"
           :rules="[required]"
           label="To"
           background-color="white"

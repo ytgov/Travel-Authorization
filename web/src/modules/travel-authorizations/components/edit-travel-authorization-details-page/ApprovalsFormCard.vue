@@ -21,7 +21,7 @@
               v-if="hasEstimates"
               :to="{
                 name: 'EditTravelAuthorizationEstimatePage',
-                params: { travelAuthorizationId: props.travelAuthorizationId },
+                params: { travelAuthorizationId: travelAuthorizationId },
               }"
               class="mt-1"
               color="secondary"
@@ -29,7 +29,7 @@
             >
             <EstimateGenerateDialog
               v-else
-              :travel-authorization-id="props.travelAuthorizationId"
+              :travel-authorization-id="travelAuthorizationId"
               button-classes="mt-1"
               button-color="primary"
               @created="refreshEstimates"
@@ -85,8 +85,8 @@
             md="3"
           >
             <SubmitToSupervisorButton
-              :travel-authorization-id="props.travelAuthorizationId"
-              :validate="props.validate"
+              :travel-authorization-id="travelAuthorizationId"
+              :validate="validate"
               :estimates="estimates"
               class="mt-1"
             />

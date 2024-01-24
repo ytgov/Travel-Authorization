@@ -1,7 +1,7 @@
 <!-- See https://stackoverflow.com/a/50892881 for slot syntax -->
 <template>
   <v-select
-    :value="props.value"
+    :value="value"
     :items="travelPurposes"
     :loading="isLoading"
     :item-text="itemText"
@@ -23,7 +23,7 @@
 <script setup>
 import useTravelPurposes from "@/use/use-travel-purposes"
 
-const props = defineProps({
+defineProps({
   value: {
     type: Number,
     default: null,

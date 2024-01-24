@@ -7,7 +7,7 @@
         v-on="on"
       >
         <v-text-field
-          :value="props.value"
+          :value="value"
           :style="{ minWidth: '80px' }"
           label="# Days"
           dense
