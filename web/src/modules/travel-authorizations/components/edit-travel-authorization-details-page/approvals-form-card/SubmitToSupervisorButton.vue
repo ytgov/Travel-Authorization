@@ -54,13 +54,17 @@ const props = defineProps({
     type: Function,
     required: true,
   },
+  estimates: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const router = useRouter()
 const snack = useSnack()
-const { estimates, isLoading, submit } = useTravelAuthorization(props.travelAuthorizationId)
+const { isLoading, submit } = useTravelAuthorization(props.travelAuthorizationId)
 
-const hasEstimates = computed(() => estimates.value.length > 0)
+const hasEstimates = computed(() => props.estimates.length > 0)
 
 async function submitAndRedirect() {
   if (!props.validate()) {

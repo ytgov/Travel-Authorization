@@ -32,6 +32,7 @@
               :travel-authorization-id="props.travelAuthorizationId"
               button-classes="mt-1"
               button-color="primary"
+              @created="refreshEstimates"
             />
           </v-col>
         </v-row>
@@ -86,6 +87,7 @@
             <SubmitToSupervisorButton
               :travel-authorization-id="props.travelAuthorizationId"
               :validate="props.validate"
+              :estimates="estimates"
               class="mt-1"
             />
           </v-col>
@@ -136,7 +138,7 @@ const expenseOptions = computed(() => ({
     type: EXPENSE_TYPES.ESTIMATE,
   },
 }))
-const { expenses: estimates } = useExpenses(expenseOptions)
+const { expenses: estimates, fetch: refreshEstimates } = useExpenses(expenseOptions)
 const userId = computed(() => travelAuthorization.value.userId)
 const { user, isLoading: isLoadingUser } = useUser(userId)
 
