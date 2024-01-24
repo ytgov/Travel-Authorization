@@ -20,7 +20,7 @@
             <v-btn
               v-if="!refreshingEstimatesSilently && hasEstimates"
               :to="{
-                name: 'EditMyTravelAuthorizationEstimatePage',
+                name: 'EditTravelAuthorizationEstimatePage',
                 params: { travelAuthorizationId: props.travelAuthorizationId },
               }"
               class="mt-1"
@@ -32,7 +32,7 @@
               :travel-authorization-id="props.travelAuthorizationId"
               button-classes="mt-1"
               button-color="primary"
-              @created="refreshEstimates"
+              @created="refresh"
             />
           </v-col>
         </v-row>
@@ -159,6 +159,16 @@ onMounted(async () => {
   const department = user.department
   await loadPreApprovedTravelRequests(department)
 })
+
+async function refresh() {
+  refreshingEstimatesSilently.value = true
+  try {
+    const newEstimates = await refreshEstimates()
+    travelAuthorization.value.estimates = newEstimates
+  } finally {
+    refreshingEstimatesSilently.value = false
+  }
+}
 
 async function loadPreApprovedTravelRequests(department) {
   // Since we can't determine if a pre-approval applies, the user doesn't get any options.
