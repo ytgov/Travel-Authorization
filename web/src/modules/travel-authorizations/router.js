@@ -91,24 +91,24 @@ const routes = [
         children: [
           {
             path: "",
-            redirect: "details",
+            redirect: "details/edit",
           },
           {
-            path: "details",
+            path: "details/edit",
             name: "EditTravelAuthorizationDetailsPage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditTravelAuthorizationDetailsPage"),
             props: cast("travelAuthorizationId", parseInt),
           },
           {
-            path: "estimate",
+            path: "estimate/edit",
             name: "EditTravelAuthorizationEstimatePage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditTravelAuthorizationEstimatePage"),
             props: cast("travelAuthorizationId", parseInt),
           },
           {
-            path: "expense",
+            path: "expense/edit",
             name: "EditTravelAuthorizationExpensePage",
             component: () =>
               import("@/modules/travel-authorizations/pages/EditTravelAuthorizationExpensePage"),
