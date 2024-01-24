@@ -1,12 +1,24 @@
 import { reactive, toRefs, unref, watch } from "vue"
-import { isNumber } from "lodash"
 
 import locationsApi from "@/api/locations-api"
+
+/**
+ * TODO: add other fields
+ * @typedef {Object} Location
+ * @property {number} id
+ */
 
 /**
  * This function retrieves and processes location data based on a given location ID.
  *
  * @param {import('vue').Ref<number>} locationId
+ * @returns {{
+ *   location: import('vue').Ref<Location>,
+ *   isLoading: import('vue').Ref<boolean>,
+ *   isErrored: import('vue').Ref<boolean>,
+ *   fetch: () => Promise<Location>,
+ *   refresh: () => Promise<Location>,
+ * }}
  */
 export function useLocation(locationId) {
   const state = reactive({
@@ -34,7 +46,7 @@ export function useLocation(locationId) {
   watch(
     () => unref(locationId),
     async (newLocationId) => {
-      if (!isNumber(newLocationId)) return
+      if ([undefined, null].includes(newLocationId)) return
 
       await fetch()
     },
