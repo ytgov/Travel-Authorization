@@ -64,7 +64,7 @@ import { computed, ref, nextTick, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import { useTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
 import { useLocation } from "@/use/use-location"
 
 const props = defineProps({

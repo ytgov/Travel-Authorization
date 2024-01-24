@@ -29,17 +29,13 @@ import { sumBy } from "lodash"
 import { computed, ref } from "vue"
 import { DateTime } from "luxon"
 
-import useExpenses, { TYPES, EXPENSE_TYPES } from "@/use/expenses"
+import useExpenses, { TYPES, EXPENSE_TYPES } from "@/use/use-expenses"
 
 const props = defineProps({
   travelAuthorizationId: {
     type: Number,
     required: true,
   },
-})
-
-defineExpose({
-  refresh,
 })
 
 const expenseOptions = computed(() => ({
@@ -73,4 +69,8 @@ function formatCurrency(amount) {
   })
   return formatter.format(amount)
 }
+
+defineExpose({
+  refresh,
+})
 </script>

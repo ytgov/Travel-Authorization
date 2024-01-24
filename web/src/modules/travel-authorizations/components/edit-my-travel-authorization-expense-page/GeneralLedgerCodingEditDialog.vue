@@ -94,10 +94,6 @@ import CurrencyTextField from "@/components/Utils/CurrencyTextField"
 
 const emit = defineEmits(["saved"])
 
-defineExpose({
-  show,
-})
-
 const route = useRoute()
 const router = useRouter()
 const snack = useSnack()
@@ -153,4 +149,8 @@ async function updateAndClose() {
     isLoading.value = false
   }
 }
+
+defineExpose({
+  show,
+})
 </script>

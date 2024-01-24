@@ -47,7 +47,7 @@ import { sumBy } from "lodash"
 import { DateTime } from "luxon"
 import { computed, ref } from "vue"
 
-import useExpenses, { TYPES, EXPENSE_TYPES } from "@/use/expenses"
+import useExpenses, { TYPES, EXPENSE_TYPES } from "@/use/use-expenses"
 
 import ViewRecieptLink from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ViewRecieptLink.vue"
 

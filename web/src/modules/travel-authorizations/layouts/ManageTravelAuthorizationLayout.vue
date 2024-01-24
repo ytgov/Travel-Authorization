@@ -60,7 +60,7 @@ import { computed } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 
 import useCurrentUser from "@/use/use-current-user"
-import useTravelAuthorization from "@/use/travel-authorization"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"

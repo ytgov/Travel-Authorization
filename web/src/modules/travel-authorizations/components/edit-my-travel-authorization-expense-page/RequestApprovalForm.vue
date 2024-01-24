@@ -70,9 +70,9 @@ import { useRouter } from "vue2-helpers/vue-router"
 import { required } from "@/utils/validators"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import { useTravelAuthorization } from "@/use/travel-authorization"
-import { useGeneralLedgerCodings } from "@/use/general-ledger-codings"
-import { useExpenses, TYPES, EXPENSE_TYPES } from "@/use/expenses"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
+import { useGeneralLedgerCodings } from "@/use/use-general-ledger-codings"
+import { useExpenses, TYPES, EXPENSE_TYPES } from "@/use/use-expenses"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
 
@@ -81,10 +81,6 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-})
-
-defineExpose({
-  refresh,
 })
 
 const form = ref(null)
@@ -97,11 +93,18 @@ const {
   fetch: fetchTravelAuthorization,
   expenseClaim,
 } = useTravelAuthorization(props.travelAuthorizationId)
+
+const generalLedgerCodingOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+  },
+}))
 const {
   generalLedgerCodings,
   isLoading: isLoadingGeneralLedgerCodings,
   fetch: fetchGeneralLedgerCodings,
-} = useGeneralLedgerCodings()
+} = useGeneralLedgerCodings(generalLedgerCodingOptions)
+
 const expenseOptions = computed(() => ({
   where: {
     travelAuthorizationId: props.travelAuthorizationId,
@@ -134,11 +137,7 @@ onMounted(async () => {
 async function refresh() {
   await Promise.all([
     await fetchTravelAuthorization(),
-    await fetchGeneralLedgerCodings({
-      where: {
-        travelAuthorizationId: props.travelAuthorizationId,
-      },
-    }),
+    await fetchGeneralLedgerCodings(),
     await fetchExpenses(),
   ])
 }
@@ -157,4 +156,8 @@ async function requestApprovalForExpenseClaim() {
     snack(error.message, { color: "error" })
   }
 }
+
+defineExpose({
+  refresh,
+})
 </script>

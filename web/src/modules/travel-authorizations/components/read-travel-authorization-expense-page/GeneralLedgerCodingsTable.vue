@@ -22,9 +22,9 @@
 
 <script setup>
 import { sumBy } from "lodash"
-import { computed, watch, ref } from "vue"
+import { computed, ref } from "vue"
 
-import useGeneralLedgerCodings from "@/use/general-ledger-codings"
+import useGeneralLedgerCodings from "@/use/use-general-ledger-codings"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -33,7 +33,12 @@ const props = defineProps({
   },
 })
 
-const { generalLedgerCodings, isLoading, fetch } = useGeneralLedgerCodings()
+const generalLedgerCodingOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+  },
+}))
+const { generalLedgerCodings, isLoading } = useGeneralLedgerCodings(generalLedgerCodingOptions)
 const totalAmount = computed(() => sumBy(generalLedgerCodings.value, "amount"))
 
 const headers = ref([
@@ -41,18 +46,6 @@ const headers = ref([
   { text: "Amount", value: "amount" },
 ])
 const totalRowClasses = ref("text-start font-weight-bold text-uppercase")
-
-watch(
-  () => props.travelAuthorizationId,
-  async (newTravelAuthorizationId) => {
-    await await fetch({
-      where: {
-        travelAuthorizationId: newTravelAuthorizationId,
-      },
-    })
-  },
-  { immediate: true }
-)
 
 function formatCurrency(amount) {
   const formatter = new Intl.NumberFormat("en-CA", {
