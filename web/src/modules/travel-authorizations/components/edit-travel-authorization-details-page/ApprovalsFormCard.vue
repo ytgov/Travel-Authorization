@@ -86,7 +86,7 @@
           >
             <SubmitToSupervisorButton
               :travel-authorization-id="props.travelAuthorizationId"
-              :validate-form="props.validate"
+              :validate="props.validate"
               class="mt-1"
             />
           </v-col>
@@ -116,7 +116,7 @@ import EstimatedCostTextField from "@/modules/travel-authorizations/components/E
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/approvals-form-card/EstimateGenerateDialog"
-import SubmitToSupervisorButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/approvals-form-card/SubmitToSupervisorButton"
+import SubmitToSupervisorButton from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/approvals-form-card/SubmitToSupervisorButton"
 import useTravelAuthorization from "@/use/travel-authorization"
 
 const props = defineProps({

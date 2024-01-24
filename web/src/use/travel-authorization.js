@@ -1,5 +1,6 @@
 import { computed, reactive, toRefs, unref, watch } from "vue"
 
+import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
 import { defineUse } from "@/use/helper-utils"
@@ -118,6 +119,25 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
   }
 
   // Stateful actions
+  async function submit() {
+    state.isLoading = true
+    try {
+      const { travelAuthorization } = await travelAuthorizationsApi.submit(
+        unref(travelAuthorizationId),
+        state.travelAuthorization
+      )
+      state.isErrored = false
+      state.travelAuthorization = travelAuthorization
+      return travelAuthorization
+    } catch (error) {
+      console.error("Failed to update travel authorization:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   async function approve() {
     state.isLoading = true
     try {
@@ -187,6 +207,9 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
     { immediate: true }
   )
 
+  const estimates = computed(() =>
+    state.travelAuthorization.expenses?.filter((expense) => expense.type === EXPENSE_TYPES.ESTIMATE)
+  )
   const stops = computed(() => state.travelAuthorization.stops)
   const firstStop = computed(() => stops.value[0] || {})
   const lastStop = computed(() => stops.value[stops.value.length - 1] || {})
@@ -212,6 +235,7 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
     STATUSES,
     ...toRefs(state),
     // computed attributes
+    estimates,
     stops,
     firstStop,
     lastStop,
@@ -222,6 +246,7 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
     newBlankStop,
     replaceStops,
     // stateful action
+    submit,
     approve,
     deny,
     expenseClaim,
