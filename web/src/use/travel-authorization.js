@@ -242,6 +242,7 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
     // methods
     fetch,
     save,
+    saveSilently,
     create,
     newBlankStop,
     replaceStops,
