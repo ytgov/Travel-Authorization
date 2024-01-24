@@ -14,7 +14,27 @@ const state = reactive({
   isCached: false,
 })
 
-// Immediately ensures current user
+/**
+ * This stores the global current user state.
+ * Immediately ensures current user
+ *
+ * @params {{ eager: boolean }} [options={}]
+ * @param {boolean} [options.eager=true] - Indicates whether to fetch the current user immediately.
+ * @returns {{
+ *   ROLES: typeof ROLES,
+ *   currentUser: import('vue').Ref<User>,
+ *   isLoading: import('vue').Ref<boolean>,
+ *   isErrored: import('vue').Ref<boolean>,
+ *   isCached: import('vue').Ref<boolean>,
+ *   isReady: import('vue').Ref<boolean>,
+ *   id: import('vue').Ref<number>,
+ *   fullName: import('vue').Ref<string>,
+ *   isAdmin: import('vue').Ref<boolean>,
+ *   ensure: () => Promise<User>,
+ *   fetch: () => Promise<User>,
+ *   unset: () => void,
+ * }}
+ */
 export function useCurrentUser({ eager = true } = {}) {
   const isReady = computed(() => state.isCached && !state.isLoading && !state.isErrored)
   const id = computed(() => state.currentUser.id)
