@@ -22,7 +22,6 @@ export { TYPES, EXPENSE_TYPES }
  *   expenses: import('vue').Ref<Expense[]>,
  *   isLoading: import('vue').Ref<boolean>,
  *   isErrored: import('vue').Ref<boolean>,
- *   isCached: import('vue').Ref<boolean>,
  *   fetch: () => Promise<Expense[]>,
  * }}
  */
@@ -31,7 +30,6 @@ export function useExpenses(options = {}) {
     expenses: [],
     isLoading: false,
     isErrored: false,
-    isCached: false,
   })
 
   async function fetch() {
