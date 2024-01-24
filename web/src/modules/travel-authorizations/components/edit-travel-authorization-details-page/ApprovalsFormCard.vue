@@ -18,7 +18,7 @@
             md="2"
           >
             <v-btn
-              v-if="!refreshingEstimatesSilently && hasEstimates"
+              v-if="hasEstimates"
               :to="{
                 name: 'EditTravelAuthorizationEstimatePage',
                 params: { travelAuthorizationId: props.travelAuthorizationId },
@@ -32,7 +32,6 @@
               :travel-authorization-id="props.travelAuthorizationId"
               button-classes="mt-1"
               button-color="primary"
-              @created="refresh"
             />
           </v-col>
         </v-row>
@@ -137,13 +136,12 @@ const expenseOptions = computed(() => ({
     type: EXPENSE_TYPES.ESTIMATE,
   },
 }))
-const { expenses: estimates, fetch: refreshEstimates } = useExpenses(expenseOptions)
+const { expenses: estimates } = useExpenses(expenseOptions)
 const userId = computed(() => travelAuthorization.value.userId)
 const { user, isLoading: isLoadingUser } = useUser(userId)
 
 const preApprovedTravelRequests = ref([])
 const isLoadingPreApprovedTravelRequests = ref(false)
-const refreshingEstimatesSilently = ref(false)
 
 const travelAdvanceInDollars = computed({
   get() {
@@ -159,16 +157,6 @@ onMounted(async () => {
   const department = user.department
   await loadPreApprovedTravelRequests(department)
 })
-
-async function refresh() {
-  refreshingEstimatesSilently.value = true
-  try {
-    const newEstimates = await refreshEstimates()
-    travelAuthorization.value.estimates = newEstimates
-  } finally {
-    refreshingEstimatesSilently.value = false
-  }
-}
 
 async function loadPreApprovedTravelRequests(department) {
   // Since we can't determine if a pre-approval applies, the user doesn't get any options.

@@ -78,7 +78,7 @@ const emit = defineEmits(["created"])
 const route = useRoute()
 const router = useRouter()
 const snack = useSnack()
-const { saveSilently } = useTravelAuthorization(props.travelAuthorizationId)
+const { travelAuthorization, saveSilently } = useTravelAuthorization(props.travelAuthorizationId)
 
 const showDialog = ref(route.query.showGenerate === "true")
 const loading = ref(false)
@@ -102,7 +102,8 @@ async function createAndClose() {
   loading.value = true
   try {
     await saveSilently()
-    await generateApi.create(props.travelAuthorizationId)
+    const { estimates } = await generateApi.create(props.travelAuthorizationId)
+    travelAuthorization.value.expenses = estimates
     emit("created")
     close()
   } catch (error) {
