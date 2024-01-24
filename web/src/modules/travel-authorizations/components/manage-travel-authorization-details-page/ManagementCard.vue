@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue"
+import { computed } from "vue"
 import { isEmpty } from "lodash"
 
 import ApproveTravelRequestDialogButton from "./ApproveTravelRequestDialogButton.vue"
@@ -67,14 +67,6 @@ const requestorDisplayName = computed(() => {
   const { displayName } = travelAuthorization.value.user
   return displayName
 })
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetch()
-  },
-  { immediate: true }
-)
 
 async function refreshAndEmit(eventName) {
   await fetch()

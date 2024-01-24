@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue"
+import { computed } from "vue"
 
 import useTravelAuthorization from "@/use/travel-authorization"
 
@@ -53,18 +53,8 @@ const props = defineProps({
   },
 })
 
-const {
-  travelAuthorization,
-  isLoading: isLoadingTravelAuthorization,
-  fetch: fetchTravelAuthorization,
-} = useTravelAuthorization(props.travelAuthorizationId)
-const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetchTravelAuthorization()
-  },
-  { immediate: true }
+const { travelAuthorization, isLoading: isLoadingTravelAuthorization } = useTravelAuthorization(
+  props.travelAuthorizationId
 )
+const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
 </script>

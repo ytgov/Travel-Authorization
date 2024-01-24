@@ -56,7 +56,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue"
+import { computed } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 
 import useCurrentUser from "@/use/use-current-user"
@@ -79,20 +79,10 @@ const props = defineProps({
 
 const router = useRouter()
 const { isAdmin } = useCurrentUser()
-const {
-  travelAuthorization,
-  isLoading: isLoadingTravelAuthorization,
-  fetch: fetchTravelAuthorization,
-} = useTravelAuthorization(props.travelAuthorizationId)
-const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetchTravelAuthorization()
-  },
-  { immediate: true }
+const { travelAuthorization, isLoading: isLoadingTravelAuthorization } = useTravelAuthorization(
+  props.travelAuthorizationId
 )
+const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
 
 function goToAdminEditPage() {
   router.push({

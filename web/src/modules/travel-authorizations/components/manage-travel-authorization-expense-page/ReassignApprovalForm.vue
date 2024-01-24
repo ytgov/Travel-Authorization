@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
+import { ref } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 
 import { required } from "@/utils/validators"
@@ -56,17 +56,7 @@ const form = ref(null)
 const snack = useSnack()
 const router = useRouter()
 
-const { travelAuthorization, isLoading, fetch, save } = useTravelAuthorization(
-  props.travelAuthorizationId
-)
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetch()
-  },
-  { immediate: true }
-)
+const { travelAuthorization, isLoading, save } = useTravelAuthorization(props.travelAuthorizationId)
 
 async function reassign() {
   try {

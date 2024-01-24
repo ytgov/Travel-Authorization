@@ -47,7 +47,7 @@
 
 <script setup>
 import { sumBy } from "lodash"
-import { computed, watch } from "vue"
+import { computed } from "vue"
 
 import useExpenses, { TYPES } from "@/use/expenses"
 import useTravelAuthorization from "@/use/travel-authorization"
@@ -66,25 +66,15 @@ const expenseOptions = computed(() => ({
   },
 }))
 const { expenses, isLoading: isLoadingExpenses } = useExpenses(expenseOptions)
-const {
-  travelAuthorization,
-  isLoading: isLoadingTravelAuthorization,
-  fetch: fetchTravelAuthorization,
-} = useTravelAuthorization(props.travelAuthorizationId)
+const { travelAuthorization, isLoading: isLoadingTravelAuthorization } = useTravelAuthorization(
+  props.travelAuthorizationId
+)
 
 const isLoading = computed(() => isLoadingExpenses.value || isLoadingTravelAuthorization.value)
 // Will need to be calculated in the back-end if data is multi-page.
 const subTotalClaim = computed(() => sumBy(expenses.value, "cost"))
 const travelAdvance = computed(() => travelAuthorization.value.travelAdvanceInCents / 100.0)
 const totalClaim = computed(() => subTotalClaim.value - travelAdvance.value)
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await Promise.all([await fetchTravelAuthorization()])
-  },
-  { immediate: true }
-)
 
 function formatCurrency(amount) {
   const formatter = new Intl.NumberFormat("en-CA", {
