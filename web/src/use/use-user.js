@@ -1,5 +1,4 @@
 import { reactive, toRefs, unref, watch } from "vue"
-import { isNumber } from "lodash"
 
 import usersApi from "@/api/users-api"
 import { defineUse } from "@/use/helper-utils"
@@ -51,7 +50,7 @@ export const useUser = defineUse((userId) => {
   watch(
     () => unref(userId),
     async (newUserId) => {
-      if (!isNumber(newUserId)) return
+      if ([undefined, null].includes(newUserId)) return
 
       await fetch()
     },
