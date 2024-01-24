@@ -86,12 +86,45 @@ const routes = [
       {
         path: ":travelAuthorizationId",
         component: () =>
+          import("@/modules/travel-authorizations/layouts/TravelAuthorizationLayout.vue"),
+        props: cast("travelAuthorizationId", parseInt),
+        children: [
+          {
+            path: "",
+            redirect: "details/edit",
+          },
+          {
+            path: "details/edit",
+            name: "EditTravelAuthorizationDetailsPage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/EditTravelAuthorizationDetailsPage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+          {
+            path: "estimate/edit",
+            name: "EditTravelAuthorizationEstimatePage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/EditTravelAuthorizationEstimatePage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+          {
+            path: "expense/edit",
+            name: "EditTravelAuthorizationExpensePage",
+            component: () =>
+              import("@/modules/travel-authorizations/pages/EditTravelAuthorizationExpensePage"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+        ],
+      },
+      {
+        path: ":travelAuthorizationId",
+        component: () =>
           import("@/modules/travel-authorizations/layouts/ManageTravelAuthorizationLayout"),
         props: cast("travelAuthorizationId", parseInt),
         children: [
           {
             path: "",
-            redirect: "details",
+            redirect: "details/manage",
           },
           {
             name: "ManageTravelAuthorizationDetailsPage",

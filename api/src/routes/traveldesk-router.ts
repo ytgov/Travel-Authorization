@@ -92,7 +92,7 @@ travelDeskRouter.get(
     const adminScoping: WhereOptions<TravelAuthorization> = {}
     if (req?.user?.roles?.includes(User.Roles.ADMIN)) {
       // No additional conditions for Admin, selects all records
-    } else if (req?.user?.roles?.includes(User.Roles.DEPT_ADMIN)) {
+    } else if (req?.user?.roles?.includes(User.Roles.DEPARTMENT_ADMIN)) {
       adminScoping.department = req.user.department
     } else {
       adminScoping.userId = req.user.id

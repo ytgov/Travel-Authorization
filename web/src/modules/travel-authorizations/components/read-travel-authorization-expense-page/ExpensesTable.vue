@@ -45,9 +45,9 @@
 <script setup>
 import { sumBy } from "lodash"
 import { DateTime } from "luxon"
-import { computed, ref, watch } from "vue"
+import { computed, ref } from "vue"
 
-import useExpenses from "@/use/expenses"
+import useExpenses, { TYPES, EXPENSE_TYPES } from "@/use/expenses"
 
 import ViewRecieptLink from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ViewRecieptLink.vue"
 
@@ -67,23 +67,16 @@ const headers = ref([
 ])
 const totalRowClasses = ref("text-start font-weight-bold text-uppercase")
 
-const { expenses, isLoading, fetch, TYPES, EXPENSE_TYPES } = useExpenses()
+const expenseOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+    type: TYPES.EXPENSE,
+    expenseType: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
+  },
+}))
+const { expenses, isLoading } = useExpenses(expenseOptions)
 
 const totalAmount = computed(() => sumBy(expenses.value, "cost"))
-
-watch(
-  () => props.travelAuthorizationId,
-  async (newTravelAuthorizationId) => {
-    await fetch({
-      where: {
-        travelAuthorizationId: newTravelAuthorizationId,
-        type: TYPES.EXPENSE,
-        expenseType: [EXPENSE_TYPES.ACCOMMODATIONS, EXPENSE_TYPES.TRANSPORTATION],
-      },
-    })
-  },
-  { immediate: true }
-)
 
 function formatDate(date) {
   return DateTime.fromISO(date, { zone: "utc" }).toFormat("d-LLLL-yyyy")

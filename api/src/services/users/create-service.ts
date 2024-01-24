@@ -1,5 +1,5 @@
 import { CreationAttributes } from "sequelize"
-import { isEmpty } from "lodash"
+import { isEmpty, isUndefined } from "lodash"
 
 import db from "@/db/db-client"
 
@@ -7,7 +7,7 @@ import BaseService from "@/services/base-service"
 import { User } from "@/models"
 import { YkGovernmentDirectorySyncService } from "@/services"
 
-type AttributesWithDefaults = "sub" | "roles" | "status"
+type AttributesWithDefaults = "sub" | "email" | "roles" | "status"
 export type UserCreationAttributes = Omit<CreationAttributes<User>, AttributesWithDefaults> &
   Partial<Pick<User, AttributesWithDefaults>>
 
@@ -27,7 +27,7 @@ export class CreateService extends BaseService {
     let fallbackEmail: string = ""
     let fallbackFirstName: string = ""
     let fallbackLastName: string = ""
-    if (!isEmpty(email)) {
+    if (!isUndefined(email) && !isEmpty(email)) {
       const names = email.split("@")[0].split(".")
       fallbackFirstName = names[0] || ""
       fallbackLastName = names[1] || ""

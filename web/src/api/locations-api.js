@@ -2,8 +2,13 @@ import http from "@/api/http-client"
 
 export const locationsApi = {
   // TODO: support pagination and filtering
-  list() {
-    return http.get("/api/locations").then(({ data }) => data)
+  async list() {
+    const { data } = await http.get("/api/locations")
+    return data
+  },
+  async fetch(locationId) {
+    const { data } = await http.get(`/api/locations/${locationId}`)
+    return data
   },
 }
 

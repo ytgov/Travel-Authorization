@@ -4,12 +4,12 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "TravelDeskHome",
+        name: "TravelDesk",
         path: "",
         meta: {
           requiresAuth: true,
         },
-        component: () => import("../views/TravelDesk.vue"),
+        component: () => import("@/modules/travelDesk/views/TravelDesk.vue"),
       },
     ],
   },
@@ -18,15 +18,15 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "TravelRequestHome",
+        name: "TravelRequest",
         path: "",
         meta: {
           requiresAuth: true,
         },
-        component: () => import("../views/TravelRequest.vue"),
+        component: () => import("@/modules/travelDesk/views/TravelRequest.vue"),
       },
     ],
   },
-];
+]
 
-export default routes;
+export default routes

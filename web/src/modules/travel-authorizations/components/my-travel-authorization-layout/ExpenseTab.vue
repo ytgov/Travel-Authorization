@@ -41,7 +41,7 @@
 
 <script setup>
 import { isNil } from "lodash"
-import { computed, watch, onMounted } from "vue"
+import { computed, onMounted } from "vue"
 
 import useTravelAuthorization from "@/use/travel-authorization"
 
@@ -80,14 +80,6 @@ const componentName = computed(() => {
 
   return "ReadMyTravelAuthorizationExpensePage"
 })
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetch()
-  },
-  { immediate: true }
-)
 
 onMounted(async () => {
   if (!isLoading.value) {

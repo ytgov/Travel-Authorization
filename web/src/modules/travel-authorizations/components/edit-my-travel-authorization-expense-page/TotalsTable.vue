@@ -49,8 +49,7 @@
 import { sumBy } from "lodash"
 import { computed, onMounted } from "vue"
 
-import { TYPES } from "@/api/expenses-api"
-import useExpenses from "@/use/expenses"
+import useExpenses, { TYPES } from "@/use/expenses"
 import useTravelAuthorization from "@/use/travel-authorization"
 
 const props = defineProps({
@@ -64,7 +63,13 @@ defineExpose({
   refresh,
 })
 
-const { expenses, isLoading: isLoadingExpenses, fetch: fetchExpenses } = useExpenses()
+const expenseOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+    type: TYPES.EXPENSE,
+  },
+}))
+const { expenses, isLoading: isLoadingExpenses, fetch: fetchExpenses } = useExpenses(expenseOptions)
 const {
   travelAuthorization,
   isLoading: isLoadingTravelAuthorization,
@@ -82,15 +87,7 @@ onMounted(async () => {
 })
 
 async function refresh() {
-  await Promise.all([
-    await fetchExpenses({
-      where: {
-        travelAuthorizationId: props.travelAuthorizationId,
-        type: TYPES.EXPENSE,
-      },
-    }),
-    await fetchTravelAuthorization(),
-  ])
+  await Promise.all([await fetchExpenses(), await fetchTravelAuthorization()])
 }
 
 function formatCurrency(amount) {

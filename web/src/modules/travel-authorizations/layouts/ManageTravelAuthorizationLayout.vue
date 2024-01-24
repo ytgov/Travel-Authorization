@@ -20,26 +20,26 @@
         Travel -
         <VUserChipMenu :user-id="travelAuthorizationUser.id" />
       </span>
-      <v-btn
-        v-if="isAdmin"
-        color="primary"
-        @click="goToAdminEditPage"
-      >
-        Edit
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            v-if="isAdmin"
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+            @click="goToAdminEditPage"
+          >
+            Edit
             <v-icon
               small
-              class="ml-2"
-              v-bind="attrs"
-              v-on="on"
+              right
             >
               mdi-help-circle-outline
             </v-icon>
-          </template>
-          <span>You can edit this because you are an admin.</span>
-        </v-tooltip>
-      </v-btn>
+          </v-btn>
+        </template>
+        <span>You can edit this because you are an admin.</span>
+      </v-tooltip>
     </h1>
 
     <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
@@ -56,9 +56,10 @@
 </template>
 
 <script setup>
-import { computed, watch } from "vue"
+import { computed } from "vue"
+import { useRouter } from "vue2-helpers/vue-router"
 
-import useCurrentUser from "@/use/current-user"
+import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorization from "@/use/travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
@@ -76,25 +77,17 @@ const props = defineProps({
   },
 })
 
+const router = useRouter()
 const { isAdmin } = useCurrentUser()
-const {
-  travelAuthorization,
-  isLoading: isLoadingTravelAuthorization,
-  fetch: fetchTravelAuthorization,
-} = useTravelAuthorization(props.travelAuthorizationId)
+const { travelAuthorization, isLoading: isLoadingTravelAuthorization } = useTravelAuthorization(
+  props.travelAuthorizationId
+)
 const travelAuthorizationUser = computed(() => travelAuthorization.value?.user)
 
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetchTravelAuthorization()
-  },
-  { immediate: true }
-)
-
 function goToAdminEditPage() {
-  alert(
-    `TODO: redirect user to admin edit interface for TravelAuthorization#${props.travelAuthorizationId}`
-  )
+  router.push({
+    name: "EditTravelAuthorizationDetailsPage",
+    params: { travelAuthorizationId: props.travelAuthorizationId },
+  })
 }
 </script>

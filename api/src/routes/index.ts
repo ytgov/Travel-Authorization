@@ -83,9 +83,11 @@ router
   .post(TravelAuthorizations.Expenses.PrefillController.create)
 
 router.route("/api/locations").get(LocationsController.index)
+router.route("/api/locations/:locationId").get(LocationsController.show)
 router.route("/api/pre-approved-travelers").get(PreApprovedTravelersController.index)
 router.route("/api/pre-approved-travel-requests").get(PreApprovedTravelRequestsController.index)
 
+router.route("/api/users").post(UsersController.create)
 router.route("/api/users/:userId").get(UsersController.show)
 router
   .route("/api/users/:userId/yg-government-directory-sync")

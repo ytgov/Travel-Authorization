@@ -2,6 +2,9 @@
 
 export const required = (v) => !!v || "This field is required"
 
+export const isInteger = (v) =>
+  v == 0 || Number.isInteger(Number(v)) || "This field must be a number"
+
 export const greaterThanOrEqualToDate =
   (b, { referenceFieldLabel }) =>
   (a) =>

@@ -5,8 +5,16 @@
     :loading="isLoading"
     auto-select-first
     v-bind="$attrs"
+    v-on="$listeners"
     @input="onInput"
-  />
+    ><template
+      v-for="(_, slotName) in $scopedSlots"
+      #[slotName]="slotData"
+      ><slot
+        :name="slotName"
+        v-bind="slotData"
+      ></slot></template
+  ></v-autocomplete>
 </template>
 
 <script>

@@ -6,6 +6,7 @@ import { User, TravelAuthorization } from "@/models"
 
 export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> {
   create(): boolean {
+    if (this.user.roles.includes(User.Roles.ADMIN)) return true
     if (this.record.userId === this.user.id) return true
 
     return false
@@ -67,12 +68,12 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     return modelClass.scope({ where })
   }
 
+  // NOTE: userId is always restricted after creation.
   permittedAttributes(): string[] {
     return [
-      "userId", // TODO: Permit but don't let non-admins create travel authorizations for anyone but themselves via policy
       "preappId",
       "purposeId",
-      "firstName", // all this user information should probably be restricted?
+      "firstName",
       "lastName",
       "department",
       "division",
@@ -105,7 +106,13 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
   }
 
   permittedAttributesForCreate() {
-    return ["slug", ...this.permittedAttributes()]
+    const permittedAttributes: string[] = [...this.permittedAttributes(), "slug", "stopsAttributes"]
+
+    if (this.user.roles.includes(User.Roles.ADMIN)) {
+      permittedAttributes.push("userId", "userAttributes")
+    }
+
+    return permittedAttributes
   }
 }
 

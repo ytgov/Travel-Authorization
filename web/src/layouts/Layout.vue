@@ -200,7 +200,7 @@ import * as config from "@/config"
 import RequestAlert from "@/components/RequestAlert.vue"
 import { getInstance } from "@/auth"
 
-import useCurrentUser from "@/use/current-user"
+import useCurrentUser from "@/use/use-current-user"
 
 const auth = getInstance()
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
