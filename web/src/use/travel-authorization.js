@@ -1,5 +1,4 @@
 import { computed, reactive, toRefs, unref, watch } from "vue"
-import { isNumber } from "lodash"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
@@ -19,8 +18,10 @@ import { defineUse } from "@/use/helper-utils"
 /**
  * This stores a global user state per id.
  *
+ * TODO: consider requiring the id, and building a separate function for use without an id
+ *
  * @callback UseTravelAuthorization
- * @param {import('vue').Ref<number>} travelAuthorizationId
+ * @param {import('vue').Ref<number>} [travelAuthorizationId]
  * @returns {{
  *   travelAuthorization: import('vue').Ref<TravelAuthorization>,
  *   isLoading: import('vue').Ref<boolean>,
@@ -174,7 +175,7 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
   watch(
     () => unref(travelAuthorizationId),
     async (newTravelAuthorizationId) => {
-      if (!isNumber(newTravelAuthorizationId)) return
+      if ([undefined, null].includes(newTravelAuthorizationId)) return
 
       await fetch()
     },

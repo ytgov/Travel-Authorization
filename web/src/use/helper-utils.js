@@ -1,5 +1,4 @@
 import { unref, watch } from "vue"
-import { isNumber } from "lodash"
 
 /**
  * @template Options
@@ -10,7 +9,9 @@ import { isNumber } from "lodash"
  * @returns {ReturnType} The reactive state object.
  */
 function ensureStateFor(globalState, useFunction, key) {
-  if (!isNumber(key)) return null
+  if ([undefined, null].includes(key)) {
+    return useFunction(key) // return without creating mapping for undefined or null keys
+  }
 
   if (globalState.has(key)) {
     return globalState.get(key)
