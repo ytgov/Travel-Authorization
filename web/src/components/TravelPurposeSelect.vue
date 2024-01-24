@@ -4,9 +4,9 @@
     :value="props.value"
     :items="travelPurposes"
     :loading="isLoading"
-    item-text="purpose"
-    item-value="id"
-    label="Travel Purpose"
+    :item-text="itemText"
+    :item-value="itemValue"
+    :label="label"
     v-bind="$attrs"
     v-on="$listeners"
     @input="emit('input', $event)"
@@ -27,6 +27,18 @@ const props = defineProps({
   value: {
     type: Number,
     default: null,
+  },
+  itemText: {
+    type: [String, Array, Function], // See https://v2.vuetifyjs.com/en/api/v-select/#props-item-text
+    default: "purpose",
+  },
+  itemValue: {
+    type: [String, Array, Function],
+    default: "id",
+  },
+  label: {
+    type: String,
+    default: "Travel Purpose",
   },
 })
 
