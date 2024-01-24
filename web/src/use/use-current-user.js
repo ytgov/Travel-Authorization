@@ -4,7 +4,7 @@ import { sleep } from "@/utils/sleep"
 
 import usersApi, { ROLES } from "@/api/users-api"
 
-// Note that state is global here, in most other use files it would not be global.
+// Note that state is global here
 const state = reactive({
   currentUser: {
     roles: [],
