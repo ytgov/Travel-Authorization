@@ -8,8 +8,6 @@
 </template>
 
 <script setup>
-import { watch } from "vue"
-
 import { useTravelAuthorization } from "@/use/travel-authorization"
 
 const props = defineProps({
@@ -19,15 +17,5 @@ const props = defineProps({
   },
 })
 
-const { travelAuthorization, fetch } = useTravelAuthorization(props.travelAuthorizationId)
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetch()
-  },
-  {
-    immediate: true,
-  }
-)
+const { travelAuthorization } = useTravelAuthorization(props.travelAuthorizationId)
 </script>
