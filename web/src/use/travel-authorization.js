@@ -99,6 +99,8 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
     }
   }
 
+  // TODO: consider having a different use function for creating a new travel authorization
+  // e.g. buildTravelAuthorization() which returns { travelAuthorization, isLoading, isErrored, create }
   async function create(attributes) {
     state.isLoading = true
     try {
