@@ -24,7 +24,6 @@
           </v-col>
         </v-row>
 
-        <!-- TODO: convert other 2 trip type components to newer form -->
         <component
           :is="tripTypeComponent"
           v-if="tripTypeComponent && hasEnoughStops"
@@ -81,7 +80,6 @@ import { pick } from "lodash"
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import { required, isInteger } from "@/utils/validators"
 import DatePicker from "@/components/Utils/DatePicker"
-// TODO: make local component?
 import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
 import { useTravelAuthorization } from "@/use/travel-authorization"
 
