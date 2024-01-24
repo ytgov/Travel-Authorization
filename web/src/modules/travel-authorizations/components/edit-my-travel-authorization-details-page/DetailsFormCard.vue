@@ -27,7 +27,9 @@
         <component
           :is="tripTypeComponent"
           v-if="tripTypeComponent && hasEnoughStops"
-          :travel-authorization-id="travelAuthorizationId"
+          :value="stops"
+          :all-travel-within-territory="travelAuthorization.allTravelWithinTerritory"
+          @input="replaceStops"
         />
         <div v-else>Trip type {{ tripType }} not implemented!</div>
         <v-row>
@@ -78,7 +80,7 @@ import { mapActions, mapGetters } from "vuex"
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import { required } from "@/utils/validators"
 import DatePicker from "@/components/Utils/DatePicker"
-import TravelDurationTextField from "./details-form-card/TravelDurationTextField.vue"
+import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -114,11 +116,20 @@ export default {
     tripTypeComponent() {
       switch (this.tripType) {
         case TRIP_TYPES.ROUND_TRIP:
-          return () => import("./details-form-card/RoundTripStopsSection")
+          return () =>
+            import(
+              "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/RoundTripStopsSection"
+            )
         case TRIP_TYPES.ONE_WAY:
-          return () => import("./details-form-card/OneWayStopsSection")
+          return () =>
+            import(
+              "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/OneWayStopsSection"
+            )
         case TRIP_TYPES.MULTI_DESTINATION:
-          return () => import("./details-form-card/MultiDestinationStopsSection")
+          return () =>
+            import(
+              "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/MultiDestinationStopsSection"
+            )
         default:
           return null
       }

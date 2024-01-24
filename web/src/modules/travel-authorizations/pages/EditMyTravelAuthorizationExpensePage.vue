@@ -78,8 +78,9 @@
 </template>
 
 <script>
-import { TYPES } from "@/api/expenses-api"
-import { useExpenses } from "@/use/expenses"
+import { computed } from "vue"
+
+import { useExpenses, TYPES } from "@/use/expenses"
 import store from "@/store"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
@@ -130,12 +131,18 @@ export default {
     },
   },
   data() {
-    const { expenses, isLoading, fetch } = useExpenses()
+    const expenseOptions = computed(() => ({
+      where: {
+        travelAuthorizationId: this.travelAuthorizationId,
+        type: TYPES.EXPENSE,
+      },
+    }))
+    const { expenses, isLoading, fetch: refresh } = useExpenses(expenseOptions)
 
     return {
       expenses,
       isLoading,
-      fetch,
+      refresh,
     }
   },
   computed: {
@@ -147,14 +154,6 @@ export default {
     await this.refresh()
   },
   methods: {
-    async refresh() {
-      await this.fetch({
-        where: {
-          travelAuthorizationId: this.travelAuthorizationId,
-          type: TYPES.EXPENSE,
-        },
-      })
-    },
     async refreshExpenseCreationDependencies() {
       await Promise.all([
         this.refresh(),

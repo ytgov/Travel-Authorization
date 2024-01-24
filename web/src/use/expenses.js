@@ -1,8 +1,32 @@
-import { reactive, toRefs } from "vue"
+import { reactive, toRefs, unref, watch } from "vue"
 
 import expensesApi, { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
 
-export function useExpenses() {
+export { TYPES, EXPENSE_TYPES }
+
+/**
+ * TODO: add other fields
+ * @typedef {Object} Expense
+ * @property {number} id
+ */
+
+/**
+ * Fetches and manages expenses data based on the provided options.
+ *
+ * @param {import('vue').Ref<{
+ *   where: { [key: string]: any },
+ *   page: number,
+ *   perPage: number,
+ * }>} [options={}] - The configuration options for fetching expenses, wrapped in a Vue ref.
+ * @returns {{
+ *   expenses: import('vue').Ref<Expense[]>,
+ *   isLoading: import('vue').Ref<boolean>,
+ *   isErrored: import('vue').Ref<boolean>,
+ *   isCached: import('vue').Ref<boolean>,
+ *   fetch: () => Promise<Expense[]>,
+ * }}
+ */
+export function useExpenses(options = {}) {
   const state = reactive({
     expenses: [],
     isLoading: false,
@@ -10,10 +34,10 @@ export function useExpenses() {
     isCached: false,
   })
 
-  async function fetch({ where, page, perPage, ...otherParams } = {}) {
+  async function fetch() {
     state.isLoading = true
     try {
-      const { expenses } = await expensesApi.list({ where, page, perPage, ...otherParams })
+      const { expenses } = await expensesApi.list(unref(options))
       state.isErrored = false
       state.expenses = expenses
       return expenses
@@ -25,6 +49,17 @@ export function useExpenses() {
       state.isLoading = false
     }
   }
+
+  watch(
+    () => unref(options),
+    async () => {
+      await fetch()
+    },
+    {
+      immediate: true,
+      deep: true,
+    }
+  )
 
   return {
     TYPES,

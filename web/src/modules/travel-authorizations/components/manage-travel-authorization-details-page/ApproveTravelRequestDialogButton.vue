@@ -76,13 +76,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  travelLocationId: {
-    type: Number,
-    required: true,
-  },
   requestorDisplayName: {
     type: String,
     required: true,
+  },
+  travelLocationId: {
+    type: Number,
+    default: null,
   },
   buttonClasses: {
     type: [String, Array, Object],

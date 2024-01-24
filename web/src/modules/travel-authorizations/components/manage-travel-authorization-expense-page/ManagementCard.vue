@@ -24,8 +24,6 @@
 </template>
 
 <script setup>
-import { watch } from "vue"
-
 import { useSnack } from "@/plugins/snack-plugin"
 import travelAuthorizationApi from "@/api/travel-authorizations-api"
 
@@ -39,14 +37,6 @@ const props = defineProps({
 })
 
 const snack = useSnack()
-
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    // TODO
-  },
-  { immediate: true }
-)
 
 function approve() {
   return travelAuthorizationApi
