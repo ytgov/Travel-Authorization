@@ -178,6 +178,9 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
     () => unref(travelAuthorizationId),
     async (newTravelAuthorizationId) => {
       if ([undefined, null].includes(newTravelAuthorizationId)) return
+      // TODO: add some tests and check whether I should abort on loading
+      // to avoid infinite loops
+      // if (state.isLoading === true) return
 
       await fetch()
     },
