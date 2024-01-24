@@ -6,10 +6,40 @@ import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-a
 import { defineUse } from "@/use/helper-utils"
 
 /**
- * This stores a global travel authorization state per id.
- *
- * @param {import('vue').Ref<number>} travelAuthorizationId
+ * TODO: add other fields
+ * @typedef {Object} TravelAuthorization
+ * @property {number} id
+ * @property {Expense[]} expenses
+ * @property {Purpose} purpose
+ * @property {Stop[]} stops
+ * @property {TravelSegment[]} travelSegments
+ * @property {User} user
  */
+
+/**
+ * This stores a global user state per id.
+ *
+ * @callback UseTravelAuthorization
+ * @param {import('vue').Ref<number>} travelAuthorizationId
+ * @returns {{
+ *   travelAuthorization: import('vue').Ref<TravelAuthorization>,
+ *   isLoading: import('vue').Ref<boolean>,
+ *   isErrored: import('vue').Ref<boolean>,
+ *   stops: import('vue').Ref<Stop[]>,
+ *   firstStop: import('vue').Ref<Stop>,
+ *   lastStop: import('vue').Ref<Stop>,
+ *   fetch: () => Promise<TravelAuthorization>,
+ *   save: () => Promise<TravelAuthorization>,
+ *   create: (attributes: Partial<TravelAuthorization>) => Promise<TravelAuthorization>,
+ *   newBlankStop: (attributes: Partial<Stop>) => Stop,
+ *   replaceStops: (stops: Stop[]) => Stop[],
+ *   approve: () => Promise<TravelAuthorization>,
+ *   deny: ({ denialReason: string } = {}) => Promise<TravelAuthorization>,
+ *   expenseClaim: (attributes) => Promise<TravelAuthorization>,
+ * }}
+ */
+
+/** @type {UseTravelAuthorization} */
 export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
   const state = reactive({
     travelAuthorization: {
