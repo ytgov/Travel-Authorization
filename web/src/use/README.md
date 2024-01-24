@@ -12,6 +12,7 @@ Functions and constants are returned directly.
 Useage looks like
 
 ```js
+// use/use-expenses.js
 const { expenses, isLoading, fetch } = useExpenses()
 ```
 

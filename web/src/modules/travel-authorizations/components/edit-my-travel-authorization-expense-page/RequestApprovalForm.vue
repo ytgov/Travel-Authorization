@@ -70,7 +70,7 @@ import { useRouter } from "vue2-helpers/vue-router"
 import { required } from "@/utils/validators"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import { useTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
 import { useGeneralLedgerCodings } from "@/use/general-ledger-codings"
 import { useExpenses, TYPES, EXPENSE_TYPES } from "@/use/expenses"
 

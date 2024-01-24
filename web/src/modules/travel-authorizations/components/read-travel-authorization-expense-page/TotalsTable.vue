@@ -50,7 +50,7 @@ import { sumBy } from "lodash"
 import { computed } from "vue"
 
 import useExpenses, { TYPES } from "@/use/expenses"
-import useTravelAuthorization from "@/use/travel-authorization"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {

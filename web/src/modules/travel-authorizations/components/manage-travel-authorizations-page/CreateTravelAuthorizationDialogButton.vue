@@ -85,7 +85,7 @@ import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobo
 
 import { useSnack } from "@/plugins/snack-plugin"
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
-import { useTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
 const snack = useSnack()
 const route = useRoute()

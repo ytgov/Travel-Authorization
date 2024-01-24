@@ -113,7 +113,7 @@ import LocationsAutocomplete from "@/components/LocationsAutocomplete"
 import TravelPurposeSelect from "@/components/TravelPurposeSelect"
 
 import { required } from "@/utils/validators"
-import { useTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {

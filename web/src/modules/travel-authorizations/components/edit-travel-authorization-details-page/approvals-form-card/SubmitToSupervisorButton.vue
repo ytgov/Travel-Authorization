@@ -43,7 +43,7 @@ import { useRouter } from "vue2-helpers/vue-router"
 
 import { useSnack } from "@/plugins/snack-plugin"
 
-import useTravelAuthorization from "@/use/travel-authorization"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {

@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { useTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {

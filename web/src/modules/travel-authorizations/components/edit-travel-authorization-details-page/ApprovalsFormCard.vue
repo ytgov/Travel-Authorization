@@ -118,7 +118,7 @@ import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/
 
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/approvals-form-card/EstimateGenerateDialog"
 import SubmitToSupervisorButton from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/approvals-form-card/SubmitToSupervisorButton"
-import useTravelAuthorization from "@/use/travel-authorization"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {
