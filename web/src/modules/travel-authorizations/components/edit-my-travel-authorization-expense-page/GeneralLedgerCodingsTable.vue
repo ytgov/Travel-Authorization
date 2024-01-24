@@ -71,7 +71,7 @@ import { sumBy } from "lodash"
 import { computed, onMounted, ref } from "vue"
 import { useRoute } from "vue2-helpers/vue-router"
 
-import useGeneralLedgerCodings from "@/use/general-ledger-codings"
+import useGeneralLedgerCodings from "@/use/use-general-ledger-codings"
 
 import GeneralLedgerCodingDeleteDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingDeleteDialog"
 import GeneralLedgerCodingEditDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/GeneralLedgerCodingEditDialog"
@@ -93,7 +93,17 @@ const editDialog = ref(null)
 const deleteDialog = ref(null)
 
 const route = useRoute()
-const { generalLedgerCodings, isLoading, fetch } = useGeneralLedgerCodings()
+
+const generalLedgerCodingOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+  },
+}))
+const {
+  generalLedgerCodings,
+  isLoading,
+  fetch: refresh,
+} = useGeneralLedgerCodings(generalLedgerCodingOptions)
 const totalAmount = computed(() => sumBy(generalLedgerCodings.value, "amount"))
 
 const headers = ref([
@@ -115,14 +125,6 @@ function formatCurrency(amount) {
     currency: "CAD",
   })
   return formatter.format(amount)
-}
-
-async function refresh() {
-  await fetch({
-    where: {
-      travelAuthorizationId: props.travelAuthorizationId,
-    },
-  })
 }
 
 async function emitChangedAndRefresh() {
