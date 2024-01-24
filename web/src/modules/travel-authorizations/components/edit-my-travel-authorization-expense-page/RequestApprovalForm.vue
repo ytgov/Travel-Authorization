@@ -72,7 +72,7 @@ import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
 import { useTravelAuthorization } from "@/use/use-travel-authorization"
 import { useGeneralLedgerCodings } from "@/use/general-ledger-codings"
-import { useExpenses, TYPES, EXPENSE_TYPES } from "@/use/expenses"
+import { useExpenses, TYPES, EXPENSE_TYPES } from "@/use/use-expenses"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
 

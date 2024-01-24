@@ -80,7 +80,7 @@
 <script>
 import { computed } from "vue"
 
-import { useExpenses, TYPES } from "@/use/expenses"
+import { useExpenses, TYPES } from "@/use/use-expenses"
 import store from "@/store"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"

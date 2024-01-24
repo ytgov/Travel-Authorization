@@ -109,7 +109,7 @@ import { isEmpty } from "lodash"
 
 import { required, isInteger } from "@/utils/validators"
 import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
-import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/expenses"
+import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
 import useUser from "@/use/use-user"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"

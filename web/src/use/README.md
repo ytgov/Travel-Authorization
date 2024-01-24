@@ -13,8 +13,19 @@ Functions and constants are returned directly.
 Useage looks like
 
 ```js
-// use/use-expenses.js
-const { expenses, isLoading, fetch } = useExpenses()
+import { useExpenses } from '@/use/use-expenses'
+
+const expenseOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+    type: TYPES.EXPENSE,
+  },
+}))
+const { expenses, isLoading, fetch } = useExpenses(expenseOptions)
 ```
+
+Note that options passed to use files should be reactive.
+i.e. either a computed, ref, or props attribute.
+This enables the use function to reactively load content whenever the options change.
 
 "expenses" and "isLoading" are refs and fetch is a function that mutates those refs.
