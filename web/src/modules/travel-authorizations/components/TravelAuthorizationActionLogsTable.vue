@@ -43,8 +43,11 @@ const options = computed(() => ({
     travelAuthorizationId: props.travelAuthorizationId,
   },
 }))
-const { travelAuthorizationActionLogs, isLoading, fetch } =
-  useTravelAuthorizationActionLogs(options)
+const {
+  travelAuthorizationActionLogs,
+  isLoading,
+  fetch: refresh,
+} = useTravelAuthorizationActionLogs(options)
 
 const headers = [
   {
@@ -82,6 +85,6 @@ function formatDate(value) {
 }
 
 defineExpose({
-  refresh: fetch,
+  refresh,
 })
 </script>

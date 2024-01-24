@@ -85,10 +85,6 @@ const props = defineProps({
 
 const emit = defineEmits(["changed"])
 
-defineExpose({
-  refresh,
-})
-
 const editDialog = ref(null)
 const deleteDialog = ref(null)
 
@@ -163,4 +159,8 @@ function showDeleteDialogForRouteQuery() {
 
   showDeleteDialog(generalLedgerCoding)
 }
+
+defineExpose({
+  refresh,
+})
 </script>

@@ -38,10 +38,6 @@ const props = defineProps({
   },
 })
 
-defineExpose({
-  refresh,
-})
-
 const expenseOptions = computed(() => ({
   where: {
     travelAuthorizationId: props.travelAuthorizationId,
@@ -73,4 +69,8 @@ function formatCurrency(amount) {
   })
   return formatter.format(amount)
 }
+
+defineExpose({
+  refresh,
+})
 </script>

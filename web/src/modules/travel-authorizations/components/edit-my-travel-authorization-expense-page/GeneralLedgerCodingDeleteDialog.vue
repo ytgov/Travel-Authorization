@@ -52,10 +52,6 @@ import generalLedgerCodingsApi from "@/api/general-ledger-codings-api"
 
 const emit = defineEmits(["deleted"])
 
-defineExpose({
-  show,
-})
-
 const route = useRoute()
 const router = useRouter()
 const snack = useSnack()
@@ -112,4 +108,8 @@ function formatCurrency(amount) {
   })
   return formatter.format(amount)
 }
+
+defineExpose({
+  show,
+})
 </script>

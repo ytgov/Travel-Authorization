@@ -83,10 +83,6 @@ const props = defineProps({
   },
 })
 
-defineExpose({
-  refresh,
-})
-
 const form = ref(null)
 const snack = useSnack()
 const router = useRouter()
@@ -160,4 +156,8 @@ async function requestApprovalForExpenseClaim() {
     snack(error.message, { color: "error" })
   }
 }
+
+defineExpose({
+  refresh,
+})
 </script>
