@@ -29,7 +29,8 @@ import { defineUse } from "@/use/helper-utils"
  *   firstStop: import('vue').Ref<Stop>,
  *   lastStop: import('vue').Ref<Stop>,
  *   fetch: () => Promise<TravelAuthorization>,
- *   save: () => Promise<TravelAuthorization>,
+ *   save: () => Promise<TravelAuthorization>, // save that triggers loading state
+ *   saveSilently: () => Promise<TravelAuthorization>, // save that does not trigger loading state
  *   create: (attributes: Partial<TravelAuthorization>) => Promise<TravelAuthorization>,
  *   newBlankStop: (attributes: Partial<Stop>) => Stop,
  *   replaceStops: (stops: Stop[]) => Stop[],
@@ -75,6 +76,14 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
   async function save() {
     state.isLoading = true
     try {
+      return saveSilently()
+    } finally {
+      state.isLoading = false
+    }
+  }
+
+  async function saveSilently() {
+    try {
       const { travelAuthorization } = await travelAuthorizationsApi.update(
         unref(travelAuthorizationId),
         state.travelAuthorization
@@ -86,8 +95,6 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
       console.error("Failed to update travel authorization:", error)
       state.isErrored = true
       throw error
-    } finally {
-      state.isLoading = false
     }
   }
 

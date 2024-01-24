@@ -115,7 +115,7 @@ import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobo
 import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
-import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/approvals-form-card/EstimateGenerateDialog"
+import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/approvals-form-card/EstimateGenerateDialog"
 import SubmitToSupervisorButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/approvals-form-card/SubmitToSupervisorButton"
 import useTravelAuthorization from "@/use/travel-authorization"
 
