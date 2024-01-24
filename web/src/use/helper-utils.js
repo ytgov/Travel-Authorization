@@ -35,3 +35,9 @@ export function asGlobalUse(globalState, useFunction) {
     return ensureStateFor(globalState, useFunction, unref(id))
   }
 }
+
+export function defineUse(useFunction) {
+  const globalState = new Map()
+
+  return asGlobalUse(globalState, useFunction)
+}

@@ -2,14 +2,14 @@ import { reactive, toRefs, unref, watch } from "vue"
 import { isNumber } from "lodash"
 
 import usersApi from "@/api/users-api"
-import { asGlobalUse } from "@/use/helper-utils"
+import { defineUse } from "@/use/helper-utils"
 
 /**
- * This function retrieves and processes user data based on a given user ID.
+ * This stores a global user state per id.
  *
  * @param {import('vue').Ref<number>} userId
  */
-function useLocalUser(userId) {
+export const useUser = defineUse((userId) => {
   const state = reactive({
     user: {},
     isLoading: false,
@@ -49,18 +49,6 @@ function useLocalUser(userId) {
     fetch,
     refresh: fetch,
   }
-}
-
-const globalState = new Map()
-
-/**
- * This stores a global user state per id.
- *
- * @param {import('vue').Ref<number>} userId
- */
-export function useUser(userId) {
-  const useGlobalUserFunction = asGlobalUse(globalState, useLocalUser)
-  return useGlobalUserFunction(userId)
-}
+})
 
 export default useUser

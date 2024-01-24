@@ -3,14 +3,14 @@ import { isNumber } from "lodash"
 
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
-import { asGlobalUse } from "@/use/helper-utils"
+import { defineUse } from "@/use/helper-utils"
 
 /**
- * This function retrieves and processes travel authorization data based on a given travel authorization ID.
+ * This stores a global travel authorization state per id.
  *
  * @param {import('vue').Ref<number>} travelAuthorizationId
  */
-function useLocalTravelAuthorization(travelAuthorizationId) {
+export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
   const state = reactive({
     travelAuthorization: {
       expenses: [],
@@ -183,18 +183,6 @@ function useLocalTravelAuthorization(travelAuthorizationId) {
     deny,
     expenseClaim,
   }
-}
-
-const globalState = new Map()
-
-/**
- * This stores a global travel authorization state per id.
- *
- * @param {import('vue').Ref<number>} travelAuthorizationId
- */
-export function useTravelAuthorization(travelAuthorizationId) {
-  const useGlobalUserFunction = asGlobalUse(globalState, useLocalTravelAuthorization)
-  return useGlobalUserFunction(travelAuthorizationId)
-}
+})
 
 export default useTravelAuthorization
