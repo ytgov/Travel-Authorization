@@ -32,7 +32,7 @@
               :travel-authorization-id="props.travelAuthorizationId"
               button-classes="mt-1"
               button-color="primary"
-              @created="refreshEstimatesWrapper"
+              @created="refreshEstimates"
             />
           </v-col>
         </v-row>
@@ -131,8 +131,13 @@ const props = defineProps({
 })
 
 const { travelAuthorization } = useTravelAuthorization(props.travelAuthorizationId)
-// TODO: upgrade useExpenses to accept reactive props
-const { expenses: estimates, fetch: refreshEstimates } = useExpenses()
+const expenseOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+    type: EXPENSE_TYPES.ESTIMATE,
+  },
+}))
+const { expenses: estimates, fetch: refreshEstimates } = useExpenses(expenseOptions)
 const userId = computed(() => travelAuthorization.value.userId)
 const { user, isLoading: isLoadingUser } = useUser(userId)
 
@@ -151,20 +156,9 @@ const travelAdvanceInDollars = computed({
 const hasEstimates = computed(() => estimates.value.length > 0)
 
 onMounted(async () => {
-  await refreshEstimatesWrapper()
-
   const department = user.department
   await loadPreApprovedTravelRequests(department)
 })
-
-function refreshEstimatesWrapper() {
-  return refreshEstimates({
-    where: {
-      travelAuthorizationId: props.travelAuthorizationId,
-      type: EXPENSE_TYPES.ESTIMATE,
-    },
-  })
-}
 
 async function loadPreApprovedTravelRequests(department) {
   // Since we can't determine if a pre-approval applies, the user doesn't get any options.

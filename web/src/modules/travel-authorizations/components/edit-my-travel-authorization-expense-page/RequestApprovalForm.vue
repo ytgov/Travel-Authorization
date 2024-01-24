@@ -72,7 +72,7 @@ import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
 import { useTravelAuthorization } from "@/use/travel-authorization"
 import { useGeneralLedgerCodings } from "@/use/general-ledger-codings"
-import { useExpenses } from "@/use/expenses"
+import { useExpenses, TYPES, EXPENSE_TYPES } from "@/use/expenses"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
 
@@ -102,13 +102,13 @@ const {
   isLoading: isLoadingGeneralLedgerCodings,
   fetch: fetchGeneralLedgerCodings,
 } = useGeneralLedgerCodings()
-const {
-  expenses,
-  isLoading: isLoadingExpenses,
-  fetch: fetchExpenses,
-  TYPES,
-  EXPENSE_TYPES,
-} = useExpenses()
+const expenseOptions = computed(() => ({
+  where: {
+    travelAuthorizationId: props.travelAuthorizationId,
+    type: TYPES.EXPENSE,
+  },
+}))
+const { expenses, isLoading: isLoadingExpenses, fetch: fetchExpenses } = useExpenses(expenseOptions)
 
 const isLoading = computed(
   () =>
@@ -139,12 +139,7 @@ async function refresh() {
         travelAuthorizationId: props.travelAuthorizationId,
       },
     }),
-    await fetchExpenses({
-      where: {
-        travelAuthorizationId: props.travelAuthorizationId,
-        type: TYPES.EXPENSE,
-      },
-    }),
+    await fetchExpenses(),
   ])
 }
 
