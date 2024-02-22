@@ -22,10 +22,10 @@
 <script setup>
 import { startCase } from "lodash"
 import { DateTime } from "luxon"
-import { watch } from "vue"
+import { computed } from "vue"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
-import { useTravelAuthorizationActionLogs } from "@/use/travel-authorization-action-logs"
+import { useTravelAuthorizationActionLogs } from "@/use/use-travel-authorization-action-logs"
 
 import VUserChipMenu from "@/components/VUserChipMenu.vue"
 
@@ -38,11 +38,16 @@ const props = defineProps({
 
 const { t } = useI18n()
 
-const { travelAuthorizationActionLogs, isLoading, fetch } = useTravelAuthorizationActionLogs({
+const options = computed(() => ({
   where: {
     travelAuthorizationId: props.travelAuthorizationId,
   },
-})
+}))
+const {
+  travelAuthorizationActionLogs,
+  isLoading,
+  fetch: refresh,
+} = useTravelAuthorizationActionLogs(options)
 
 const headers = [
   {
@@ -67,16 +72,6 @@ const headers = [
   },
 ]
 
-watch(
-  () => props.travelAuthorizationId,
-  async () => {
-    await fetch()
-  },
-  {
-    immediate: true,
-  }
-)
-
 function formatAction(value) {
   const fallback = startCase(value.replace("_", " "))
   return t(`global.status.${value}`, { $default: fallback })
@@ -90,6 +85,6 @@ function formatDate(value) {
 }
 
 defineExpose({
-  refresh: fetch,
+  refresh,
 })
 </script>

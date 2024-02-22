@@ -1,12 +1,10 @@
 import { reactive, toRefs, unref, watch } from "vue"
 
-import expensesApi, { TYPES, EXPENSE_TYPES } from "@/api/expenses-api"
-
-export { TYPES, EXPENSE_TYPES }
+import generalLedgerCodingsApi from "@/api/general-ledger-codings-api"
 
 /**
  * TODO: add other fields
- * @typedef {Object} Expense
+ * @typedef {Object} GeneralLedgerCoding
  * @property {number} id
  */
 
@@ -15,34 +13,30 @@ export { TYPES, EXPENSE_TYPES }
  *
  * @param {import('vue').Ref<{
  *   where: { [key: string]: any },
- *   page: number,
- *   perPage: number,
  * }>} [options={}] - The configuration options for fetching expenses, wrapped in a Vue ref.
  * @returns {{
- *   expenses: import('vue').Ref<Expense[]>,
+ *   generalLedgerCodings: import('vue').Ref<GeneralLedgerCoding[]>,
  *   isLoading: import('vue').Ref<boolean>,
  *   isErrored: import('vue').Ref<boolean>,
- *   isCached: import('vue').Ref<boolean>,
- *   fetch: () => Promise<Expense[]>,
+ *   fetch: () => Promise<GeneralLedgerCoding[]>,
  * }}
  */
-export function useExpenses(options = {}) {
+export function useGeneralLedgerCodings(options = {}) {
   const state = reactive({
-    expenses: [],
+    generalLedgerCodings: [],
     isLoading: false,
     isErrored: false,
-    isCached: false,
   })
 
   async function fetch() {
     state.isLoading = true
     try {
-      const { expenses } = await expensesApi.list(unref(options))
+      const { generalLedgerCodings } = await generalLedgerCodingsApi.list(unref(options))
       state.isErrored = false
-      state.expenses = expenses
-      return expenses
+      state.generalLedgerCodings = generalLedgerCodings
+      return generalLedgerCodings
     } catch (error) {
-      console.error("Failed to fetch expenses:", error)
+      console.error("Failed to fetch general ledger codings:", error)
       state.isErrored = true
       throw error
     } finally {
@@ -62,11 +56,9 @@ export function useExpenses(options = {}) {
   )
 
   return {
-    TYPES,
-    EXPENSE_TYPES,
     ...toRefs(state),
     fetch,
   }
 }
 
-export default useExpenses
+export default useGeneralLedgerCodings

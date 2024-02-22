@@ -36,7 +36,7 @@
 <script setup>
 import { computed } from "vue"
 
-import useTravelAuthorization from "@/use/travel-authorization"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"

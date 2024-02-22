@@ -36,7 +36,7 @@ import { isEmpty } from "lodash"
 import ApproveTravelRequestDialogButton from "./ApproveTravelRequestDialogButton.vue"
 import DenyTravelRequestDialogButton from "./DenyTravelRequestDialogButton.vue"
 
-import { useTravelAuthorization } from "@/use/travel-authorization"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {
