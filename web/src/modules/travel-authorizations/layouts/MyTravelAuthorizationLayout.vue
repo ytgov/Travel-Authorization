@@ -15,21 +15,29 @@
   <div v-else>
     <Breadcrumbs />
 
-    <h1>
-      Travel -
-      <VUserChipMenu :user-id="currentUser.id" />
-    </h1>
+    <div class="d-flex justify-space-between align-baseline my-5">
+      <h1>
+        Travel -
+        <VUserChipMenu :user-id="currentUser.id" />
+      </h1>
+    </div>
 
-    <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
+    <v-card class="default">
+      <v-card-text>
+        <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
 
-    <v-tabs>
-      <DetailsTab :travel-authorization-id="travelAuthorizationId" />
-      <EstimateTab :travel-authorization-id="travelAuthorizationId" />
-      <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
-      <!-- TODO: add in any tabs that you can normally see in read-only mode -->
-    </v-tabs>
+        <div style="border: 1px #ddd solid">
+          <v-tabs>
+            <DetailsTab :travel-authorization-id="travelAuthorizationId" />
+            <EstimateTab :travel-authorization-id="travelAuthorizationId" />
+            <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
+            <!-- TODO: add in any tabs that you can normally see in read-only mode -->
+          </v-tabs>
+        </div>
 
-    <router-view></router-view>
+        <router-view></router-view>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="2">
+  <v-card>
     <v-card-title> Management</v-card-title>
     <v-card-text>
       <!-- TODO: add support for re-assignment to another supervisor -->

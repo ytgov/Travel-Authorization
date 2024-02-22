@@ -57,7 +57,6 @@
             <v-col cols="4">
               <v-btn
                 color="primary"
-                elevation="5"
                 @click="uploadDocument"
               >
                 Upload PNR Document

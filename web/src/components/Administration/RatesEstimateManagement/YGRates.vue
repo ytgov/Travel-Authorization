@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <v-container fluid>
+    <div fluid>
       <H1>Yukon Government Expense Rates</H1>
       <Breadcrumbs />
-    </v-container>
+    </div>
   </v-app>
 </template>
 <script>

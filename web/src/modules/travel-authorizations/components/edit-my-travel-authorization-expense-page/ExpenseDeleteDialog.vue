@@ -8,7 +8,7 @@
         Are you sure you want to delete the following expense?
       </v-card-title>
       <v-card-text>
-        <v-container v-if="hasExpense">
+        <div v-if="hasExpense">
           <v-row no-gutters>
             <v-col class="text-center">
               {{ expense.expenseType }}
@@ -29,7 +29,7 @@
               {{ formatCurrency(expense.cost) }}
             </v-col>
           </v-row>
-        </v-container>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

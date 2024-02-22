@@ -1,12 +1,12 @@
 <template>
-  <v-container>
+  <div>
     <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin/users" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
         ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to User Management</v-btn
         > -->
     <h1>
       User Editor:
       <small
-        >{{ user.first_name }}
+        >{{ user.firstName }}
         {{ user.last_name }}
 
         <small>({{ user.status }})</small>
@@ -24,7 +24,7 @@
               <v-row>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="user.first_name"
+                    v-model="user.firstName"
                     label="First name"
                     dense
                     outlined
@@ -35,7 +35,7 @@
                 </v-col>
                 <v-col cols="12" sm="6">
                   <v-text-field
-                    v-model="user.last_name"
+                    v-model="user.lastName"
                     label="Last name"
                     dense
                     outlined
@@ -99,7 +99,7 @@
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>

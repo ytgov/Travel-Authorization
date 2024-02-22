@@ -18,7 +18,7 @@
 					<div class="text-h5">
 						Travel Itinerary
 					</div>
-					<v-btn class="ml-auto" elevation="5" color="secondary" :loading="loadingData" @click="print">
+					<v-btn class="ml-auto" color="secondary" :loading="loadingData" @click="print">
 						Print <v-icon class="ml-2" color="primary darken-2">mdi-printer</v-icon>
 					</v-btn>
 					<v-btn class="ml-3" color="grey darken-5" @click="itineraryDialog = false">

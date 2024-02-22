@@ -8,7 +8,7 @@
         Are you sure you want to delete the following estimate?
       </v-card-title>
       <v-card-text>
-        <v-container v-if="hasEstimate">
+        <div v-if="hasEstimate">
           <v-row no-gutters>
             <v-col class="text-center">
               {{ estimate.expenseType }}
@@ -29,7 +29,7 @@
               {{ formatCurrency(estimate.cost) }}
             </v-col>
           </v-row>
-        </v-container>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

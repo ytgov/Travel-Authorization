@@ -1,10 +1,13 @@
 <template>
   <div class="">
-    <v-container fluid>
-      <h1>Place Type</h1>
+    <div>
       <Breadcrumbs />
+      <h1>Place Type</h1>
       <v-row class="mb-2">
-        <v-col cols="6" class="d-flex">
+        <v-col
+          cols="6"
+          class="d-flex"
+        >
           <v-text-field
             flat
             prepend-icon="mdi-magnify"
@@ -32,7 +35,10 @@
               <!-- value doesnt get modified by the search filter, this is due to the automated search that the vuetify datatable provides -->
             </v-col>
           </v-row>
-          <v-divider inset class="mb-4"></v-divider>
+          <v-divider
+            inset
+            class="mb-4"
+          ></v-divider>
           <v-row>
             <v-col>
               <v-data-table
@@ -44,7 +50,7 @@
                 :server-items-length="totalLength"
                 @click:row="handleClick"
                 :footer-props="{
-                  'items-per-page-options': [10, 30, 100]
+                  'items-per-page-options': [10, 30, 100],
                 }"
               >
                 <template v-slot:item.Status="{ item }">
@@ -52,7 +58,11 @@
                   <div v-else>Expired</div>
                 </template>
                 <template v-slot:item.actions="{ item }">
-                  <v-btn color="success" outlined @click="removeItem(item)">
+                  <v-btn
+                    color="success"
+                    outlined
+                    @click="removeItem(item)"
+                  >
                     <v-icon class="mr-1">mdi-delete</v-icon>
                     Remove
                   </v-btn>
@@ -62,23 +72,27 @@
           </v-row>
         </v-card>
       </div>
-      <EditDialog :dialog="editDialog" :data="displayPlaceType" @closeEditDialog="closeDialog" />
-    </v-container>
+      <EditDialog
+        :dialog="editDialog"
+        :data="displayPlaceType"
+        @closeEditDialog="closeDialog"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import catalogs from "../../../../controllers/catalogs";
-import Breadcrumbs from "../../../Breadcrumbs";
-import EditDialog from "./EditDialog";
-import AddDialog from "./AddDialog";
-import _ from "lodash";
+import catalogs from "../../../../controllers/catalogs"
+import Breadcrumbs from "../../../Breadcrumbs"
+import EditDialog from "./EditDialog"
+import AddDialog from "./AddDialog"
+import _ from "lodash"
 export default {
   name: "placetypegrid",
   components: {
     Breadcrumbs,
     EditDialog,
-    AddDialog
+    AddDialog,
   },
   data: () => ({
     loading: false,
@@ -89,76 +103,82 @@ export default {
     headers: [
       {
         text: "Type",
-        value: "PlaceType"
-      }
+        value: "PlaceType",
+      },
     ],
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
     displayPlaceType: {},
-    editDialog: false
+    editDialog: false,
   }),
   mounted() {
-    this.getDataFromApi();
+    this.getDataFromApi()
   },
   methods: {
     searchChange: _.debounce(function () {
-      this.getDataFromApi();
+      this.getDataFromApi()
     }, 400),
     handleClick(value) {
       //Redirects the user to the edit user form
-      this.displayPlaceType = value;
-      this.editDialog = true;
+      this.displayPlaceType = value
+      this.editDialog = true
     },
     removeItem(item) {
       //removes one element from the users array
-      const index = this.placetypes.findIndex(a => a.id == item.id);
-      console.log(index);
+      const index = this.placetypes.findIndex((a) => a.id == item.id)
+      console.log(index)
       if (index > -1) {
-        this.placetypes.splice(index, 1);
+        this.placetypes.splice(index, 1)
       }
     },
     async getDataFromApi() {
-      this.loading = true;
-      let { page, itemsPerPage, sortBy, sortDesc } = this.options;
-      page = page > 0 ? page - 1 : 0;
-      itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage;
-      let textToMatch = this.search;
-      let data = await catalogs.getPlaceTypes(page, itemsPerPage, textToMatch, sortBy[0], sortDesc[0] ? "desc" : "asc");
-      this.placetypes = _.get(data, "body", []);
-      console.log(this.placetypes);
-      this.totalLength = _.get(data, "count", 0);
-      this.loading = false;
+      this.loading = true
+      let { page, itemsPerPage, sortBy, sortDesc } = this.options
+      page = page > 0 ? page - 1 : 0
+      itemsPerPage = itemsPerPage === undefined ? 10 : itemsPerPage
+      let textToMatch = this.search
+      let data = await catalogs.getPlaceTypes(
+        page,
+        itemsPerPage,
+        textToMatch,
+        sortBy[0],
+        sortDesc[0] ? "desc" : "asc"
+      )
+      this.placetypes = _.get(data, "body", [])
+      console.log(this.placetypes)
+      this.totalLength = _.get(data, "count", 0)
+      this.loading = false
     },
     formatDate(date) {
-      if (!date) return null;
-      date = date.substr(0, 10);
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
+      if (!date) return null
+      date = date.substr(0, 10)
+      const [year, month, day] = date.split("-")
+      return `${month}/${day}/${year}`
     },
     closeDialog() {
-      this.editDialog = false;
-    }
+      this.editDialog = false
+    },
   },
   computed: {
     filteredData() {
       // returns a filtered users array depending on the selected filters
-      let data = JSON.parse(JSON.stringify(this.placetypes));
-      return data;
-    }
+      let data = JSON.parse(JSON.stringify(this.placetypes))
+      return data
+    },
   },
   watch: {
     options: {
       handler() {
-        this.getDataFromApi();
+        this.getDataFromApi()
       },
-      deep: true
+      deep: true,
     },
     search() {
-      this.getDataFromApi();
-    }
-  }
-};
+      this.getDataFromApi()
+    },
+  },
+}
 </script>
 
 <style scoped>

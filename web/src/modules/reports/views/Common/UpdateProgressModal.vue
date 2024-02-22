@@ -5,7 +5,6 @@
                 <v-btn          
                     @click="initUpdate()"          
                     class="ml-2"
-                    elevation="5"
                     color="secondary"
                     v-bind="attrs"
                     v-on="on">
@@ -44,15 +43,13 @@
                 <v-card-actions class="mx-2">
                     <v-btn					
                         @click="closeDialog()"
-                        :loading="loadingData"												
-                        elevation="5"			
+                        :loading="loadingData"			
                         color="secondary">Close
                     </v-btn>
                     <v-btn
                         :disabled="runningUpdates"	
                         :loading="loadingData"				
-                        @click="startUpdate()"												
-                        elevation="5"
+                        @click="startUpdate()"			
                         class="ml-auto"			
                         color="primary">Start Update
                     </v-btn>

@@ -1,13 +1,13 @@
 <template>
-  <v-container>
+  <div>
     <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin/users" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
       ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to User Management</v-btn
     > -->
     <h1>
       User Editor:
       <small
-        >{{ user.first_name }}
-        {{ user.last_name }}
+        >{{ user.firstName }}
+        {{ user.lastName }}
 
         <small>({{ user.status }})</small>
       </small>
@@ -15,15 +15,21 @@
     <Breadcrumbs />
 
     <v-row>
-      <v-col cols="12" md="12">
+      <v-col
+        cols="12"
+        md="12"
+      >
         <v-card class="default">
           <v-card-title>User Details</v-card-title>
           <v-card-text>
             <v-form>
               <v-row>
-                <v-col cols="12" sm="6">
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
                   <v-text-field
-                    v-model="user.first_name"
+                    v-model="user.firstName"
                     label="First name"
                     dense
                     outlined
@@ -32,9 +38,12 @@
                     hide-details
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6">
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
                   <v-text-field
-                    v-model="user.last_name"
+                    v-model="user.lastName"
                     label="Last name"
                     dense
                     outlined
@@ -152,7 +161,7 @@
             <v-row>
               <v-col>
                 <!--
-                    <v-btn class="black--text" depressed elevation="0"
+                    <v-btn class="black--text" depressed
                       v-if="isEditable">
                         Reset Password
                     </v-btn>
@@ -160,43 +169,52 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" class="d-flex py-0">
+              <v-col
+                cols="12"
+                class="d-flex py-0"
+              >
                 <v-spacer></v-spacer>
-                <v-btn color="primary" class="mr-5 mt-0" @click="doSave"> Save user </v-btn>
+                <v-btn
+                  color="primary"
+                  class="mr-5 mt-0"
+                  @click="doSave"
+                >
+                  Save user
+                </v-btn>
               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
-import { USERS_URL, LOOKUP_URL } from "../../../../urls";
-import Breadcrumbs from "../../../Breadcrumbs.vue";
-import { secureGet, securePut } from "@/store/jwt";
+import { USERS_URL, LOOKUP_URL } from "../../../../urls"
+import Breadcrumbs from "../../../Breadcrumbs.vue"
+import { secureGet, securePut } from "@/store/jwt"
 export default {
   components: {
-    Breadcrumbs
+    Breadcrumbs,
   },
   data: () => ({
     overlay: false,
     accessItem: {
       AccessType: 1,
-      AccessText: 1
+      AccessText: 1,
     },
     /* VALIDATION*/
     dataAccessValidation: false,
     menu: null,
 
-    rules: [value => !!value || "Required."],
+    rules: [(value) => !!value || "Required."],
 
     user: {
       first_name: "",
       last_name: "",
       email: "",
-      roles: []
+      roles: [],
     },
 
     pendingRoles: [],
@@ -206,79 +224,79 @@ export default {
     departments: [],
     branches: [],
     roles: [],
-    showAccessDialog: false
+    showAccessDialog: false,
   }),
   async mounted() {
-    await this.loadDepartments();
-    await this.loadRoles();
-    await this.loadUser(this.$route.params.id);
-    this.getBranches();
+    await this.loadDepartments()
+    await this.loadRoles()
+    await this.loadUser(this.$route.params.id)
+    this.getBranches()
   },
   computed: {
     myBranches: function () {
-      return this.branches.filter(b => {
-        return this.pendingDepartments.indexOf(b.ownedby) >= 0;
-      });
-    }
+      return this.branches.filter((b) => {
+        return this.pendingDepartments.indexOf(b.ownedby) >= 0
+      })
+    },
   },
   watch: {},
   methods: {
     async doSave() {
-      this.saveAccess();
+      this.saveAccess()
     },
     async saveAccess() {
       // await this.saveUserAccess(this.accessItem);
-      this.pendingBranches = this.pendingBranches.filter(b => {
-        let found = this.branches.find(x => x.id === b);
-        return this.pendingDepartments.indexOf(found.ownedby) >= 0;
-      });
+      this.pendingBranches = this.pendingBranches.filter((b) => {
+        let found = this.branches.find((x) => x.id === b)
+        return this.pendingDepartments.indexOf(found.ownedby) >= 0
+      })
       let permsObject = {
         departments: [...this.pendingDepartments, ...this.pendingBranches],
-        roles: this.pendingRoles
-      };
-      securePut(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject).then(resp => {
-        console.log(resp);
-      });
+        roles: this.pendingRoles,
+      }
+      securePut(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject).then((resp) => {
+        console.log(resp)
+      })
       // this.showAccessDialog = false;
     },
     async loadUser(id) {
-      secureGet(`${USERS_URL}/${id}`).then(resp => {
-        this.user = resp.data;
-        if (this.user.is_active == 1) this.user.status = "active";
-        else this.user.status = "inactive";
-      });
-      secureGet(`${USERS_URL}/${id}/permissions`).then(resp => {
+      secureGet(`${USERS_URL}/${id}`).then((resp) => {
+        this.user = resp.data
+        if (this.user.is_active == 1) this.user.status = "active"
+        else this.user.status = "inactive"
+      })
+      secureGet(`${USERS_URL}/${id}/permissions`).then((resp) => {
         for (let i = 0; i < resp.data.departments.length; i++) {
           if (this.departments[resp.data.departments[i].objectid])
-            this.pendingDepartments.push(resp.data.departments[i].objectid);
-          else this.pendingBranches.push(resp.data.departments[i].objectid);
+            this.pendingDepartments.push(resp.data.departments[i].objectid)
+          else this.pendingBranches.push(resp.data.departments[i].objectid)
         }
 
-        this.pendingRoles = resp.data.roles.map(entry => {
-          return entry.roleid;
-        });
-      });
+        this.pendingRoles = resp.data.roles.map((entry) => {
+          return entry.roleid
+        })
+      })
     },
     async loadDepartments() {
-      return secureGet(`${LOOKUP_URL}/departments`).then(resp => {
-        this.departments = resp.data;
-      });
+      return secureGet(`${LOOKUP_URL}/departments`).then((resp) => {
+        this.departments = resp.data
+      })
     },
     async getBranches() {
-      await secureGet(`${LOOKUP_URL}/branches`).then(resp => {
-        this.branches = resp.data;
-      });
+      await secureGet(`${LOOKUP_URL}/branches`).then((resp) => {
+        this.branches = resp.data
+      })
     },
     loadUnits() {
-      secureGet(`${LOOKUP_URL}/departments`).then(resp => {
-        this.departments = resp.data;
-      });
+      secureGet(`${LOOKUP_URL}/departments`).then((resp) => {
+        this.departments = resp.data
+      })
     },
     loadRoles() {
-      secureGet(`${LOOKUP_URL}/roles`).then(resp => {
-        this.roles = resp.data;
-      });
-    }
-  }
-};
+      secureGet(`${LOOKUP_URL}/roles`).then((resp) => {
+        this.roles = resp.data
+      })
+    },
+  },
+}
 </script>

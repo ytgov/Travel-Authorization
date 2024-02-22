@@ -47,7 +47,6 @@
                 <template #body>
                   <v-row class="mx-0">
                     <v-btn
-                      elevation="5"
                       class="mx-auto mt-7 mb-7"
                       style="min-width: 0"
                       @click="parseTravel()"

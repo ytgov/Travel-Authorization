@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="2">
+  <v-card>
     <v-card-text>
       <ReassignApprovalForm :travel-authorization-id="travelAuthorizationId" />
       <v-row>

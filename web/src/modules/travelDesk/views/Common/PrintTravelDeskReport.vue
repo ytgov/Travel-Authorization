@@ -5,22 +5,21 @@
       persistent
       max-width="950px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           :disabled="disabled"
-          @click="initPrint()"
-          class="my-7"
-          elevation="5"
           color="primary"
           v-bind="attrs"
+          class="my-0"
+          @click="initPrint()"
           v-on="on"
           >{{ buttonName }}
         </v-btn>
       </template>
 
       <v-card
-        class="px-10 py-5"
         v-if="!loadingData"
+        class="px-10 py-5"
       >
         <v-row
           class="mb-3"
@@ -29,7 +28,6 @@
           <v-col cols="5" />
           <v-col cols="2">
             <v-btn
-              elevation="5"
               color="secondary"
               @click="print"
             >
@@ -47,7 +45,6 @@
             align="right"
           >
             <v-btn
-              elevation="5"
               color="grey"
               @click="closeModal()"
               >Close</v-btn

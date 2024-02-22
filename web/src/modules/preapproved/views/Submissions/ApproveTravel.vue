@@ -1,11 +1,14 @@
 <template>
   <div>
-    <v-dialog v-model="approveTravelDialog" persistent max-width="950px">
+    <v-dialog
+      v-model="approveTravelDialog"
+      persistent
+      max-width="950px"
+    >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           small
           class="my-0"
-          elevation="5"
           color="primary"
           @click="extractTravelRequests()"
           v-bind="attrs"
@@ -46,9 +49,17 @@
             <v-col cols="1" />
           </v-row>
 
-          <v-row class="mt-1 mb-5" align="center" justify="center">
+          <v-row
+            class="mt-1 mb-5"
+            align="center"
+            justify="center"
+          >
             <v-col cols="4">
-              <v-btn class="ml-1" color="primary" elevation="5" @click="uploadApproval">
+              <v-btn
+                class="ml-1"
+                color="primary"
+                @click="uploadApproval"
+              >
                 Upload Approval
                 <input
                   id="inputfile"
@@ -61,10 +72,18 @@
               </v-btn>
             </v-col>
             <v-col cols="1" />
-            <v-col :key="update" class="blue--text text-h6 text-decoration-underline" cols="7">
-              <a v-if="reader.result" :href="reader.result" download="UploadedFile.pdf" target="_blank">{{
-                approvalFileName
-              }}</a>
+            <v-col
+              :key="update"
+              class="blue--text text-h6 text-decoration-underline"
+              cols="7"
+            >
+              <a
+                v-if="reader.result"
+                :href="reader.result"
+                download="UploadedFile.pdf"
+                target="_blank"
+                >{{ approvalFileName }}</a
+              >
             </v-col>
           </v-row>
 
@@ -78,7 +97,10 @@
                 hide-default-footer
               >
                 <template v-slot:item.name="{ item }">
-                  <v-tooltip top color="primary">
+                  <v-tooltip
+                    top
+                    color="primary"
+                  >
                     <template v-slot:activator="{ on }">
                       <div v-on="item.travelers.length > 1 ? on : ''">
                         <span>
@@ -88,7 +110,10 @@
                       </div>
                     </template>
                     <span
-                      ><div v-for="(trv, inx) in item.travelers" :key="inx">
+                      ><div
+                        v-for="(trv, inx) in item.travelers"
+                        :key="inx"
+                      >
                         {{ trv.fullName.replace(".", " ") }}
                       </div></span
                     >
@@ -101,8 +126,8 @@
                       item.status == 'declined'
                         ? 'red lighten-4'
                         : item.status == 'approved'
-                        ? 'green lighten-4'
-                        : 'grey lighten-4'
+                          ? 'green lighten-4'
+                          : 'grey lighten-4'
                     "
                     class="my-0 py-0"
                     dense
@@ -117,14 +142,32 @@
               </v-data-table>
             </v-col>
           </v-row>
-          <v-alert v-model="alert" dense color="red darken-4" dark dismissible>
+          <v-alert
+            v-model="alert"
+            dense
+            color="red darken-4"
+            dark
+            dismissible
+          >
             {{ alertMsg }}
           </v-alert>
         </v-card-text>
 
         <v-card-actions>
-          <v-btn color="grey darken-5" @click="approveTravelDialog = false"> Cancel </v-btn>
-          <v-btn class="ml-auto" color="green darken-1" :loading="savingData" @click="saveApproval()"> Save </v-btn>
+          <v-btn
+            color="grey darken-5"
+            @click="approveTravelDialog = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            class="ml-auto"
+            color="green darken-1"
+            :loading="savingData"
+            @click="saveApproval()"
+          >
+            Save
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -132,19 +175,19 @@
 </template>
 
 <script>
-import { PREAPPROVED_URL } from "../../../../urls";
-import { securePost } from "../../../../store/jwt";
+import { PREAPPROVED_URL } from "../../../../urls"
+import { securePost } from "../../../../store/jwt"
 
 export default {
   components: {},
   name: "ApproveTravel",
   props: {
     travelRequests: {
-      type: []
+      type: [],
     },
     submissionId: {
-      type: Number
-    }
+      type: Number,
+    },
   },
   data() {
     return {
@@ -152,30 +195,30 @@ export default {
         {
           text: "Name",
           value: "name",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Branch",
           value: "branch",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Reason",
           value: "reason",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Location",
           value: "location",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Status",
           value: "status",
           class: "blue-grey lighten-4",
           sortable: false,
-          width: "11rem"
-        }
+          width: "11rem",
+        },
       ],
       approvalRequests: [],
       approvedBy: "",
@@ -190,111 +233,112 @@ export default {
       alertMsg: "",
       savingData: false,
       reader: new FileReader(),
-      update: 0
-    };
+      update: 0,
+    }
   },
   mounted() {},
   methods: {
     extractTravelRequests() {
-      this.alert = false;
-      this.approvalFileName = "";
-      this.approvalFileType = "";
-      this.approvedBy = "";
-      this.approvalDate = "";
-      this.approvedByErr = false;
-      this.approvalDateErr = false;
-      this.approvalRequests = JSON.parse(JSON.stringify(this.travelRequests));
+      this.alert = false
+      this.approvalFileName = ""
+      this.approvalFileType = ""
+      this.approvedBy = ""
+      this.approvalDate = ""
+      this.approvedByErr = false
+      this.approvalDateErr = false
+      this.approvalRequests = JSON.parse(JSON.stringify(this.travelRequests))
     },
 
     uploadApproval() {
-      this.alert = false;
-      const el = document.getElementById("inputfile");
-      if (el) el.click();
+      this.alert = false
+      const el = document.getElementById("inputfile")
+      if (el) el.click()
     },
 
     handleSelectedFile(event) {
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault()
+      event.stopPropagation()
 
       if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
+        const file = event.target.files[0]
 
-        this.approvalFileType = file.type;
-        this.approvalFileName = file.name;
+        this.approvalFileType = file.type
+        this.approvalFileName = file.name
 
         this.reader.onload = () => {
-          this.update++;
-        };
-        this.reader.readAsDataURL(file);
+          this.update++
+        }
+        this.reader.readAsDataURL(file)
       }
     },
 
     checkFields() {
-      this.alert = false;
+      this.alert = false
 
-      this.approvedByErr = this.approvedBy ? false : true;
-      this.approvalDateErr = this.approvalDate ? false : true;
-      if (this.approvedByErr || this.approvalDateErr) return false;
+      this.approvedByErr = this.approvedBy ? false : true
+      this.approvalDateErr = this.approvalDate ? false : true
+      if (this.approvedByErr || this.approvalDateErr) return false
 
       for (const req of this.approvalRequests) {
         if (req.status != "Approved" && req.status != "Declined") {
-          this.alertMsg = "Please select either 'Approved' or 'Declined' status for all the records.";
-          this.alert = true;
-          return false;
+          this.alertMsg =
+            "Please select either 'Approved' or 'Declined' status for all the records."
+          this.alert = true
+          return false
         }
       }
-      return true;
+      return true
     },
 
     saveApproval() {
-      this.alert = false;
+      this.alert = false
 
       if (this.checkFields()) {
         if (!this.reader?.result || this.approvalFileType != "application/pdf") {
-          this.alertMsg = "Please upload the approval PDF file.";
-          this.alert = true;
-          return;
+          this.alertMsg = "Please upload the approval PDF file."
+          this.alert = true
+          return
         }
 
-        this.savingData = true;
+        this.savingData = true
         const data = {
           status: "Finished",
           approvalDate: this.approvalDate,
           approvedBy: this.approvedBy,
-          preapproved: this.approvalRequests.map(req => {
+          preapproved: this.approvalRequests.map((req) => {
             return {
               preTID: req.preTID,
-              status: req.status
-            };
-          })
-        };
-        const bodyFormData = new FormData();
-        bodyFormData.append("file", this.reader.result);
-        bodyFormData.append("data", JSON.stringify(data));
+              status: req.status,
+            }
+          }),
+        }
+        const bodyFormData = new FormData()
+        bodyFormData.append("file", this.reader.result)
+        bodyFormData.append("data", JSON.stringify(data))
 
         const header = {
           responseType: "application/pdf",
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        };
+            "Content-Type": "multipart/form-data",
+          },
+        }
 
         securePost(`${PREAPPROVED_URL}/approval/${this.submissionId}`, bodyFormData, header)
           .then(() => {
-            this.savingData = false;
-            this.approveTravelDialog = false;
-            this.$emit("updateTable");
+            this.savingData = false
+            this.approveTravelDialog = false
+            this.$emit("updateTable")
           })
-          .catch(e => {
-            this.savingData = false;
-            console.log(e.response.data);
-            this.alertMsg = e.response.data;
-            this.alert = true;
-          });
+          .catch((e) => {
+            this.savingData = false
+            console.log(e.response.data)
+            this.alertMsg = e.response.data
+            this.alert = true
+          })
       }
-    }
-  }
-};
+    },
+  },
+}
 </script>
 
 <style scoped>
