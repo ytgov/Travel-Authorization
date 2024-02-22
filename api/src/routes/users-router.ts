@@ -55,29 +55,32 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
   }
 })
 
-userRouter.put("/:id/permissions", RequiresRoleAdmin, async (req: Request, res: Response) => {
-  try {
-    console.log("body", {
-      firstName: req.body.first_name,
-      lastName: req.body.last_name,
-      department: req.body.departments,
-      roles: req.body.roles,
-    })
-    await User.update(
-      {
+userRouter.put(
+  "/:id/permissions",
+  /* RequiresRoleAdmin, */ async (req: Request, res: Response) => {
+    try {
+      console.log("body", {
         firstName: req.body.first_name,
         lastName: req.body.last_name,
         department: req.body.departments,
         roles: req.body.roles,
-      },
-      { where: { id: req.params.id } }
-    )
-    res.status(200).json("Saved permissions")
-  } catch (error: any) {
-    console.log(error)
-    res.status(500).json("Internal Server Error")
+      })
+      await User.update(
+        {
+          firstName: req.body.first_name,
+          lastName: req.body.last_name,
+          department: req.body.departments,
+          roles: req.body.roles,
+        },
+        { where: { id: req.params.id } }
+      )
+      res.status(200).json("Saved permissions")
+    } catch (error: any) {
+      console.log(error)
+      res.status(500).json("Internal Server Error")
+    }
   }
-})
+)
 
 userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
   try {
