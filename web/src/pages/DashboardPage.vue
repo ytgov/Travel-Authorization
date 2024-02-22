@@ -2,10 +2,7 @@
   <div class="home">
     <h1>Dashboard</h1>
 
-    <v-card
-      class="mt-5"
-      color="#fff2d5"
-    >
+    <v-card class="mt-5 default">
       <v-card-title>Current/Recent Trip</v-card-title>
       <v-card-text>
         <v-row>
@@ -104,10 +101,7 @@
     </v-card>
     <v-row>
       <v-col>
-        <v-card
-          class="mt-5"
-          color="#fff2d5"
-        >
+        <v-card class="mt-5 default">
           <v-card-title>Travel Authorization Status</v-card-title>
           <v-card-text>
             <v-data-table
@@ -124,10 +118,7 @@
         </v-card>
       </v-col>
       <v-col>
-        <v-card
-          class="mt-5"
-          color="#fff2d5"
-        >
+        <v-card class="mt-5 default">
           <v-card-title>Upcoming Trips</v-card-title>
           <v-card-text>
             <v-data-table
@@ -147,10 +138,7 @@
 
     <v-row>
       <v-col>
-        <v-card
-          class="mt-5"
-          color="#fff2d5"
-        >
+        <v-card class="mt-5 default">
           <v-card-title>Create a new travel request</v-card-title>
           <v-card-text>
             To begin the process of creating a new travel request, click the button

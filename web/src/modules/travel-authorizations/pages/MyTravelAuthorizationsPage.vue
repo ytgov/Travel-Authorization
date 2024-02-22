@@ -18,7 +18,11 @@
       <CreateTravelAuthorizationButton />
     </div>
 
-    <MyTravelAuthorizationsTable ref="table" />
+    <v-card class="default">
+      <v-card-text>
+        <MyTravelAuthorizationsTable ref="table" />
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 <script>

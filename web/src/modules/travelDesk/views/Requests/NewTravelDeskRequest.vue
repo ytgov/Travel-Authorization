@@ -6,7 +6,6 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
-          elevation="5"
           style="width: 80%"
           class="mr-5 my-2"
           color="primary"

@@ -31,7 +31,7 @@ const routes = [
     component: () => import("@/pages/AuthLoadingOverlay"),
   },
   {
-    path: "/",
+    path: "",
     component: () => import("@/layouts/Layout"),
     children: [
       {
@@ -46,6 +46,66 @@ const routes = [
         meta: { requiresAuth: true },
         component: () => import("@/pages/UserProfilePage"),
       },
+
+      // CONSIDER: moving these into modules, or moving all route definitions into this file
+      {
+        path: "admin/users/view/:id",
+        name: "AdminUserView",
+        component: AdminUserForm,
+      },
+      {
+        path: "administration/users/edit/:id",
+        name: "AdminUserEdit",
+        component: AdminUserForm,
+      },
+      {
+        path: "administration",
+        name: "AdminDashboard",
+        component: AdminDashboard,
+      },
+      {
+        path: "administration/users",
+        name: "User Management",
+        component: UserManagement,
+      },
+      {
+        path: "administration/flightEstimate",
+        name: "FlightEstimate",
+        component: FlightEstimate,
+      },
+      {
+        path: "administration/poolCarCost",
+        name: "PoolCarCost",
+        component: PoolCarCost,
+      },
+      {
+        path: "administration/rentalCarEstimates",
+        name: "RentalCarEstimates",
+        component: RentalCarEstimates,
+      },
+      {
+        path: "administration/ygRates",
+        name: "YGRates",
+        component: YGRates,
+      },
+      {
+        path: "administration/TravelAgents",
+        name: "TravelAgents",
+        meta: {
+          requiresAuth: true,
+        },
+        component: TravelAgents,
+      },
+      {
+        path: "qa/scenarios",
+        name: "Qa-Scenarios",
+        component: () => import("@/pages/qa/ScenariosListPage"),
+      },
+      {
+        path: "health-check",
+        name: "HealthCheck",
+        component: () => import("@/pages/HealthCheckPage"),
+      },
     ],
   },
 
@@ -56,65 +116,6 @@ const routes = [
   ...flightExpenseRouter,
   ...reportsRouter,
 
-  // CONSIDER: moving these into modules, or moving all route definitions into this file
-  {
-    path: "/admin/users/view/:id",
-    name: "AdminUserView",
-    component: AdminUserForm,
-  },
-  {
-    path: "/administration/users/edit/:id",
-    name: "AdminUserEdit",
-    component: AdminUserForm,
-  },
-  {
-    path: "/administration",
-    name: "AdminDashboard",
-    component: AdminDashboard,
-  },
-  {
-    path: "/administration/users",
-    name: "User Management",
-    component: UserManagement,
-  },
-  {
-    path: "/administration/flightEstimate",
-    name: "FlightEstimate",
-    component: FlightEstimate,
-  },
-  {
-    path: "/administration/poolCarCost",
-    name: "PoolCarCost",
-    component: PoolCarCost,
-  },
-  {
-    path: "/administration/rentalCarEstimates",
-    name: "RentalCarEstimates",
-    component: RentalCarEstimates,
-  },
-  {
-    path: "/administration/ygRates",
-    name: "YGRates",
-    component: YGRates,
-  },
-  {
-    path: "/administration/TravelAgents",
-    name: "TravelAgents",
-    meta: {
-      requiresAuth: true,
-    },
-    component: TravelAgents,
-  },
-  {
-    path: "/qa/scenarios",
-    name: "Qa-Scenarios",
-    component: () => import("@/pages/qa/ScenariosListPage"),
-  },
-  {
-    path: "/health-check",
-    name: "HealthCheck",
-    component: () => import("@/pages/HealthCheckPage"),
-  },
   {
     path: "*",
     name: "Not Found",

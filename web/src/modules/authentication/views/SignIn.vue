@@ -1,5 +1,5 @@
 <template>
-  <v-container id="login" class="fill-height justify-center" tag="section">
+  <div id="login" class="fill-height justify-center" tag="section">
     <v-row justify="center">
       <v-col lg="11" sm="8" xl="7">
         <v-card class="elevation-5" style="overflow: hidden">
@@ -43,7 +43,7 @@
         </v-card>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>

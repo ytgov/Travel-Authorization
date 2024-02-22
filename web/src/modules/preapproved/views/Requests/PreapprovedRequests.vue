@@ -18,16 +18,19 @@
         buttonName="Print Report"
       />
       <v-btn
-           v-if="admin"
-          :disabled="selectedRequests.length == 0"
-          @click="exportToExcel()"
-          class="mr-5 my-7"
-          elevation="5"
-          color="primary"
-        >
-          Export To Excel
+        v-if="admin"
+        :disabled="selectedRequests.length == 0"
+        @click="exportToExcel()"
+        class="mr-5 my-7"
+        color="primary"
+      >
+        Export To Excel
       </v-btn>
-      <new-travel-request type="Add New" @updateTable="updateTable" :class="admin ? '' : 'ml-auto'" />
+      <new-travel-request
+        type="Add New"
+        @updateTable="updateTable"
+        :class="admin ? '' : 'ml-auto'"
+      />
     </v-row>
     <v-data-table
       :headers="headers"
@@ -41,7 +44,10 @@
       @toggle-select-all="applyAllSameDeptSelection"
     >
       <template v-slot:item.name="{ item }">
-        <v-tooltip top color="primary">
+        <v-tooltip
+          top
+          color="primary"
+        >
           <template v-slot:activator="{ on }">
             <div v-on="item.travelers.length > 1 ? on : ''">
               <span>
@@ -51,7 +57,10 @@
             </div>
           </template>
           <span
-            ><div v-for="(trv, inx) in item.travelers" :key="inx">
+            ><div
+              v-for="(trv, inx) in item.travelers"
+              :key="inx"
+            >
               {{ trv.fullName.replace(".", " ") }}
             </div></span
           >
@@ -87,23 +96,23 @@
 </template>
 
 <script>
-import Vue from "vue";
-import NewTravelRequest from "./NewTravelRequest.vue";
-import PrintReport from "../Common/PrintReport.vue";
-import SubmitTravel from "../Common/SubmitTravel.vue";
-import { ExportToCsv } from 'export-to-csv';
+import Vue from "vue"
+import NewTravelRequest from "./NewTravelRequest.vue"
+import PrintReport from "../Common/PrintReport.vue"
+import SubmitTravel from "../Common/SubmitTravel.vue"
+import { ExportToCsv } from "export-to-csv"
 
 export default {
   components: {
     NewTravelRequest,
     PrintReport,
-    SubmitTravel
+    SubmitTravel,
   },
   name: "PreapprovedRequests",
   props: {
     travelRequests: {
-      type: []
-    }
+      type: [],
+    },
   },
   data() {
     return {
@@ -111,42 +120,42 @@ export default {
         {
           text: "Name",
           value: "name",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Department",
           value: "department",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Branch",
           value: "branch",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "TravelDate",
           value: "travelDate",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Location",
           value: "location",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Purpose Type",
           value: "purpose",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Reason",
           value: "reason",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Status",
           value: "status",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "",
@@ -154,89 +163,104 @@ export default {
           class: "blue-grey lighten-4",
           cellClass: "px-0 mx-0",
           sortable: false,
-          width: "1rem"
-        }
+          width: "1rem",
+        },
       ],
       admin: false,
       selectedRequests: [],
-      firstSelectionDept: ""
-    };
+      firstSelectionDept: "",
+    }
   },
   mounted() {
-    this.admin = Vue.filter("isAdmin")();
+    this.admin = Vue.filter("isAdmin")()
   },
   computed: {
     grayedOutTravelRequests() {
-      const travelRequests = JSON.parse(JSON.stringify(this.travelRequests));
-      if(this.firstSelectionDept)
-        travelRequests.forEach(req => {
-            req.isSelectable= req.isSelectable? (req.department==this.firstSelectionDept) :false
-        });
+      const travelRequests = JSON.parse(JSON.stringify(this.travelRequests))
+      if (this.firstSelectionDept)
+        travelRequests.forEach((req) => {
+          req.isSelectable = req.isSelectable ? req.department == this.firstSelectionDept : false
+        })
       return travelRequests
-    }
+    },
   },
   methods: {
     updateTable() {
-      this.$emit("updateTable");
+      this.$emit("updateTable")
     },
     applySameDeptSelection(selection) {
       Vue.nextTick(() => {
         if (this.selectedRequests.length == 1) {
-          this.firstSelectionDept = this.selectedRequests[0].department;
+          this.firstSelectionDept = this.selectedRequests[0].department
         } else if (this.selectedRequests.length == 0) {
-          this.firstSelectionDept = "";
+          this.firstSelectionDept = ""
         }
 
         if (selection.value == true && selection.item.department != this.firstSelectionDept) {
-          this.selectedRequests = this.selectedRequests.filter(req => req.preTID != selection.item.preTID);
+          this.selectedRequests = this.selectedRequests.filter(
+            (req) => req.preTID != selection.item.preTID
+          )
         }
-      });
+      })
     },
     applyAllSameDeptSelection(selection) {
-      console.log(selection);
+      console.log(selection)
       Vue.nextTick(() => {
         if (selection.value == true && this.firstSelectionDept) {
-          this.selectedRequests = this.selectedRequests.filter(req => req.department == this.firstSelectionDept);
+          this.selectedRequests = this.selectedRequests.filter(
+            (req) => req.department == this.firstSelectionDept
+          )
         } else {
-          this.selectedRequests = [];
-          this.firstSelectionDept = "";
+          this.selectedRequests = []
+          this.firstSelectionDept = ""
         }
-      });
+      })
     },
-    exportToExcel(){
+    exportToExcel() {
       // console.log(this.selectedRequests)
-      const csvInfo = this.selectedRequests.map(req =>{
+      const csvInfo = this.selectedRequests.map((req) => {
         return {
-          travelers: req.travelers?.map(trv=>trv.fullName.replace(".", " "))?.join(', '),
+          travelers: req.travelers?.map((trv) => trv.fullName.replace(".", " "))?.join(", "),
           department: req.department,
-          branch: (req.branch? req.branch:''),
-          travelDate: (req.dateUnkInd? req.month:(req.startDate +' '+ req.endDate)),
+          branch: req.branch ? req.branch : "",
+          travelDate: req.dateUnkInd ? req.month : req.startDate + " " + req.endDate,
           location: req.location,
-          purpose: (req.purpose? req.purpose :''),
+          purpose: req.purpose ? req.purpose : "",
           estimatedCost: req.estimatedCost,
-          reason: (req.reason? req.reason :''),
-          status: (req.status? req.status :''),
-          travelerNotes: (req.travelerNotes? req.travelerNotes :'')
+          reason: req.reason ? req.reason : "",
+          status: req.status ? req.status : "",
+          travelerNotes: req.travelerNotes ? req.travelerNotes : "",
         }
       })
       const options = {
-          fieldSeparator: ',',
-          quoteStrings: '"',
-          decimalSeparator: '.',
-          showLabels: true,
-          showTitle: false,
-          title: '',
-          filename: 'Preapproved-Travel-Requests',
-          useTextFile: false,
-          useBom: true,
-          useKeysAsHeaders: false,
-          headers: ['Name', 'Department', 'Branch', 'Travel Date', 'Location', 'Purpose', 'Estimated Cost', 'Reason', 'Status', 'Notes']
-      };
-      const csvExporter = new ExportToCsv(options);
-      csvExporter.generateCsv(csvInfo);
-    }
-  }
-};
+        fieldSeparator: ",",
+        quoteStrings: '"',
+        decimalSeparator: ".",
+        showLabels: true,
+        showTitle: false,
+        title: "",
+        filename: "Preapproved-Travel-Requests",
+        useTextFile: false,
+        useBom: true,
+        useKeysAsHeaders: false,
+        headers: [
+          "Name",
+          "Department",
+          "Branch",
+          "Travel Date",
+          "Location",
+          "Purpose",
+          "Estimated Cost",
+          "Reason",
+          "Status",
+          "Notes",
+        ],
+      }
+      const csvExporter = new ExportToCsv(options)
+      csvExporter.generateCsv(csvInfo)
+    },
+  },
+}
 </script>
 
 <style scoped>

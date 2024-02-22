@@ -12,6 +12,8 @@
           dense
           outlined
           readonly
+          append-icon="mdi-lock"
+          background-color="white"
         ></v-text-field>
       </v-col>
       <v-col
@@ -32,10 +34,11 @@
         <v-text-field
           :value="initialDestination.departureDate"
           label="Start Date"
-          prepend-icon="mdi-calendar"
           dense
           outlined
           readonly
+          append-icon="mdi-lock"
+          background-color="white"
         ></v-text-field>
       </v-col>
       <v-col
@@ -45,10 +48,11 @@
         <v-text-field
           :value="finalDestinationDepartureDate"
           label="End Date"
-          prepend-icon="mdi-calendar"
           dense
           outlined
           readonly
+          append-icon="mdi-lock"
+          background-color="white"
         ></v-text-field>
       </v-col>
     </v-row>

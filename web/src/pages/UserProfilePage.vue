@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <FullScreenLoadingOverlay :value="isLoading" />
 
     <h1 class="d-flex justify-space-between">
@@ -180,7 +180,7 @@
         </v-chip>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>

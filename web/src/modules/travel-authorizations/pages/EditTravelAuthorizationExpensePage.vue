@@ -1,10 +1,10 @@
 <template>
-  <v-container>
+  <div>
     TODO: Build out expense page for travel authorization.
     <pre>
       {{ travelAuthorization }}
     </pre>
-  </v-container>
+  </div>
 </template>
 
 <script setup>

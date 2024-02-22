@@ -1,17 +1,20 @@
 <template>
-  <v-container>
+  <div>
     <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
       ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to Administration</v-btn
     > -->
 
-    <h1>User Management</h1>
-
     <Breadcrumbs />
+
+    <h1>User Management</h1>
     <div class="mt-2">
       <v-card class="default px-3 py-3">
         <v-card-text>
           <v-row>
-            <v-col cols="8" class="d-flex">
+            <v-col
+              cols="8"
+              class="d-flex"
+            >
               <v-text-field
                 prepend-inner-icon="mdi-magnify"
                 background-color="white"
@@ -22,7 +25,10 @@
                 hide-details
               ></v-text-field>
             </v-col>
-            <v-col cols="4" class="d-flex">
+            <v-col
+              cols="4"
+              class="d-flex"
+            >
               <v-select
                 small-chips
                 multiple
@@ -44,28 +50,28 @@
             :headers="headers"
             :loading="loading"
             :search="search"
-            @click:row="handleClick"
             :footer-props="{
-              'items-per-page-options': [10, 30, 100]
+              'items-per-page-options': [10, 30, 100],
             }"
             class="clickable-row"
+            @click:row="handleClick"
           >
           </v-data-table
         ></v-card-text>
       </v-card>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
-import Breadcrumbs from "../../../Breadcrumbs.vue";
-import { USERS_URL } from "../../../../urls";
-import { mapActions } from "vuex";
-import { secureGet } from "@/store/jwt";
+import Breadcrumbs from "../../../Breadcrumbs.vue"
+import { USERS_URL } from "../../../../urls"
+import { mapActions } from "vuex"
+import { secureGet } from "@/store/jwt"
 export default {
   name: "usersgrid",
   components: {
-    Breadcrumbs
+    Breadcrumbs,
   },
   data: () => ({
     loading: false,
@@ -76,59 +82,59 @@ export default {
     headers: [
       {
         text: "Email",
-        value: "email"
+        value: "email",
       },
       {
         text: "First Name",
-        value: "first_name"
+        value: "firstName",
       },
       {
         text: "Last Name",
-        value: "last_name"
+        value: "lastName",
       },
       {
         text: "Status",
-        value: "is_active"
-      }
+        value: "isActive",
+      },
       //      { text: "Actions", value: "actions"}
     ],
     page: 1,
     pageCount: 0,
     iteamsPerPage: 10,
     selectedFilter: ["Active"],
-    filterOptions: ["Active", "Expired", "Inactive"]
+    filterOptions: ["Active", "Expired", "Inactive"],
   }),
   async mounted() {
     //this.getDataFromApi();
-    this.laodUsers();
+    this.laodUsers()
   },
   methods: {
     ...mapActions("users", ["loadUsers"]),
 
     handleClick(value) {
       //Redirects the user to the edit user form
-      this.$router.push(`/administration/users/edit/${value.id}`);
+      this.$router.push(`/administration/users/edit/${value.id}`)
     },
     laodUsers() {
-      secureGet(`${USERS_URL}`).then(resp => {
-        this.users = resp.data;
-      });
-    }
+      secureGet(`${USERS_URL}`).then((resp) => {
+        this.users = resp.data
+      })
+    },
   },
   computed: {
     filteredData() {
-      if (this.selectedFilter.length == 0) return this.users;
+      if (this.selectedFilter.length == 0) return this.users
 
-      let data = [];
+      let data = []
       for (let usr of this.users) {
         if (this.selectedFilter.indexOf("Active") >= 0) {
-          if (usr.status == "active") data.push(usr);
+          if (usr.status == "active") data.push(usr)
         }
       }
-      return data;
-    }
-  }
-};
+      return data
+    },
+  },
+}
 </script>
 
 <style scoped>

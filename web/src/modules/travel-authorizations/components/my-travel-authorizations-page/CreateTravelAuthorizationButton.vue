@@ -2,6 +2,7 @@
   <v-btn
     :disabled="isLoadingTravelAuthorization"
     :loading="isLoadingTravelAuthorization"
+    class="my-0"
     color="primary"
     @click="createAndGoToFormDetails"
   >

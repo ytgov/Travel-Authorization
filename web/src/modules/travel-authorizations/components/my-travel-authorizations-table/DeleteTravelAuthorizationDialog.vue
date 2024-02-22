@@ -8,7 +8,7 @@
         Are you sure you want to delete the following travel authorization request?
       </v-card-title>
       <v-card-text>
-        <v-container v-if="hasTravelAuthorization">
+        <div v-if="hasTravelAuthorization">
           <v-row no-gutters>
             <v-col class="text-center">
               {{ formatPhase(travelAuthorization.phase) }}
@@ -34,7 +34,7 @@
               {{ formatStatus(travelAuthorization.status) }}
             </v-col>
           </v-row>
-        </v-container>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

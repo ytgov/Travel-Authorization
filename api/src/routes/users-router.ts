@@ -1,4 +1,4 @@
-import { isNil, isNull } from "lodash"
+import { isNull } from "lodash"
 import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
@@ -39,7 +39,7 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
   try {
     // TODO: update the front-end so renaming is no longer needed
     const users = await User.findAll({
-      attributes: ["email", ["firstName", "first_name"], ["lastName", "last_name"]],
+      attributes: ["email", "firstName", "lastName"],
       where: {
         status: User.Statuses.ACTIVE,
         roles: {
@@ -57,13 +57,18 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
 
 userRouter.put("/:id/permissions", RequiresRoleAdmin, async (req: Request, res: Response) => {
   try {
-    console.log("body", req.body)
+    console.log("body", {
+      firstName: req.body.first_name,
+      lastName: req.body.last_name,
+      department: req.body.departments,
+      roles: req.body.roles,
+    })
     await User.update(
       {
         firstName: req.body.first_name,
         lastName: req.body.last_name,
         department: req.body.departments,
-        roles: req.body.roles.join(","),
+        roles: req.body.roles,
       },
       { where: { id: req.params.id } }
     )
@@ -81,7 +86,6 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" })
     }
 
-    console.log(user)
     let permissions = {
       first_name: user.firstName,
       last_name: user.lastName,
@@ -97,7 +101,7 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
   try {
-    const user = User.findByPk(req.params.id)
+    const user = await User.findByPk(req.params.id)
     if (isNull(user)) {
       return res.status(404).json({ message: "User not found" })
     }

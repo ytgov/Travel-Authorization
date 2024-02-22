@@ -1,5 +1,5 @@
 <template>    
-	<v-card elevation="1" outlined :style="{border:border}">
+	<v-card outlined :style="{border:border}">
         
         <div :class="largeTitle?'custom-large-title-card':'custom-title-card'" :style="{width:titleWidth}">       
             <slot name="title"></slot>

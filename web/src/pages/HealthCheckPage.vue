@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container>
+    <div>
       <router-link :to="{ name: 'Dashboard' }">Dashboard</router-link>
 
       <v-row class="mt-5">
@@ -107,7 +107,7 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
+    </div>
   </v-app>
 </template>
 <script>

@@ -8,7 +8,6 @@
       :loading="loading"
       class="mx-auto"
       max-width="400"
-      elevation="2"
     >
       <v-card-title> Apply a given QA Scenario </v-card-title>
       <v-card-subtitle>

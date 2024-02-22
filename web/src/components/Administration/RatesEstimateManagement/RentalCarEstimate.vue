@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container fluid>
+    <div fluid>
       <H1>Rental Car Estimates</H1>
       <Breadcrumbs class="mb-5"/>
       <v-data-table :headers="headers" :items="vehicles" class="elevation-1">
@@ -57,7 +57,7 @@
           <v-btn color="primary" @click="initialize"> Reset </v-btn>
         </template>
       </v-data-table>
-    </v-container>
+    </div>
   </v-app>
 </template>
 <script>

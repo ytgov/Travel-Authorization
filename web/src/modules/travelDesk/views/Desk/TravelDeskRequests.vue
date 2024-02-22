@@ -1,31 +1,26 @@
 <template>
-  <div
-    class="mx-10 mb-5"
-    v-if="tdUser"
-  >
-    <v-row
-      class="my-0 mx-0"
-      :key="update"
-    >
+  <div v-if="tdUser">
+    <div class="d-flex mb-4">
+      <v-spacer />
       <print-travel-desk-report
-        class="ml-auto"
+        class="my-0 mr-4"
         :disabled="selectedRequests.length == 0"
-        :travelDeskRequests="selectedRequests"
-        buttonName="Print Report"
+        :travel-desk-requests="selectedRequests"
+        button-name="Print Report"
         @update="update++"
       />
       <v-btn
         :disabled="selectedRequests.length == 0"
-        @click="exportToExcel()"
-        class="ml-3 mr-2 my-7"
-        elevation="5"
+        class="my-0"
         color="primary"
+        @click="exportToExcel()"
       >
         Export To Excel
       </v-btn>
-    </v-row>
+    </div>
 
     <v-data-table
+      v-model="selectedRequests"
       :headers="headers"
       :items="travelDeskRequests"
       :sort-by="['bookedStatus', 'userTravel', 'startDate']"
@@ -33,10 +28,8 @@
       :item-class="itemRowBackground"
       multi-sort
       :items-per-page="15"
-      v-model="selectedRequests"
       show-select
       item-key="id"
-      class="elevation-1 mt-4"
     >
       <template #item.createdAt="{ item }">
         <div>
@@ -103,8 +96,8 @@
       <template #item.edit="{ item }">
         <process-travel-desk-request
           :type="item.status == 'booked' ? 'booked' : 'edit'"
+          :travel-detail="item"
           @updateTable="updateTable()"
-          :travelDetail="item"
         />
       </template>
     </v-data-table>
@@ -118,36 +111,34 @@ import PrintTravelDeskReport from "../Common/PrintTravelDeskReport.vue"
 import { ExportToCsv } from "export-to-csv"
 
 export default {
+  name: "TravelDeskRequests",
   components: {
     ProcessTravelDeskRequest,
     PrintTravelDeskReport,
   },
-  name: "TravelDeskRequests",
   props: {
     travelDeskRequests: {},
   },
   data() {
     return {
       headers: [
-        { text: "Submit Date", value: "createdAt", class: "blue-grey lighten-4" },
-        { text: "Name", value: "fullname", class: "blue-grey lighten-4", sortable: false },
-        { text: "Department", value: "department", class: "blue-grey lighten-4" },
-        { text: "Branch", value: "branch", class: "blue-grey lighten-4" },
-        { text: "Travel Start Date", value: "startDate", class: "blue-grey lighten-4" },
+        { text: "Submit Date", value: "createdAt" },
+        { text: "Name", value: "fullname", sortable: false },
+        { text: "Department", value: "department" },
+        { text: "Branch", value: "branch" },
+        { text: "Travel Start Date", value: "startDate" },
         {
           text: "Travel End Date",
           value: "endDate",
-          class: "blue-grey lighten-4",
           sortable: false,
         },
-        { text: "Location", value: "location", class: "blue-grey lighten-4" },
-        { text: "Requested", value: "requested", class: "blue-grey lighten-4" },
-        { text: "Status", value: "status", class: "blue-grey lighten-4" },
-        { text: "Travel Desk Officer", value: "travelDeskOfficer", class: "blue-grey lighten-4" },
+        { text: "Location", value: "location" },
+        { text: "Requested", value: "requested" },
+        { text: "Status", value: "status" },
+        { text: "Travel Desk Officer", value: "travelDeskOfficer" },
         {
           text: "",
           value: "edit",
-          class: "blue-grey lighten-4",
           cellClass: "px-0 mx-0",
           sortable: false,
         },
@@ -159,10 +150,10 @@ export default {
       tdUser: false,
     }
   },
+  computed: {},
   mounted() {
     this.tdUser = Vue.filter("isTdUser")()
   },
-  computed: {},
   methods: {
     updateTable() {
       this.$emit("updateTable")

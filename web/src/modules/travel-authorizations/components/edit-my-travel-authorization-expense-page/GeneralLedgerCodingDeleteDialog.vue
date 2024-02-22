@@ -8,7 +8,7 @@
         Are you sure you want to delete the following coding?
       </v-card-title>
       <v-card-text>
-        <v-container v-if="hasGeneralLedgerCoding">
+        <div v-if="hasGeneralLedgerCoding">
           <v-row no-gutters>
             <v-col class="text-center">
               {{ generalLedgerCoding.code }}
@@ -19,7 +19,7 @@
               {{ formatCurrency(generalLedgerCoding.amount) }}
             </v-col>
           </v-row>
-        </v-container>
+        </div>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

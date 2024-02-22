@@ -4,7 +4,6 @@
 			<v-btn    
 				@click="exportToExcel()"          
 				class="ml-auto"
-				elevation="5"
 				color="secondary">
 				Download Data
 			</v-btn>

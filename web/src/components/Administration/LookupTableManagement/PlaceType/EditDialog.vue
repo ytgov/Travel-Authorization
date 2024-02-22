@@ -6,7 +6,7 @@
           <span class="text-h5">Edit Purpose</span>
         </v-card-title>
         <v-card-text>
-          <v-container>
+          <div>
             <v-row>
               <v-col cols="12">
                 <v-form ref="editPlaceTypeForm" :lazy-validation="false" v-model="valid">
@@ -14,7 +14,7 @@
                 </v-form>
               </v-col>
             </v-row>
-          </v-container>
+          </div>
         </v-card-text>
         <v-card-actions>
           <v-btn text @click="closeDialog"> Close </v-btn>

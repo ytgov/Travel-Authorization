@@ -5,6 +5,8 @@
     :loading="isLoading"
     readonly
     v-bind="$attrs"
+    append-icon="mdi-lock"
+    background-color="white"
   />
 </template>
 
