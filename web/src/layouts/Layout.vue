@@ -175,7 +175,7 @@
       <v-container
         v-else
         fluid
-        class="fill-height"
+        class="h-full"
       >
         <router-view></router-view>
         <RequestAlert />
@@ -338,3 +338,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.h-full {
+  height: 100%;
+}
+</style>
