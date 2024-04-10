@@ -1,7 +1,6 @@
 import { reactive, toRefs, unref, watch } from "vue"
 
 import locationsApi from "@/api/locations-api"
-import { defineUse } from "@/use/helper-utils"
 
 /**
  * TODO: add other fields
@@ -24,7 +23,7 @@ import { defineUse } from "@/use/helper-utils"
  */
 
 /** @type {UseLocation} */
-export const useLocation = defineUse((locationId) => {
+export function useLocation(locationId) {
   const state = reactive({
     location: {},
     isLoading: false,
@@ -64,6 +63,6 @@ export const useLocation = defineUse((locationId) => {
     fetch,
     refresh: fetch,
   }
-})
+}
 
 export default useLocation
