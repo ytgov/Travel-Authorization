@@ -18,7 +18,7 @@
 
     <v-form
       ref="form"
-      @submit.prevent="denyAndClose"
+      @submit.prevent="approveAndClose"
     >
       <v-card>
         <v-card-title class="text-h5"> Approve Request </v-card-title>
@@ -111,14 +111,14 @@ function close() {
   form.value.resetValidation()
 }
 
-async function denyAndClose() {
+async function approveAndClose() {
   try {
     await approve()
     close()
+
+    await nextTick()
+    emit("approved")
     snack("Travel authorization approved!", { color: "success" })
-    nextTick(() => {
-      emit("approved")
-    })
   } catch (error) {
     snack(error.message, { color: "error" })
   }
@@ -126,9 +126,9 @@ async function denyAndClose() {
 
 watch(
   () => showDialog.value,
-  (newShowDialog) => {
-    if (newShowDialog) {
-      router.push({ query: { showApprove: newShowDialog } })
+  (value) => {
+    if (value) {
+      router.push({ query: { showApprove: "true" } })
     } else {
       router.push({ query: { showApprove: undefined } })
     }
