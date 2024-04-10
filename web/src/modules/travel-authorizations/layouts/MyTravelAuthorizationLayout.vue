@@ -1,17 +1,5 @@
 <template>
-  <v-layout
-    v-if="!isReadyTravelAuthorization"
-    fill-height
-    align-center
-    justify-center
-    class="min-vh-70"
-  >
-    <v-progress-circular
-      indeterminate
-      color="primary"
-      size="64"
-    ></v-progress-circular>
-  </v-layout>
+  <PageLoader v-if="!isReadyTravelAuthorization" />
   <div v-else>
     <Breadcrumbs />
 
@@ -45,6 +33,7 @@
 import { mapActions, mapGetters } from "vuex"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
+import PageLoader from "@/components/PageLoader"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
@@ -59,6 +48,7 @@ export default {
     DetailsTab,
     EstimateTab,
     ExpenseTab,
+    PageLoader,
     SummaryHeaderPanel,
     VUserChipMenu,
   },
@@ -84,9 +74,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.min-vh-70 {
-  min-height: 70vh;
-}
-</style>

@@ -35,6 +35,7 @@
             <v-btn
               text
               color="primary"
+              :loading="isLoading"
               v-bind="attrs"
               v-on="on"
             >
@@ -169,38 +170,32 @@
     </v-app-bar>
 
     <v-main :style="{ 'padding-left: 33px !important': !hasSidebar }">
+      <PageLoader v-if="isLoading" />
       <!-- Provides the application the proper gutter -->
       <v-container
+        v-else
         fluid
-        class="page-wrapper"
+        class="h-full"
       >
         <router-view></router-view>
         <RequestAlert />
       </v-container>
     </v-main>
-
-    <v-overlay v-model="showOverlay">
-      <div class="text-center">
-        <v-progress-circular
-          indeterminate
-          size="64"
-          class="mb-5"
-        ></v-progress-circular>
-        <h1 class="title">Loading Travel Authorization</h1>
-      </div>
-    </v-overlay>
   </v-app>
 </template>
 
 <script>
 import { mapState } from "vuex"
+
+import { getInstance } from "@/auth"
+import * as config from "@/config"
 import router from "@/router"
 import store from "@/store"
-import * as config from "@/config"
-import RequestAlert from "@/components/RequestAlert.vue"
-import { getInstance } from "@/auth"
 
 import useCurrentUser from "@/use/use-current-user"
+
+import RequestAlert from "@/components/RequestAlert.vue"
+import PageLoader from "@/components/PageLoader.vue"
 
 const auth = getInstance()
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
@@ -209,6 +204,7 @@ export default {
   name: "App",
   components: {
     RequestAlert,
+    PageLoader,
   },
   data: () => ({
     releaseTag: config.releaseTag,
@@ -226,7 +222,7 @@ export default {
     currentId: 0,
     menuTitle: "Dashboard",
 
-    showOverlay: true,
+    isLoading: true,
   }),
   computed: {
     ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
@@ -312,7 +308,7 @@ export default {
     },
     async doInitialize() {
       //await this.initialize();
-      this.showOverlay = false
+      this.isLoading = false
       this.getDropdownTitle()
     },
     getDropdownTitle() {
@@ -342,3 +338,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.h-full {
+  height: 100%;
+}
+</style>
