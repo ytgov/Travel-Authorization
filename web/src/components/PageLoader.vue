@@ -1,6 +1,6 @@
 <template>
   <!-- Vuetify v2 fill-height becomes Vuetify v3 h-screen -->
-  <div class="d-flex justify-center align-center fill-height">
+  <div class="d-flex justify-center align-center fill-height fill-width">
     <div class="d-flex flex-column align-center">
       <v-progress-circular
         indeterminate
@@ -21,3 +21,9 @@ defineProps({
   },
 })
 </script>
+
+<style scoped>
+.fill-width {
+  width: 100%;
+}
+</style>
