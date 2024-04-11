@@ -1,13 +1,15 @@
-import BaseController from "./base-controller"
+import { WhereOptions } from "sequelize"
 
-import { Preapproved } from "@/models"
+import { TravelAuthorizationPreApproval } from "@/models"
+
+import BaseController from "@/controllers/base-controller"
 
 export class TravelAuthorizationPreApprovalsController extends BaseController {
   async index() {
-    const where = this.query.where
-    const travelAuthorizationPreApprovals = await Preapproved.findAll({
+    const where = this.query.where as WhereOptions<TravelAuthorizationPreApproval>
+    const travelAuthorizationPreApprovals = await TravelAuthorizationPreApproval.findAll({
       where,
-      include: ["preApprovedTravelers"],
+      include: ["travelers"],
     })
     return this.response.json({
       travelAuthorizationPreApprovals,
