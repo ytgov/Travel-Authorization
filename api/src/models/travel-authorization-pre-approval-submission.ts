@@ -1,12 +1,19 @@
 import {
+  Association,
   CreationOptional,
   DataTypes,
+  HasOneCreateAssociationMixin,
+  HasOneGetAssociationMixin,
+  HasOneSetAssociationMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
+
+import TravelAuthorizationPreApproval from "@/models/travel-authorization-pre-approval"
 
 export class TravelAuthorizationPreApprovalSubmission extends Model<
   InferAttributes<TravelAuthorizationPreApprovalSubmission>,
@@ -20,8 +27,33 @@ export class TravelAuthorizationPreApprovalSubmission extends Model<
   declare approvedBy: CreationOptional<string | null>
   declare department: CreationOptional<string | null>
 
+  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
+  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
+  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
+  declare getPreApproval: HasOneGetAssociationMixin<TravelAuthorizationPreApproval>
+  declare setPreApproval: HasOneSetAssociationMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare createPreApproval: HasOneCreateAssociationMixin<TravelAuthorizationPreApproval>
+
+  declare preApproval?: NonAttribute<TravelAuthorizationPreApproval>
+
+  declare static associations: {
+    preApproval: Association<
+      TravelAuthorizationPreApprovalSubmission,
+      TravelAuthorizationPreApproval
+    >
+  }
+
   // TODO: add associations
-  static establishAssociations() {}
+  static establishAssociations() {
+    this.hasOne(TravelAuthorizationPreApproval, {
+      sourceKey: "preTSubID",
+      foreignKey: "submissionId",
+      as: "preApproval",
+    })
+  }
 }
 
 TravelAuthorizationPreApprovalSubmission.init(
