@@ -1,4 +1,4 @@
-import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
+import travelAuthorizationPreApprovalsApi from "@/api/pre-approved-travel-requests-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
 
@@ -25,8 +25,9 @@ const actions = {
   async fetch({ commit }, { where = {} } = {}) {
     commit("SET_IS_LOADING", true)
     try {
-      const { preApprovedTravelRequests: travelAuthorizationPreApprovals } =
-        await preApprovedTravelRequestsApi.list({ where })
+      const { travelAuthorizationPreApprovals } = await travelAuthorizationPreApprovalsApi.list({
+        where,
+      })
       commit("SET_IS_ERRORED", false)
       commit("SET_ITEMS", travelAuthorizationPreApprovals)
       commit("SET_IS_CACHED", true)

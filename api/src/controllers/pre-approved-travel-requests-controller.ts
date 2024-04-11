@@ -5,9 +5,11 @@ import { Preapproved } from "@/models"
 export class PreApprovedTravelRequestsController extends BaseController {
   index() {
     const where = this.query.where
-    return Preapproved.findAll({ where, include: ['preApprovedTravelers'] }).then((preApprovedTravelRequests) => {
-      return this.response.json({ preApprovedTravelRequests })
-    })
+    return Preapproved.findAll({ where, include: ["preApprovedTravelers"] }).then(
+      (preApprovedTravelRequests) => {
+        return this.response.json({ travelAuthorizationPreApprovals: preApprovedTravelRequests })
+      }
+    )
   }
 }
 
