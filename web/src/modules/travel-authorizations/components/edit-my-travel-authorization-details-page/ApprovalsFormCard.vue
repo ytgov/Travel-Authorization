@@ -133,7 +133,6 @@ export default {
   data: () => ({
     required: (v) => !!v || "This field is required",
     isInteger: (v) => v == 0 || Number.isInteger(Number(v)) || "This field must be a number",
-    preApprovedTravelRequests: [],
     loadingPreApprovedTravelRequests: false,
     refreshingEstimatesSilently: false,
   }),
