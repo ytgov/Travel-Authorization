@@ -2,7 +2,7 @@
   <v-select
     :value="value"
     :items="travelAuthorizationPreApprovals"
-    :loading="isLoadingPreApprovedTravelRequests"
+    :loading="isLoading"
     label="Pre-approved Travel Request?"
     no-data-text="No pre-approvals available"
     v-bind="$attrs"
@@ -31,12 +31,12 @@ const props = defineProps({
 const emit = defineEmits(["input"])
 
 const travelAuthorizationPreApprovals = ref([])
-const isLoadingPreApprovedTravelRequests = ref(false)
+const isLoading = ref(false)
 
 watch(
   () => props.department,
   async (newDepartment) => {
-    await loadPreApprovedTravelRequests(newDepartment)
+    await fetch(newDepartment)
   },
   { immediate: true }
 )
@@ -45,14 +45,14 @@ watch(
  *
  * @param {string | null} department
  */
-async function loadPreApprovedTravelRequests(department) {
+async function fetch(department) {
   // Since we can't determine if a pre-approval applies, the user doesn't get any options.
   if (isEmpty(department)) {
     travelAuthorizationPreApprovals.value = []
     return
   }
 
-  isLoadingPreApprovedTravelRequests.value = true
+  isLoading.value = true
   try {
     const { preApprovedTravelRequests: newTravelAuthorizationPreApprovals } =
       await preApprovedTravelRequestsApi.list({ where: { department } })
@@ -68,7 +68,7 @@ async function loadPreApprovedTravelRequests(department) {
     })
     travelAuthorizationPreApprovals.value = options
   } finally {
-    isLoadingPreApprovedTravelRequests.value = false
+    isLoading.value = false
   }
 }
 
