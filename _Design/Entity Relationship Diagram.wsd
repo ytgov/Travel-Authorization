@@ -428,9 +428,10 @@ entity "travelDeskRentalCar" {
 entity "travel_authorization_action_logs" {
   * id : serial4
   --
-  travel_authorization_id : int4
-  user_id : int4
-  action : varchar(255)
+  * travel_authorization_id : <<FK>> int4
+  * actor_id : <<FK>> int4
+  * assignee_id : <<FK>> int4
+  * action : varchar(255)
   note : varchar(255)
   created_at : timestamptz
   updated_at : timestamptz
@@ -472,23 +473,24 @@ entity "travelDeskFlightSegment" {
 }
 
 ' Relationships
-travel_authorization_pre_approvals::submission_id ||--o{ preapprovedSubmissions::preTSubID
+expenses::travel_authorization_id ||--o{ travel_authorizations:id
 preapprovedSubmissions::preTSubID }o--o| preapprovedDocuments::preTSubID
 preapprovedTravelers::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
+stops::travel_authorization_id }o--|| travel_authorizations::id
+travel_authorization_action_logs::travel_authorization_id ||--o{ travel_authorizations::id
+travel_authorization_action_logs::actor_id ||--o{ users::id
+travel_authorization_action_logs::assignee_id ||--o{ users::id
+travel_authorization_pre_approvals::submission_id ||--o{ preapprovedSubmissions::preTSubID
 travel_authorizations::purpose_id ||--o{ travel_purposes::id
-travel_desk_travel_requests }o--|| travel_authorizations : travel_authorization_id_foreign
-travel_desk_travel_requests }o--|| travelDeskTravelAgent : travel_desk_travel_agent_id_foreign
-expenses }o--|| travel_authorizations : travel_authorization_id_foreign
-stops }o--|| travel_authorizations : travel_authorization_id_foreign
-travelDeskFlightRequest }o--|| travel_desk_travel_requests : requestid_foreign
-travelDeskHotel }o--|| travel_desk_travel_requests : requestid_foreign
-travelDeskOtherTransportation }o--|| travel_desk_travel_requests : requestid_foreign
-travelDeskQuestion }o--|| travel_desk_travel_requests : requestid_foreign
-travelDeskRentalCar }o--|| travel_desk_travel_requests : requestid_foreign
-travel_authorization_action_logs }o--|| travel_authorizations : travel_authorization_id_foreign
-travel_authorization_action_logs ||--o{ users : user_id_foreign
-travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests : travel_desk_travel_request_id_foreign
-travelDeskFlightOption }o--|| travelDeskFlightRequest : flightrequestid_foreign
-travelDeskFlightSegment }o--|| travelDeskFlightOption : flightoptionid_foreign
+travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
+travel_desk_travel_requests }o--|| travel_authorizations
+travel_desk_travel_requests }o--|| travelDeskTravelAgent
+travelDeskFlightOption }o--|| travelDeskFlightRequest
+travelDeskFlightRequest }o--|| travel_desk_travel_requests
+travelDeskFlightSegment }o--|| travelDeskFlightOption
+travelDeskHotel }o--|| travel_desk_travel_requests
+travelDeskOtherTransportation }o--|| travel_desk_travel_requests
+travelDeskQuestion }o--|| travel_desk_travel_requests
+travelDeskRentalCar }o--|| travel_desk_travel_requests
 
 @enduml
