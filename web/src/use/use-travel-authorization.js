@@ -7,6 +7,7 @@ import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-a
  * TODO: add other fields
  * @typedef {Object} TravelAuthorization
  * @property {number} id
+ * @property {number} userId
  * @property {Expense[]} expenses
  * @property {Purpose} purpose
  * @property {Stop[]} stops
