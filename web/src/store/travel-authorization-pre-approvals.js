@@ -25,11 +25,12 @@ const actions = {
   async fetch({ commit }, { where = {} } = {}) {
     commit("SET_IS_LOADING", true)
     try {
-      const { preApprovedTravelRequests } = await preApprovedTravelRequestsApi.list({ where })
+      const { preApprovedTravelRequests: travelAuthorizationPreApprovals } =
+        await preApprovedTravelRequestsApi.list({ where })
       commit("SET_IS_ERRORED", false)
-      commit("SET_ITEMS", preApprovedTravelRequests)
+      commit("SET_ITEMS", travelAuthorizationPreApprovals)
       commit("SET_IS_CACHED", true)
-      return preApprovedTravelRequests
+      return travelAuthorizationPreApprovals
     } catch (error) {
       console.error("Failed to fetch pre-approved travel requests:", error)
       commit("SET_IS_ERRORED", true)

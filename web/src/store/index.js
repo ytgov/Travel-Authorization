@@ -7,7 +7,7 @@ import current from "./current"
 import expenses from "@/store/expenses"
 import locations from "@/store/locations"
 import preapproved from "./preapproved" // TODO: replace "preapproved" usage with pre-approved-travel-requests store.
-import preApprovedTravelRequests from "@/store/pre-approved-travel-requests"
+import travelAuthorizationPreApprovals from "@/store/travel-authorization-pre-approvals"
 import reports from "./reports"
 import travelAuthorization from "@/store/travel-authorization"
 import travelAuthorizations from "@/store/travel-authorizations"
@@ -66,7 +66,7 @@ export default new Vuex.Store({
     expenses,
     locations,
     preapproved,
-    preApprovedTravelRequests,
+    travelAuthorizationPreApprovals,
     reports,
     travelAuthorization,
     travelAuthorizations,
