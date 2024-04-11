@@ -1,4 +1,4 @@
-import travelAuthorizationPreApprovalsApi from "@/api/pre-approved-travel-requests-api"
+import travelAuthorizationPreApprovalsApi from "@/api/travel-authorization-pre-approvals-api"
 
 import { withGettersFromState } from "@/utils/vuex-utils"
 

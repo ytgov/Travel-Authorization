@@ -15,7 +15,7 @@
 import { ref, watch } from "vue"
 import { isEmpty } from "lodash"
 
-import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
+import travelAuthorizationPreApprovalsApi from "@/api/travel-authorization-pre-approvals-api"
 
 const props = defineProps({
   value: {
@@ -54,8 +54,8 @@ async function fetch(department) {
 
   isLoading.value = true
   try {
-    const { preApprovedTravelRequests: newTravelAuthorizationPreApprovals } =
-      await preApprovedTravelRequestsApi.list({ where: { department } })
+    const { travelAuthorizationPreApprovals: newTravelAuthorizationPreApprovals } =
+      await travelAuthorizationPreApprovalsApi.list({ where: { department } })
     const flatRequests = flattenRequests(newTravelAuthorizationPreApprovals)
     const options = flatRequests.map((request) => {
       const text = isEmpty(request.fullName)
