@@ -8,72 +8,6 @@ note as Disclaimer
   This diagram may be out of date and should be verified against the current database schema.
 end note
 
-entity "StatisticsProgress" {
-  * id : serial4
-  --
-  last_update : timestamptz
-  progress : int4
-}
-
-entity "StatisticsRecord" {
-  * id : serial4
-  --
-  dept : varchar(255)
-  arrAirport : varchar(255)
-  totalExpenses : float4
-  totalFlightCost : float4
-  days : int4
-  totalTrips : int4
-  totalRoundTrips : int4
-  roundTripCost : float4
-  finalDestinationCity : varchar(255)
-  finalDestinationProvince : varchar(255)
-  averageDurationDays : float4
-  averageExpensesPerDay : float4
-  averageRoundTripFlightCost : float4
-}
-
-entity "YgDepartments" {
-  * id : serial4
-  --
-  update_date : timestamptz
-  department : varchar(255)
-  division : varchar(255)
-  branch : varchar(255)
-  unit : varchar(255)
-  order : int4
-}
-
-entity "YgEmployees" {
-  * id : serial4
-  --
-  update_date : timestamptz
-  full_name : varchar(255)
-  first_name : varchar(255)
-  last_name : varchar(255)
-  organization : varchar(255)
-  department : varchar(255)
-  division : varchar(255)
-  branch : varchar(255)
-  unit : varchar(255)
-  title : varchar(255)
-  email : varchar(255)
-  suite : varchar(255)
-  phone_office : varchar(255)
-  fax_office : varchar(255)
-  mobile : varchar(255)
-  office : varchar(255)
-  address : varchar(255)
-  po_box : varchar(255)
-  community : varchar(255)
-  postal_code : varchar(255)
-  latitude : varchar(255)
-  longitude : varchar(255)
-  mailcode : varchar(255)
-  manager : varchar(255)
-  username : varchar(255)
-}
-
 entity "auditHistory" {
   * id : serial4
   --
@@ -104,6 +38,23 @@ entity "emailList" {
   * id : serial4
   --
   email : varchar(255)
+}
+
+entity "expenses" {
+  * id : serial4
+  --
+  travel_authorization_id : int4
+  description : varchar(255)
+  date : date
+  cost : float4
+  currency : varchar(255)
+  type : varchar(255)
+  receipt_image : bytea
+  file_size : int4
+  file_name : varchar(255)
+  expense_type : varchar(255)
+  created_at : timestamptz
+  updated_at : timestamptz
 }
 
 entity "flightReconciliation" {
@@ -147,6 +98,13 @@ entity "perDiems" {
   currency : varchar(255)
 }
 
+entity "preapprovedDocuments" {
+  * preTDocID : serial4
+  --
+  preTSubID : int4
+  approvalDoc : bytea
+}
+
 entity "preapprovedSubmissions" {
   * preTSubID : serial4
   --
@@ -158,10 +116,58 @@ entity "preapprovedSubmissions" {
   department : varchar(255)
 }
 
+entity "preapprovedTravelers" {
+  * travelerID : serial4
+  --
+  preTID : int4
+  fullName : varchar(255)
+  department : varchar(255)
+  branch : varchar(255)
+}
+
 entity "roles" {
   * id : serial4
   --
   name : varchar(255)
+}
+
+
+entity "StatisticsProgress" {
+  * id : serial4
+  --
+  last_update : timestamptz
+  progress : int4
+}
+
+entity "StatisticsRecord" {
+  * id : serial4
+  --
+  dept : varchar(255)
+  arrAirport : varchar(255)
+  totalExpenses : float4
+  totalFlightCost : float4
+  days : int4
+  totalTrips : int4
+  totalRoundTrips : int4
+  roundTripCost : float4
+  finalDestinationCity : varchar(255)
+  finalDestinationProvince : varchar(255)
+  averageDurationDays : float4
+  averageExpensesPerDay : float4
+  averageRoundTripFlightCost : float4
+}
+
+entity "stops" {
+  * id : serial4
+  --
+  travel_authorization_id : int4
+  location_id : int4
+  departure_date : date
+  departure_time : time
+  transport : varchar(255)
+  accommodation_type : varchar(255)
+  created_at : timestamptz
+  updated_at : timestamptz
 }
 
 entity "transportMethod" {
@@ -170,53 +176,18 @@ entity "transportMethod" {
   method : varchar(255)
 }
 
-entity "travelDeskTravelAgent" {
-  * agencyID : serial4
-  --
-  agencyName : varchar(255)
-  agencyInfo : varchar(255)
-}
-
-entity "travel_purposes" {
+entity "travel_authorization_action_logs" {
   * id : serial4
   --
-  purpose : varchar(255)
+  * travel_authorization_id : <<FK>> int4
+  * actor_id : <<FK>> int4
+  * assignee_id : <<FK>> int4
+  * action : varchar(255)
+  note : varchar(255)
   created_at : timestamptz
   updated_at : timestamptz
 }
 
-entity "tripReports" {
-  * id : serial4
-  --
-  taid : int4
-  costDifferenceExplanation : varchar(255)
-  skillsGained : varchar(255)
-  applicationTimeframe : varchar(255)
-  benefitsToUnit : varchar(255)
-  benefitsToYG : varchar(255)
-  futureRecommendations : varchar(255)
-  reportStatus : varchar(255)
-}
-
-entity "users" {
-  * id : int4
-  --
-  sub : varchar(255)
-  email : varchar(255)
-  status : varchar(255)
-  first_name : varchar(255)
-  last_name : varchar(255)
-  department : varchar(255)
-  roles : _varchar[]
-  created_at : timestamptz
-  updated_at : timestamptz
-  division : varchar(255)
-  branch : varchar(255)
-  unit : varchar(255)
-  mailcode : varchar(255)
-  manager : varchar(255)
-  last_employee_directory_sync_at : timestamptz
-}
 
 entity "travel_authorization_pre_approvals" {
   * id : int <<PK>>
@@ -238,22 +209,6 @@ entity "travel_authorization_pre_approvals" {
   * created_at : timestamptz
   * updated_at : timestamptz
   deleted_at : timestamptz
-}
-
-entity "preapprovedDocuments" {
-  * preTDocID : serial4
-  --
-  preTSubID : int4
-  approvalDoc : bytea
-}
-
-entity "preapprovedTravelers" {
-  * travelerID : serial4
-  --
-  preTID : int4
-  fullName : varchar(255)
-  department : varchar(255)
-  branch : varchar(255)
 }
 
 entity "travel_authorizations" {
@@ -291,64 +246,32 @@ entity "travel_authorizations" {
   updated_at : timestamptz
 }
 
-entity "travel_desk_travel_requests" {
+entity "travel_desk_passenger_name_record_documents" {
   * id : serial4
   --
-  travel_authorization_id : int4
-  legal_first_name : varchar(255)
-  legal_middle_name : varchar(255)
-  legal_last_name : varchar(255)
-  birth_date : varchar(255)
-  str_address : varchar(255)
-  city : varchar(255)
-  province : varchar(255)
-  postal_code : varchar(255)
-  passport_country : varchar(255)
-  passport_num : varchar(255)
-  travel_purpose : varchar(255)
-  travel_location : varchar(255)
-  travel_notes : varchar(255)
-  bus_phone : varchar(255)
-  bus_email : varchar(255)
-  travel_contact : bool
-  travel_phone : varchar(255)
-  travel_email : varchar(255)
-  additional_information : varchar(255)
-  status : varchar(255)
-  travel_desk_officer : varchar(255)
-  travel_desk_travel_agent_id : int4
+  travel_desk_travel_request_id : int4
+  pnr_document : bytea
+  invoice_number : varchar(255)
   created_at : timestamptz
   updated_at : timestamptz
 }
 
-entity "expenses" {
+entity "travel_purposes" {
   * id : serial4
   --
-  travel_authorization_id : int4
-  description : varchar(255)
-  date : date
-  cost : float4
-  currency : varchar(255)
-  type : varchar(255)
-  receipt_image : bytea
-  file_size : int4
-  file_name : varchar(255)
-  expense_type : varchar(255)
+  purpose : varchar(255)
   created_at : timestamptz
   updated_at : timestamptz
 }
 
-entity "stops" {
-  * id : serial4
+entity "travelDeskFlightOption" {
+  * flightOptionID : serial4
   --
-  travel_authorization_id : int4
-  location_id : int4
-  departure_date : date
-  departure_time : time
-  transport : varchar(255)
-  accommodation_type : varchar(255)
-  created_at : timestamptz
-  updated_at : timestamptz
+  flightRequestID : int4
+  cost : varchar(255)
+  flightPreference : varchar(255)
+  leg : varchar(255)
+  duration : varchar(255)
 }
 
 entity "travelDeskFlightRequest" {
@@ -360,6 +283,21 @@ entity "travelDeskFlightRequest" {
   date : date
   timePreference : varchar(255)
   seatPreference : varchar(255)
+}
+
+entity "travelDeskFlightSegment" {
+  * flightSegmentID : serial4
+  --
+  flightNumber : varchar(255)
+  departDate : timestamptz
+  departLocation : varchar(255)
+  arriveDate : timestamptz
+  arriveLocation : varchar(255)
+  duration : varchar(255)
+  status : varchar(255)
+  class : varchar(255)
+  sortOrder : int4
+  flightOptionID : int4
 }
 
 entity "travelDeskHotel" {
@@ -425,51 +363,85 @@ entity "travelDeskRentalCar" {
   booking : varchar(255)
 }
 
-entity "travel_authorization_action_logs" {
+entity "travelDeskTravelAgent" {
+  * agencyID : serial4
+  --
+  agencyName : varchar(255)
+  agencyInfo : varchar(255)
+}
+
+entity "tripReports" {
   * id : serial4
   --
-  * travel_authorization_id : <<FK>> int4
-  * actor_id : <<FK>> int4
-  * assignee_id : <<FK>> int4
-  * action : varchar(255)
-  note : varchar(255)
-  created_at : timestamptz
-  updated_at : timestamptz
+  taid : int4
+  costDifferenceExplanation : varchar(255)
+  skillsGained : varchar(255)
+  applicationTimeframe : varchar(255)
+  benefitsToUnit : varchar(255)
+  benefitsToYG : varchar(255)
+  futureRecommendations : varchar(255)
+  reportStatus : varchar(255)
 }
 
-entity "travel_desk_passenger_name_record_documents" {
-  * id : serial4
+entity "users" {
+  * id : int4
   --
-  travel_desk_travel_request_id : int4
-  pnr_document : bytea
-  invoice_number : varchar(255)
-  created_at : timestamptz
-  updated_at : timestamptz
-}
-
-entity "travelDeskFlightOption" {
-  * flightOptionID : serial4
-  --
-  flightRequestID : int4
-  cost : varchar(255)
-  flightPreference : varchar(255)
-  leg : varchar(255)
-  duration : varchar(255)
-}
-
-entity "travelDeskFlightSegment" {
-  * flightSegmentID : serial4
-  --
-  flightNumber : varchar(255)
-  departDate : timestamptz
-  departLocation : varchar(255)
-  arriveDate : timestamptz
-  arriveLocation : varchar(255)
-  duration : varchar(255)
+  sub : varchar(255)
+  email : varchar(255)
   status : varchar(255)
-  class : varchar(255)
-  sortOrder : int4
-  flightOptionID : int4
+  first_name : varchar(255)
+  last_name : varchar(255)
+  department : varchar(255)
+  roles : _varchar[]
+  created_at : timestamptz
+  updated_at : timestamptz
+  division : varchar(255)
+  branch : varchar(255)
+  unit : varchar(255)
+  mailcode : varchar(255)
+  manager : varchar(255)
+  last_employee_directory_sync_at : timestamptz
+}
+
+entity "YgDepartments" {
+  * id : serial4
+  --
+  update_date : timestamptz
+  department : varchar(255)
+  division : varchar(255)
+  branch : varchar(255)
+  unit : varchar(255)
+  order : int4
+}
+
+entity "YgEmployees" {
+  * id : serial4
+  --
+  update_date : timestamptz
+  full_name : varchar(255)
+  first_name : varchar(255)
+  last_name : varchar(255)
+  organization : varchar(255)
+  department : varchar(255)
+  division : varchar(255)
+  branch : varchar(255)
+  unit : varchar(255)
+  title : varchar(255)
+  email : varchar(255)
+  suite : varchar(255)
+  phone_office : varchar(255)
+  fax_office : varchar(255)
+  mobile : varchar(255)
+  office : varchar(255)
+  address : varchar(255)
+  po_box : varchar(255)
+  community : varchar(255)
+  postal_code : varchar(255)
+  latitude : varchar(255)
+  longitude : varchar(255)
+  mailcode : varchar(255)
+  manager : varchar(255)
+  username : varchar(255)
 }
 
 ' Relationships
