@@ -68,7 +68,7 @@
       </template>
 
       <template v-slot:item.travelDate="{ item }">
-        <div v-if="item.dateUnkInd">
+        <div v-if="item.isOpenForAnyDate">
           {{ item.month }}
         </div>
         <div v-else>
@@ -223,7 +223,7 @@ export default {
           travelers: req.travelers?.map((trv) => trv.fullName.replace(".", " "))?.join(", "),
           department: req.department,
           branch: req.branch ? req.branch : "",
-          travelDate: req.dateUnkInd ? req.month : req.startDate + " " + req.endDate,
+          travelDate: req.isOpenForAnyDate ? req.month : req.startDate + " " + req.endDate,
           location: req.location,
           purpose: req.purpose ? req.purpose : "",
           estimatedCost: req.estimatedCost,

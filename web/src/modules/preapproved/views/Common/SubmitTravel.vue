@@ -191,7 +191,7 @@
             </template>
 
             <template #item.travelDate="{ item }">
-              <div v-if="item.dateUnkInd">
+              <div v-if="item.isOpenForAnyDate">
                 {{ item.month }}
               </div>
               <div v-else>

@@ -279,10 +279,10 @@ preapprovedRouter.post(
         if (
           newPreapproved.department &&
           newPreapproved.purpose &&
-          newPreapproved.dateUnkInd >= 0 &&
+          newPreapproved.isOpenForAnyDate >= 0 &&
           newPreapproved.estimatedCost &&
           newPreapproved.location &&
-          newPreapproved.travelerUnkInd >= 0 &&
+          newPreapproved.isOpenForAnyTraveler >= 0 &&
           travelers?.length > 0
         ) {
           let preApproval = await TravelAuthorizationPreApproval.findByPk(preApprovalId)

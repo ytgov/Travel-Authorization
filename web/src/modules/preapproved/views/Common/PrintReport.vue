@@ -88,7 +88,7 @@
             </template>
 
             <template v-slot:item.travelDate="{ item }">
-              <div v-if="item.dateUnkInd">
+              <div v-if="item.isOpenForAnyDate">
                 {{ item.month }}
               </div>
               <div v-else>
@@ -240,27 +240,27 @@ export default {
       const styles = [
         `@media print {
                     @page {
-                        size: letter landscape !important;                        
+                        size: letter landscape !important;
                     }
                     div.form-footer {
                       position: fixed;
                       bottom: 0;
-                      width:100%; 
+                      width:100%;
                       display:inline-block;
                     }
                     .new-page{
                         page-break-before: always;
                         position: relative; top: 8em;
                     }
-                    
+
                 }`,
         `https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css`,
         `thead th {
                     font-size: 11pt !important;
-                    color: #111111 !important;                     
+                    color: #111111 !important;
                     text-align: center !important;
                     border:  1px solid #333334 !important;
-                    border-bottom: 2px solid #333334 !important; 
+                    border-bottom: 2px solid #333334 !important;
                 }`,
         `tbody td { border:  1px solid #666666 !important;}`,
         `table {border: 2px solid #333334;}`,
