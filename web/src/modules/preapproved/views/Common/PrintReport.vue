@@ -5,15 +5,15 @@
       persistent
       max-width="950px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           :disabled="disabled"
-          @click="initPrint()"
           :small="buttonInsideTable"
           :class="buttonInsideTable ? 'my-0' : 'mr-5 my-7'"
           color="primary"
           v-bind="attrs"
           v-on="on"
+          @click="initPrint"
         >
           {{ buttonName }}
         </v-btn>
@@ -77,7 +77,7 @@
             class="elevation-1"
             hide-default-footer
           >
-            <template v-slot:item.name="{ item }">
+            <template #item.name="{ item }">
               <span> {{ item.department }}, </span>
               <span
                 v-for="(trv, inx) in item.travelers"
@@ -87,7 +87,7 @@
               >
             </template>
 
-            <template v-slot:item.travelDate="{ item }">
+            <template #item.travelDate="{ item }">
               <div v-if="item.isOpenForAnyDate">
                 {{ item.month }}
               </div>
@@ -102,10 +102,10 @@
                 </div>
               </div>
             </template>
-            <template v-slot:item.estimatedCost="{ item }">
+            <template #item.estimatedCost="{ item }">
               <div style="text-align: right !important">${{ item.estimatedCost | currency }}</div>
             </template>
-            <template v-slot:body.append>
+            <template #body.append>
               <tr style="">
                 <td
                   colspan="4"
@@ -137,9 +137,9 @@
                 >
                 <v-col style="padding-left: 0; margin-left: 0">
                   <input
+                    v-model="approver"
                     style="width: 100%; cursor: pointer; padding-left: 0.25rem"
                     class="yellow darken-3"
-                    v-model="approver"
                     clearable
                   />
                 </v-col>
@@ -167,18 +167,20 @@
 import { Printd } from "printd"
 
 export default {
-  components: {},
   name: "PrintReport",
+  components: {},
   props: {
     buttonName: {
       type: String,
+      default: "Print",
     },
     buttonInsideTable: {
       type: Boolean,
       default: false,
     },
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     disabled: {
       type: Boolean,
@@ -233,7 +235,9 @@ export default {
       console.log("Print")
       this.currentDate = new Date().toDateString()
       this.totalCost = 0
-      for (const req of this.travelRequests) this.totalCost += req.estimatedCost
+      for (const req of this.travelRequests) {
+        this.totalCost += req.estimatedCost
+      }
       this.printRequests = JSON.parse(JSON.stringify(this.travelRequests))
     },
     print() {
