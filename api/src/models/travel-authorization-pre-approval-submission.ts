@@ -46,7 +46,6 @@ export class TravelAuthorizationPreApprovalSubmission extends Model<
     >
   }
 
-  // TODO: add associations
   static establishAssociations() {
     this.hasOne(TravelAuthorizationPreApproval, {
       sourceKey: "preTSubID",

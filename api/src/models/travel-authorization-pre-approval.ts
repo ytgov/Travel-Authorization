@@ -126,6 +126,10 @@ TravelAuthorizationPreApproval.init(
     submissionId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: TravelAuthorizationPreApprovalSubmission,
+        key: "preTSubID",
+      },
     },
     estimatedCost: {
       type: DataTypes.INTEGER,

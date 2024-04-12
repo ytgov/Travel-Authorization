@@ -12,6 +12,7 @@ import TravelSegment from "./travel-segment"
 import TravelAuthorizationPreApproval from "./travel-authorization-pre-approval"
 import TravelAuthorizationPreApprovalTraveler from "./travel-authorizations-pre-approval-traveler"
 import TravelAuthorizationPreApprovalSubmission from "./travel-authorization-pre-approval-submission"
+import TravelAuthorizationPreApprovalDocument from "./travel-authorization-pre-approval-document"
 
 // Order matters here, though may be somewhat flexible
 Stop.establishAssociations()
@@ -26,6 +27,7 @@ GeneralLedgerCoding.establishAssociations()
 TravelAuthorizationPreApproval.establishAssociations()
 TravelAuthorizationPreApprovalTraveler.establishAssociations()
 TravelAuthorizationPreApprovalSubmission.establishAssociations()
+TravelAuthorizationPreApprovalDocument.establishAssociations()
 
 // Alphabetically - order does not matter
 export { DistanceMatrix } from "./distance-matrix"
@@ -40,6 +42,7 @@ export {
   TravelAuthorizationActionLog,
   TravelAuthorizationPreApproval,
   TravelAuthorizationPreApprovalSubmission,
+  TravelAuthorizationPreApprovalDocument,
   TravelAuthorizationPreApprovalTraveler,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskTravelRequest,
