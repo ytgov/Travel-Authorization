@@ -24,13 +24,13 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import Expense from "./expense"
-import Preapproved from "./travel-authorization-pre-approval"
-import Stop from "./stop"
-import TravelDeskTravelRequest from "./travel-desk-travel-request"
-import TravelPurpose from "./travel-purpose"
-import TravelSegment from "./travel-segment"
-import User from "./user"
+import Expense from "@/models/expense"
+import TravelAuthorizationPreApproval from "@/models/travel-authorization-pre-approval"
+import Stop from "@/models/stop"
+import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
+import TravelPurpose from "@/models/travel-purpose"
+import TravelSegment from "@/models/travel-segment"
+import User from "@/models/user"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
@@ -68,7 +68,7 @@ export class TravelAuthorization extends Model<
   declare id: CreationOptional<number>
   declare slug: string
   declare userId: ForeignKey<User["id"]>
-  declare preappId: ForeignKey<Preapproved["preTID"]> | null
+  declare preappId: ForeignKey<TravelAuthorizationPreApproval["id"]> | null
   declare purposeId: ForeignKey<TravelPurpose["id"]> | null
   declare firstName: string | null
   declare lastName: string | null
