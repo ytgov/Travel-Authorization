@@ -1,34 +1,42 @@
 import express, { Request, Response } from "express"
 import knex from "knex"
+import { ModelStatic, Op } from "sequelize"
+import { isNil } from "lodash"
 
 import { RequiresAuth, RequiresRolePatAdminOrAdmin } from "@/middleware"
 import { DB_CONFIG } from "@/config"
-import { User } from "@/models"
+import db, {
+  TravelAuthorizationPreApproval,
+  TravelAuthorizationPreApprovalSubmission,
+  User,
+} from "@/models"
 
-const db = knex(DB_CONFIG)
+const dbLegacy = knex(DB_CONFIG)
 
 export const preapprovedRouter = express.Router()
 
 preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request, res: Response) {
-  const adminQuery = function (queryBuilder: any) {
-    if (req?.user?.roles?.indexOf(User.Roles.ADMIN) >= 0) queryBuilder.select("*")
-    else queryBuilder.where("department", req.user.department).select("*")
-  }
-
-  const submissionList = await db("preapprovedSubmissions").modify(adminQuery)
-
-  for (const submission of submissionList) {
-    const preapproved = await db("preapproved").select("*").where({
-      preTSubID: submission.preTSubID,
-    })
-    for (const preapp of preapproved) {
-      const traveler = await db("preapprovedTravelers").select("*").where({
-        preTID: preapp.preTID,
-      })
-      preapp.travelers = traveler
+  const applyScope = (scope: ModelStatic<TravelAuthorizationPreApprovalSubmission>, user: User) => {
+    if (req?.user?.roles?.indexOf(User.Roles.ADMIN) >= 0) {
+      return scope
     }
-    submission.preapproved = preapproved
+
+    return scope.scope({
+      where: {
+        department: req.user.department,
+      },
+    })
   }
+
+  const scopedSubmissions = applyScope(TravelAuthorizationPreApprovalSubmission, req.user)
+  const submissionList = await scopedSubmissions.findAll({
+    include: [
+      {
+        association: "preApproval",
+        include: ["travelers"],
+      },
+    ],
+  })
 
   res.status(200).json(submissionList)
 })
@@ -40,10 +48,7 @@ preapprovedRouter.get(
   async function (req: Request, res: Response) {
     const preTSubID = req.params.submissionId
     try {
-      const submission = await db("preapprovedSubmissions")
-        .select("*")
-        .where("preTSubID", preTSubID)
-        .first()
+      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(preTSubID)
       res.status(200).json(submission)
     } catch (error: any) {
       console.log(error)
@@ -58,7 +63,7 @@ preapprovedRouter.post(
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
     try {
-      await db.transaction(async (trx) => {
+      await db.transaction(async () => {
         const preTSubID = Number(req.params.submissionId)
         const preapprovedIds = req.body.preapprovedIds
         delete req.body.preapprovedIds
@@ -69,39 +74,36 @@ preapprovedRouter.post(
           var id = []
           newSubmission.submitter = req.user.displayName
 
-          if (preTSubID > 0) {
-            id = await db("preapprovedSubmissions")
-              .update(newSubmission, "preTSubID")
-              .where("preTSubID", preTSubID)
+          let submission = await TravelAuthorizationPreApprovalSubmission.findByPk(preTSubID)
+          if (submission !== null) {
+            submission.update(newSubmission)
           } else {
-            id = await db("preapprovedSubmissions").insert(newSubmission, "preTSubID")
+            submission = await TravelAuthorizationPreApprovalSubmission.create(newSubmission)
           }
 
-          const preapprovedQuery = await db("preapproved")
-            .select("preTID")
-            .where("preTSubID", id[0].preTSubID)
-
-          let preapprovedIdList = preapprovedQuery.map((preapp) => preapp.preTID)
-          preapprovedIdList = preapprovedIdList.filter(
-            (preappId) => !preapprovedIds.includes(preappId)
+          await TravelAuthorizationPreApproval.update(
+            {
+              status: submission.status,
+              submissionId: submission.preTSubID,
+            },
+            {
+              where: {
+                id: preapprovedIds,
+              },
+            }
           )
-          // console.log(preapprovedIdList)
-
-          await db("preapproved")
-            .update({
-              status: newSubmission.status,
-              preTSubID: id[0].preTSubID,
-            })
-            .whereIn("preTID", preapprovedIds)
-
-          if (preapprovedIdList.length > 0) {
-            await db("preapproved")
-              .update({
-                status: null,
-                preTSubID: null,
-              })
-              .whereIn("preTID", preapprovedIdList)
-          }
+          await TravelAuthorizationPreApproval.update(
+            {
+              status: null,
+              submissionId: null,
+            },
+            {
+              where: {
+                submissionId: submission.preTSubID,
+                [Op.not]: [{ id: preapprovedIds }],
+              },
+            }
+          )
 
           res.status(200).json("Successful")
         } else {
@@ -122,22 +124,27 @@ preapprovedRouter.delete(
   async function (req: Request, res: Response) {
     try {
       const preTSubID = Number(req.params.submissionId)
-      await db.transaction(async (trx) => {
-        const submission = await db("preapprovedSubmissions")
-          .select("*")
-          .where("preTSubID", preTSubID)
-          .first()
+      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(preTSubID)
+      if (isNil(submission)) {
+        return res.status(404).json("Submission not found")
+      }
+
+      await db.transaction(async () => {
         if (submission.status == "Finished" || submission.approvalDate || submission.approvedBy) {
           res.status(403).json("Cannot delete final records")
         } else {
-          await db("preapproved")
-            .update({
+          await TravelAuthorizationPreApproval.update(
+            {
               status: null,
-              preTSubID: null,
-            })
-            .where("preTSubID", preTSubID)
-
-          await db("preapprovedSubmissions").delete().where("preTSubID", preTSubID).transacting(trx)
+              submissionId: null,
+            },
+            {
+              where: {
+                submissionId: submission.preTSubID,
+              },
+            }
+          )
+          await submission.destroy()
 
           res.status(200).json("Delete Successful")
         }
@@ -159,8 +166,8 @@ preapprovedRouter.post(
     const data = JSON.parse(req.body.data)
 
     try {
-      await db.transaction(async (trx) => {
-        const approvalDoc = await db("preapprovedDocuments")
+      await dbLegacy.transaction(async (trx) => {
+        const approvalDoc = await dbLegacy("preapprovedDocuments")
           .select("preTDocID")
           .where("preTSubID", preTSubID)
           .first()
@@ -177,9 +184,9 @@ preapprovedRouter.post(
             preTSubID: preTSubID,
             approvalDoc: file,
           }
-          await db("preapprovedDocuments").insert(newDocument, "preTDocID")
+          await dbLegacy("preapprovedDocuments").insert(newDocument, "preTDocID")
 
-          await db("preapprovedSubmissions")
+          await dbLegacy("preapprovedSubmissions")
             .update({
               status: data.status,
               approvalDate: data.approvalDate,
@@ -188,7 +195,7 @@ preapprovedRouter.post(
             .where("preTSubID", preTSubID)
 
           for (const preapp of data.preapproved) {
-            await db("preapproved")
+            await dbLegacy("preapproved")
               .update({
                 status: preapp.status,
               })
@@ -210,7 +217,7 @@ preapprovedRouter.post(
 preapprovedRouter.get("/document/:submissionId", RequiresAuth, async function (req, res) {
   try {
     const preTSubID = req.params.submissionId
-    const doc = await db("preapprovedDocuments")
+    const doc = await dbLegacy("preapprovedDocuments")
       .select("approvalDoc")
       .where("preTSubID", preTSubID)
       .first()
@@ -227,10 +234,10 @@ preapprovedRouter.get("/", RequiresAuth, async function (req: Request, res: Resp
     else queryBuilder.where("department", req.user.department).select("*")
   }
 
-  const preapprovedList = await db("preapproved").modify(adminQuery)
+  const preapprovedList = await dbLegacy("preapproved").modify(adminQuery)
 
   for (const preapp of preapprovedList) {
-    const traveler = await db("preapprovedTravelers").select("*").where({
+    const traveler = await dbLegacy("preapprovedTravelers").select("*").where({
       preTID: preapp.preTID,
     })
     preapp.travelers = traveler
@@ -245,7 +252,7 @@ preapprovedRouter.post(
   async function (req: Request, res: Response) {
     const preTID = Number(req.params.preapprovedId)
     try {
-      await db.transaction(async (trx) => {
+      await dbLegacy.transaction(async (trx) => {
         const travelers = req.body.travelers
         delete req.body.travelers
 
@@ -262,12 +269,14 @@ preapprovedRouter.post(
         ) {
           var id = []
           if (preTID > 0) {
-            id = await db("preapproved").update(newPreapproved, "preTID").where("preTID", preTID)
+            id = await dbLegacy("preapproved")
+              .update(newPreapproved, "preTID")
+              .where("preTID", preTID)
           } else {
-            id = await db("preapproved").insert(newPreapproved, "preTID")
+            id = await dbLegacy("preapproved").insert(newPreapproved, "preTID")
           }
 
-          const travelersQuery = await db("preapprovedTravelers")
+          const travelersQuery = await dbLegacy("preapprovedTravelers")
             .select("travelerID")
             .where("preTID", id[0].preTID)
 
@@ -281,12 +290,12 @@ preapprovedRouter.post(
                 preTID: id[0].preTID,
                 ...traveller,
               }
-              await db("preapprovedTravelers").insert(travellerInfo).transacting(trx)
+              await dbLegacy("preapprovedTravelers").insert(travellerInfo).transacting(trx)
             }
           }
 
           for (const travellerId of travelerIdList) {
-            await db("preapprovedTravelers")
+            await dbLegacy("preapprovedTravelers")
               .delete()
               .where("travelerID", travellerId)
               .transacting(trx)
@@ -311,12 +320,12 @@ preapprovedRouter.delete(
   async function (req: Request, res: Response) {
     try {
       const preTID = req.params.preapprovedId
-      await db.transaction(async (trx) => {
-        const preapp = await db("preapproved").select("*").where("preTID", preTID).first()
+      await dbLegacy.transaction(async (trx) => {
+        const preapp = await dbLegacy("preapproved").select("*").where("preTID", preTID).first()
         if (preapp.status == "Approved" || preapp.status == "Declined") {
           res.status(403).json("Cannot delete final records")
         } else {
-          await db("preapproved").delete().where("preTID", preTID).transacting(trx)
+          await dbLegacy("preapproved").delete().where("preTID", preTID).transacting(trx)
           res.status(200).json("Delete Successful")
         }
       })
