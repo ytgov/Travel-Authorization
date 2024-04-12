@@ -125,7 +125,7 @@ TravelAuthorizationPreApproval.init(
     },
     submissionId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: TravelAuthorizationPreApprovalSubmission,
         key: "preTSubID",
