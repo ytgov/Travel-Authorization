@@ -199,14 +199,14 @@ preapprovedRouter.post(
             }
           )
 
-          for (const preapp of data.preapproved) {
+          for (const preApproval of data.preapproved) {
             await TravelAuthorizationPreApproval.update(
               {
-                status: preapp.status,
+                status: preApproval.status,
               },
               {
                 where: {
-                  id: preapp.preTID,
+                  id: preApproval.id,
                 },
               }
             )
@@ -268,7 +268,7 @@ preapprovedRouter.post(
   "/:preApprovalId",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    const preTID = Number(req.params.preApprovalId)
+    const preApprovalId = Number(req.params.preApprovalId)
     try {
       await db.transaction(async () => {
         const travelers = req.body.travelers
@@ -285,7 +285,7 @@ preapprovedRouter.post(
           newPreapproved.travelerUnkInd >= 0 &&
           travelers?.length > 0
         ) {
-          let preApproval = await TravelAuthorizationPreApproval.findByPk(preTID)
+          let preApproval = await TravelAuthorizationPreApproval.findByPk(preApprovalId)
           if (isNil(preApproval)) {
             preApproval = await TravelAuthorizationPreApproval.create(newPreapproved)
           }

@@ -407,7 +407,7 @@ export default {
           department: currentDept,
           status: type,
           submitter: "SYSTEM",
-          preapprovedIds: currentIDs,
+          preApprovalIds: currentIDs,
         }
         // console.log(body)
         securePost(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`, body)
