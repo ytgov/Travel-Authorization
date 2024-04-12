@@ -5,15 +5,15 @@
       persistent
       max-width="950px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           :id="'edit-' + preTSubID"
           :disabled="disabled"
           :small="editButton"
           :class="editButton ? 'my-0' : 'mr-5 my-7'"
           color="primary"
-          @click="extractTravelRequests()"
           v-bind="attrs"
+          @click="extractTravelRequests"
           v-on="on"
         >
           {{ buttonName }}
@@ -43,23 +43,23 @@
             class="elevation-1"
             hide-default-footer
           >
-            <template v-slot:item.remove="{ item }">
+            <template #item.remove="{ item }">
               <v-btn
-                @click="removeTravel(item)"
                 style="min-width: 0"
                 color="transparent"
                 class="px-1"
                 small
+                @click="removeTravel(item)"
               >
                 <v-icon color="red">mdi-delete</v-icon>
               </v-btn>
             </template>
-            <template v-slot:item.name="{ item }">
+            <template #item.name="{ item }">
               <v-tooltip
                 top
                 color="primary"
               >
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <div v-on="item.travelers.length > 1 ? on : ''">
                     <span>
                       {{ item.travelers[0].fullName.replace(".", " ") }}
@@ -77,18 +77,18 @@
                 >
               </v-tooltip>
             </template>
-            <template v-slot:item.status="{ item }">
+            <template #item.status="{ item }">
               <v-tooltip
                 top
                 color="amber accent-4"
               >
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-icon
-                    style="cursor: pointer"
-                    v-on="on"
                     v-if="item.status && item.preTSubID != preTSubID"
+                    style="cursor: pointer"
                     class=""
                     color="amber accent-2"
+                    v-on="on"
                     >mdi-alert</v-icon
                   >
                 </template>
@@ -98,11 +98,11 @@
                 </span>
               </v-tooltip>
             </template>
-            <template v-slot:item.edit="{ item }">
+            <template #item.edit="{ item }">
               <new-travel-request
+                :travel-request="item"
                 type="Edit"
                 @updateTable="updateAndOpenDialog"
-                :travelRequest="item"
               />
             </template>
           </v-data-table>
@@ -157,21 +157,21 @@
 
         <v-card-text>
           <v-data-table
+            v-model="newSelectedRequests"
             :headers="addTravelHeaders"
             :items="remainingTravelRequests"
             :items-per-page="5"
             class="elevation-1 mt-5"
-            v-model="newSelectedRequests"
             item-key="preTID"
             show-select
             single-select
           >
-            <template v-slot:item.name="{ item }">
+            <template #item.name="{ item }">
               <v-tooltip
                 top
                 color="primary"
               >
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <div v-on="item.travelers.length > 1 ? on : ''">
                     <span>
                       {{ item.travelers[0].fullName.replace(".", " ") }}
@@ -190,7 +190,7 @@
               </v-tooltip>
             </template>
 
-            <template v-slot:item.travelDate="{ item }">
+            <template #item.travelDate="{ item }">
               <div v-if="item.dateUnkInd">
                 {{ item.month }}
               </div>
@@ -207,7 +207,7 @@
               </div>
             </template>
 
-            <template v-slot:item.status="{ item }">
+            <template #item.status="{ item }">
               <div v-if="item.preTSubID != preTSubID">
                 {{ item.status }}
               </div>
@@ -241,13 +241,14 @@ import { PREAPPROVED_URL } from "../../../../urls"
 import { securePost, secureDelete } from "@/store/jwt"
 
 export default {
+  name: "SubmitTravel",
   components: {
     NewTravelRequest,
   },
-  name: "SubmitTravel",
   props: {
     buttonName: {
       type: String,
+      default: "Submit Travel",
     },
     editButton: {
       type: Boolean,
@@ -258,10 +259,12 @@ export default {
       default: 0,
     },
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     selectedRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     disabled: {
       type: Boolean,
@@ -359,7 +362,6 @@ export default {
       update: 0,
     }
   },
-  mounted() {},
   computed: {
     remainingTravelRequests() {
       const currentIDs = this.submittingRequests.map((req) => req.preTID)
