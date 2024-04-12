@@ -305,7 +305,7 @@ export default {
           status: "Finished",
           approvalDate: this.approvalDate,
           approvedBy: this.approvedBy,
-          preapproved: this.approvalRequests.map((req) => {
+          preApprovals: this.approvalRequests.map((req) => {
             return {
               id: req.id,
               status: req.status,

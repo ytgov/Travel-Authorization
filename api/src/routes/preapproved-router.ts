@@ -199,7 +199,7 @@ preapprovedRouter.post(
             }
           )
 
-          for (const preApproval of data.preapproved) {
+          for (const preApproval of data.preApprovals) {
             await TravelAuthorizationPreApproval.update(
               {
                 status: preApproval.status,
