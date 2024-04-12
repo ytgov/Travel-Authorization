@@ -2,10 +2,10 @@
 top to bottom direction
 
 note as Disclaimer
-  Diagram generated with the assistance from ChatGPT - may contain errors
-  PlantUML URL: https://plantuml.com/ie-diagram
-  Last Updated: 2023-11-22
-  This diagram may be out of date and should be verified against the current database schema.
+Diagram generated with the assistance from ChatGPT - may contain errors
+PlantUML URL: https://plantuml.com/ie-diagram
+Last Updated: 2023-11-22
+This diagram may be out of date and should be verified against the current database schema.
 end note
 
 entity "auditHistory" {
@@ -256,6 +256,36 @@ entity "travel_desk_passenger_name_record_documents" {
   updated_at : timestamptz
 }
 
+entity "travel_desk_travel_requests" {
+  * id : <<PK>> serial4
+  --
+  * travel_authorization_id : <<FK>> int4
+  * bus_email : varchar(255)
+  * bus_phone : varchar(255)
+  * city : varchar(255)
+  * legal_first_name : varchar(255)
+  * legal_last_name : varchar(255)
+  * postal_code : varchar(255)
+  * province : varchar(255)
+  * status : varchar(255)
+  * str_address : varchar(255)
+  * travel_purpose : varchar(255)
+  travel_desk_travel_agent_id :  <<FK>> int4
+  legal_middle_name : varchar(255)
+  birth_date : varchar(255)
+  passport_country : varchar(255)
+  passport_num : varchar(255)
+  travel_location : varchar(255)
+  travel_notes : varchar(255)
+  travel_contact : bool
+  travel_phone : varchar(255)
+  travel_email : varchar(255)
+  additional_information : varchar(255)
+  travel_desk_officer : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+}
+
 entity "travel_purposes" {
   * id : serial4
   --
@@ -455,7 +485,7 @@ travel_authorization_action_logs::assignee_id ||--o{ users::id
 travel_authorization_pre_approvals::submission_id ||--o{ preapprovedSubmissions::preTSubID
 travel_authorizations::purpose_id ||--o{ travel_purposes::id
 travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
-travel_desk_travel_requests }o--|| travel_authorizations
+travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
 travel_desk_travel_requests }o--|| travelDeskTravelAgent
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
