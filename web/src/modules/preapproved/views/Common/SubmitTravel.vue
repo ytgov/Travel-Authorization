@@ -7,7 +7,7 @@
     >
       <template #activator="{ on, attrs }">
         <v-btn
-          :id="'edit-' + preTSubID"
+          :id="'edit-' + submissionId"
           :disabled="disabled"
           :small="editButton"
           :class="editButton ? 'my-0' : 'mr-5 my-7'"
@@ -84,7 +84,7 @@
               >
                 <template #activator="{ on }">
                   <v-icon
-                    v-if="item.status && item.preTSubID != preTSubID"
+                    v-if="item.status && item.sumssionId != submissionId"
                     style="cursor: pointer"
                     class=""
                     color="amber accent-2"
@@ -207,7 +207,7 @@
             </template>
 
             <template #item.status="{ item }">
-              <div v-if="item.preTSubID != preTSubID">
+              <div v-if="item.submissionId != submissionId">
                 {{ item.status }}
               </div>
             </template>
@@ -253,7 +253,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    preTSubID: {
+    submissionId: {
       type: Number,
       default: 0,
     },
@@ -411,7 +411,7 @@ export default {
           preApprovalIds: currentIDs,
         }
         // console.log(body)
-        securePost(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`, body)
+        securePost(`${PREAPPROVED_URL}/submissions/${this.submissionId}`, body)
           .then(() => {
             this.savingData = false
             this.submitTravelDialog = false
@@ -425,7 +425,7 @@ export default {
     },
 
     deleteSubmission() {
-      secureDelete(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`)
+      secureDelete(`${PREAPPROVED_URL}/submissions/${this.submissionId}`)
         .then(() => {
           this.savingData = false
           this.submitTravelDialog = false
@@ -442,7 +442,7 @@ export default {
     },
 
     updateAndOpenDialog() {
-      this.$store.commit("preapproved/SET_OPEN_DIALOG_ID", "edit-" + this.preTSubID)
+      this.$store.commit("preapproved/SET_OPEN_DIALOG_ID", "edit-" + this.submissionId)
       this.updateTable()
     },
   },

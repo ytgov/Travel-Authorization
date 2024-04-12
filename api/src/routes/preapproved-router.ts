@@ -44,9 +44,9 @@ preapprovedRouter.get(
   RequiresAuth,
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
-    const preTSubID = req.params.submissionId
+    const submissionId = req.params.submissionId
     try {
-      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(preTSubID)
+      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
       res.status(200).json(submission)
     } catch (error: any) {
       console.log(error)
@@ -62,7 +62,7 @@ preapprovedRouter.post(
   async function (req: Request, res: Response) {
     try {
       await db.transaction(async () => {
-        const preTSubID = Number(req.params.submissionId)
+        const submissionId = Number(req.params.submissionId)
         const preApprovalIds = req.body.preApprovalIds
         delete req.body.preApprovalIds
 
@@ -72,7 +72,7 @@ preapprovedRouter.post(
           var id = []
           newSubmission.submitter = req.user.displayName
 
-          let submission = await TravelAuthorizationPreApprovalSubmission.findByPk(preTSubID)
+          let submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
           if (submission !== null) {
             submission.update(newSubmission)
           } else {
@@ -121,8 +121,8 @@ preapprovedRouter.delete(
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
     try {
-      const preTSubID = Number(req.params.submissionId)
-      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(preTSubID)
+      const submissionId = Number(req.params.submissionId)
+      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
       if (isNil(submission)) {
         return res.status(404).json("Submission not found")
       }

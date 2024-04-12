@@ -1,12 +1,12 @@
 <template>
   <div class="mx-10 mb-5">
     <v-row class="my-0 mx-0">
-      <submit-travel
+      <SubmitTravel
         v-if="admin"
         :disabled="selectedRequests.length == 0"
-        :travelRequests="travelRequests"
-        :selectedRequests="selectedRequests"
-        :preTSubID="0"
+        :travel-requests="travelRequests"
+        :selected-requests="selectedRequests"
+        :submission-id="0"
         @updateTable="updateTable"
         buttonName="Submit Selected Travel"
         class="ml-auto"

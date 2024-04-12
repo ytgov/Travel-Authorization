@@ -1,26 +1,35 @@
 <template>
   <div class="mt-15 mx-10 mb-5">
-    <v-data-table :headers="headers" :items="travelSubmissions" :items-per-page="5" class="elevation-1">
+    <v-data-table
+      :headers="headers"
+      :items="travelSubmissions"
+      :items-per-page="5"
+      class="elevation-1"
+    >
       <!-- eslint-disable-next-line vue/no-unused-vars -->
       <template v-slot:item.submissionDate="{ item }">
         <!-- eslint-disable-next-line vue/no-parsing-error -->
         {{ item.submissionDate | beautifyDate }}
       </template>
       <template v-slot:item.location="{ item }">
-        <div v-for="(sub, inx) in item.preapproved" :key="inx" style="line-height: 1rem">
+        <div
+          v-for="(sub, inx) in item.preapproved"
+          :key="inx"
+          style="line-height: 1rem"
+        >
           - {{ sub.location }}
         </div>
       </template>
       <template v-slot:item.edit="{ item }">
         <v-row>
           <div style="width: 4.5rem">
-            <submit-travel
+            <SubmitTravel
               v-if="item.status == 'draft' && admin"
-              :preTSubID="item.preTSubID"
-              :editButton="true"
-              buttonName="Edit"
-              :travelRequests="travelRequests"
-              :selectedRequests="item.preapproved"
+              :submission-id="item.preTSubID"
+              :edit-button="true"
+              button-name="Edit"
+              :travel-requests="travelRequests"
+              :selected-requests="item.preapproved"
               @updateTable="updateTable"
             />
           </div>
@@ -48,25 +57,25 @@
 </template>
 
 <script>
-import Vue from "vue";
-import PrintReport from "../Common/PrintReport.vue";
-import SubmitTravel from "../Common/SubmitTravel.vue";
-import ApproveTravel from "./ApproveTravel.vue";
+import Vue from "vue"
+import PrintReport from "../Common/PrintReport.vue"
+import SubmitTravel from "../Common/SubmitTravel.vue"
+import ApproveTravel from "./ApproveTravel.vue"
 
 export default {
+  name: "Submissions",
   components: {
     PrintReport,
     SubmitTravel,
-    ApproveTravel
+    ApproveTravel,
   },
-  name: "Submissions",
   props: {
     travelSubmissions: {
-      type: []
+      type: [],
     },
     travelRequests: {
-      type: []
-    }
+      type: [],
+    },
   },
   data() {
     return {
@@ -74,55 +83,55 @@ export default {
         {
           text: "Submission Date",
           value: "submissionDate",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Department",
           value: "department",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Location",
           value: "location",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Submitter",
           value: "submitter",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "Status",
           value: "status",
-          class: "blue-grey lighten-4"
+          class: "blue-grey lighten-4",
         },
         {
           text: "",
           sortable: false,
           value: "edit",
           class: "blue-grey lighten-4",
-          width: "18rem"
-        }
+          width: "18rem",
+        },
       ],
-      admin: false
-    };
+      admin: false,
+    }
   },
   mounted() {
-    this.admin = Vue.filter("isAdmin")();
+    this.admin = Vue.filter("isAdmin")()
 
-    const dialogId = this.$store.state.preapproved.openDialogId;
-    const el = document.getElementById(dialogId);
+    const dialogId = this.$store.state.preapproved.openDialogId
+    const el = document.getElementById(dialogId)
     if (el) {
-      this.$store.commit("preapproved/SET_OPEN_DIALOG_ID", "");
-      el.click();
+      this.$store.commit("preapproved/SET_OPEN_DIALOG_ID", "")
+      el.click()
     }
   },
   methods: {
     updateTable() {
-      this.$emit("updateTable");
-    }
-  }
-};
+      this.$emit("updateTable")
+    },
+  },
+}
 </script>
 
 <style scoped>

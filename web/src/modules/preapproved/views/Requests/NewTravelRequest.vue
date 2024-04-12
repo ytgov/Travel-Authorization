@@ -702,10 +702,10 @@ export default {
       this.approvalDate = ""
 
       if (
-        this.travelRequest?.preTSubID &&
+        this.travelRequest?.submissionId &&
         (this.travelRequest.status == "approved" || this.travelRequest.status == "declined")
       )
-        this.initSubmission(this.travelRequest.preTSubID)
+        this.initSubmission(this.travelRequest.submissionId)
     },
 
     initStates() {
@@ -756,7 +756,7 @@ export default {
         },
       }
 
-      secureGet(`${PREAPPROVED_URL}/document/${this.travelRequest.preTSubID}`, header)
+      secureGet(`${PREAPPROVED_URL}/document/${this.travelRequest.submissionId}`, header)
         .then((res) => {
           this.loadingData = false
           const link = document.createElement("a")
