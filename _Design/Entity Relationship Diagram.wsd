@@ -119,7 +119,7 @@ entity "preapprovedSubmissions" {
 entity "preapprovedTravelers" {
   * travelerID : serial4
   --
-  preTID : int4
+  pre_approval_id : int4 <<FK>>
   fullName : varchar(255)
   department : varchar(255)
   branch : varchar(255)
