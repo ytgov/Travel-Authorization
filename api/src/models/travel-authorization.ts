@@ -25,7 +25,7 @@ import {
 import sequelize from "@/db/db-client"
 
 import Expense from "./expense"
-import Preapproved from "./preapproved"
+import Preapproved from "./travel-authorization-pre-approval"
 import Stop from "./stop"
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelPurpose from "./travel-purpose"

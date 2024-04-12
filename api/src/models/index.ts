@@ -9,6 +9,9 @@ import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import User from "./user"
 import TravelSegment from "./travel-segment"
+import TravelAuthorizationPreApproval from "./travel-authorization-pre-approval"
+import TravelAuthorizationPreApprovalTraveler from "./travel-authorizations-pre-approval-traveler"
+import TravelAuthorizationPreApprovalSubmission from "./travel-authorization-pre-approval-submission"
 
 // Order matters here, though may be somewhat flexible
 Stop.establishAssociations()
@@ -20,13 +23,14 @@ User.establishAssociations()
 TravelAuthorizationActionLog.establishAssociations()
 TravelSegment.establishAssociations()
 GeneralLedgerCoding.establishAssociations()
+TravelAuthorizationPreApproval.establishAssociations()
+TravelAuthorizationPreApprovalTraveler.establishAssociations()
+TravelAuthorizationPreApprovalSubmission.establishAssociations()
 
 // Alphabetically - order does not matter
 export { DistanceMatrix } from "./distance-matrix"
 export { Location } from "./location"
 export { PerDiem } from "./per-diem"
-export { Preapproved } from "./preapproved"
-export { PreapprovedTraveler } from "./preapproved-traveler"
 export { TravelPurpose } from "./travel-purpose"
 export {
   Expense,
@@ -34,6 +38,9 @@ export {
   Stop,
   TravelAuthorization,
   TravelAuthorizationActionLog,
+  TravelAuthorizationPreApproval,
+  TravelAuthorizationPreApprovalSubmission,
+  TravelAuthorizationPreApprovalTraveler,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskTravelRequest,
   TravelSegment,
