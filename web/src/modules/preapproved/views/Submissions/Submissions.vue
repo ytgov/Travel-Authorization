@@ -7,20 +7,20 @@
       class="elevation-1"
     >
       <!-- eslint-disable-next-line vue/no-unused-vars -->
-      <template v-slot:item.submissionDate="{ item }">
+      <template #item.submissionDate="{ item }">
         <!-- eslint-disable-next-line vue/no-parsing-error -->
         {{ item.submissionDate | beautifyDate }}
       </template>
-      <template v-slot:item.location="{ item }">
+      <template #item.location="{ item }">
         <div
-          v-for="(sub, inx) in item.preapproved"
+          v-for="(sub, inx) in item.preApproval"
           :key="inx"
           style="line-height: 1rem"
         >
           - {{ sub.location }}
         </div>
       </template>
-      <template v-slot:item.edit="{ item }">
+      <template #item.edit="{ item }">
         <v-row>
           <div style="width: 4.5rem">
             <SubmitTravel
@@ -29,25 +29,25 @@
               :edit-button="true"
               button-name="Edit"
               :travel-requests="travelRequests"
-              :selected-requests="item.preapproved"
+              :selected-requests="item.preApproval"
               @updateTable="updateTable"
             />
           </div>
           <div style="width: 6.75rem">
-            <approve-travel
+            <ApproveTravel
               v-if="item.status == 'submitted' && admin"
-              :travelRequests="item.preapproved"
-              :submissionId="item.preTSubID"
+              :travel-requests="item.preApproval"
+              :submission-id="item.preTSubID"
               @updateTable="updateTable"
             />
           </div>
           <div style="width: 5.75rem">
-            <print-report
+            <PrintReport
               v-if="admin"
-              :travelRequests="item.preapproved"
-              :buttonInsideTable="true"
               :id="item.preTSubID"
-              buttonName="Print"
+              :travel-requests="item.preApproval"
+              :button-inside-table="true"
+              button-name="Print"
             />
           </div>
         </v-row>
@@ -71,10 +71,12 @@ export default {
   },
   props: {
     travelSubmissions: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
   },
   data() {

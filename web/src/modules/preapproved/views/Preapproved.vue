@@ -43,18 +43,18 @@
     >
       <v-tab-item>
         <v-card flat>
-          <preapproved-requests
-            :travelRequests="travelRequests"
-            @updateTable="updatePreapprovedTravel()"
+          <PreapprovedRequests
+            :travel-requests="travelRequests"
+            @updateTable="updatePreapprovedTravel"
           />
         </v-card>
       </v-tab-item>
       <v-tab-item>
         <v-card flat>
-          <submissions
-            :travelSubmissions="travelSubmissions"
-            :travelRequests="travelRequests"
-            @updateTable="updatePreapprovedTravel()"
+          <Submissions
+            :travel-submissions="travelSubmissions"
+            :travel-requests="travelRequests"
+            @updateTable="updatePreapprovedTravel"
           />
         </v-card>
       </v-tab-item>
