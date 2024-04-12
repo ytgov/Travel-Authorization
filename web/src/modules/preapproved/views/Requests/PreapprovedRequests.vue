@@ -38,7 +38,6 @@
       :items-per-page="5"
       class="elevation-1"
       v-model="selectedRequests"
-      item-key="preTID"
       :show-select="admin"
       @item-selected="applySameDeptSelection"
       @toggle-select-all="applyAllSameDeptSelection"
@@ -197,9 +196,7 @@ export default {
         }
 
         if (selection.value == true && selection.item.department != this.firstSelectionDept) {
-          this.selectedRequests = this.selectedRequests.filter(
-            (req) => req.preTID != selection.item.preTID
-          )
+          this.selectedRequests = this.selectedRequests.filter((req) => req.id != selection.item.id)
         }
       })
     },

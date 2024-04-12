@@ -162,7 +162,6 @@
             :items="remainingTravelRequests"
             :items-per-page="5"
             class="elevation-1 mt-5"
-            item-key="preTID"
             show-select
             single-select
           >
@@ -237,7 +236,7 @@
 
 <script>
 import NewTravelRequest from "../Requests/NewTravelRequest.vue"
-import { PREAPPROVED_URL } from "../../../../urls"
+import { PREAPPROVED_URL } from "@/urls"
 import { securePost, secureDelete } from "@/store/jwt"
 
 export default {
@@ -364,11 +363,11 @@ export default {
   },
   computed: {
     remainingTravelRequests() {
-      const currentIDs = this.submittingRequests.map((req) => req.preTID)
+      const currentIDs = this.submittingRequests.map((req) => req.id)
       const currentDept = this.submittingRequests[0]?.department
       return this.travelRequests?.filter(
         (req) =>
-          !currentIDs.includes(req.preTID) &&
+          !currentIDs.includes(req.id) &&
           (req.status == null || req.status == "draft") &&
           (req.department == currentDept || currentIDs.length == 0)
       )
@@ -385,7 +384,7 @@ export default {
 
     removeTravel(item) {
       this.submittingRequests = JSON.parse(
-        JSON.stringify(this.submittingRequests.filter((travel) => travel.preTID != item.preTID))
+        JSON.stringify(this.submittingRequests.filter((travel) => travel.preApprovalId != item.id))
       )
       this.update++
     },
@@ -401,7 +400,7 @@ export default {
     },
 
     submitTravelRequest(type) {
-      const currentIDs = this.submittingRequests.map((req) => req.preTID)
+      const currentIDs = this.submittingRequests.map((req) => req.id)
       if (currentIDs.length > 0) {
         const currentDept = this.submittingRequests[0].department
         this.savingData = true

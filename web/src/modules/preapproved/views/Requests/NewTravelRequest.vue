@@ -644,7 +644,7 @@ export default {
           travelerNotes: this.travellerNotes,
         }
         // console.log(body);
-        const id = this.travelRequest?.preTID ? this.travelRequest.preTID : 0
+        const id = this.travelRequest?.id ? this.travelRequest.id : 0
         securePost(`${PREAPPROVED_URL}/${id}`, body)
           .then(() => {
             this.savingData = false
@@ -671,7 +671,8 @@ export default {
 
       this.travellers = this.type == "Add New" ? [] : this.travelRequest.travelers
       this.purpose = this.type == "Add New" ? "" : this.travelRequest.purpose
-      this.unknownDate = this.type == "Add New" ? false : Boolean(this.travelRequest.isOpenForAnyDate)
+      this.unknownDate =
+        this.type == "Add New" ? false : Boolean(this.travelRequest.isOpenForAnyDate)
       this.location = this.type == "Add New" ? "" : this.travelRequest.location
       this.cost = this.type == "Add New" ? "" : this.travelRequest.estimatedCost
       this.reason = this.type == "Add New" ? "" : this.travelRequest.reason
@@ -774,7 +775,7 @@ export default {
     deleteTravelRequest() {
       this.deleteDialog = false
       this.savingData = true
-      secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.preTID}`)
+      secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.id}`)
         .then(() => {
           this.savingData = false
           this.addNewTravelDialog = false
