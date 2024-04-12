@@ -11,15 +11,7 @@
         <!-- eslint-disable-next-line vue/no-parsing-error -->
         {{ item.submissionDate | beautifyDate }}
       </template>
-      <template #item.location="{ item }">
-        <div
-          v-for="(sub, inx) in item.preApproval"
-          :key="inx"
-          style="line-height: 1rem"
-        >
-          - {{ sub.location }}
-        </div>
-      </template>
+      <template #item.location="{ item }"> {{ item.preApproval?.location }} </template>
       <template #item.edit="{ item }">
         <v-row>
           <div style="width: 4.5rem">
@@ -45,7 +37,7 @@
             <PrintReport
               v-if="admin"
               :id="item.preTSubID"
-              :travel-requests="item.preApproval"
+              :travel-requests="[item.preApproval]"
               :button-inside-table="true"
               button-name="Print"
             />
