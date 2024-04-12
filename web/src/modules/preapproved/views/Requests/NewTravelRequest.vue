@@ -632,13 +632,13 @@ export default {
           purpose: this.purpose,
           estimatedCost: this.cost,
           reason: this.reason,
-          isOpenForAnyDate: this.unknownDate ? 1 : 0,
+          isOpenForAnyDate: this.unknownDate,
           month: this.anticipatedMonth,
           startDate: !this.unknownDate ? this.startDate : null,
           endDate: !this.unknownDate ? this.endDate : null,
           department: this.department,
           branch: this.branch,
-          isOpenForAnyTraveler: this.undefinedTraveller ? 1 : 0,
+          isOpenForAnyTraveler: this.undefinedTraveller,
           numberTravelers: this.travellersNum,
           travelers: this.travellers,
           travelerNotes: this.travellerNotes,
@@ -671,8 +671,7 @@ export default {
 
       this.travellers = this.type == "Add New" ? [] : this.travelRequest.travelers
       this.purpose = this.type == "Add New" ? "" : this.travelRequest.purpose
-      this.unknownDate =
-        this.type == "Add New" ? false : Boolean(this.travelRequest.isOpenForAnyDate)
+      this.unknownDate = this.type == "Add New" ? false : this.travelRequest.isOpenForAnyDate
       this.location = this.type == "Add New" ? "" : this.travelRequest.location
       this.cost = this.type == "Add New" ? "" : this.travelRequest.estimatedCost
       this.reason = this.type == "Add New" ? "" : this.travelRequest.reason
@@ -681,7 +680,7 @@ export default {
       this.department = this.type == "Add New" ? userDept : this.travelRequest.department
       this.branch = this.type == "Add New" ? "" : this.travelRequest.branch
       this.undefinedTraveller =
-        this.type == "Add New" ? false : Boolean(this.travelRequest.isOpenForAnyTraveler)
+        this.type == "Add New" ? false : this.travelRequest.isOpenForAnyTraveler
       this.undefinedTravellerHint = ""
       this.travellersNum = this.type == "Add New" ? null : this.travelRequest.numberTravelers
       this.anticipatedMonth = this.type == "Add New" ? "" : this.travelRequest.month
