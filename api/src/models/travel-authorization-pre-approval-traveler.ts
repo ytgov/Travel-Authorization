@@ -58,6 +58,7 @@ TravelAuthorizationPreApprovalTraveler.init(
       autoIncrement: true,
     },
     preApprovalId: {
+      field: "pre_approval_id", // Remove once table is underscored
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {

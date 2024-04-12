@@ -24,7 +24,7 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import TravelAuthorizationPreApprovalTraveler from "@/models/travel-authorizations-pre-approval-traveler"
+import TravelAuthorizationPreApprovalTraveler from "@/models/travel-authorization-pre-approval-traveler"
 import TravelAuthorizationPreApprovalSubmission from "@/models/travel-authorization-pre-approval-submission"
 
 export class TravelAuthorizationPreApproval extends Model<
