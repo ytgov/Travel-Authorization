@@ -72,8 +72,14 @@ preapprovedRouter.post(
           var id = []
           newSubmission.submitter = req.user.displayName
 
-          let submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
-          if (submission !== null) {
+          // TODO: fix legacy patterm - split creation and update into separate endpoints
+          let submission
+          if (submissionId > 0) {
+            submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
+            if (isNil(submission)) {
+              return res.status(404).json("Submission not found")
+            }
+
             submission.update(newSubmission)
           } else {
             submission = await TravelAuthorizationPreApprovalSubmission.create(newSubmission)
@@ -279,14 +285,20 @@ preapprovedRouter.post(
         if (
           newPreapproved.department &&
           newPreapproved.purpose &&
-          !isNil(newPreapproved.isOpenForAnyDate) &&
           newPreapproved.estimatedCost &&
           newPreapproved.location &&
-          !isNil(newPreapproved.isOpenForAnyTraveler) &&
           travelers?.length > 0
         ) {
-          let preApproval = await TravelAuthorizationPreApproval.findByPk(preApprovalId)
-          if (isNil(preApproval)) {
+          // TODO: fix legacy patterm - split creation and update into separate endpoints
+          let preApproval
+          if (preApprovalId > 0) {
+            preApproval = await TravelAuthorizationPreApproval.findByPk(preApprovalId)
+            if (isNil(preApproval)) {
+              return res.status(404).json("Pre-approval not found")
+            }
+
+            preApproval.update(newPreapproved)
+          } else {
             preApproval = await TravelAuthorizationPreApproval.create(newPreapproved)
           }
 
