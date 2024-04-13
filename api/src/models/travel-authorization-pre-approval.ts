@@ -43,6 +43,7 @@ export class TravelAuthorizationPreApproval extends Model<
   declare endDate: CreationOptional<Date | null>
   declare isOpenForAnyDate: CreationOptional<boolean>
   declare month: CreationOptional<string | null>
+  declare isOpenForAnyTraveler: CreationOptional<boolean>
   declare numberTravelers: CreationOptional<number | null>
   declare travelerNotes: CreationOptional<string | null>
   declare status: CreationOptional<string | null>
@@ -166,10 +167,16 @@ TravelAuthorizationPreApproval.init(
     isOpenForAnyDate: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
+      defaultValue: false,
     },
     month: {
       type: DataTypes.STRING(255),
       allowNull: true,
+    },
+    isOpenForAnyTraveler: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
     },
     numberTravelers: {
       type: DataTypes.INTEGER,
