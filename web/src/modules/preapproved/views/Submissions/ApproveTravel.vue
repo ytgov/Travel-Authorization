@@ -184,6 +184,7 @@ import { PREAPPROVED_URL } from "@/urls"
 import { securePost } from "@/store/jwt"
 
 import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+import { STATUSES as SUBMISSION_STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
 
 export default {
   name: "ApproveTravel",
@@ -315,7 +316,7 @@ export default {
 
         this.savingData = true
         const data = {
-          status: "Finished",
+          status: SUBMISSION_STATUSES.FINISHED,
           approvalDate: this.approvalDate,
           approvedBy: this.approvedBy,
           preApprovals: this.approvalRequests.map((req) => {

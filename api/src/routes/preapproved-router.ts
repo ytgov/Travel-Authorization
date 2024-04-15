@@ -134,7 +134,11 @@ preapprovedRouter.delete(
       }
 
       await db.transaction(async () => {
-        if (submission.status == "Finished" || submission.approvalDate || submission.approvedBy) {
+        if (
+          submission.status === TravelAuthorizationPreApprovalSubmission.Statuses.FINISHED ||
+          submission.approvalDate ||
+          submission.approvedBy
+        ) {
           res.status(403).json("Cannot delete final records")
         } else {
           await TravelAuthorizationPreApproval.update(

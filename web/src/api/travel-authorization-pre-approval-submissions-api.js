@@ -4,6 +4,7 @@ import http from "@/api/http-client"
 export const STATUSES = Object.freeze({
   DRAFT: "draft",
   SUBMITTED: "submitted",
+  FINISHED: "finished",
 })
 
 export const travelAuthorizationPreApprovalSubmissionsApi = {

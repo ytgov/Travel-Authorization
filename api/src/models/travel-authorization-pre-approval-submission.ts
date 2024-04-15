@@ -34,12 +34,15 @@ import TravelAuthorizationPreApprovalDocument from "@/models/travel-authorizatio
 export enum Statuses {
   DRAFT = "draft",
   SUBMITTED = "submitted",
+  FINISHED = "finished",
 }
 
 export class TravelAuthorizationPreApprovalSubmission extends Model<
   InferAttributes<TravelAuthorizationPreApprovalSubmission>,
   InferCreationAttributes<TravelAuthorizationPreApprovalSubmission>
 > {
+  static readonly Statuses = Statuses
+
   declare preTSubID: CreationOptional<number>
   declare submitter: string
   declare status: string

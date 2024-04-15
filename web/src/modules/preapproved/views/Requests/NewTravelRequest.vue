@@ -426,8 +426,10 @@
 
 <script>
 import Vue from "vue"
-import { PREAPPROVED_URL } from "../../../../urls"
-import { secureDelete, secureGet, securePost } from "../../../../store/jwt"
+
+import { PREAPPROVED_URL } from "@/urls"
+import { secureDelete, secureGet, securePost } from "@/store/jwt"
+import { STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
 
 export default {
   name: "NewTravelRequest",
@@ -737,7 +739,7 @@ export default {
     initSubmission(id) {
       secureGet(`${PREAPPROVED_URL}/submissions/${id}`)
         .then((res) => {
-          this.showApproval = res.data.status == "Finished"
+          this.showApproval = res.data.status === STATUSES.FINISHED
           this.approvedBy = res.data.approvedBy
           this.approvalDate = res.data.approvalDate
         })
