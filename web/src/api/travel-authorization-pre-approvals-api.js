@@ -2,6 +2,7 @@ import http from "@/api/http-client"
 
 /** Keep in sync with api/src/models/travel-authorization-pre-approval.ts */
 export const STATUSES = Object.freeze({
+  DRAFT: "draft",
   SUBMITTED: "submitted",
   APPROVED: "approved",
   DENIED: "denied",

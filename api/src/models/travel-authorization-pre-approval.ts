@@ -30,6 +30,7 @@ import TravelAuthorizationPreApprovalTraveler from "@/models/travel-authorizatio
 
 /** Keep in sync with web/src/api/travel-authorization-pre-approvals-api.js */
 export enum Statuses {
+  DRAFT = "draft",
   SUBMITTED = "submitted",
   APPROVED = "approved",
   DENIED = "denied",

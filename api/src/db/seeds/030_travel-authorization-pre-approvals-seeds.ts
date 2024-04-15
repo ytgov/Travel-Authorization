@@ -1,5 +1,7 @@
-import { TravelAuthorizationPreApproval } from "@/models"
 import { Knex } from "knex"
+
+import { TravelAuthorizationPreApproval } from "@/models"
+import { Statuses } from "@/models/travel-authorization-pre-approval"
 
 export async function seed(knex: Knex): Promise<void> {
   await TravelAuthorizationPreApproval.destroy({ where: {} })
@@ -19,7 +21,7 @@ export async function seed(knex: Knex): Promise<void> {
       isOpenForAnyTraveler: false,
       numberTravelers: 3,
       travelerNotes: "All travelers are senior finance officers",
-      status: "Pending",
+      status: Statuses.DRAFT,
     },
     {
       submissionId: null,
@@ -36,7 +38,7 @@ export async function seed(knex: Knex): Promise<void> {
       isOpenForAnyTraveler: true,
       numberTravelers: 2,
       travelerNotes: "Include both a creative director and campaign manager",
-      status: "Approved",
+      status: Statuses.DRAFT,
     },
     {
       submissionId: null,
@@ -53,7 +55,7 @@ export async function seed(knex: Knex): Promise<void> {
       isOpenForAnyTraveler: false,
       numberTravelers: 4,
       travelerNotes: "Includes IT managers and system administrators",
-      status: "Reviewing",
+      status: Statuses.DRAFT,
     },
   ])
 }
