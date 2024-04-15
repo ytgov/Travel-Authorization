@@ -7,47 +7,47 @@
         :travel-requests="travelRequests"
         :selected-requests="selectedRequests"
         :submission-id="0"
-        @updateTable="updateTable"
-        buttonName="Submit Selected Travel"
+        button-name="Submit Selected Travel"
         class="ml-auto"
+        @updateTable="updateTable"
       />
       <print-report
         v-if="admin"
         :disabled="selectedRequests.length == 0"
-        :travelRequests="selectedRequests"
-        buttonName="Print Report"
+        :travel-requests="selectedRequests"
+        button-name="Print Report"
       />
       <v-btn
         v-if="admin"
         :disabled="selectedRequests.length == 0"
-        @click="exportToExcel()"
         class="mr-5 my-7"
         color="primary"
+        @click="exportToExcel"
       >
         Export To Excel
       </v-btn>
       <new-travel-request
         type="Add New"
-        @updateTable="updateTable"
         :class="admin ? '' : 'ml-auto'"
+        @updateTable="updateTable"
       />
     </v-row>
     <v-data-table
+      v-model="selectedRequests"
       :headers="headers"
       :items="grayedOutTravelRequests"
       :items-per-page="5"
       class="elevation-1"
-      v-model="selectedRequests"
       :show-select="admin"
       @item-selected="applySameDeptSelection"
       @toggle-select-all="applyAllSameDeptSelection"
     >
-      <template v-slot:item.name="{ item }">
+      <template #item.name="{ item }">
         <v-tooltip
           top
           color="primary"
         >
-          <template v-slot:activator="{ on }">
+          <template #activator="{ on }">
             <div v-on="item.travelers.length > 1 ? on : ''">
               <span>
                 {{ item.travelers[0].fullName.replace(".", " ") }}
@@ -66,7 +66,7 @@
         </v-tooltip>
       </template>
 
-      <template v-slot:item.travelDate="{ item }">
+      <template #item.travelDate="{ item }">
         <div v-if="item.isOpenForAnyDate">
           {{ item.month }}
         </div>
@@ -83,11 +83,11 @@
         </div>
       </template>
 
-      <template v-slot:item.edit="{ item }">
+      <template #item.edit="{ item }">
         <new-travel-request
           :type="item.status == 'draft' || !item.status ? 'Edit' : 'View'"
+          :travel-request="item"
           @updateTable="updateTable"
-          :travelRequest="item"
         />
       </template>
     </v-data-table>
@@ -102,15 +102,16 @@ import SubmitTravel from "../Common/SubmitTravel.vue"
 import { ExportToCsv } from "export-to-csv"
 
 export default {
+  name: "PreapprovedRequests",
   components: {
     NewTravelRequest,
     PrintReport,
     SubmitTravel,
   },
-  name: "PreapprovedRequests",
   props: {
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -170,9 +171,6 @@ export default {
       firstSelectionDept: "",
     }
   },
-  mounted() {
-    this.admin = Vue.filter("isAdmin")()
-  },
   computed: {
     grayedOutTravelRequests() {
       const travelRequests = JSON.parse(JSON.stringify(this.travelRequests))
@@ -182,6 +180,9 @@ export default {
         })
       return travelRequests
     },
+  },
+  mounted() {
+    this.admin = Vue.filter("isAdmin")()
   },
   methods: {
     updateTable() {
