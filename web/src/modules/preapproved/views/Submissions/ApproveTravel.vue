@@ -178,6 +178,8 @@
 import { PREAPPROVED_URL } from "@/urls"
 import { securePost } from "@/store/jwt"
 
+import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+
 export default {
   name: "ApproveTravel",
   components: {},
@@ -227,7 +229,11 @@ export default {
       approvedByErr: false,
       approvalDate: "",
       approvalDateErr: false,
-      statusList: ["Approved", "Declined", "Submitted"],
+      statusList: [
+        { text: "Approved", value: STATUSES.APPROVED },
+        { text: "Declined", value: STATUSES.DECLINED },
+        { text: "Submitted", value: STATUSES.SUBMITTED },
+      ],
       approveTravelDialog: false,
       approvalFileType: "",
       approvalFileName: "",
