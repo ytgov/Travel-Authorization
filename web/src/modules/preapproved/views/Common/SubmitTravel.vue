@@ -131,7 +131,7 @@
             class="ml-auto"
             color="lime darken-1"
             :loading="savingData"
-            @click="submitTravelRequest('Draft')"
+            @click="submitTravelRequest(STATUSES.DRAFT)"
           >
             Save Draft
           </v-btn>
@@ -139,7 +139,7 @@
             class="ml-5"
             color="green darken-1"
             :loading="savingData"
-            @click="submitTravelRequest('Submitted')"
+            @click="submitTravelRequest(STATUSES.SUBMITTED)"
           >
             Submit
           </v-btn>
@@ -245,9 +245,12 @@
 </template>
 
 <script>
-import NewTravelRequest from "../Requests/NewTravelRequest.vue"
 import { PREAPPROVED_URL } from "@/urls"
 import { securePost, secureDelete } from "@/store/jwt"
+
+import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+
+import NewTravelRequest from "../Requests/NewTravelRequest.vue"
 
 export default {
   name: "SubmitTravel",
@@ -372,6 +375,9 @@ export default {
     }
   },
   computed: {
+    STATUSES() {
+      return STATUSES
+    },
     remainingTravelRequests() {
       const currentIDs = this.submittingRequests.map((req) => req.id)
       const currentDept = this.submittingRequests[0]?.department
@@ -409,14 +415,14 @@ export default {
       this.addTravelDialog = false
     },
 
-    submitTravelRequest(type) {
+    submitTravelRequest(status) {
       const currentIDs = this.submittingRequests.map((req) => req.id)
       if (currentIDs.length > 0) {
         const currentDept = this.submittingRequests[0].department
         this.savingData = true
         const body = {
           department: currentDept,
-          status: type,
+          status,
           submitter: "SYSTEM",
           preApprovalIds: currentIDs,
         }
