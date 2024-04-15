@@ -292,8 +292,8 @@ export default {
       this.approvalDateErr = this.approvalDate ? false : true
       if (this.approvedByErr || this.approvalDateErr) return false
 
-      for (const req of this.approvalRequests) {
-        if (req.status != "Approved" && req.status != "Declined") {
+      for (const request of this.approvalRequests) {
+        if (![STATUSES.APPROVED, STATUSES.DECLINED].includes(request.status)) {
           this.alertMsg =
             "Please select either 'Approved' or 'Declined' status for all the records."
           this.alert = true
