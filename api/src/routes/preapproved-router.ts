@@ -249,27 +249,6 @@ preapprovedRouter.get("/document/:submissionId", RequiresAuth, async function (r
   }
 })
 
-preapprovedRouter.get("/", RequiresAuth, async function (req: Request, res: Response) {
-  const applyScope = (scope: ModelStatic<TravelAuthorizationPreApproval>, user: User) => {
-    if (user.roles?.indexOf(User.Roles.ADMIN) >= 0) {
-      return scope
-    }
-
-    return scope.scope({
-      where: {
-        department: user.department,
-      },
-    })
-  }
-
-  const scopedPreApprovals = applyScope(TravelAuthorizationPreApproval, req.user)
-  const preApprovals = await scopedPreApprovals.findAll({
-    include: ["travelers"],
-  })
-
-  res.status(200).json(preApprovals)
-})
-
 preapprovedRouter.post(
   "/:preApprovalId",
   RequiresAuth,

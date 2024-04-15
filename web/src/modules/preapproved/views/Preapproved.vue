@@ -65,7 +65,11 @@
 <script>
 import { PREAPPROVED_URL, LOOKUP_URL, PROFILE_URL } from "@/urls"
 import { secureGet } from "@/store/jwt"
+
 import travelPurposesApi from "@/api/travel-purposes-api"
+import travelAuthorizationPreApprovalsApi, {
+  STATUSES,
+} from "@/api/travel-authorization-pre-approvals-api"
 
 import PreapprovedRequests from "./Requests/PreapprovedRequests.vue"
 import Submissions from "./Submissions/Submissions.vue"
@@ -147,16 +151,17 @@ export default {
     },
 
     async getPreapprovedTravel() {
-      return secureGet(`${PREAPPROVED_URL}/`)
-        .then((resp) => {
-          this.travelRequests = resp.data.map((x) => ({
-            ...x,
-            isSelectable: x.status != "Approved" && x.status != "Declined",
-          }))
-        })
-        .catch((e) => {
-          console.log(e)
-        })
+      try {
+        const { travelAuthorizationPreApprovals } = await travelAuthorizationPreApprovalsApi.list()
+        this.travelRequests = travelAuthorizationPreApprovals.map((preApproval) => ({
+          ...preApproval,
+          isSelectable:
+            preApproval.status !== STATUSES.APPROVED && preApproval.status !== STATUSES.DECLINED,
+        }))
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     },
 
     async getPreapprovedTravelSubmissions() {

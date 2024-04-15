@@ -28,10 +28,19 @@ import TravelAuthorization from "@/models/travel-authorization"
 import TravelAuthorizationPreApprovalSubmission from "@/models/travel-authorization-pre-approval-submission"
 import TravelAuthorizationPreApprovalTraveler from "@/models/travel-authorization-pre-approval-traveler"
 
+/** Keep in sync with web/src/api/travel-authorization-pre-approvals-api.js */
+export enum Statuses {
+  SUBMITTED = "submitted",
+  APPROVED = "approved",
+  DENIED = "denied",
+}
+
 export class TravelAuthorizationPreApproval extends Model<
   InferAttributes<TravelAuthorizationPreApproval>,
   InferCreationAttributes<TravelAuthorizationPreApproval>
 > {
+  static readonly Statuses = Statuses
+
   declare id: CreationOptional<number>
   declare submissionId: ForeignKey<TravelAuthorizationPreApprovalSubmission["preTSubID"] | null>
   declare estimatedCost: number
@@ -228,6 +237,12 @@ TravelAuthorizationPreApproval.init(
     status: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      validate: {
+        isIn: {
+          args: [Object.values(Statuses)],
+          msg: "Invalid status value",
+        },
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
