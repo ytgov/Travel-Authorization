@@ -184,7 +184,7 @@ preapprovedRouter.post(
         data.status &&
         data.approvalDate &&
         data.approvedBy &&
-        data.preapproved.length > 0
+        data.preApprovals.length > 0
       ) {
         const newDocument = {
           preTSubID,
