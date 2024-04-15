@@ -5,7 +5,7 @@
       persistent
       max-width="950px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           small
           class="my-0"
@@ -96,12 +96,12 @@
                 class="elevation-1"
                 hide-default-footer
               >
-                <template v-slot:item.name="{ item }">
+                <template #item.name="{ item }">
                   <v-tooltip
                     top
                     color="primary"
                   >
-                    <template v-slot:activator="{ on }">
+                    <template #activator="{ on }">
                       <div v-on="item.travelers.length > 1 ? on : ''">
                         <span>
                           {{ item.travelers[0].fullName.replace(".", " ") }}
@@ -120,8 +120,9 @@
                   </v-tooltip>
                 </template>
 
-                <template v-slot:item.status="{ item }">
+                <template #item.status="{ item }">
                   <v-select
+                    v-model="item.status"
                     :background-color="
                       item.status == 'declined'
                         ? 'red lighten-4'
@@ -132,11 +133,10 @@
                     class="my-0 py-0"
                     dense
                     hide-details
-                    @change="alert = false"
-                    v-model="item.status"
                     :items="statusList"
                     label=""
                     solo
+                    @change="alert = false"
                   />
                 </template>
               </v-data-table>
@@ -175,18 +175,20 @@
 </template>
 
 <script>
-import { PREAPPROVED_URL } from "../../../../urls"
-import { securePost } from "../../../../store/jwt"
+import { PREAPPROVED_URL } from "@/urls"
+import { securePost } from "@/store/jwt"
 
 export default {
-  components: {},
   name: "ApproveTravel",
+  components: {},
   props: {
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     submissionId: {
       type: Number,
+      required: true,
     },
   },
   data() {
