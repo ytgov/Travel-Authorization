@@ -33,7 +33,7 @@ export enum Statuses {
   DRAFT = "draft",
   SUBMITTED = "submitted",
   APPROVED = "approved",
-  DENIED = "denied",
+  DECLINED = "declined",
 }
 
 export class TravelAuthorizationPreApproval extends Model<

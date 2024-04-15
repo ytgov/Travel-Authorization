@@ -5,7 +5,7 @@ export const STATUSES = Object.freeze({
   DRAFT: "draft",
   SUBMITTED: "submitted",
   APPROVED: "approved",
-  DENIED: "denied",
+  DECLINED: "declined",
 })
 
 export const travelAuthorizationPreApprovalsApi = {
