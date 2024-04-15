@@ -55,24 +55,29 @@
               </v-btn>
             </template>
             <template #item.name="{ item }">
+              <template v-if="item.travelers.length === 0"> Unspecified </template>
+              <template v-else-if="item.travelers.length === 1">
+                {{ item.travelers[0].fullName.replace(".", " ") }}
+              </template>
               <v-tooltip
+                v-else
                 top
                 color="primary"
               >
                 <template #activator="{ on }">
-                  <div v-on="item.travelers.length > 1 ? on : ''">
+                  <div v-on="on">
                     <span>
                       {{ item.travelers[0].fullName.replace(".", " ") }}
                     </span>
-                    <span v-if="item.travelers.length > 1">, ... </span>
+                    <span>, ... </span>
                   </div>
                 </template>
                 <span
                   ><div
-                    v-for="(trv, inx) in item.travelers"
-                    :key="inx"
+                    v-for="(traveler, index) in item.travelers"
+                    :key="index"
                   >
-                    {{ trv.fullName.replace(".", " ") }}
+                    {{ traveler.fullName.replace(".", " ") }}
                   </div></span
                 >
               </v-tooltip>
@@ -166,24 +171,29 @@
             single-select
           >
             <template #item.name="{ item }">
+              <template v-if="item.travelers.length === 0"> Unspecified </template>
+              <template v-else-if="item.travelers.length === 1">
+                {{ item.travelers[0].fullName.replace(".", " ") }}
+              </template>
               <v-tooltip
+                v-else
                 top
                 color="primary"
               >
                 <template #activator="{ on }">
-                  <div v-on="item.travelers.length > 1 ? on : ''">
+                  <div v-on="on">
                     <span>
                       {{ item.travelers[0].fullName.replace(".", " ") }}
                     </span>
-                    <span v-if="item.travelers.length > 1">, ... </span>
+                    <span>, ... </span>
                   </div>
                 </template>
                 <span
                   ><div
-                    v-for="(trv, inx) in item.travelers"
-                    :key="inx"
+                    v-for="(traveler, index) in item.travelers"
+                    :key="index"
                   >
-                    {{ trv.fullName.replace(".", " ") }}
+                    {{ traveler.fullName.replace(".", " ") }}
                   </div></span
                 >
               </v-tooltip>
