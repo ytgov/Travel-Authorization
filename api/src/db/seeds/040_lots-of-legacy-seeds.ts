@@ -1,11 +1,22 @@
 import { Knex } from "knex"
 import { isNull } from "lodash"
 
-import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose } from "@/models"
+import {
+  Stop,
+  TravelAuthorization,
+  TravelAuthorizationPreApproval,
+  TravelDeskTravelRequest,
+  TravelPurpose,
+} from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
 export async function seed(knex: Knex): Promise<void> {
+  const travelAuthorizationPreApprovals = await TravelAuthorizationPreApproval.findAll()
+  if (travelAuthorizationPreApprovals.length < 3) {
+    throw new Error("Could not find enough travel authorization pre-approvals.")
+  }
+
   // INSERT INTO public.forms ("userId","firstName","lastName",department,division,branch,unit,email,mailcode,"daysOffTravelStatus","dateBackToWork","travelDuration",purpose,"travelAdvance","eventName",summary,benefits,status,"formId","supervisorEmail","preApprovalId",approved,"requestChange","denialReason","oneWayTrip","multiStop","createdBy") VALUES
   //  (2,'Max','Parker','Highways and Public Works',NULL,NULL,NULL,'max.parker@yukon.ca',NULL,NULL,'2023-03-18',10,'Conference',1,'Global Biotechnology Summit',NULL,NULL,'Approved','1',NULL,1,NULL,NULL,NULL,false,true,NULL),
   //  (2,'Max','Parker','Highways and Public Works',NULL,NULL,NULL,'max.parker@yukon.ca',NULL,NULL,'2023-03-20',3,'Conference',1,'Gelobal  IT',NULL,NULL,'Approved','3',NULL,3,NULL,NULL,NULL,false,true,NULL),
@@ -45,7 +56,7 @@ export async function seed(knex: Knex): Promise<void> {
         status: TravelAuthorization.Statuses.APPROVED,
         slug: "2c2db7f4-5711-40c8-bd54-a6b7ad306319",
         supervisorEmail: "dpdavids@ynet.gov.yk.ca",
-        preApprovalId: 1,
+        preApprovalId: travelAuthorizationPreApprovals[0].id,
         requestChange: "",
         denialReason: "",
         oneWayTrip: true,
@@ -73,7 +84,7 @@ export async function seed(knex: Knex): Promise<void> {
         status: TravelAuthorization.Statuses.APPROVED,
         slug: "2c2db7f4-5711-40c8-bd54-a6b7ad306311",
         supervisorEmail: "dpdavids@ynet.gov.yk.ca",
-        preApprovalId: 2,
+        preApprovalId: travelAuthorizationPreApprovals[1].id,
         requestChange: "",
         denialReason: "",
         oneWayTrip: true,
@@ -101,7 +112,7 @@ export async function seed(knex: Knex): Promise<void> {
         status: TravelAuthorization.Statuses.APPROVED,
         slug: "2c2db7f4-5711-40c8-bd54-a6b7ad306312",
         supervisorEmail: "dpdavids@ynet.gov.yk.ca",
-        preApprovalId: 3,
+        preApprovalId: travelAuthorizationPreApprovals[2].id,
         requestChange: "",
         denialReason: "",
         oneWayTrip: true,
