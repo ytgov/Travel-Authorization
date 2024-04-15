@@ -28,8 +28,6 @@ import TravelAuthorizationPreApprovalDocument from "@/models/travel-authorizatio
 
 /**
  * Keep in sync with web/src/api/travel-authorization-pre-approval-submissions-api.js
- *
- * TODO: consider if these should be shared with TravelAuthorizationPreApproval
  */
 export enum Statuses {
   DRAFT = "draft",
