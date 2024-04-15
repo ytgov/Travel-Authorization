@@ -90,7 +90,7 @@
 
       <template #item.edit="{ item }">
         <new-travel-request
-          :type="item.status == 'draft' || !item.status ? 'Edit' : 'View'"
+          :type="item.status === STATUSES.DRAFT || isNil(item.status) ? 'Edit' : 'View'"
           :travel-request="item"
           @updateTable="updateTable"
         />
@@ -101,10 +101,14 @@
 
 <script>
 import Vue from "vue"
+import { ExportToCsv } from "export-to-csv"
+import { isNil } from "lodash"
+
+import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+
 import NewTravelRequest from "./NewTravelRequest.vue"
 import PrintReport from "../Common/PrintReport.vue"
 import SubmitTravel from "../Common/SubmitTravel.vue"
-import { ExportToCsv } from "export-to-csv"
 
 export default {
   name: "PreapprovedRequests",
@@ -177,6 +181,9 @@ export default {
     }
   },
   computed: {
+    STATUSES() {
+      return STATUSES
+    },
     grayedOutTravelRequests() {
       const travelRequests = JSON.parse(JSON.stringify(this.travelRequests))
       if (this.firstSelectionDept)
@@ -190,6 +197,7 @@ export default {
     this.admin = Vue.filter("isAdmin")()
   },
   methods: {
+    isNil,
     updateTable() {
       this.$emit("updateTable")
     },
