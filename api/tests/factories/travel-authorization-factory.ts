@@ -1,10 +1,14 @@
 import { Includeable } from "sequelize"
 import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
-import { isEmpty, isNil } from "lodash"
+import { isNil } from "lodash"
 
 import { TravelAuthorization, TravelSegment } from "@/models"
-import { travelPurposeFactory, userFactory } from "@/factories"
+import {
+  travelAuthorizationPreApprovalFactory,
+  travelPurposeFactory,
+  userFactory,
+} from "@/factories"
 import { POSTGRES_INT_4_MAX, presence } from "./helpers"
 
 type TransientParam = {
@@ -63,7 +67,6 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
 
     return TravelAuthorization.build({
       slug: faker.string.uuid(),
-      preApprovalId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       department: faker.commerce.department(),
