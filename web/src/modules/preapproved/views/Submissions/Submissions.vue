@@ -21,14 +21,14 @@
               :edit-button="true"
               button-name="Edit"
               :travel-requests="travelRequests"
-              :selected-requests="item.preApproval"
+              :selected-requests="[item.preApproval]"
               @updateTable="updateTable"
             />
           </div>
           <div style="width: 6.75rem">
             <ApproveTravel
               v-if="item.status === STATUSES.SUBMITTED && admin"
-              :travel-requests="item.preApproval"
+              :travel-requests="[item.preApproval]"
               :submission-id="item.preTSubID"
               @updateTable="updateTable"
             />
