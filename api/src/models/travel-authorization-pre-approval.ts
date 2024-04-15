@@ -24,8 +24,9 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import TravelAuthorizationPreApprovalTraveler from "@/models/travel-authorization-pre-approval-traveler"
+import TravelAuthorization from "@/models/travel-authorization"
 import TravelAuthorizationPreApprovalSubmission from "@/models/travel-authorization-pre-approval-submission"
+import TravelAuthorizationPreApprovalTraveler from "@/models/travel-authorization-pre-approval-traveler"
 
 export class TravelAuthorizationPreApproval extends Model<
   InferAttributes<TravelAuthorizationPreApproval>,
@@ -61,6 +62,38 @@ export class TravelAuthorizationPreApproval extends Model<
   >
   declare createSubmission: BelongsToCreateAssociationMixin<TravelAuthorizationPreApprovalSubmission>
 
+  declare getTravelAuthorizations: HasManyGetAssociationsMixin<TravelAuthorization>
+  declare setTravelAuthorizations: HasManySetAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["preApprovalId"]
+  >
+  declare hasTravelAuthorization: HasManyHasAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["preApprovalId"]
+  >
+  declare hasTravelAuthorizations: HasManyHasAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["preApprovalId"]
+  >
+  declare addTravelAuthorization: HasManyAddAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["preApprovalId"]
+  >
+  declare addTravelAuthorizations: HasManyAddAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["preApprovalId"]
+  >
+  declare removeTravelAuthorization: HasManyRemoveAssociationMixin<
+    TravelAuthorization,
+    TravelAuthorization["preApprovalId"]
+  >
+  declare removeTravelAuthorizations: HasManyRemoveAssociationsMixin<
+    TravelAuthorization,
+    TravelAuthorization["preApprovalId"]
+  >
+  declare countTravelAuthorizations: HasManyCountAssociationsMixin
+  declare createTravelAuthorization: HasManyCreateAssociationMixin<TravelAuthorizationPreApprovalTraveler>
+
   declare getTravelers: HasManyGetAssociationsMixin<TravelAuthorizationPreApprovalTraveler>
   declare setTravelers: HasManySetAssociationsMixin<
     TravelAuthorizationPreApprovalTraveler,
@@ -94,6 +127,7 @@ export class TravelAuthorizationPreApproval extends Model<
   declare createTraveler: HasManyCreateAssociationMixin<TravelAuthorizationPreApprovalTraveler>
 
   declare submission?: NonAttribute<TravelAuthorizationPreApprovalSubmission>
+  declare travelAuthorizations?: NonAttribute<TravelAuthorization[]>
   declare travelers?: NonAttribute<TravelAuthorizationPreApprovalTraveler[]>
 
   declare static associations: {
@@ -101,6 +135,7 @@ export class TravelAuthorizationPreApproval extends Model<
       TravelAuthorizationPreApproval,
       TravelAuthorizationPreApprovalSubmission
     >
+    travelAuthorizations: Association<TravelAuthorizationPreApproval, TravelAuthorization>
     travelers: Association<TravelAuthorizationPreApproval, TravelAuthorizationPreApprovalTraveler>
   }
 
@@ -108,6 +143,10 @@ export class TravelAuthorizationPreApproval extends Model<
     this.belongsTo(TravelAuthorizationPreApprovalSubmission, {
       as: "submission",
       foreignKey: "submissionId",
+    })
+    this.hasMany(TravelAuthorization, {
+      as: "travelAuthorizations",
+      foreignKey: "preApprovalId",
     })
     this.hasMany(TravelAuthorizationPreApprovalTraveler, {
       as: "travelers",

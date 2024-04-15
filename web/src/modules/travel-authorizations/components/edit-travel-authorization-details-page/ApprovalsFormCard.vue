@@ -56,7 +56,7 @@
             md="4"
           >
             <TravelAuthorizationPreApprovalSelect
-              v-model="travelAuthorization.preappId"
+              v-model="travelAuthorization.preApprovalId"
               :department="department"
               dense
               outlined

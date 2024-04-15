@@ -108,7 +108,7 @@ export default {
     },
     travelAuthorizationPreApprovalText() {
       const travelAuthorizationPreApproval = this.travelAuthorizationPreApprovals.find(
-        (p) => p.value === this.travelAuthorization.preappId
+        (p) => p.value === this.travelAuthorization.preApprovalId
       )
 
       if (isNil(travelAuthorizationPreApproval)) {

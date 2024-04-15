@@ -63,7 +63,7 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
 
     return TravelAuthorization.build({
       slug: faker.string.uuid(),
-      preappId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
+      preApprovalId: faker.number.int({ min: 1, max: POSTGRES_INT_4_MAX }), // TODO: add factories once foreign key constraint exists
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
       department: faker.commerce.department(),
