@@ -791,7 +791,7 @@ export default {
       this.branch = branch ? branch : ""
       const depts = this.$store.state.preapproved.departmentBranch
       if (this.department) {
-        this.branchList = depts[this.department].branches
+        this.branchList = depts[this.department]?.branches || []
       } else {
         this.branchList = []
       }
