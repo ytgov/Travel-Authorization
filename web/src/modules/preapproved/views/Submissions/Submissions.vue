@@ -16,7 +16,7 @@
         <v-row>
           <div style="width: 4.5rem">
             <SubmitTravel
-              v-if="item.status == 'draft' && admin"
+              v-if="item.status === STATUSES.DRAFT && admin"
               :submission-id="item.preTSubID"
               :edit-button="true"
               button-name="Edit"
@@ -27,7 +27,7 @@
           </div>
           <div style="width: 6.75rem">
             <ApproveTravel
-              v-if="item.status == 'submitted' && admin"
+              v-if="item.status === STATUSES.SUBMITTED && admin"
               :travel-requests="item.preApproval"
               :submission-id="item.preTSubID"
               @updateTable="updateTable"
@@ -50,6 +50,9 @@
 
 <script>
 import Vue from "vue"
+
+import { STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
+
 import PrintReport from "../Common/PrintReport.vue"
 import SubmitTravel from "../Common/SubmitTravel.vue"
 import ApproveTravel from "./ApproveTravel.vue"
@@ -109,6 +112,11 @@ export default {
       ],
       admin: false,
     }
+  },
+  computed: {
+    STATUSES() {
+      return STATUSES
+    },
   },
   mounted() {
     this.admin = Vue.filter("isAdmin")()

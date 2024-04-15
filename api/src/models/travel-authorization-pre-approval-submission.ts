@@ -26,6 +26,16 @@ import sequelize from "@/db/db-client"
 import TravelAuthorizationPreApproval from "@/models/travel-authorization-pre-approval"
 import TravelAuthorizationPreApprovalDocument from "@/models/travel-authorization-pre-approval-document"
 
+/**
+ * Keep in sync with web/src/api/travel-authorization-pre-approval-submissions-api.js
+ *
+ * TODO: consider if these should be shared with TravelAuthorizationPreApproval
+ */
+export enum Statuses {
+  DRAFT = "draft",
+  SUBMITTED = "submitted",
+}
+
 export class TravelAuthorizationPreApprovalSubmission extends Model<
   InferAttributes<TravelAuthorizationPreApprovalSubmission>,
   InferCreationAttributes<TravelAuthorizationPreApprovalSubmission>
