@@ -245,6 +245,8 @@
 </template>
 
 <script>
+import { cloneDeep } from "lodash"
+
 import { PREAPPROVED_URL } from "@/urls"
 import { securePost, secureDelete } from "@/store/jwt"
 
@@ -391,16 +393,16 @@ export default {
   },
   methods: {
     extractTravelRequests() {
-      this.submittingRequests = JSON.parse(
-        JSON.stringify(
-          this.selectedRequests.filter((req) => req.status == null || req.status == "draft")
+      this.submittingRequests = cloneDeep(
+        this.selectedRequests.filter(
+          (request) => request.status == null || request.status == "draft"
         )
       )
     },
 
     removeTravel(item) {
-      this.submittingRequests = JSON.parse(
-        JSON.stringify(this.submittingRequests.filter((travel) => travel.preApprovalId != item.id))
+      this.submittingRequests = cloneDeep(
+        this.submittingRequests.filter((request) => request.id != item.id)
       )
       this.update++
     },
