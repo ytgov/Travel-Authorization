@@ -1,12 +1,14 @@
-import path from "path"
 import fs from "fs"
+
+import { Knex } from "knex"
 import Papa from "papaparse"
 
+import { APP_ROOT } from "@/config"
 import { PerDiem } from "@/models"
 import { ClaimTypes, CurrencyTypes, LocationTypes } from "@/models/per-diem"
 
-export async function perDiemSeeds() {
-  const fileName = path.resolve(__dirname, "./per-diem-seeds.csv")
+export async function seed(knex: Knex): Promise<void> {
+  const fileName = `${APP_ROOT}/db/data/per-diems.csv`
   const fileContent = fs.readFileSync(fileName, "utf8")
   const { data } = Papa.parse<{
     location: LocationTypes
@@ -21,5 +23,3 @@ export async function perDiemSeeds() {
   await PerDiem.destroy({ where: {} })
   await PerDiem.bulkCreate(data)
 }
-
-export default perDiemSeeds

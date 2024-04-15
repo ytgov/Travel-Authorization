@@ -1,72 +1,11 @@
+import { Knex } from "knex"
 import { isNull } from "lodash"
 
-import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose, User } from "@/models"
+import { Stop, TravelAuthorization, TravelDeskTravelRequest, TravelPurpose } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
-import { locationsSeeds } from "./locations-seeds"
-import { perDiemSeeds } from "./per-diem-seeds"
-
-export async function seedUp() {
-  await User.update({ roles: [User.Roles.USER] }, { where: {} })
-  await User.update(
-    { roles: [User.Roles.ADMIN] },
-    {
-      where: {
-        email: [
-          "Max.parker@yukon.ca",
-          "dpdavids@ynet.gov.yk.ca",
-          "hassan.anvar@pacificintelligent.com",
-        ],
-      },
-    }
-  )
-
-  await dbLegacy("roles").delete().whereRaw("1=1")
-  const rolesAttributes = Object.values(User.Roles).map((role) => ({ name: role }))
-  await dbLegacy("roles").insert(rolesAttributes)
-
-  await TravelAuthorization.destroy({ where: {} })
-  await TravelPurpose.destroy({ where: {} })
-  await TravelPurpose.bulkCreate([
-    {
-      purpose: "Maintenance",
-    },
-    {
-      purpose: "Conference",
-    },
-    {
-      purpose: "Workshop",
-    },
-    {
-      purpose: "General Travel",
-    },
-    {
-      purpose: "Community Travel",
-    },
-    {
-      purpose: "IT",
-    },
-  ])
-
-  await dbLegacy("transportMethod").delete().whereRaw("1=1")
-  await dbLegacy("transportMethod").insert([
-    {
-      method: "Rental vehicle",
-    },
-    {
-      method: "Personal vehicle",
-    },
-    {
-      method: "Fleet vehicle",
-    },
-    {
-      method: "Plane",
-    },
-  ])
-
-  await locationsSeeds()
-
+export async function seed(knex: Knex): Promise<void> {
   // INSERT INTO public.forms ("userId","firstName","lastName",department,division,branch,unit,email,mailcode,"daysOffTravelStatus","dateBackToWork","travelDuration",purpose,"travelAdvance","eventName",summary,benefits,status,"formId","supervisorEmail","preApprovalId",approved,"requestChange","denialReason","oneWayTrip","multiStop","createdBy") VALUES
   //  (2,'Max','Parker','Highways and Public Works',NULL,NULL,NULL,'max.parker@yukon.ca',NULL,NULL,'2023-03-18',10,'Conference',1,'Global Biotechnology Summit',NULL,NULL,'Approved','1',NULL,1,NULL,NULL,NULL,false,true,NULL),
   //  (2,'Max','Parker','Highways and Public Works',NULL,NULL,NULL,'max.parker@yukon.ca',NULL,NULL,'2023-03-20',3,'Conference',1,'Gelobal  IT',NULL,NULL,'Approved','3',NULL,3,NULL,NULL,NULL,false,true,NULL),
@@ -2403,9 +2342,5 @@ export async function seedUp() {
     },
   ])
 
-  await perDiemSeeds()
-
   await TravelDeskTravelRequest.destroy({ where: {} })
-
-  return "Done"
 }

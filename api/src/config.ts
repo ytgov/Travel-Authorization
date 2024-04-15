@@ -37,6 +37,7 @@ export const AUTH_REDIRECT = process.env.AUTH_REDIRECT || process.env.FRONTEND_U
 export const AUTH0_DOMAIN = (process.env.AUTH0_DOMAIN || "").replace(/\/+$/, "")
 export const AUTH0_AUDIENCE = process.env.AUTH0_AUDIENCE || ""
 export const NODE_ENV = process.env.NODE_ENV
+export const APP_ROOT = path.resolve(__dirname)
 
 export const DB_NAME = process.env.DB_NAME || ""
 export const DB_USER = process.env.DB_USER || ""
