@@ -136,6 +136,12 @@ TravelAuthorizationPreApprovalSubmission.init(
     status: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      validate: {
+        isIn: {
+          args: [Object.values(Statuses)],
+          msg: "Invalid status value",
+        },
+      },
     },
     submissionDate: {
       type: DataTypes.DATE,
