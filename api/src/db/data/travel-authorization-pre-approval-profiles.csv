@@ -1,4 +1,4 @@
-travelerID,preTID,fullName,department,branch
+id,preApprovalId,profileName,department,branch
 1,1,Alice Johnson,Finance,New York
 2,1,Bob Smith,Finance,New York
 3,2,Charlie Brown,Marketing,San Francisco
