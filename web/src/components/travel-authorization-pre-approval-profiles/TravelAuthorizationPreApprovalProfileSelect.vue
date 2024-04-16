@@ -13,18 +13,29 @@
 
 <script setup>
 import { ref, watch } from "vue"
-import { isEmpty } from "lodash"
+import { isEmpty, isNil } from "lodash"
 
 import travelAuthorizationPreApprovalProfilesApi from "@/api/travel-authorization-pre-approval-profiles-api"
 
+/**
+ * Defines component props with descriptions and types using JSDoc.
+ *
+ * @type {{
+ *   value: number | null,
+ *   queryOptions: {
+ *     where?: {department?: string},
+ *     filters?: {approved?: boolean, openDateOrBeforeStartDate?: boolean}
+ *   }
+ * }}
+ */
 const props = defineProps({
   value: {
     type: Number,
     default: null,
   },
-  department: {
-    type: String,
-    default: null,
+  queryOptions: {
+    type: Object,
+    default: () => ({}),
   },
 })
 
@@ -34,34 +45,24 @@ const profiles = ref([])
 const isLoading = ref(false)
 
 watch(
-  () => props.department,
-  async (newDepartment) => {
-    await fetch(newDepartment)
+  () => props.queryOptions,
+  async (newQueryOptions) => {
+    await fetch(newQueryOptions)
   },
   { immediate: true }
 )
 
-/**
- *
- * @param {string | null} department
- */
-async function fetch(department) {
-  // Since we can't determine if a pre-approval applies, the user doesn't get any options.
-  if (isEmpty(department)) {
-    profiles.value = []
-    return
+async function fetch(queryOptions) {
+  const department = queryOptions?.where?.department
+  // Strip out department from query options if it is nil or empty
+  if (isNil(department) || isEmpty(department)) {
+    delete queryOptions.department
   }
 
   isLoading.value = true
   try {
     const { travelAuthorizationPreApprovalProfiles: newProfiles } =
-      await travelAuthorizationPreApprovalProfilesApi.list({
-        where: { department },
-        filters: {
-          approved: true,
-          openDateOrBeforeStartDate: true,
-        },
-      })
+      await travelAuthorizationPreApprovalProfilesApi.list(queryOptions)
     profiles.value = newProfiles.map(({ id, profileName }) => {
       return {
         text: profileName,

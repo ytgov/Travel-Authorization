@@ -57,7 +57,13 @@
           >
             <TravelAuthorizationPreApprovalProfileSelect
               v-model="travelAuthorization.preApprovalProfileId"
-              :department="department"
+              :query-options="{
+                where: { department },
+                filters: {
+                  approved: true,
+                  openDateOrBeforeStartDate: true,
+                },
+              }"
               dense
               outlined
             />
