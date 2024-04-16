@@ -1,5 +1,6 @@
 import { faker } from "@faker-js/faker"
 
+import { User } from "@/models"
 import { Users } from "@/services"
 import { CreateService } from "@/services/travel-authorizations"
 
@@ -14,7 +15,7 @@ describe("api/src/services/travel-authorizations/create-service.ts", () => {
 
   describe("CreateService", () => {
     describe(".perform", () => {
-      test("when user attributes are supplied, it call EnsureUser with those attributes", async () => {
+      test("when creator is admin, and user attributes are supplied, it calls EnsureUser with those attributes", async () => {
         // Arrange
         const email = faker.internet.email().toLowerCase()
         userEnsureServicePerformMock.mockImplementation(() => {
@@ -25,7 +26,9 @@ describe("api/src/services/travel-authorizations/create-service.ts", () => {
         const { dataValues: travelAuthorizationAttributes } = travelAuthorizationFactory
           .transient({ roundTrip: true })
           .build()
-        const creator = await userFactory.create()
+        const creator = await userFactory.create({
+          roles: [User.Roles.ADMIN],
+        })
         const userAttributes = { email }
 
         // Act
@@ -46,14 +49,16 @@ describe("api/src/services/travel-authorizations/create-service.ts", () => {
         )
       })
 
-      test("when user attributes are not supplied, it does not call EnsureUser", async () => {
+      test("when creator is admin, and user attributes are not supplied, it does not call EnsureUser", async () => {
         // Arrange
         const user = await userFactory.create()
         const { dataValues: travelAuthorizationAttributes } = travelAuthorizationFactory
           .params({ userId: user.id })
           .transient({ roundTrip: true })
           .build()
-        const creator = await userFactory.create()
+        const creator = await userFactory.create({
+          roles: [User.Roles.ADMIN],
+        })
 
         // Act
         const travelAuthorization = await CreateService.perform(
@@ -68,6 +73,35 @@ describe("api/src/services/travel-authorizations/create-service.ts", () => {
           expect.objectContaining({
             user: expect.objectContaining({
               email: user.email,
+            }),
+          })
+        )
+      })
+
+      test("when creator is not admin, and user attributes are supplied, it does not call EnsureUser", async () => {
+        // Arrange
+        const user = await userFactory.create()
+        const { dataValues: travelAuthorizationAttributes } = travelAuthorizationFactory
+          .params({ userId: user.id })
+          .transient({ roundTrip: true })
+          .build()
+        const creator = await userFactory.create({
+          roles: [User.Roles.USER],
+        })
+
+        // Act
+        const travelAuthorization = await CreateService.perform(
+          travelAuthorizationAttributes,
+          creator
+        )
+
+        // Assert
+        expect.assertions(2)
+        expect(userEnsureServicePerformMock).not.toHaveBeenCalled()
+        expect(travelAuthorization).toEqual(
+          expect.objectContaining({
+            user: expect.objectContaining({
+              email: creator.email,
             }),
           })
         )

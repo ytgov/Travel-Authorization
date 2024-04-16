@@ -24,13 +24,13 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import Expense from "./expense"
-import Preapproved from "./preapproved"
-import Stop from "./stop"
-import TravelDeskTravelRequest from "./travel-desk-travel-request"
-import TravelPurpose from "./travel-purpose"
-import TravelSegment from "./travel-segment"
-import User from "./user"
+import Expense from "@/models/expense"
+import TravelAuthorizationPreApproval from "@/models/travel-authorization-pre-approval"
+import Stop from "@/models/stop"
+import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
+import TravelPurpose from "@/models/travel-purpose"
+import TravelSegment from "@/models/travel-segment"
+import User from "@/models/user"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
@@ -68,7 +68,7 @@ export class TravelAuthorization extends Model<
   declare id: CreationOptional<number>
   declare slug: string
   declare userId: ForeignKey<User["id"]>
-  declare preappId: ForeignKey<Preapproved["preTID"]> | null
+  declare preApprovalId: ForeignKey<TravelAuthorizationPreApproval["id"]> | null
   declare purposeId: ForeignKey<TravelPurpose["id"]> | null
   declare firstName: string | null
   declare lastName: string | null
@@ -102,6 +102,13 @@ export class TravelAuthorization extends Model<
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
+  declare getPreApproval: BelongsToGetAssociationMixin<TravelAuthorizationPreApproval>
+  declare setPreApproval: BelongsToSetAssociationMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["id"]
+  >
+  declare createPreApproval: BelongsToCreateAssociationMixin<TravelAuthorizationPreApproval>
+
   declare getPurpose: BelongsToGetAssociationMixin<TravelPurpose>
   declare setPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
   declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
@@ -171,6 +178,7 @@ export class TravelAuthorization extends Model<
   declare countTravelSegments: HasManyCountAssociationsMixin
   declare createTravelSegment: HasManyCreateAssociationMixin<TravelSegment>
 
+  declare preApproval?: NonAttribute<TravelAuthorizationPreApproval>
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
   declare user: NonAttribute<User>
@@ -180,6 +188,7 @@ export class TravelAuthorization extends Model<
 
   declare static associations: {
     expenses: Association<TravelAuthorization, Expense>
+    preApproval: Association<TravelAuthorization, TravelAuthorizationPreApproval>
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
     travelDeskTravelRequest: Association<TravelAuthorization, TravelDeskTravelRequest>
@@ -188,6 +197,10 @@ export class TravelAuthorization extends Model<
   }
 
   static establishAssociations() {
+    this.belongsTo(TravelAuthorizationPreApproval, {
+      as: "preApproval",
+      foreignKey: "preApprovalId",
+    })
     this.belongsTo(TravelPurpose, {
       as: "purpose",
       foreignKey: "purposeId",
@@ -278,7 +291,7 @@ TravelAuthorization.init(
       allowNull: false,
       unique: true,
     },
-    preappId: {
+    preApprovalId: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },

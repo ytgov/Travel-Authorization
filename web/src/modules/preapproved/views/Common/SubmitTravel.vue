@@ -5,15 +5,15 @@
       persistent
       max-width="950px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
-          :id="'edit-' + preTSubID"
+          :id="'edit-' + submissionId"
           :disabled="disabled"
           :small="editButton"
           :class="editButton ? 'my-0' : 'mr-5 my-7'"
           color="primary"
-          @click="extractTravelRequests()"
           v-bind="attrs"
+          @click="extractTravelRequests"
           v-on="on"
         >
           {{ buttonName }}
@@ -43,52 +43,57 @@
             class="elevation-1"
             hide-default-footer
           >
-            <template v-slot:item.remove="{ item }">
+            <template #item.remove="{ item }">
               <v-btn
-                @click="removeTravel(item)"
                 style="min-width: 0"
                 color="transparent"
                 class="px-1"
                 small
+                @click="removeTravel(item)"
               >
                 <v-icon color="red">mdi-delete</v-icon>
               </v-btn>
             </template>
-            <template v-slot:item.name="{ item }">
+            <template #item.name="{ item }">
+              <template v-if="item.travelers.length === 0"> Unspecified </template>
+              <template v-else-if="item.travelers.length === 1">
+                {{ item.travelers[0].fullName.replace(".", " ") }}
+              </template>
               <v-tooltip
+                v-else
                 top
                 color="primary"
               >
-                <template v-slot:activator="{ on }">
-                  <div v-on="item.travelers.length > 1 ? on : ''">
+                <template #activator="{ on }">
+                  <div v-on="on">
                     <span>
                       {{ item.travelers[0].fullName.replace(".", " ") }}
                     </span>
-                    <span v-if="item.travelers.length > 1">, ... </span>
+                    <span>, ... </span>
                   </div>
                 </template>
                 <span
                   ><div
-                    v-for="(trv, inx) in item.travelers"
-                    :key="inx"
+                    v-for="(traveler, index) in item.travelers"
+                    :key="index"
                   >
-                    {{ trv.fullName.replace(".", " ") }}
+                    {{ traveler.fullName.replace(".", " ") }}
                   </div></span
                 >
               </v-tooltip>
             </template>
-            <template v-slot:item.status="{ item }">
+            <template #item.status="{ item }">
               <v-tooltip
                 top
                 color="amber accent-4"
               >
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-icon
+                    v-if="item.status && item.sumssionId != submissionId"
                     style="cursor: pointer"
-                    v-on="on"
-                    v-if="item.status && item.preTSubID != preTSubID"
                     class=""
                     color="amber accent-2"
+                    v-on="on"
                     >mdi-alert</v-icon
                   >
                 </template>
@@ -98,11 +103,11 @@
                 </span>
               </v-tooltip>
             </template>
-            <template v-slot:item.edit="{ item }">
+            <template #item.edit="{ item }">
               <new-travel-request
+                :travel-request="item"
                 type="Edit"
                 @updateTable="updateAndOpenDialog"
-                :travelRequest="item"
               />
             </template>
           </v-data-table>
@@ -126,7 +131,7 @@
             class="ml-auto"
             color="lime darken-1"
             :loading="savingData"
-            @click="submitTravelRequest('Draft')"
+            @click="submitTravelRequest(STATUSES.DRAFT)"
           >
             Save Draft
           </v-btn>
@@ -134,7 +139,7 @@
             class="ml-5"
             color="green darken-1"
             :loading="savingData"
-            @click="submitTravelRequest('Submitted')"
+            @click="submitTravelRequest(STATUSES.SUBMITTED)"
           >
             Submit
           </v-btn>
@@ -157,41 +162,45 @@
 
         <v-card-text>
           <v-data-table
+            v-model="newSelectedRequests"
             :headers="addTravelHeaders"
             :items="remainingTravelRequests"
             :items-per-page="5"
             class="elevation-1 mt-5"
-            v-model="newSelectedRequests"
-            item-key="preTID"
             show-select
             single-select
           >
-            <template v-slot:item.name="{ item }">
+            <template #item.name="{ item }">
+              <template v-if="item.travelers.length === 0"> Unspecified </template>
+              <template v-else-if="item.travelers.length === 1">
+                {{ item.travelers[0].fullName.replace(".", " ") }}
+              </template>
               <v-tooltip
+                v-else
                 top
                 color="primary"
               >
-                <template v-slot:activator="{ on }">
-                  <div v-on="item.travelers.length > 1 ? on : ''">
+                <template #activator="{ on }">
+                  <div v-on="on">
                     <span>
                       {{ item.travelers[0].fullName.replace(".", " ") }}
                     </span>
-                    <span v-if="item.travelers.length > 1">, ... </span>
+                    <span>, ... </span>
                   </div>
                 </template>
                 <span
                   ><div
-                    v-for="(trv, inx) in item.travelers"
-                    :key="inx"
+                    v-for="(traveler, index) in item.travelers"
+                    :key="index"
                   >
-                    {{ trv.fullName.replace(".", " ") }}
+                    {{ traveler.fullName.replace(".", " ") }}
                   </div></span
                 >
               </v-tooltip>
             </template>
 
-            <template v-slot:item.travelDate="{ item }">
-              <div v-if="item.dateUnkInd">
+            <template #item.travelDate="{ item }">
+              <div v-if="item.isOpenForAnyDate">
                 {{ item.month }}
               </div>
               <div v-else>
@@ -207,8 +216,8 @@
               </div>
             </template>
 
-            <template v-slot:item.status="{ item }">
-              <div v-if="item.preTSubID != preTSubID">
+            <template #item.status="{ item }">
+              <div v-if="item.submissionId != submissionId">
                 {{ item.status }}
               </div>
             </template>
@@ -236,32 +245,40 @@
 </template>
 
 <script>
-import NewTravelRequest from "../Requests/NewTravelRequest.vue"
-import { PREAPPROVED_URL } from "../../../../urls"
+import { cloneDeep } from "lodash"
+
+import { PREAPPROVED_URL } from "@/urls"
 import { securePost, secureDelete } from "@/store/jwt"
 
+import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+
+import NewTravelRequest from "../Requests/NewTravelRequest.vue"
+
 export default {
+  name: "SubmitTravel",
   components: {
     NewTravelRequest,
   },
-  name: "SubmitTravel",
   props: {
     buttonName: {
       type: String,
+      default: "Submit Travel",
     },
     editButton: {
       type: Boolean,
       default: false,
     },
-    preTSubID: {
+    submissionId: {
       type: Number,
       default: 0,
     },
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     selectedRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     disabled: {
       type: Boolean,
@@ -359,14 +376,16 @@ export default {
       update: 0,
     }
   },
-  mounted() {},
   computed: {
+    STATUSES() {
+      return STATUSES
+    },
     remainingTravelRequests() {
-      const currentIDs = this.submittingRequests.map((req) => req.preTID)
+      const currentIDs = this.submittingRequests.map((req) => req.id)
       const currentDept = this.submittingRequests[0]?.department
       return this.travelRequests?.filter(
         (req) =>
-          !currentIDs.includes(req.preTID) &&
+          !currentIDs.includes(req.id) &&
           (req.status == null || req.status == "draft") &&
           (req.department == currentDept || currentIDs.length == 0)
       )
@@ -374,16 +393,16 @@ export default {
   },
   methods: {
     extractTravelRequests() {
-      this.submittingRequests = JSON.parse(
-        JSON.stringify(
-          this.selectedRequests.filter((req) => req.status == null || req.status == "draft")
+      this.submittingRequests = cloneDeep(
+        this.selectedRequests.filter(
+          (request) => request.status == null || request.status == "draft"
         )
       )
     },
 
     removeTravel(item) {
-      this.submittingRequests = JSON.parse(
-        JSON.stringify(this.submittingRequests.filter((travel) => travel.preTID != item.preTID))
+      this.submittingRequests = cloneDeep(
+        this.submittingRequests.filter((request) => request.id != item.id)
       )
       this.update++
     },
@@ -398,19 +417,19 @@ export default {
       this.addTravelDialog = false
     },
 
-    submitTravelRequest(type) {
-      const currentIDs = this.submittingRequests.map((req) => req.preTID)
+    submitTravelRequest(status) {
+      const currentIDs = this.submittingRequests.map((req) => req.id)
       if (currentIDs.length > 0) {
         const currentDept = this.submittingRequests[0].department
         this.savingData = true
         const body = {
           department: currentDept,
-          status: type,
+          status,
           submitter: "SYSTEM",
-          preapprovedIds: currentIDs,
+          preApprovalIds: currentIDs,
         }
         // console.log(body)
-        securePost(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`, body)
+        securePost(`${PREAPPROVED_URL}/submissions/${this.submissionId}`, body)
           .then(() => {
             this.savingData = false
             this.submitTravelDialog = false
@@ -424,7 +443,7 @@ export default {
     },
 
     deleteSubmission() {
-      secureDelete(`${PREAPPROVED_URL}/submissions/${this.preTSubID}`)
+      secureDelete(`${PREAPPROVED_URL}/submissions/${this.submissionId}`)
         .then(() => {
           this.savingData = false
           this.submitTravelDialog = false
@@ -441,7 +460,7 @@ export default {
     },
 
     updateAndOpenDialog() {
-      this.$store.commit("preapproved/SET_OPEN_DIALOG_ID", "edit-" + this.preTSubID)
+      this.$store.commit("preapproved/SET_OPEN_DIALOG_ID", "edit-" + this.submissionId)
       this.updateTable()
     },
   },

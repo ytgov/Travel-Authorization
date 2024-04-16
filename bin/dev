@@ -118,6 +118,16 @@ class DevHelper
     end
   end
 
+  def migrate(*args, **kwargs)
+    action = args[0]
+    knex("migrate:#{action}", *args.drop(1), **kwargs)
+  end
+
+  def seed(*args, **kwargs)
+    action = args[0]
+    knex("seed:#{action}", *args.drop(1), **kwargs)
+  end
+
   def ownit(*args, **kwargs)
     file_or_directory = args[0]
     raise ScriptError, "Must provide a file or directory path." if file_or_directory.nil?

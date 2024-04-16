@@ -7,8 +7,8 @@ import {
   ExpensesController,
   GeneralLedgerCodingsController,
   LocationsController,
-  PreApprovedTravelersController,
-  PreApprovedTravelRequestsController,
+  TravelAuthorizationPreApprovalTravelersController,
+  TravelAuthorizationPreApprovalsController,
   Qa,
   StopsController,
   TravelAuthorizationActionLogsController,
@@ -84,8 +84,12 @@ router
 
 router.route("/api/locations").get(LocationsController.index)
 router.route("/api/locations/:locationId").get(LocationsController.show)
-router.route("/api/pre-approved-travelers").get(PreApprovedTravelersController.index)
-router.route("/api/pre-approved-travel-requests").get(PreApprovedTravelRequestsController.index)
+router
+  .route("/api/pre-approved-travelers")
+  .get(TravelAuthorizationPreApprovalTravelersController.index)
+router
+  .route("/api/travel-authorization-pre-approvals")
+  .get(TravelAuthorizationPreApprovalsController.index)
 
 router.route("/api/users").post(UsersController.create)
 router.route("/api/users/:userId").get(UsersController.show)

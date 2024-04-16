@@ -37,8 +37,8 @@
           md="6"
         >
           <v-text-field
-            :value="preApprovedTravelRequestText"
-            :loading="isLoadingPreApprovedTravelRequests"
+            :value="travelAuthorizationPreApprovalText"
+            :loading="isLoadingTravelAuthorizationPreApprovals"
             label="Pre-approved Travel Request?"
             no-data-text="No pre-approvals available"
             dense
@@ -96,9 +96,9 @@ export default {
       travelAuthorization: "attributes",
       estimates: "estimates",
     }),
-    ...mapGetters("preApprovedTravelRequests", {
-      preApprovedTravelRequests: "items",
-      isLoadingPreApprovedTravelRequests: "isLoading",
+    ...mapGetters("travelAuthorizationPreApprovals", {
+      travelAuthorizationPreApprovals: "items",
+      isLoadingTravelAuthorizationPreApprovals: "isLoading",
     }),
     estimatedCost() {
       return sumBy(this.estimates, "cost")
@@ -106,26 +106,26 @@ export default {
     travelAuthorizationUser() {
       return this.travelAuthorization.user || {}
     },
-    preApprovedTravelRequestText() {
-      const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
-        (p) => p.value === this.travelAuthorization.preappId
+    travelAuthorizationPreApprovalText() {
+      const travelAuthorizationPreApproval = this.travelAuthorizationPreApprovals.find(
+        (p) => p.value === this.travelAuthorization.preApprovalId
       )
 
-      if (isNil(preApprovedTravelRequest)) {
+      if (isNil(travelAuthorizationPreApproval)) {
         return ""
       }
 
-      const { preApprovedTravelers } = preApprovedTravelRequest
+      const { preApprovedTravelers } = travelAuthorizationPreApproval
       const travelerNames = preApprovedTravelers
         .map((traveler) => traveler.fullName)
         .filter(Boolean)
       const { fullName: travelAuthorizationUserFullname } = this.travelAuthorizationUser
 
       if (isEmpty(travelerNames) || !travelerNames.includes(travelAuthorizationUserFullname)) {
-        return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month}`
+        return `${travelAuthorizationPreApproval.purpose} - ${travelAuthorizationPreApproval.month}`
       }
 
-      return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month} - ${travelAuthorizationUserFullname}`
+      return `${travelAuthorizationPreApproval.purpose} - ${travelAuthorizationPreApproval.month} - ${travelAuthorizationUserFullname}`
     },
     travelAdvanceInDollars() {
       return Math.ceil(this.travelAuthorization.travelAdvanceInCents / 100.0)
@@ -137,7 +137,7 @@ export default {
     await this.ensurePreApprovedTravelRequests({ where: { department } })
   },
   methods: {
-    ...mapActions("preApprovedTravelRequests", {
+    ...mapActions("travelAuthorizationPreApprovals", {
       ensurePreApprovedTravelRequests: "ensure",
     }),
     ...mapActions("travelAuthorization", {

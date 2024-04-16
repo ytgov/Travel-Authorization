@@ -15,7 +15,7 @@
       </template>
 
       <template #item.startDate="{ item }">
-        <div v-if="item.dateUnkInd">
+        <div v-if="item.isOpenForAnyDate">
           {{ item.month }}
         </div>
         <div v-else>
@@ -25,7 +25,7 @@
         </div>
       </template>
       <template #item.endDate="{ item }">
-        <div v-if="item.dateUnkInd">
+        <div v-if="item.isOpenForAnyDate">
           {{ item.month }}
         </div>
         <div v-else>

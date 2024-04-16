@@ -1,4 +1,4 @@
-import { seedUp } from "@/db/seeds"
+import knex from "@/db/db-client-legacy"
 import { TravelAuthorization } from "@/models"
 
 async function runSeeds(): Promise<void> {
@@ -10,7 +10,8 @@ async function runSeeds(): Promise<void> {
     }
   }
 
-  return seedUp()
+  return knex.seed
+    .run()
     .then(() => {
       console.log("All seeds completed successfully.")
     })

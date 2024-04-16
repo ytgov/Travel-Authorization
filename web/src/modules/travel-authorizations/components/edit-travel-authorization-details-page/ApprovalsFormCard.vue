@@ -55,15 +55,12 @@
             cols="12"
             md="4"
           >
-            <v-select
-              v-model="travelAuthorization.preappId"
-              :items="preApprovedTravelRequests"
-              :loading="isLoadingUser || isLoadingPreApprovedTravelRequests"
-              label="Pre-approved Travel Request?"
-              no-data-text="No pre-approvals available"
+            <TravelAuthorizationPreApprovalSelect
+              v-model="travelAuthorization.preApprovalId"
+              :department="department"
               dense
               outlined
-            ></v-select>
+            />
           </v-col>
         </v-row>
         <v-row>
@@ -104,11 +101,9 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue"
-import { isEmpty } from "lodash"
+import { computed } from "vue"
 
 import { required, isInteger } from "@/utils/validators"
-import preApprovedTravelRequestsApi from "@/api/pre-approved-travel-requests-api"
 import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
 import useUser from "@/use/use-user"
 
@@ -140,10 +135,9 @@ const expenseOptions = computed(() => ({
 }))
 const { expenses: estimates, fetch: refreshEstimates } = useExpenses(expenseOptions)
 const userId = computed(() => travelAuthorization.value.userId)
-const { user, isLoading: isLoadingUser } = useUser(userId)
+const { user } = useUser(userId)
 
-const preApprovedTravelRequests = ref([])
-const isLoadingPreApprovedTravelRequests = ref(false)
+const department = computed(() => user.value?.department)
 
 const travelAdvanceInDollars = computed({
   get() {
@@ -154,59 +148,4 @@ const travelAdvanceInDollars = computed({
   },
 })
 const hasEstimates = computed(() => estimates.value.length > 0)
-
-onMounted(async () => {
-  const department = user.department
-  await loadPreApprovedTravelRequests(department)
-})
-
-async function loadPreApprovedTravelRequests(department) {
-  // Since we can't determine if a pre-approval applies, the user doesn't get any options.
-  if (isEmpty(department)) {
-    preApprovedTravelRequests.value = []
-    return
-  }
-
-  isLoadingPreApprovedTravelRequests.value = true
-  try {
-    const { preApprovedTravelRequests } = await preApprovedTravelRequestsApi.list({
-      where: { department },
-    })
-    const flatRequests = flattenRequests(preApprovedTravelRequests)
-    const options = flatRequests.map((request) => {
-      const text = isEmpty(request.fullName)
-        ? `${request.purpose} - ${request.month}`
-        : `${request.purpose} - ${request.month} - ${request.fullName}`
-      return {
-        text,
-        value: request.id,
-      }
-    })
-    preApprovedTravelRequests.value = options
-  } finally {
-    isLoadingPreApprovedTravelRequests.value = false
-  }
-}
-
-function flattenRequests(preApprovedTravelRequests) {
-  return preApprovedTravelRequests.flatMap(
-    ({ preApprovedTravelers, ...otherRequestAttributes }) => {
-      // If there are no travelers, return the request as is
-      if (preApprovedTravelers.length === 0) {
-        return {
-          ...otherRequestAttributes,
-          travelerID: null,
-          fullName: null,
-        }
-      }
-
-      // Otherwise, return an array of requests, one for each traveler
-      return preApprovedTravelers.map((traveler) => ({
-        ...otherRequestAttributes,
-        travelerID: traveler.travelerID,
-        fullName: traveler.fullName,
-      }))
-    }
-  )
-}
 </script>

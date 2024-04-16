@@ -1,6 +1,6 @@
 import http from "@/api/http-client"
 
-// Must match statues in api/src/models/travel-authorization.ts
+/** Keep in sync with api/src/models/travel-authorization.ts */
 export const STATUSES = Object.freeze({
   APPROVED: "approved",
   AWAITING_DIRECTOR_APPROVAL: "awaiting_director_approval",

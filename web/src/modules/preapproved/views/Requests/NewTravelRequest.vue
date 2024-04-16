@@ -174,6 +174,7 @@
               <v-col cols="1" />
               <v-col cols="3">
                 <v-checkbox
+                  v-model="undefinedTraveller"
                   :readonly="readonly"
                   :error-messages="
                     state.undefinedTravellerErr
@@ -182,9 +183,8 @@
                         ? undefinedTravellerHint
                         : ''
                   "
-                  @change="selectUndefinedTraveller()"
-                  v-model="undefinedTraveller"
-                  label="traveller undefined"
+                  label="exact traveler not known"
+                  @change="selectUndefinedTraveller"
                 />
               </v-col>
               <v-col cols="4">
@@ -426,8 +426,10 @@
 
 <script>
 import Vue from "vue"
-import { PREAPPROVED_URL } from "../../../../urls"
-import { secureDelete, secureGet, securePost } from "../../../../store/jwt"
+
+import { PREAPPROVED_URL } from "@/urls"
+import { secureDelete, secureGet, securePost } from "@/store/jwt"
+import { STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
 
 export default {
   name: "NewTravelRequest",
@@ -632,19 +634,19 @@ export default {
           purpose: this.purpose,
           estimatedCost: this.cost,
           reason: this.reason,
-          dateUnkInd: this.unknownDate ? 1 : 0,
+          isOpenForAnyDate: this.unknownDate,
           month: this.anticipatedMonth,
           startDate: !this.unknownDate ? this.startDate : null,
           endDate: !this.unknownDate ? this.endDate : null,
           department: this.department,
           branch: this.branch,
-          travelerUnkInd: this.undefinedTraveller ? 1 : 0,
+          isOpenForAnyTraveler: this.undefinedTraveller,
           numberTravelers: this.travellersNum,
           travelers: this.travellers,
           travelerNotes: this.travellerNotes,
         }
         // console.log(body);
-        const id = this.travelRequest?.preTID ? this.travelRequest.preTID : 0
+        const id = this.travelRequest?.id ? this.travelRequest.id : 0
         securePost(`${PREAPPROVED_URL}/${id}`, body)
           .then(() => {
             this.savingData = false
@@ -671,7 +673,7 @@ export default {
 
       this.travellers = this.type == "Add New" ? [] : this.travelRequest.travelers
       this.purpose = this.type == "Add New" ? "" : this.travelRequest.purpose
-      this.unknownDate = this.type == "Add New" ? false : Boolean(this.travelRequest.dateUnkInd)
+      this.unknownDate = this.type == "Add New" ? false : this.travelRequest.isOpenForAnyDate
       this.location = this.type == "Add New" ? "" : this.travelRequest.location
       this.cost = this.type == "Add New" ? "" : this.travelRequest.estimatedCost
       this.reason = this.type == "Add New" ? "" : this.travelRequest.reason
@@ -680,7 +682,7 @@ export default {
       this.department = this.type == "Add New" ? userDept : this.travelRequest.department
       this.branch = this.type == "Add New" ? "" : this.travelRequest.branch
       this.undefinedTraveller =
-        this.type == "Add New" ? false : Boolean(this.travelRequest.travelerUnkInd)
+        this.type == "Add New" ? false : this.travelRequest.isOpenForAnyTraveler
       this.undefinedTravellerHint = ""
       this.travellersNum = this.type == "Add New" ? null : this.travelRequest.numberTravelers
       this.anticipatedMonth = this.type == "Add New" ? "" : this.travelRequest.month
@@ -701,10 +703,10 @@ export default {
       this.approvalDate = ""
 
       if (
-        this.travelRequest?.preTSubID &&
+        this.travelRequest?.submissionId &&
         (this.travelRequest.status == "approved" || this.travelRequest.status == "declined")
       )
-        this.initSubmission(this.travelRequest.preTSubID)
+        this.initSubmission(this.travelRequest.submissionId)
     },
 
     initStates() {
@@ -737,7 +739,7 @@ export default {
     initSubmission(id) {
       secureGet(`${PREAPPROVED_URL}/submissions/${id}`)
         .then((res) => {
-          this.showApproval = res.data.status == "Finished"
+          this.showApproval = res.data.status === STATUSES.FINISHED
           this.approvedBy = res.data.approvedBy
           this.approvalDate = res.data.approvalDate
         })
@@ -755,7 +757,7 @@ export default {
         },
       }
 
-      secureGet(`${PREAPPROVED_URL}/document/${this.travelRequest.preTSubID}`, header)
+      secureGet(`${PREAPPROVED_URL}/document/${this.travelRequest.submissionId}`, header)
         .then((res) => {
           this.loadingData = false
           const link = document.createElement("a")
@@ -774,7 +776,7 @@ export default {
     deleteTravelRequest() {
       this.deleteDialog = false
       this.savingData = true
-      secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.preTID}`)
+      secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.id}`)
         .then(() => {
           this.savingData = false
           this.addNewTravelDialog = false
@@ -791,7 +793,7 @@ export default {
       this.branch = branch ? branch : ""
       const depts = this.$store.state.preapproved.departmentBranch
       if (this.department) {
-        this.branchList = depts[this.department].branches
+        this.branchList = depts[this.department]?.branches || []
       } else {
         this.branchList = []
       }
