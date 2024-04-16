@@ -214,6 +214,7 @@ entity "travel_authorization_pre_approvals" {
 entity "travel_authorizations" {
   * id : int4
   --
+  pre_approval_id : int4 <<FK>>
   user_id : int4
   first_name : varchar(255)
   last_name : varchar(255)
@@ -233,7 +234,6 @@ entity "travel_authorizations" {
   status : varchar(255)
   slug : varchar(255)
   supervisor_email : varchar(255)
-  preapp_id : int4
   request_change : varchar(255)
   denial_reason : varchar(255)
   one_way_trip : bool
@@ -475,7 +475,7 @@ entity "YgEmployees" {
 }
 
 ' Relationships
-expenses::travel_authorization_id ||--o{ travel_authorizations:id
+expenses::travel_authorization_id ||--o{ travel_authorizations::id
 preapprovedSubmissions::preTSubID }o--o| preapprovedDocuments::preTSubID
 preapprovedTravelers::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
 stops::travel_authorization_id }o--|| travel_authorizations::id
@@ -483,6 +483,7 @@ travel_authorization_action_logs::travel_authorization_id ||--o{ travel_authoriz
 travel_authorization_action_logs::actor_id ||--o{ users::id
 travel_authorization_action_logs::assignee_id ||--o{ users::id
 travel_authorization_pre_approvals::submission_id ||--o{ preapprovedSubmissions::preTSubID
+travel_authorizations::pre_approval_id |o--o{ travel_authorization_pre_approvals::id
 travel_authorizations::purpose_id ||--o{ travel_purposes::id
 travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
 travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
