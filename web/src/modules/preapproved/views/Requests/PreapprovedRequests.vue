@@ -11,7 +11,7 @@
         class="ml-auto"
         @updateTable="updateTable"
       />
-      <print-report
+      <PrintReport
         v-if="admin"
         :disabled="selectedRequests.length == 0"
         :travel-requests="selectedRequests"
@@ -89,7 +89,7 @@
       </template>
 
       <template #item.edit="{ item }">
-        <new-travel-request
+        <NewTravelRequest
           :type="item.status === STATUSES.DRAFT || isNil(item.status) ? 'Edit' : 'View'"
           :travel-request="item"
           @updateTable="updateTable"
