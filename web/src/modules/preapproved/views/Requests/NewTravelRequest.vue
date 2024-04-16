@@ -541,11 +541,10 @@ export default {
     addTraveller() {
       if (this.adName) {
         this.travellerDialog = false
-        const travellerInx = this.profiles.findIndex(
-          (traveller) =>
-            traveller.profileName == this.adName && traveller.department == this.department
+        const profileIndex = this.profiles.findIndex(
+          (profile) => profile.profileName === this.adName && profile.department === this.department
         )
-        if (travellerInx < 0)
+        if (profileIndex < 0)
           this.profiles.push({
             profileName: this.adName,
             department: this.department,
