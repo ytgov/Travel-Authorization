@@ -103,9 +103,6 @@ export default {
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
-    travelAuthorizationUser() {
-      return this.travelAuthorization.user || {}
-    },
     travelAuthorizationPreApprovalProfileText() {
       if (
         isEmpty(this.travelAuthorizationPreApprovalProfile) ||
