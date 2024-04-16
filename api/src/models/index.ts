@@ -10,7 +10,7 @@ import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import User from "./user"
 import TravelSegment from "./travel-segment"
 import TravelAuthorizationPreApproval from "./travel-authorization-pre-approval"
-import TravelAuthorizationPreApprovalTraveler from "./travel-authorization-pre-approval-traveler"
+import TravelAuthorizationPreApprovalProfile from "./travel-authorization-pre-approval-profile"
 import TravelAuthorizationPreApprovalSubmission from "./travel-authorization-pre-approval-submission"
 import TravelAuthorizationPreApprovalDocument from "./travel-authorization-pre-approval-document"
 
@@ -25,7 +25,7 @@ TravelAuthorizationActionLog.establishAssociations()
 TravelSegment.establishAssociations()
 GeneralLedgerCoding.establishAssociations()
 TravelAuthorizationPreApproval.establishAssociations()
-TravelAuthorizationPreApprovalTraveler.establishAssociations()
+TravelAuthorizationPreApprovalProfile.establishAssociations()
 TravelAuthorizationPreApprovalSubmission.establishAssociations()
 TravelAuthorizationPreApprovalDocument.establishAssociations()
 
@@ -43,7 +43,7 @@ export {
   TravelAuthorizationPreApproval,
   TravelAuthorizationPreApprovalSubmission,
   TravelAuthorizationPreApprovalDocument,
-  TravelAuthorizationPreApprovalTraveler,
+  TravelAuthorizationPreApprovalProfile,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskTravelRequest,
   TravelSegment,

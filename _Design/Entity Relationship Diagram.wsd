@@ -116,13 +116,16 @@ entity "preapprovedSubmissions" {
   department : varchar(255)
 }
 
-entity "preapprovedTravelers" {
-  * travelerID : serial4
+entity "travel_authorization_pre_approval_profiles" {
+  * id : serial4 <<PK>>
   --
-  pre_approval_id : int4 <<FK>>
-  fullName : varchar(255)
-  department : varchar(255)
+  * pre_approval_id : int4 <<FK>>
+  * profile_name : varchar(255)
+  * department : varchar(255)
   branch : varchar(255)
+  created_at: timestamptz
+  updated_at: timestamptz
+  deleted_at: timestamptz
 }
 
 entity "roles" {
@@ -477,7 +480,7 @@ entity "YgEmployees" {
 ' Relationships
 expenses::travel_authorization_id ||--o{ travel_authorizations::id
 preapprovedSubmissions::preTSubID }o--o| preapprovedDocuments::preTSubID
-preapprovedTravelers::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
+travel_authorization_pre_approval_profiles::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
 stops::travel_authorization_id }o--|| travel_authorizations::id
 travel_authorization_action_logs::travel_authorization_id ||--o{ travel_authorizations::id
 travel_authorization_action_logs::actor_id ||--o{ users::id

@@ -55,9 +55,9 @@
               </v-btn>
             </template>
             <template #item.name="{ item }">
-              <template v-if="item.travelers.length === 0"> Unspecified </template>
-              <template v-else-if="item.travelers.length === 1">
-                {{ item.travelers[0].fullName.replace(".", " ") }}
+              <template v-if="item.profiles.length === 0"> Unspecified </template>
+              <template v-else-if="item.profiles.length === 1">
+                {{ item.profiles[0].profileName.replace(".", " ") }}
               </template>
               <v-tooltip
                 v-else
@@ -67,17 +67,17 @@
                 <template #activator="{ on }">
                   <div v-on="on">
                     <span>
-                      {{ item.travelers[0].fullName.replace(".", " ") }}
+                      {{ item.profiles[0].profileName.replace(".", " ") }}
                     </span>
                     <span>, ... </span>
                   </div>
                 </template>
                 <span
                   ><div
-                    v-for="(traveler, index) in item.travelers"
+                    v-for="(profile, index) in item.profiles"
                     :key="index"
                   >
-                    {{ traveler.fullName.replace(".", " ") }}
+                    {{ profile.profileName.replace(".", " ") }}
                   </div></span
                 >
               </v-tooltip>
@@ -171,9 +171,9 @@
             single-select
           >
             <template #item.name="{ item }">
-              <template v-if="item.travelers.length === 0"> Unspecified </template>
-              <template v-else-if="item.travelers.length === 1">
-                {{ item.travelers[0].fullName.replace(".", " ") }}
+              <template v-if="item.profiles.length === 0"> Unspecified </template>
+              <template v-else-if="item.profiles.length === 1">
+                {{ item.profiles[0].profileName.replace(".", " ") }}
               </template>
               <v-tooltip
                 v-else
@@ -183,17 +183,17 @@
                 <template #activator="{ on }">
                   <div v-on="on">
                     <span>
-                      {{ item.travelers[0].fullName.replace(".", " ") }}
+                      {{ item.profiles[0].profileName.replace(".", " ") }}
                     </span>
                     <span>, ... </span>
                   </div>
                 </template>
                 <span
                   ><div
-                    v-for="(traveler, index) in item.travelers"
+                    v-for="(profile, index) in item.profiles"
                     :key="index"
                   >
-                    {{ traveler.fullName.replace(".", " ") }}
+                    {{ profile.profileName.replace(".", " ") }}
                   </div></span
                 >
               </v-tooltip>
@@ -386,7 +386,7 @@ export default {
       return this.travelRequests?.filter(
         (req) =>
           !currentIDs.includes(req.id) &&
-          (req.status == null || req.status == "draft") &&
+          (req.status == null || req.status === STATUSES.DRAFT) &&
           (req.department == currentDept || currentIDs.length == 0)
       )
     },
@@ -395,7 +395,7 @@ export default {
     extractTravelRequests() {
       this.submittingRequests = cloneDeep(
         this.selectedRequests.filter(
-          (request) => request.status == null || request.status == "draft"
+          (request) => request.status == null || request.status === STATUSES.DRAFT
         )
       )
     },

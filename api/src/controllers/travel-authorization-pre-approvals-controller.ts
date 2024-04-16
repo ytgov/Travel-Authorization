@@ -17,7 +17,7 @@ export class TravelAuthorizationPreApprovalsController extends BaseController {
     const totalCount = await scopedTravelAuthorizationPreApprovals.count({ where })
     const travelAuthorizationPreApprovals = await scopedTravelAuthorizationPreApprovals.findAll({
       where,
-      include: ["travelers"],
+      include: ["profiles"],
     })
     return this.response.json({
       travelAuthorizationPreApprovals,

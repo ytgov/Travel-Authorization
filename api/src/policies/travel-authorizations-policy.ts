@@ -71,7 +71,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
   // NOTE: userId is always restricted after creation.
   permittedAttributes(): string[] {
     return [
-      "preApprovalId",
+      "preApprovalProfileId",
       "purposeId",
       "firstName",
       "lastName",

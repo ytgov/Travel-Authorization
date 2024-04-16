@@ -55,9 +55,15 @@
             cols="12"
             md="4"
           >
-            <TravelAuthorizationPreApprovalSelect
-              v-model="travelAuthorization.preApprovalId"
-              :department="department"
+            <TravelAuthorizationPreApprovalProfileSelect
+              v-model="travelAuthorization.preApprovalProfileId"
+              :query-options="{
+                where: { department },
+                filters: {
+                  approved: true,
+                  openDateOrBeforeStartDate: true,
+                },
+              }"
               dense
               outlined
             />
@@ -103,7 +109,7 @@
 import { mapActions, mapGetters } from "vuex"
 
 import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
-import TravelAuthorizationPreApprovalSelect from "@/components/travel-authorization-pre-approvals/TravelAuthorizationPreApprovalSelect"
+import TravelAuthorizationPreApprovalProfileSelect from "@/components/travel-authorization-pre-approval-profiles/TravelAuthorizationPreApprovalProfileSelect"
 import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
@@ -118,7 +124,7 @@ export default {
     SearchableUserEmailCombobox,
     SubmitToSupervisorButton,
     TravelAuthorizationActionLogsTable,
-    TravelAuthorizationPreApprovalSelect,
+    TravelAuthorizationPreApprovalProfileSelect,
   },
   props: {
     travelAuthorizationId: {

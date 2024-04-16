@@ -1,11 +1,11 @@
 import { Knex } from "knex"
 
-import { TravelAuthorizationPreApproval } from "@/models"
+import { TravelAuthorizationPreApproval, TravelAuthorizationPreApprovalProfile } from "@/models"
 import { Statuses } from "@/models/travel-authorization-pre-approval"
 
 export async function seed(knex: Knex): Promise<void> {
   await TravelAuthorizationPreApproval.destroy({ where: {} })
-  await TravelAuthorizationPreApproval.bulkCreate([
+  const preApprovals = await TravelAuthorizationPreApproval.bulkCreate([
     {
       submissionId: null,
       estimatedCost: 1500,
@@ -18,7 +18,7 @@ export async function seed(knex: Knex): Promise<void> {
       reason: "Annual departmental meeting to discuss financial strategies and performance",
       startDate: new Date("2024-06-15"),
       endDate: new Date("2024-06-20"),
-      isOpenForAnyDate: false,
+      isOpenForAnyDate: true,
       month: "June",
       isOpenForAnyTraveler: false,
       numberTravelers: 3,
@@ -36,7 +36,7 @@ export async function seed(knex: Knex): Promise<void> {
       startDate: new Date("2024-07-22"),
       endDate: new Date("2024-07-25"),
       isOpenForAnyDate: false,
-      month: "July",
+      month: null,
       isOpenForAnyTraveler: true,
       numberTravelers: 2,
       travelerNotes: "Include both a creative director and campaign manager",
@@ -50,14 +50,40 @@ export async function seed(knex: Knex): Promise<void> {
       branch: "Human Resources",
       purpose: "Technology Upgrade Planning",
       reason: "Planning session for upcoming software and hardware upgrades",
-      startDate: new Date("2024-08-10"),
-      endDate: new Date("2024-08-12"),
-      isOpenForAnyDate: false,
-      month: "August",
-      isOpenForAnyTraveler: false,
+      startDate: null,
+      endDate: null,
+      isOpenForAnyDate: true,
+      month: "January",
+      isOpenForAnyTraveler: true,
       numberTravelers: 4,
       travelerNotes: "Includes IT managers and system administrators",
       status: Statuses.DRAFT,
+    },
+  ])
+
+  if (preApprovals.length < 3) {
+    throw new Error("Need at least 3 pre-approvals to seed pre-approval profiles.")
+  }
+
+  await TravelAuthorizationPreApprovalProfile.destroy({ where: {} })
+  await TravelAuthorizationPreApprovalProfile.bulkCreate([
+    {
+      preApprovalId: preApprovals[0].id,
+      profileName: "Finance Officers",
+      department: "Economic Development",
+      branch: "Human Resources",
+    },
+    {
+      preApprovalId: preApprovals[1].id,
+      profileName: "Marketing Team",
+      department: "Economic Development",
+      branch: "Human Resources",
+    },
+    {
+      preApprovalId: preApprovals[2].id,
+      profileName: "IT Team",
+      department: "Economic Development",
+      branch: "Human Resources",
     },
   ])
 }

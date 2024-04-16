@@ -11,7 +11,7 @@
         class="ml-auto"
         @updateTable="updateTable"
       />
-      <print-report
+      <PrintReport
         v-if="admin"
         :disabled="selectedRequests.length == 0"
         :travel-requests="selectedRequests"
@@ -43,9 +43,9 @@
       @toggle-select-all="applyAllSameDeptSelection"
     >
       <template #item.name="{ item }">
-        <template v-if="item.travelers.length === 0"> Unspecified </template>
-        <template v-else-if="item.travelers.length === 1">
-          {{ item.travelers[0].fullName.replace(".", " ") }}
+        <template v-if="item.profiles.length === 0"> Unspecified </template>
+        <template v-else-if="item.profiles.length === 1">
+          {{ item.profiles[0].profileName.replace(".", " ") }}
         </template>
         <v-tooltip
           v-else
@@ -55,17 +55,17 @@
           <template #activator="{ on }">
             <div v-on="on">
               <span>
-                {{ item.travelers[0].fullName.replace(".", " ") }}
+                {{ item.profiles[0].profileName.replace(".", " ") }}
               </span>
               <span>, ... </span>
             </div>
           </template>
           <span
             ><div
-              v-for="(traveler, index) in item.travelers"
+              v-for="(profile, index) in item.profiles"
               :key="index"
             >
-              {{ traveler.fullName.replace(".", " ") }}
+              {{ profile.profileName.replace(".", " ") }}
             </div></span
           >
         </v-tooltip>
@@ -89,7 +89,7 @@
       </template>
 
       <template #item.edit="{ item }">
-        <new-travel-request
+        <NewTravelRequest
           :type="item.status === STATUSES.DRAFT || isNil(item.status) ? 'Edit' : 'View'"
           :travel-request="item"
           @updateTable="updateTable"
@@ -231,7 +231,9 @@ export default {
       // console.log(this.selectedRequests)
       const csvInfo = this.selectedRequests.map((req) => {
         return {
-          travelers: req.travelers?.map((trv) => trv.fullName.replace(".", " "))?.join(", "),
+          profiles: req.profiles
+            ?.map((profile) => profile.profileName.replace(".", " "))
+            ?.join(", "),
           department: req.department,
           branch: req.branch ? req.branch : "",
           travelDate: req.isOpenForAnyDate ? req.month : req.startDate + " " + req.endDate,

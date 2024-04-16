@@ -7,7 +7,7 @@ import db, {
   TravelAuthorizationPreApproval,
   TravelAuthorizationPreApprovalDocument,
   TravelAuthorizationPreApprovalSubmission,
-  TravelAuthorizationPreApprovalTraveler,
+  TravelAuthorizationPreApprovalProfile,
   User,
 } from "@/models"
 
@@ -31,7 +31,7 @@ preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request
     include: [
       {
         association: "preApproval",
-        include: ["travelers"],
+        include: ["profiles"],
       },
     ],
   })
@@ -260,8 +260,8 @@ preapprovedRouter.post(
     const preApprovalId = Number(req.params.preApprovalId)
     try {
       await db.transaction(async () => {
-        const travelers = req.body.travelers
-        delete req.body.travelers
+        const profiles = req.body.profiles
+        delete req.body.profiles
 
         const newPreapproved = req.body
 
@@ -270,7 +270,7 @@ preapprovedRouter.post(
           newPreapproved.purpose &&
           newPreapproved.estimatedCost &&
           newPreapproved.location &&
-          travelers?.length > 0
+          profiles?.length > 0
         ) {
           // TODO: fix legacy patterm - split creation and update into separate endpoints
           let preApproval
@@ -285,30 +285,30 @@ preapprovedRouter.post(
             preApproval = await TravelAuthorizationPreApproval.create(newPreapproved)
           }
 
-          const travelersQuery = await TravelAuthorizationPreApprovalTraveler.findAll({
-            attributes: ["travelerID"],
+          const profilesQuery = await TravelAuthorizationPreApprovalProfile.findAll({
+            attributes: ["id"],
             where: {
               preApprovalId: preApproval.id,
             },
           })
 
-          let travelerIdList = travelersQuery.map((traveler) => traveler.travelerID)
+          let profileIdList = profilesQuery.map((profile) => profile.id)
 
-          for (const traveller of travelers) {
-            if (traveller.travelerID) {
-              travelerIdList = travelerIdList.filter((tid) => tid != traveller.travelerID)
+          for (const profile of profiles) {
+            if (profile.id) {
+              profileIdList = profileIdList.filter((profileId) => profileId != profile.id)
             } else {
-              let travellerInfo = {
+              let profileInfo = {
                 preApprovalId: preApproval.id,
-                ...traveller,
+                ...profile,
               }
-              await TravelAuthorizationPreApprovalTraveler.create(travellerInfo)
+              await TravelAuthorizationPreApprovalProfile.create(profileInfo)
             }
           }
 
-          await TravelAuthorizationPreApprovalTraveler.destroy({
+          await TravelAuthorizationPreApprovalProfile.destroy({
             where: {
-              travelerID: travelerIdList,
+              id: profileIdList,
             },
           })
 

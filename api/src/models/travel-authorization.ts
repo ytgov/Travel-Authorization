@@ -25,7 +25,7 @@ import {
 import sequelize from "@/db/db-client"
 
 import Expense from "@/models/expense"
-import TravelAuthorizationPreApproval from "@/models/travel-authorization-pre-approval"
+import TravelAuthorizationPreApprovalProfile from "@/models/travel-authorization-pre-approval-profile"
 import Stop from "@/models/stop"
 import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 import TravelPurpose from "@/models/travel-purpose"
@@ -68,7 +68,7 @@ export class TravelAuthorization extends Model<
   declare id: CreationOptional<number>
   declare slug: string
   declare userId: ForeignKey<User["id"]>
-  declare preApprovalId: ForeignKey<TravelAuthorizationPreApproval["id"]> | null
+  declare preApprovalProfileId: ForeignKey<TravelAuthorizationPreApprovalProfile["id"]> | null
   declare purposeId: ForeignKey<TravelPurpose["id"]> | null
   declare firstName: string | null
   declare lastName: string | null
@@ -102,12 +102,12 @@ export class TravelAuthorization extends Model<
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getPreApproval: BelongsToGetAssociationMixin<TravelAuthorizationPreApproval>
-  declare setPreApproval: BelongsToSetAssociationMixin<
-    TravelAuthorizationPreApproval,
-    TravelAuthorizationPreApproval["id"]
+  declare getPreApprovalProfile: BelongsToGetAssociationMixin<TravelAuthorizationPreApprovalProfile>
+  declare setPreApprovalProfile: BelongsToSetAssociationMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare createPreApproval: BelongsToCreateAssociationMixin<TravelAuthorizationPreApproval>
+  declare createPreApprovalProfile: BelongsToCreateAssociationMixin<TravelAuthorizationPreApprovalProfile>
 
   declare getPurpose: BelongsToGetAssociationMixin<TravelPurpose>
   declare setPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
@@ -178,7 +178,7 @@ export class TravelAuthorization extends Model<
   declare countTravelSegments: HasManyCountAssociationsMixin
   declare createTravelSegment: HasManyCreateAssociationMixin<TravelSegment>
 
-  declare preApproval?: NonAttribute<TravelAuthorizationPreApproval>
+  declare preApprovalProfile?: NonAttribute<TravelAuthorizationPreApprovalProfile>
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
   declare user: NonAttribute<User>
@@ -188,7 +188,7 @@ export class TravelAuthorization extends Model<
 
   declare static associations: {
     expenses: Association<TravelAuthorization, Expense>
-    preApproval: Association<TravelAuthorization, TravelAuthorizationPreApproval>
+    preApprovalProfile: Association<TravelAuthorization, TravelAuthorizationPreApprovalProfile>
     purpose: Association<TravelAuthorization, TravelPurpose>
     stops: Association<TravelAuthorization, Stop>
     travelDeskTravelRequest: Association<TravelAuthorization, TravelDeskTravelRequest>
@@ -197,9 +197,9 @@ export class TravelAuthorization extends Model<
   }
 
   static establishAssociations() {
-    this.belongsTo(TravelAuthorizationPreApproval, {
-      as: "preApproval",
-      foreignKey: "preApprovalId",
+    this.belongsTo(TravelAuthorizationPreApprovalProfile, {
+      as: "preApprovalProfile",
+      foreignKey: "preApprovalProfileId",
     })
     this.belongsTo(TravelPurpose, {
       as: "purpose",
@@ -291,16 +291,20 @@ TravelAuthorization.init(
       allowNull: false,
       unique: true,
     },
-    preApprovalId: {
+    preApprovalProfileId: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      references: {
+        model: TravelAuthorizationPreApprovalProfile,
+        key: "id",
+      },
     },
     purposeId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "travel_purposes", // using real table name here
-        key: "id", // using real column name here
+        model: TravelPurpose,
+        key: "id",
       },
     },
     // TODO: consider renaming this to requestorId?
@@ -308,8 +312,8 @@ TravelAuthorization.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "users", // using real table name here
-        key: "id", // using real column name here
+        model: User,
+        key: "id",
       },
     },
     firstName: {
