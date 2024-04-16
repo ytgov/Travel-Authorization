@@ -3,7 +3,7 @@
     :value="value"
     :items="profiles"
     :loading="isLoading"
-    label="Pre-approval Travel Request (if applicable)"
+    label="Pre-approved travel for (if applicable)"
     no-data-text="No pre-approvals available"
     v-bind="$attrs"
     @input="emit('input', $event)"
@@ -58,7 +58,8 @@ async function fetch(department) {
       await travelAuthorizationPreApprovalProfilesApi.list({
         where: { department },
         filters: {
-          notInThePast: true,
+          approved: true,
+          openDateOrBeforeStartDate: true,
         },
       })
     profiles.value = newProfiles.map(({ id, profileName }) => {

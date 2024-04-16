@@ -20,6 +20,7 @@ import {
   InferCreationAttributes,
   Model,
   NonAttribute,
+  Op,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
@@ -146,6 +147,41 @@ TravelAuthorizationPreApprovalProfile.init(
   {
     sequelize,
     paranoid: true, // TODO: make this the default
+    scopes: {
+      approved() {
+        return {
+          include: [
+            {
+              association: "preApproval",
+              where: {
+                status: TravelAuthorizationPreApproval.Statuses.APPROVED,
+              },
+            },
+          ],
+        }
+      },
+      openDateOrBeforeStartDate() {
+        return {
+          include: [
+            {
+              association: "preApproval",
+              where: {
+                [Op.or]: [
+                  {
+                    startDate: {
+                      [Op.gte]: new Date().toISOString(),
+                    },
+                  },
+                  {
+                    isOpenForAnyDate: true,
+                  },
+                ],
+              },
+            },
+          ],
+        }
+      },
+    },
   }
 )
 
