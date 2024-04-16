@@ -59,9 +59,7 @@ async function fetch(department) {
     const flatRequests = flattenRequests(newTravelAuthorizationPreApprovals)
     const options = flatRequests.map((request) => {
       const { fullName, purpose, month } = request
-      const text = isEmpty(fullName)
-        ? [purpose, month].filter(Boolean).join(" - ")
-        : [purpose, month, fullName].filter(Boolean).join(" - ")
+      const text = !isEmpty(fullName) ? fullName : [purpose, month].filter(Boolean).join(" - ")
       return {
         text,
         value: request.id,
@@ -75,12 +73,13 @@ async function fetch(department) {
 
 function flattenRequests(travelAuthorizationPreApprovals) {
   return travelAuthorizationPreApprovals.flatMap(({ travelers, ...otherRequestAttributes }) => {
-    // If there are no travelers, return the request as is
+    const { department, branch } = otherRequestAttributes
+    // If there are no travelers, generate a generic "staff" record
     if (travelers.length === 0) {
       return {
         ...otherRequestAttributes,
         travelerID: null,
-        fullName: null,
+        fullName: [department, branch, "staff"].filter(Boolean).join(" "),
       }
     }
 
