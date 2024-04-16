@@ -80,10 +80,10 @@
             <template #item.name="{ item }">
               <span> {{ item.department }}, </span>
               <span
-                v-for="(trv, inx) in item.travelers"
-                :key="inx"
+                v-for="(profile, index) in item.profiles"
+                :key="index"
                 style="line-height: 1rem"
-                >{{ trv.fullName.replace(".", " ") }}</span
+                >{{ profile.profileName.replace(".", " ") }}</span
               >
             </template>
 

@@ -5,13 +5,13 @@
       persistent
       max-width="950px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           style="min-width: 0"
           :class="type == 'Add New' ? 'mr-5 my-7' : 'px-1'"
           :color="type == 'Add New' ? 'primary' : 'transparent'"
-          @click="initForm()"
           v-bind="attrs"
+          @click="initForm"
           v-on="on"
         >
           <div v-if="type == 'Add New'">Add New Travel</div>
@@ -39,25 +39,25 @@
           <v-row class="mt-5">
             <v-col cols="3">
               <v-select
+                v-model="purpose"
                 :readonly="readonly"
                 :error="state.purposeErr"
-                @change="state.purposeErr = false"
-                v-model="purpose"
                 :items="purposeList"
                 label="Purpose"
                 outlined
+                @change="state.purposeErr = false"
               />
             </v-col>
             <v-col cols="1" />
             <v-col cols="8">
               <v-text-field
+                v-model="location"
                 :readonly="readonly"
                 :error="state.locationErr"
-                @input="state.locationErr = false"
-                v-model="location"
                 label="Location"
                 outlined
                 :clearable="!readonly"
+                @input="state.locationErr = false"
               />
             </v-col>
           </v-row>
@@ -65,30 +65,30 @@
           <v-row class="mt-n5">
             <v-col cols="3">
               <v-text-field
+                v-model="cost"
                 :readonly="readonly"
                 :error="state.costErr"
-                @input="state.costErr = false"
-                v-model="cost"
                 label="Estimated Cost ($)"
                 type="number"
                 outlined
                 :clearable="!readonly"
+                @input="state.costErr = false"
               />
               <v-text-field
+                v-model="startDate"
                 :readonly="readonly"
                 :error="state.startDateErr"
-                v-model="startDate"
-                @input="state.unknownDateErr = false"
                 label="Start Date"
                 outlined
                 type="date"
+                @input="state.unknownDateErr = false"
               />
             </v-col>
             <v-col cols="1" />
             <v-col cols="8">
               <v-textarea
-                :readonly="readonly"
                 v-model="reason"
+                :readonly="readonly"
                 label="Reason"
                 outlined
                 :clearable="!readonly"
@@ -99,13 +99,13 @@
           <v-row class="mt-n5">
             <v-col cols="3">
               <v-text-field
+                v-model="endDate"
                 :readonly="readonly"
                 :error="state.endDateErr"
-                v-model="endDate"
-                @input="state.unknownDateErr = false"
                 label="End Date"
                 outlined
                 type="date"
+                @input="state.unknownDateErr = false"
               />
             </v-col>
             <v-col cols="1" />
@@ -113,27 +113,27 @@
               <v-row>
                 <v-col cols="5">
                   <v-checkbox
-                    :readonly="readonly"
                     v-model="unknownDate"
+                    :readonly="readonly"
                     label="exact date unknown"
-                    @change="selectUnknownDate()"
                     :error-messages="
                       state.unknownDateErr
                         ? 'Either select Start and End Dates or Select this option'
                         : ''
                     "
+                    @change="selectUnknownDate"
                   />
                 </v-col>
                 <v-col cols="5">
                   <v-select
+                    v-model="anticipatedMonth"
                     :readonly="readonly"
-                    @change="state.anticipatedMonthErr = false"
                     :error="state.anticipatedMonthErr"
                     :disabled="!unknownDate"
-                    v-model="anticipatedMonth"
                     :items="monthList"
                     label="Anticipated Month"
                     outlined
+                    @change="state.anticipatedMonthErr = false"
                   />
                 </v-col>
               </v-row>
@@ -145,27 +145,27 @@
             <v-row class="mt-5 mx-3">
               <v-col cols="6">
                 <v-select
+                  v-model="department"
                   :readonly="readonly || lockDepartment"
                   :error="state.departmentErr"
-                  @change="departmentChanged"
-                  v-model="department"
                   :items="departmentList"
                   item-text="name"
                   label="Department"
                   outlined
+                  @change="departmentChanged"
                 />
               </v-col>
               <v-col cols="6">
                 <v-select
+                  v-model="branch"
                   :readonly="readonly"
                   :error="state.branchErr"
-                  @change="state.branchErr = false"
-                  v-model="branch"
                   :items="branchList"
                   item-text="name"
                   item-value="name"
                   label="Branch"
                   outlined
+                  @change="state.branchErr = false"
                 />
               </v-col>
             </v-row>
@@ -189,14 +189,14 @@
               </v-col>
               <v-col cols="4">
                 <v-text-field
+                  v-model="profilesNum"
                   :readonly="readonly"
-                  @input="addUndefinedTraveller()"
                   :error="state.travellerNumErr"
                   :disabled="!undefinedTraveller"
                   label="Number of Travellers"
-                  v-model="travellersNum"
                   type="number"
                   outlined
+                  @input="addUndefinedTraveller"
                 />
               </v-col>
             </v-row>
@@ -205,18 +205,18 @@
               <v-col cols="9">
                 <v-data-table
                   :headers="headers"
-                  :items="travellers"
+                  :items="profiles"
                   hide-default-footer
                   class="elevation-1"
                 >
-                  <template v-slot:item.remove="{ item }">
+                  <template #item.remove="{ item }">
                     <v-btn
                       v-if="!readonly"
-                      @click="removeTraveller(item)"
                       style="min-width: 0"
                       color="transparent"
                       class="px-1"
                       small
+                      @click="removeTraveller(item)"
                     >
                       <v-icon
                         class=""
@@ -242,8 +242,8 @@
             <v-row class="mx-3">
               <v-col cols="12">
                 <v-textarea
-                  :readonly="readonly"
                   v-model="travellerNotes"
+                  :readonly="readonly"
                   label="Traveller Notes"
                   outlined
                   :clearable="!readonly"
@@ -324,8 +324,8 @@
             v-if="type == 'Edit' && admin"
             class="ml-5"
             color="red darken-5"
-            @click="deleteDialog = true"
             :loading="savingData"
+            @click="deleteDialog = true"
           >
             Delete
           </v-btn>
@@ -333,8 +333,8 @@
             v-if="type == 'Add New' || type == 'Edit'"
             class="ml-auto"
             color="green darken-1"
-            @click="saveNewTravelRequest()"
             :loading="savingData"
+            @click="saveNewTravelRequest"
           >
             Save
           </v-btn>
@@ -359,13 +359,13 @@
           <v-row class="mt-5">
             <v-col cols="12">
               <v-autocomplete
-                @change="adNameErr = false"
+                v-model="adName"
                 :error="adNameErr"
                 :items="adNameList"
                 item-text="fullName"
-                v-model="adName"
                 label="Traveller Name"
                 outlined
+                @change="adNameErr = false"
               />
             </v-col>
           </v-row>
@@ -429,15 +429,20 @@ import Vue from "vue"
 
 import { PREAPPROVED_URL } from "@/urls"
 import { secureDelete, secureGet, securePost } from "@/store/jwt"
-import { STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
+import { STATUSES as PRE_APPROVED_STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+import { STATUSES as SUBMISSION_STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
 
 export default {
   name: "NewTravelRequest",
   props: {
     type: {
       type: String,
+      default: "Add New",
     },
-    travelRequest: {},
+    travelRequest: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
@@ -466,7 +471,7 @@ export default {
           width: "1rem",
         },
       ],
-      travellers: [],
+      profiles: [],
       purposeList: [],
       purpose: "",
       addNewTravelDialog: false,
@@ -483,7 +488,7 @@ export default {
       branchList: [],
       undefinedTraveller: false,
       undefinedTravellerHint: "",
-      travellersNum: null,
+      profilesNum: null,
       anticipatedMonth: "",
       travellerNotes: "",
       monthList: [
@@ -536,13 +541,13 @@ export default {
     addTraveller() {
       if (this.adName) {
         this.travellerDialog = false
-        const travellerInx = this.travellers.findIndex(
+        const travellerInx = this.profiles.findIndex(
           (traveller) =>
-            traveller.fullName == this.adName && traveller.department == this.department
+            traveller.profileName == this.adName && traveller.department == this.department
         )
         if (travellerInx < 0)
-          this.travellers.push({
-            fullName: this.adName,
+          this.profiles.push({
+            profileName: this.adName,
             department: this.department,
             branch: this.branch,
           })
@@ -559,7 +564,7 @@ export default {
       if (this.department && (this.branch || this.branchList.length == 0)) {
         this.adNameList = this.employeeList
           .filter((employee) => employee.department == this.department)
-          .sort((a, b) => (a.fullName >= b.fullName ? 1 : -1))
+          .sort((a, b) => (a.profileName >= b.profileName ? 1 : -1))
         this.travellerDialog = true
       }
     },
@@ -577,7 +582,7 @@ export default {
       this.state.departmentErr = this.department ? false : true
       this.state.branchErr = this.branchList.length > 0 && !this.branch ? true : false
       if (!this.undefinedTraveller) {
-        this.travellers = []
+        this.profiles = []
         return
       }
       if (this.department && (this.branch || this.branchList.length == 0)) {
@@ -592,10 +597,10 @@ export default {
 
     addUndefinedTraveller() {
       this.state.travellerNumErr = false
-      if (this.travellersNum > 0) {
-        this.travellers = [
+      if (this.profilesNum > 0) {
+        this.profiles = [
           {
-            fullName: this.department + " " + (this.branch ? this.branch + " " : "") + "staff",
+            profileName: this.department + " " + (this.branch ? this.branch + " " : "") + "staff",
             department: this.department,
             branch: this.branch,
           },
@@ -616,9 +621,9 @@ export default {
       this.state.endDateErr = this.startDate && !this.endDate && !this.unknownDate ? true : false
 
       this.state.undefinedTravellerErr =
-        !this.undefinedTraveller && this.travellers.length == 0 ? true : false
+        !this.undefinedTraveller && this.profiles.length == 0 ? true : false
       this.state.travellerNumErr =
-        this.undefinedTraveller && (!this.travellersNum || this.travellersNum < 1) ? true : false
+        this.undefinedTraveller && (!this.profilesNum || this.profilesNum < 1) ? true : false
 
       for (const key of Object.keys(this.state)) {
         if (this.state[key]) return false
@@ -641,8 +646,8 @@ export default {
           department: this.department,
           branch: this.branch,
           isOpenForAnyTraveler: this.undefinedTraveller,
-          numberTravelers: this.travellersNum,
-          travelers: this.travellers,
+          numberTravelers: this.profilesNum,
+          profiles: this.profiles,
           travelerNotes: this.travellerNotes,
         }
         // console.log(body);
@@ -671,7 +676,7 @@ export default {
       this.initDepartments()
       this.purposeList = this.$store.state.preapproved?.travelPurposes?.map((item) => item.purpose)
 
-      this.travellers = this.type == "Add New" ? [] : this.travelRequest.travelers
+      this.profiles = this.type == "Add New" ? [] : this.travelRequest.profiles
       this.purpose = this.type == "Add New" ? "" : this.travelRequest.purpose
       this.unknownDate = this.type == "Add New" ? false : this.travelRequest.isOpenForAnyDate
       this.location = this.type == "Add New" ? "" : this.travelRequest.location
@@ -684,7 +689,7 @@ export default {
       this.undefinedTraveller =
         this.type == "Add New" ? false : this.travelRequest.isOpenForAnyTraveler
       this.undefinedTravellerHint = ""
-      this.travellersNum = this.type == "Add New" ? null : this.travelRequest.numberTravelers
+      this.profilesNum = this.type == "Add New" ? null : this.travelRequest.numberTravelers
       this.anticipatedMonth = this.type == "Add New" ? "" : this.travelRequest.month
       this.travellerNotes = this.type == "Add New" ? "" : this.travelRequest.travelerNotes
       this.travellerDialog = false
@@ -698,13 +703,14 @@ export default {
 
       this.loadingData = false
       this.showApproval = false
-      this.approved = this.travelRequest?.status == "approved"
+      this.approved = this.travelRequest?.status === PRE_APPROVED_STATUSES.APPROVED
       this.approvedBy = ""
       this.approvalDate = ""
 
       if (
         this.travelRequest?.submissionId &&
-        (this.travelRequest.status == "approved" || this.travelRequest.status == "declined")
+        (this.travelRequest.status === PRE_APPROVED_STATUSES.APPROVED ||
+          this.travelRequest.status === PRE_APPROVED_STATUSES.DECLINED)
       )
         this.initSubmission(this.travelRequest.submissionId)
     },
@@ -720,7 +726,7 @@ export default {
     initTravellers() {
       this.employeeList = this.$store.state.preapproved.employees.map((item) => {
         return {
-          fullName: item.fullName,
+          profileName: item.profileName,
           department: item.department,
         }
       })
@@ -739,7 +745,7 @@ export default {
     initSubmission(id) {
       secureGet(`${PREAPPROVED_URL}/submissions/${id}`)
         .then((res) => {
-          this.showApproval = res.data.status === STATUSES.FINISHED
+          this.showApproval = res.data.status === SUBMISSION_STATUSES.FINISHED
           this.approvedBy = res.data.approvedBy
           this.approvalDate = res.data.approvalDate
         })
@@ -800,12 +806,12 @@ export default {
     },
 
     removeTraveller(item) {
-      this.travellers = this.travellers.filter(
-        (traveller) =>
-          !(traveller.fullName == item.fullName && traveller.department == item.department)
+      this.profiles = this.profiles.filter(
+        (profile) =>
+          !(profile.profileName == item.profileName && profile.department == item.department)
       )
-      if (this.travellers.length == 0 && this.undefinedTraveller) {
-        this.travellersNum = null
+      if (this.profiles.length == 0 && this.undefinedTraveller) {
+        this.profilesNum = null
       }
     },
   },

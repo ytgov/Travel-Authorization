@@ -43,9 +43,9 @@
       @toggle-select-all="applyAllSameDeptSelection"
     >
       <template #item.name="{ item }">
-        <template v-if="item.travelers.length === 0"> Unspecified </template>
-        <template v-else-if="item.travelers.length === 1">
-          {{ item.travelers[0].fullName.replace(".", " ") }}
+        <template v-if="item.profiles.length === 0"> Unspecified </template>
+        <template v-else-if="item.profiles.length === 1">
+          {{ item.profiles[0].profileName.replace(".", " ") }}
         </template>
         <v-tooltip
           v-else
@@ -55,17 +55,17 @@
           <template #activator="{ on }">
             <div v-on="on">
               <span>
-                {{ item.travelers[0].fullName.replace(".", " ") }}
+                {{ item.profiles[0].profileName.replace(".", " ") }}
               </span>
               <span>, ... </span>
             </div>
           </template>
           <span
             ><div
-              v-for="(traveler, index) in item.travelers"
+              v-for="(profile, index) in item.profiles"
               :key="index"
             >
-              {{ traveler.fullName.replace(".", " ") }}
+              {{ profile.profileName.replace(".", " ") }}
             </div></span
           >
         </v-tooltip>
@@ -231,7 +231,9 @@ export default {
       // console.log(this.selectedRequests)
       const csvInfo = this.selectedRequests.map((req) => {
         return {
-          travelers: req.travelers?.map((trv) => trv.fullName.replace(".", " "))?.join(", "),
+          profiles: req.profiles
+            ?.map((profile) => profile.profileName.replace(".", " "))
+            ?.join(", "),
           department: req.department,
           branch: req.branch ? req.branch : "",
           travelDate: req.isOpenForAnyDate ? req.month : req.startDate + " " + req.endDate,
