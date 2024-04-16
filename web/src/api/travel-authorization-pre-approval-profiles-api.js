@@ -7,6 +7,13 @@ export const travelAuthorizationPreApprovalProfilesApi = {
     })
     return data
   },
+  async get(profileId, params = {}) {
+    const { data } = await http.get(
+      `/api/travel-authorization-pre-approval-profiles/${profileId}`,
+      { params }
+    )
+    return data
+  },
 }
 
 export default travelAuthorizationPreApprovalProfilesApi

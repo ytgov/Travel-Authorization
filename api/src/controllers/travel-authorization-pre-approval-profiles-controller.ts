@@ -1,5 +1,5 @@
 import { WhereOptions } from "sequelize"
-import { isEmpty } from "lodash"
+import { isEmpty, isNil } from "lodash"
 
 import { TravelAuthorizationPreApprovalProfile } from "@/models"
 import { TravelAuthorizationPreApprovalProfilesPolicy } from "@/policies"
@@ -28,9 +28,29 @@ export class TravelAuthorizationPreApprovalProfilesController extends BaseContro
       where,
       include: ["preApproval"],
     })
-    return this.response.json({
+    return this.response.status(200).json({
       travelAuthorizationPreApprovalProfiles,
       totalCount,
+    })
+  }
+
+  async show() {
+    const preApprovalProfile = await this.loadPreApprovalProfile()
+
+    if (isNil(preApprovalProfile)) {
+      this.response.status(404).json({
+        message: "Travel Authorization Pre-Approval Profile not found",
+      })
+    }
+
+    return this.response.status(200).json({
+      travelAuthorizationPreApprovalProfile: preApprovalProfile,
+    })
+  }
+
+  async loadPreApprovalProfile() {
+    return TravelAuthorizationPreApprovalProfile.findByPk(this.params.id, {
+      include: ["preApproval"],
     })
   }
 }

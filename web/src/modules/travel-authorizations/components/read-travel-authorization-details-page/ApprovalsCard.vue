@@ -37,10 +37,9 @@
           md="6"
         >
           <v-text-field
-            :value="travelAuthorizationPreApprovalText"
-            :loading="isLoadingTravelAuthorizationPreApprovals"
-            label="Pre-approved Travel Request?"
-            no-data-text="No pre-approvals available"
+            :value="travelAuthorizationPreApprovalProfileText"
+            :loading="isLoadingTravelAuthorizationPreApprovalProfile"
+            label="Pre-approved travel for (if applicable)"
             dense
             outlined
             readonly
@@ -77,6 +76,8 @@
 import { isNil, isEmpty, sumBy } from "lodash"
 import { mapActions, mapGetters } from "vuex"
 
+import travelAuthorizationPreApprovalProfilesApi from "@/api/travel-authorization-pre-approval-profiles-api"
+
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
 export default {
@@ -90,15 +91,14 @@ export default {
       required: true,
     },
   },
-  data: () => ({}),
+  data: () => ({
+    travelAuthorizationPreApprovalProfile: {},
+    isLoadingTravelAuthorizationPreApprovalProfile: false,
+  }),
   computed: {
     ...mapGetters("travelAuthorization", {
       travelAuthorization: "attributes",
       estimates: "estimates",
-    }),
-    ...mapGetters("travelAuthorizationPreApprovals", {
-      travelAuthorizationPreApprovals: "items",
-      isLoadingTravelAuthorizationPreApprovals: "isLoading",
     }),
     estimatedCost() {
       return sumBy(this.estimates, "cost")
@@ -106,26 +106,15 @@ export default {
     travelAuthorizationUser() {
       return this.travelAuthorization.user || {}
     },
-    travelAuthorizationPreApprovalText() {
-      const travelAuthorizationPreApproval = this.travelAuthorizationPreApprovals.find(
-        (p) => p.value === this.travelAuthorization.preApprovalId
-      )
-
-      if (isNil(travelAuthorizationPreApproval)) {
+    travelAuthorizationPreApprovalProfileText() {
+      if (
+        isEmpty(this.travelAuthorizationPreApprovalProfile) ||
+        this.isLoadingTravelAuthorizationPreApprovalProfile
+      ) {
         return ""
       }
 
-      const { preApprovedTravelers } = travelAuthorizationPreApproval
-      const travelerNames = preApprovedTravelers
-        .map((traveler) => traveler.fullName)
-        .filter(Boolean)
-      const { fullName: travelAuthorizationUserFullname } = this.travelAuthorizationUser
-
-      if (isEmpty(travelerNames) || !travelerNames.includes(travelAuthorizationUserFullname)) {
-        return `${travelAuthorizationPreApproval.purpose} - ${travelAuthorizationPreApproval.month}`
-      }
-
-      return `${travelAuthorizationPreApproval.purpose} - ${travelAuthorizationPreApproval.month} - ${travelAuthorizationUserFullname}`
+      return this.travelAuthorizationPreApprovalProfile.profileName
     },
     travelAdvanceInDollars() {
       return Math.ceil(this.travelAuthorization.travelAdvanceInCents / 100.0)
@@ -133,16 +122,25 @@ export default {
   },
   async mounted() {
     await this.ensureTravelAuthorization(this.travelAuthorizationId)
-    const { department } = this.travelAuthorizationUser
-    await this.ensurePreApprovedTravelRequests({ where: { department } })
+    const { preApprovalProfileId } = this.travelAuthorization
+    if (!isNil(preApprovalProfileId)) {
+      await this.loadTravelAuthorizationPreApprovedProfile(preApprovalProfileId)
+    }
   },
   methods: {
-    ...mapActions("travelAuthorizationPreApprovals", {
-      ensurePreApprovedTravelRequests: "ensure",
-    }),
     ...mapActions("travelAuthorization", {
       ensureTravelAuthorization: "ensure",
     }),
+    async loadTravelAuthorizationPreApprovedProfile(preApprovalProfileId) {
+      this.isLoadingTravelAuthorizationPreApprovalProfile = true
+      try {
+        const { travelAuthorizationPreApprovalProfile: newProfile } =
+          await travelAuthorizationPreApprovalProfilesApi.get(preApprovalProfileId)
+        this.travelAuthorizationPreApprovalProfile = newProfile
+      } finally {
+        this.isLoadingTravelAuthorizationPreApprovalProfile = false
+      }
+    },
     refresh() {
       this.$refs.travelAuthorizationActionLogsTable.refresh()
     },

@@ -84,9 +84,14 @@ router
 
 router.route("/api/locations").get(LocationsController.index)
 router.route("/api/locations/:locationId").get(LocationsController.show)
+
 router
   .route("/api/travel-authorization-pre-approval-profiles")
   .get(TravelAuthorizationPreApprovalProfilesController.index)
+router
+  .route("/api/travel-authorization-pre-approval-profiles/:id")
+  .get(TravelAuthorizationPreApprovalProfilesController.show)
+
 router
   .route("/api/travel-authorization-pre-approvals")
   .get(TravelAuthorizationPreApprovalsController.index)
