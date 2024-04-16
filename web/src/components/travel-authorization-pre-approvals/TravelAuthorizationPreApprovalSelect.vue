@@ -19,7 +19,7 @@ import travelAuthorizationPreApprovalsApi from "@/api/travel-authorization-pre-a
 
 const props = defineProps({
   value: {
-    type: String,
+    type: Number,
     default: null,
   },
   department: {
@@ -58,9 +58,10 @@ async function fetch(department) {
       await travelAuthorizationPreApprovalsApi.list({ where: { department } })
     const flatRequests = flattenRequests(newTravelAuthorizationPreApprovals)
     const options = flatRequests.map((request) => {
-      const text = isEmpty(request.fullName)
-        ? `${request.purpose} - ${request.month}`
-        : `${request.purpose} - ${request.month} - ${request.fullName}`
+      const { fullName, purpose, month } = request
+      const text = isEmpty(fullName)
+        ? [purpose, month].filter(Boolean).join(" - ")
+        : [purpose, month, fullName].filter(Boolean).join(" - ")
       return {
         text,
         value: request.id,
@@ -73,24 +74,22 @@ async function fetch(department) {
 }
 
 function flattenRequests(travelAuthorizationPreApprovals) {
-  return travelAuthorizationPreApprovals.flatMap(
-    ({ preApprovedTravelers, ...otherRequestAttributes }) => {
-      // If there are no travelers, return the request as is
-      if (preApprovedTravelers.length === 0) {
-        return {
-          ...otherRequestAttributes,
-          travelerID: null,
-          fullName: null,
-        }
-      }
-
-      // Otherwise, return an array of requests, one for each traveler
-      return preApprovedTravelers.map((traveler) => ({
+  return travelAuthorizationPreApprovals.flatMap(({ travelers, ...otherRequestAttributes }) => {
+    // If there are no travelers, return the request as is
+    if (travelers.length === 0) {
+      return {
         ...otherRequestAttributes,
-        travelerID: traveler.travelerID,
-        fullName: traveler.fullName,
-      }))
+        travelerID: null,
+        fullName: null,
+      }
     }
-  )
+
+    // Otherwise, return an array of requests, one for each traveler
+    return travelers.map((traveler) => ({
+      ...otherRequestAttributes,
+      travelerID: traveler.travelerID,
+      fullName: traveler.fullName,
+    }))
+  })
 }
 </script>
