@@ -4,7 +4,7 @@ import { isNull } from "lodash"
 import {
   Stop,
   TravelAuthorization,
-  TravelAuthorizationPreApproval,
+  TravelAuthorizationPreApprovalProfile,
   TravelDeskTravelRequest,
   TravelPurpose,
 } from "@/models"
@@ -12,8 +12,9 @@ import {
 import dbLegacy from "@/db/db-client-legacy"
 
 export async function seed(knex: Knex): Promise<void> {
-  const travelAuthorizationPreApprovals = await TravelAuthorizationPreApproval.findAll()
-  if (travelAuthorizationPreApprovals.length < 3) {
+  const travelAuthorizationPreApprovalProfiles =
+    await TravelAuthorizationPreApprovalProfile.findAll()
+  if (travelAuthorizationPreApprovalProfiles.length < 3) {
     throw new Error("Could not find enough travel authorization pre-approvals.")
   }
 
@@ -56,7 +57,7 @@ export async function seed(knex: Knex): Promise<void> {
         status: TravelAuthorization.Statuses.APPROVED,
         slug: "2c2db7f4-5711-40c8-bd54-a6b7ad306319",
         supervisorEmail: "dpdavids@ynet.gov.yk.ca",
-        preApprovalId: travelAuthorizationPreApprovals[0].id,
+        preApprovalProfileId: travelAuthorizationPreApprovalProfiles[0].id,
         requestChange: "",
         denialReason: "",
         oneWayTrip: true,
@@ -84,7 +85,7 @@ export async function seed(knex: Knex): Promise<void> {
         status: TravelAuthorization.Statuses.APPROVED,
         slug: "2c2db7f4-5711-40c8-bd54-a6b7ad306311",
         supervisorEmail: "dpdavids@ynet.gov.yk.ca",
-        preApprovalId: travelAuthorizationPreApprovals[1].id,
+        preApprovalProfileId: travelAuthorizationPreApprovalProfiles[1].id,
         requestChange: "",
         denialReason: "",
         oneWayTrip: true,
@@ -112,7 +113,7 @@ export async function seed(knex: Knex): Promise<void> {
         status: TravelAuthorization.Statuses.APPROVED,
         slug: "2c2db7f4-5711-40c8-bd54-a6b7ad306312",
         supervisorEmail: "dpdavids@ynet.gov.yk.ca",
-        preApprovalId: travelAuthorizationPreApprovals[2].id,
+        preApprovalProfileId: travelAuthorizationPreApprovalProfiles[2].id,
         requestChange: "",
         denialReason: "",
         oneWayTrip: true,
