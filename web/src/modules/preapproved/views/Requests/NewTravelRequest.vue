@@ -449,7 +449,7 @@ export default {
       headers: [
         {
           text: "Name",
-          value: "fullName",
+          value: "profileName",
           class: "blue-grey lighten-4",
         },
         {
@@ -564,7 +564,7 @@ export default {
       if (this.department && (this.branch || this.branchList.length == 0)) {
         this.adNameList = this.employeeList
           .filter((employee) => employee.department == this.department)
-          .sort((a, b) => (a.profileName >= b.profileName ? 1 : -1))
+          .sort((a, b) => (a.fullName >= b.fullName ? 1 : -1))
         this.travellerDialog = true
       }
     },
@@ -672,7 +672,7 @@ export default {
       this.lockDepartment = !Vue.filter("isSystemAdmin")() || this.type != "Add New"
 
       this.initStates()
-      this.initTravellers()
+      this.initEmployeeList()
       this.initDepartments()
       this.purposeList = this.$store.state.preapproved?.travelPurposes?.map((item) => item.purpose)
 
@@ -723,10 +723,10 @@ export default {
       }
     },
 
-    initTravellers() {
+    initEmployeeList() {
       this.employeeList = this.$store.state.preapproved.employees.map((item) => {
         return {
-          profileName: item.profileName,
+          fullName: item.fullName,
           department: item.department,
         }
       })
