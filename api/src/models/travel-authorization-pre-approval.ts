@@ -26,7 +26,7 @@ import sequelize from "@/db/db-client"
 
 import TravelAuthorization from "@/models/travel-authorization"
 import TravelAuthorizationPreApprovalSubmission from "@/models/travel-authorization-pre-approval-submission"
-import TravelAuthorizationPreApprovalTraveler from "@/models/travel-authorization-pre-approval-traveler"
+import TravelAuthorizationPreApprovalProfile from "@/models/travel-authorization-pre-approval-profile"
 
 /** Keep in sync with web/src/api/travel-authorization-pre-approvals-api.js */
 export enum Statuses {
@@ -102,43 +102,43 @@ export class TravelAuthorizationPreApproval extends Model<
     TravelAuthorization["preApprovalId"]
   >
   declare countTravelAuthorizations: HasManyCountAssociationsMixin
-  declare createTravelAuthorization: HasManyCreateAssociationMixin<TravelAuthorizationPreApprovalTraveler>
+  declare createTravelAuthorization: HasManyCreateAssociationMixin<TravelAuthorizationPreApprovalProfile>
 
-  declare getTravelers: HasManyGetAssociationsMixin<TravelAuthorizationPreApprovalTraveler>
-  declare setTravelers: HasManySetAssociationsMixin<
-    TravelAuthorizationPreApprovalTraveler,
-    TravelAuthorizationPreApprovalTraveler["travelerID"]
+  declare getProfiles: HasManyGetAssociationsMixin<TravelAuthorizationPreApprovalProfile>
+  declare setProfiles: HasManySetAssociationsMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare hasTraveler: HasManyHasAssociationMixin<
-    TravelAuthorizationPreApprovalTraveler,
-    TravelAuthorizationPreApprovalTraveler["travelerID"]
+  declare hasProfile: HasManyHasAssociationMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare hasTravelers: HasManyHasAssociationsMixin<
-    TravelAuthorizationPreApprovalTraveler,
-    TravelAuthorizationPreApprovalTraveler["travelerID"]
+  declare hasProfiles: HasManyHasAssociationsMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare addTraveler: HasManyAddAssociationMixin<
-    TravelAuthorizationPreApprovalTraveler,
-    TravelAuthorizationPreApprovalTraveler["travelerID"]
+  declare addProfile: HasManyAddAssociationMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare addTravelers: HasManyAddAssociationsMixin<
-    TravelAuthorizationPreApprovalTraveler,
-    TravelAuthorizationPreApprovalTraveler["travelerID"]
+  declare addProfiles: HasManyAddAssociationsMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare removeTraveler: HasManyRemoveAssociationMixin<
-    TravelAuthorizationPreApprovalTraveler,
-    TravelAuthorizationPreApprovalTraveler["travelerID"]
+  declare removeProfile: HasManyRemoveAssociationMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare removeTravelers: HasManyRemoveAssociationsMixin<
-    TravelAuthorizationPreApprovalTraveler,
-    TravelAuthorizationPreApprovalTraveler["travelerID"]
+  declare removeProfiles: HasManyRemoveAssociationsMixin<
+    TravelAuthorizationPreApprovalProfile,
+    TravelAuthorizationPreApprovalProfile["id"]
   >
-  declare countTravelers: HasManyCountAssociationsMixin
-  declare createTraveler: HasManyCreateAssociationMixin<TravelAuthorizationPreApprovalTraveler>
+  declare countProfiles: HasManyCountAssociationsMixin
+  declare createProfile: HasManyCreateAssociationMixin<TravelAuthorizationPreApprovalProfile>
 
   declare submission?: NonAttribute<TravelAuthorizationPreApprovalSubmission>
   declare travelAuthorizations?: NonAttribute<TravelAuthorization[]>
-  declare travelers?: NonAttribute<TravelAuthorizationPreApprovalTraveler[]>
+  declare profiles?: NonAttribute<TravelAuthorizationPreApprovalProfile[]>
 
   declare static associations: {
     submission: Association<
@@ -146,7 +146,7 @@ export class TravelAuthorizationPreApproval extends Model<
       TravelAuthorizationPreApprovalSubmission
     >
     travelAuthorizations: Association<TravelAuthorizationPreApproval, TravelAuthorization>
-    travelers: Association<TravelAuthorizationPreApproval, TravelAuthorizationPreApprovalTraveler>
+    profiles: Association<TravelAuthorizationPreApproval, TravelAuthorizationPreApprovalProfile>
   }
 
   static establishAssociations() {
@@ -158,8 +158,8 @@ export class TravelAuthorizationPreApproval extends Model<
       as: "travelAuthorizations",
       foreignKey: "preApprovalId",
     })
-    this.hasMany(TravelAuthorizationPreApprovalTraveler, {
-      as: "travelers",
+    this.hasMany(TravelAuthorizationPreApprovalProfile, {
+      as: "profiles",
       foreignKey: "preApprovalId",
     })
   }

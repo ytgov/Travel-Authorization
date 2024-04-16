@@ -1,7 +1,7 @@
 export { ExpensesController } from "./expenses-controller"
 export { GeneralLedgerCodingsController } from "./general-ledger-codings-controller"
 export { LocationsController } from "./locations-controller"
-export { TravelAuthorizationPreApprovalTravelersController } from "./travel-authorization-pre-approval-travelers-controller"
+export { TravelAuthorizationPreApprovalProfilesController } from "./travel-authorization-pre-approval-profiles-controller"
 export { TravelAuthorizationPreApprovalsController } from "./travel-authorization-pre-approvals-controller"
 export { StopsController } from "./stops-controller"
 export { TravelAuthorizationActionLogsController } from "./travel-authorization-action-logs-controller"

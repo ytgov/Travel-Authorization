@@ -16,29 +16,31 @@ import sequelize from "@/db/db-client"
 
 import TravelAuthorizationPreApproval from "@/models/travel-authorization-pre-approval"
 
-export class TravelAuthorizationPreApprovalTraveler extends Model<
-  InferAttributes<TravelAuthorizationPreApprovalTraveler>,
-  InferCreationAttributes<TravelAuthorizationPreApprovalTraveler>
+export class TravelAuthorizationPreApprovalProfile extends Model<
+  InferAttributes<TravelAuthorizationPreApprovalProfile>,
+  InferCreationAttributes<TravelAuthorizationPreApprovalProfile>
 > {
-  declare travelerID: CreationOptional<number> // Primary key
+  declare id: CreationOptional<number>
   declare preApprovalId: ForeignKey<TravelAuthorizationPreApproval["id"]>
-  declare fullName: string
+  declare profileName: string
   declare department: string
   declare branch: CreationOptional<string | null>
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // Associations
-
   declare getPreApproval: BelongsToGetAssociationMixin<TravelAuthorizationPreApproval>
   declare setPreApproval: BelongsToSetAssociationMixin<
-  TravelAuthorizationPreApproval,
-  TravelAuthorizationPreApproval["id"]
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["id"]
   >
   declare createPreApproval: BelongsToCreateAssociationMixin<TravelAuthorizationPreApproval>
 
   preApproval?: NonAttribute<TravelAuthorizationPreApproval>
 
   declare static associations: {
-    preApproval: Association<TravelAuthorizationPreApprovalTraveler, TravelAuthorizationPreApproval>
+    preApproval: Association<TravelAuthorizationPreApprovalProfile, TravelAuthorizationPreApproval>
   }
 
   static establishAssociations() {
@@ -49,16 +51,15 @@ export class TravelAuthorizationPreApprovalTraveler extends Model<
   }
 }
 
-TravelAuthorizationPreApprovalTraveler.init(
+TravelAuthorizationPreApprovalProfile.init(
   {
-    travelerID: {
+    id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
     preApprovalId: {
-      field: "pre_approval_id", // Remove once table is underscored
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -66,7 +67,7 @@ TravelAuthorizationPreApprovalTraveler.init(
         key: "id",
       },
     },
-    fullName: {
+    profileName: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
@@ -78,15 +79,25 @@ TravelAuthorizationPreApprovalTraveler.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    modelName: "TravelAuthorizationPreApprovalTraveler",
-    tableName: "preapprovedTravelers",
-    underscored: false,
-    timestamps: false,
-    paranoid: false,
+    paranoid: true, // TODO: make this the default
   }
 )
 
-export default TravelAuthorizationPreApprovalTraveler
+export default TravelAuthorizationPreApprovalProfile
