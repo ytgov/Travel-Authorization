@@ -113,7 +113,7 @@
 <script>
 import { mapState, mapActions, mapGetters } from "vuex"
 
-import LocationsAutocomplete from "@/components/LocationsAutocomplete"
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete"
 
 export default {
   name: "PurposeFormCard",
