@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <NewTravelDeskRequest
+    <TravelDeskTravelRequestCreateFormCard
       type="Submit"
       :authorized-travel="{
         id: travelAuthorizationId,
@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import NewTravelDeskRequest from "@/modules/travelDesk/views/Requests/NewTravelDeskRequest.vue"
+import TravelDeskTravelRequestCreateFormCard from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestCreateFormCard.vue"
 
 defineProps({
   travelAuthorizationId: {
