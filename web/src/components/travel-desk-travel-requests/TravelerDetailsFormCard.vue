@@ -177,94 +177,77 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, reactive, ref, watch } from "vue"
 import { cloneDeep } from "lodash"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
-export default {
-  name: "TravelerDetails",
-  components: {
-    TitleCard,
-    LocationsAutocomplete,
+const props = defineProps({
+  value: {
+    type: Object,
+    required: true,
   },
-  model: {
-    prop: "modelValue",
-    event: "update:modelValue",
+  travelerState: {
+    type: Object,
+    required: true,
   },
-  props: {
-    modelValue: {
-      type: Object,
-      required: true,
-    },
-    travelerState: {
-      type: Object,
-      required: true,
-    },
+})
+
+const emit = defineEmits(["input"])
+
+const travelerDetails = reactive({
+  legalFirstName: "",
+  legalMiddleName: "",
+  legalLastName: "",
+  birthDate: "",
+  strAddress: "",
+  city: "",
+  province: "",
+  postalCode: "",
+  passportNum: "",
+  passportCountry: "",
+  busPhone: "",
+  busEmail: "",
+  travelContact: "",
+  travelPhone: "",
+  travelEmail: "",
+  // internationalTravel = this.modelValue.passportCountry || this.modelValue.passportNum
+  internationalTravel: false,
+  ...props.value,
+})
+const travelAuthorizationId = ref("")
+const dobMaxDate = ref("")
+const rules = {
+  phone: (value) => {
+    const pattern = /^[0-9]{3}[-. ][0-9]{3}[-. ][0-9]{4}((\s\x[0-9]{4})|)?$/
+    return pattern.test(value) || "Invalid Phone (888-888-8888)"
   },
-  data() {
-    return {
-      travelerDetails: {
-        legalFirstName: "",
-        legalMiddleName: "",
-        legalLastName: "",
-        birthDate: "",
-        strAddress: "",
-        city: "",
-        province: "",
-        postalCode: "",
-        passportNum: "",
-        passportCountry: "",
-        busPhone: "",
-        busEmail: "",
-        travelContact: "",
-        travelPhone: "",
-        travelEmail: "",
-        // internationalTravel = this.modelValue.passportCountry || this.modelValue.passportNum
-        internationalTravel: false,
-        ...cloneDeep(this.modelValue),
-      },
-      admin: false,
-      travelAuthorizationId: "",
-      dobMaxDate: "",
-      rules: {
-        phone: (value) => {
-          const pattern = /^[0-9]{3}[-. ][0-9]{3}[-. ][0-9]{4}((\s\x[0-9]{4})|)?$/
-          return pattern.test(value) || "Invalid Phone (888-888-8888)"
-        },
-        email: (value) => {
-          const pattern =
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          return pattern.test(value) || "Invalid e-mail."
-        },
-      },
-    }
+  email: (value) => {
+    const pattern =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return pattern.test(value) || "Invalid e-mail."
   },
-  watch: {
-    travelerDetails: {
-      handler(newValue) {
-        this.$emit(
-          "update:modelValue",
-          cloneDeep({
-            ...this.modelValue,
-            ...newValue,
-          })
-        )
-      },
-      deep: true,
-    },
-  },
-  mounted() {
-    this.travelAuthorizationId = this.travelerDetails.travelAuthorizationId
-      .toString()
-      .padStart(5, "0")
-    const currentDate = new Date()
-    currentDate.setDate(currentDate.getDate() - 18 * 365)
-    this.dobMaxDate = currentDate.toISOString().slice(0, 10)
-  },
-  methods: {},
 }
+
+watch(
+  travelerDetails,
+  (newValue) => {
+    emit("input", cloneDeep({ ...props.value, ...newValue }))
+  },
+  {
+    deep: true,
+  }
+)
+
+onMounted(() => {
+  travelAuthorizationId.value = travelerDetails.travelAuthorizationId.toString().padStart(5, "0")
+
+  const currentDate = new Date()
+  currentDate.setDate(currentDate.getDate() - 18 * 365)
+  dobMaxDate.value = currentDate.toISOString().slice(0, 10)
+})
 </script>
 
 <style scoped lang="css" src="@/styles/_travel_desk.css"></style>
