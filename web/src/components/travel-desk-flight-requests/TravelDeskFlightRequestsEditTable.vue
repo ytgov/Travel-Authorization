@@ -5,7 +5,7 @@
     style="border: 0px solid red !important"
   >
     <v-row class="mt-n1 mx-0">
-      <NewFlightRequest
+      <TravelDeskFlightRequestCreateDialog
         v-if="!readonly"
         :disabled="loadingData"
         :min-date="minDate"
@@ -60,7 +60,7 @@
           <template #[`item.edit`]="{ item }">
             <v-row class="mx-0 py-0 mt-n6 mb-n6">
               <v-col cols="6">
-                <NewFlightRequest
+                <TravelDeskFlightRequestCreateDialog
                   v-if="!readonly"
                   type="Edit"
                   :min-date="minDate"
@@ -96,13 +96,14 @@
 import { TRAVEL_DESK_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
 
-import NewFlightRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewFlightRequest.vue"
+import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
+
 import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
 
 export default {
   name: "TravelDeskFlightRequestsEditTable",
   components: {
-    NewFlightRequest,
+    TravelDeskFlightRequestCreateDialog,
     FlightOptionCard,
   },
   props: {
