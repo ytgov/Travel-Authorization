@@ -193,10 +193,6 @@ export default {
     await this.initForm()
   },
   methods: {
-    updateTable() {
-      this.$emit("updateTable")
-    },
-
     async initForm() {
       this.initStates()
       this.savingData = false
@@ -276,7 +272,6 @@ export default {
         securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
           .then(() => {
             this.savingData = false
-            this.$emit("updateTable")
           })
           .catch((e) => {
             this.savingData = false
