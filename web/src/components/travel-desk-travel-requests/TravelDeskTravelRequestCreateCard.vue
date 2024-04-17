@@ -25,7 +25,7 @@
             v-model="travelerDetails"
           />
 
-          <title-card
+          <TitleCard
             class="mt-10"
             title-width="12.5rem"
             large-title
@@ -34,7 +34,7 @@
               <div>Travel Information</div>
             </template>
             <template #body>
-              <title-card
+              <TitleCard
                 class="mt-5 mx-5"
                 title-width="8.5rem"
               >
@@ -70,7 +70,7 @@
                     </v-col>
                   </v-row>
                 </template>
-              </title-card>
+              </TitleCard>
 
               <RentalCarRequestTable
                 :authorized-travel="travelAuthorization"
@@ -90,7 +90,7 @@
                 :other-transportations="travelerDetails.otherTransportation"
               />
             </template>
-          </title-card>
+          </TitleCard>
         </v-col>
       </v-row>
     </v-card-text>
