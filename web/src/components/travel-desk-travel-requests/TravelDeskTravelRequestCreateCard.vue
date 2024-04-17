@@ -20,10 +20,9 @@
     <v-card-text v-if="!loadingData">
       <v-row class="mb-3">
         <v-col cols="12">
-          <TravelerDetails
-            :traveler-details="travelerDetails"
+          <TravelerDetailsFormCard
+            v-model="travelerDetails"
             :traveler-state="state"
-            :readonly="false"
           />
 
           <title-card
@@ -124,8 +123,9 @@ import { secureGet, securePost } from "@/store/jwt"
 
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
+import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
+
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
 import FlightRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightRequestTable.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
@@ -135,7 +135,7 @@ export default {
   name: "TravelDeskTravelRequestCreateFormCard",
   components: {
     TitleCard,
-    TravelerDetails,
+    TravelerDetailsFormCard,
     FlightRequestTable,
     RentalCarRequestTable,
     TransportationRequestTable,
