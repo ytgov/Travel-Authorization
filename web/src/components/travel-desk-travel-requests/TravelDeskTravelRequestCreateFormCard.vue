@@ -19,7 +19,7 @@
     </div>
     <v-card-text v-if="!loadingData">
       <v-row class="mb-3">
-        <v-col :cols="type != 'Submit' ? 8 : 12">
+        <v-col cols="12">
           <TravelerDetails
             :traveler-details="travelerDetails"
             :traveler-state="state"
@@ -47,7 +47,7 @@
                     <v-col cols="9">
                       <FlightRequestTable
                         :travel-desk-travel-request-id="travelerDetails.id"
-                        :authorized-travel="authorizedTravel"
+                        :authorized-travel="travelAuthorization"
                         :readonly="false"
                         :travel-desk-user="false"
                         :show-flight-options="travelerDetails.status != 'draft'"
@@ -74,45 +74,24 @@
               </title-card>
 
               <RentalCarRequestTable
-                :authorized-travel="authorizedTravel"
+                :authorized-travel="travelAuthorization"
                 :readonly="false"
                 :flight-requests="travelerDetails.flightRequests"
                 :rental-cars="travelerDetails.rentalCars"
               />
               <HotelRequestTable
-                :authorized-travel="authorizedTravel"
+                :authorized-travel="travelAuthorization"
                 :readonly="false"
                 :flight-requests="travelerDetails.flightRequests"
                 :hotels="travelerDetails.hotels"
               />
               <TransportationRequestTable
-                :authorized-travel="authorizedTravel"
+                :authorized-travel="travelAuthorization"
                 :readonly="false"
                 :other-transportations="travelerDetails.otherTransportation"
               />
             </template>
           </title-card>
-        </v-col>
-        <v-col
-          v-if="type != 'Submit'"
-          cols="4"
-        >
-          <v-row class="mt-3 mb-0 mx-0">
-            <v-col cols="6" />
-            <v-col cols="6">
-              <v-text-field
-                v-model="travelerDetails.travelDeskOfficer"
-                readonly
-                class="mr-2"
-                label="Travel Desk Agent Assigned"
-                outlined
-              />
-            </v-col>
-          </v-row>
-          <QuestionsTable
-            :readonly="false"
-            :questions="travelerDetails.questions"
-          />
         </v-col>
       </v-row>
     </v-card-text>
@@ -121,13 +100,10 @@
       <v-btn
         color="grey darken-5"
         class="px-5"
-        @click="addNewTravelDialog = false"
       >
-        <div v-if="!type">Close</div>
-        <div v-else>Cancel</div>
+        <div>Cancel</div>
       </v-btn>
       <v-btn
-        v-if="type"
         class="ml-auto mr-2 px-5"
         color="green darken-1"
         :loading="savingData"
@@ -135,7 +111,6 @@
         >Save Draft
       </v-btn>
       <v-btn
-        v-if="type"
         class="mr-5 px-5"
         color="brown darken-1"
         :loading="savingData"
@@ -147,8 +122,12 @@
 </template>
 
 <script>
+import { toRefs } from "vue"
+
 import { LOOKUP_URL, TRAVEL_DESK_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
+
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
@@ -156,7 +135,6 @@ import FlightRequestTable from "@/modules/travelDesk/views/Requests/RequestDialo
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
 import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
-import QuestionsTable from "@/modules/travelDesk/views/Desk/Components/QuestionsTable.vue"
 
 export default {
   name: "TravelDeskTravelRequestCreateFormCard",
@@ -167,25 +145,27 @@ export default {
     RentalCarRequestTable,
     TransportationRequestTable,
     HotelRequestTable,
-    QuestionsTable,
   },
   props: {
-    type: {
-      type: String,
-      required: true,
-    },
-    authorizedTravel: {
-      type: Object,
+    travelAuthorizationId: {
+      type: Number,
       required: true,
     },
   },
-  data() {
+  setup(props) {
+    const { travelAuthorizationId } = toRefs(props)
+
+    const { travelAuthorization, fetch: fetchTravelAuthorization } =
+      useTravelAuthorization(travelAuthorizationId)
+
     return {
-      addNewTravelDialog: false,
+      travelAuthorization,
       readonly: false,
       internationalTravel: false,
 
-      travelerDetails: {},
+      travelerDetails: {
+        travelAuthorizationId: props.travelAuthorizationId,
+      },
       savingData: false,
 
       state: {
@@ -211,9 +191,12 @@ export default {
       },
 
       loadingData: false,
+      fetchTravelAuthorization,
     }
   },
-  mounted() {},
+  async mounted() {
+    await this.initForm()
+  },
   methods: {
     updateTable() {
       this.$emit("updateTable")
@@ -223,28 +206,14 @@ export default {
       this.initStates()
       this.savingData = false
       this.loadingData = true
-      const travelRequest = await this.getTravelRequestInfo()
-      // console.log(travelRequest)
-      if (travelRequest) {
-        this.extractTravelRequestInfo(travelRequest)
-      } else await this.getEmployeeInfo()
+
+      await this.fetchTravelAuthorization()
+      await this.getEmployeeInfo(this.travelAuthorization.email)
     },
 
-    async getTravelRequestInfo() {
-      return secureGet(`${TRAVEL_DESK_URL}/travel-request/` + this.authorizedTravel.id)
+    async getEmployeeInfo(email) {
+      return secureGet(`${LOOKUP_URL}/employee-info?email=` + email)
         .then((resp) => {
-          // console.log(resp.data)
-          return resp.data
-        })
-        .catch((e) => {
-          console.log(e)
-        })
-    },
-
-    async getEmployeeInfo() {
-      return secureGet(`${LOOKUP_URL}/employee-info?email=` + this.authorizedTravel.email)
-        .then((resp) => {
-          console.log(resp.data)
           const employee = resp.data
           const travelerDetails = {
             legalFirstName: employee.firstName,
@@ -270,7 +239,7 @@ export default {
             office: employee.office,
             department: employee.department,
             fullName: employee.fullName,
-            travelAuthorizationId: this.authorizedTravel.id,
+            travelAuthorizationId: this.travelAuthorizationId,
             additionalInformation: "",
             rentalCars: [],
             flightRequests: [],
@@ -283,26 +252,12 @@ export default {
           this.loadingData = false
         })
         .catch((e) => {
-          console.log(e)
+          console.error(e)
           this.loadingData = false
         })
     },
 
-    extractTravelRequestInfo(travelerDetails) {
-      travelerDetails.internationalTravel =
-        travelerDetails.passportCountry || travelerDetails.passportNum
-      travelerDetails.office = ""
-      travelerDetails.department = this.$store.state.auth.department
-      travelerDetails.fullName =
-        travelerDetails.legalFirstName + "." + travelerDetails.legalLastName
-      this.travelerDetails = travelerDetails
-      this.loadingData = false
-    },
-
     saveNewTravelRequest(saveType) {
-      console.log(saveType)
-      // console.log(this.travelerDetails)
-
       if (saveType == "save" || this.checkFields()) {
         this.savingData = true
         const body = this.travelerDetails
@@ -316,17 +271,15 @@ export default {
         } else if (saveType == "submit" && body.status == "options_provided") {
           body.status = "options_ranked"
         }
-        // console.log(body);
-        const id = this.authorizedTravel.id
+        const id = this.travelAuthorizationId
         securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
           .then(() => {
             this.savingData = false
-            this.addNewTravelDialog = false
             this.$emit("updateTable")
           })
           .catch((e) => {
             this.savingData = false
-            console.log(e)
+            console.error(e)
           })
       }
     },

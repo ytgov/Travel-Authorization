@@ -1,11 +1,6 @@
 <template>
   <v-container>
-    <TravelDeskTravelRequestCreateFormCard
-      type="Submit"
-      :authorized-travel="{
-        id: travelAuthorizationId,
-      }"
-    />
+    <TravelDeskTravelRequestCreateFormCard :travel-authorization-id="travelAuthorizationId" />
   </v-container>
 </template>
 
