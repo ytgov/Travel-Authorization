@@ -117,6 +117,7 @@
 
 <script>
 import { toRefs } from "vue"
+import { isNil, isEmpty } from "lodash"
 
 import { LOOKUP_URL, TRAVEL_DESK_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
@@ -202,10 +203,16 @@ export default {
       this.loadingData = true
 
       await this.fetchTravelAuthorization()
-      await this.getEmployeeInfo(this.travelAuthorization.email)
+      const email = this.travelAuthorization.email || this.travelAuthorization.user?.email
+      await this.getEmployeeInfo(email)
     },
 
     async getEmployeeInfo(email) {
+      if (isNil(email) || isEmpty(email)) {
+        this.loadingData = false
+        throw new Error("Email is empty")
+      }
+
       return secureGet(`${LOOKUP_URL}/employee-info?email=` + email)
         .then((resp) => {
           const employee = resp.data
@@ -245,8 +252,8 @@ export default {
           this.travelerDetails = travelerDetails
           this.loadingData = false
         })
-        .catch((e) => {
-          console.error(e)
+        .catch((error) => {
+          console.error(`Failed to get employee info: ${error}`)
           this.loadingData = false
         })
     },
