@@ -25,7 +25,7 @@ export default {
   name: "LocationsAutocomplete",
   props: {
     value: {
-      type: Number,
+      type: [Number, String],
       default: null,
     },
     inTerritory: {
