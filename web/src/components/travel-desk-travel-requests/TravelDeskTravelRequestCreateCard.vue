@@ -114,9 +114,9 @@
   </v-card>
 </template>
 
-<script>
-import { toRefs } from "vue"
-import { isNil, isEmpty } from "lodash"
+<script setup>
+import { onMounted, reactive, ref, toRefs } from "vue"
+import { cloneDeep, isNil, isEmpty } from "lodash"
 
 import { LOOKUP_URL, TRAVEL_DESK_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
@@ -131,226 +131,207 @@ import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDi
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
 import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
 
-export default {
-  name: "TravelDeskTravelRequestCreateFormCard",
-  components: {
-    TitleCard,
-    TravelerDetailsFormCard,
-    FlightRequestTable,
-    RentalCarRequestTable,
-    TransportationRequestTable,
-    HotelRequestTable,
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  setup(props) {
-    const { travelAuthorizationId } = toRefs(props)
+})
 
-    const { travelAuthorization, fetch: fetchTravelAuthorization } =
-      useTravelAuthorization(travelAuthorizationId)
+const { travelAuthorizationId } = toRefs(props)
 
-    return {
-      travelAuthorization,
-      readonly: false,
+const { travelAuthorization, fetch: fetchTravelAuthorization } =
+  useTravelAuthorization(travelAuthorizationId)
+
+const readonly = ref(false)
+const internationalTravel = ref(false)
+
+const travelerDetails = ref({
+  travelAuthorizationId: props.travelAuthorizationId,
+})
+const savingData = ref(false)
+
+const travelerDetailsFormCard = ref(null)
+const state = reactive({
+  firstNameErr: false,
+  middleNameErr: false,
+  lastNameErr: false,
+  birthDateErr: false,
+  travelAuthErr: false,
+  addressErr: false,
+  cityErr: false,
+  provinceErr: false,
+  postalCodeErr: false,
+  passportNumberErr: false,
+  passportCountryErr: false,
+  businessPhoneErr: false,
+  businessEmailErr: false,
+  travelPhoneErr: false,
+  travelEmailErr: false,
+  flightRequestsErr: false,
+  rentalCarsErr: false,
+  hotelsErr: false,
+  otherTransportationErr: false,
+})
+
+const loadingData = ref(false)
+
+onMounted(async () => {
+  await initForm()
+})
+
+async function initForm() {
+  initStates()
+  savingData.value = false
+  loadingData.value = true
+
+  await fetchTravelAuthorization()
+  const email = travelAuthorization.value.email || travelAuthorization.value.user?.email
+  await getEmployeeInfo(email)
+}
+
+function initStates() {
+  for (const key of Object.keys(state)) {
+    state[key] = false
+  }
+}
+
+async function getEmployeeInfo(email) {
+  if (isNil(email) || isEmpty(email)) {
+    loadingData.value = false
+    throw new Error("Email is empty")
+  }
+
+  try {
+    const { data: employee } = await secureGet(`${LOOKUP_URL}/employee-info?email=` + email)
+    travelerDetails.value = {
+      travelAuthorizationId: props.travelAuthorizationId,
+      legalFirstName: employee.firstName,
+      legalMiddleName: "",
+      legalLastName: employee.lastName,
+      birthDate: "",
+      strAddress: employee.address,
+      city: employee.community,
+      province: employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : "",
+      postalCode: employee.postalCode,
+      passportCountry: "",
+      passportNum: "",
+      travelPurpose: "",
+      travelLocation: "",
+      travelNotes: "",
+      busPhone: employee.businessPhone,
+      busEmail: employee.email,
+      travelContact: false,
+      travelPhone: employee.mobile,
+      travelEmail: "",
+      travelDeskOfficer: "",
       internationalTravel: false,
-
-      travelerDetails: {
-        travelAuthorizationId: props.travelAuthorizationId,
-      },
-      savingData: false,
-
-      state: {
-        firstNameErr: false,
-        middleNameErr: false,
-        lastNameErr: false,
-        birthDateErr: false,
-        travelAuthErr: false,
-        addressErr: false,
-        cityErr: false,
-        provinceErr: false,
-        postalCodeErr: false,
-        passportNumberErr: false,
-        passportCountryErr: false,
-        businessPhoneErr: false,
-        businessEmailErr: false,
-        travelPhoneErr: false,
-        travelEmailErr: false,
-        flightRequestsErr: false,
-        rentalCarsErr: false,
-        hotelsErr: false,
-        otherTransportationErr: false,
-      },
-
-      loadingData: false,
-      fetchTravelAuthorization,
+      office: employee.office,
+      department: employee.department,
+      fullName: employee.fullName,
+      additionalInformation: "",
+      rentalCars: [],
+      flightRequests: [],
+      hotels: [],
+      otherTransportation: [],
+      questions: [],
+      status: "draft",
     }
-  },
-  async mounted() {
-    await this.initForm()
-  },
-  methods: {
-    async initForm() {
-      this.initStates()
-      this.savingData = false
-      this.loadingData = true
+  } catch (error) {
+    console.error(`Failed to get employee info: ${error}`)
+  } finally {
+    loadingData.value = false
+  }
+}
 
-      await this.fetchTravelAuthorization()
-      const email = this.travelAuthorization.email || this.travelAuthorization.user?.email
-      await this.getEmployeeInfo(email)
-    },
+async function saveNewTravelRequest(saveType) {
+  if (validate() !== true) {
+    // TODO: notify user of validation error
+    throw new Error("Form validation failed")
+  }
 
-    async getEmployeeInfo(email) {
-      if (isNil(email) || isEmpty(email)) {
-        this.loadingData = false
-        throw new Error("Email is empty")
+  if (saveType == "save" || checkFields()) {
+    savingData.value = true
+    const body = cloneDeep(travelerDetails.value)
+    delete body.internationalTravel
+    delete body.differentTravelContact
+    delete body.office
+    delete body.department
+    delete body.fullName
+    if (saveType == "submit" && body.status == "draft") {
+      body.status = "submitted"
+    } else if (saveType == "submit" && body.status == "options_provided") {
+      body.status = "options_ranked"
+    }
+    const id = travelAuthorizationId.value
+    try {
+      await securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      savingData.value = false
+    }
+  }
+}
+
+function checkFields() {
+  state.firstNameErr = travelerDetails.value.legalFirstName ? false : true
+  state.middleNameErr = false
+  state.lastNameErr = travelerDetails.value.legalLastName ? false : true
+  state.birthDateErr = travelerDetails.value.birthDate ? false : true
+  state.travelAuthErr = false //this.travelerDetails.travelAuth? false:true; TODO: add this in backend
+  state.addressErr = travelerDetails.value.strAddress ? false : true
+  state.cityErr = travelerDetails.value.city ? false : true
+  state.provinceErr = travelerDetails.value.province ? false : true
+  state.postalCodeErr = travelerDetails.value.postalCode ? false : true
+  state.passportNumberErr =
+    internationalTravel.value && !travelerDetails.value.passportNum ? true : false
+  state.passportCountryErr =
+    internationalTravel.value && !travelerDetails.value.passportCountry ? true : false
+  state.businessPhoneErr = travelerDetails.value.busPhone ? false : true
+  state.businessEmailErr = travelerDetails.value.busEmail ? false : true
+  state.travelPhoneErr =
+    travelerDetails.value.travelContact && !travelerDetails.value.travelPhone ? true : false //show hint
+  state.travelEmailErr =
+    travelerDetails.value.travelContact && !travelerDetails.value.travelEmail ? true : false //show hint
+  state.flightRequestsErr = false
+  state.rentalCarsErr = false
+  state.hotelsErr = false
+  state.otherTransportationErr = false
+
+  if (travelerDetails.value.status == "options_provided") {
+    let error = false
+    for (const question of travelerDetails.value.questions) {
+      if (question.response) question.state.responseErr = false
+      else {
+        question.state.responseErr = true
+        error = true
       }
+    }
 
-      return secureGet(`${LOOKUP_URL}/employee-info?email=` + email)
-        .then((resp) => {
-          const employee = resp.data
-          const travelerDetails = {
-            travelAuthorizationId: this.travelAuthorizationId,
-            legalFirstName: employee.firstName,
-            legalMiddleName: "",
-            legalLastName: employee.lastName,
-            birthDate: "",
-            strAddress: employee.address,
-            city: employee.community,
-            province: employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : "",
-            postalCode: employee.postalCode,
-            passportCountry: "",
-            passportNum: "",
-            travelPurpose: "",
-            travelLocation: "",
-            travelNotes: "",
-            busPhone: employee.businessPhone,
-            busEmail: employee.email,
-            travelContact: false,
-            travelPhone: employee.mobile,
-            travelEmail: "",
-            travelDeskOfficer: "",
-            internationalTravel: false,
-            office: employee.office,
-            department: employee.department,
-            fullName: employee.fullName,
-            additionalInformation: "",
-            rentalCars: [],
-            flightRequests: [],
-            hotels: [],
-            otherTransportation: [],
-            questions: [],
-            status: "draft",
-          }
-          this.travelerDetails = travelerDetails
-          this.loadingData = false
-        })
-        .catch((error) => {
-          console.error(`Failed to get employee info: ${error}`)
-          this.loadingData = false
-        })
-    },
-
-    saveNewTravelRequest(saveType) {
-      if (this.validate() !== true) {
-        // TODO: notify user of validation error
-        throw new Error("Form validation failed")
-      }
-
-      if (saveType == "save" || this.checkFields()) {
-        this.savingData = true
-        const body = this.travelerDetails
-        delete body.internationalTravel
-        delete body.differentTravelContact
-        delete body.office
-        delete body.department
-        delete body.fullName
-        if (saveType == "submit" && body.status == "draft") {
-          body.status = "submitted"
-        } else if (saveType == "submit" && body.status == "options_provided") {
-          body.status = "options_ranked"
+    for (const flightRequest of travelerDetails.value.flightRequests) {
+      for (const flightOption of flightRequest.flightOptions) {
+        if (!flightOption.flightPreference) {
+          error = true
         }
-        const id = this.travelAuthorizationId
-        securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
-          .then(() => {
-            this.savingData = false
-          })
-          .catch((e) => {
-            this.savingData = false
-            console.error(e)
-          })
       }
-    },
+    }
 
-    initStates() {
-      for (const key of Object.keys(this.state)) {
-        this.state[key] = false
-      }
-    },
+    if (error) return false
+  }
 
-    checkFields() {
-      this.state.firstNameErr = this.travelerDetails.legalFirstName ? false : true
-      ;(this.state.middleNameErr = false),
-        (this.state.lastNameErr = this.travelerDetails.legalLastName ? false : true)
-      this.state.birthDateErr = this.travelerDetails.birthDate ? false : true
-      this.state.travelAuthErr = false //this.travelerDetails.travelAuth? false:true; TODO: add this in backend
-      this.state.addressErr = this.travelerDetails.strAddress ? false : true
-      this.state.cityErr = this.travelerDetails.city ? false : true
-      this.state.provinceErr = this.travelerDetails.province ? false : true
-      this.state.postalCodeErr = this.travelerDetails.postalCode ? false : true
-      this.state.passportNumberErr =
-        this.internationalTravel && !this.travelerDetails.passportNum ? true : false
-      this.state.passportCountryErr =
-        this.internationalTravel && !this.travelerDetails.passportCountry ? true : false
-      this.state.businessPhoneErr = this.travelerDetails.busPhone ? false : true
-      this.state.businessEmailErr = this.travelerDetails.busEmail ? false : true
-      this.state.travelPhoneErr =
-        this.travelerDetails.travelContact && !this.travelerDetails.travelPhone ? true : false //show hint
-      this.state.travelEmailErr =
-        this.travelerDetails.travelContact && !this.travelerDetails.travelEmail ? true : false //show hint
-      this.state.flightRequestsErr = false
-      this.state.rentalCarsErr = false
-      this.state.hotelsErr = false
-      this.state.otherTransportationErr = false
+  for (const key of Object.keys(state)) {
+    if (state[key]) return false
+  }
+  return true
+}
 
-      if (this.travelerDetails.status == "options_provided") {
-        let error = false
-        for (const question of this.travelerDetails.questions) {
-          if (question.response) question.state.responseErr = false
-          else {
-            question.state.responseErr = true
-            error = true
-          }
-        }
+function validate() {
+  if (isNil(travelerDetailsFormCard.value)) {
+    throw new Error("Travel details form could not be found")
+  }
 
-        for (const flightRequest of this.travelerDetails.flightRequests) {
-          for (const flightOption of flightRequest.flightOptions) {
-            if (!flightOption.flightPreference) {
-              error = true
-            }
-          }
-        }
-
-        if (error) return false
-      }
-
-      for (const key of Object.keys(this.state)) {
-        if (this.state[key]) return false
-      }
-      return true
-    },
-
-    validate() {
-      if (isNil(this.$refs.travelerDetailsFormCard)) {
-        throw new Error("Form could not be found")
-      }
-
-      return this.$refs.travelerDetailsFormCard.validate()
-    },
-  },
+  return travelerDetailsFormCard.value.validate()
 }
 </script>
 
