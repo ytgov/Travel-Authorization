@@ -49,6 +49,9 @@ export default {
         return {
           value: id,
           text: `${city} (${province})`,
+          // These legacy fields support using location selector for cities or provinces.
+          city,
+          province,
         }
       })
     },

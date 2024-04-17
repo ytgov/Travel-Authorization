@@ -70,14 +70,12 @@
             />
           </v-col>
           <v-col cols="2">
-            <v-autocomplete
-              :items="destinations"
-              item-text="city"
+            <LocationsAutocomplete
+              v-model="travelerDetails.city"
               item-value="city"
               :readonly="readonly"
               :error="travelerState.cityErr"
               label="City"
-              v-model="travelerDetails.city"
               outlined
             />
           </v-col>
@@ -196,11 +194,13 @@
 </template>
 
 <script>
-import TitleCard from "../../Common/TitleCard.vue"
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 export default {
   components: {
     TitleCard,
+    LocationsAutocomplete,
   },
   name: "TravelerDetails",
   props: {
@@ -224,11 +224,9 @@ export default {
           return pattern.test(value) || "Invalid e-mail."
         },
       },
-      destinations: [],
     }
   },
   mounted() {
-    this.destinations = this.$store.state.traveldesk.destinations
     this.travelAuthorizationId = this.travelerDetails.travelAuthorizationId
       .toString()
       .padStart(5, "0")
