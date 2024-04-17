@@ -20,7 +20,7 @@
     <v-card-text v-if="!loadingData">
       <v-row class="mb-3">
         <v-col :cols="type != 'Submit' ? 8 : 12">
-          <traveler-details
+          <TravelerDetails
             :traveler-details="travelerDetails"
             :traveler-state="state"
             :readonly="false"
@@ -45,7 +45,7 @@
                 <template #body>
                   <v-row class="mt-0 mx-0">
                     <v-col cols="9">
-                      <flight-request-table
+                      <FlightRequestTable
                         :travel-desk-travel-request-id="travelerDetails.id"
                         :authorized-travel="authorizedTravel"
                         :readonly="false"
@@ -73,19 +73,19 @@
                 </template>
               </title-card>
 
-              <rental-car-request-table
+              <RentalCarRequestTable
                 :authorized-travel="authorizedTravel"
                 :readonly="false"
                 :flight-requests="travelerDetails.flightRequests"
                 :rental-cars="travelerDetails.rentalCars"
               />
-              <hotel-request-table
+              <HotelRequestTable
                 :authorized-travel="authorizedTravel"
                 :readonly="false"
                 :flight-requests="travelerDetails.flightRequests"
                 :hotels="travelerDetails.hotels"
               />
-              <transportation-request-table
+              <TransportationRequestTable
                 :authorized-travel="authorizedTravel"
                 :readonly="false"
                 :other-transportations="travelerDetails.otherTransportation"
@@ -109,7 +109,7 @@
               />
             </v-col>
           </v-row>
-          <questions-table
+          <QuestionsTable
             :readonly="false"
             :questions="travelerDetails.questions"
           />
