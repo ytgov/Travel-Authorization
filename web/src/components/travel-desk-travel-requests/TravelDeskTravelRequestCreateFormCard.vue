@@ -98,12 +98,6 @@
 
     <v-card-actions>
       <v-btn
-        color="grey darken-5"
-        class="px-5"
-      >
-        <div>Cancel</div>
-      </v-btn>
-      <v-btn
         class="ml-auto mr-2 px-5"
         color="green darken-1"
         :loading="savingData"
