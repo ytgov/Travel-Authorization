@@ -5,15 +5,15 @@
     style="border: 0px solid red !important"
   >
     <v-row class="mt-n1 mx-0">
-      <new-flight-request
+      <NewFlightRequest
         v-if="!readonly"
         :disabled="loadingData"
-        :minDate="minDate"
-        :maxDate="maxDate"
+        :min-date="minDate"
+        :max-date="maxDate"
         class="ml-auto mr-3"
         type="Add New"
+        :flight-request="flightRequest"
         @updateTable="updateTable"
-        :flightRequest="flightRequest"
       />
     </v-row>
     <v-row
@@ -21,8 +21,8 @@
       class="mb-3 mx-0"
     >
       <v-col
-        cols="12"
         v-if="flightRequests?.length > 0"
+        cols="12"
       >
         <v-data-table
           :headers="flightHeaders"
@@ -32,7 +32,7 @@
           hide-default-footer
           class="elevation-1"
         >
-          <template v-slot:expanded-item="{ item }">
+          <template #expanded-item="{ item }">
             <td
               v-if="showFlightOptions"
               :colspan="6"
@@ -43,40 +43,40 @@
                 :key="'flight-' + flightOption.flightOptionID + '-' + inx"
               >
                 <v-col>
-                  <flight-option-card
-                    :flightOption="flightOption"
-                    :optLen="item.flightOptions.length"
-                    :travelDeskUser="travelDeskUser"
+                  <FlightOptionCard
+                    :flight-option="flightOption"
+                    :opt-len="item.flightOptions.length"
+                    :travel-desk-user="travelDeskUser"
                   />
                 </v-col>
               </v-row>
             </td>
           </template>
 
-          <template v-slot:[`item.date`]="{ item }">
+          <template #[`item.date`]="{ item }">
             {{ item.date | beautifyDateTime }}
           </template>
 
-          <template v-slot:[`item.edit`]="{ item }">
+          <template #[`item.edit`]="{ item }">
             <v-row class="mx-0 py-0 mt-n6 mb-n6">
               <v-col cols="6">
-                <new-flight-request
+                <NewFlightRequest
                   v-if="!readonly"
                   type="Edit"
-                  :minDate="minDate"
-                  :maxDate="maxDate"
+                  :min-date="minDate"
+                  :max-date="maxDate"
+                  :flight-request="item"
                   @updateTable="updateTable"
-                  :flightRequest="item"
                 />
               </v-col>
               <v-col cols="6">
                 <v-btn
                   v-if="!readonly"
-                  @click="removeFlight(item)"
                   style="min-width: 0"
                   color="transparent"
                   class="px-1 pt-2"
                   small
+                  @click="removeFlight(item)"
                   ><v-icon
                     class=""
                     color="red"
@@ -93,24 +93,43 @@
 </template>
 
 <script>
-import NewFlightRequest from "./NewFlightRequest.vue"
-import FlightOptionCard from "./FlightComponents/FlightOptionCard.vue"
-import { TRAVEL_DESK_URL } from "../../../../../urls"
-import { secureGet, securePost } from "../../../../../store/jwt"
+import { TRAVEL_DESK_URL } from "@/urls"
+import { secureGet, securePost } from "@/store/jwt"
+
+import NewFlightRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewFlightRequest.vue"
+import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
 
 export default {
+  name: "TravelDeskFlightRequestsEditTable",
   components: {
     NewFlightRequest,
     FlightOptionCard,
   },
-  name: "FlightRequestTable",
   props: {
-    readonly: Boolean,
-    flightRequests: {},
-    travelDeskUser: { type: Boolean, default: false },
-    showFlightOptions: { type: Boolean, default: false },
-    travelDeskTravelRequestId: {},
-    authorizedTravel: { required: false },
+    travelDeskTravelRequestId: {
+      type: Number,
+      default: () => null,
+    },
+    flightRequests: {
+      type: Array,
+      default: () => [],
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    travelDeskUser: {
+      type: Boolean,
+      default: false,
+    },
+    showFlightOptions: {
+      type: Boolean,
+      default: false,
+    },
+    authorizedTravel: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   data() {
     return {
