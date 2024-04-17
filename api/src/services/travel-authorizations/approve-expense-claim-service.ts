@@ -1,9 +1,10 @@
 import db from "@/db/db-client"
 
-import BaseService from "@/services/base-service"
 import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
-export class ApproveService extends BaseService {
+import BaseService from "@/services/base-service"
+
+export class ApproveExpenseClaimService extends BaseService {
   private travelAuthorization: TravelAuthorization
   private approver: User
 
@@ -13,21 +14,20 @@ export class ApproveService extends BaseService {
     this.approver = approver
   }
 
-  // TODO: Create travel desk travel request if a user is traveling by air.
   async perform(): Promise<TravelAuthorization> {
-    if (this.travelAuthorization.status !== TravelAuthorization.Statuses.SUBMITTED) {
-      throw new Error("Travel authorization must be in submitted state to approve.")
+    if (this.travelAuthorization.status !== TravelAuthorization.Statuses.EXPENSE_CLAIM_SUBMITTED) {
+      throw new Error("Travel authorization must be in expense claim submitted state to approve.")
     }
 
     await db.transaction(async () => {
       await this.travelAuthorization.update({
-        status: TravelAuthorization.Statuses.APPROVED,
+        status: TravelAuthorization.Statuses.EXPENSE_CLAIM_APPROVED,
       })
       await TravelAuthorizationActionLog.create({
         travelAuthorizationId: this.travelAuthorization.id,
         actorId: this.approver.id,
         assigneeId: this.travelAuthorization.userId,
-        action: TravelAuthorizationActionLog.Actions.APPROVED,
+        action: TravelAuthorizationActionLog.Actions.EXPENSE_CLAIM_APPROVED,
       })
     })
 
@@ -35,4 +35,4 @@ export class ApproveService extends BaseService {
   }
 }
 
-export default ApproveService
+export default ApproveExpenseClaimService

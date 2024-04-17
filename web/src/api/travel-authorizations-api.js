@@ -46,10 +46,15 @@ export const travelAuthorizationsApi = {
       .post(`/api/travel-authorizations/${travelAuthorizationId}/submit`, attributes)
       .then(({ data }) => data)
   },
-  approve(travelAuthorizationId) {
-    return http
-      .post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)
-      .then(({ data }) => data)
+  async approve(travelAuthorizationId) {
+    const { data } = await http.post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)
+    return data
+  },
+  async approveExpenseClaim(travelAuthorizationId) {
+    const { data } = await http.post(
+      `/api/travel-authorizations/${travelAuthorizationId}/approve-expense-claim`
+    )
+    return data
   },
   async deny(travelAuthorizationId, { denialReason } = {}) {
     const { data } = await http.post(`/api/travel-authorizations/${travelAuthorizationId}/deny`, {

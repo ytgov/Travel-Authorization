@@ -69,6 +69,9 @@ router
   .route("/api/travel-authorizations/:travelAuthorizationId/approve")
   .post(TravelAuthorizations.ApproveController.create)
 router
+  .route("/api/travel-authorizations/:travelAuthorizationId/approve-expense-claim")
+  .post(TravelAuthorizations.ApproveExpenseClaimController.create)
+router
   .route("/api/travel-authorizations/:travelAuthorizationId/deny")
   .post(TravelAuthorizations.DenyController.create)
 router
