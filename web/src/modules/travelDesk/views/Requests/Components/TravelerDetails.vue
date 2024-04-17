@@ -54,7 +54,7 @@
               readonly
               :error="travelerState.travelAuthErr"
               label="Travel Auth"
-              v-model="taid"
+              v-model="travelAuthorizationId"
               outlined
             />
           </v-col>
@@ -211,7 +211,7 @@ export default {
   data() {
     return {
       admin: false,
-      taid: "",
+      travelAuthorizationId: "",
       dobMaxDate: "",
       rules: {
         phone: (value) => {
