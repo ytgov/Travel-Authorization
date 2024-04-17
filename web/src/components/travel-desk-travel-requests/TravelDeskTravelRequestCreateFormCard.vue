@@ -213,6 +213,7 @@ export default {
         .then((resp) => {
           const employee = resp.data
           const travelerDetails = {
+            travelAuthorizationId: this.travelAuthorizationId,
             legalFirstName: employee.firstName,
             legalMiddleName: "",
             legalLastName: employee.lastName,
@@ -236,7 +237,6 @@ export default {
             office: employee.office,
             department: employee.department,
             fullName: employee.fullName,
-            travelAuthorizationId: this.travelAuthorizationId,
             additionalInformation: "",
             rentalCars: [],
             flightRequests: [],
