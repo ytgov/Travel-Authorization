@@ -1,27 +1,26 @@
 <template>
-  <div>
-    <title-card
-      class="mt-10"
-      title-width="11rem"
-      large-title
-    >
-      <template #title>
-        <div>Traveler Details</div>
-      </template>
-      <template #body>
+  <TitleCard
+    class="mt-10"
+    title-width="11rem"
+    large-title
+  >
+    <template #title>
+      <div>Traveler Details</div>
+    </template>
+    <template #body>
+      <v-form ref="form">
         <v-row class="mt-5 mx-3">
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.legalFirstName"
-              :error="travelerState.firstNameErr"
-              label="Legal First Name"
+              label="Legal First Name *"
+              :rules="[required]"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.legalMiddleName"
-              :error="travelerState.middleNameErr"
               label="Legal Middle Name"
               outlined
             />
@@ -29,15 +28,14 @@
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.legalLastName"
-              :error="travelerState.lastNameErr"
-              label="Legal Last Name"
+              label="Legal Last Name *"
+              :rules="[required]"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.birthDate"
-              :error="travelerState.birthDateErr"
               label="Birth Date"
               outlined
               :max="dobMaxDate"
@@ -49,7 +47,6 @@
             <v-text-field
               v-model="travelAuthorizationId"
               readonly
-              :error="travelerState.travelAuthErr"
               label="Travel Auth"
               outlined
             />
@@ -59,33 +56,33 @@
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.strAddress"
-              :error="travelerState.addressErr"
-              label="Address"
+              label="Address *"
+              :rules="[required]"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <LocationsAutocomplete
               v-model="travelerDetails.city"
+              label="City *"
               item-value="city"
-              :error="travelerState.cityErr"
-              label="City"
+              :rules="[required]"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.province"
-              :error="travelerState.provinceErr"
-              label="Province"
+              label="Province *"
+              :rules="[required]"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.postalCode"
-              :error="travelerState.postalCodeErr"
-              label="Postal Code"
+              label="Postal Code *"
+              :rules="[required]"
               outlined
             />
           </v-col>
@@ -104,7 +101,6 @@
           >
             <v-text-field
               v-model="travelerDetails.passportNum"
-              :error="travelerState.passportNumberErr"
               label="Passport Number"
               outlined
             />
@@ -115,7 +111,6 @@
           >
             <v-text-field
               v-model="travelerDetails.passportCountry"
-              :error="travelerState.passportCountryErr"
               label="Passport Country"
               outlined
             />
@@ -126,19 +121,19 @@
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.busPhone"
-              :rules="[rules.phone]"
-              :error="travelerState.businessPhoneErr"
-              label="Business Phone"
+              :rules="[isPhoneNumber, required]"
+              label="Business Phone *"
               outlined
+              validate-on-blur
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.busEmail"
-              :rules="[rules.email]"
-              :error="travelerState.businessEmailErr"
-              label="Business Email"
+              :rules="[isEmail, required]"
+              label="Business Email *"
               outlined
+              validate-on-blur
             />
           </v-col>
           <v-col cols="3">
@@ -153,8 +148,7 @@
           >
             <v-text-field
               v-model="travelerDetails.travelPhone"
-              :rules="[rules.phone]"
-              :error="travelerState.travelPhoneErr"
+              :rules="[isPhoneNumber]"
               label="Travel Phone"
               outlined
             />
@@ -165,31 +159,29 @@
           >
             <v-text-field
               v-model="travelerDetails.travelEmail"
-              :rules="[rules.email]"
-              :error="travelerState.travelEmailErr"
+              :rules="[isEmail]"
               label="Travel Email"
               outlined
             />
           </v-col>
         </v-row>
-      </template>
-    </title-card>
-  </div>
+      </v-form>
+    </template>
+  </TitleCard>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref, watch } from "vue"
-import { cloneDeep } from "lodash"
+import { computed, reactive, ref, watch } from "vue"
+import { cloneDeep, isNil } from "lodash"
+
+import { isPhoneNumber, isEmail } from "@/utils/validators"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+import { required } from "@/utils/validators"
 
 const props = defineProps({
   value: {
-    type: Object,
-    required: true,
-  },
-  travelerState: {
     type: Object,
     required: true,
   },
@@ -217,19 +209,16 @@ const travelerDetails = reactive({
   internationalTravel: false,
   ...props.value,
 })
-const travelAuthorizationId = ref("")
-const dobMaxDate = ref("")
-const rules = {
-  phone: (value) => {
-    const pattern = /^[0-9]{3}[-. ][0-9]{3}[-. ][0-9]{4}((\s\x[0-9]{4})|)?$/
-    return pattern.test(value) || "Invalid Phone (888-888-8888)"
-  },
-  email: (value) => {
-    const pattern =
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    return pattern.test(value) || "Invalid e-mail."
-  },
-}
+const form = ref(null)
+
+const travelAuthorizationId = computed(() => {
+  return travelerDetails.travelAuthorizationId.toString().padStart(5, "0")
+})
+const dobMaxDate = computed(() => {
+  const currentDate = new Date()
+  currentDate.setFullYear(currentDate.getFullYear() - 18)
+  return currentDate.toISOString().slice(0, 10)
+})
 
 watch(
   travelerDetails,
@@ -241,12 +230,16 @@ watch(
   }
 )
 
-onMounted(() => {
-  travelAuthorizationId.value = travelerDetails.travelAuthorizationId.toString().padStart(5, "0")
+function validate() {
+  if (isNil(form.value)) {
+    throw new Error("Form could not be found")
+  }
 
-  const currentDate = new Date()
-  currentDate.setDate(currentDate.getDate() - 18 * 365)
-  dobMaxDate.value = currentDate.toISOString().slice(0, 10)
+  return form.value.validate()
+}
+
+defineExpose({
+  validate,
 })
 </script>
 

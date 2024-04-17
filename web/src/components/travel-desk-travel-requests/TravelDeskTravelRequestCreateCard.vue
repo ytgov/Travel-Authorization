@@ -21,8 +21,8 @@
       <v-row class="mb-3">
         <v-col cols="12">
           <TravelerDetailsFormCard
+            ref="travelerDetailsFormCard"
             v-model="travelerDetails"
-            :traveler-state="state"
           />
 
           <title-card
@@ -255,6 +255,11 @@ export default {
     },
 
     saveNewTravelRequest(saveType) {
+      if (this.validate() !== true) {
+        // TODO: notify user of validation error
+        throw new Error("Form validation failed")
+      }
+
       if (saveType == "save" || this.checkFields()) {
         this.savingData = true
         const body = this.travelerDetails
@@ -336,6 +341,14 @@ export default {
         if (this.state[key]) return false
       }
       return true
+    },
+
+    validate() {
+      if (isNil(this.$refs.travelerDetailsFormCard)) {
+        throw new Error("Form could not be found")
+      }
+
+      return this.$refs.travelerDetailsFormCard.validate()
     },
   },
 }
