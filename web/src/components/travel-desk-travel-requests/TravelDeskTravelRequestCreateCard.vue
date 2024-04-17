@@ -44,7 +44,7 @@
                 <template #body>
                   <v-row class="mt-0 mx-0">
                     <v-col cols="9">
-                      <FlightRequestTable
+                      <TravelDeskFlightRequestsEditTable
                         :travel-desk-travel-request-id="travelerDetails.id"
                         :authorized-travel="travelAuthorization"
                         :readonly="false"
@@ -123,13 +123,14 @@ import { secureGet, securePost } from "@/store/jwt"
 
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
-
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import FlightRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightRequestTable.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
 import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
+
+import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
+
+import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
