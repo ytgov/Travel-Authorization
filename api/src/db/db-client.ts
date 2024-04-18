@@ -27,6 +27,7 @@ export const SEQUELIZE_CONFIG: Options = {
   define: {
     underscored: true,
     timestamps: true,
+    whereMergeStrategy: 'and', // where fields will be merged using the and operator (instead of overwriting each other)
   },
 }
 
