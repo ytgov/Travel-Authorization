@@ -234,6 +234,10 @@ function validate() {
     throw new Error("Form could not be found")
   }
 
+  // TODO: add validation for additional fields
+  // passportNum and passportCountry are required if internationalTravel is set
+  // travelPhone and travelEmail are required if travelContact is present
+
   return form.value.validate()
 }
 
