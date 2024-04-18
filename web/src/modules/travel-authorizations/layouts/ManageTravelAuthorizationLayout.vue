@@ -1,17 +1,5 @@
 <template>
-  <v-layout
-    v-if="isLoadingTravelAuthorization"
-    fill-height
-    align-center
-    justify-center
-    class="min-vh-70"
-  >
-    <v-progress-circular
-      indeterminate
-      color="primary"
-      size="64"
-    ></v-progress-circular>
-  </v-layout>
+  <PageLoader v-if="isLoadingTravelAuthorization" />
   <div v-else>
     <Breadcrumbs />
 
@@ -63,6 +51,7 @@ import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
+import PageLoader from "@/components/PageLoader"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
 

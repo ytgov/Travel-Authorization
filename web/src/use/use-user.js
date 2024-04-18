@@ -1,7 +1,6 @@
 import { reactive, toRefs, unref, watch } from "vue"
 
 import usersApi from "@/api/users-api"
-import { defineUse } from "@/use/helper-utils"
 
 /**
  * TODO: add other user fields
@@ -24,7 +23,7 @@ import { defineUse } from "@/use/helper-utils"
  */
 
 /** @type {UseUser} */
-export const useUser = defineUse((userId) => {
+export function useUser(userId) {
   const state = reactive({
     user: {},
     isLoading: false,
@@ -64,6 +63,6 @@ export const useUser = defineUse((userId) => {
     fetch,
     refresh: fetch,
   }
-})
+}
 
 export default useUser

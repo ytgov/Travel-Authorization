@@ -37,10 +37,9 @@
           md="6"
         >
           <v-text-field
-            :value="preApprovedTravelRequestText"
-            :loading="isLoadingPreApprovedTravelRequests"
-            label="Pre-approved Travel Request?"
-            no-data-text="No pre-approvals available"
+            :value="travelAuthorizationPreApprovalProfileText"
+            :loading="isLoadingTravelAuthorizationPreApprovalProfile"
+            label="Pre-approved travel for (if applicable)"
             dense
             outlined
             readonly
@@ -77,6 +76,8 @@
 import { isNil, isEmpty, sumBy } from "lodash"
 import { mapActions, mapGetters } from "vuex"
 
+import travelAuthorizationPreApprovalProfilesApi from "@/api/travel-authorization-pre-approval-profiles-api"
+
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
 export default {
@@ -90,42 +91,27 @@ export default {
       required: true,
     },
   },
-  data: () => ({}),
+  data: () => ({
+    travelAuthorizationPreApprovalProfile: {},
+    isLoadingTravelAuthorizationPreApprovalProfile: false,
+  }),
   computed: {
     ...mapGetters("travelAuthorization", {
       travelAuthorization: "attributes",
       estimates: "estimates",
     }),
-    ...mapGetters("preApprovedTravelRequests", {
-      preApprovedTravelRequests: "items",
-      isLoadingPreApprovedTravelRequests: "isLoading",
-    }),
     estimatedCost() {
       return sumBy(this.estimates, "cost")
     },
-    travelAuthorizationUser() {
-      return this.travelAuthorization.user || {}
-    },
-    preApprovedTravelRequestText() {
-      const preApprovedTravelRequest = this.preApprovedTravelRequests.find(
-        (p) => p.value === this.travelAuthorization.preappId
-      )
-
-      if (isNil(preApprovedTravelRequest)) {
+    travelAuthorizationPreApprovalProfileText() {
+      if (
+        isEmpty(this.travelAuthorizationPreApprovalProfile) ||
+        this.isLoadingTravelAuthorizationPreApprovalProfile
+      ) {
         return ""
       }
 
-      const { preApprovedTravelers } = preApprovedTravelRequest
-      const travelerNames = preApprovedTravelers
-        .map((traveler) => traveler.fullName)
-        .filter(Boolean)
-      const { fullName: travelAuthorizationUserFullname } = this.travelAuthorizationUser
-
-      if (isEmpty(travelerNames) || !travelerNames.includes(travelAuthorizationUserFullname)) {
-        return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month}`
-      }
-
-      return `${preApprovedTravelRequest.purpose} - ${preApprovedTravelRequest.month} - ${travelAuthorizationUserFullname}`
+      return this.travelAuthorizationPreApprovalProfile.profileName
     },
     travelAdvanceInDollars() {
       return Math.ceil(this.travelAuthorization.travelAdvanceInCents / 100.0)
@@ -133,16 +119,25 @@ export default {
   },
   async mounted() {
     await this.ensureTravelAuthorization(this.travelAuthorizationId)
-    const { department } = this.travelAuthorizationUser
-    await this.ensurePreApprovedTravelRequests({ where: { department } })
+    const { preApprovalProfileId } = this.travelAuthorization
+    if (!isNil(preApprovalProfileId)) {
+      await this.loadTravelAuthorizationPreApprovedProfile(preApprovalProfileId)
+    }
   },
   methods: {
-    ...mapActions("preApprovedTravelRequests", {
-      ensurePreApprovedTravelRequests: "ensure",
-    }),
     ...mapActions("travelAuthorization", {
       ensureTravelAuthorization: "ensure",
     }),
+    async loadTravelAuthorizationPreApprovedProfile(preApprovalProfileId) {
+      this.isLoadingTravelAuthorizationPreApprovalProfile = true
+      try {
+        const { travelAuthorizationPreApprovalProfile: newProfile } =
+          await travelAuthorizationPreApprovalProfilesApi.get(preApprovalProfileId)
+        this.travelAuthorizationPreApprovalProfile = newProfile
+      } finally {
+        this.isLoadingTravelAuthorizationPreApprovalProfile = false
+      }
+    },
     refresh() {
       this.$refs.travelAuthorizationActionLogsTable.refresh()
     },

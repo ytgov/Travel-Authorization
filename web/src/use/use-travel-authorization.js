@@ -3,12 +3,11 @@ import { computed, reactive, toRefs, unref, watch } from "vue"
 import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
 import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
 
-import { defineUse } from "@/use/helper-utils"
-
 /**
  * TODO: add other fields
  * @typedef {Object} TravelAuthorization
  * @property {number} id
+ * @property {number} userId
  * @property {Expense[]} expenses
  * @property {Purpose} purpose
  * @property {Stop[]} stops
@@ -43,7 +42,7 @@ import { defineUse } from "@/use/helper-utils"
  */
 
 /** @type {UseTravelAuthorization} */
-export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
+export function useTravelAuthorization(travelAuthorizationId) {
   const state = reactive({
     travelAuthorization: {
       expenses: [],
@@ -252,6 +251,6 @@ export const useTravelAuthorization = defineUse((travelAuthorizationId) => {
     deny,
     expenseClaim,
   }
-})
+}
 
 export default useTravelAuthorization

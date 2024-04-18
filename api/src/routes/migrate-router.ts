@@ -1,7 +1,6 @@
 import { Router, type Request, type Response } from "express"
 
 import dbLegacy from "@/db/db-client-legacy"
-import { seedUp } from "@/db/seeds"
 
 export const migrateRouter = Router()
 
@@ -43,7 +42,8 @@ migrateRouter.get("/migrate/latest", async (req: Request, res: Response) => {
 
 migrateRouter.get("/migrate/seed", async (req: Request, res: Response) => {
   console.log("-------- MIGRATE SEED ---------")
-  return seedUp()
+  return dbLegacy.seed
+    .run()
     .then((result) => {
       return res.json(result)
     })

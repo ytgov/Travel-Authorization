@@ -5,15 +5,15 @@
       persistent
       max-width="950px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           :disabled="disabled"
-          @click="initPrint()"
           :small="buttonInsideTable"
           :class="buttonInsideTable ? 'my-0' : 'mr-5 my-7'"
           color="primary"
           v-bind="attrs"
           v-on="on"
+          @click="initPrint"
         >
           {{ buttonName }}
         </v-btn>
@@ -77,18 +77,18 @@
             class="elevation-1"
             hide-default-footer
           >
-            <template v-slot:item.name="{ item }">
+            <template #item.name="{ item }">
               <span> {{ item.department }}, </span>
               <span
-                v-for="(trv, inx) in item.travelers"
-                :key="inx"
+                v-for="(profile, index) in item.profiles"
+                :key="index"
                 style="line-height: 1rem"
-                >{{ trv.fullName.replace(".", " ") }}</span
+                >{{ profile.profileName.replace(".", " ") }}</span
               >
             </template>
 
-            <template v-slot:item.travelDate="{ item }">
-              <div v-if="item.dateUnkInd">
+            <template #item.travelDate="{ item }">
+              <div v-if="item.isOpenForAnyDate">
                 {{ item.month }}
               </div>
               <div v-else>
@@ -102,10 +102,10 @@
                 </div>
               </div>
             </template>
-            <template v-slot:item.estimatedCost="{ item }">
+            <template #item.estimatedCost="{ item }">
               <div style="text-align: right !important">${{ item.estimatedCost | currency }}</div>
             </template>
-            <template v-slot:body.append>
+            <template #body.append>
               <tr style="">
                 <td
                   colspan="4"
@@ -137,9 +137,9 @@
                 >
                 <v-col style="padding-left: 0; margin-left: 0">
                   <input
+                    v-model="approver"
                     style="width: 100%; cursor: pointer; padding-left: 0.25rem"
                     class="yellow darken-3"
-                    v-model="approver"
                     clearable
                   />
                 </v-col>
@@ -167,18 +167,20 @@
 import { Printd } from "printd"
 
 export default {
-  components: {},
   name: "PrintReport",
+  components: {},
   props: {
     buttonName: {
       type: String,
+      default: "Print",
     },
     buttonInsideTable: {
       type: Boolean,
       default: false,
     },
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
     disabled: {
       type: Boolean,
@@ -233,34 +235,36 @@ export default {
       console.log("Print")
       this.currentDate = new Date().toDateString()
       this.totalCost = 0
-      for (const req of this.travelRequests) this.totalCost += req.estimatedCost
+      for (const req of this.travelRequests) {
+        this.totalCost += req.estimatedCost
+      }
       this.printRequests = JSON.parse(JSON.stringify(this.travelRequests))
     },
     print() {
       const styles = [
         `@media print {
                     @page {
-                        size: letter landscape !important;                        
+                        size: letter landscape !important;
                     }
                     div.form-footer {
                       position: fixed;
                       bottom: 0;
-                      width:100%; 
+                      width:100%;
                       display:inline-block;
                     }
                     .new-page{
                         page-break-before: always;
                         position: relative; top: 8em;
                     }
-                    
+
                 }`,
         `https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css`,
         `thead th {
                     font-size: 11pt !important;
-                    color: #111111 !important;                     
+                    color: #111111 !important;
                     text-align: center !important;
                     border:  1px solid #333334 !important;
-                    border-bottom: 2px solid #333334 !important; 
+                    border-bottom: 2px solid #333334 !important;
                 }`,
         `tbody td { border:  1px solid #666666 !important;}`,
         `table {border: 2px solid #333334;}`,

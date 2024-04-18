@@ -1,74 +1,78 @@
 <template>
   <div class="mx-10 mb-5">
     <v-row class="my-0 mx-0">
-      <submit-travel
+      <SubmitTravel
         v-if="admin"
         :disabled="selectedRequests.length == 0"
-        :travelRequests="travelRequests"
-        :selectedRequests="selectedRequests"
-        :preTSubID="0"
-        @updateTable="updateTable"
-        buttonName="Submit Selected Travel"
+        :travel-requests="travelRequests"
+        :selected-requests="selectedRequests"
+        :submission-id="0"
+        button-name="Submit Selected Travel"
         class="ml-auto"
+        @updateTable="updateTable"
       />
-      <print-report
+      <PrintReport
         v-if="admin"
         :disabled="selectedRequests.length == 0"
-        :travelRequests="selectedRequests"
-        buttonName="Print Report"
+        :travel-requests="selectedRequests"
+        button-name="Print Report"
       />
       <v-btn
         v-if="admin"
         :disabled="selectedRequests.length == 0"
-        @click="exportToExcel()"
         class="mr-5 my-7"
         color="primary"
+        @click="exportToExcel"
       >
         Export To Excel
       </v-btn>
       <new-travel-request
         type="Add New"
-        @updateTable="updateTable"
         :class="admin ? '' : 'ml-auto'"
+        @updateTable="updateTable"
       />
     </v-row>
     <v-data-table
+      v-model="selectedRequests"
       :headers="headers"
       :items="grayedOutTravelRequests"
       :items-per-page="5"
       class="elevation-1"
-      v-model="selectedRequests"
-      item-key="preTID"
       :show-select="admin"
       @item-selected="applySameDeptSelection"
       @toggle-select-all="applyAllSameDeptSelection"
     >
-      <template v-slot:item.name="{ item }">
+      <template #item.name="{ item }">
+        <template v-if="item.profiles.length === 0"> Unspecified </template>
+        <template v-else-if="item.profiles.length === 1">
+          {{ item.profiles[0].profileName.replace(".", " ") }}
+        </template>
         <v-tooltip
+          v-else
           top
           color="primary"
         >
-          <template v-slot:activator="{ on }">
-            <div v-on="item.travelers.length > 1 ? on : ''">
+          <template #activator="{ on }">
+            <div v-on="on">
               <span>
-                {{ item.travelers[0].fullName.replace(".", " ") }}
+                {{ item.profiles[0].profileName.replace(".", " ") }}
               </span>
-              <span v-if="item.travelers.length > 1">, ... </span>
+              <span>, ... </span>
             </div>
           </template>
           <span
             ><div
-              v-for="(trv, inx) in item.travelers"
-              :key="inx"
+              v-for="(profile, index) in item.profiles"
+              :key="index"
             >
-              {{ trv.fullName.replace(".", " ") }}
+              {{ profile.profileName.replace(".", " ") }}
             </div></span
           >
         </v-tooltip>
       </template>
 
-      <template v-slot:item.travelDate="{ item }">
-        <div v-if="item.dateUnkInd">
+      <template #item.travelDate="{ item }">
+        <div v-if="item.isOpenForAnyDate">
           {{ item.month }}
         </div>
         <div v-else>
@@ -84,11 +88,11 @@
         </div>
       </template>
 
-      <template v-slot:item.edit="{ item }">
-        <new-travel-request
-          :type="item.status == 'draft' || !item.status ? 'Edit' : 'View'"
+      <template #item.edit="{ item }">
+        <NewTravelRequest
+          :type="item.status === STATUSES.DRAFT || isNil(item.status) ? 'Edit' : 'View'"
+          :travel-request="item"
           @updateTable="updateTable"
-          :travelRequest="item"
         />
       </template>
     </v-data-table>
@@ -97,21 +101,26 @@
 
 <script>
 import Vue from "vue"
+import { ExportToCsv } from "export-to-csv"
+import { isNil } from "lodash"
+
+import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+
 import NewTravelRequest from "./NewTravelRequest.vue"
 import PrintReport from "../Common/PrintReport.vue"
 import SubmitTravel from "../Common/SubmitTravel.vue"
-import { ExportToCsv } from "export-to-csv"
 
 export default {
+  name: "PreapprovedRequests",
   components: {
     NewTravelRequest,
     PrintReport,
     SubmitTravel,
   },
-  name: "PreapprovedRequests",
   props: {
     travelRequests: {
-      type: [],
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -171,10 +180,10 @@ export default {
       firstSelectionDept: "",
     }
   },
-  mounted() {
-    this.admin = Vue.filter("isAdmin")()
-  },
   computed: {
+    STATUSES() {
+      return STATUSES
+    },
     grayedOutTravelRequests() {
       const travelRequests = JSON.parse(JSON.stringify(this.travelRequests))
       if (this.firstSelectionDept)
@@ -184,7 +193,11 @@ export default {
       return travelRequests
     },
   },
+  mounted() {
+    this.admin = Vue.filter("isAdmin")()
+  },
   methods: {
+    isNil,
     updateTable() {
       this.$emit("updateTable")
     },
@@ -197,9 +210,7 @@ export default {
         }
 
         if (selection.value == true && selection.item.department != this.firstSelectionDept) {
-          this.selectedRequests = this.selectedRequests.filter(
-            (req) => req.preTID != selection.item.preTID
-          )
+          this.selectedRequests = this.selectedRequests.filter((req) => req.id != selection.item.id)
         }
       })
     },
@@ -220,10 +231,12 @@ export default {
       // console.log(this.selectedRequests)
       const csvInfo = this.selectedRequests.map((req) => {
         return {
-          travelers: req.travelers?.map((trv) => trv.fullName.replace(".", " "))?.join(", "),
+          profiles: req.profiles
+            ?.map((profile) => profile.profileName.replace(".", " "))
+            ?.join(", "),
           department: req.department,
           branch: req.branch ? req.branch : "",
-          travelDate: req.dateUnkInd ? req.month : req.startDate + " " + req.endDate,
+          travelDate: req.isOpenForAnyDate ? req.month : req.startDate + " " + req.endDate,
           location: req.location,
           purpose: req.purpose ? req.purpose : "",
           estimatedCost: req.estimatedCost,

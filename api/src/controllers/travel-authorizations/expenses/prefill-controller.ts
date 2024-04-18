@@ -40,9 +40,16 @@ export class PrefillController extends BaseController {
     return TravelAuthorization.findByPk(this.params.travelAuthorizationId, {
       include: [
         {
+          association: "expenses",
+          where: {
+            type: Expense.Types.ESTIMATE,
+          },
+          required: false
+        },
+        {
           association: "travelSegments",
           order: [["segmentNumber", "ASC"]],
-        }
+        },
       ],
       order: [["expenses", "date", "ASC"]],
     })

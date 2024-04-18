@@ -1,34 +1,40 @@
 import express, { Request, Response } from "express"
-import knex from "knex"
+import { ModelStatic, Op } from "sequelize"
+import { isNil } from "lodash"
 
 import { RequiresAuth, RequiresRolePatAdminOrAdmin } from "@/middleware"
-import { DB_CONFIG } from "@/config"
-import { User } from "@/models"
-
-const db = knex(DB_CONFIG)
+import db, {
+  TravelAuthorizationPreApproval,
+  TravelAuthorizationPreApprovalDocument,
+  TravelAuthorizationPreApprovalSubmission,
+  TravelAuthorizationPreApprovalProfile,
+  User,
+} from "@/models"
 
 export const preapprovedRouter = express.Router()
 
 preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request, res: Response) {
-  const adminQuery = function (queryBuilder: any) {
-    if (req?.user?.roles?.indexOf(User.Roles.ADMIN) >= 0) queryBuilder.select("*")
-    else queryBuilder.where("department", req.user.department).select("*")
-  }
-
-  const submissionList = await db("preapprovedSubmissions").modify(adminQuery)
-
-  for (const submission of submissionList) {
-    const preapproved = await db("preapproved").select("*").where({
-      preTSubID: submission.preTSubID,
-    })
-    for (const preapp of preapproved) {
-      const traveler = await db("preapprovedTravelers").select("*").where({
-        preTID: preapp.preTID,
-      })
-      preapp.travelers = traveler
+  const applyScope = (scope: ModelStatic<TravelAuthorizationPreApprovalSubmission>, user: User) => {
+    if (req?.user?.roles?.indexOf(User.Roles.ADMIN) >= 0) {
+      return scope
     }
-    submission.preapproved = preapproved
+
+    return scope.scope({
+      where: {
+        department: req.user.department,
+      },
+    })
   }
+
+  const scopedSubmissions = applyScope(TravelAuthorizationPreApprovalSubmission, req.user)
+  const submissionList = await scopedSubmissions.findAll({
+    include: [
+      {
+        association: "preApproval",
+        include: ["profiles"],
+      },
+    ],
+  })
 
   res.status(200).json(submissionList)
 })
@@ -38,12 +44,9 @@ preapprovedRouter.get(
   RequiresAuth,
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
-    const preTSubID = req.params.submissionId
+    const submissionId = req.params.submissionId
     try {
-      const submission = await db("preapprovedSubmissions")
-        .select("*")
-        .where("preTSubID", preTSubID)
-        .first()
+      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
       res.status(200).json(submission)
     } catch (error: any) {
       console.log(error)
@@ -58,50 +61,53 @@ preapprovedRouter.post(
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
     try {
-      await db.transaction(async (trx) => {
-        const preTSubID = Number(req.params.submissionId)
-        const preapprovedIds = req.body.preapprovedIds
-        delete req.body.preapprovedIds
+      await db.transaction(async () => {
+        const submissionId = Number(req.params.submissionId)
+        const preApprovalIds = req.body.preApprovalIds
+        delete req.body.preApprovalIds
 
         const newSubmission = req.body
 
-        if (newSubmission.department && newSubmission.status && preapprovedIds.length > 0) {
+        if (newSubmission.department && newSubmission.status && preApprovalIds.length > 0) {
           var id = []
           newSubmission.submitter = req.user.displayName
 
-          if (preTSubID > 0) {
-            id = await db("preapprovedSubmissions")
-              .update(newSubmission, "preTSubID")
-              .where("preTSubID", preTSubID)
+          // TODO: fix legacy patterm - split creation and update into separate endpoints
+          let submission
+          if (submissionId > 0) {
+            submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
+            if (isNil(submission)) {
+              return res.status(404).json("Submission not found")
+            }
+
+            submission.update(newSubmission)
           } else {
-            id = await db("preapprovedSubmissions").insert(newSubmission, "preTSubID")
+            submission = await TravelAuthorizationPreApprovalSubmission.create(newSubmission)
           }
 
-          const preapprovedQuery = await db("preapproved")
-            .select("preTID")
-            .where("preTSubID", id[0].preTSubID)
-
-          let preapprovedIdList = preapprovedQuery.map((preapp) => preapp.preTID)
-          preapprovedIdList = preapprovedIdList.filter(
-            (preappId) => !preapprovedIds.includes(preappId)
+          await TravelAuthorizationPreApproval.update(
+            {
+              status: submission.status,
+              submissionId: submission.preTSubID,
+            },
+            {
+              where: {
+                id: preApprovalIds,
+              },
+            }
           )
-          // console.log(preapprovedIdList)
-
-          await db("preapproved")
-            .update({
-              status: newSubmission.status,
-              preTSubID: id[0].preTSubID,
-            })
-            .whereIn("preTID", preapprovedIds)
-
-          if (preapprovedIdList.length > 0) {
-            await db("preapproved")
-              .update({
-                status: null,
-                preTSubID: null,
-              })
-              .whereIn("preTID", preapprovedIdList)
-          }
+          await TravelAuthorizationPreApproval.update(
+            {
+              status: null,
+              submissionId: null,
+            },
+            {
+              where: {
+                submissionId: submission.preTSubID,
+                [Op.not]: [{ id: preApprovalIds }],
+              },
+            }
+          )
 
           res.status(200).json("Successful")
         } else {
@@ -121,23 +127,32 @@ preapprovedRouter.delete(
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
     try {
-      const preTSubID = Number(req.params.submissionId)
-      await db.transaction(async (trx) => {
-        const submission = await db("preapprovedSubmissions")
-          .select("*")
-          .where("preTSubID", preTSubID)
-          .first()
-        if (submission.status == "Finished" || submission.approvalDate || submission.approvedBy) {
+      const submissionId = Number(req.params.submissionId)
+      const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
+      if (isNil(submission)) {
+        return res.status(404).json("Submission not found")
+      }
+
+      await db.transaction(async () => {
+        if (
+          submission.status === TravelAuthorizationPreApprovalSubmission.Statuses.FINISHED ||
+          submission.approvalDate ||
+          submission.approvedBy
+        ) {
           res.status(403).json("Cannot delete final records")
         } else {
-          await db("preapproved")
-            .update({
+          await TravelAuthorizationPreApproval.update(
+            {
               status: null,
-              preTSubID: null,
-            })
-            .where("preTSubID", preTSubID)
-
-          await db("preapprovedSubmissions").delete().where("preTSubID", preTSubID).transacting(trx)
+              submissionId: null,
+            },
+            {
+              where: {
+                submissionId: submission.preTSubID,
+              },
+            }
+          )
+          await submission.destroy()
 
           res.status(200).json("Delete Successful")
         }
@@ -155,51 +170,63 @@ preapprovedRouter.post(
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
     const file = req.body.file
-    const preTSubID = req.params.submissionId
+    const preTSubID = Number(req.params.submissionId)
     const data = JSON.parse(req.body.data)
 
     try {
-      await db.transaction(async (trx) => {
-        const approvalDoc = await db("preapprovedDocuments")
-          .select("preTDocID")
-          .where("preTSubID", preTSubID)
-          .first()
-        if (approvalDoc) {
-          res.status(409).json("File Already Exist!")
-        } else if (
-          preTSubID &&
-          data.status &&
-          data.approvalDate &&
-          data.approvedBy &&
-          data.preapproved.length > 0
-        ) {
-          const newDocument = {
-            preTSubID: preTSubID,
-            approvalDoc: file,
-          }
-          await db("preapprovedDocuments").insert(newDocument, "preTDocID")
+      const approvalDoc = await TravelAuthorizationPreApprovalDocument.findOne({
+        where: {
+          preTSubID,
+        },
+      })
+      if (approvalDoc) {
+        return res.status(409).json("File Already Exist!")
+      }
 
-          await db("preapprovedSubmissions")
-            .update({
+      if (
+        preTSubID &&
+        data.status &&
+        data.approvalDate &&
+        data.approvedBy &&
+        data.preApprovals.length > 0
+      ) {
+        const newDocument = {
+          preTSubID,
+          approvalDoc: file,
+        }
+        await db.transaction(async () => {
+          await TravelAuthorizationPreApprovalDocument.create(newDocument)
+          await TravelAuthorizationPreApprovalSubmission.update(
+            {
               status: data.status,
               approvalDate: data.approvalDate,
               approvedBy: data.approvedBy,
-            })
-            .where("preTSubID", preTSubID)
+            },
+            {
+              where: {
+                preTSubID,
+              },
+            }
+          )
 
-          for (const preapp of data.preapproved) {
-            await db("preapproved")
-              .update({
-                status: preapp.status,
-              })
-              .where("preTID", preapp.preTID)
+          for (const preApproval of data.preApprovals) {
+            await TravelAuthorizationPreApproval.update(
+              {
+                status: preApproval.status,
+              },
+              {
+                where: {
+                  id: preApproval.id,
+                },
+              }
+            )
           }
 
           res.status(200).json("Successful")
-        } else {
-          res.status(500).json("Required fields in submission are blank")
-        }
-      })
+        })
+      } else {
+        res.status(422).json("Required fields in submission are blank")
+      }
     } catch (error: any) {
       console.log(error)
       res.status(500).json("Insert failed")
@@ -210,89 +237,82 @@ preapprovedRouter.post(
 preapprovedRouter.get("/document/:submissionId", RequiresAuth, async function (req, res) {
   try {
     const preTSubID = req.params.submissionId
-    const doc = await db("preapprovedDocuments")
-      .select("approvalDoc")
-      .where("preTSubID", preTSubID)
-      .first()
-    res.status(200).send(doc.approvalDoc)
+    const document = await TravelAuthorizationPreApprovalDocument.findOne({
+      where: {
+        preTSubID,
+      },
+    })
+    if (isNil(document)) {
+      return res.status(404).json("Document not found")
+    }
+
+    res.status(200).send(document.approvalDoc)
   } catch (error: any) {
     console.log(error)
     res.status(500).json("PDF not Found")
   }
 })
 
-preapprovedRouter.get("/", RequiresAuth, async function (req: Request, res: Response) {
-  const adminQuery = function (queryBuilder: any) {
-    if (req?.user?.roles?.indexOf(User.Roles.ADMIN) >= 0) queryBuilder.select("*")
-    else queryBuilder.where("department", req.user.department).select("*")
-  }
-
-  const preapprovedList = await db("preapproved").modify(adminQuery)
-
-  for (const preapp of preapprovedList) {
-    const traveler = await db("preapprovedTravelers").select("*").where({
-      preTID: preapp.preTID,
-    })
-    preapp.travelers = traveler
-  }
-
-  res.status(200).json(preapprovedList)
-})
-
 preapprovedRouter.post(
-  "/:preapprovedId",
+  "/:preApprovalId",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    const preTID = Number(req.params.preapprovedId)
+    const preApprovalId = Number(req.params.preApprovalId)
     try {
-      await db.transaction(async (trx) => {
-        const travelers = req.body.travelers
-        delete req.body.travelers
+      await db.transaction(async () => {
+        const profiles = req.body.profiles
+        delete req.body.profiles
 
         const newPreapproved = req.body
 
         if (
           newPreapproved.department &&
           newPreapproved.purpose &&
-          newPreapproved.dateUnkInd >= 0 &&
           newPreapproved.estimatedCost &&
           newPreapproved.location &&
-          newPreapproved.travelerUnkInd >= 0 &&
-          travelers?.length > 0
+          profiles?.length > 0
         ) {
-          var id = []
-          if (preTID > 0) {
-            id = await db("preapproved").update(newPreapproved, "preTID").where("preTID", preTID)
+          // TODO: fix legacy patterm - split creation and update into separate endpoints
+          let preApproval
+          if (preApprovalId > 0) {
+            preApproval = await TravelAuthorizationPreApproval.findByPk(preApprovalId)
+            if (isNil(preApproval)) {
+              return res.status(404).json("Pre-approval not found")
+            }
+
+            preApproval.update(newPreapproved)
           } else {
-            id = await db("preapproved").insert(newPreapproved, "preTID")
+            preApproval = await TravelAuthorizationPreApproval.create(newPreapproved)
           }
 
-          const travelersQuery = await db("preapprovedTravelers")
-            .select("travelerID")
-            .where("preTID", id[0].preTID)
+          const profilesQuery = await TravelAuthorizationPreApprovalProfile.findAll({
+            attributes: ["id"],
+            where: {
+              preApprovalId: preApproval.id,
+            },
+          })
 
-          let travelerIdList = travelersQuery.map((traveler) => traveler.travelerID)
+          let profileIdList = profilesQuery.map((profile) => profile.id)
 
-          for (const traveller of travelers) {
-            if (traveller.travelerID) {
-              travelerIdList = travelerIdList.filter((tid) => tid != traveller.travelerID)
+          for (const profile of profiles) {
+            if (profile.id) {
+              profileIdList = profileIdList.filter((profileId) => profileId != profile.id)
             } else {
-              let travellerInfo = {
-                preTID: id[0].preTID,
-                ...traveller,
+              let profileInfo = {
+                preApprovalId: preApproval.id,
+                ...profile,
               }
-              await db("preapprovedTravelers").insert(travellerInfo).transacting(trx)
+              await TravelAuthorizationPreApprovalProfile.create(profileInfo)
             }
           }
 
-          for (const travellerId of travelerIdList) {
-            await db("preapprovedTravelers")
-              .delete()
-              .where("travelerID", travellerId)
-              .transacting(trx)
-          }
+          await TravelAuthorizationPreApprovalProfile.destroy({
+            where: {
+              id: profileIdList,
+            },
+          })
 
-          res.status(200).json(id)
+          res.status(200).json([preApproval])
         } else {
           res.status(500).json("Required fields in submission are blank")
         }
@@ -305,21 +325,23 @@ preapprovedRouter.post(
 )
 
 preapprovedRouter.delete(
-  "/:preapprovedId",
+  "/:preApprovalId",
   RequiresAuth,
   RequiresRolePatAdminOrAdmin,
   async function (req: Request, res: Response) {
     try {
-      const preTID = req.params.preapprovedId
-      await db.transaction(async (trx) => {
-        const preapp = await db("preapproved").select("*").where("preTID", preTID).first()
-        if (preapp.status == "Approved" || preapp.status == "Declined") {
-          res.status(403).json("Cannot delete final records")
-        } else {
-          await db("preapproved").delete().where("preTID", preTID).transacting(trx)
-          res.status(200).json("Delete Successful")
-        }
-      })
+      const preApprovalId = req.params.preApprovalId
+      const preApproval = await TravelAuthorizationPreApproval.findByPk(preApprovalId)
+      if (isNil(preApproval)) {
+        return res.status(404).json("Pre-approval not found")
+      }
+
+      if (preApproval.status == "Approved" || preApproval.status == "Declined") {
+        res.status(403).json("Cannot delete final records")
+      } else {
+        await preApproval.destroy()
+        res.status(200).json("Delete Successful")
+      }
     } catch (error: any) {
       console.log(error)
       res.status(500).json("Delete failed")
