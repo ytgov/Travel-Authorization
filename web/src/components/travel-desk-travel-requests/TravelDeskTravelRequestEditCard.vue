@@ -142,8 +142,8 @@ const props = defineProps({
 const { travelDeskTravelRequestId } = toRefs(props)
 const { travelDeskTravelRequest, isLoading } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-const travelAuthorizationId = computed(() => travelDeskTravelRequest.value.travelAuthorizationId)
-const travelAuthorization = computed(() => travelDeskTravelRequest.value.travelAuthorization)
+const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
+const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travelAuthorization)
 
 const readonly = ref(false)
 const internationalTravel = ref(false)
