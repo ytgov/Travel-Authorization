@@ -1,7 +1,7 @@
 <template>
   <v-card
-    :loading="loadingData"
-    :disabled="loadingData"
+    :loading="isLoading"
+    :disabled="isLoading"
   >
     <v-card-title
       class="primary"
@@ -11,18 +11,18 @@
     </v-card-title>
 
     <div
-      v-if="loadingData"
+      v-if="isLoading"
       class="mt-10"
       style="text-align: center"
     >
       loading ...
     </div>
-    <v-card-text v-if="!loadingData">
+    <v-card-text v-else>
       <v-row class="mb-3">
         <v-col cols="12">
           <TravelerDetailsFormCard
             ref="travelerDetailsFormCard"
-            v-model="travelerDetails"
+            v-model="travelDeskTravelRequest"
           />
 
           <TitleCard
@@ -45,12 +45,12 @@
                   <v-row class="mt-0 mx-0">
                     <v-col cols="9">
                       <TravelDeskFlightRequestsEditTable
-                        :travel-desk-travel-request-id="travelerDetails.id"
+                        :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                         :authorized-travel="travelAuthorization"
                         :readonly="false"
                         :travel-desk-user="false"
-                        :show-flight-options="travelerDetails.status != 'draft'"
-                        :flight-requests="travelerDetails.flightRequests"
+                        :show-flight-options="travelDeskTravelRequest.status != 'draft'"
+                        :flight-requests="travelDeskTravelRequest.flightRequests"
                       />
                     </v-col>
                     <v-col
@@ -58,7 +58,7 @@
                       class="px-0"
                     >
                       <v-textarea
-                        v-model="travelerDetails.additionalInformation"
+                        v-model="travelDeskTravelRequest.additionalInformation"
                         class="mt-5 mr-5"
                         :readonly="readonly"
                         label="Additional Information"
@@ -75,19 +75,19 @@
               <RentalCarRequestTable
                 :authorized-travel="travelAuthorization"
                 :readonly="false"
-                :flight-requests="travelerDetails.flightRequests"
-                :rental-cars="travelerDetails.rentalCars"
+                :flight-requests="travelDeskTravelRequest.flightRequests"
+                :rental-cars="travelDeskTravelRequest.rentalCars"
               />
               <HotelRequestTable
                 :authorized-travel="travelAuthorization"
                 :readonly="false"
-                :flight-requests="travelerDetails.flightRequests"
-                :hotels="travelerDetails.hotels"
+                :flight-requests="travelDeskTravelRequest.flightRequests"
+                :hotels="travelDeskTravelRequest.hotels"
               />
               <TransportationRequestTable
                 :authorized-travel="travelAuthorization"
                 :readonly="false"
-                :other-transportations="travelerDetails.otherTransportation"
+                :other-transportations="travelDeskTravelRequest.otherTransportation"
               />
             </template>
           </TitleCard>
@@ -116,12 +116,12 @@
 
 <script setup>
 import { onMounted, reactive, ref, toRefs } from "vue"
-import { cloneDeep, isNil, isEmpty } from "lodash"
+import { cloneDeep, isNil, computed } from "lodash"
 
-import { LOOKUP_URL, TRAVEL_DESK_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+import { TRAVEL_DESK_URL } from "@/urls"
+import { securePost } from "@/store/jwt"
 
-import useTravelAuthorization from "@/use/use-travel-authorization"
+import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
@@ -133,23 +133,21 @@ import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-r
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 
 const props = defineProps({
-  travelAuthorizationId: {
+  travelDeskTravelRequestId: {
     type: Number,
     required: true,
   },
 })
 
-const { travelAuthorizationId } = toRefs(props)
+const { travelDeskTravelRequestId } = toRefs(props)
+const { travelDeskTravelRequest, isLoading } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-const { travelAuthorization, fetch: fetchTravelAuthorization } =
-  useTravelAuthorization(travelAuthorizationId)
+const travelAuthorizationId = computed(() => travelDeskTravelRequest.value.travelAuthorizationId)
+const travelAuthorization = computed(() => travelDeskTravelRequest.value.travelAuthorization)
 
 const readonly = ref(false)
 const internationalTravel = ref(false)
 
-const travelerDetails = ref({
-  travelAuthorizationId: props.travelAuthorizationId,
-})
 const savingData = ref(false)
 
 const travelerDetailsFormCard = ref(null)
@@ -175,73 +173,13 @@ const state = reactive({
   otherTransportationErr: false,
 })
 
-const loadingData = ref(false)
-
 onMounted(async () => {
-  await initForm()
-})
-
-async function initForm() {
   initStates()
-  savingData.value = false
-  loadingData.value = true
-
-  await fetchTravelAuthorization()
-  const email = travelAuthorization.value.email || travelAuthorization.value.user?.email
-  await getEmployeeInfo(email)
-}
+})
 
 function initStates() {
   for (const key of Object.keys(state)) {
     state[key] = false
-  }
-}
-
-async function getEmployeeInfo(email) {
-  if (isNil(email) || isEmpty(email)) {
-    loadingData.value = false
-    throw new Error("Email is empty")
-  }
-
-  try {
-    const { data: employee } = await secureGet(`${LOOKUP_URL}/employee-info?email=` + email)
-    travelerDetails.value = {
-      travelAuthorizationId: props.travelAuthorizationId,
-      legalFirstName: employee.firstName,
-      legalMiddleName: "",
-      legalLastName: employee.lastName,
-      birthDate: "",
-      strAddress: employee.address,
-      city: employee.community,
-      province: employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : "",
-      postalCode: employee.postalCode,
-      passportCountry: "",
-      passportNum: "",
-      travelPurpose: "",
-      travelLocation: "",
-      travelNotes: "",
-      busPhone: employee.businessPhone,
-      busEmail: employee.email,
-      travelContact: false,
-      travelPhone: employee.mobile,
-      travelEmail: "",
-      travelDeskOfficer: "",
-      internationalTravel: false,
-      office: employee.office,
-      department: employee.department,
-      fullName: employee.fullName,
-      additionalInformation: "",
-      rentalCars: [],
-      flightRequests: [],
-      hotels: [],
-      otherTransportation: [],
-      questions: [],
-      status: "draft",
-    }
-  } catch (error) {
-    console.error(`Failed to get employee info: ${error}`)
-  } finally {
-    loadingData.value = false
   }
 }
 
@@ -253,7 +191,7 @@ async function saveNewTravelRequest(saveType) {
 
   if (saveType == "save" || checkFields()) {
     savingData.value = true
-    const body = cloneDeep(travelerDetails.value)
+    const body = cloneDeep(travelDeskTravelRequest.value)
     delete body.internationalTravel
     delete body.differentTravelContact
     delete body.office
@@ -276,33 +214,37 @@ async function saveNewTravelRequest(saveType) {
 }
 
 function checkFields() {
-  state.firstNameErr = travelerDetails.value.legalFirstName ? false : true
+  state.firstNameErr = travelDeskTravelRequest.value.legalFirstName ? false : true
   state.middleNameErr = false
-  state.lastNameErr = travelerDetails.value.legalLastName ? false : true
-  state.birthDateErr = travelerDetails.value.birthDate ? false : true
-  state.travelAuthErr = false //this.travelerDetails.travelAuth? false:true; TODO: add this in backend
-  state.addressErr = travelerDetails.value.strAddress ? false : true
-  state.cityErr = travelerDetails.value.city ? false : true
-  state.provinceErr = travelerDetails.value.province ? false : true
-  state.postalCodeErr = travelerDetails.value.postalCode ? false : true
+  state.lastNameErr = travelDeskTravelRequest.value.legalLastName ? false : true
+  state.birthDateErr = travelDeskTravelRequest.value.birthDate ? false : true
+  state.travelAuthErr = false //this.travelDeskTravelRequest.travelAuth? false:true; TODO: add this in backend
+  state.addressErr = travelDeskTravelRequest.value.strAddress ? false : true
+  state.cityErr = travelDeskTravelRequest.value.city ? false : true
+  state.provinceErr = travelDeskTravelRequest.value.province ? false : true
+  state.postalCodeErr = travelDeskTravelRequest.value.postalCode ? false : true
   state.passportNumberErr =
-    internationalTravel.value && !travelerDetails.value.passportNum ? true : false
+    internationalTravel.value && !travelDeskTravelRequest.value.passportNum ? true : false
   state.passportCountryErr =
-    internationalTravel.value && !travelerDetails.value.passportCountry ? true : false
-  state.businessPhoneErr = travelerDetails.value.busPhone ? false : true
-  state.businessEmailErr = travelerDetails.value.busEmail ? false : true
+    internationalTravel.value && !travelDeskTravelRequest.value.passportCountry ? true : false
+  state.businessPhoneErr = travelDeskTravelRequest.value.busPhone ? false : true
+  state.businessEmailErr = travelDeskTravelRequest.value.busEmail ? false : true
   state.travelPhoneErr =
-    travelerDetails.value.travelContact && !travelerDetails.value.travelPhone ? true : false //show hint
+    travelDeskTravelRequest.value.travelContact && !travelDeskTravelRequest.value.travelPhone
+      ? true
+      : false //show hint
   state.travelEmailErr =
-    travelerDetails.value.travelContact && !travelerDetails.value.travelEmail ? true : false //show hint
+    travelDeskTravelRequest.value.travelContact && !travelDeskTravelRequest.value.travelEmail
+      ? true
+      : false //show hint
   state.flightRequestsErr = false
   state.rentalCarsErr = false
   state.hotelsErr = false
   state.otherTransportationErr = false
 
-  if (travelerDetails.value.status == "options_provided") {
+  if (travelDeskTravelRequest.value.status == "options_provided") {
     let error = false
-    for (const question of travelerDetails.value.questions) {
+    for (const question of travelDeskTravelRequest.value.questions) {
       if (question.response) question.state.responseErr = false
       else {
         question.state.responseErr = true
@@ -310,7 +252,7 @@ function checkFields() {
       }
     }
 
-    for (const flightRequest of travelerDetails.value.flightRequests) {
+    for (const flightRequest of travelDeskTravelRequest.value.flightRequests) {
       for (const flightOption of flightRequest.flightOptions) {
         if (!flightOption.flightPreference) {
           error = true
