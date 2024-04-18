@@ -18,15 +18,28 @@
       loading ...
     </div>
     <v-card-text v-else>
-      <v-row class="mb-3">
+      <v-row>
         <v-col cols="12">
           <TravelerDetailsFormCard
             ref="travelerDetailsFormCard"
             v-model="travelDeskTravelRequest"
           />
-
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col class="d-flex justify-end">
+          <v-btn
+            color="green darken-1"
+            :loading="isLoading"
+            @click="saveAndNotify"
+          >
+            Save Details
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
           <TitleCard
-            class="mt-10"
             title-width="12.5rem"
             large-title
           >
@@ -97,14 +110,7 @@
 
     <v-card-actions>
       <v-btn
-        class="ml-auto mr-2 px-5"
-        color="green darken-1"
-        :loading="isLoading"
-        @click="saveAndNotify"
-        >Save Draft
-      </v-btn>
-      <v-btn
-        class="mr-5 px-5"
+        class="ml-auto mr-5 px-5"
         color="brown darken-1"
         :loading="savingData"
         @click="saveNewTravelRequest('submit')"
