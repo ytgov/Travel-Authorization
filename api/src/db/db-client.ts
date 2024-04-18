@@ -2,6 +2,7 @@ import { Sequelize, Options } from "sequelize"
 import { createNamespace } from "cls-hooked"
 
 import { DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, NODE_ENV } from "@/config"
+import { monkeyPatchSequelizeErrorsForJest } from "@/db/utils/monkey-patch-sequelize-errors-for-jest";
 
 export const transactionManager = createNamespace('transaction-manager');
 Sequelize.useCLS(transactionManager)
@@ -29,6 +30,11 @@ export const SEQUELIZE_CONFIG: Options = {
   },
 }
 
-export const db = new Sequelize(SEQUELIZE_CONFIG)
+export let db: Sequelize
+if (NODE_ENV === "test") {
+  db = monkeyPatchSequelizeErrorsForJest(new Sequelize(SEQUELIZE_CONFIG))
+} else {
+  db = new Sequelize(SEQUELIZE_CONFIG)
+}
 
 export default db
