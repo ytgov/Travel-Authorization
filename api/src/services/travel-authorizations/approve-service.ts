@@ -1,4 +1,5 @@
 import { isNil, isUndefined } from "lodash"
+import { Attributes } from "sequelize"
 
 import { yukonGovernmentIntegration } from "@/integrations"
 import db, {
@@ -47,7 +48,7 @@ export class ApproveService extends BaseService {
 
       if (this.isTravelingByAir(travelSegments)) {
         const travelerDetails = await this.getTravelerDetails(user.email)
-        await this.createTravelDeskTravelRequest(user, purpose)
+        await this.createTravelDeskTravelRequest(user, purpose, travelerDetails)
       }
 
       await TravelAuthorizationActionLog.create({
@@ -70,7 +71,7 @@ export class ApproveService extends BaseService {
   private async createTravelDeskTravelRequest(
     user: User,
     purpose: TravelPurpose,
-    travelerDetails: Record<string, string> = {}
+    travelerDetails: Partial<Attributes<TravelDeskTravelRequest>>
   ): Promise<TravelDeskTravelRequest> {
     const { firstName, lastName, email } = user
     if (isNil(firstName)) {
@@ -97,7 +98,9 @@ export class ApproveService extends BaseService {
     })
   }
 
-  private async getTravelerDetails(email: string) {
+  private async getTravelerDetails(
+    email: string
+  ): Promise<Partial<Attributes<TravelDeskTravelRequest>>> {
     try {
       const employee = await yukonGovernmentIntegration.fetchEmployee(email)
       if (isNil(employee)) {
@@ -118,9 +121,6 @@ export class ApproveService extends BaseService {
         busEmail: employee.email,
         travelContact: false,
         travelPhone: employee.mobile,
-        office: employee.office,
-        department: employee.department,
-        fullName: employee.full_name,
       }
     } catch (error) {
       console.error(`Failed to retrieve employee info: ${error}`)
