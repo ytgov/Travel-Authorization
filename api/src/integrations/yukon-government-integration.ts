@@ -7,7 +7,7 @@ import { NODE_ENV, AZURE_KEY } from "@/config"
 const baseURL =
   NODE_ENV === "production" ? "https://directory-api-prd.ynet.gov.yk.ca" : "https://api.gov.yk.ca"
 
-export const yukonGovernmentApi = axios.create({
+const yukonGovernmentApi = axios.create({
   baseURL,
   headers: {
     "Ocp-Apim-Subscription-Key": AZURE_KEY,
