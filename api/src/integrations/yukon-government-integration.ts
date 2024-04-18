@@ -60,7 +60,7 @@ export const yukonGovernmentIntegration = {
     })
     return data
   },
-  async fetchEmpolyee(email: string): Promise<YukonGovernmentEmployee | null> {
+  async fetchEmployee(email: string): Promise<YukonGovernmentEmployee | null> {
     const { employees } = await yukonGovernmentIntegration.searchEmployees({ email })
 
     if (isEmpty(employees)) {

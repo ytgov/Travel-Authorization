@@ -17,7 +17,7 @@ export class YkGovernmentDirectorySyncService extends BaseService {
     const email = this.user.email
 
     try {
-      const employee = await yukonGovernmentIntegration.fetchEmpolyee(email)
+      const employee = await yukonGovernmentIntegration.fetchEmployee(email)
       if (isNil(employee)) {
         console.log(`Failed to find any employee info for email=${email}`)
         return this.user
