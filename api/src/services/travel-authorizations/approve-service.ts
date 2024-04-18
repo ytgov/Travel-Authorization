@@ -1,5 +1,6 @@
 import { isNil, isUndefined } from "lodash"
 
+import { yukonGovernmentIntegration } from "@/integrations"
 import db, {
   TravelAuthorization,
   TravelAuthorizationActionLog,
@@ -45,6 +46,7 @@ export class ApproveService extends BaseService {
       })
 
       if (this.isTravelingByAir(travelSegments)) {
+        const travelerDetails = await this.getTravelerDetails(user.email)
         await this.createTravelDeskTravelRequest(user, purpose)
       }
 
@@ -67,7 +69,8 @@ export class ApproveService extends BaseService {
 
   private async createTravelDeskTravelRequest(
     user: User,
-    purpose: TravelPurpose
+    purpose: TravelPurpose,
+    travelerDetails: Record<string, string> = {}
   ): Promise<TravelDeskTravelRequest> {
     const { firstName, lastName, email } = user
     if (isNil(firstName)) {
@@ -78,71 +81,52 @@ export class ApproveService extends BaseService {
       throw new Error("User expected to have last name.")
     }
 
-    // TODO: decide how to handle these fields
-    // Either make fields nullable, or ensure values are set before
-    // getting to this point.
     return TravelDeskTravelRequest.create({
       travelAuthorizationId: this.travelAuthorization.id,
       legalFirstName: firstName,
       legalLastName: lastName,
-      strAddress: "TODO",
-      city: "TODO",
-      province: "TODO",
-      postalCode: "TODO",
-      busPhone: "TODO",
-      busEmail: "TODO",
+      strAddress: "",
+      city: "",
+      province: "",
+      postalCode: "",
+      busPhone: "",
+      busEmail: "",
+      ...travelerDetails,
       travelPurpose: purpose.purpose,
       status: TravelDeskTravelRequest.Statuses.DRAFT,
     })
   }
 
-  // async function getEmployeeInfo(email) {
-  //   if (isNil(email) || isEmpty(email)) {
-  //     loadingData.value = false
-  //     throw new Error("Email is empty")
-  //   }
+  private async getTravelerDetails(email: string) {
+    try {
+      const employee = await yukonGovernmentIntegration.fetchEmployee(email)
+      if (isNil(employee)) {
+        console.info(`Failed to find employee info for email: ${email}`)
+        return {}
+      }
 
-  //   try {
-  //     const { data: employee } = await secureGet(`${LOOKUP_URL}/employee-info?email=` + email)
-  //     travelerDetails.value = {
-  //       travelAuthorizationId: props.travelAuthorizationId,
-  //       legalFirstName: employee.firstName,
-  //       legalMiddleName: "",
-  //       legalLastName: employee.lastName,
-  //       birthDate: "",
-  //       strAddress: employee.address,
-  //       city: employee.community,
-  //       province: employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : "",
-  //       postalCode: employee.postalCode,
-  //       passportCountry: "",
-  //       passportNum: "",
-  //       travelPurpose: "",
-  //       travelLocation: "",
-  //       travelNotes: "",
-  //       busPhone: employee.businessPhone,
-  //       busEmail: employee.email,
-  //       travelContact: false,
-  //       travelPhone: employee.mobile,
-  //       travelEmail: "",
-  //       travelDeskOfficer: "",
-  //       internationalTravel: false,
-  //       office: employee.office,
-  //       department: employee.department,
-  //       fullName: employee.fullName,
-  //       additionalInformation: "",
-  //       rentalCars: [],
-  //       flightRequests: [],
-  //       hotels: [],
-  //       otherTransportation: [],
-  //       questions: [],
-  //       status: "draft",
-  //     }
-  //   } catch (error) {
-  //     console.error(`Failed to get employee info: ${error}`)
-  //   } finally {
-  //     loadingData.value = false
-  //   }
-  // }
+      const province = employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : ""
+
+      return {
+        legalFirstName: employee.first_name,
+        legalLastName: employee.last_name,
+        strAddress: employee.address,
+        city: employee.community,
+        province,
+        postalCode: employee.postal_code,
+        busPhone: employee.phone_office,
+        busEmail: employee.email,
+        travelContact: false,
+        travelPhone: employee.mobile,
+        office: employee.office,
+        department: employee.department,
+        fullName: employee.full_name,
+      }
+    } catch (error) {
+      console.error(`Failed to retrieve employee info: ${error}`)
+      return {}
+    }
+  }
 }
 
 export default ApproveService

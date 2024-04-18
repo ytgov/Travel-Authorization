@@ -1,3 +1,4 @@
+import { yukonGovernmentIntegration } from "@/integrations/yukon-government-integration"
 import { TravelAuthorization, TravelDeskTravelRequest, TravelSegment } from "@/models"
 import { ApproveService } from "@/services/travel-authorizations"
 import {
@@ -7,8 +8,16 @@ import {
   userFactory,
 } from "@/factories"
 
+jest.mock("@/integrations/yukon-government-integration.ts")
+
 describe("api/src/services/travel-authorizations/approve-service.ts", () => {
   describe("ApproveService#perform", () => {
+    let mockedYukonGovernmentIntegration: jest.MockedObjectDeep<typeof yukonGovernmentIntegration>
+
+    beforeEach(() => {
+      mockedYukonGovernmentIntegration = jest.mocked(yukonGovernmentIntegration)
+    })
+
     test("when travel authorization is in a submitted state, it updates the status to approved", async () => {
       // Arrange
       const approver = await userFactory.create()
@@ -65,7 +74,7 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
       }
     })
 
-    test("when travel is by air, it creates a travel desk travel request", async () => {
+    test("when travel is by air, and employee not found in directory, it creates a travel desk travel request", async () => {
       // Arrange
       const approver = await userFactory.create()
       const user = await userFactory.create()
@@ -83,6 +92,8 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
           status: TravelAuthorization.Statuses.SUBMITTED,
         })
 
+      mockedYukonGovernmentIntegration.fetchEmployee.mockResolvedValue(null)
+
       // Act
       await ApproveService.perform(travelAuthorization, approver)
 
@@ -98,12 +109,12 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
           travelAuthorizationId: travelAuthorization.id,
           legalFirstName: user.firstName,
           legalLastName: user.lastName,
-          strAddress: "TODO",
-          city: "TODO",
-          province: "TODO",
-          postalCode: "TODO",
-          busPhone: "TODO",
-          busEmail: "todo",
+          strAddress: "",
+          city: "",
+          province: "",
+          postalCode: "",
+          busPhone: "",
+          busEmail: "",
           travelPurpose: purpose.purpose,
           status: TravelDeskTravelRequest.Statuses.DRAFT,
         })
