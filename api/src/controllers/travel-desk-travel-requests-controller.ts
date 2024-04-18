@@ -2,6 +2,7 @@ import { WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { TravelDeskTravelRequest } from "@/models"
+import { TravelDeskTravelRequestsPolicy } from "@/policies"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -9,11 +10,14 @@ export class TravelDeskTravelRequestsController extends BaseController {
   async index() {
     const where = this.query.where as WhereOptions<TravelDeskTravelRequest>
 
-    // TODO: add policy scope
+    const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
+      TravelDeskTravelRequest,
+      this.currentUser
+    )
 
     try {
-      const totalCount = await TravelDeskTravelRequest.count({ where })
-      const travelDeskTravelRequests = await TravelDeskTravelRequest.findAll({
+      const totalCount = await scopedTravelDeskTravelRequests.count({ where })
+      const travelDeskTravelRequests = await scopedTravelDeskTravelRequests.findAll({
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
@@ -35,7 +39,12 @@ export class TravelDeskTravelRequestsController extends BaseController {
       return this.response.status(404).json({ message: "Travel desk request not found." })
     }
 
-    // TODO: add policy check
+    const policy = this.buildPolicy(travelDeskTravelRequest)
+    if (!policy.show()) {
+      return this.response
+        .status(403)
+        .json({ message: "You are not authorized to view this travel desk request." })
+    }
 
     return this.response.status(200).json({ travelDeskTravelRequest })
   }
@@ -45,6 +54,12 @@ export class TravelDeskTravelRequestsController extends BaseController {
     return TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId, {
       include: ["travelAuthorization"],
     })
+  }
+
+  private buildPolicy(
+    travelDeskTravelRequest: TravelDeskTravelRequest
+  ): TravelDeskTravelRequestsPolicy {
+    return new TravelDeskTravelRequestsPolicy(this.currentUser, travelDeskTravelRequest)
   }
 }
 
