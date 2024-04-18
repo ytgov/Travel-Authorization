@@ -42,7 +42,9 @@ export class TravelDeskTravelRequestsController extends BaseController {
 
   private async loadTravelDeskTravelRequest(): Promise<TravelDeskTravelRequest | null> {
     const { travelDeskTravelRequestId } = this.params
-    return TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId)
+    return TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId, {
+      include: ["travelAuthorization"],
+    })
   }
 }
 
