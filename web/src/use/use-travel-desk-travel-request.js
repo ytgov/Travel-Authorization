@@ -42,7 +42,26 @@ export function useTravelDeskTravelRequests(
       state.travelDeskTravelRequest = travelDeskTravelRequest
       return travelDeskTravelRequest
     } catch (error) {
-      console.error("Failed to fetch travelDeskTravelRequest:", error)
+      console.error("Failed to fetch travel desk travel request:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
+  async function save() {
+    state.isLoading = true
+    try {
+      const { travelDeskTravelRequest } = await travelDeskTravelRequestsApi.update(
+        unref(travelDeskTravelRequestId),
+        state.travelDeskTravelRequest
+      )
+      state.isErrored = false
+      state.travelDeskTravelRequest = travelDeskTravelRequest
+      return travelDeskTravelRequest
+    } catch (error) {
+      console.error("Failed to save travel desk travel request:", error)
       state.isErrored = true
       throw error
     } finally {
@@ -64,6 +83,7 @@ export function useTravelDeskTravelRequests(
     ...toRefs(state),
     fetch,
     refresh: fetch,
+    save,
   }
 }
 

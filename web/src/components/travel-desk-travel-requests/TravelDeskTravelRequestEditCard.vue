@@ -99,8 +99,8 @@
       <v-btn
         class="ml-auto mr-2 px-5"
         color="green darken-1"
-        :loading="savingData"
-        @click="saveNewTravelRequest('save')"
+        :loading="isLoading"
+        @click="saveAndNotify"
         >Save Draft
       </v-btn>
       <v-btn
@@ -120,6 +120,7 @@ import { cloneDeep, isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import { securePost } from "@/store/jwt"
+import { useSnack } from "@/plugins/snack-plugin"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
@@ -140,7 +141,8 @@ const props = defineProps({
 })
 
 const { travelDeskTravelRequestId } = toRefs(props)
-const { travelDeskTravelRequest, isLoading } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
+const { travelDeskTravelRequest, isLoading, save } =
+  useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
 const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
 const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travelAuthorization)
@@ -181,6 +183,20 @@ function initStates() {
   for (const key of Object.keys(state)) {
     state[key] = false
   }
+}
+
+const snack = useSnack()
+
+async function saveAndNotify() {
+  if (validate() !== true) {
+    snack("Form validation failed! Please fill out all required fields.", {
+      color: "error",
+    })
+    throw new Error("Form validation failed")
+  }
+
+  await save()
+  snack("Request updated.")
 }
 
 async function saveNewTravelRequest(saveType) {

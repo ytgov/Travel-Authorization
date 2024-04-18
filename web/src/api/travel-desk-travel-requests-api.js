@@ -14,6 +14,13 @@ export const travelDeskTravelRequestsApi = {
     )
     return data
   },
+  async update(travelDeskTravelRequestId, attributes) {
+    const { data } = await http.patch(
+      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}`,
+      attributes
+    )
+    return data
+  },
 }
 
 export default travelDeskTravelRequestsApi

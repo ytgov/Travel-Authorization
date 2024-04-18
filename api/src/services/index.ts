@@ -11,6 +11,7 @@ export * as GeneralLedgerCodings from "./general-ledger-codings"
 export * as Qa from "./qa"
 export * as Stops from "./stops"
 export * as TravelAuthorizations from "./travel-authorizations"
+export * as TravelDeskTravelRequests from "./travel-desk-travel-requests"
 export * as TravelSegments from "./travel-segments"
 export * as Users from "./users"
 
