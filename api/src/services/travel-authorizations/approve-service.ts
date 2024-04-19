@@ -1,4 +1,4 @@
-import { isNil, isUndefined } from "lodash"
+import { isEmpty, isNil, isUndefined } from "lodash"
 import { Attributes } from "sequelize"
 
 import { yukonGovernmentIntegration } from "@/integrations"
@@ -104,11 +104,20 @@ export class ApproveService extends BaseService {
     try {
       const employee = await yukonGovernmentIntegration.fetchEmployee(email)
       if (isNil(employee)) {
-        console.info(`Failed to find employee info for email: ${email}`)
+        console.debug(`Failed to find employee info for email: ${email}`)
         return {}
       }
 
       const province = employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : ""
+      const travelContact =
+        isNil(employee.mobile) ||
+        isEmpty(employee.mobile) ||
+        isNil(employee.email) ||
+        isEmpty(employee.email)
+          ? false
+          : true
+      const travelPhone = travelContact === true ? employee.mobile : null
+      const travelEmail = travelContact === true ? email : null
 
       return {
         legalFirstName: employee.first_name,
@@ -119,8 +128,9 @@ export class ApproveService extends BaseService {
         postalCode: employee.postal_code,
         busPhone: employee.phone_office,
         busEmail: employee.email,
-        travelContact: false,
-        travelPhone: employee.mobile,
+        travelContact,
+        travelPhone,
+        travelEmail,
       }
     } catch (error) {
       console.error(`Failed to retrieve employee info: ${error}`)

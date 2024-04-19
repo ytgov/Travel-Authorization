@@ -16,6 +16,9 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
 
     beforeEach(() => {
       mockedYukonGovernmentIntegration = jest.mocked(yukonGovernmentIntegration)
+
+      // Suppress debug logging messages
+      jest.spyOn(console, "debug").mockImplementation(() => {})
     })
 
     test("when travel authorization is in a submitted state, it updates the status to approved", async () => {
@@ -120,6 +123,7 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
         })
       )
     })
+
     test("when travel is by air, and employee found in directory, it creates a travel desk travel request with traveler details from directory", async () => {
       // Arrange
       const approver = await userFactory.create()
@@ -187,7 +191,8 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
           postalCode: "X0X 0X0",
           busPhone: "123-456-7890",
           busEmail: "john.doe@yukon.ca",
-          travelContact: false,
+          travelContact: true,
+          travelEmail: user.email,
           travelPhone: "987-654-3210",
           travelPurpose: purpose.purpose,
           status: TravelDeskTravelRequest.Statuses.DRAFT,
