@@ -10,13 +10,16 @@
     <template #body>
       <SaveStateProgress
         v-if="showSaveStateProgress"
-        class="float-right my-0 mr-3"
+        class="float-right my-0 mr-3 hidden-sm-and-down"
         :saving="isSaving"
         @click="emit('save-requested')"
       />
       <v-form ref="form">
         <v-row class="mt-5 mx-3">
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.legalFirstName"
               label="Legal First Name *"
