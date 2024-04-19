@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="px-0 px-md-6">
     <v-skeleton-loader
       v-if="isNil(travelDeskTravelRequestId) && !isErrored"
       type="card"
