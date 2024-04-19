@@ -6,18 +6,29 @@ import {
   CreationOptional,
   DataTypes,
   ForeignKey,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
 } from "sequelize"
-import { isEmpty, isNil } from "lodash"
-
-import TravelAuthorization from "./travel-authorization"
-import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
-import TravelDeskTravelAgent from "./travel-desk-travel-agent"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
+
+import TravelAuthorization from "@/models/travel-authorization"
+import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
+import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
+import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
 
 // Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
 enum Statuses {
@@ -87,11 +98,45 @@ export class TravelDeskTravelRequest extends Model<
   >
   declare createTravelDeskTravelAgent: BelongsToCreateAssociationMixin<TravelDeskTravelAgent>
 
+  declare getFlightRequests: HasManyGetAssociationsMixin<TravelDeskFlightRequest>
+  declare setFlightRequests: HasManySetAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["requestId"]
+  >
+  declare hasFlightRequest: HasManyHasAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["requestId"]
+  >
+  declare hasFlightRequests: HasManyHasAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["requestId"]
+  >
+  declare addFlightRequest: HasManyAddAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["requestId"]
+  >
+  declare addFlightRequests: HasManyAddAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["requestId"]
+  >
+  declare removeFlightRequest: HasManyRemoveAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["requestId"]
+  >
+  declare removeFlightRequests: HasManyRemoveAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["requestId"]
+  >
+  declare countFlightRequests: HasManyCountAssociationsMixin
+  declare createFlightRequest: HasManyCreateAssociationMixin<TravelDeskFlightRequest>
+
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
   declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
+  declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
 
   declare static associations: {
+    flightRequests: Association<TravelDeskTravelRequest, TravelDeskFlightRequest>
     travelAuthorization: Association<TravelDeskTravelRequest, TravelAuthorization>
     travelDeskPassengerNameRecordDocument: Association<
       TravelDeskTravelRequest,
@@ -115,6 +160,10 @@ export class TravelDeskTravelRequest extends Model<
     //   as: "travelDeskTravelAgent",
     //   foreignKey: "agencyID",
     // })
+    this.hasMany(TravelDeskFlightRequest, {
+      as: "flightRequests",
+      foreignKey: "requestID",
+    })
   }
 }
 
@@ -273,10 +322,7 @@ TravelDeskTravelRequest.init(
         }
       },
       allTravelContactFieldsOrNone() {
-        if (
-          this.travelContact === true &&
-          (isNil(this.travelPhone) || isNil(this.travelEmail))
-        ) {
+        if (this.travelContact === true && (isNil(this.travelPhone) || isNil(this.travelEmail))) {
           throw new Error("Travel phone and email are required if travel contact is true")
         } else if (
           this.travelContact === false &&
@@ -284,7 +330,7 @@ TravelDeskTravelRequest.init(
         ) {
           throw new Error("Travel phone and email are only permitted if travel contact is true")
         }
-      }
+      },
     },
   }
 )
