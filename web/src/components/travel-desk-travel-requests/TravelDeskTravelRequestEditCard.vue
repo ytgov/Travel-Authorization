@@ -11,7 +11,7 @@
     </v-card-title>
 
     <div
-      v-if="isLoading"
+      v-if="isNil(travelDeskTravelRequest)"
       class="mt-10"
       style="text-align: center"
     >
