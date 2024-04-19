@@ -33,21 +33,19 @@
         <!-- <ROW-1> -->
         <v-row class="mt-5 mx-0">
           <v-col cols="4">
-            <v-autocomplete
+            <LocationsAutocomplete
               v-model="flightRequest.departLocation"
-              :items="destinations"
-              item-value="text"
               :error="state.departLocationErr"
               label="Depart Location"
+              item-value="city"
               outlined
               @input="state.departLocationErr = false"
             />
           </v-col>
           <v-col cols="4">
-            <v-autocomplete
+            <LocationsAutocomplete
               v-model="flightRequest.arriveLocation"
-              :items="destinations"
-              item-value="text"
+              item-value="city"
               :error="state.arriveLocationErr"
               label="Arrive Location"
               outlined
@@ -134,8 +132,13 @@
 </template>
 
 <script>
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+
 export default {
   name: "NewFlightRequest",
+  components: {
+    LocationsAutocomplete,
+  },
   props: {
     type: {
       type: String,
@@ -172,12 +175,9 @@ export default {
         timePreferenceErr: false,
         seatPreferenceErr: false,
       },
-      destinations: [],
     }
   },
-  mounted() {
-    this.destinations = this.$store.state.traveldesk.destinations
-  },
+  mounted() {},
   methods: {
     checkFields() {
       this.state.departLocationErr = this.flightRequest.departLocation ? false : true
