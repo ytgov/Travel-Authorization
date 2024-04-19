@@ -283,6 +283,16 @@ const dobMaxDate = computed(() => {
 watch(
   travelerDetails,
   (newValue) => {
+    if (newValue.isInternationalTravel === false) {
+      newValue.passportNum = null
+      newValue.passportCountry = null
+    }
+
+    if (newValue.travelContact === false) {
+      newValue.travelPhone = null
+      newValue.travelEmail = null
+    }
+
     emit("input", cloneDeep({ ...props.value, ...newValue }))
   },
   {
