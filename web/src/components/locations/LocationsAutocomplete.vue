@@ -25,7 +25,7 @@ export default {
   name: "LocationsAutocomplete",
   props: {
     value: {
-      type: Number,
+      type: [Number, String],
       default: null,
     },
     inTerritory: {
@@ -49,6 +49,9 @@ export default {
         return {
           value: id,
           text: `${city} (${province})`,
+          // These legacy fields support using location selector string values.
+          city,
+          province,
         }
       })
     },

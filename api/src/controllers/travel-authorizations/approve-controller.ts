@@ -41,7 +41,9 @@ export class ApproveController extends BaseController {
   }
 
   private loadTravelAuthorization(): Promise<TravelAuthorization | null> {
-    return TravelAuthorization.findByPk(this.params.travelAuthorizationId)
+    return TravelAuthorization.findByPk(this.params.travelAuthorizationId, {
+      include: ["purpose", "travelSegments", "user"],
+    })
   }
 
   private buildPolicy(record: TravelAuthorization): ApprovePolicy {

@@ -16,8 +16,21 @@ export const isGeneralLedgerCode = (v) =>
   /^[a-zA-Z0-9]{3}-[a-zA-Z0-9]{6}-\d{4}(?:-[a-zA-Z0-9]{1,4}(?:-[a-zA-Z0-9]{1,5})?)?$/.test(v) ||
   "Code must be in the format: vote (3 characters) - Program (6 characters) - object code (4 digits) - subledger-1 (0-4 characters) - subleger-2 (0-5 characters)"
 
+export const isPhoneNumber = (value) => {
+  const pattern = /^[0-9]{3}[-. ][0-9]{3}[-. ][0-9]{4}((\s\x[0-9]{4})|)?$/
+  return pattern.test(value) || "Invalid Phone (888-888-8888)"
+}
+
+export const isEmail = (value) => {
+  const pattern =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return pattern.test(value) || "Invalid e-mail."
+}
+
 export default {
-  isGeneralLedgerCode,
   greaterThanOrEqualToDate,
+  isEmail,
+  isGeneralLedgerCode,
+  isPhoneNumber,
   required,
 }

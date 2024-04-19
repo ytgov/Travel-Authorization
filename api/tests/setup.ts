@@ -17,6 +17,10 @@ import { QueryTypes } from "sequelize"
 
 import db from "@/models"
 
+// Global Mocks
+import "@/support/mock-current-user"
+import { mockedAxios } from "@/support/mock-axios"
+
 async function getTableNames() {
   const query = `
     SELECT table_name as "tableName"
@@ -60,4 +64,8 @@ async function cleanDatabase() {
 
 beforeEach(async () => {
   await cleanDatabase()
+})
+
+afterEach(() => {
+  mockedAxios.reset()
 })

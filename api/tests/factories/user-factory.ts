@@ -31,7 +31,7 @@ export const userFactory = Factory.define<User>(({ params, onCreate }) => {
     unit: faker.datatype.boolean(0.1) ? faker.lorem.word() : null,
     mailcode: faker.datatype.boolean(0.7) ? generateMailCode() : null,
     manager: faker.datatype.boolean(0.9) ? faker.person.fullName() : null,
-    lastEmployeeDirectorySyncAt: faker.date.recent(),
+    lastSyncFailureAt: faker.date.recent(),
   })
 })
 

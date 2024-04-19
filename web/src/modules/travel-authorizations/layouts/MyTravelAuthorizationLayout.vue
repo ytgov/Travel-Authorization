@@ -18,6 +18,7 @@
           <v-tabs>
             <DetailsTab :travel-authorization-id="travelAuthorizationId" />
             <EstimateTab :travel-authorization-id="travelAuthorizationId" />
+            <RequestTab :travel-authorization-id="travelAuthorizationId" />
             <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
             <!-- TODO: add in any tabs that you can normally see in read-only mode -->
           </v-tabs>
@@ -40,6 +41,7 @@ import VUserChipMenu from "@/components/VUserChipMenu"
 import DetailsTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/DetailsTab"
 import EstimateTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/EstimateTab"
 import ExpenseTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/ExpenseTab"
+import RequestTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/RequestTab"
 
 export default {
   name: "MyTravelAuthorizationLayout",
@@ -49,6 +51,7 @@ export default {
     EstimateTab,
     ExpenseTab,
     PageLoader,
+    RequestTab,
     SummaryHeaderPanel,
     VUserChipMenu,
   },
