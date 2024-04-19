@@ -27,14 +27,20 @@
               outlined
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.legalMiddleName"
               label="Legal Middle Name"
               outlined
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.legalLastName"
               label="Legal Last Name *"
@@ -42,7 +48,10 @@
               outlined
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.birthDate"
               label="Birth Date"
@@ -51,7 +60,10 @@
               type="date"
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelAuthorizationId"
               readonly
@@ -61,7 +73,10 @@
           </v-col>
         </v-row>
         <v-row class="mt-0 mx-3">
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.strAddress"
               label="Address *"
@@ -69,7 +84,10 @@
               outlined
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <LocationsAutocomplete
               v-model="travelerDetails.city"
               label="City *"
@@ -78,7 +96,10 @@
               outlined
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.province"
               label="Province *"
@@ -86,7 +107,10 @@
               outlined
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.postalCode"
               label="Postal Code *"
@@ -94,7 +118,10 @@
               outlined
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-checkbox
               v-model="travelerDetails.isInternationalTravel"
               label="International travel"
@@ -105,7 +132,10 @@
           v-if="travelerDetails.isInternationalTravel"
           class="mt-0 mx-3"
         >
-          <v-col cols="3">
+          <v-col
+            cols="12"
+            md="3"
+          >
             <v-text-field
               v-model="travelerDetails.passportNum"
               label="Passport Number *"
@@ -113,7 +143,10 @@
               outlined
             />
           </v-col>
-          <v-col cols="3">
+          <v-col
+            cols="12"
+            md="3"
+          >
             <v-text-field
               v-model="travelerDetails.passportCountry"
               label="Passport Country *"
@@ -124,7 +157,10 @@
         </v-row>
 
         <v-row class="mt-0 mx-3">
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.busPhone"
               :rules="[isPhoneNumber, required]"
@@ -133,7 +169,10 @@
               validate-on-blur
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.busEmail"
               :rules="[isEmail, required]"
@@ -142,7 +181,10 @@
               validate-on-blur
             />
           </v-col>
-          <v-col cols="3">
+          <v-col
+            cols="12"
+            md="3"
+          >
             <v-checkbox
               v-model="travelerDetails.travelContact"
               label="Contact information different for travel"
@@ -153,7 +195,10 @@
           v-if="travelerDetails.travelContact"
           class="mt-0 mx-3"
         >
-          <v-col cols="2">
+          <v-col
+            cols="12"
+            md="2"
+          >
             <v-text-field
               v-model="travelerDetails.travelPhone"
               :rules="[isPhoneNumber, required]"
@@ -161,7 +206,10 @@
               outlined
             />
           </v-col>
-          <v-col cols="3">
+          <v-col
+            cols="12"
+            md="3"
+          >
             <v-text-field
               v-model="travelerDetails.travelEmail"
               :rules="[isEmail, required]"
