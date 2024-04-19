@@ -48,8 +48,11 @@
                   <div>Flight Request</div>
                 </template>
                 <template #body>
-                  <v-row class="mt-0 mx-0">
-                    <v-col cols="9">
+                  <v-row
+                    class="mt-0"
+                    no-gutters
+                  >
+                    <v-col cols="12">
                       <TravelDeskFlightRequestsEditTable
                         :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                         :authorized-travel="travelAuthorization"
@@ -59,19 +62,19 @@
                         :flight-requests="travelDeskTravelRequest.flightRequests"
                       />
                     </v-col>
-                    <v-col
-                      cols="3"
-                      class="px-0"
-                    >
+                  </v-row>
+                  <v-row
+                    class="ml-3"
+                    no-gutters
+                  >
+                    <v-col cols="12">
                       <v-textarea
                         v-model="travelDeskTravelRequest.additionalInformation"
                         class="mt-5 mr-5"
-                        :readonly="readonly"
                         label="Additional Information"
                         outlined
                         auto-grow
                         counter
-                        :clearable="!readonly"
                       />
                     </v-col>
                   </v-row>

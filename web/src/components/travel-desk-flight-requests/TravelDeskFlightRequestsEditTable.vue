@@ -4,26 +4,18 @@
     class="pt-1"
     style="border: 0px solid red !important"
   >
-    <v-row class="mt-n1 mx-0">
+    <div class="d-flex justify-end pr-4">
       <TravelDeskFlightRequestCreateDialog
-        v-if="!readonly"
-        :disabled="loadingData"
+        :loading="loadingData"
         :min-date="minDate"
         :max-date="maxDate"
-        class="ml-auto mr-3"
         type="Add New"
         :flight-request="flightRequest"
         @updateTable="updateTable"
       />
-    </v-row>
-    <v-row
-      v-if="!loadingData"
-      class="mb-3 mx-0"
-    >
-      <v-col
-        v-if="flightRequests?.length > 0"
-        cols="12"
-      >
+    </div>
+    <v-row class="mb-3 mx-0">
+      <v-col cols="12">
         <v-data-table
           :headers="flightHeaders"
           :items="flightRequests"
