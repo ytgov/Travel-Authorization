@@ -65,6 +65,7 @@ export class TravelDeskTravelRequestsPolicy extends BasePolicy<TravelDeskTravelR
       "busEmail",
       "status",
       "birthDate",
+      "isInternationalTravel",
       "passportCountry",
       "passportNum",
       "travelLocation",

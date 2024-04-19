@@ -85,32 +85,30 @@
               outlined
             />
           </v-col>
-          <v-col
-            v-if="!travelerDetails.internationalTravel"
-            cols="2"
-          >
+          <v-col cols="2">
             <v-checkbox
-              v-model="travelerDetails.internationalTravel"
+              v-model="travelerDetails.isInternationalTravel"
               label="International travel"
             />
           </v-col>
-          <v-col
-            v-if="travelerDetails.internationalTravel"
-            cols="2"
-          >
+        </v-row>
+        <v-row
+          v-if="travelerDetails.isInternationalTravel"
+          class="mt-0 mx-3"
+        >
+          <v-col cols="3">
             <v-text-field
               v-model="travelerDetails.passportNum"
-              label="Passport Number"
+              label="Passport Number *"
+              :rules="[required]"
               outlined
             />
           </v-col>
-          <v-col
-            v-if="travelerDetails.internationalTravel"
-            cols="2"
-          >
+          <v-col cols="3">
             <v-text-field
               v-model="travelerDetails.passportCountry"
-              label="Passport Country"
+              label="Passport Country *"
+              :rules="[required]"
               outlined
             />
           </v-col>
@@ -141,25 +139,24 @@
               label="Contact information different for travel"
             />
           </v-col>
-          <v-col
-            v-if="travelerDetails.travelContact"
-            cols="2"
-          >
+        </v-row>
+        <v-row
+          v-if="travelerDetails.travelContact"
+          class="mt-0 mx-3"
+        >
+          <v-col cols="2">
             <v-text-field
               v-model="travelerDetails.travelPhone"
-              :rules="[isPhoneNumber]"
-              label="Travel Phone"
+              :rules="[isPhoneNumber, required]"
+              label="Travel Phone *"
               outlined
             />
           </v-col>
-          <v-col
-            v-if="travelerDetails.travelContact"
-            cols="3"
-          >
+          <v-col cols="3">
             <v-text-field
               v-model="travelerDetails.travelEmail"
-              :rules="[isEmail]"
-              label="Travel Email"
+              :rules="[isEmail, required]"
+              label="Travel Email *"
               outlined
             />
           </v-col>
@@ -197,15 +194,14 @@ const travelerDetails = reactive({
   city: "",
   province: "",
   postalCode: "",
+  isInternationalTravel: false,
   passportNum: "",
   passportCountry: "",
   busPhone: "",
   busEmail: "",
-  travelContact: "",
+  travelContact: false,
   travelPhone: "",
   travelEmail: "",
-  // internationalTravel = this.modelValue.passportCountry || this.modelValue.passportNum
-  internationalTravel: false,
   ...props.value,
 })
 const form = ref(null)
@@ -233,10 +229,6 @@ function validate() {
   if (isNil(form.value)) {
     throw new Error("Form could not be found")
   }
-
-  // TODO: add validation for additional fields
-  // passportNum and passportCountry are required if internationalTravel is set
-  // travelPhone and travelEmail are required if travelContact is present
 
   return form.value.validate()
 }
