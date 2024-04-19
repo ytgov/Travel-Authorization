@@ -23,6 +23,10 @@
           <TravelerDetailsFormCard
             ref="travelerDetailsFormCard"
             v-model="travelDeskTravelRequest"
+            :show-save-state-progress="true"
+            :is-saving="isLoading"
+            @save-requested="saveAndNotify"
+            @input="debouncedSaveAndNotify"
           />
         </v-col>
       </v-row>
@@ -119,7 +123,7 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref, toRefs } from "vue"
-import { cloneDeep, isNil } from "lodash"
+import { cloneDeep, debounce, isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import { securePost } from "@/store/jwt"
@@ -201,6 +205,8 @@ async function saveAndNotify() {
   await save()
   snack("Request updated.")
 }
+
+const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 
 async function saveNewTravelRequest(saveType) {
   if (validate() !== true) {

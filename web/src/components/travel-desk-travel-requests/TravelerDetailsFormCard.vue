@@ -8,6 +8,12 @@
       <div>Traveler Details</div>
     </template>
     <template #body>
+      <SaveStateProgress
+        v-if="showSaveStateProgress"
+        class="float-right my-0 mr-3"
+        :saving="isSaving"
+        @click="emit('save-requested')"
+      />
       <v-form ref="form">
         <v-row class="mt-5 mx-3">
           <v-col cols="2">
@@ -172,6 +178,7 @@ import { cloneDeep, isNil } from "lodash"
 
 import { isPhoneNumber, isEmail, required } from "@/utils/validators"
 
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
@@ -180,9 +187,17 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  showSaveStateProgress: {
+    type: Boolean,
+    default: false,
+  },
+  isSaving: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-const emit = defineEmits(["input"])
+const emit = defineEmits(["input", "save-requested"])
 
 const travelerDetails = reactive({
   legalFirstName: "",
