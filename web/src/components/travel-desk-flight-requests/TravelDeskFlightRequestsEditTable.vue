@@ -45,11 +45,11 @@
             </td>
           </template>
 
-          <template #[`item.date`]="{ item }">
+          <template #item.date="{ item }">
             {{ item.date | beautifyDateTime }}
           </template>
 
-          <template #[`item.edit`]="{ item }">
+          <template #item.edit="{ item }">
             <v-row class="mx-0 py-0 mt-n6 mb-n6">
               <v-col cols="6">
                 <TravelDeskFlightRequestCreateDialog
