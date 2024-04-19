@@ -11,6 +11,7 @@ import {
   Model,
   NonAttribute,
 } from "sequelize"
+import { isEmpty, isNil } from "lodash"
 
 import TravelAuthorization from "./travel-authorization"
 import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
@@ -44,6 +45,7 @@ export class TravelDeskTravelRequest extends Model<
   declare city: string
   declare province: string
   declare postalCode: string
+  declare isInternationalTravel: CreationOptional<boolean>
   declare passportCountry: string | null
   declare passportNum: string | null
   declare travelPurpose: string
@@ -200,6 +202,11 @@ TravelDeskTravelRequest.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    isInternationalTravel: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     passportCountry: {
       type: DataTypes.STRING(255),
       allowNull: true,
@@ -251,6 +258,34 @@ TravelDeskTravelRequest.init(
     sequelize,
     modelName: "TravelDeskTravelRequest",
     tableName: "travel_desk_travel_requests",
+    validate: {
+      allInternationalTravelFieldsOrNone() {
+        if (
+          this.isInternationalTravel === true &&
+          (isNil(this.passportCountry) || isNil(this.passportNum))
+        ) {
+          throw new Error("Passport country and number are required for international travel")
+        } else if (
+          this.isInternationalTravel === false &&
+          (!isNil(this.passportCountry) || !isNil(this.passportNum))
+        ) {
+          throw new Error("Passport country and number are only permitted for international travel")
+        }
+      },
+      allTravelContactFieldsOrNone() {
+        if (
+          this.travelContact === true &&
+          (isNil(this.travelPhone) || isNil(this.travelEmail))
+        ) {
+          throw new Error("Travel phone and email are required if travel contact is true")
+        } else if (
+          this.travelContact === false &&
+          (!isNil(this.travelPhone) || !isNil(this.travelEmail))
+        ) {
+          throw new Error("Travel phone and email are only permitted if travel contact is true")
+        }
+      }
+    },
   }
 )
 
