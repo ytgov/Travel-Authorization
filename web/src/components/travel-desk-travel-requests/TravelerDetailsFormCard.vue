@@ -170,11 +170,10 @@
 import { computed, reactive, ref, watch } from "vue"
 import { cloneDeep, isNil } from "lodash"
 
-import { isPhoneNumber, isEmail } from "@/utils/validators"
+import { isPhoneNumber, isEmail, required } from "@/utils/validators"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import { required } from "@/utils/validators"
 
 const props = defineProps({
   value: {
