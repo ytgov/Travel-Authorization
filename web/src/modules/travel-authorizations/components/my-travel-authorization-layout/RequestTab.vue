@@ -1,6 +1,6 @@
 <template>
   <v-tooltip
-    v-if="isWaitingForApproval"
+    v-if="isLocked"
     bottom
   >
     <template #activator="{ on }">
@@ -22,7 +22,8 @@
         </v-tab>
       </div>
     </template>
-    <span> Locked until request is approved. </span>
+    <span v-if="hasNoAirTravel"> Disabled as traveler is not traveling by air.</span>
+    <span v-else-if="isWaitingForApproval"> Locked until request is approved. </span>
   </v-tooltip>
   <v-tab
     v-else
@@ -38,6 +39,7 @@
 <script setup>
 import { computed, toRefs } from "vue"
 
+import { TRAVEL_METHODS } from "@/api/travel-segments-api"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
@@ -55,4 +57,10 @@ const isWaitingForApproval = computed(
     travelAuthorization.value.status === STATUSES.DRAFT ||
     travelAuthorization.value.status === STATUSES.SUBMITTED
 )
+const hasNoAirTravel = computed(() =>
+  travelAuthorization.value.travelSegments.every(
+    (segment) => segment.modeOfTransport !== TRAVEL_METHODS.AIRCRAFT
+  )
+)
+const isLocked = computed(() => isWaitingForApproval.value || hasNoAirTravel.value)
 </script>
