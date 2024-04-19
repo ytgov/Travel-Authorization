@@ -57,7 +57,8 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare unit: string | null
   declare mailcode: string | null
   declare manager: string | null
-  declare lastEmployeeDirectorySyncAt: Date | null
+  declare lastSyncSuccessAt: Date | null
+  declare lastSyncFailureAt: Date | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
@@ -117,12 +118,16 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   }
 
   isTimeToSyncWithEmployeeDirectory(): NonAttribute<boolean> {
-    if (this.lastEmployeeDirectorySyncAt === null) {
+    if (this.lastSyncFailureAt !== null) {
+      return false
+    }
+
+    if (this.lastSyncSuccessAt === null) {
       return true
     }
 
     const current = moment.utc()
-    const lastSyncDate = moment.utc(this.lastEmployeeDirectorySyncAt)
+    const lastSyncDate = moment.utc(this.lastSyncSuccessAt)
 
     return !current.isSame(lastSyncDate, "day")
   }
@@ -206,7 +211,11 @@ User.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    lastEmployeeDirectorySyncAt: {
+    lastSyncSuccessAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    lastSyncFailureAt: {
       type: DataTypes.DATE,
       allowNull: true,
     },

@@ -20,7 +20,9 @@ export class YkGovernmentDirectorySyncService extends BaseService {
       const employee = await yukonGovernmentIntegration.fetchEmployee(email)
       if (isNil(employee)) {
         console.log(`Failed to find any employee info for email=${email}`)
-        return this.user
+        return this.user.update({
+          lastSyncFailureAt: new Date(),
+        })
       }
 
       return this.user.update({
@@ -30,10 +32,14 @@ export class YkGovernmentDirectorySyncService extends BaseService {
         unit: employee.unit,
         mailcode: employee.mailcode,
         manager: employee.manager,
-        lastEmployeeDirectorySyncAt: new Date(),
+        lastSyncSuccessAt: new Date(),
+        lastSyncFailureAt: null,
       })
     } catch (error) {
-      return this.user
+      console.error(`User sync failure for ${email} with yukon government directory`, error)
+      return this.user.update({
+        lastSyncFailureAt: new Date(),
+      })
     }
   }
 }
