@@ -1,4 +1,5 @@
 export { ApproveController } from "./approve-controller"
+export { ApproveExpenseClaimController } from "./approve-expense-claim-controller"
 export { DenyController } from "./deny-controller"
 export { ExpenseClaimController } from "./expense-claim-controller"
 export { SubmitController } from "./submit-controller"

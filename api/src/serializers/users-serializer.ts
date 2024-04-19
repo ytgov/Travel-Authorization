@@ -27,7 +27,7 @@ export class UsersSerializer extends BaseSerializer<User> {
         "unit",
         "mailcode",
         "manager",
-        "lastEmployeeDirectorySyncAt",
+        "lastSyncSuccessAt",
         "createdAt",
         "updatedAt",
       ]),

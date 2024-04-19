@@ -40,7 +40,7 @@ const snack = useSnack()
 
 function approve() {
   return travelAuthorizationApi
-    .approve(props.travelAuthorizationId)
+    .approveExpenseClaim(props.travelAuthorizationId)
     .then(() => {
       snack("Travel authorization approved!", { color: "success" })
     })

@@ -2,8 +2,8 @@
   <div>
     <title-card
       class="mt-10"
-      titleWidth="11rem"
-      largeTitle
+      title-width="11rem"
+      large-title
     >
       <template #title>
         <div>Traveler Details</div>
@@ -12,49 +12,49 @@
         <v-row class="mt-5 mx-3">
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.legalFirstName"
               :readonly="readonly"
               :error="travelerState.firstNameErr"
               label="Legal First Name"
-              v-model="travelerDetails.legalFirstName"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.legalMiddleName"
               :readonly="readonly"
               :error="travelerState.middleNameErr"
               label="Legal Middle Name"
-              v-model="travelerDetails.legalMiddleName"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.legalLastName"
               :readonly="readonly"
               :error="travelerState.lastNameErr"
               label="Legal Last Name"
-              v-model="travelerDetails.legalLastName"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.birthDate"
               :readonly="readonly"
               :error="travelerState.birthDateErr"
-              v-model="travelerDetails.birthDate"
-              @input="travelerState.birthDateErr = false"
               label="Birth Date"
               outlined
               :max="dobMaxDate"
               type="date"
+              @input="travelerState.birthDateErr = false"
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
+              v-model="travelAuthorizationId"
               readonly
               :error="travelerState.travelAuthErr"
               label="Travel Auth"
-              v-model="taid"
               outlined
             />
           </v-col>
@@ -62,74 +62,72 @@
         <v-row class="mt-0 mx-3">
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.strAddress"
               :readonly="readonly"
               :error="travelerState.addressErr"
               label="Address"
-              v-model="travelerDetails.strAddress"
               outlined
             />
           </v-col>
           <v-col cols="2">
-            <v-autocomplete
-              :items="destinations"
-              item-text="city"
+            <LocationsAutocomplete
+              v-model="travelerDetails.city"
               item-value="city"
               :readonly="readonly"
               :error="travelerState.cityErr"
               label="City"
-              v-model="travelerDetails.city"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.province"
               :readonly="readonly"
               :error="travelerState.provinceErr"
               label="Province"
-              v-model="travelerDetails.province"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.postalCode"
               :readonly="readonly"
               :error="travelerState.postalCodeErr"
               label="Postal Code"
-              v-model="travelerDetails.postalCode"
               outlined
             />
           </v-col>
           <v-col
-            cols="2"
             v-if="!travelerDetails.internationalTravel"
+            cols="2"
           >
             <v-checkbox
-              :readonly="readonly"
               v-model="travelerDetails.internationalTravel"
+              :readonly="readonly"
               label="International travel"
             />
           </v-col>
           <v-col
-            cols="2"
             v-if="travelerDetails.internationalTravel"
+            cols="2"
           >
             <v-text-field
+              v-model="travelerDetails.passportNum"
               :readonly="readonly"
               :error="travelerState.passportNumberErr"
               label="Passport Number"
-              v-model="travelerDetails.passportNum"
               outlined
             />
           </v-col>
           <v-col
-            cols="2"
             v-if="travelerDetails.internationalTravel"
+            cols="2"
           >
             <v-text-field
+              v-model="travelerDetails.passportCountry"
               :readonly="readonly"
               :error="travelerState.passportCountryErr"
               label="Passport Country"
-              v-model="travelerDetails.passportCountry"
               outlined
             />
           </v-col>
@@ -138,54 +136,54 @@
         <v-row class="mt-0 mx-3">
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.busPhone"
               :readonly="readonly"
               :rules="[rules.phone]"
               :error="travelerState.businessPhoneErr"
               label="Business Phone"
-              v-model="travelerDetails.busPhone"
               outlined
             />
           </v-col>
           <v-col cols="2">
             <v-text-field
+              v-model="travelerDetails.busEmail"
               :readonly="readonly"
               :rules="[rules.email]"
               :error="travelerState.businessEmailErr"
               label="Business Email"
-              v-model="travelerDetails.busEmail"
               outlined
             />
           </v-col>
           <v-col cols="3">
             <v-checkbox
-              :readonly="readonly"
               v-model="travelerDetails.travelContact"
+              :readonly="readonly"
               label="Contact information different for travel"
             />
           </v-col>
           <v-col
-            cols="2"
             v-if="travelerDetails.travelContact"
+            cols="2"
           >
             <v-text-field
+              v-model="travelerDetails.travelPhone"
               :readonly="readonly"
               :rules="[rules.phone]"
               :error="travelerState.travelPhoneErr"
               label="Travel Phone"
-              v-model="travelerDetails.travelPhone"
               outlined
             />
           </v-col>
           <v-col
-            cols="3"
             v-if="travelerDetails.travelContact"
+            cols="3"
           >
             <v-text-field
+              v-model="travelerDetails.travelEmail"
               :readonly="readonly"
               :rules="[rules.email]"
               :error="travelerState.travelEmailErr"
               label="Travel Email"
-              v-model="travelerDetails.travelEmail"
               outlined
             />
           </v-col>
@@ -196,22 +194,30 @@
 </template>
 
 <script>
-import TitleCard from "../../Common/TitleCard.vue"
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 export default {
+  name: "TravelerDetails",
   components: {
     TitleCard,
+    LocationsAutocomplete,
   },
-  name: "TravelerDetails",
   props: {
     readonly: Boolean,
-    travelerDetails: {},
-    travelerState: {},
+    travelerDetails: {
+      type: Object,
+      required: true,
+    },
+    travelerState: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
       admin: false,
-      taid: "",
+      travelAuthorizationId: "",
       dobMaxDate: "",
       rules: {
         phone: (value) => {
@@ -224,11 +230,9 @@ export default {
           return pattern.test(value) || "Invalid e-mail."
         },
       },
-      destinations: [],
     }
   },
   mounted() {
-    this.destinations = this.$store.state.traveldesk.destinations
     this.travelAuthorizationId = this.travelerDetails.travelAuthorizationId
       .toString()
       .padStart(5, "0")

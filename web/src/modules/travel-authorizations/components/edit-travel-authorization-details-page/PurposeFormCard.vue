@@ -109,7 +109,7 @@
 <script setup>
 import { ref, watch } from "vue"
 
-import LocationsAutocomplete from "@/components/LocationsAutocomplete"
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete"
 import TravelPurposeSelect from "@/components/TravelPurposeSelect"
 
 import { required } from "@/utils/validators"

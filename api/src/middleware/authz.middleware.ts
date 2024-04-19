@@ -1,13 +1,19 @@
+import { expressjwt as jwt, type Request as JwtRequest } from "express-jwt"
+import { isNil } from "lodash"
 import { NextFunction, Response } from "express"
-import { expressjwt as jwt, type Request } from "express-jwt"
 import axios from "axios"
 import jwksRsa, { type GetVerificationKey } from "jwks-rsa"
 
-import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config"
+import { AUTH0_DOMAIN, AUTH0_AUDIENCE, NODE_ENV } from "@/config"
 import { User } from "@/models"
-import { isNil } from "lodash"
 
-console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
+if (NODE_ENV !== "test") {
+  console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
+}
+
+export type AuthorizationRequest = JwtRequest & {
+  user?: User
+}
 
 export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({
@@ -78,7 +84,7 @@ function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
     })
 }
 
-export async function loadUser(req: Request, res: Response, next: NextFunction) {
+export async function loadUser(req: AuthorizationRequest, res: Response, next: NextFunction) {
   const sub = req.auth?.sub // from express-jwt
 
   const user = await User.findOne({ where: { sub } })
