@@ -26,17 +26,6 @@
           />
         </v-col>
       </v-row>
-      <v-row no-gutters>
-        <v-col class="d-flex justify-end">
-          <v-btn
-            color="green darken-1"
-            :loading="isLoading"
-            @click="saveAndNotify"
-          >
-            Save Details
-          </v-btn>
-        </v-col>
-      </v-row>
       <v-row>
         <v-col>
           <TitleCard
@@ -110,7 +99,15 @@
 
     <v-card-actions>
       <v-btn
-        class="ml-auto mr-5 px-5"
+        class="ml-auto mr-2"
+        color="green darken-1"
+        :loading="isLoading"
+        @click="saveAndNotify"
+      >
+        Save Draft
+      </v-btn>
+      <v-btn
+        class="mr-5 px-5"
         color="brown darken-1"
         :loading="savingData"
         @click="saveNewTravelRequest('submit')"
