@@ -1,10 +1,17 @@
 import { ModelStatic, Op } from "sequelize"
+import { isUndefined } from "lodash"
 
-import { User, TravelDeskFlightRequest } from "@/models"
+import { Path } from "@/utils/deep-pick"
+import { User, TravelDeskFlightRequest, TravelDeskTravelRequest } from "@/models"
+import TravelDeskTravelRequestsPolicy from "@/policies/travel-desk-travel-requests-policy"
 
 import BasePolicy from "@/policies/base-policy"
 
 export class TravelDeskFlightRequestsPolicy extends BasePolicy<TravelDeskFlightRequest> {
+  create(): boolean {
+    return this.travelDeskTravelRequestsPolicy.update()
+  }
+
   static applyScope(
     modelClass: ModelStatic<TravelDeskFlightRequest>,
     currentUser: User
@@ -34,6 +41,33 @@ export class TravelDeskFlightRequestsPolicy extends BasePolicy<TravelDeskFlightR
         },
       ],
     })
+  }
+
+  permittedAttributesForUpdate(): Path[] {
+    return [
+      "departLocation",
+      "arriveLocation",
+      "datePreference",
+      "timePreference",
+      "seatPreference",
+    ]
+  }
+
+  permittedAttributesForCreate(): Path[] {
+    return ["travelRequestId", ...this.permittedAttributesForUpdate()]
+  }
+
+  private get travelDeskTravelRequest(): TravelDeskTravelRequest {
+    const { travelRequest } = this.record
+    if (isUndefined(travelRequest)) {
+      throw new Error("Travel request is required")
+    }
+
+    return travelRequest
+  }
+
+  private get travelDeskTravelRequestsPolicy(): TravelDeskTravelRequestsPolicy {
+    return new TravelDeskTravelRequestsPolicy(this.user, this.travelDeskTravelRequest)
   }
 }
 
