@@ -8,7 +8,7 @@
         :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :min-date="minDate"
         :max-date="maxDate"
-        @emit="refresh"
+        @created="refresh"
       />
     </div>
     <v-row class="mb-3 mx-0">
