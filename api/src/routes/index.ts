@@ -91,6 +91,9 @@ router
   .route("/api/travel-desk-flight-requests")
   .get(TravelDeskFlightRequestsController.index)
   .post(TravelDeskFlightRequestsController.create)
+router
+  .route("/api/travel-desk-flight-requests/:travelDeskFlightRequestId")
+  .patch(TravelDeskFlightRequestsController.update)
 
 router.route("/api/travel-desk-travel-requests").get(TravelDeskTravelRequestsController.index)
 router

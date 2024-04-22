@@ -3,7 +3,7 @@ import { isNil } from "lodash"
 
 import { TravelDeskFlightRequest, TravelDeskTravelRequest } from "@/models"
 import { TravelDeskFlightRequestsPolicy } from "@/policies"
-import { CreateService } from "@/services/travel-desk-flight-requests"
+import { CreateService, UpdateService } from "@/services/travel-desk-flight-requests"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -55,6 +55,34 @@ export class TravelDeskFlightRequestsController extends BaseController {
     }
   }
 
+  async update() {
+    try {
+      const travelDeskFlightRequest = await this.loadTravelDeskFlightRequest()
+      if (isNil(travelDeskFlightRequest)) {
+        return this.response.status(404).json({ message: "Flight request not found." })
+      }
+
+      const policy = this.buildPolicy(travelDeskFlightRequest)
+      if (!policy.update()) {
+        return this.response
+          .status(403)
+          .json({ message: "You are not authorized to update this flight request." })
+      }
+
+      const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
+      const updatedTravelDeskFlightRequest = await UpdateService.perform(
+        travelDeskFlightRequest,
+        permittedAttributes,
+        this.currentUser
+      )
+      return this.response
+        .status(200)
+        .json({ travelDeskFlightRequest: updatedTravelDeskFlightRequest })
+    } catch (error) {
+      return this.response.status(422).json({ message: `Flight request update failed: ${error}` })
+    }
+  }
+
   private async buildTravelDeskFlightRequest(): Promise<TravelDeskFlightRequest> {
     const travelDeskFlightRequest = TravelDeskFlightRequest.build(this.request.body)
 
@@ -67,6 +95,18 @@ export class TravelDeskFlightRequestsController extends BaseController {
     travelDeskFlightRequest.travelRequest = travelDeskTravelRequest
 
     return travelDeskFlightRequest
+  }
+
+  private loadTravelDeskFlightRequest(): Promise<TravelDeskFlightRequest | null> {
+    return TravelDeskFlightRequest.findByPk(this.params.travelDeskFlightRequestId, {
+      include: [
+        // required for policy check
+        {
+          association: "travelRequest",
+          include: ["travelAuthorization"],
+        },
+      ],
+    })
   }
 
   private buildPolicy(travelDeskFlightRequest: TravelDeskFlightRequest) {
