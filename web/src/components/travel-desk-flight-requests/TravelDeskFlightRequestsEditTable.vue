@@ -1,12 +1,11 @@
 <template>
   <v-card
-    :loading="loadingData"
+    :loading="isLoading"
     class="pt-1"
-    style="border: 0px solid red !important"
   >
     <div class="d-flex justify-end pr-4">
       <TravelDeskFlightRequestCreateDialog
-        :loading="loadingData"
+        :loading="isLoading"
         :min-date="minDate"
         :max-date="maxDate"
         type="Add New"
@@ -17,34 +16,11 @@
     <v-row class="mb-3 mx-0">
       <v-col cols="12">
         <v-data-table
-          :headers="flightHeaders"
+          :headers="headers"
           :items="flightRequests"
-          :expanded.sync="expanded"
-          :show-expand="false"
           hide-default-footer
           class="elevation-1"
         >
-          <template #expanded-item="{ item }">
-            <td
-              v-if="showFlightOptions"
-              :colspan="6"
-            >
-              <!-- {{ item.flightOptions }} -->
-              <v-row
-                v-for="(flightOption, inx) in item.flightOptions"
-                :key="'flight-' + flightOption.flightOptionID + '-' + inx"
-              >
-                <v-col>
-                  <FlightOptionCard
-                    :flight-option="flightOption"
-                    :opt-len="item.flightOptions.length"
-                    :travel-desk-user="travelDeskUser"
-                  />
-                </v-col>
-              </v-row>
-            </td>
-          </template>
-
           <template #item.date="{ item }">
             {{ item.date | beautifyDateTime }}
           </template>
@@ -53,7 +29,6 @@
             <v-row class="mx-0 py-0 mt-n6 mb-n6">
               <v-col cols="6">
                 <TravelDeskFlightRequestCreateDialog
-                  v-if="!readonly"
                   type="Edit"
                   :min-date="minDate"
                   :max-date="maxDate"
@@ -63,7 +38,6 @@
               </v-col>
               <v-col cols="6">
                 <v-btn
-                  v-if="!readonly"
                   style="min-width: 0"
                   color="transparent"
                   class="px-1 pt-2"
@@ -90,13 +64,10 @@ import { secureGet, securePost } from "@/store/jwt"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
 
-import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
-
 export default {
   name: "TravelDeskFlightRequestsEditTable",
   components: {
     TravelDeskFlightRequestCreateDialog,
-    FlightOptionCard,
   },
   props: {
     travelDeskTravelRequestId: {
@@ -107,18 +78,6 @@ export default {
       type: Array,
       default: () => [],
     },
-    readonly: {
-      type: Boolean,
-      default: false,
-    },
-    travelDeskUser: {
-      type: Boolean,
-      default: false,
-    },
-    showFlightOptions: {
-      type: Boolean,
-      default: false,
-    },
     authorizedTravel: {
       type: Object,
       default: () => ({}),
@@ -126,7 +85,7 @@ export default {
   },
   data() {
     return {
-      flightHeaders: [
+      headers: [
         {
           text: "Depart Location",
           value: "departLocation",
@@ -156,11 +115,7 @@ export default {
       ],
       flightRequest: {},
       tmpId: 1,
-      admin: false,
-      travelerDetails: {},
-      savingData: false,
-      expanded: [true],
-      loadingData: false,
+      isLoading: false,
       minDate: "",
       maxDate: "",
     }
@@ -225,34 +180,34 @@ export default {
     },
 
     async loadFlightRequests() {
-      this.loadingData = true
+      this.isLoading = true
 
       secureGet(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`)
         .then((resp) => {
           // console.log(resp.data)
           this.flightRequests.splice(0)
           for (const flightRequest of resp.data) this.flightRequests.push(flightRequest)
-          this.loadingData = false
+          this.isLoading = false
         })
         .catch((e) => {
           console.log(e)
-          this.loadingData = false
+          this.isLoading = false
         })
     },
 
     async saveFlightRequests() {
-      this.loadingData = true
+      this.isLoading = true
       const body = this.flightRequests
 
       securePost(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`, body)
         .then(() => {
           // console.log(resp)
           this.loadFlightRequests()
-          this.loadingData = false
+          this.isLoading = false
         })
         .catch((e) => {
           console.log(e)
-          this.loadingData = false
+          this.isLoading = false
         })
     },
   },

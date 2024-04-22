@@ -54,13 +54,15 @@
                   >
                     <v-col cols="12">
                       <TravelDeskFlightRequestsEditTable
+                        v-if="
+                          travelDeskTravelRequest.status ===
+                          TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
+                        "
                         :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                         :authorized-travel="travelAuthorization"
-                        :readonly="false"
-                        :travel-desk-user="false"
-                        :show-flight-options="travelDeskTravelRequest.status != 'draft'"
                         :flight-requests="travelDeskTravelRequest.flightRequests"
                       />
+                      <template v-else> TODO: show flight options table thing</template>
                     </v-col>
                   </v-row>
                   <v-row
@@ -132,7 +134,9 @@ import { TRAVEL_DESK_URL } from "@/urls"
 import { securePost } from "@/store/jwt"
 import { useSnack } from "@/plugins/snack-plugin"
 
-import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
+import useTravelDeskTravelRequest, {
+  TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
+} from "@/use/use-travel-desk-travel-request"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
@@ -157,7 +161,6 @@ const { travelDeskTravelRequest, isLoading, save } =
 const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
 const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travelAuthorization)
 
-const readonly = ref(false)
 const internationalTravel = ref(false)
 
 const savingData = ref(false)

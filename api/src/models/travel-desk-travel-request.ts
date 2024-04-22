@@ -30,8 +30,8 @@ import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenge
 import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
 import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
 
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
-enum Statuses {
+/** Keep in sync with web/src/api/travel-desk-travel-requests-api.js */
+export enum TravelDeskTravelRequestStatuses {
   BOOKED = "booked",
   DRAFT = "draft",
   OPTIONS_PROVIDED = "options_provided",
@@ -43,7 +43,7 @@ export class TravelDeskTravelRequest extends Model<
   InferAttributes<TravelDeskTravelRequest>,
   InferCreationAttributes<TravelDeskTravelRequest>
 > {
-  static Statuses = Statuses
+  static Statuses = TravelDeskTravelRequestStatuses
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
@@ -242,7 +242,7 @@ TravelDeskTravelRequest.init(
       allowNull: false,
       validate: {
         isIn: {
-          args: [Object.values(Statuses)],
+          args: [Object.values(TravelDeskTravelRequestStatuses)],
           msg: "Invalid status value",
         },
       },
