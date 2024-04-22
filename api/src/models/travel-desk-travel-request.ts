@@ -101,31 +101,31 @@ export class TravelDeskTravelRequest extends Model<
   declare getFlightRequests: HasManyGetAssociationsMixin<TravelDeskFlightRequest>
   declare setFlightRequests: HasManySetAssociationsMixin<
     TravelDeskFlightRequest,
-    TravelDeskFlightRequest["requestId"]
+    TravelDeskFlightRequest["travelRequestId"]
   >
   declare hasFlightRequest: HasManyHasAssociationMixin<
     TravelDeskFlightRequest,
-    TravelDeskFlightRequest["requestId"]
+    TravelDeskFlightRequest["travelRequestId"]
   >
   declare hasFlightRequests: HasManyHasAssociationsMixin<
     TravelDeskFlightRequest,
-    TravelDeskFlightRequest["requestId"]
+    TravelDeskFlightRequest["travelRequestId"]
   >
   declare addFlightRequest: HasManyAddAssociationMixin<
     TravelDeskFlightRequest,
-    TravelDeskFlightRequest["requestId"]
+    TravelDeskFlightRequest["travelRequestId"]
   >
   declare addFlightRequests: HasManyAddAssociationsMixin<
     TravelDeskFlightRequest,
-    TravelDeskFlightRequest["requestId"]
+    TravelDeskFlightRequest["travelRequestId"]
   >
   declare removeFlightRequest: HasManyRemoveAssociationMixin<
     TravelDeskFlightRequest,
-    TravelDeskFlightRequest["requestId"]
+    TravelDeskFlightRequest["travelRequestId"]
   >
   declare removeFlightRequests: HasManyRemoveAssociationsMixin<
     TravelDeskFlightRequest,
-    TravelDeskFlightRequest["requestId"]
+    TravelDeskFlightRequest["travelRequestId"]
   >
   declare countFlightRequests: HasManyCountAssociationsMixin
   declare createFlightRequest: HasManyCreateAssociationMixin<TravelDeskFlightRequest>
@@ -162,7 +162,7 @@ export class TravelDeskTravelRequest extends Model<
     // })
     this.hasMany(TravelDeskFlightRequest, {
       as: "flightRequests",
-      foreignKey: "requestID",
+      foreignKey: "travelRequestId",
     })
   }
 }

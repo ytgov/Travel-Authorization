@@ -20,13 +20,16 @@ export class TravelDeskFlightRequest extends Model<
   InferAttributes<TravelDeskFlightRequest>,
   InferCreationAttributes<TravelDeskFlightRequest>
 > {
-  declare flightRequestId: CreationOptional<number>
-  declare requestId: ForeignKey<TravelDeskTravelRequest["id"]>
+  declare id: CreationOptional<number>
+  declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare departLocation: string
   declare arriveLocation: string
-  declare date: Date
+  declare datePreference: Date
   declare timePreference: string
   declare seatPreference: string
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // Associations
   declare getTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
@@ -45,61 +48,66 @@ export class TravelDeskFlightRequest extends Model<
   static establishAssociations() {
     this.belongsTo(TravelDeskTravelRequest, {
       as: "travelRequest",
-      foreignKey: "requestID",
+      foreignKey: "travelRequestId",
     })
   }
 }
 
 TravelDeskFlightRequest.init(
   {
-    flightRequestId: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-      field: "flightRequestID",
+      allowNull: false,
     },
-    requestId: {
+    travelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: TravelDeskTravelRequest,
         key: "id",
       },
-      field: "requestID",
     },
     departLocation: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "departLocation",
     },
     arriveLocation: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "arriveLocation",
     },
-    date: {
+    datePreference: {
       type: DataTypes.DATE,
       allowNull: false,
     },
     timePreference: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "timePreference",
     },
     seatPreference: {
       type: DataTypes.STRING,
       allowNull: false,
-      field: "seatPreference",
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
   },
   {
     sequelize,
-    // TODO: remove after normalizing table and field names.
-    modelName: "TravelDeskFlightRequest",
-    tableName: "travelDeskFlightRequest",
-    underscored: false,
-    timestamps: false,
-    paranoid: false,
+    paranoid: true, // TODO: remove once parnoid is default.
   }
 )
 
