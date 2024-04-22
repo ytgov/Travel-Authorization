@@ -195,7 +195,7 @@ export default {
       }
       if (this.travelDeskTravelRequestId) await this.loadFlightRequests()
       const flightRequest = {}
-      flightRequest.flightRequestId = null
+      flightRequest.id = null
       flightRequest.tmpId = null
 
       flightRequest.departLocation = ""
@@ -216,9 +216,9 @@ export default {
     async removeFlight(item) {
       // console.log(item)
       let delIndex = -1
-      if (item.flightRequestId > 0)
+      if (item.id > 0)
         delIndex = this.flightRequests.findIndex(
-          (flight) => flight.flightRequestId && flight.flightRequestId == item.flightRequestId
+          (flight) => flight.id && flight.id == item.id
         )
       else
         delIndex = this.flightRequests.findIndex(

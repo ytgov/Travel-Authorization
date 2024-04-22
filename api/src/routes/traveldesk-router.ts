@@ -191,12 +191,10 @@ travelDeskRouter.post(
         return res.status(422).json("Empty Payload for Flight Options")
 
       const flightRequestsIds = await TravelDeskFlightRequest.findAll({
-        attributes: ["flightRequestId"],
-        where: { requestId: travelDeskTravelRequestId },
+        attributes: ["id"],
+        where: { id: travelDeskTravelRequestId },
       })
-      const flightRequestIDs = flightRequestsIds.map(
-        (flightRequest) => flightRequest.flightRequestId
-      )
+      const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
 
       await dbLegacy.transaction(async (trx) => {
         await dbLegacy("travelDeskFlightOption")
@@ -243,12 +241,10 @@ travelDeskRouter.delete(
     try {
       const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
       const flightRequestsIds = await TravelDeskFlightRequest.findAll({
-        attributes: ["flightRequestId"],
-        where: { requestId: travelDeskTravelRequestId },
+        attributes: ["id"],
+        where: { travelRequestId: travelDeskTravelRequestId },
       })
-      const flightRequestIDs = flightRequestsIds.map(
-        (flightRequest) => flightRequest.flightRequestId
-      )
+      const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
 
       await dbLegacy.transaction(async (trx) => {
         await dbLegacy("travelDeskFlightOption")
@@ -287,12 +283,12 @@ travelDeskRouter.get(
       let tmpId = 3000
 
       const flightRequests = await TravelDeskFlightRequest.findAll({
-        where: { requestId: travelDeskTravelRequestId },
+        where: { travelRequestId: travelDeskTravelRequestId },
       })
       for (const flightRequest of flightRequests) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
-          .where("flightRequestID", flightRequest.flightRequestId)
+          .where("flightRequestID", flightRequest.id)
         for (const flightOption of flightOptions) {
           const flightSegments = await dbLegacy("travelDeskFlightSegment")
             .select("*")
@@ -331,7 +327,7 @@ travelDeskRouter.post(
 
         if (travelDeskTravelRequestId) {
           await TravelDeskFlightRequest.destroy({
-            where: { requestId: travelDeskTravelRequestId },
+            where: { travelRequestId: travelDeskTravelRequestId },
             transaction: sequelizeTransaction,
           })
 
@@ -341,16 +337,15 @@ travelDeskRouter.post(
             delete flightRequest.tmpId
             if (flightRequest.flightRequestID == null) delete flightRequest.flightRequestID
 
-            flightRequest.requestID = travelDeskTravelRequestId
+            flightRequest.travelRequestId = travelDeskTravelRequestId
 
             const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {
               transaction: sequelizeTransaction,
             })
-            const { flightRequestId } = newFlightRequest
 
             await dbLegacy("travelDeskFlightOption")
               .delete()
-              .where("flightRequestID", flightRequestId)
+              .where("flightRequestID", newFlightRequest.id)
 
             for (const newFlightOption of newFlightOptions) {
               delete newFlightOption.state
@@ -358,7 +353,7 @@ travelDeskRouter.post(
               const flightSegments = newFlightOption.flightSegments
               delete newFlightOption.flightSegments
 
-              newFlightOption.flightRequestID = flightRequestId
+              newFlightOption.flightRequestID = newFlightRequest.id
 
               const id = await dbLegacy("travelDeskFlightOption").insert(
                 newFlightOption,
@@ -427,12 +422,12 @@ travelDeskRouter.get(
       let tmpId = 1000
 
       const flightRequests = await TravelDeskFlightRequest.findAll({
-        where: { requestId: travelRequestId },
+        where: { travelRequestId },
       })
       for (const flightRequest of flightRequests) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
-          .where("flightRequestID", flightRequest.flightRequestId)
+          .where("flightRequestID", flightRequest.id)
         for (const flightOption of flightOptions) {
           const flightSegments = await dbLegacy("travelDeskFlightSegment")
             .select("*")
@@ -532,7 +527,7 @@ travelDeskRouter.post(
 
           //FlightRequests
           await TravelDeskFlightRequest.destroy({
-            where: { requestId: travelRequest.id },
+            where: { travelRequestId: travelRequest.id },
             transaction: sequelizeTransaction,
           })
 
@@ -540,18 +535,19 @@ travelDeskRouter.post(
             const newFlightOptions = flightRequest.flightOptions
             delete flightRequest.flightOptions
             delete flightRequest.tmpId
-            if (flightRequest.flightRequestID == null) delete flightRequest.flightRequestID
+            if (flightRequest.id == null) {
+              delete flightRequest.id
+            }
 
-            flightRequest.requestID = travelRequest.id
+            flightRequest.travelRequestId = travelRequest.id
 
             const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {
               transaction: sequelizeTransaction,
             })
-            const { flightRequestId } = newFlightRequest
 
             await dbLegacy("travelDeskFlightOption")
               .delete()
-              .where("flightRequestID", flightRequestId)
+              .where("flightRequestID", newFlightRequest.id)
 
             for (const newFlightOption of newFlightOptions) {
               delete newFlightOption.state
@@ -559,7 +555,7 @@ travelDeskRouter.post(
               const flightSegments = newFlightOption.flightSegments
               delete newFlightOption.flightSegments
 
-              newFlightOption.flightRequestID = flightRequestId
+              newFlightOption.flightRequestID = newFlightRequest.id
 
               const travelDeskFlighOption = await dbLegacy("travelDeskFlightOption").insert(
                 newFlightOption,

@@ -192,7 +192,7 @@ export default {
         this.flightOptions.push(...flightRequest.flightOptions)
         // console.log(flightRequest)
         this.legs.push({
-          flightRequestID: flightRequest.flightRequestId,
+          flightRequestID: flightRequest.id,
           text: this.getFlightRequestTxt(flightRequest),
         })
       }
