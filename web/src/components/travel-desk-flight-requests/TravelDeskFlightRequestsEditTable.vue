@@ -5,12 +5,10 @@
   >
     <div class="d-flex justify-end pr-4">
       <TravelDeskFlightRequestCreateDialog
-        :loading="isLoading"
+        :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :min-date="minDate"
         :max-date="maxDate"
-        type="Add New"
-        :flight-request="flightRequest"
-        @updateTable="updateTable"
+        @emit="refresh"
       />
     </div>
     <v-row class="mb-3 mx-0">
@@ -28,7 +26,7 @@
           <template #item.edit="{ item }">
             <v-row class="mx-0 py-0 mt-n6 mb-n6">
               <v-col cols="6">
-                <TravelDeskFlightRequestCreateDialog
+                <TravelDeskFlightRequestEditDialog
                   type="Edit"
                   :min-date="minDate"
                   :max-date="maxDate"
@@ -68,6 +66,7 @@ import { securePost } from "@/store/jwt"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
+import TravelDeskFlightRequestEditDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestEditDialog.vue"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
@@ -76,7 +75,7 @@ const props = defineProps({
     required: true,
   },
   travelAuthorizationId: {
-    type: Object,
+    type: Number,
     required: true,
   },
 })
