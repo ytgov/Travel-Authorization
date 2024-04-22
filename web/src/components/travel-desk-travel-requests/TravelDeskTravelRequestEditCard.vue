@@ -59,7 +59,7 @@
                           TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
                         "
                         :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                        :authorized-travel="travelAuthorization"
+                        :travel-authorization-id="travelAuthorizationId"
                       />
                       <template v-else> TODO: show flight options table thing</template>
                     </v-col>

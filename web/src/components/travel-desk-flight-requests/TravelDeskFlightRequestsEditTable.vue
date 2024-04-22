@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue"
+import { onMounted, ref, computed, toRefs } from "vue"
 import { cloneDeep } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
@@ -68,15 +68,16 @@ import { securePost } from "@/store/jwt"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
     type: Number,
-    default: () => null,
+    required: true,
   },
-  authorizedTravel: {
+  travelAuthorizationId: {
     type: Object,
-    default: () => ({}),
+    required: true,
   },
 })
 
@@ -115,10 +116,13 @@ const travelDeskFlightRequestsQuery = computed(() => ({
 const { travelDeskFlightRequests, isLoading, refresh } = useTravelDeskFlightRequests(
   travelDeskFlightRequestsQuery
 )
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
 const flightRequest = ref({})
 const tmpId = ref(1)
-const minDate = computed(() => props.authorizedTravel?.startDate?.slice(0, 10))
-const maxDate = computed(() => props.authorizedTravel?.endDate?.slice(0, 10))
+const minDate = computed(() => travelAuthorization.value?.startDate?.slice(0, 10))
+const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
 
 onMounted(async () => {
   await initForm()
