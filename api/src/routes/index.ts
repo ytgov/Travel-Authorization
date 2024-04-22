@@ -18,6 +18,7 @@ import {
   Users,
   UsersController,
   TravelDeskTravelRequestsController,
+  TravelDeskFlightRequestsController,
 } from "@/controllers"
 import { healthCheckRouter } from "./healthcheck-router"
 
@@ -85,6 +86,8 @@ router
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/expenses/prefill")
   .post(TravelAuthorizations.Expenses.PrefillController.create)
+
+router.route("/api/travel-desk-flight-requests").get(TravelDeskFlightRequestsController.index)
 
 router.route("/api/travel-desk-travel-requests").get(TravelDeskTravelRequestsController.index)
 router
