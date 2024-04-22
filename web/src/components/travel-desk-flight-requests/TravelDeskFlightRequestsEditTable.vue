@@ -17,7 +17,7 @@
       <v-col cols="12">
         <v-data-table
           :headers="headers"
-          :items="flightRequests"
+          :items="travelDeskFlightRequests"
           hide-default-footer
           class="elevation-1"
         >
@@ -59,11 +59,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue"
+import { onMounted, ref, computed } from "vue"
 import { cloneDeep } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+import { securePost } from "@/store/jwt"
+
+import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
 
@@ -107,27 +109,22 @@ const headers = [
   { text: "", value: "edit", class: "blue-grey lighten-4", width: "4rem", sortable: false },
 ]
 
-const flightRequests = ref([])
+const travelDeskFlightRequestsQuery = computed(() => ({
+  travelRequestId: props.travelDeskTravelRequestId,
+}))
+const { travelDeskFlightRequests, isLoading, refresh } = useTravelDeskFlightRequests(
+  travelDeskFlightRequestsQuery
+)
 const flightRequest = ref({})
 const tmpId = ref(1)
-const isLoading = ref(false)
-const minDate = ref("")
-const maxDate = ref("")
+const minDate = computed(() => props.authorizedTravel?.startDate?.slice(0, 10))
+const maxDate = computed(() => props.authorizedTravel?.endDate?.slice(0, 10))
 
 onMounted(async () => {
   await initForm()
 })
 
 async function initForm() {
-  if (props.authorizedTravel?.startDate && props.authorizedTravel?.endDate) {
-    minDate.value = props.authorizedTravel.startDate.slice(0, 10)
-    maxDate.value = props.authorizedTravel.endDate.slice(0, 10)
-  }
-
-  if (props.travelDeskTravelRequestId) {
-    await loadFlightRequests()
-  }
-
   const flightRequest = {}
   flightRequest.flightRequestId = null
   flightRequest.tmpId = null
@@ -142,28 +139,10 @@ async function initForm() {
   flightRequest.value = flightRequest
 }
 
-async function loadFlightRequests() {
-  isLoading.value = true
-
-  return secureGet(`${TRAVEL_DESK_URL}/flight-request/${props.travelDeskTravelRequestId}`)
-    .then((resp) => {
-      flightRequests.value.splice(0)
-      for (const flightRequest of resp.data) {
-        flightRequests.value.push(flightRequest)
-      }
-
-      isLoading.value = false
-    })
-    .catch((e) => {
-      console.log(e)
-      isLoading.value = false
-    })
-}
-
 async function updateTable(type) {
   if (type == "Add New") {
     flightRequest.value.tmpId = tmpId.value
-    flightRequests.value.push(cloneDeep(flightRequest.value))
+    travelDeskFlightRequests.value.push(cloneDeep(flightRequest.value))
     tmpId.value++
     await saveFlightRequests()
   } else if (type == "Edit") {
@@ -175,28 +154,27 @@ async function removeFlight(item) {
   // console.log(item)
   let delIndex = -1
   if (item.flightRequestId > 0)
-    delIndex = flightRequests.value.findIndex(
+    delIndex = travelDeskFlightRequests.value.findIndex(
       (flight) => flight.flightRequestId && flight.flightRequestId == item.flightRequestId
     )
   else
-    delIndex = flightRequests.value.findIndex(
+    delIndex = travelDeskFlightRequests.value.findIndex(
       (flight) => flight.tmpId && flight.tmpId == item.tmpId
     )
   // console.log(delIndex)
   if (delIndex >= 0) {
-    flightRequests.value.splice(delIndex, 1)
+    travelDeskFlightRequests.value.splice(delIndex, 1)
     await saveFlightRequests()
   }
 }
 
 async function saveFlightRequests() {
   isLoading.value = true
-  const body = flightRequests.value
+  const body = travelDeskFlightRequests.value
 
   return securePost(`${TRAVEL_DESK_URL}/flight-request/${props.travelDeskTravelRequestId}`, body)
     .then(async () => {
-      // console.log(resp)
-      await loadFlightRequests()
+      await refresh()
       isLoading.value = false
     })
     .catch((e) => {
