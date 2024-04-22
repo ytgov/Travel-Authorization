@@ -26,7 +26,10 @@
 
         <v-card-text>
           <v-row class="mt-5 mx-0">
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <LocationsAutocomplete
                 v-model="flightRequest.departLocation"
                 :rules="[required]"
@@ -36,7 +39,10 @@
                 required
               />
             </v-col>
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <LocationsAutocomplete
                 v-model="flightRequest.arriveLocation"
                 :rules="[required]"
@@ -48,7 +54,10 @@
             </v-col>
           </v-row>
           <v-row class="mt-0 mx-0">
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <v-text-field
                 v-model="flightRequest.datePreference"
                 :min="minDate"
@@ -60,7 +69,10 @@
                 required
               />
             </v-col>
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <div class="label">Time Preference *</div>
               <v-radio-group
                 v-model="flightRequest.timePreference"
@@ -79,7 +91,10 @@
                 ></v-radio>
               </v-radio-group>
             </v-col>
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <!-- TODO: make this a component -->
               <v-select
                 v-model="flightRequest.seatPreference"
