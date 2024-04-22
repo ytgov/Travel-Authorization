@@ -53,8 +53,8 @@
             </td>
           </template>
 
-          <template #[`item.date`]="{ item }">
-            {{ item.date | beautifyDateTime }}
+          <template #[`item.datePreference`]="{ item }">
+            {{ item.datePreference | beautifyDateTime }}
           </template>
 
           <template #[`item.edit`]="{ item }">
@@ -200,7 +200,7 @@ export default {
 
       flightRequest.departLocation = ""
       flightRequest.arriveLocation = ""
-      flightRequest.date = ""
+      flightRequest.datePreference = ""
       flightRequest.timePreference = ""
       flightRequest.seatPreference = ""
       flightRequest.flightOptions = []

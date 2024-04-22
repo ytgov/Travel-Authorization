@@ -21,8 +21,8 @@
           hide-default-footer
           class="elevation-1"
         >
-          <template #item.date="{ item }">
-            {{ item.date | beautifyDateTime }}
+          <template #item.datePreference="{ item }">
+            {{ item.datePreference | beautifyDateTime }}
           </template>
 
           <template #item.edit="{ item }">
@@ -135,7 +135,7 @@ async function initForm() {
 
   flightRequest.departLocation = ""
   flightRequest.arriveLocation = ""
-  flightRequest.date = ""
+  flightRequest.datePreference = ""
   flightRequest.timePreference = ""
   flightRequest.seatPreference = ""
   flightRequest.flightOptions = []

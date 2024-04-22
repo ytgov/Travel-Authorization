@@ -205,7 +205,7 @@ export default {
         " -> " +
         flightRequest.arriveLocation +
         " @ " +
-        Vue.filter("beautifyDate")(flightRequest.date)
+        Vue.filter("beautifyDate")(flightRequest.datePreference)
       )
     },
     checkStates() {

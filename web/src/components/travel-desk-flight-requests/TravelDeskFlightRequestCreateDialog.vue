@@ -59,13 +59,13 @@
             <v-text-field
               v-model="date"
               :readonly="readonly"
-              :error="state.dateErr"
+              :error="state.datePreferenceErr"
               :min="minDate"
               :max="maxDate"
               label="Date"
               outlined
               type="date"
-              @input="state.dateErr = false"
+              @input="state.datePreferenceErr = false"
             />
           </v-col>
           <v-col cols="4">
@@ -183,7 +183,7 @@ export default {
       this.state.departLocationErr = this.flightRequest.departLocation ? false : true
       this.state.arriveLocationErr = this.flightRequest.arriveLocation ? false : true
 
-      this.state.dateErr = this.date ? false : true
+      this.state.datePreferenceErr = this.datePreference ? false : true
       this.state.timePreferenceErr = this.flightRequest.timePreference ? false : true
       this.state.seatPreferenceErr = this.flightRequest.seatPreference ? false : true
 
@@ -195,7 +195,7 @@ export default {
 
     saveFlightRequest() {
       if (this.checkFields()) {
-        this.flightRequest.date = this.date
+        this.flightRequest.datePreference = this.datePreference
         this.$emit("updateTable", this.type)
         this.flightDialog = false
       }
@@ -208,15 +208,15 @@ export default {
         this.flightRequest.departLocation = ""
         this.flightRequest.arriveLocation = ""
 
-        this.flightRequest.date = ""
+        this.flightRequest.datePreference = ""
         this.flightRequest.timePreference = ""
         this.flightRequest.seatPreference = ""
         this.flightRequest.flightOptions = []
         // this.flightRequest.status="Requested"//, Reserved"
 
-        this.date = ""
+        this.datePreference = ""
       } else {
-        this.date = this.flightRequest.date
+        this.datePreference = this.flightRequest.datePreference
       }
     },
 
