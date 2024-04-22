@@ -15,7 +15,6 @@ export const travelDeskFlightRequestsApi = {
     )
     return data
   },
-  // TODO: build back-end endpoint
   async create(attributes) {
     const { data } = await http.post("/api/travel-desk-flight-requests", attributes)
     return data
