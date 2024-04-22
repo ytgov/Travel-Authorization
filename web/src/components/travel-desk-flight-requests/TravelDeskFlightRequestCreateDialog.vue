@@ -16,7 +16,6 @@
 
     <v-form
       ref="form"
-      v-model="isValid"
       @submit.prevent="createAndClose"
     >
       <v-card :loading="isLoading">
@@ -170,7 +169,6 @@ const showDialog = ref(route.query.showFlightRequestCreate === "true")
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
 const isLoading = ref(false)
-const isValid = ref(false)
 
 watch(
   () => props.travelDeskTravelRequestId,
@@ -198,7 +196,7 @@ function close() {
 }
 
 async function createAndClose() {
-  if (!isValid.value) {
+  if (!form.value?.validate()) {
     snack("Please fill in all required fields", { color: "error" })
     return
   }
