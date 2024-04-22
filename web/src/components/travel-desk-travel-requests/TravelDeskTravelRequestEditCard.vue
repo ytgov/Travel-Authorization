@@ -60,7 +60,6 @@
                         "
                         :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                         :authorized-travel="travelAuthorization"
-                        :flight-requests="travelDeskTravelRequest.flightRequests"
                       />
                       <template v-else> TODO: show flight options table thing</template>
                     </v-col>

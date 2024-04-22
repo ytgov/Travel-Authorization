@@ -58,159 +58,151 @@
   </v-card>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref } from "vue"
+import { cloneDeep } from "lodash"
+
 import { TRAVEL_DESK_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
 
-export default {
-  name: "TravelDeskFlightRequestsEditTable",
-  components: {
-    TravelDeskFlightRequestCreateDialog,
+const props = defineProps({
+  travelDeskTravelRequestId: {
+    type: Number,
+    default: () => null,
   },
-  props: {
-    travelDeskTravelRequestId: {
-      type: Number,
-      default: () => null,
-    },
-    flightRequests: {
-      type: Array,
-      default: () => [],
-    },
-    authorizedTravel: {
-      type: Object,
-      default: () => ({}),
-    },
+  authorizedTravel: {
+    type: Object,
+    default: () => ({}),
   },
-  data() {
-    return {
-      headers: [
-        {
-          text: "Depart Location",
-          value: "departLocation",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Arrive Location",
-          value: "arriveLocation",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        { text: "Date", value: "date", class: "blue-grey lighten-4" },
-        {
-          text: "Time Preference",
-          value: "timePreference",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Seat Preference",
-          value: "seatPreference",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        { text: "", value: "edit", class: "blue-grey lighten-4", width: "4rem", sortable: false },
-      ],
-      flightRequest: {},
-      tmpId: 1,
-      isLoading: false,
-      minDate: "",
-      maxDate: "",
-    }
+})
+
+const headers = [
+  {
+    text: "Depart Location",
+    value: "departLocation",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  mounted() {
-    this.initForm()
+  {
+    text: "Arrive Location",
+    value: "arriveLocation",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  methods: {
-    async updateTable(type) {
-      if (type == "Add New") {
-        // console.log(this.flightRequests)
-        this.flightRequest.tmpId = this.tmpId
-        this.flightRequests.push(JSON.parse(JSON.stringify(this.flightRequest)))
-        this.tmpId++
-        await this.saveFlightRequests()
-      } else if (type == "Edit") {
-        await this.saveFlightRequests()
+  { text: "Date", value: "date", class: "blue-grey lighten-4" },
+  {
+    text: "Time Preference",
+    value: "timePreference",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  {
+    text: "Seat Preference",
+    value: "seatPreference",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  { text: "", value: "edit", class: "blue-grey lighten-4", width: "4rem", sortable: false },
+]
+
+const flightRequests = ref([])
+const flightRequest = ref({})
+const tmpId = ref(1)
+const isLoading = ref(false)
+const minDate = ref("")
+const maxDate = ref("")
+
+onMounted(async () => {
+  await initForm()
+})
+
+async function initForm() {
+  if (props.authorizedTravel?.startDate && props.authorizedTravel?.endDate) {
+    minDate.value = props.authorizedTravel.startDate.slice(0, 10)
+    maxDate.value = props.authorizedTravel.endDate.slice(0, 10)
+  }
+
+  if (props.travelDeskTravelRequestId) {
+    await loadFlightRequests()
+  }
+
+  const flightRequest = {}
+  flightRequest.flightRequestId = null
+  flightRequest.tmpId = null
+
+  flightRequest.departLocation = ""
+  flightRequest.arriveLocation = ""
+  flightRequest.date = ""
+  flightRequest.timePreference = ""
+  flightRequest.seatPreference = ""
+  flightRequest.flightOptions = []
+
+  flightRequest.value = flightRequest
+}
+
+async function loadFlightRequests() {
+  isLoading.value = true
+
+  return secureGet(`${TRAVEL_DESK_URL}/flight-request/${props.travelDeskTravelRequestId}`)
+    .then((resp) => {
+      flightRequests.value.splice(0)
+      for (const flightRequest of resp.data) {
+        flightRequests.value.push(flightRequest)
       }
-    },
 
-    async initForm() {
-      if (this.authorizedTravel?.startDate && this.authorizedTravel?.endDate) {
-        this.minDate = this.authorizedTravel.startDate.slice(0, 10)
-        this.maxDate = this.authorizedTravel.endDate.slice(0, 10)
-      }
-      if (this.travelDeskTravelRequestId) await this.loadFlightRequests()
-      const flightRequest = {}
-      flightRequest.flightRequestId = null
-      flightRequest.tmpId = null
+      isLoading.value = false
+    })
+    .catch((e) => {
+      console.log(e)
+      isLoading.value = false
+    })
+}
 
-      flightRequest.departLocation = ""
-      flightRequest.arriveLocation = ""
-      flightRequest.date = ""
-      flightRequest.timePreference = ""
-      flightRequest.seatPreference = ""
-      flightRequest.flightOptions = []
-      // flightRequest.status="Requested";
+async function updateTable(type) {
+  if (type == "Add New") {
+    flightRequest.value.tmpId = tmpId.value
+    flightRequests.value.push(cloneDeep(flightRequest.value))
+    tmpId.value++
+    await saveFlightRequests()
+  } else if (type == "Edit") {
+    await saveFlightRequests()
+  }
+}
 
-      this.flightRequest = flightRequest
-    },
+async function removeFlight(item) {
+  // console.log(item)
+  let delIndex = -1
+  if (item.flightRequestId > 0)
+    delIndex = flightRequests.value.findIndex(
+      (flight) => flight.flightRequestId && flight.flightRequestId == item.flightRequestId
+    )
+  else
+    delIndex = flightRequests.value.findIndex(
+      (flight) => flight.tmpId && flight.tmpId == item.tmpId
+    )
+  // console.log(delIndex)
+  if (delIndex >= 0) {
+    flightRequests.value.splice(delIndex, 1)
+    await saveFlightRequests()
+  }
+}
 
-    editFlight(item) {
-      this.flightRequest = item
-    },
+async function saveFlightRequests() {
+  isLoading.value = true
+  const body = flightRequests.value
 
-    async removeFlight(item) {
-      // console.log(item)
-      let delIndex = -1
-      if (item.flightRequestId > 0)
-        delIndex = this.flightRequests.findIndex(
-          (flight) => flight.flightRequestId && flight.flightRequestId == item.flightRequestId
-        )
-      else
-        delIndex = this.flightRequests.findIndex(
-          (flight) => flight.tmpId && flight.tmpId == item.tmpId
-        )
-      // console.log(delIndex)
-      if (delIndex >= 0) {
-        this.flightRequests.splice(delIndex, 1)
-        await this.saveFlightRequests()
-      }
-    },
-
-    async loadFlightRequests() {
-      this.isLoading = true
-
-      secureGet(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`)
-        .then((resp) => {
-          // console.log(resp.data)
-          this.flightRequests.splice(0)
-          for (const flightRequest of resp.data) this.flightRequests.push(flightRequest)
-          this.isLoading = false
-        })
-        .catch((e) => {
-          console.log(e)
-          this.isLoading = false
-        })
-    },
-
-    async saveFlightRequests() {
-      this.isLoading = true
-      const body = this.flightRequests
-
-      securePost(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`, body)
-        .then(() => {
-          // console.log(resp)
-          this.loadFlightRequests()
-          this.isLoading = false
-        })
-        .catch((e) => {
-          console.log(e)
-          this.isLoading = false
-        })
-    },
-  },
+  return securePost(`${TRAVEL_DESK_URL}/flight-request/${props.travelDeskTravelRequestId}`, body)
+    .then(async () => {
+      // console.log(resp)
+      await loadFlightRequests()
+      isLoading.value = false
+    })
+    .catch((e) => {
+      console.log(e)
+      isLoading.value = false
+    })
 }
 </script>
 
