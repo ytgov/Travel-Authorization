@@ -16,10 +16,24 @@ import sequelize from "@/db/db-client"
 
 import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 
+/**
+ * Keep in sync with web/src/api/travel-desk-flight-requests-api.js
+ *
+ * TODO: standardize (lowercase and underscore) these values
+ */
+export enum SeatPreferencesTypes {
+  WINDOW = "Window",
+  AISLE = "Aisle",
+  MIDDLE = "Middle",
+  NO_PREFERENCE = "No Preference",
+}
+
 export class TravelDeskFlightRequest extends Model<
   InferAttributes<TravelDeskFlightRequest>,
   InferCreationAttributes<TravelDeskFlightRequest>
 > {
+  static readonly SeatPreferencesTypes = SeatPreferencesTypes
+
   declare id: CreationOptional<number>
   declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare departLocation: string
@@ -88,6 +102,12 @@ TravelDeskFlightRequest.init(
     seatPreference: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isIn: {
+          args: [Object.values(SeatPreferencesTypes)],
+          msg: "Invalid seat preference value",
+        },
+      },
     },
     createdAt: {
       type: DataTypes.DATE,

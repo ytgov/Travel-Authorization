@@ -86,9 +86,8 @@
               md="4"
             >
               <!-- TODO: make this a component -->
-              <v-select
+              <SeatPreferenceSelect
                 v-model="flightRequest.seatPreference"
-                :items="seatPreferenceList"
                 :rules="[required]"
                 label="Seat Preference *"
                 outlined
@@ -132,6 +131,7 @@ import { useSnack } from "@/plugins/snack-plugin"
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import SeatPreferenceSelect from "@/components/travel-desk-flight-requests/SeatPreferenceSelect.vue"
 
 defineProps({
   minDate: {
@@ -145,8 +145,6 @@ defineProps({
 })
 
 const emit = defineEmits(["saved"])
-
-const seatPreferenceList = ["Aisle", "Middle", "Window", "No Preference"]
 
 const flightRequest = ref({})
 const flightRequestId = computed(() => flightRequest.value.id)

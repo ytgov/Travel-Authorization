@@ -1,5 +1,13 @@
 import http from "@/api/http-client"
 
+/** Keep in sync with api/src/models/travel-desk-flight-request.ts */
+export const SEAT_PREFERENCE_TYPES = Object.freeze({
+  WINDOW: "Window",
+  AISLE: "Aisle",
+  MIDDLE: "Middle",
+  NO_PREFERENCE: "No Preference",
+})
+
 export const travelDeskFlightRequestsApi = {
   async list({ where, page, perPage, ...otherParams } = {}) {
     const { data } = await http.get("/api/travel-desk-flight-requests", {
