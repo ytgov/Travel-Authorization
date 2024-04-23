@@ -30,7 +30,6 @@ export const VEHICLE_TYPES = Object.freeze({
 })
 
 export const travelDeskRentalCarsApi = {
-  // TODO: build back-end endpoint
   async list({ where, page, perPage, ...otherParams } = {}) {
     const { data } = await http.get("/api/travel-desk-rental-cars", {
       params: { where, page, perPage, ...otherParams },
@@ -44,12 +43,10 @@ export const travelDeskRentalCarsApi = {
     })
     return data
   },
-  // TODO: build back-end endpoint
   async create(attributes) {
     const { data } = await http.post("/api/travel-desk-rental-cars", attributes)
     return data
   },
-  // TODO: build back-end endpoint
   async update(travelDeskRentalCarId, attributes) {
     const { data } = await http.patch(
       `/api/travel-desk-rental-cars/${travelDeskRentalCarId}`,
@@ -57,7 +54,6 @@ export const travelDeskRentalCarsApi = {
     )
     return data
   },
-  // TODO: build back-end endpoint
   async delete(travelDeskRentalCarId) {
     const { data } = await http.delete(`/api/travel-desk-rental-cars/${travelDeskRentalCarId}`)
     return data

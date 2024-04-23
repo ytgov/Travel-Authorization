@@ -74,7 +74,7 @@ export class TravelDeskRentalCar extends Model<
   declare matchFlightTimes: CreationOptional<boolean>
   declare vehicleTypeChangeIndicator: CreationOptional<string | null>
   declare vehicleType: string
-  declare vehicleChangeRationale: string
+  declare vehicleChangeRationale: CreationOptional<string | null>
   declare pickUpDate: Date
   declare dropOffDate: Date
   declare additionalNotes: CreationOptional<string | null>
