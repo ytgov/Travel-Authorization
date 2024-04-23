@@ -20,10 +20,7 @@
           />
         </v-row>
         <v-row class="mb-3 mx-3">
-          <v-col
-            v-if="rentalCars?.length > 0"
-            cols="12"
-          >
+          <v-col cols="12">
             <v-data-table
               :headers="rentalCarHeaders"
               :items="rentalCars"
