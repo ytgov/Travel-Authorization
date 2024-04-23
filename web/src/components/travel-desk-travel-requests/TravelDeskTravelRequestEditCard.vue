@@ -70,6 +70,11 @@
                     no-gutters
                   >
                     <v-col cols="12">
+                      <SaveStateProgress
+                        class="float-right my-0 mr-3 ml-3 hidden-sm-and-down"
+                        :saving="isLoading"
+                        @click="saveAndNotify"
+                      />
                       <v-textarea
                         v-model="travelDeskTravelRequest.additionalInformation"
                         class="mt-5 mr-5"
@@ -139,6 +144,7 @@ import useTravelDeskTravelRequest, {
   TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
 } from "@/use/use-travel-desk-travel-request"
 
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
