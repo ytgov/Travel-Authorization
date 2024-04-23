@@ -27,11 +27,17 @@ export const travelDeskFlightRequestsApi = {
     const { data } = await http.post("/api/travel-desk-flight-requests", attributes)
     return data
   },
-  // TODO: build back-end endpoint
   async update(travelDeskFlightRequestId, attributes) {
     const { data } = await http.patch(
       `/api/travel-desk-flight-requests/${travelDeskFlightRequestId}`,
       attributes
+    )
+    return data
+  },
+  // TODO: build back-end endpoint
+  async delete(travelDeskFlightRequestId) {
+    const { data } = await http.delete(
+      `/api/travel-desk-flight-requests/${travelDeskFlightRequestId}`
     )
     return data
   },

@@ -49,11 +49,11 @@
               </v-col>
               <v-col cols="6">
                 <v-btn
-                  style="min-width: 0"
+                  :loading="isLoading"
                   color="transparent"
                   class="px-1 pt-2"
                   small
-                  @click="removeFlight(item)"
+                  @click="deleteFlightRequest(item)"
                   ><v-icon
                     class=""
                     color="red"
@@ -71,12 +71,10 @@
 
 <script setup>
 import { isNil } from "lodash"
-import { onMounted, ref, computed, toRefs, watch } from "vue"
+import { ref, computed, toRefs, watch } from "vue"
 import { useRoute } from "vue2-helpers/vue-router"
 
-import { TRAVEL_DESK_URL } from "@/urls"
-import { securePost } from "@/store/jwt"
-
+import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
@@ -165,57 +163,15 @@ watch(
   }
 )
 
-// TODO: Remove once dependent components are standardized
-onMounted(async () => {
-  await initForm()
-})
+async function deleteFlightRequest(flightRequest) {
+  if (!confirm("Are you sure you want to remove this flight request?")) return
 
-async function initForm() {
-  const flightRequest = {}
-  flightRequest.id = null
-  flightRequest.tmpId = null
-
-  flightRequest.departLocation = ""
-  flightRequest.arriveLocation = ""
-  flightRequest.datePreference = ""
-  flightRequest.timePreference = ""
-  flightRequest.seatPreference = ""
-  flightRequest.flightOptions = []
-
-  flightRequest.value = flightRequest
-}
-
-async function removeFlight(item) {
-  // console.log(item)
-  let delIndex = -1
-  if (item.id > 0)
-    delIndex = travelDeskFlightRequests.value.findIndex(
-      (flight) => flight.id && flight.id == item.id
-    )
-  else
-    delIndex = travelDeskFlightRequests.value.findIndex(
-      (flight) => flight.tmpId && flight.tmpId == item.tmpId
-    )
-  // console.log(delIndex)
-  if (delIndex >= 0) {
-    travelDeskFlightRequests.value.splice(delIndex, 1)
-    await saveFlightRequests()
+  try {
+    await travelDeskFlightRequestsApi.delete(flightRequest.id)
+    await refresh()
+  } catch (error) {
+    console.error(error)
   }
-}
-
-async function saveFlightRequests() {
-  isLoading.value = true
-  const body = travelDeskFlightRequests.value
-
-  return securePost(`${TRAVEL_DESK_URL}/flight-request/${props.travelDeskTravelRequestId}`, body)
-    .then(async () => {
-      await refresh()
-      isLoading.value = false
-    })
-    .catch((e) => {
-      console.log(e)
-      isLoading.value = false
-    })
 }
 </script>
 
