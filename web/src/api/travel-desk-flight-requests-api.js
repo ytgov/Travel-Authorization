@@ -34,7 +34,6 @@ export const travelDeskFlightRequestsApi = {
     )
     return data
   },
-  // TODO: build back-end endpoint
   async delete(travelDeskFlightRequestId) {
     const { data } = await http.delete(
       `/api/travel-desk-flight-requests/${travelDeskFlightRequestId}`
