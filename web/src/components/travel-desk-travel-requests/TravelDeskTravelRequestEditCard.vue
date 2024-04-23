@@ -84,7 +84,7 @@
                 </template>
               </TitleCard>
 
-              <RentalCarRequestTable
+              <TravelDeskRentalCarsEditTable
                 :authorized-travel="travelAuthorization"
                 :readonly="false"
                 :flight-requests="travelDeskTravelRequest.flightRequests"
@@ -139,12 +139,11 @@ import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
 import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
 
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
-
+import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 
 const props = defineProps({
