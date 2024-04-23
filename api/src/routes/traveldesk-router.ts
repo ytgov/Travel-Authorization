@@ -404,6 +404,7 @@ travelDeskRouter.get(
     const travelRequest = await TravelDeskTravelRequest.findOne({
       where: { travelAuthorizationId },
       include: [
+        "flightRequests",
         "rentalCars",
         {
           association: "travelDeskPassengerNameRecordDocument",
@@ -418,10 +419,7 @@ travelDeskRouter.get(
 
       let tmpId = 1000
 
-      const flightRequests = await TravelDeskFlightRequest.findAll({
-        where: { travelRequestId },
-      })
-      for (const flightRequest of flightRequests) {
+      for (const flightRequest of travelRequest.flightRequests || []) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
           .where("flightRequestID", flightRequest.id)
@@ -444,8 +442,6 @@ travelDeskRouter.get(
         // @ts-ignore - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
-      // @ts-ignore - not worth fixing at this time
-      travelRequest.flightRequests = flightRequests
 
       const hotels = await dbLegacy("travelDeskHotel")
         .select("*")
