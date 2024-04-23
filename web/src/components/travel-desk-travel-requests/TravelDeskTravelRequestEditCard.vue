@@ -60,6 +60,7 @@
                         "
                         :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                         :travel-authorization-id="travelAuthorizationId"
+                        class="borderless-card"
                       />
                       <template v-else> TODO: show flight options table thing</template>
                     </v-col>
@@ -310,3 +311,10 @@ function validate() {
 </script>
 
 <style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+
+<style scoped>
+.v-card.borderless-card {
+  border: none !important;
+  box-shadow: none !important;
+}
+</style>
