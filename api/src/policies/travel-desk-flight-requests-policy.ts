@@ -16,6 +16,10 @@ export class TravelDeskFlightRequestsPolicy extends BasePolicy<TravelDeskFlightR
     return this.travelDeskTravelRequestsPolicy.update()
   }
 
+  destroy(): boolean {
+    return this.travelDeskTravelRequestsPolicy.update()
+  }
+
   static applyScope(
     modelClass: ModelStatic<TravelDeskFlightRequest>,
     currentUser: User

@@ -83,6 +83,27 @@ export class TravelDeskFlightRequestsController extends BaseController {
     }
   }
 
+  async destroy() {
+    try {
+      const travelDeskFlightRequest = await this.loadTravelDeskFlightRequest()
+      if (isNil(travelDeskFlightRequest)) {
+        return this.response.status(404).json({ message: "Flight request not found." })
+      }
+
+      const policy = this.buildPolicy(travelDeskFlightRequest)
+      if (!policy.destroy()) {
+        return this.response
+          .status(403)
+          .json({ message: "You are not authorized to delete this flight request." })
+      }
+
+      await travelDeskFlightRequest.destroy()
+      return this.response.status(204).send()
+    } catch (error) {
+      return this.response.status(422).json({ message: `Flight request deletion failed: ${error}` })
+    }
+  }
+
   private async buildTravelDeskFlightRequest(): Promise<TravelDeskFlightRequest> {
     const travelDeskFlightRequest = TravelDeskFlightRequest.build(this.request.body)
 

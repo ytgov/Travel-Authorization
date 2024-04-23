@@ -94,6 +94,7 @@ router
 router
   .route("/api/travel-desk-flight-requests/:travelDeskFlightRequestId")
   .patch(TravelDeskFlightRequestsController.update)
+  .delete(TravelDeskFlightRequestsController.destroy)
 
 router.route("/api/travel-desk-travel-requests").get(TravelDeskTravelRequestsController.index)
 router
