@@ -87,9 +87,9 @@
               />
               <v-text-field
                 v-if="carRequest.pickUpLocation == 'Other'"
-                v-model="carRequest.pickUpLocOther"
+                v-model="carRequest.pickUpLocationOther"
                 class="mt-n3"
-                :error="state.pickUpLocOtherErr"
+                :error="state.pickUpLocationOtherErr"
                 label="Other Pick-up Location"
                 outlined
               />
@@ -197,12 +197,12 @@
               />
               <v-text-field
                 v-if="!carRequest.sameDropOffLocation && carRequest.dropOffLocation == 'Other'"
-                v-model="carRequest.dropOffLocOther"
+                v-model="carRequest.dropOffLocationOther"
                 class="mt-n3"
-                :error="state.dropOffLocOtherErr"
+                :error="state.dropOffLocationOtherErr"
                 label="Other Drop-off Location"
                 outlined
-                @input="state.dropOffLocOtherErr = false"
+                @input="state.dropOffLocationOtherErr = false"
               />
             </v-col>
             <v-col cols="6">
@@ -300,9 +300,9 @@ export default {
         pickUpCityErr: false,
         dropOffCityErr: false,
         pickUpLocationErr: false,
-        pickUpLocOtherErr: false,
+        pickUpLocationOtherErr: false,
         dropOffLocationErr: false,
-        dropOffLocOtherErr: false,
+        dropOffLocationOtherErr: false,
         sameDropOffLocationErr: false,
         matchFlightTimesErr: false,
         pickUpDateErr: false,
@@ -323,8 +323,10 @@ export default {
     checkFields() {
       this.state.pickUpCityErr = this.carRequest.pickUpCity ? false : true
       this.state.pickUpLocationErr = this.carRequest.pickUpLocation ? false : true
-      this.state.pickUpLocOtherErr =
-        this.carRequest.pickUpLocation == "Other" && !this.carRequest.pickUpLocOther ? true : false
+      this.state.pickUpLocationOtherErr =
+        this.carRequest.pickUpLocation == "Other" && !this.carRequest.pickUpLocationOther
+          ? true
+          : false
 
       this.state.sameDropOffLocationErr = this.carRequest.sameDropOffLocation != null ? false : true
       this.state.dropOffLocationErr =
@@ -371,9 +373,9 @@ export default {
         this.carRequest.pickUpCity = ""
         this.carRequest.dropOffCity = ""
         this.carRequest.pickUpLocation = ""
-        this.carRequest.pickUpLocOther = ""
+        this.carRequest.pickUpLocationOther = ""
         this.carRequest.dropOffLocation = ""
-        this.carRequest.dropOffLocOther = ""
+        this.carRequest.dropOffLocationOther = ""
         this.carRequest.sameDropOffLocation = true
         this.carRequest.vehicleType = "Compact"
         this.carRequest.pickUpDate = ""

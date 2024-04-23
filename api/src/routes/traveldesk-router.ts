@@ -565,16 +565,16 @@ travelDeskRouter.post(
 
           //RentalCars
           await TravelDeskRentalCar.destroy({
-            where: { requestID: travelRequest.id },
+            where: { travelRequestId: travelRequest.id },
             transaction: sequelizeTransaction,
           })
 
           for (const rentalCar of rentalCars) {
             delete rentalCar.tmpId
-            if (rentalCar.rentalVehicleID == null) {
-              delete rentalCar.rentalVehicleID
+            if (rentalCar.id == null) {
+              delete rentalCar.id
             }
-            rentalCar.requestID = travelRequest.id
+            rentalCar.travelRequestId = travelRequest.id
             await TravelDeskRentalCar.create(rentalCar, { transaction: sequelizeTransaction })
           }
 

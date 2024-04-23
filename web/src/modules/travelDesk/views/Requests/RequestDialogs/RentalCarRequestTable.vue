@@ -35,13 +35,13 @@
                 {{ item.matchFlightTimes ? "Yes" : "No" }}
               </template>
               <template #item.pickUpLocation="{ item }">
-                <div v-if="item.pickUpLocation == 'Other'">{{ item.pickUpLocOther }}</div>
+                <div v-if="item.pickUpLocation == 'Other'">{{ item.pickUpLocationOther }}</div>
                 <div v-else>{{ item.pickUpLocation }}</div>
               </template>
 
               <template #item.dropOffLocation="{ item }">
                 <div v-if="item.sameDropOffLocation && item.pickUpLocation == 'Other'">
-                  {{ item.pickUpLocOther }}
+                  {{ item.pickUpLocationOther }}
                 </div>
                 <div v-else-if="item.sameDropOffLocation">{{ item.pickUpLocation }}</div>
                 <div v-else>{{ item.dropOffLocation }}</div>
@@ -199,14 +199,14 @@ export default {
       }
 
       const carRequest = {}
-      carRequest.rentalVehicleID = null
+      carRequest.id = null
       carRequest.tmpId = null
       carRequest.pickUpCity = ""
       carRequest.dropOffCity = ""
       carRequest.pickUpLocation = ""
-      carRequest.pickUpLocOther = ""
+      carRequest.pickUpLocationOther = ""
       carRequest.dropOffLocation = ""
-      carRequest.dropOffLocOther = ""
+      carRequest.dropOffLocationOther = ""
       carRequest.sameDropOffLocation = true
       carRequest.matchFlightTimes = false
       carRequest.pickUpDate = ""
@@ -226,11 +226,8 @@ export default {
     removeRentalCar(item) {
       console.log(item)
       let delIndex = -1
-      if (item.rentalVehicleID > 0)
-        delIndex = this.rentalCars.findIndex(
-          (rentalCar) =>
-            rentalCar.rentalVehicleID && rentalCar.rentalVehicleID == item.rentalVehicleID
-        )
+      if (item.id > 0)
+        delIndex = this.rentalCars.findIndex((rentalCar) => rentalCar.id && rentalCar.id == item.id)
       else
         delIndex = this.rentalCars.findIndex(
           (rentalCar) => rentalCar.tmpId && rentalCar.tmpId == item.tmpId

@@ -134,31 +134,31 @@ export class TravelDeskTravelRequest extends Model<
   declare getRentalCars: HasManyGetAssociationsMixin<TravelDeskRentalCar>
   declare setRentalCars: HasManySetAssociationsMixin<
     TravelDeskRentalCar,
-    TravelDeskRentalCar["requestID"]
+    TravelDeskRentalCar["travelRequestId"]
   >
   declare hasRentalCar: HasManyHasAssociationMixin<
     TravelDeskRentalCar,
-    TravelDeskRentalCar["requestID"]
+    TravelDeskRentalCar["travelRequestId"]
   >
   declare hasRentalCars: HasManyHasAssociationsMixin<
     TravelDeskRentalCar,
-    TravelDeskRentalCar["requestID"]
+    TravelDeskRentalCar["travelRequestId"]
   >
   declare addRentalCar: HasManyAddAssociationMixin<
     TravelDeskRentalCar,
-    TravelDeskRentalCar["requestID"]
+    TravelDeskRentalCar["travelRequestId"]
   >
   declare addRentalCars: HasManyAddAssociationsMixin<
     TravelDeskRentalCar,
-    TravelDeskRentalCar["requestID"]
+    TravelDeskRentalCar["travelRequestId"]
   >
   declare removeRentalCar: HasManyRemoveAssociationMixin<
     TravelDeskRentalCar,
-    TravelDeskRentalCar["requestID"]
+    TravelDeskRentalCar["travelRequestId"]
   >
   declare removeRentalCars: HasManyRemoveAssociationsMixin<
     TravelDeskRentalCar,
-    TravelDeskRentalCar["requestID"]
+    TravelDeskRentalCar["travelRequestId"]
   >
   declare countRentalCars: HasManyCountAssociationsMixin
   declare createRentalCar: HasManyCreateAssociationMixin<TravelDeskRentalCar>
@@ -201,7 +201,7 @@ export class TravelDeskTravelRequest extends Model<
     })
     this.hasMany(TravelDeskRentalCar, {
       as: "rentalCars",
-      foreignKey: "requestID",
+      foreignKey: "travelRequestId",
     })
   }
 }

@@ -19,17 +19,17 @@ export class TravelDeskRentalCar extends Model<
   InferAttributes<TravelDeskRentalCar>,
   InferCreationAttributes<TravelDeskRentalCar>
 > {
-  declare rentalVehicleID: CreationOptional<number>
-  declare requestID: ForeignKey<TravelDeskTravelRequest["id"]>
+  declare id: CreationOptional<number>
+  declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare pickUpCity: string
   declare pickUpLocation: string
-  declare pickUpLocOther: CreationOptional<string | null>
+  declare pickUpLocationOther: CreationOptional<string | null>
   declare dropOffCity: CreationOptional<string | null>
   declare dropOffLocation: CreationOptional<string | null>
-  declare dropOffLocOther: CreationOptional<string | null>
+  declare dropOffLocationOther: CreationOptional<string | null>
   declare sameDropOffLocation: CreationOptional<boolean>
   declare matchFlightTimes: CreationOptional<boolean>
-  declare vehicleTypeChangeInd: CreationOptional<string | null>
+  declare vehicleTypeChangeIndicator: CreationOptional<string | null>
   declare vehicleType: string
   declare vehicleChangeRationale: string
   declare pickUpDate: Date
@@ -38,6 +38,9 @@ export class TravelDeskRentalCar extends Model<
   declare status: string
   declare reservedVehicleInfo: CreationOptional<string | null>
   declare booking: CreationOptional<string | null>
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // Associations
   declare getTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
@@ -63,17 +66,15 @@ export class TravelDeskRentalCar extends Model<
 
 TravelDeskRentalCar.init(
   {
-    rentalVehicleID: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
-      field: "rentalVehicleID",
     },
-    requestID: {
+    travelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: "requestID",
       references: {
         model: TravelDeskTravelRequest,
         key: "id",
@@ -82,97 +83,90 @@ TravelDeskRentalCar.init(
     pickUpCity: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: "pickUpCity",
     },
     pickUpLocation: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: "pickUpLocation",
     },
-    pickUpLocOther: {
+    pickUpLocationOther: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "pickUpLocOther",
     },
     dropOffCity: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "dropOffCity",
     },
     dropOffLocation: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "dropOffLocation",
     },
-    dropOffLocOther: {
+    dropOffLocationOther: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "dropOffLocOther",
     },
     sameDropOffLocation: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
-      field: "sameDropOffLocation",
     },
     matchFlightTimes: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: "matchFlightTimes",
     },
-    vehicleTypeChangeInd: {
+    vehicleTypeChangeIndicator: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "vehicleTypeChangeInd",
     },
     vehicleType: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: "vehicleType",
     },
     vehicleChangeRationale: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "vehicleChangeRationale",
     },
     pickUpDate: {
       type: DataTypes.DATE,
       allowNull: false,
-      field: "pickUpDate",
     },
     dropOffDate: {
       type: DataTypes.DATE,
       allowNull: false,
-      field: "dropOffDate",
     },
     additionalNotes: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "additionalNotes",
     },
     status: {
       type: DataTypes.STRING(255),
       allowNull: false,
-      field: "status",
     },
     reservedVehicleInfo: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "reservedVehicleInfo",
     },
     booking: {
       type: DataTypes.STRING(255),
       allowNull: true,
-      field: "booking",
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {
     sequelize,
-    modelName: "TravelDeskRentalCar",
-    tableName: "travelDeskRentalCar",
-    underscored: false,
-    timestamps: false,
     paranoid: false,
   }
 )
