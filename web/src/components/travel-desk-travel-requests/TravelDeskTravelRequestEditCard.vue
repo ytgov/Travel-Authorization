@@ -76,6 +76,7 @@
                         outlined
                         auto-grow
                         counter
+                        @input="debouncedSaveAndNotify"
                       />
                     </v-col>
                   </v-row>
