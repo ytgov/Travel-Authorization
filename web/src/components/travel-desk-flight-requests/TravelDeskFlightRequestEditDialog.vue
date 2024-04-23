@@ -103,7 +103,7 @@
             color="grey darken-5"
             @click="close"
           >
-            Close
+            Cancel
           </v-btn>
           <v-btn
             :loading="isLoading"
