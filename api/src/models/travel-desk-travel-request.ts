@@ -26,9 +26,10 @@ import { isNil } from "lodash"
 import sequelize from "@/db/db-client"
 
 import TravelAuthorization from "@/models/travel-authorization"
-import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
-import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
 import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
+import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
+import TravelDeskRentalCar from "@/models/travel-desk-rental-car"
+import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
 
 /** Keep in sync with web/src/api/travel-desk-travel-requests-api.js */
 export enum TravelDeskTravelRequestStatuses {
@@ -130,13 +131,47 @@ export class TravelDeskTravelRequest extends Model<
   declare countFlightRequests: HasManyCountAssociationsMixin
   declare createFlightRequest: HasManyCreateAssociationMixin<TravelDeskFlightRequest>
 
+  declare getRentalCars: HasManyGetAssociationsMixin<TravelDeskRentalCar>
+  declare setRentalCars: HasManySetAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["requestID"]
+  >
+  declare hasRentalCar: HasManyHasAssociationMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["requestID"]
+  >
+  declare hasRentalCars: HasManyHasAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["requestID"]
+  >
+  declare addRentalCar: HasManyAddAssociationMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["requestID"]
+  >
+  declare addRentalCars: HasManyAddAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["requestID"]
+  >
+  declare removeRentalCar: HasManyRemoveAssociationMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["requestID"]
+  >
+  declare removeRentalCars: HasManyRemoveAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["requestID"]
+  >
+  declare countRentalCars: HasManyCountAssociationsMixin
+  declare createRentalCar: HasManyCreateAssociationMixin<TravelDeskRentalCar>
+
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
   declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
   declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
+  declare rentalCars?: NonAttribute<TravelDeskRentalCar[]>
 
   declare static associations: {
     flightRequests: Association<TravelDeskTravelRequest, TravelDeskFlightRequest>
+    rentalCars: Association<TravelDeskTravelRequest, TravelDeskRentalCar>
     travelAuthorization: Association<TravelDeskTravelRequest, TravelAuthorization>
     travelDeskPassengerNameRecordDocument: Association<
       TravelDeskTravelRequest,
@@ -163,6 +198,10 @@ export class TravelDeskTravelRequest extends Model<
     this.hasMany(TravelDeskFlightRequest, {
       as: "flightRequests",
       foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskRentalCar, {
+      as: "rentalCars",
+      foreignKey: "requestID",
     })
   }
 }

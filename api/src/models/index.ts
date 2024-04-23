@@ -14,6 +14,7 @@ import TravelAuthorizationPreApprovalProfile from "./travel-authorization-pre-ap
 import TravelAuthorizationPreApprovalSubmission from "./travel-authorization-pre-approval-submission"
 import TravelAuthorizationPreApprovalDocument from "./travel-authorization-pre-approval-document"
 import TravelDeskFlightRequest from "./travel-desk-flight-request"
+import TravelDeskRentalCar from "./travel-desk-rental-car"
 
 // Order matters here, though may be somewhat flexible
 Stop.establishAssociations()
@@ -30,6 +31,7 @@ TravelAuthorizationPreApprovalProfile.establishAssociations()
 TravelAuthorizationPreApprovalSubmission.establishAssociations()
 TravelAuthorizationPreApprovalDocument.establishAssociations()
 TravelDeskFlightRequest.establishAssociations()
+TravelDeskRentalCar.establishAssociations()
 
 // Alphabetically - order does not matter
 export { DistanceMatrix } from "./distance-matrix"
@@ -48,6 +50,7 @@ export {
   TravelAuthorizationPreApprovalSubmission,
   TravelDeskFlightRequest,
   TravelDeskPassengerNameRecordDocument,
+  TravelDeskRentalCar,
   TravelDeskTravelRequest,
   TravelSegment,
   User,
