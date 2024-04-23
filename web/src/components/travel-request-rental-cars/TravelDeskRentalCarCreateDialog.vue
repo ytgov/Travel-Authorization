@@ -246,7 +246,6 @@ import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
 import travelDeskRentalCarsApi, {
   LOCATION_TYPES,
-  TRAVEL_DESK_RENTAL_CAR_STATUSES,
   VEHICLE_TYPES,
 } from "@/api/travel-desk-rental-cars-api"
 
@@ -295,7 +294,6 @@ const rentalCar = ref({
   vehicleType: VEHICLE_TYPES.COMPACT,
   vehicleChangeRationale: "",
   additionalNotes: "",
-  status: TRAVEL_DESK_RENTAL_CAR_STATUSES.REQUESTED,
 })
 const pickUpDate = ref("")
 const pickUpTime = ref("")
@@ -391,7 +389,6 @@ function resetState() {
     vehicleType: VEHICLE_TYPES.COMPACT,
     vehicleChangeRationale: "",
     additionalNotes: "",
-    status: TRAVEL_DESK_RENTAL_CAR_STATUSES.REQUESTED,
   }
 
   pickUpDate.value = ""
