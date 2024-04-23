@@ -1,407 +1,402 @@
 <template>
   <div>
     <v-dialog
-      v-model="rentalCarDialog"
+      v-model="showDialog"
       persistent
       max-width="80%"
     >
       <template #activator="{ on, attrs }">
         <v-btn
-          class="my-4 right"
           color="primary"
           v-bind="attrs"
-          @click="initForm"
           v-on="on"
         >
           Add Rental Car
         </v-btn>
       </template>
 
-      <v-card>
-        <v-card-title class="blue">
-          <div class="text-h5">Add Rental Car</div>
-        </v-card-title>
+      <v-form
+        ref="form"
+        @submit.prevent="createAndClose"
+      >
+        <v-card :loading="isLoading">
+          <v-card-title class="blue">
+            <div class="text-h5">Add Rental Car</div>
+          </v-card-title>
 
-        <v-card-text>
-          <!-- <ROW-1> -->
-          <v-row class="mt-5 mx-0">
-            <v-col cols="4">
-              <v-autocomplete
-                v-model="carRequest.pickUpCity"
-                :items="destinations"
-                item-value="text"
-                :error="state.pickUpCityErr"
-                label="Pick-up City"
-                outlined
-                @input="state.pickUpCityErr = false"
-              />
-            </v-col>
-            <v-col cols="5">
-              <label>Pick-up/Drop-off match flights</label>
-              <v-radio-group
-                v-model="carRequest.matchFlightTimes"
-                :disabled="!flightStart || !flightEnd"
-                :error="state.matchFlightTimesErr"
-                class="mt-1"
-                row
-                @change="matchWithFlight"
+          <v-card-text>
+            <v-row class="mt-5 mx-0">
+              <v-col
+                cols="12"
+                md="4"
               >
-                <v-radio
-                  label="Yes"
-                  :value="true"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  :value="false"
-                ></v-radio>
-              </v-radio-group>
-            </v-col>
-            <v-col cols="3">
-              <v-select
-                v-model="carRequest.vehicleType"
-                :items="vehicleList"
-                :error="state.vehicleTypesErr"
-                label="Vehicle Type"
-                outlined
-                @input="state.vehicleTypesErr = false"
-              />
-            </v-col>
-          </v-row>
-          <!-- <ROW-2> -->
-          <v-row class="mt-0 mx-0">
-            <v-col cols="3">
-              <v-select
-                v-model="carRequest.pickUpLocation"
-                :items="pickUpLocations"
-                :error="state.pickUpLocationErr"
-                label="Pick-up Location"
-                outlined
-                @input="state.pickUpLocationErr = false"
-              />
-              <v-text-field
-                v-if="carRequest.pickUpLocation == 'Other'"
-                v-model="carRequest.pickUpLocationOther"
-                class="mt-n3"
-                :error="state.pickUpLocationOtherErr"
-                label="Other Pick-up Location"
-                outlined
-              />
-            </v-col>
-            <v-col cols="2">
-              <v-text-field
-                v-model="pickUpDate"
-                :disabled="carRequest.matchFlightTimes"
-                :readonly="readonly"
-                :error="state.pickUpDateErr"
-                label="Pick-up date"
-                outlined
-                :min="minDate"
-                :max="maxDate"
-                type="date"
-                @input="state.pickUpDateErr = false"
-              />
-              <v-text-field
-                v-model="dropOffDate"
-                class="mt-n3"
-                :disabled="carRequest.matchFlightTimes"
-                :readonly="readonly"
-                :error="state.dropOffDateErr"
-                label="Drop-off date"
-                outlined
-                :min="minDate"
-                :max="maxDate"
-                type="date"
-                @input="state.dropOffDateErr = false"
-              />
-            </v-col>
-            <v-col cols="2">
-              <v-text-field
-                v-model="pickUpTime"
-                :readonly="readonly"
-                :error="state.pickUpTimeErr"
-                label="Pick-up time"
-                outlined
-                type="time"
-                @input="state.pickUpTimeErr = false"
-              />
-              <v-text-field
-                v-model="dropOffTime"
-                class="mt-n3"
-                :readonly="readonly"
-                :error="state.dropOffTimeErr"
-                label="Drop-off time"
-                outlined
-                type="time"
-                @input="state.dropOffTimeErr = false"
-              />
-            </v-col>
-            <v-col cols="5">
-              <v-textarea
-                v-model="carRequest.vehicleChangeRationale"
-                :readonly="readonly"
-                :error="state.reasonForChangeErr"
-                label="Reason for Change"
-                rows="4"
-                outlined
-                :clearable="!readonly"
-              />
-            </v-col>
-          </v-row>
-          <!-- <ROW-3> -->
-          <v-row class="mt-0 mx-0">
-            <v-col cols="3">
-              <div class="label">Same Drop-off location?</div>
-              <v-radio-group
-                v-model="carRequest.sameDropOffLocation"
-                :error="state.sameDropOffLocationErr"
-                class="mt-1"
-                row
-              >
-                <v-radio
-                  label="Yes"
-                  :value="true"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  :value="false"
-                ></v-radio>
-              </v-radio-group>
-              <v-autocomplete
-                v-if="!carRequest.sameDropOffLocation"
-                v-model="carRequest.dropOffCity"
-                :items="destinations"
-                item-value="text"
-                :error="state.dropOffCityErr"
-                class="mt-n1"
-                label="Drop-off City"
-                outlined
-                @input="state.dropOffCityErr = false"
-              />
-            </v-col>
-            <v-col cols="3">
-              <v-select
-                v-if="!carRequest.sameDropOffLocation"
-                v-model="carRequest.dropOffLocation"
-                :items="pickUpLocations"
-                class="mt-n1"
-                :error="state.dropOffLocationErr"
-                label="Drop-off Location:"
-                outlined
-              />
-              <v-text-field
-                v-if="!carRequest.sameDropOffLocation && carRequest.dropOffLocation == 'Other'"
-                v-model="carRequest.dropOffLocationOther"
-                class="mt-n3"
-                :error="state.dropOffLocationOtherErr"
-                label="Other Drop-off Location"
-                outlined
-                @input="state.dropOffLocationOtherErr = false"
-              />
-            </v-col>
-            <v-col cols="6">
-              <v-textarea
-                v-model="carRequest.additionalNotes"
-                :readonly="readonly"
-                :error="state.additionalNotesErr"
-                label="Additional Information"
-                outlined
-                rows="4"
-                :clearable="!readonly"
-              />
-            </v-col>
-          </v-row>
-        </v-card-text>
+                <LocationsAutocomplete
+                  v-model="rentalCar.pickUpCity"
+                  :rules="[required]"
+                  item-value="city"
+                  label="Pick-up City *"
+                  outlined
+                  required
+                />
+              </v-col>
+              <v-col cols="5">
+                <!-- TODO: maybe make this a component? -->
+                <label>Pick-up/Drop-off match flights</label>
+                <v-radio-group
+                  v-model="rentalCar.matchFlightTimes"
+                  :disabled="isNil(flightStart) || isNil(flightEnd)"
+                  class="mt-1"
+                  row
+                  @change="matchWithFlight"
+                >
+                  <v-radio
+                    label="Yes"
+                    :value="true"
+                  ></v-radio>
+                  <v-radio
+                    label="No"
+                    :value="false"
+                  ></v-radio>
+                </v-radio-group>
+              </v-col>
+              <v-col cols="3">
+                <!-- TODO: Make this a component -->
+                <v-select
+                  v-model="rentalCar.vehicleType"
+                  :items="Object.values(VEHICLE_TYPES)"
+                  :rules="[required]"
+                  label="Vehicle Type *"
+                  outlined
+                  required
+                />
+              </v-col>
+            </v-row>
+            <v-row class="mt-0 mx-0">
+              <v-col cols="3">
+                <!-- TODO: make this a component -->
+                <v-select
+                  v-model="rentalCar.pickUpLocation"
+                  :items="Object.values(LOCATION_TYPES)"
+                  :rules="[required]"
+                  label="Pick-up Location *"
+                  outlined
+                  required
+                />
+                <v-text-field
+                  v-if="rentalCar.pickUpLocation === LOCATION_TYPES.OTHER"
+                  v-model="rentalCar.pickUpLocationOther"
+                  :rules="[required]"
+                  class="mt-n3"
+                  label="Other Pick-up Location *"
+                  outlined
+                  required
+                />
+              </v-col>
+              <v-col cols="2">
+                <v-text-field
+                  v-model="pickUpDate"
+                  label="Pick-up date *"
+                  type="date"
+                  :disabled="rentalCar.matchFlightTimes"
+                  :min="minDate"
+                  :max="maxDate"
+                  :rules="[required]"
+                  outlined
+                  required
+                />
+                <v-text-field
+                  v-model="dropOffDate"
+                  label="Drop-off date *"
+                  type="date"
+                  class="mt-n3"
+                  :disabled="rentalCar.matchFlightTimes"
+                  :min="minDate"
+                  :max="maxDate"
+                  :rules="[required]"
+                  outlined
+                  required
+                />
+              </v-col>
+              <v-col cols="2">
+                <v-text-field
+                  v-model="pickUpTime"
+                  label="Pick-up time *"
+                  type="time"
+                  :rules="[required]"
+                  outlined
+                  required
+                />
+                <v-text-field
+                  v-model="dropOffTime"
+                  label="Drop-off time *"
+                  type="time"
+                  :rules="[required]"
+                  class="mt-n3"
+                  outlined
+                  required
+                />
+              </v-col>
+              <v-col cols="5">
+                <v-textarea
+                  v-if="rentalCar.vehicleType !== VEHICLE_TYPES.COMPACT"
+                  v-model="rentalCar.vehicleChangeRationale"
+                  label="Reason for Change *"
+                  :rules="[required]"
+                  rows="4"
+                  outlined
+                  required
+                />
+              </v-col>
+            </v-row>
+            <v-row class="mt-0 mx-0">
+              <v-col cols="3">
+                <div class="label">Same Drop-off location?</div>
+                <v-radio-group
+                  v-model="rentalCar.sameDropOffLocation"
+                  class="mt-1"
+                  row
+                >
+                  <v-radio
+                    label="Yes"
+                    :value="true"
+                  ></v-radio>
+                  <v-radio
+                    label="No"
+                    :value="false"
+                  ></v-radio>
+                </v-radio-group>
+                <LocationsAutocomplete
+                  v-if="rentalCar.sameDropOffLocation === false"
+                  v-model="rentalCar.dropOffCity"
+                  :rules="[required]"
+                  item-value="city"
+                  class="mt-n1"
+                  label="Drop-off City *"
+                  outlined
+                  required
+                />
+              </v-col>
+              <v-col cols="3">
+                <!-- TODO: make this a component -->
+                <v-select
+                  v-if="rentalCar.sameDropOffLocation === false"
+                  v-model="rentalCar.dropOffLocation"
+                  :items="Object.values(LOCATION_TYPES)"
+                  :rules="[required]"
+                  class="mt-n1"
+                  label="Drop-off Location *"
+                  outlined
+                  required
+                />
+                <v-text-field
+                  v-if="
+                    rentalCar.sameDropOffLocation === false &&
+                    rentalCar.dropOffLocation === LOCATION_TYPES.OTHER
+                  "
+                  v-model="rentalCar.dropOffLocationOther"
+                  label="Other Drop-off Location *"
+                  :rules="[required]"
+                  class="mt-n3"
+                  outlined
+                  required
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-textarea
+                  v-model="rentalCar.additionalNotes"
+                  label="Additional Information"
+                  outlined
+                  rows="4"
+                  clearable
+                />
+              </v-col>
+            </v-row>
+          </v-card-text>
 
-        <v-card-actions>
-          <v-btn
-            color="grey darken-5"
-            @click="rentalCarDialog = false"
-          >
-            Cancel
-          </v-btn>
-          <v-btn
-            class="ml-auto"
-            color="green darken-1"
-            @click="saveRentalCarRequest"
-          >
-            Add
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              :loading="isLoading"
+              color="grey darken-5"
+              @click="close"
+            >
+              Cancel
+            </v-btn>
+            <v-btn
+              :loading="isLoading"
+              color="green darken-1"
+              type="submit"
+            >
+              Add
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
     </v-dialog>
   </div>
 </template>
 
-<script>
-import Vue from "vue"
+<script setup>
+import { ref, nextTick, watch } from "vue"
+import { useRoute, useRouter } from "vue2-helpers/vue-router"
+import { isNil } from "lodash"
 
-export default {
-  name: "TravelDeskRentalCarCreateDialog",
-  props: {
-    type: {
-      type: String,
-      required: true,
-    },
-    carRequest: {
-      type: Object,
-      required: true,
-    },
-    flightRequests: {
-      type: Array,
-      required: true,
-    },
-    minDate: {
-      type: String,
-      default: "",
-    },
-    maxDate: {
-      type: String,
-      default: "",
-    },
+import { required } from "@/utils/validators"
+import { useSnack } from "@/plugins/snack-plugin"
+import travelDeskRentalCarsApi, {
+  LOCATION_TYPES,
+  TRAVEL_DESK_RENTAL_CAR_STATUSES,
+  VEHICLE_TYPES,
+} from "@/api/travel-desk-rental-cars-api"
+
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+
+const props = defineProps({
+  travelDeskTravelRequestId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      pickUpDate: "",
-      pickUpTime: "",
-      dropOffDate: "",
-      dropOffTime: "",
+  minDate: {
+    type: String,
+    default: null,
+  },
+  maxDate: {
+    type: String,
+    default: null,
+  },
+  // TODO: consider loading flightStart/End using travelDeskTravelRequestId?
+  flightStart: {
+    type: String,
+    default: null,
+  },
+  flightEnd: {
+    type: String,
+    default: null,
+  },
+})
 
-      flightStart: "",
-      flightEnd: "",
+const emit = defineEmits(["created"])
 
-      rentalCarDialog: false,
-      vehicleList: [
-        "Economy",
-        "Compact",
-        "Intermediate",
-        "Standard",
-        "Full-Size",
-        "Intermediate SUV",
-        "Luxury",
-        "Minivan",
-        "Standard SUV",
-        "Full-Size SUV",
-        "Pickup Truck",
-      ],
-      pickUpLocations: ["Airport", "Hotel", "Downtown", "Other"],
+const rentalCar = ref({
+  travelRequestId: props.travelDeskTravelRequestId,
+  pickUpCity: "",
+  dropOffCity: "",
+  pickUpLocation: "",
+  pickUpLocationOther: "",
+  dropOffLocation: "",
+  dropOffLocationOther: "",
+  sameDropOffLocation: true,
+  matchFlightTimes: false,
+  pickUpDate: "",
+  pickUpTime: "12:00",
+  dropOffDate: "",
+  dropOffTime: "12:00",
+  vehicleType: VEHICLE_TYPES.COMPACT,
+  vehicleChangeRationale: "",
+  additionalNotes: "",
+  status: TRAVEL_DESK_RENTAL_CAR_STATUSES.REQUESTED,
+})
+const pickUpDate = ref("")
+const pickUpTime = ref("")
+const dropOffDate = ref("")
+const dropOffTime = ref("")
 
-      readonly: false,
+const snack = useSnack()
+const router = useRouter()
+const route = useRoute()
+const showDialog = ref(route.query.showRentalCarCreate === "true")
 
-      state: {
-        pickUpCityErr: false,
-        dropOffCityErr: false,
-        pickUpLocationErr: false,
-        pickUpLocationOtherErr: false,
-        dropOffLocationErr: false,
-        dropOffLocationOtherErr: false,
-        sameDropOffLocationErr: false,
-        matchFlightTimesErr: false,
-        pickUpDateErr: false,
-        pickUpTimeErr: false,
-        dropOffDateErr: false,
-        dropOffTimeErr: false,
-        vehicleTypesErr: false,
-        reasonForChangeErr: false,
-        additionalNotesErr: false,
-      },
-      destinations: [],
+/** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
+const form = ref(null)
+const isLoading = ref(false)
+
+function matchWithFlight() {
+  if (rentalCar.value.matchFlightTimes) {
+    pickUpDate.value = props.flightStart
+    dropOffDate.value = props.flightEnd
+  }
+}
+
+watch(
+  () => props.travelDeskTravelRequestId,
+  () => {
+    resetState()
+  },
+  { immediate: true }
+)
+
+watch(
+  () => showDialog.value,
+  (value) => {
+    if (value) {
+      router.push({ query: { showRentalCarCreate: "true" } })
+    } else {
+      router.push({ query: { showRentalCarCreate: undefined } })
     }
-  },
-  mounted() {
-    this.destinations = this.$store.state.traveldesk.destinations
-  },
-  methods: {
-    checkFields() {
-      this.state.pickUpCityErr = this.carRequest.pickUpCity ? false : true
-      this.state.pickUpLocationErr = this.carRequest.pickUpLocation ? false : true
-      this.state.pickUpLocationOtherErr =
-        this.carRequest.pickUpLocation == "Other" && !this.carRequest.pickUpLocationOther
-          ? true
-          : false
+  }
+)
 
-      this.state.sameDropOffLocationErr = this.carRequest.sameDropOffLocation != null ? false : true
-      this.state.dropOffLocationErr =
-        !this.carRequest.sameDropOffLocation && !this.carRequest.dropOffLocation ? true : false
-      this.state.dropOffCityErr =
-        !this.carRequest.sameDropOffLocation && !this.carRequest.dropOffCity ? true : false
+function close() {
+  showDialog.value = false
+  resetState()
+  form.value?.resetValidation()
+}
 
-      this.state.matchFlightTimesErr = this.carRequest.matchFlightTimes != null ? false : true
-      this.state.vehicleTypesErr = this.carRequest.vehicleType ? false : true
-      this.state.reasonForChangeErr =
-        this.carRequest.vehicleType != "Compact" && !this.carRequest.vehicleChangeRationale
-          ? true
-          : false
-      this.state.additionalNotesErr = false
+async function createAndClose() {
+  if (!form.value?.validate()) {
+    snack("Please fill in all required fields", { color: "error" })
+    return
+  }
 
-      this.state.pickUpDateErr = this.pickUpDate ? false : true
-      this.state.pickUpTimeErr = this.pickUpTime ? false : true
+  // TODO: Notify the user, in the UI, that times are in UTC?
+  // Or maybe make them local to city?
+  // Oversight in original code so not fixing at this time.
+  rentalCar.value.pickUpDate = pickUpDate.value + "T" + pickUpTime.value + ":00.000Z"
+  rentalCar.value.dropOffDate = dropOffDate.value + "T" + dropOffTime.value + ":00.000Z"
 
-      this.state.dropOffDateErr = this.dropOffDate ? false : true
-      this.state.dropOffTimeErr = this.dropOffTime ? false : true
+  isLoading.value = true
+  try {
+    const { travelDeskRentalCar: newRentalCar } = await travelDeskRentalCarsApi.create(
+      rentalCar.value
+    )
+    close()
 
-      for (const key of Object.keys(this.state)) {
-        if (this.state[key]) return false
-      }
-      return true
-    },
+    await nextTick()
+    emit("created", newRentalCar.id)
+    snack("Rental car request created successfully", { color: "success" })
+  } catch (error) {
+    console.error(error)
+    snack("Failed to create rental car request", { color: "error" })
+  } finally {
+    isLoading.value = false
+  }
+}
 
-    saveRentalCarRequest() {
-      if (this.checkFields()) {
-        this.carRequest.pickUpDate = this.pickUpDate + "T" + this.pickUpTime + ":00.000Z"
-        this.carRequest.dropOffDate = this.dropOffDate + "T" + this.dropOffTime + ":00.000Z"
-        this.$emit("updateTable", this.type)
-        this.rentalCarDialog = false
-      }
-    },
+function resetState() {
+  rentalCar.value = {
+    travelRequestId: props.travelDeskTravelRequestId,
+    pickUpCity: "",
+    dropOffCity: "",
+    pickUpLocation: "",
+    pickUpLocationOther: "",
+    dropOffLocation: "",
+    dropOffLocationOther: "",
+    sameDropOffLocation: true,
+    matchFlightTimes: false,
+    pickUpDate: "",
+    pickUpTime: "12:00",
+    dropOffDate: "",
+    dropOffTime: "12:00",
+    vehicleType: VEHICLE_TYPES.COMPACT,
+    vehicleChangeRationale: "",
+    additionalNotes: "",
+    status: TRAVEL_DESK_RENTAL_CAR_STATUSES.REQUESTED,
+  }
 
-    initForm() {
-      this.initStates()
-      const flightDates = Vue.filter("flightStartEnd")(this.flightRequests)
-      this.flightStart = flightDates.start
-      this.flightEnd = flightDates.end
-
-      if (this.type == "Add New") {
-        this.carRequest.pickUpCity = ""
-        this.carRequest.dropOffCity = ""
-        this.carRequest.pickUpLocation = ""
-        this.carRequest.pickUpLocationOther = ""
-        this.carRequest.dropOffLocation = ""
-        this.carRequest.dropOffLocationOther = ""
-        this.carRequest.sameDropOffLocation = true
-        this.carRequest.vehicleType = "Compact"
-        this.carRequest.pickUpDate = ""
-        this.carRequest.dropOffDate = ""
-        this.carRequest.additionalNotes = ""
-        this.carRequest.status = "Requested" //, Reserved"
-        this.carRequest.vehicleChangeRationale = ""
-        this.carRequest.matchFlightTimes = false
-
-        this.pickUpDate = ""
-        this.pickUpTime = "12:00"
-        this.dropOffDate = ""
-        this.dropOffTime = "12:00"
-      } else {
-        this.pickUpDate = this.carRequest.pickUpDate.slice(0, 10)
-        this.pickUpTime = this.carRequest.pickUpDate.slice(11, 16)
-        this.dropOffDate = this.carRequest.dropOffDate.slice(0, 10)
-        this.dropOffTime = this.carRequest.dropOffDate.slice(11, 16)
-        if (!this.flightStart || !this.flightEnd) this.carRequest.matchFlightTimes = false
-      }
-    },
-
-    initStates() {
-      for (const key of Object.keys(this.state)) {
-        this.state[key] = false
-      }
-    },
-
-    matchWithFlight() {
-      if (this.carRequest.matchFlightTimes) {
-        this.pickUpDate = this.flightStart
-        this.dropOffDate = this.flightEnd
-      }
-    },
-  },
+  pickUpDate.value = ""
+  pickUpTime.value = ""
+  dropOffDate.value = ""
+  dropOffTime.value = ""
 }
 </script>
 

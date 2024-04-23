@@ -11,10 +11,11 @@
         <v-row class="mt-3 mx-3">
           <TravelDeskRentalCarCreateDialog
             class="ml-auto mr-3"
+            :travel-desk-travel-request-id="travelDeskTravelRequestId"
             :min-date="minDate"
             :max-date="maxDate"
-            :flight-requests="flightRequests"
-            :car-request="carRequest"
+            :flight-start="flightStart"
+            :flight-end="flightEnd"
             @updateTable="updateTable"
           />
         </v-row>
@@ -101,14 +102,21 @@ export default {
     TravelDeskRentalCarCreateDialog,
   },
   props: {
-    readonly: Boolean,
+    travelDeskTravelRequestId: {
+      type: Number,
+      required: true,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
     rentalCars: {
       type: Array,
-      required: true,
+      default: () => [],
     },
     flightRequests: {
       type: Array,
-      required: true,
+      default: () => [],
     },
     authorizedTravel: {
       type: Object,
@@ -179,6 +187,27 @@ export default {
       minDate: "",
       maxDate: "",
     }
+  },
+  computed: {
+    sortedFlightRequestDates() {
+      const dates = this.flightRequests.map((flight) => flight.datePreference)
+      dates.sort()
+      return dates
+    },
+    flightStart() {
+      if (this.sortedFlightRequestDates.length > 0) {
+        return this.sortedFlightRequestDates[0]
+      }
+
+      return null
+    },
+    flightEnd() {
+      if (this.sortedFlightRequestDates.length > 1) {
+        return this.sortedFlightRequestDates[this.sortedFlightRequestDates.length - 1]
+      }
+
+      return null
+    },
   },
   mounted() {
     this.initForm()

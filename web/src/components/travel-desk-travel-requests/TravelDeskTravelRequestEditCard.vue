@@ -85,6 +85,7 @@
               </TitleCard>
 
               <TravelDeskRentalCarsEditTable
+                :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :authorized-travel="travelAuthorization"
                 :readonly="false"
                 :flight-requests="travelDeskTravelRequest.flightRequests"
