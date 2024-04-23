@@ -27,8 +27,8 @@
               @saved="refresh"
             />
           </template>
-          <template #item.datePreference="{ item }">
-            {{ item.datePreference | beautifyDateTime }}
+          <template #item.datePreference="{ value }">
+            {{ formatDate(value) }}
           </template>
 
           <template #item.actions="{ item }">
@@ -73,6 +73,7 @@
 import { isNil } from "lodash"
 import { ref, computed, toRefs, watch } from "vue"
 import { useRoute } from "vue2-helpers/vue-router"
+import { DateTime } from "luxon"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
@@ -105,7 +106,7 @@ const headers = [
     class: "blue-grey lighten-4",
     sortable: false,
   },
-  { text: "Date", value: "date", class: "blue-grey lighten-4" },
+  { text: "Date", value: "datePreference", class: "blue-grey lighten-4" },
   {
     text: "Time Preference",
     value: "timePreference",
@@ -137,6 +138,10 @@ const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestEditDialog> | null>} */
 const editDialog = ref(null)
+
+function formatDate(date) {
+  return DateTime.fromISO(date).toFormat("MMM d yyyy")
+}
 
 function showEditDialog(flightRequest) {
   editDialog.value?.show(flightRequest)
