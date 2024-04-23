@@ -9,10 +9,8 @@
       </template>
       <template #body>
         <v-row class="mt-3 mx-3">
-          <NewRentalCarRequest
-            v-if="!readonly"
+          <TravelDeskRentalCarCreateDialog
             class="ml-auto mr-3"
-            type="Add New"
             :min-date="minDate"
             :max-date="maxDate"
             :flight-requests="flightRequests"
@@ -93,12 +91,14 @@ import { cloneDeep } from "lodash"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import NewRentalCarRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewRentalCarRequest.vue"
+import TravelDeskRentalCarCreateDialog from "@/components/travel-request-rental-cars/TravelDeskRentalCarCreateDialog.vue"
 
 export default {
   name: "NewTravelDeskRequest",
   components: {
     TitleCard,
     NewRentalCarRequest,
+    TravelDeskRentalCarCreateDialog,
   },
   props: {
     readonly: Boolean,
