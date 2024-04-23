@@ -1,82 +1,59 @@
 <template>
   <v-card
-    :loading="loadingData"
+    :loading="isLoading"
     class="pt-1"
-    style="border: 0px solid red !important"
   >
-    <v-row class="mt-n1 mx-0">
+    <div class="d-flex justify-end pr-4">
       <TravelDeskFlightRequestCreateDialog
-        v-if="!readonly"
-        :disabled="loadingData"
+        :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :min-date="minDate"
         :max-date="maxDate"
-        class="ml-auto mr-3"
-        type="Add New"
-        :flight-request="flightRequest"
-        @updateTable="updateTable"
+        @created="refresh"
       />
-    </v-row>
-    <v-row
-      v-if="!loadingData"
-      class="mb-3 mx-0"
-    >
-      <v-col
-        v-if="flightRequests?.length > 0"
-        cols="12"
-      >
+    </div>
+    <v-row class="mb-3 mx-0">
+      <v-col cols="12">
         <v-data-table
-          :headers="flightHeaders"
-          :items="flightRequests"
-          :expanded.sync="expanded"
-          :show-expand="false"
+          :headers="headers"
+          :items="travelDeskFlightRequests"
           hide-default-footer
           class="elevation-1"
         >
-          <template #expanded-item="{ item }">
-            <td
-              v-if="showFlightOptions"
-              :colspan="6"
-            >
-              <!-- {{ item.flightOptions }} -->
-              <v-row
-                v-for="(flightOption, inx) in item.flightOptions"
-                :key="'flight-' + flightOption.flightOptionID + '-' + inx"
-              >
-                <v-col>
-                  <FlightOptionCard
-                    :flight-option="flightOption"
-                    :opt-len="item.flightOptions.length"
-                    :travel-desk-user="travelDeskUser"
-                  />
-                </v-col>
-              </v-row>
-            </td>
+          <template #top>
+            <TravelDeskFlightRequestEditDialog
+              ref="editDialog"
+              :min-date="minDate"
+              :max-date="maxDate"
+              @saved="refresh"
+            />
+          </template>
+          <template #item.datePreference="{ value }">
+            {{ formatDate(value) }}
           </template>
 
-          <template #[`item.date`]="{ item }">
-            {{ item.date | beautifyDateTime }}
-          </template>
-
-          <template #[`item.edit`]="{ item }">
+          <template #item.actions="{ item }">
             <v-row class="mx-0 py-0 mt-n6 mb-n6">
               <v-col cols="6">
-                <TravelDeskFlightRequestCreateDialog
-                  v-if="!readonly"
-                  type="Edit"
-                  :min-date="minDate"
-                  :max-date="maxDate"
-                  :flight-request="item"
-                  @updateTable="updateTable"
-                />
+                <v-btn
+                  class="mx-0 px-0"
+                  color="transparent"
+                  title="Edit"
+                  @click="showEditDialog(item)"
+                >
+                  <v-icon
+                    class="mx-0 px-0"
+                    color="blue"
+                    >mdi-pencil</v-icon
+                  >
+                </v-btn>
               </v-col>
               <v-col cols="6">
                 <v-btn
-                  v-if="!readonly"
-                  style="min-width: 0"
+                  :loading="isLoading"
                   color="transparent"
                   class="px-1 pt-2"
                   small
-                  @click="removeFlight(item)"
+                  @click="deleteFlightRequest(item)"
                   ><v-icon
                     class=""
                     color="red"
@@ -92,178 +69,114 @@
   </v-card>
 </template>
 
-<script>
-import { TRAVEL_DESK_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+<script setup>
+import { isNil } from "lodash"
+import { ref, computed, toRefs, watch } from "vue"
+import { useRoute } from "vue2-helpers/vue-router"
+import { DateTime } from "luxon"
+
+import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
+import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
+import TravelDeskFlightRequestEditDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestEditDialog.vue"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
-
-export default {
-  name: "TravelDeskFlightRequestsEditTable",
-  components: {
-    TravelDeskFlightRequestCreateDialog,
-    FlightOptionCard,
+const props = defineProps({
+  travelDeskTravelRequestId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelDeskTravelRequestId: {
-      type: Number,
-      default: () => null,
-    },
-    flightRequests: {
-      type: Array,
-      default: () => [],
-    },
-    readonly: {
-      type: Boolean,
-      default: false,
-    },
-    travelDeskUser: {
-      type: Boolean,
-      default: false,
-    },
-    showFlightOptions: {
-      type: Boolean,
-      default: false,
-    },
-    authorizedTravel: {
-      type: Object,
-      default: () => ({}),
-    },
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      flightHeaders: [
-        {
-          text: "Depart Location",
-          value: "departLocation",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Arrive Location",
-          value: "arriveLocation",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        { text: "Date", value: "date", class: "blue-grey lighten-4" },
-        {
-          text: "Time Preference",
-          value: "timePreference",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Seat Preference",
-          value: "seatPreference",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        { text: "", value: "edit", class: "blue-grey lighten-4", width: "4rem", sortable: false },
-      ],
-      flightRequest: {},
-      tmpId: 1,
-      admin: false,
-      travelerDetails: {},
-      savingData: false,
-      expanded: [true],
-      loadingData: false,
-      minDate: "",
-      maxDate: "",
-    }
+})
+
+const headers = [
+  {
+    text: "Depart Location",
+    value: "departLocation",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  mounted() {
-    this.initForm()
+  {
+    text: "Arrive Location",
+    value: "arriveLocation",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  methods: {
-    async updateTable(type) {
-      if (type == "Add New") {
-        // console.log(this.flightRequests)
-        this.flightRequest.tmpId = this.tmpId
-        this.flightRequests.push(JSON.parse(JSON.stringify(this.flightRequest)))
-        this.tmpId++
-        await this.saveFlightRequests()
-      } else if (type == "Edit") {
-        await this.saveFlightRequests()
-      }
-    },
-
-    async initForm() {
-      if (this.authorizedTravel?.startDate && this.authorizedTravel?.endDate) {
-        this.minDate = this.authorizedTravel.startDate.slice(0, 10)
-        this.maxDate = this.authorizedTravel.endDate.slice(0, 10)
-      }
-      if (this.travelDeskTravelRequestId) await this.loadFlightRequests()
-      const flightRequest = {}
-      flightRequest.flightRequestID = null
-      flightRequest.tmpId = null
-
-      flightRequest.departLocation = ""
-      flightRequest.arriveLocation = ""
-      flightRequest.date = ""
-      flightRequest.timePreference = ""
-      flightRequest.seatPreference = ""
-      flightRequest.flightOptions = []
-      // flightRequest.status="Requested";
-
-      this.flightRequest = flightRequest
-    },
-
-    editFlight(item) {
-      this.flightRequest = item
-    },
-
-    async removeFlight(item) {
-      // console.log(item)
-      let delIndex = -1
-      if (item.flightRequestID > 0)
-        delIndex = this.flightRequests.findIndex(
-          (flight) => flight.flightRequestID && flight.flightRequestID == item.flightRequestID
-        )
-      else
-        delIndex = this.flightRequests.findIndex(
-          (flight) => flight.tmpId && flight.tmpId == item.tmpId
-        )
-      // console.log(delIndex)
-      if (delIndex >= 0) {
-        this.flightRequests.splice(delIndex, 1)
-        await this.saveFlightRequests()
-      }
-    },
-
-    async loadFlightRequests() {
-      this.loadingData = true
-
-      secureGet(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`)
-        .then((resp) => {
-          // console.log(resp.data)
-          this.flightRequests.splice(0)
-          for (const flightRequest of resp.data) this.flightRequests.push(flightRequest)
-          this.loadingData = false
-        })
-        .catch((e) => {
-          console.log(e)
-          this.loadingData = false
-        })
-    },
-
-    async saveFlightRequests() {
-      this.loadingData = true
-      const body = this.flightRequests
-
-      securePost(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`, body)
-        .then(() => {
-          // console.log(resp)
-          this.loadFlightRequests()
-          this.loadingData = false
-        })
-        .catch((e) => {
-          console.log(e)
-          this.loadingData = false
-        })
-    },
+  { text: "Date", value: "datePreference", class: "blue-grey lighten-4" },
+  {
+    text: "Time Preference",
+    value: "timePreference",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
+  {
+    text: "Seat Preference",
+    value: "seatPreference",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  { text: "", value: "actions", class: "blue-grey lighten-4", width: "4rem", sortable: false },
+]
+
+const route = useRoute()
+
+const travelDeskFlightRequestsQuery = computed(() => ({
+  travelRequestId: props.travelDeskTravelRequestId,
+}))
+const { travelDeskFlightRequests, isLoading, refresh } = useTravelDeskFlightRequests(
+  travelDeskFlightRequestsQuery
+)
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const minDate = computed(() => travelAuthorization.value?.startDate?.slice(0, 10))
+const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
+
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestEditDialog> | null>} */
+const editDialog = ref(null)
+
+function formatDate(date) {
+  return DateTime.fromISO(date).toFormat("MMM d yyyy")
+}
+
+function showEditDialog(flightRequest) {
+  editDialog.value?.show(flightRequest)
+}
+
+function showEditDialogForRouteQuery() {
+  const flightRequestId = parseInt(route.query.showFlightRequestEdit)
+  if (isNaN(flightRequestId)) return
+
+  const flightRequest = travelDeskFlightRequests.value.find(
+    (flightRequest) => flightRequest.id === flightRequestId
+  )
+  if (isNil(flightRequest)) return
+
+  showEditDialog(flightRequest)
+}
+
+watch(
+  () => travelDeskFlightRequests.value,
+  (flightRequests) => {
+    if (flightRequests.length === 0) return
+
+    showEditDialogForRouteQuery()
+  }
+)
+
+async function deleteFlightRequest(flightRequest) {
+  if (!confirm("Are you sure you want to remove this flight request?")) return
+
+  try {
+    await travelDeskFlightRequestsApi.delete(flightRequest.id)
+    await refresh()
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 

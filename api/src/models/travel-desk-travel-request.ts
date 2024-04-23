@@ -6,21 +6,32 @@ import {
   CreationOptional,
   DataTypes,
   ForeignKey,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
 } from "sequelize"
-import { isEmpty, isNil } from "lodash"
-
-import TravelAuthorization from "./travel-authorization"
-import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
-import TravelDeskTravelAgent from "./travel-desk-travel-agent"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
-enum Statuses {
+import TravelAuthorization from "@/models/travel-authorization"
+import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
+import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
+import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
+
+/** Keep in sync with web/src/api/travel-desk-travel-requests-api.js */
+export enum TravelDeskTravelRequestStatuses {
   BOOKED = "booked",
   DRAFT = "draft",
   OPTIONS_PROVIDED = "options_provided",
@@ -32,7 +43,7 @@ export class TravelDeskTravelRequest extends Model<
   InferAttributes<TravelDeskTravelRequest>,
   InferCreationAttributes<TravelDeskTravelRequest>
 > {
-  static Statuses = Statuses
+  static Statuses = TravelDeskTravelRequestStatuses
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
@@ -87,11 +98,45 @@ export class TravelDeskTravelRequest extends Model<
   >
   declare createTravelDeskTravelAgent: BelongsToCreateAssociationMixin<TravelDeskTravelAgent>
 
+  declare getFlightRequests: HasManyGetAssociationsMixin<TravelDeskFlightRequest>
+  declare setFlightRequests: HasManySetAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare hasFlightRequest: HasManyHasAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare hasFlightRequests: HasManyHasAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare addFlightRequest: HasManyAddAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare addFlightRequests: HasManyAddAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare removeFlightRequest: HasManyRemoveAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare removeFlightRequests: HasManyRemoveAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare countFlightRequests: HasManyCountAssociationsMixin
+  declare createFlightRequest: HasManyCreateAssociationMixin<TravelDeskFlightRequest>
+
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
   declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
+  declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
 
   declare static associations: {
+    flightRequests: Association<TravelDeskTravelRequest, TravelDeskFlightRequest>
     travelAuthorization: Association<TravelDeskTravelRequest, TravelAuthorization>
     travelDeskPassengerNameRecordDocument: Association<
       TravelDeskTravelRequest,
@@ -115,6 +160,10 @@ export class TravelDeskTravelRequest extends Model<
     //   as: "travelDeskTravelAgent",
     //   foreignKey: "agencyID",
     // })
+    this.hasMany(TravelDeskFlightRequest, {
+      as: "flightRequests",
+      foreignKey: "travelRequestId",
+    })
   }
 }
 
@@ -193,7 +242,7 @@ TravelDeskTravelRequest.init(
       allowNull: false,
       validate: {
         isIn: {
-          args: [Object.values(Statuses)],
+          args: [Object.values(TravelDeskTravelRequestStatuses)],
           msg: "Invalid status value",
         },
       },
@@ -273,10 +322,7 @@ TravelDeskTravelRequest.init(
         }
       },
       allTravelContactFieldsOrNone() {
-        if (
-          this.travelContact === true &&
-          (isNil(this.travelPhone) || isNil(this.travelEmail))
-        ) {
+        if (this.travelContact === true && (isNil(this.travelPhone) || isNil(this.travelEmail))) {
           throw new Error("Travel phone and email are required if travel contact is true")
         } else if (
           this.travelContact === false &&
@@ -284,7 +330,7 @@ TravelDeskTravelRequest.init(
         ) {
           throw new Error("Travel phone and email are only permitted if travel contact is true")
         }
-      }
+      },
     },
   }
 )

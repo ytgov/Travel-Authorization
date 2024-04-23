@@ -25,6 +25,12 @@
     <span v-if="hasNoAirTravel"> Disabled as traveler is not traveling by air.</span>
     <span v-else-if="isWaitingForApproval"> Locked until request is approved. </span>
   </v-tooltip>
+  <!--
+    TODO: add page for different travel request states
+    e.g.
+      - only show edit page when travelDeskTravelRequest.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
+      - when status SUBMITTED, show a read-only page, etc.
+   -->
   <v-tab
     v-else
     :to="{

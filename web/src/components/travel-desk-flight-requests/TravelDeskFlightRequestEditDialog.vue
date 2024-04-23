@@ -4,23 +4,13 @@
     persistent
     max-width="80%"
   >
-    <template #activator="{ on, attrs }">
-      <v-btn
-        color="primary"
-        v-bind="attrs"
-        v-on="on"
-      >
-        Add Flight
-      </v-btn>
-    </template>
-
     <v-form
       ref="form"
-      @submit.prevent="createAndClose"
+      @submit.prevent="updateAndClose"
     >
       <v-card :loading="isLoading">
         <v-card-title class="blue">
-          <div class="text-h5">Add Flight</div>
+          <div class="text-h5">Edit Flight</div>
         </v-card-title>
 
         <v-card-text>
@@ -94,6 +84,7 @@
               cols="12"
               md="4"
             >
+              <!-- TODO: make this a component -->
               <SeatPreferenceSelect
                 v-model="flightRequest.seatPreference"
                 :rules="[required]"
@@ -112,14 +103,14 @@
             color="grey darken-5"
             @click="close"
           >
-            Cancel
+            Close
           </v-btn>
           <v-btn
             :loading="isLoading"
             color="green darken-1"
             type="submit"
           >
-            Add
+            Save
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -128,7 +119,8 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from "vue"
+import { cloneDeep } from "lodash"
+import { ref, nextTick, watch, computed } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 import { required } from "@/utils/validators"
@@ -140,11 +132,7 @@ import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import SeatPreferenceSelect from "@/components/travel-desk-flight-requests/SeatPreferenceSelect.vue"
 
-const props = defineProps({
-  travelDeskTravelRequestId: {
-    type: Number,
-    required: true,
-  },
+defineProps({
   minDate: {
     type: String,
     default: "",
@@ -155,39 +143,39 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["created"])
+const emit = defineEmits(["saved"])
 
-const flightRequest = ref({
-  travelRequestId: props.travelDeskTravelRequestId,
-})
+const flightRequest = ref({})
+const flightRequestId = computed(() => flightRequest.value.id)
 
 const snack = useSnack()
 const router = useRouter()
 const route = useRoute()
-const showDialog = ref(route.query.showFlightRequestCreate === "true")
+const showDialog = ref(false)
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
 const isLoading = ref(false)
 
 watch(
-  () => props.travelDeskTravelRequestId,
-  () => {
-    resetFlightRequest()
-  },
-  { immediate: true }
-)
-
-watch(
   () => showDialog.value,
   (value) => {
     if (value) {
-      router.push({ query: { showFlightRequestCreate: "true" } })
+      if (route.query.showFlightRequestEdit === flightRequestId.value?.toString()) {
+        return
+      }
+
+      router.push({ query: { showFlightRequestEdit: flightRequestId.value } })
     } else {
-      router.push({ query: { showFlightRequestCreate: undefined } })
+      router.push({ query: { showFlightRequestEdit: undefined } })
     }
   }
 )
+
+function show(newFlightRequest) {
+  flightRequest.value = cloneDeep(newFlightRequest)
+  showDialog.value = true
+}
 
 function close() {
   showDialog.value = false
@@ -195,7 +183,7 @@ function close() {
   form.value?.resetValidation()
 }
 
-async function createAndClose() {
+async function updateAndClose() {
   if (!form.value?.validate()) {
     snack("Please fill in all required fields", { color: "error" })
     return
@@ -203,26 +191,33 @@ async function createAndClose() {
 
   isLoading.value = true
   try {
-    const { travelDeskFlightRequest: newFlightRequest } = await travelDeskFlightRequestsApi.create(
+    if (flightRequestId.value === undefined) {
+      throw new Error("Flight request could not be found")
+    }
+
+    const { travelDeskFlightRequest: newFlightRequest } = await travelDeskFlightRequestsApi.update(
+      flightRequestId.value,
       flightRequest.value
     )
     close()
 
     await nextTick()
-    emit("created", newFlightRequest.id)
-    snack("Flight request created successfully", { color: "success" })
+    emit("saved", newFlightRequest.id)
+    snack("Flight request saved", { color: "success" })
   } catch (error) {
-    snack("Failed to create flight request", { color: "error" })
+    snack("Failed to save flight request", { color: "error" })
   } finally {
     isLoading.value = false
   }
 }
 
 function resetFlightRequest() {
-  flightRequest.value = {
-    travelRequestId: props.travelDeskTravelRequestId,
-  }
+  flightRequest.value = {}
 }
+
+defineExpose({
+  show,
+})
 </script>
 
 <style scoped lang="css" src="@/styles/_travel_desk.css">

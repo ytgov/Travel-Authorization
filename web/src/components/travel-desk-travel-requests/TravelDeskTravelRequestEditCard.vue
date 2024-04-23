@@ -23,18 +23,11 @@
           <TravelerDetailsFormCard
             ref="travelerDetailsFormCard"
             v-model="travelDeskTravelRequest"
+            :show-save-state-progress="true"
+            :is-saving="isLoading"
+            @save-requested="saveAndNotify"
+            @input="debouncedSaveAndNotify"
           />
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col class="d-flex justify-end">
-          <v-btn
-            color="green darken-1"
-            :loading="isLoading"
-            @click="saveAndNotify"
-          >
-            Save Details
-          </v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -55,30 +48,36 @@
                   <div>Flight Request</div>
                 </template>
                 <template #body>
-                  <v-row class="mt-0 mx-0">
-                    <v-col cols="9">
+                  <v-row
+                    class="mt-0"
+                    no-gutters
+                  >
+                    <v-col cols="12">
                       <TravelDeskFlightRequestsEditTable
                         :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                        :authorized-travel="travelAuthorization"
-                        :readonly="false"
-                        :travel-desk-user="false"
-                        :show-flight-options="travelDeskTravelRequest.status != 'draft'"
-                        :flight-requests="travelDeskTravelRequest.flightRequests"
+                        :travel-authorization-id="travelAuthorizationId"
+                        class="borderless-card"
                       />
                     </v-col>
-                    <v-col
-                      cols="3"
-                      class="px-0"
-                    >
+                  </v-row>
+                  <v-row
+                    class="ml-3"
+                    no-gutters
+                  >
+                    <v-col cols="12">
+                      <SaveStateProgress
+                        class="float-right my-0 mr-3 ml-3 hidden-sm-and-down"
+                        :saving="isLoading"
+                        @click="saveAndNotify"
+                      />
                       <v-textarea
                         v-model="travelDeskTravelRequest.additionalInformation"
                         class="mt-5 mr-5"
-                        :readonly="readonly"
                         label="Additional Information"
                         outlined
                         auto-grow
                         counter
-                        :clearable="!readonly"
+                        @input="debouncedSaveAndNotify"
                       />
                     </v-col>
                   </v-row>
@@ -110,7 +109,15 @@
 
     <v-card-actions>
       <v-btn
-        class="ml-auto mr-5 px-5"
+        class="ml-auto mr-2"
+        color="green darken-1"
+        :loading="isLoading"
+        @click="saveAndNotify"
+      >
+        Save Draft
+      </v-btn>
+      <v-btn
+        class="mr-5 px-5"
         color="brown darken-1"
         :loading="savingData"
         @click="saveNewTravelRequest('submit')"
@@ -122,7 +129,7 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref, toRefs } from "vue"
-import { cloneDeep, isNil } from "lodash"
+import { cloneDeep, debounce, isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import { securePost } from "@/store/jwt"
@@ -130,6 +137,7 @@ import { useSnack } from "@/plugins/snack-plugin"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
@@ -153,7 +161,6 @@ const { travelDeskTravelRequest, isLoading, save } =
 const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
 const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travelAuthorization)
 
-const readonly = ref(false)
 const internationalTravel = ref(false)
 
 const savingData = ref(false)
@@ -204,6 +211,8 @@ async function saveAndNotify() {
   await save()
   snack("Request updated.")
 }
+
+const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
 
 async function saveNewTravelRequest(saveType) {
   if (validate() !== true) {
@@ -301,3 +310,10 @@ function validate() {
 </script>
 
 <style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+
+<style scoped>
+.v-card.borderless-card {
+  border: none !important;
+  box-shadow: none !important;
+}
+</style>

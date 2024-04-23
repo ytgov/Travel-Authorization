@@ -4,13 +4,13 @@
       v-model="travelPortDialog"
       persistent
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           size="x-small"
           style="min-width: 0"
           color="blue"
-          @click="initForm()"
           v-bind="attrs"
+          @click="initForm()"
           v-on="on"
         >
           <div class="mx-n2 px-2">Travel Port Text</div>
@@ -36,10 +36,10 @@
         <v-card-text>
           <v-row class="mt-5">
             <v-col cols="3">
-              <title-card
+              <TitleCard
                 class="mt-5"
-                titleWidth="10.5rem"
-                largeTitle
+                title-width="10.5rem"
+                large-title
               >
                 <template #title>
                   <div>Travel Port Text</div>
@@ -49,46 +49,46 @@
                     <v-btn
                       class="mx-auto mt-7 mb-7"
                       style="min-width: 0"
-                      @click="parseTravel()"
                       color="blue"
+                      @click="parseTravel()"
                     >
                       <div class="mx-0 px-1">Clean and Seperate Options</div>
                     </v-btn>
                   </v-row>
                   <v-textarea
+                    v-model="portText"
                     class="mx-5"
                     :error="state.portTextErr"
-                    @input="state.portTextErr = false"
                     label="Paste Text Here"
-                    v-model="portText"
                     rows="20"
                     clearable
                     outlined
+                    @input="state.portTextErr = false"
                   />
                 </template>
-              </title-card>
+              </TitleCard>
             </v-col>
             <v-col cols="9">
-              <title-card
+              <TitleCard
                 class="mt-5"
-                titleWidth="18rem"
-                largeTitle
+                title-width="18rem"
+                large-title
               >
                 <template #title>
                   <div>Cost and Group Segments</div>
                 </template>
                 <template #body>
-                  <flight-segments-table
-                    :flightSegments="flightSegments"
-                    :flightOptions="flightOptions"
-                    :flightText="flightText"
-                    @cleanPortText="portText = ''"
+                  <FlightSegmentsTable
+                    :flight-segments="flightSegments"
+                    :flight-options="flightOptions"
+                    :flight-text="flightText"
                     class="mx-2 mt-10"
+                    @cleanPortText="portText = ''"
                   />
-                  <flight-options-table
+                  <FlightOptionsTable
                     :legs="legs"
-                    :ungroupedFlightSegments="flightSegments"
-                    :flightOptions="flightOptions"
+                    :ungrouped-flight-segments="flightSegments"
+                    :flight-options="flightOptions"
                     style="margin: 7rem 0.5rem 2rem 0.5rem"
                   />
                   <v-row class="mx-0">
@@ -96,43 +96,43 @@
                       class="ml-3 mr-2 my-5 px-3 py-4"
                       style="min-width: 0"
                       color="grey darken-1"
-                      @click="closeModal()"
                       :loading="savingData"
                       small
+                      @click="closeModal"
                       >Close
                     </v-btn>
                     <v-btn
-                      @click="deleteFlightOptions(true)"
                       style="min-width: 0"
                       color="red"
                       class="ml-3 my-5 px-3 py-4"
                       :loading="savingData"
                       small
+                      @click="deleteFlightOptions(true)"
                       >Delete Travel Port Record
                     </v-btn>
                     <v-btn
                       :disabled="flightOptions.length == 0"
-                      @click="removeAllFlightOptions()"
                       style="min-width: 0"
                       color="secondary"
                       class="ml-auto mr-3 my-5 px-3 py-4"
                       :loading="savingData"
                       small
+                      @click="removeAllFlightOptions()"
                       >Remove All Groups
                     </v-btn>
                     <v-btn
                       :disabled="flightOptions.length == 0"
-                      @click="saveAllFlightOptions()"
                       style="min-width: 0"
                       color="#005A65"
                       class="ml-3 mr-3 my-5 px-3 py-4"
                       :loading="savingData"
                       small
+                      @click="saveAllFlightOptions()"
                       >Save Groupings
                     </v-btn>
                   </v-row>
                 </template>
-              </title-card>
+              </TitleCard>
             </v-col>
           </v-row>
         </v-card-text>
@@ -143,11 +143,12 @@
 
 <script>
 import Vue from "vue"
-import TitleCard from "../../Common/TitleCard.vue"
-import FlightSegmentsTable from "./FlightSegmentsTable.vue"
-import FlightOptionsTable from "./FlightOptionsTable.vue"
-import { TRAVEL_DESK_URL } from "../../../../../urls"
-import { securePost, secureDelete } from "../../../../../store/jwt"
+import { TRAVEL_DESK_URL } from "@/urls"
+import { securePost, secureDelete } from "@/store/jwt"
+
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+import FlightSegmentsTable from "@/modules/travelDesk/views/Desk/Components/FlightSegmentsTable.vue"
+import FlightOptionsTable from "@/modules/travelDesk/views/Desk/Components/FlightOptionsTable.vue"
 
 export default {
   name: "TravelPortModal",
@@ -157,8 +158,14 @@ export default {
     FlightOptionsTable,
   },
   props: {
-    flightRequests: {},
-    travelDeskTravelRequestId: {},
+    flightRequests: {
+      type: Array,
+      required: true,
+    },
+    travelDeskTravelRequestId: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
@@ -185,7 +192,7 @@ export default {
         this.flightOptions.push(...flightRequest.flightOptions)
         // console.log(flightRequest)
         this.legs.push({
-          flightRequestID: flightRequest.flightRequestID,
+          flightRequestID: flightRequest.id,
           text: this.getFlightRequestTxt(flightRequest),
         })
       }
@@ -198,7 +205,7 @@ export default {
         " -> " +
         flightRequest.arriveLocation +
         " @ " +
-        Vue.filter("beautifyDate")(flightRequest.date)
+        Vue.filter("beautifyDate")(flightRequest.datePreference)
       )
     },
     checkStates() {

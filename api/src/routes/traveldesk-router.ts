@@ -10,6 +10,7 @@ import {
 } from "@/middleware"
 import {
   TravelAuthorization,
+  TravelDeskFlightRequest,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskTravelRequest,
   User,
@@ -28,6 +29,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
       },
     },
     include: [
+      "flightRequests",
       {
         association: "travelAuthorization",
         include: ["stops"],
@@ -45,12 +47,6 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     // @ts-ignore - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
     delete travelRequest.travelAuthorization
-
-    const flightRequests = await dbLegacy("travelDeskFlightRequest")
-      .select("*")
-      .where("requestID", traveRequestId)
-    // @ts-ignore - not worth fixing at this time, belongs in a serializer
-    travelRequest.flightRequests = flightRequests
 
     const rentalCars = await dbLegacy("travelDeskRentalCar")
       .select("*")
@@ -188,18 +184,19 @@ travelDeskRouter.post(
   RequiresAuth,
   async function (req: Request, res: Response) {
     try {
-      await dbLegacy.transaction(async (trx) => {
-        const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
-        const newFlightOptions = req.body
-        //console.log(newFlightOptions)
-        if (newFlightOptions.length < 1 || !travelDeskTravelRequestId)
-          return res.status(500).json("Empty Payload for Flight Options")
+      const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
+      const newFlightOptions = req.body
+      //console.log(newFlightOptions)
+      if (newFlightOptions.length < 1 || !travelDeskTravelRequestId)
+        return res.status(422).json("Empty Payload for Flight Options")
 
-        const flightRequestQuery = await await dbLegacy("travelDeskFlightRequest")
-          .select("flightRequestID")
-          .where("requestID", travelDeskTravelRequestId)
-        const flightRequestIDs = flightRequestQuery.map((req) => req.flightRequestID)
-        // console.log(flightRequestIDs)
+      const flightRequestsIds = await TravelDeskFlightRequest.findAll({
+        attributes: ["id"],
+        where: { id: travelDeskTravelRequestId },
+      })
+      const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
+
+      await dbLegacy.transaction(async (trx) => {
         await dbLegacy("travelDeskFlightOption")
           .delete()
           .whereIn("flightRequestID", flightRequestIDs)
@@ -243,13 +240,13 @@ travelDeskRouter.delete(
   async function (req: Request, res: Response) {
     try {
       const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
-      // console.log(flightRequestIDs)
-      await dbLegacy.transaction(async (trx) => {
-        const flightRequestQuery = await await dbLegacy("travelDeskFlightRequest")
-          .select("flightRequestID")
-          .where("requestID", travelDeskTravelRequestId)
-        const flightRequestIDs = flightRequestQuery.map((req) => req.flightRequestID)
+      const flightRequestsIds = await TravelDeskFlightRequest.findAll({
+        attributes: ["id"],
+        where: { travelRequestId: travelDeskTravelRequestId },
+      })
+      const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
 
+      await dbLegacy.transaction(async (trx) => {
         await dbLegacy("travelDeskFlightOption")
           .delete()
           .whereIn("flightRequestID", flightRequestIDs)
@@ -285,13 +282,13 @@ travelDeskRouter.get(
     if (travelDeskTravelRequestId) {
       let tmpId = 3000
 
-      const flightRequests = await dbLegacy("travelDeskFlightRequest")
-        .select("*")
-        .where("requestID", travelDeskTravelRequestId)
+      const flightRequests = await TravelDeskFlightRequest.findAll({
+        where: { travelRequestId: travelDeskTravelRequestId },
+      })
       for (const flightRequest of flightRequests) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
-          .where("flightRequestID", flightRequest.flightRequestID)
+          .where("flightRequestID", flightRequest.id)
         for (const flightOption of flightOptions) {
           const flightSegments = await dbLegacy("travelDeskFlightSegment")
             .select("*")
@@ -308,6 +305,7 @@ travelDeskRouter.get(
           flightOption.flightSegments = flightSegments
           flightOption.state = { costErr: false, legErr: false }
         }
+        // @ts-ignore - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
       res.status(200).json(flightRequests)
@@ -319,6 +317,8 @@ travelDeskRouter.post(
   "/flight-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
+    // TODO: use managed Sequelize transaction once all database access is through Sequelize
+    const sequelizeTransaction = await db.transaction()
     try {
       await dbLegacy.transaction(async (trx) => {
         const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
@@ -326,9 +326,10 @@ travelDeskRouter.post(
         // console.log(flightRequests)
 
         if (travelDeskTravelRequestId) {
-          await dbLegacy("travelDeskFlightRequest")
-            .delete()
-            .where("requestID", travelDeskTravelRequestId)
+          await TravelDeskFlightRequest.destroy({
+            where: { travelRequestId: travelDeskTravelRequestId },
+            transaction: sequelizeTransaction,
+          })
 
           for (const flightRequest of flightRequests) {
             const newFlightOptions = flightRequest.flightOptions
@@ -336,17 +337,15 @@ travelDeskRouter.post(
             delete flightRequest.tmpId
             if (flightRequest.flightRequestID == null) delete flightRequest.flightRequestID
 
-            flightRequest.requestID = travelDeskTravelRequestId
+            flightRequest.travelRequestId = travelDeskTravelRequestId
 
-            const flightId = await dbLegacy("travelDeskFlightRequest").insert(
-              flightRequest,
-              "flightRequestID"
-            )
-            const flightRequestID = flightId[0].flightRequestID
+            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {
+              transaction: sequelizeTransaction,
+            })
 
             await dbLegacy("travelDeskFlightOption")
               .delete()
-              .where("flightRequestID", flightRequestID)
+              .where("flightRequestID", newFlightRequest.id)
 
             for (const newFlightOption of newFlightOptions) {
               delete newFlightOption.state
@@ -354,7 +353,7 @@ travelDeskRouter.post(
               const flightSegments = newFlightOption.flightSegments
               delete newFlightOption.flightSegments
 
-              newFlightOption.flightRequestID = flightRequestID
+              newFlightOption.flightRequestID = newFlightRequest.id
 
               const id = await dbLegacy("travelDeskFlightOption").insert(
                 newFlightOption,
@@ -374,6 +373,7 @@ travelDeskRouter.post(
               }
             }
           }
+          await sequelizeTransaction.commit()
           res.status(200).json("Successful")
         } else {
           res.status(500).json("Required fields in submission are blank")
@@ -381,6 +381,7 @@ travelDeskRouter.post(
       })
     } catch (error: any) {
       console.log(error)
+      await sequelizeTransaction.rollback()
       res.status(500).json("Saving the Flight Request failed")
     }
   }
@@ -420,13 +421,13 @@ travelDeskRouter.get(
 
       let tmpId = 1000
 
-      const flightRequests = await dbLegacy("travelDeskFlightRequest")
-        .select("*")
-        .where("requestID", travelRequestId)
+      const flightRequests = await TravelDeskFlightRequest.findAll({
+        where: { travelRequestId },
+      })
       for (const flightRequest of flightRequests) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
-          .where("flightRequestID", flightRequest.flightRequestID)
+          .where("flightRequestID", flightRequest.id)
         for (const flightOption of flightOptions) {
           const flightSegments = await dbLegacy("travelDeskFlightSegment")
             .select("*")
@@ -443,6 +444,7 @@ travelDeskRouter.get(
           flightOption.flightSegments = flightSegments
           flightOption.state = { costErr: false, legErr: false }
         }
+        // @ts-ignore - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
       // @ts-ignore - not worth fixing at this time
@@ -489,6 +491,7 @@ travelDeskRouter.post(
   "/travel-request/:travelAuthorizationId",
   RequiresAuth,
   async function (req: Request, res: Response) {
+    const sequelizeTransaction = await db.transaction()
     try {
       await dbLegacy.transaction(async (trx) => {
         const travelAuthorizationId = Number(req.params.travelAuthorizationId)
@@ -523,25 +526,28 @@ travelDeskRouter.post(
           }
 
           //FlightRequests
-          await dbLegacy("travelDeskFlightRequest").delete().where("requestID", travelRequest.id)
+          await TravelDeskFlightRequest.destroy({
+            where: { travelRequestId: travelRequest.id },
+            transaction: sequelizeTransaction,
+          })
 
           for (const flightRequest of flightRequests) {
             const newFlightOptions = flightRequest.flightOptions
             delete flightRequest.flightOptions
             delete flightRequest.tmpId
-            if (flightRequest.flightRequestID == null) delete flightRequest.flightRequestID
+            if (flightRequest.id == null) {
+              delete flightRequest.id
+            }
 
-            flightRequest.requestID = travelRequest.id
+            flightRequest.travelRequestId = travelRequest.id
 
-            const flightId = await dbLegacy("travelDeskFlightRequest").insert(
-              flightRequest,
-              "flightRequestID"
-            )
-            const flightRequestID = flightId[0].flightRequestID
+            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {
+              transaction: sequelizeTransaction,
+            })
 
             await dbLegacy("travelDeskFlightOption")
               .delete()
-              .where("flightRequestID", flightRequestID)
+              .where("flightRequestID", newFlightRequest.id)
 
             for (const newFlightOption of newFlightOptions) {
               delete newFlightOption.state
@@ -549,7 +555,7 @@ travelDeskRouter.post(
               const flightSegments = newFlightOption.flightSegments
               delete newFlightOption.flightSegments
 
-              newFlightOption.flightRequestID = flightRequestID
+              newFlightOption.flightRequestID = newFlightRequest.id
 
               const travelDeskFlighOption = await dbLegacy("travelDeskFlightOption").insert(
                 newFlightOption,
@@ -614,6 +620,8 @@ travelDeskRouter.post(
             await dbLegacy("travelDeskQuestion").insert(question)
           }
 
+          await sequelizeTransaction.commit()
+
           res.status(200).json("Successful")
         } else {
           res.status(500).json("Required fields in submission are blank")
@@ -621,6 +629,7 @@ travelDeskRouter.post(
       })
     } catch (error: any) {
       console.log(error)
+      await sequelizeTransaction.rollback()
       res.status(500).json("Saving the Travel Request failed")
     }
   }
