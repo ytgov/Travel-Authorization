@@ -16,6 +16,7 @@
         <v-data-table
           :headers="headers"
           :items="travelDeskFlightRequests"
+          :loading="isLoading"
           hide-default-footer
           class="elevation-1"
         >
@@ -54,11 +55,7 @@
                   class="px-1 pt-2"
                   small
                   @click="deleteFlightRequest(item)"
-                  ><v-icon
-                    class=""
-                    color="red"
-                    >mdi-close</v-icon
-                  >
+                  ><v-icon color="red">mdi-close</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
