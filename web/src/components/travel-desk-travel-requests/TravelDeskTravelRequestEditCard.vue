@@ -54,15 +54,10 @@
                   >
                     <v-col cols="12">
                       <TravelDeskFlightRequestsEditTable
-                        v-if="
-                          travelDeskTravelRequest.status ===
-                          TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
-                        "
                         :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                         :travel-authorization-id="travelAuthorizationId"
                         class="borderless-card"
                       />
-                      <template v-else> TODO: show flight options table thing</template>
                     </v-col>
                   </v-row>
                   <v-row
@@ -140,9 +135,7 @@ import { TRAVEL_DESK_URL } from "@/urls"
 import { securePost } from "@/store/jwt"
 import { useSnack } from "@/plugins/snack-plugin"
 
-import useTravelDeskTravelRequest, {
-  TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
-} from "@/use/use-travel-desk-travel-request"
+import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
