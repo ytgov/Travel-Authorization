@@ -8,7 +8,7 @@
         <div>Rental Car Request</div>
       </template>
       <template #body>
-        <v-row class="mt-3 mx-3">
+        <div class="d-flex justify-end pr-4">
           <TravelDeskRentalCarCreateDialog
             class="ml-auto mr-3"
             :travel-desk-travel-request-id="travelDeskTravelRequestId"
@@ -16,14 +16,15 @@
             :max-date="maxDate"
             :flight-start="flightStart"
             :flight-end="flightEnd"
-            @updateTable="updateTable"
+            @created="refresh"
           />
-        </v-row>
+        </div>
         <v-row class="mb-3 mx-3">
           <v-col cols="12">
             <v-data-table
-              :headers="rentalCarHeaders"
-              :items="rentalCars"
+              :headers="headers"
+              :items="travelDeskRentalCars"
+              :loading="isLoading"
               hide-default-footer
               class="elevation-1"
             >
@@ -31,48 +32,47 @@
                 {{ item.matchFlightTimes ? "Yes" : "No" }}
               </template>
               <template #item.pickUpLocation="{ item }">
-                <div v-if="item.pickUpLocation == 'Other'">{{ item.pickUpLocationOther }}</div>
+                <div v-if="item.pickUpLocation === LOCATION_TYPES.OTHER">
+                  {{ item.pickUpLocationOther }}
+                </div>
                 <div v-else>{{ item.pickUpLocation }}</div>
               </template>
 
               <template #item.dropOffLocation="{ item }">
-                <div v-if="item.sameDropOffLocation && item.pickUpLocation == 'Other'">
+                <div
+                  v-if="item.sameDropOffLocation && item.pickUpLocation === LOCATION_TYPES.OTHER"
+                >
                   {{ item.pickUpLocationOther }}
                 </div>
                 <div v-else-if="item.sameDropOffLocation">{{ item.pickUpLocation }}</div>
                 <div v-else>{{ item.dropOffLocation }}</div>
               </template>
 
-              <template #item.pickUpDate="{ item }">
-                {{ item.pickUpDate | beautifyDateTime }}
+              <template #item.pickUpDate="{ value }">
+                {{ formatDate(value) }}
               </template>
-              <template #item.dropOffDate="{ item }">
-                {{ item.dropOffDate | beautifyDateTime }}
+              <template #item.dropOffDate="{ value }">
+                {{ formatDate(value) }}
               </template>
 
-              <template #item.edit="{ item }">
+              <template #item.actions="{ item }">
                 <v-row class="m-0 p-0">
+                  <!-- TODO: fork and rebuild this component -->
                   <NewRentalCarRequest
-                    v-if="!readonly"
                     type="Edit"
                     :min-date="minDate"
                     :max-date="maxDate"
-                    :flight-requests="flightRequests"
+                    :flight-requests="travelDeskFlightRequests"
                     :car-request="item"
-                    @updateTable="updateTable"
+                    @updateTable="refresh"
                   />
                   <v-btn
-                    v-if="!readonly"
-                    style="min-width: 0"
+                    :loading="isLoading"
                     color="transparent"
                     class="px-1 pt-2"
                     small
-                    @click="removeRentalCar(item)"
-                    ><v-icon
-                      class=""
-                      color="red"
-                      >mdi-close</v-icon
-                    >
+                    @click="deleteRentalCar(item)"
+                    ><v-icon color="red">mdi-close</v-icon>
                   </v-btn>
                 </v-row>
               </template>
@@ -84,186 +84,139 @@
   </div>
 </template>
 
-<script>
-import { cloneDeep } from "lodash"
+<script setup>
+import { computed, ref, toRefs } from "vue"
+import { DateTime } from "luxon"
+
+import travelDeskRentalCarsApi from "@/api/travel-desk-rental-cars-api"
+import useTravelAuthorization from "@/use/use-travel-authorization"
+import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
+import useTravelDeskRentalCars, { LOCATION_TYPES } from "@/use/use-travel-desk-rental-cars"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import NewRentalCarRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewRentalCarRequest.vue"
 import TravelDeskRentalCarCreateDialog from "@/components/travel-request-rental-cars/TravelDeskRentalCarCreateDialog.vue"
 
-export default {
-  name: "NewTravelDeskRequest",
-  components: {
-    TitleCard,
-    NewRentalCarRequest,
-    TravelDeskRentalCarCreateDialog,
+const props = defineProps({
+  travelDeskTravelRequestId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelDeskTravelRequestId: {
-      type: Number,
-      required: true,
-    },
-    readonly: {
-      type: Boolean,
-      default: false,
-    },
-    rentalCars: {
-      type: Array,
-      default: () => [],
-    },
-    flightRequests: {
-      type: Array,
-      default: () => [],
-    },
-    authorizedTravel: {
-      type: Object,
-      default: () => null,
-    },
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      rentalCarHeaders: [
-        {
-          text: "Match Flight Times",
-          value: "matchFlightTimes",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Pick-Up City",
-          value: "pickUpCity",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Pick-up Location",
-          value: "pickUpLocation",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Drop-off City",
-          value: "dropOffCity",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Drop-off Location",
-          value: "dropOffLocation",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        { text: "Pick-up Date", value: "pickUpDate", class: "blue-grey lighten-4" },
-        { text: "Drop-off Date", value: "dropOffDate", class: "blue-grey lighten-4" },
+})
 
-        {
-          text: "Vehicle Type",
-          value: "vehicleType",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Reason Change",
-          value: "vehicleChangeRationale",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Additional Notes",
-          value: "additionalNotes",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        { text: "", value: "edit", class: "blue-grey lighten-4", width: "4rem", sortable: false },
-      ],
-      carRequest: {},
-      tmpId: 1,
-      admin: false,
-      travelerDetails: {},
-      savingData: false,
-      minDate: "",
-      maxDate: "",
-    }
+const headers = ref([
+  {
+    text: "Match Flight Times",
+    value: "matchFlightTimes",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  computed: {
-    sortedFlightRequestDates() {
-      const dates = this.flightRequests.map((flight) => flight.datePreference)
-      dates.sort()
-      return dates
-    },
-    flightStart() {
-      if (this.sortedFlightRequestDates.length > 0) {
-        return this.sortedFlightRequestDates[0]
-      }
-
-      return null
-    },
-    flightEnd() {
-      if (this.sortedFlightRequestDates.length > 1) {
-        return this.sortedFlightRequestDates[this.sortedFlightRequestDates.length - 1]
-      }
-
-      return null
-    },
+  {
+    text: "Pick-Up City",
+    value: "pickUpCity",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  mounted() {
-    this.initForm()
+  {
+    text: "Pick-up Location",
+    value: "pickUpLocation",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  methods: {
-    updateTable(type) {
-      if (type == "Add New") {
-        this.carRequest.tmpId = this.tmpId
-        this.rentalCars.push(cloneDeep(this.carRequest))
-        this.tmpId++
-      }
-    },
-
-    initForm() {
-      if (this.authorizedTravel?.startDate && this.authorizedTravel?.endDate) {
-        this.minDate = this.authorizedTravel.startDate.slice(0, 10)
-        this.maxDate = this.authorizedTravel.endDate.slice(0, 10)
-      }
-
-      const carRequest = {}
-      carRequest.id = null
-      carRequest.tmpId = null
-      carRequest.pickUpCity = ""
-      carRequest.dropOffCity = ""
-      carRequest.pickUpLocation = ""
-      carRequest.pickUpLocationOther = ""
-      carRequest.dropOffLocation = ""
-      carRequest.dropOffLocationOther = ""
-      carRequest.sameDropOffLocation = true
-      carRequest.matchFlightTimes = false
-      carRequest.pickUpDate = ""
-      carRequest.dropOffDate = ""
-      carRequest.vehicleType = "Compact"
-      carRequest.vehicleChangeRationale = ""
-      carRequest.additionalNotes = ""
-      carRequest.status = "Requested"
-
-      this.carRequest = carRequest
-    },
-
-    editRentalCar(item) {
-      this.carRequest = item
-    },
-
-    removeRentalCar(item) {
-      console.log(item)
-      let delIndex = -1
-      if (item.id > 0)
-        delIndex = this.rentalCars.findIndex((rentalCar) => rentalCar.id && rentalCar.id == item.id)
-      else
-        delIndex = this.rentalCars.findIndex(
-          (rentalCar) => rentalCar.tmpId && rentalCar.tmpId == item.tmpId
-        )
-      console.log(delIndex)
-      if (delIndex >= 0) {
-        this.rentalCars.splice(delIndex, 1)
-      }
-    },
+  {
+    text: "Drop-off City",
+    value: "dropOffCity",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
+  {
+    text: "Drop-off Location",
+    value: "dropOffLocation",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  { text: "Pick-up Date", value: "pickUpDate", class: "blue-grey lighten-4" },
+  { text: "Drop-off Date", value: "dropOffDate", class: "blue-grey lighten-4" },
+
+  {
+    text: "Vehicle Type",
+    value: "vehicleType",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  {
+    text: "Reason Change",
+    value: "vehicleChangeRationale",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  {
+    text: "Additional Notes",
+    value: "additionalNotes",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  { text: "", value: "actions", class: "blue-grey lighten-4", width: "4rem", sortable: false },
+])
+
+const travelDeskRentalCarsQuery = computed(() => ({
+  travelRequestId: props.travelDeskTravelRequestId,
+}))
+const { travelDeskRentalCars, isLoading, refresh } =
+  useTravelDeskRentalCars(travelDeskRentalCarsQuery)
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const minDate = computed(() => travelAuthorization.value?.startDate?.slice(0, 10))
+const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
+
+// TODO: maybe make an optimized query that returns the start/end dates?
+const travelDeskFlightRequestsQuery = computed(() => ({
+  travelRequestId: props.travelDeskTravelRequestId,
+  perPage: 1000,
+}))
+const { travelDeskFlightRequests } = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
+const sortedFlightRequestDates = computed(() => {
+  const dates = travelDeskFlightRequests.value.map((flight) => flight.datePreference)
+  dates.sort()
+  return dates
+})
+const flightStart = computed(() => {
+  if (sortedFlightRequestDates.value.length > 0) {
+    return sortedFlightRequestDates.value[0]
+  }
+
+  return null
+})
+const flightEnd = computed(() => {
+  if (sortedFlightRequestDates.value.length > 1) {
+    return sortedFlightRequestDates.value[sortedFlightRequestDates.value.length - 1]
+  }
+
+  return null
+})
+
+/**
+ * TODO: switch to .fromISO when the API returns ISO dates
+ */
+function formatDate(date) {
+  return DateTime.fromSQL(date).toFormat("MMM dd yyyy, HH:mm")
+}
+
+async function deleteRentalCar(flightRequest) {
+  if (!confirm("Are you sure you want to remove this rental car?")) return
+
+  try {
+    await travelDeskRentalCarsApi.delete(flightRequest.id)
+    await refresh()
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 

@@ -54,7 +54,7 @@
                   >
                     <v-col cols="12">
                       <TravelDeskFlightRequestsEditTable
-                        :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+                        :travel-desk-travel-request-id="travelDeskTravelRequestId"
                         :travel-authorization-id="travelAuthorizationId"
                         class="borderless-card"
                       />
@@ -86,10 +86,7 @@
 
               <TravelDeskRentalCarsEditTable
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
-                :authorized-travel="travelAuthorization"
-                :readonly="false"
-                :flight-requests="travelDeskTravelRequest.flightRequests"
-                :rental-cars="travelDeskTravelRequest.rentalCars"
+                :travel-authorization-id="travelAuthorizationId"
               />
               <HotelRequestTable
                 :authorized-travel="travelAuthorization"
