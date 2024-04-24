@@ -4,27 +4,32 @@ import { isNil } from "lodash"
 import { TravelDeskRentalCar, TravelDeskTravelRequest } from "@/models"
 import { TravelDeskRentalCarsPolicy } from "@/policies"
 import { CreateService, UpdateService } from "@/services/travel-desk-rental-cars"
+import { IndexSerializer } from "@/serializers/travel-desk-rental-cars"
 
 import BaseController from "@/controllers/base-controller"
 
 export class TravelDeskRentalCarsController extends BaseController {
   async index() {
-    const where = this.query.where as WhereOptions<TravelDeskRentalCar>
-
-    const scopedTravelDeskRentalCars = TravelDeskRentalCarsPolicy.applyScope(
-      TravelDeskRentalCar,
-      this.currentUser
-    )
-
     try {
+      const where = this.query.where as WhereOptions<TravelDeskRentalCar>
+
+      const scopedTravelDeskRentalCars = TravelDeskRentalCarsPolicy.applyScope(
+        TravelDeskRentalCar,
+        this.currentUser
+      )
+
       const totalCount = await scopedTravelDeskRentalCars.count({ where })
       const travelDeskRentalCars = await scopedTravelDeskRentalCars.findAll({
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
       })
-      return this.response.status(200).json({
+      const serializedTravelDeskRentalCars = IndexSerializer.perform(
         travelDeskRentalCars,
+        this.currentUser
+      )
+      return this.response.status(200).json({
+        travelDeskRentalCars: serializedTravelDeskRentalCars,
         totalCount,
       })
     } catch (error) {
