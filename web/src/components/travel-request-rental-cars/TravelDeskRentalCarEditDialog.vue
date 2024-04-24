@@ -60,10 +60,8 @@
                 cols="12"
                 md="3"
               >
-                <!-- TODO: make this a component -->
-                <v-select
+                <LocationTypeSelect
                   v-model="rentalCar.pickUpLocation"
-                  :items="Object.values(LOCATION_TYPES)"
                   :rules="[required]"
                   label="Pick-up Location *"
                   outlined
@@ -179,8 +177,7 @@
                 cols="12"
                 md="3"
               >
-                <!-- TODO: make this a component -->
-                <v-select
+                <LocationTypeSelect
                   v-if="rentalCar.sameDropOffLocation === false"
                   v-model="rentalCar.dropOffLocation"
                   :items="Object.values(LOCATION_TYPES)"
@@ -256,6 +253,7 @@ import travelDeskRentalCarsApi, {
 
 import YesNoRowRadioGroup from "@/components/common/YesNoRowRadioGroup.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import LocationTypeSelect from "@/components/travel-request-rental-cars/LocationTypeSelect.vue"
 import VehicleTypeSelect from "@/components/travel-request-rental-cars/VehicleTypeSelect.vue"
 
 const props = defineProps({
