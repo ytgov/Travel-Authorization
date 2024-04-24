@@ -52,6 +52,7 @@
                   label="Vehicle Type *"
                   outlined
                   required
+                  @input="resetReasonForChangeIfCompact"
                 />
               </v-col>
             </v-row>
@@ -66,6 +67,7 @@
                   label="Pick-up Location *"
                   outlined
                   required
+                  @input="resetPickUpLocationOtherUnlessOther"
                 />
                 <v-text-field
                   v-if="rentalCar.pickUpLocation === LOCATION_TYPES.OTHER"
@@ -177,6 +179,7 @@
                   label="Drop-off Location *"
                   outlined
                   required
+                  @input="resetDropOffLocationOtherUnlessOther"
                 />
                 <v-text-field
                   v-if="
@@ -290,6 +293,24 @@ function matchWithFlight(value) {
   if (value === true) {
     pickUpDate.value = props.flightStart
     dropOffDate.value = props.flightEnd
+  }
+}
+
+function resetReasonForChangeIfCompact(value) {
+  if (value === VEHICLE_TYPES.COMPACT) {
+    rentalCar.value.vehicleChangeRationale = null
+  }
+}
+
+function resetPickUpLocationOtherUnlessOther(value) {
+  if (value !== LOCATION_TYPES.OTHER) {
+    rentalCar.value.pickUpLocationOther = null
+  }
+}
+
+function resetDropOffLocationOtherUnlessOther(value) {
+  if (value !== LOCATION_TYPES.OTHER) {
+    rentalCar.value.dropOffLocationOther = null
   }
 }
 
