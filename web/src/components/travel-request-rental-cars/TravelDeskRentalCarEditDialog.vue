@@ -29,7 +29,10 @@
                   required
                 />
               </v-col>
-              <v-col cols="5">
+              <v-col
+                cols="12"
+                md="5"
+              >
                 <!-- TODO: maybe make this a component? -->
                 <!-- TODO: add tooltip explaining disabled state -->
                 <label>Pick-up/Drop-off match flights</label>
@@ -50,7 +53,10 @@
                   ></v-radio>
                 </v-radio-group>
               </v-col>
-              <v-col cols="3">
+              <v-col
+                cols="12"
+                md="3"
+              >
                 <!-- TODO: Make this a component -->
                 <v-select
                   v-model="rentalCar.vehicleType"
@@ -63,7 +69,10 @@
               </v-col>
             </v-row>
             <v-row class="mt-0 mx-0">
-              <v-col cols="3">
+              <v-col
+                cols="12"
+                md="3"
+              >
                 <!-- TODO: make this a component -->
                 <v-select
                   v-model="rentalCar.pickUpLocation"
@@ -83,7 +92,10 @@
                   required
                 />
               </v-col>
-              <v-col cols="2">
+              <v-col
+                cols="12"
+                md="2"
+              >
                 <v-text-field
                   v-model="pickUpDate"
                   label="Pick-up date *"
@@ -108,7 +120,10 @@
                   required
                 />
               </v-col>
-              <v-col cols="2">
+              <v-col
+                cols="12"
+                md="2"
+              >
                 <v-text-field
                   v-model="pickUpTime"
                   label="Pick-up time *"
@@ -127,7 +142,10 @@
                   required
                 />
               </v-col>
-              <v-col cols="5">
+              <v-col
+                cols="12"
+                md="5"
+              >
                 <v-textarea
                   v-if="rentalCar.vehicleType !== VEHICLE_TYPES.COMPACT"
                   v-model="rentalCar.vehicleChangeRationale"
@@ -140,7 +158,10 @@
               </v-col>
             </v-row>
             <v-row class="mt-0 mx-0">
-              <v-col cols="3">
+              <v-col
+                cols="12"
+                md="3"
+              >
                 <div class="label">Same Drop-off location?</div>
                 <v-radio-group
                   v-model="rentalCar.sameDropOffLocation"
@@ -167,7 +188,10 @@
                   required
                 />
               </v-col>
-              <v-col cols="3">
+              <v-col
+                cols="12"
+                md="3"
+              >
                 <!-- TODO: make this a component -->
                 <v-select
                   v-if="rentalCar.sameDropOffLocation === false"
@@ -192,7 +216,10 @@
                   required
                 />
               </v-col>
-              <v-col cols="6">
+              <v-col
+                cols="12"
+                md="6"
+              >
                 <v-textarea
                   v-model="rentalCar.additionalNotes"
                   label="Additional Information"
