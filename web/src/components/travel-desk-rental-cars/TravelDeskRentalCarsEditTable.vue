@@ -28,6 +28,16 @@
               hide-default-footer
               class="elevation-1"
             >
+              <template #top>
+                <TravelDeskRentalCarEditDialog
+                  ref="editDialog"
+                  :min-date="minDate"
+                  :max-date="maxDate"
+                  :flight-start="flightStart"
+                  :flight-end="flightEnd"
+                  @saved="refresh"
+                />
+              </template>
               <template #item.matchFlightTimes="{ item }">
                 {{ item.matchFlightTimes ? "Yes" : "No" }}
               </template>
@@ -56,25 +66,23 @@
               </template>
 
               <template #item.actions="{ item }">
-                <v-row class="m-0 p-0">
-                  <!-- TODO: fork and rebuild this component -->
-                  <NewRentalCarRequest
-                    type="Edit"
-                    :min-date="minDate"
-                    :max-date="maxDate"
-                    :flight-requests="travelDeskFlightRequests"
-                    :car-request="item"
-                    @updateTable="refresh"
-                  />
+                <div class="d-flex justify-end">
+                  <v-btn
+                    title="Edit"
+                    icon
+                    color="blue"
+                    @click="showEditDialog(item)"
+                    ><v-icon>mdi-pencil</v-icon></v-btn
+                  >
                   <v-btn
                     :loading="isLoading"
-                    color="transparent"
-                    class="px-1 pt-2"
-                    small
+                    title="Delete"
+                    icon
+                    color="red"
                     @click="deleteRentalCar(item)"
-                    ><v-icon color="red">mdi-close</v-icon>
-                  </v-btn>
-                </v-row>
+                    ><v-icon>mdi-close</v-icon></v-btn
+                  >
+                </div>
               </template>
             </v-data-table>
           </v-col>
@@ -85,8 +93,10 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
+import { computed, ref, toRefs, watch } from "vue"
 import { DateTime } from "luxon"
+import { isNil } from "lodash"
+import { useRoute } from "vue2-helpers/vue-router"
 
 import travelDeskRentalCarsApi from "@/api/travel-desk-rental-cars-api"
 import useTravelAuthorization from "@/use/use-travel-authorization"
@@ -94,8 +104,8 @@ import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 import useTravelDeskRentalCars, { LOCATION_TYPES } from "@/use/use-travel-desk-rental-cars"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import NewRentalCarRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewRentalCarRequest.vue"
 import TravelDeskRentalCarCreateDialog from "@/components/travel-request-rental-cars/TravelDeskRentalCarCreateDialog.vue"
+import TravelDeskRentalCarEditDialog from "@/components/travel-request-rental-cars/TravelDeskRentalCarEditDialog.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -163,6 +173,8 @@ const headers = ref([
   { text: "", value: "actions", class: "blue-grey lighten-4", width: "4rem", sortable: false },
 ])
 
+const route = useRoute()
+
 const travelDeskRentalCarsQuery = computed(() => ({
   travelRequestId: props.travelDeskTravelRequestId,
 }))
@@ -201,12 +213,35 @@ const flightEnd = computed(() => {
   return null
 })
 
-/**
- * TODO: switch to .fromISO when the API returns ISO dates
- */
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarEditDialog> | null>} */
+const editDialog = ref(null)
+
 function formatDate(date) {
-  return DateTime.fromSQL(date).toFormat("MMM dd yyyy, HH:mm")
+  return DateTime.fromISO(date).toFormat("MMM dd yyyy, HH:mm")
 }
+
+function showEditDialog(flightRequest) {
+  editDialog.value?.show(flightRequest)
+}
+
+function showEditDialogForRouteQuery() {
+  const rentalCarId = parseInt(route.query.showRentalCarEdit)
+  if (isNaN(rentalCarId)) return
+
+  const rentalCar = travelDeskRentalCars.value.find((rentalCar) => rentalCar.id === rentalCarId)
+  if (isNil(rentalCar)) return
+
+  showEditDialog(rentalCar)
+}
+
+watch(
+  () => travelDeskRentalCars.value,
+  (rentalCars) => {
+    if (rentalCars.length === 0) return
+
+    showEditDialogForRouteQuery()
+  }
+)
 
 async function deleteRentalCar(flightRequest) {
   if (!confirm("Are you sure you want to remove this rental car?")) return
