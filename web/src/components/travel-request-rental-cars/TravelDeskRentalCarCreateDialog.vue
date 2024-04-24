@@ -56,10 +56,8 @@
                 cols="12"
                 md="3"
               >
-                <!-- TODO: Make this a component -->
-                <v-select
+                <VehicleTypeSelect
                   v-model="rentalCar.vehicleType"
-                  :items="Object.values(VEHICLE_TYPES)"
                   :rules="[required]"
                   label="Vehicle Type *"
                   outlined
@@ -267,6 +265,7 @@ import travelDeskRentalCarsApi, {
 
 import YesNoRowRadioGroup from "@/components/common/YesNoRowRadioGroup.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import VehicleTypeSelect from "@/components/travel-request-rental-cars/VehicleTypeSelect.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
