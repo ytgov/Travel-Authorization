@@ -2,9 +2,9 @@ import { Sequelize, Options } from "sequelize"
 import { createNamespace } from "cls-hooked"
 
 import { DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER, NODE_ENV } from "@/config"
-import { monkeyPatchSequelizeErrorsForJest } from "@/db/utils/monkey-patch-sequelize-errors-for-jest";
+import { monkeyPatchSequelizeErrorsForJest } from "@/db/utils/monkey-patch-sequelize-errors-for-jest"
 
-export const transactionManager = createNamespace('transaction-manager');
+export const transactionManager = createNamespace("transaction-manager")
 Sequelize.useCLS(transactionManager)
 
 if (DB_NAME === undefined) throw new Error("database name is unset.")
@@ -28,7 +28,7 @@ export const SEQUELIZE_CONFIG: Options = {
     underscored: true,
     timestamps: true, // This is actually the default, but making it explicit for clarity.
     paranoid: false, // TODO: switch this to true, adds deleted_at column
-    whereMergeStrategy: 'and', // where fields will be merged using the and operator (instead of overwriting each other)
+    whereMergeStrategy: "and", // where fields will be merged using the and operator (instead of overwriting each other)
   },
 }
 

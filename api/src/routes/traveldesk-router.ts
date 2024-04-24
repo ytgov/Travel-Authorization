@@ -12,6 +12,7 @@ import {
   TravelAuthorization,
   TravelDeskFlightRequest,
   TravelDeskPassengerNameRecordDocument,
+  TravelDeskRentalCar,
   TravelDeskTravelRequest,
   User,
 } from "@/models"
@@ -30,6 +31,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     },
     include: [
       "flightRequests",
+      "rentalCars",
       {
         association: "travelAuthorization",
         include: ["stops"],
@@ -47,12 +49,6 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     // @ts-ignore - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
     delete travelRequest.travelAuthorization
-
-    const rentalCars = await dbLegacy("travelDeskRentalCar")
-      .select("*")
-      .where("requestID", traveRequestId)
-    // @ts-ignore - not worth fixing at this time, belongs in a serializer
-    travelRequest.rentalCars = rentalCars
 
     const hotels = await dbLegacy("travelDeskHotel").select("*").where("requestID", traveRequestId)
     // @ts-ignore - not worth fixing at this time, belongs in a serializer
@@ -408,6 +404,8 @@ travelDeskRouter.get(
     const travelRequest = await TravelDeskTravelRequest.findOne({
       where: { travelAuthorizationId },
       include: [
+        "flightRequests",
+        "rentalCars",
         {
           association: "travelDeskPassengerNameRecordDocument",
           attributes: ["invoiceNumber"],
@@ -421,10 +419,7 @@ travelDeskRouter.get(
 
       let tmpId = 1000
 
-      const flightRequests = await TravelDeskFlightRequest.findAll({
-        where: { travelRequestId },
-      })
-      for (const flightRequest of flightRequests) {
+      for (const flightRequest of travelRequest.flightRequests || []) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
           .where("flightRequestID", flightRequest.id)
@@ -447,14 +442,6 @@ travelDeskRouter.get(
         // @ts-ignore - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
-      // @ts-ignore - not worth fixing at this time
-      travelRequest.flightRequests = flightRequests
-
-      const rentalCars = await dbLegacy("travelDeskRentalCar")
-        .select("*")
-        .where("requestID", travelRequestId)
-      // @ts-ignore - not worth fixing at this time
-      travelRequest.rentalCars = rentalCars
 
       const hotels = await dbLegacy("travelDeskHotel")
         .select("*")
@@ -577,13 +564,18 @@ travelDeskRouter.post(
           }
 
           //RentalCars
-          await dbLegacy("travelDeskRentalCar").delete().where("requestID", travelRequest.id)
+          await TravelDeskRentalCar.destroy({
+            where: { travelRequestId: travelRequest.id },
+            transaction: sequelizeTransaction,
+          })
 
           for (const rentalCar of rentalCars) {
             delete rentalCar.tmpId
-            if (rentalCar.rentalVehicleID == null) delete rentalCar.rentalVehicleID
-            rentalCar.requestID = travelRequest.id
-            await dbLegacy("travelDeskRentalCar").insert(rentalCar)
+            if (rentalCar.id == null) {
+              delete rentalCar.id
+            }
+            rentalCar.travelRequestId = travelRequest.id
+            await TravelDeskRentalCar.create(rentalCar, { transaction: sequelizeTransaction })
           }
 
           //Hotels

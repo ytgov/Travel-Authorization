@@ -19,6 +19,7 @@ import {
   UsersController,
   TravelDeskTravelRequestsController,
   TravelDeskFlightRequestsController,
+  TravelDeskRentalCarsController,
 } from "@/controllers"
 import { healthCheckRouter } from "./healthcheck-router"
 
@@ -95,6 +96,15 @@ router
   .route("/api/travel-desk-flight-requests/:travelDeskFlightRequestId")
   .patch(TravelDeskFlightRequestsController.update)
   .delete(TravelDeskFlightRequestsController.destroy)
+
+router
+  .route("/api/travel-desk-rental-cars")
+  .get(TravelDeskRentalCarsController.index)
+  .post(TravelDeskRentalCarsController.create)
+router
+  .route("/api/travel-desk-rental-cars/:travelDeskRentalCarId")
+  .patch(TravelDeskRentalCarsController.update)
+  .delete(TravelDeskRentalCarsController.destroy)
 
 router.route("/api/travel-desk-travel-requests").get(TravelDeskTravelRequestsController.index)
 router

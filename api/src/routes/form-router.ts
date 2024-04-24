@@ -10,32 +10,13 @@ import { Expense, TravelAuthorization, User } from "@/models"
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
 
-// TODO: Check if parser/builtins hack patch code is still needed
-const { setTypeParser, builtins } = require("pg").types
-
-const typesToReset = [
-  builtins.DATE,
-  builtins.TIME,
-  builtins.TIMETZ,
-  builtins.TIMESTAMP,
-  builtins.TIMESTAMPTZ,
-]
-
-function resetPgDateParsers() {
-  for (const pgType of typesToReset) {
-    setTypeParser(pgType, (val: any) => String(val)) // like noParse() function underhood pg lib
-  }
-}
-
-resetPgDateParsers()
-
 export const formRouter = express.Router()
 const formService = new FormService()
 const auditService = new AuditService()
 
 // Get all forms for a user
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
-  console.warn("DEPRECATED: prefer /api/forms instead")
+  console.warn("DEPRECATED: prefer /api/travel-authorizations instead")
   try {
     const user = req.user
     const forms = await TravelAuthorization.findAll({

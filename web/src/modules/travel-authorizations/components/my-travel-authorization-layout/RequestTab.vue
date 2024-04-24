@@ -34,7 +34,7 @@
   <v-tab
     v-else
     :to="{
-      name: 'MyTravelRequestsRequestEditPage',
+      name: componentName,
       params: { travelAuthorizationId },
     }"
   >
@@ -46,6 +46,7 @@
 import { computed, toRefs } from "vue"
 
 import { TRAVEL_METHODS } from "@/api/travel-segments-api"
+import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
@@ -69,4 +70,16 @@ const hasNoAirTravel = computed(() =>
   )
 )
 const isLocked = computed(() => isWaitingForApproval.value || hasNoAirTravel.value)
+
+// TODO: this will likely a different page for each travel desk travel request status.
+const componentName = computed(() => {
+  if (
+    travelAuthorization.value?.travelDeskTravelRequest?.status ===
+    TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
+  ) {
+    return "MyTravelRequestsRequestEditPage"
+  } else {
+    return "MyTravelRequestsRequestReadPage"
+  }
+})
 </script>

@@ -16,6 +16,7 @@
         <v-data-table
           :headers="headers"
           :items="travelDeskFlightRequests"
+          :loading="isLoading"
           hide-default-footer
           class="elevation-1"
         >
@@ -32,36 +33,23 @@
           </template>
 
           <template #item.actions="{ item }">
-            <v-row class="mx-0 py-0 mt-n6 mb-n6">
-              <v-col cols="6">
-                <v-btn
-                  class="mx-0 px-0"
-                  color="transparent"
-                  title="Edit"
-                  @click="showEditDialog(item)"
-                >
-                  <v-icon
-                    class="mx-0 px-0"
-                    color="blue"
-                    >mdi-pencil</v-icon
-                  >
-                </v-btn>
-              </v-col>
-              <v-col cols="6">
-                <v-btn
-                  :loading="isLoading"
-                  color="transparent"
-                  class="px-1 pt-2"
-                  small
-                  @click="deleteFlightRequest(item)"
-                  ><v-icon
-                    class=""
-                    color="red"
-                    >mdi-close</v-icon
-                  >
-                </v-btn>
-              </v-col>
-            </v-row>
+            <div class="d-flex justify-end">
+              <v-btn
+                title="Edit"
+                icon
+                color="blue"
+                @click="showEditDialog(item)"
+                ><v-icon>mdi-pencil</v-icon></v-btn
+              >
+              <v-btn
+                :loading="isLoading"
+                title="Delete"
+                icon
+                color="red"
+                @click="deleteFlightRequest(item)"
+                ><v-icon>mdi-close</v-icon></v-btn
+              >
+            </div>
           </template>
         </v-data-table>
       </v-col>
