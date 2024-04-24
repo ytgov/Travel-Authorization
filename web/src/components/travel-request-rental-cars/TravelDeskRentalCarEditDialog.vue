@@ -33,25 +33,14 @@
                 cols="12"
                 md="5"
               >
-                <!-- TODO: maybe make this a component? -->
                 <!-- TODO: add tooltip explaining disabled state -->
-                <label>Pick-up/Drop-off match flights</label>
-                <v-radio-group
+                <YesNoRowRadioGroup
                   v-model="rentalCar.matchFlightTimes"
+                  label="Pick-up/Drop-off match flights"
                   :disabled="isNil(flightStart) || isNil(flightEnd)"
                   class="mt-1"
-                  row
                   @change="matchWithFlight"
-                >
-                  <v-radio
-                    label="Yes"
-                    :value="true"
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    :value="false"
-                  ></v-radio>
-                </v-radio-group>
+                />
               </v-col>
               <v-col
                 cols="12"
@@ -267,6 +256,7 @@ import travelDeskRentalCarsApi, {
   VEHICLE_TYPES,
 } from "@/api/travel-desk-rental-cars-api"
 
+import YesNoRowRadioGroup from "@/components/common/YesNoRowRadioGroup.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 
 const props = defineProps({
