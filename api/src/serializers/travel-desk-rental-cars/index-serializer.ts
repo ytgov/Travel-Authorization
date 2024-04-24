@@ -49,15 +49,15 @@ export class IndexSerializer extends BaseSerializer<TravelDeskRentalCar> {
         "vehicleTypeChangeIndicator",
         "vehicleType",
         "vehicleChangeRationale",
+        "pickUpDate",
+        "dropOffDate",
         "additionalNotes",
         "status",
         "reservedVehicleInfo",
         "booking",
+        "createdAt",
+        "updatedAt",
       ]),
-      pickUpDate: new Date(this.record.pickUpDate),
-      dropOffDate: new Date(this.record.dropOffDate),
-      createdAt: new Date(this.record.createdAt),
-      updatedAt: new Date(this.record.updatedAt),
     }
   }
 }
