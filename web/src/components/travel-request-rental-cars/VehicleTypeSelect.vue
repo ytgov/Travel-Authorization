@@ -2,7 +2,7 @@
   <v-select
     :value="value"
     :label="label"
-    :items="items"
+    :items="Object.values(VEHICLE_TYPES)"
     v-bind="$attrs"
     @input="emit('input', $event)"
     v-on="$listeners"
@@ -20,10 +20,6 @@ defineProps({
   label: {
     type: String,
     default: "Vehicle Type",
-  },
-  items: {
-    type: Array,
-    default: () => Object.values(VEHICLE_TYPES),
   },
 })
 
