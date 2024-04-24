@@ -157,21 +157,12 @@
                 cols="12"
                 md="3"
               >
-                <div class="label">Same Drop-off location?</div>
-                <v-radio-group
+                <YesNoRowRadioGroup
                   v-model="rentalCar.sameDropOffLocation"
+                  label="Same Drop-off location?"
                   class="mt-1"
-                  row
-                >
-                  <v-radio
-                    label="Yes"
-                    :value="true"
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    :value="false"
-                  ></v-radio>
-                </v-radio-group>
+                  @change="resetDropOffLocationStates"
+                />
                 <LocationsAutocomplete
                   v-if="rentalCar.sameDropOffLocation === false"
                   v-model="rentalCar.dropOffCity"
@@ -316,6 +307,14 @@ function matchWithFlight() {
   if (rentalCar.value.matchFlightTimes) {
     pickUpDate.value = props.flightStart
     dropOffDate.value = props.flightEnd
+  }
+}
+
+function resetDropOffLocationStates(value) {
+  if (value === true) {
+    rentalCar.value.dropOffCity = null
+    rentalCar.value.dropOffLocation = null
+    rentalCar.value.dropOffLocationOther = null
   }
 }
 
