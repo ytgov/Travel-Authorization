@@ -313,9 +313,9 @@ const rentalCar = ref({
   vehicleType: VEHICLE_TYPES.COMPACT,
 })
 const pickUpDate = ref("")
-const pickUpTime = ref("")
+const pickUpTime = ref("12:00")
 const dropOffDate = ref("")
-const dropOffTime = ref("")
+const dropOffTime = ref("12:00")
 
 const snack = useSnack()
 const router = useRouter()
@@ -399,9 +399,9 @@ function resetState() {
   }
 
   pickUpDate.value = ""
-  pickUpTime.value = ""
+  pickUpTime.value = "12:00"
   dropOffDate.value = ""
-  dropOffTime.value = ""
+  dropOffTime.value = "12:00"
 }
 </script>
 
