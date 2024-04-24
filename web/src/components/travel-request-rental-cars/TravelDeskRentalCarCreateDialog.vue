@@ -303,8 +303,8 @@ const showDialog = ref(route.query.showRentalCarCreate === "true")
 const form = ref(null)
 const isLoading = ref(false)
 
-function matchWithFlight() {
-  if (rentalCar.value.matchFlightTimes) {
+function matchWithFlight(value) {
+  if (value === true) {
     pickUpDate.value = props.flightStart
     dropOffDate.value = props.flightEnd
   }
