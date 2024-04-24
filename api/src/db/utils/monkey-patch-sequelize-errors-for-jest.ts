@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Sequelize } from "sequelize"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sequelizeVersion = (Sequelize as any).version
 const major = sequelizeVersion.split(".").map(Number)[0]
 
