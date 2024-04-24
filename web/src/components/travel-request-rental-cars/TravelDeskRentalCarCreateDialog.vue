@@ -45,22 +45,24 @@
               >
                 <!-- TODO: maybe make this a component? -->
                 <!-- TODO: add tooltip explaining disabled state -->
-                <label>Pick-up/Drop-off match flights</label>
                 <v-radio-group
                   v-model="rentalCar.matchFlightTimes"
+                  label="Pick-up/Drop-off match flights"
                   :disabled="isNil(flightStart) || isNil(flightEnd)"
                   class="mt-1"
-                  row
                   @change="matchWithFlight"
                 >
-                  <v-radio
-                    label="Yes"
-                    :value="true"
-                  ></v-radio>
-                  <v-radio
-                    label="No"
-                    :value="false"
-                  ></v-radio>
+                  <div class="d-flex align-baseline">
+                    <v-radio
+                      label="Yes"
+                      :value="true"
+                    ></v-radio>
+                    <v-radio
+                      class="ml-4"
+                      label="No"
+                      :value="false"
+                    ></v-radio>
+                  </div>
                 </v-radio-group>
               </v-col>
               <v-col
