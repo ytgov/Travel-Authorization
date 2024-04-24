@@ -16,7 +16,7 @@ const auditService = new AuditService()
 
 // Get all forms for a user
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
-  console.warn("DEPRECATED: prefer /api/forms instead")
+  console.warn("DEPRECATED: prefer /api/travel-authorizations instead")
   try {
     const user = req.user
     const forms = await TravelAuthorization.findAll({
