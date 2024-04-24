@@ -28,11 +28,11 @@
 defineProps({
   value: {
     type: Boolean,
-    required: true,
+    default: null,
   },
   label: {
     type: String,
-    required: true,
+    default: "Pick yes or no:",
   },
 })
 

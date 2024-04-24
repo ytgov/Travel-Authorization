@@ -15,7 +15,7 @@ import { VEHICLE_TYPES } from "@/api/travel-desk-rental-cars-api"
 defineProps({
   value: {
     type: String,
-    required: true,
+    default: null,
   },
   label: {
     type: String,
