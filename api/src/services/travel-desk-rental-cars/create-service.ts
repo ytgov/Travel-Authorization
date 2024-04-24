@@ -20,6 +20,7 @@ export class CreateService extends BaseService {
       vehicleChangeRationale,
       pickUpDate,
       dropOffDate,
+      ...optionalAttributes
     } = this.attributes
 
     if (isNil(travelRequestId)) {
@@ -54,6 +55,7 @@ export class CreateService extends BaseService {
       vehicleChangeRationale,
       pickUpDate,
       dropOffDate,
+      ...optionalAttributes,
       status: TravelDeskRentalCar.Statuses.REQUESTED,
     })
   }
