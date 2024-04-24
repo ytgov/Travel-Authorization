@@ -306,21 +306,11 @@ const emit = defineEmits(["created"])
 
 const rentalCar = ref({
   travelRequestId: props.travelDeskTravelRequestId,
-  pickUpCity: "",
-  dropOffCity: "",
-  pickUpLocation: "",
-  pickUpLocationOther: "",
-  dropOffLocation: "",
-  dropOffLocationOther: "",
   sameDropOffLocation: true,
   matchFlightTimes: false,
-  pickUpDate: "",
   pickUpTime: "12:00",
-  dropOffDate: "",
   dropOffTime: "12:00",
   vehicleType: VEHICLE_TYPES.COMPACT,
-  vehicleChangeRationale: "",
-  additionalNotes: "",
 })
 const pickUpDate = ref("")
 const pickUpTime = ref("")
@@ -401,21 +391,11 @@ async function createAndClose() {
 function resetState() {
   rentalCar.value = {
     travelRequestId: props.travelDeskTravelRequestId,
-    pickUpCity: "",
-    dropOffCity: "",
-    pickUpLocation: "",
-    pickUpLocationOther: "",
-    dropOffLocation: "",
-    dropOffLocationOther: "",
     sameDropOffLocation: true,
     matchFlightTimes: false,
-    pickUpDate: "",
     pickUpTime: "12:00",
-    dropOffDate: "",
     dropOffTime: "12:00",
     vehicleType: VEHICLE_TYPES.COMPACT,
-    vehicleChangeRationale: "",
-    additionalNotes: "",
   }
 
   pickUpDate.value = ""
