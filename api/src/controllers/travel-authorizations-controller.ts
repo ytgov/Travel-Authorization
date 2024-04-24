@@ -79,34 +79,28 @@ export class TravelAuthorizationsController extends BaseController {
   }
 
   async show() {
-    // TODO: make missing route params auto-404?
-    if (isNil(this.params.travelAuthorizationId)) {
-      return this.response.status(404).json({ message: "Travel authorization not found." })
-    }
-
-    const travelAuthorization = await this.loadTravelAuthorization()
-    if (isNil(travelAuthorization))
-      return this.response.status(404).json({ message: "Travel authorization not found." })
-
-    const policy = this.buildPolicy(travelAuthorization)
-    if (!policy.show()) {
-      return this.response
-        .status(403)
-        .json({ message: "You are not authorized to view this travel authorization." })
-    }
-
-    return TravelAuthorization.findByPk(this.params.travelAuthorizationId, {
-      include: ["expenses", "stops", "purpose", "user", "travelSegments"],
-    }).then((travelAuthorization) => {
+    try {
+      const travelAuthorization = await this.loadTravelAuthorization()
       if (isNil(travelAuthorization)) {
         return this.response.status(404).json({ message: "Travel authorization not found." })
+      }
+
+      const policy = this.buildPolicy(travelAuthorization)
+      if (!policy.show()) {
+        return this.response
+          .status(403)
+          .json({ message: "You are not authorized to view this travel authorization." })
       }
 
       const serializedTravelAuthorization =
         TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
 
-      return this.response.json({ travelAuthorization: serializedTravelAuthorization })
-    })
+      return this.response.status(200).json({ travelAuthorization: serializedTravelAuthorization })
+    } catch (error) {
+      return this.response
+        .status(500)
+        .json({ message: `Failed to retrieve travel authorization: ${error}` })
+    }
   }
 
   async update() {
@@ -165,7 +159,16 @@ export class TravelAuthorizationsController extends BaseController {
   }
 
   private loadTravelAuthorization(): Promise<TravelAuthorization | null> {
-    return TravelAuthorization.findByPk(this.params.travelAuthorizationId)
+    return TravelAuthorization.findByPk(this.params.travelAuthorizationId, {
+      include: [
+        "expenses",
+        "stops",
+        "purpose",
+        "user",
+        "travelSegments",
+        "travelDeskTravelRequest",
+      ],
+    })
   }
 
   private buildTravelAuthorization() {
