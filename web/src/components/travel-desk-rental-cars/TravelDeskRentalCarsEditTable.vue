@@ -217,7 +217,7 @@ const flightEnd = computed(() => {
 const editDialog = ref(null)
 
 function formatDate(date) {
-  return DateTime.fromISO(date).toFormat("MMM dd yyyy, HH:mm")
+  return DateTime.fromISO(date, { zone: "utc" }).toFormat("MMM dd yyyy, HH:mm")
 }
 
 function showEditDialog(flightRequest) {

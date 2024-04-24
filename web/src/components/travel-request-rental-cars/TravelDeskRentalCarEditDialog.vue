@@ -333,12 +333,12 @@ watch(
 function show(newRentalCar) {
   rentalCar.value = cloneDeep(newRentalCar)
 
-  const pickUpDateTime = DateTime.fromISO(rentalCar.value.pickUpDate)
-  pickUpDate.value = pickUpDateTime.toFormat("YYYY-MM-DD")
+  const pickUpDateTime = DateTime.fromISO(rentalCar.value.pickUpDate, { zone: "utc" })
+  pickUpDate.value = pickUpDateTime.toFormat("yyyy-MM-dd")
   pickUpTime.value = pickUpDateTime.toFormat("HH:mm")
 
-  const dropOffDateTime = DateTime.fromISO(rentalCar.value.dropOffDate)
-  dropOffDate.value = dropOffDateTime.toFormat("YYYY-MM-DD")
+  const dropOffDateTime = DateTime.fromISO(rentalCar.value.dropOffDate, { zone: "utc" })
+  dropOffDate.value = dropOffDateTime.toFormat("yyyy-MM-dd")
   dropOffTime.value = dropOffDateTime.toFormat("HH:mm")
 
   showDialog.value = true
