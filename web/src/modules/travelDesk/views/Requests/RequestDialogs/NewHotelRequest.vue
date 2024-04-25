@@ -62,8 +62,8 @@
                 @input="state.cityErr = false"
               />
               <v-radio-group
-                v-model="hotelRequest.rsvConferenceHotel"
-                :error="state.rsvConferenceHotelErr"
+                v-model="hotelRequest.isDedicatedConferenceHotelAvailable"
+                :error="state.isDedicatedConferenceHotelAvailableErr"
                 label="Conference/Meeting Hotel?"
                 outlined
                 row
@@ -172,7 +172,7 @@ export default {
         checkInErr: false,
         checkOutErr: false,
         cityErr: false,
-        rsvConferenceHotelErr: false,
+        isDedicatedConferenceHotelAvailableErr: false,
         conferenceNameErr: false,
         conferenceHotelNameErr: false,
         additionalInfoErr: false,
@@ -188,7 +188,8 @@ export default {
       this.state.checkInErr = this.hotelRequest.checkIn ? false : true
       this.state.checkOutErr = this.hotelRequest.checkOut ? false : true
       this.state.cityErr = this.hotelRequest.city ? false : true
-      this.state.rsvConferenceHotelErr = this.hotelRequest.rsvConferenceHotel != null ? false : true
+      this.state.isDedicatedConferenceHotelAvailableErr =
+        this.hotelRequest.isDedicatedConferenceHotelAvailable != null ? false : true
       this.state.conferenceNameErr = this.hotelRequest.conferenceName ? false : true
       this.state.conferenceHotelNameErr = this.hotelRequest.conferenceHotelName ? false : true
       this.state.additionalInfoErr = false
@@ -214,7 +215,7 @@ export default {
         this.hotelRequest.checkIn = flightDates.start
         this.hotelRequest.checkOut = flightDates.end
         this.hotelRequest.city = ""
-        this.hotelRequest.rsvConferenceHotel = true
+        this.hotelRequest.isDedicatedConferenceHotelAvailable = true
         this.hotelRequest.conferenceName = ""
         this.hotelRequest.conferenceHotelName = ""
         this.hotelRequest.additionalInformation = ""

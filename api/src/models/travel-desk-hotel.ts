@@ -28,18 +28,21 @@ export class TravelDeskHotel extends Model<
 > {
   static readonly Statuses = TravelDeskHotelStatuses
 
-  declare hotelID: CreationOptional<number>
-  declare requestID: ForeignKey<TravelDeskTravelRequest["id"]>
-  declare city: CreationOptional<string | null>
-  declare rsvConferenceHotel: CreationOptional<boolean | null>
-  declare conferenceName: CreationOptional<string | null>
-  declare conferenceHotelName: CreationOptional<string | null>
-  declare checkIn: CreationOptional<Date | null>
-  declare checkOut: CreationOptional<Date | null>
+  declare id: CreationOptional<number>
+  declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
+  declare city: string
+  declare isDedicatedConferenceHotelAvailable: boolean
+  declare conferenceName: string
+  declare conferenceHotelName: string
+  declare checkIn: Date
+  declare checkOut: Date
   declare additionalInformation: CreationOptional<string | null>
   declare status: string
   declare reservedHotelInfo: CreationOptional<string | null>
   declare booking: CreationOptional<string | null>
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // Associations
   declare getTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
@@ -58,22 +61,20 @@ export class TravelDeskHotel extends Model<
   static establishAssociations() {
     this.belongsTo(TravelDeskTravelRequest, {
       as: "travelRequest",
-      foreignKey: "requestID",
+      foreignKey: "travelRequestId",
     })
   }
 }
 
 TravelDeskHotel.init(
   {
-    hotelID: {
-      field: "hotelID",
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    requestID: {
-      field: "requestID",
+    travelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -82,42 +83,34 @@ TravelDeskHotel.init(
       },
     },
     city: {
-      field: "city",
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
     },
-    rsvConferenceHotel: {
-      field: "rsvConferenceHotel",
+    isDedicatedConferenceHotelAvailable: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
     },
     conferenceName: {
-      field: "conferenceName",
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
     },
     conferenceHotelName: {
-      field: "conferenceHotelName",
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
     },
     checkIn: {
-      field: "checkIn",
       type: DataTypes.DATEONLY,
-      allowNull: true,
+      allowNull: false,
     },
     checkOut: {
-      field: "checkOut",
       type: DataTypes.DATEONLY,
-      allowNull: true,
+      allowNull: false,
     },
     additionalInformation: {
-      field: "additionalInformation",
       type: DataTypes.STRING(255),
       allowNull: true,
     },
     status: {
-      field: "status",
       type: DataTypes.STRING(255),
       allowNull: false,
       validate: {
@@ -130,23 +123,31 @@ TravelDeskHotel.init(
       },
     },
     reservedHotelInfo: {
-      field: "reservedHotelInfo",
       type: DataTypes.STRING(255),
       allowNull: true,
     },
     booking: {
-      field: "booking",
       type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
       allowNull: true,
     },
   },
   {
     sequelize,
-    modelName: "TravelDeskHotel",
-    tableName: "travelDeskHotel",
-    underscored: false,
-    timestamps: false,
-    paranoid: false,
+    paranoid: true, // TODO: remove once is default
   }
 )
 

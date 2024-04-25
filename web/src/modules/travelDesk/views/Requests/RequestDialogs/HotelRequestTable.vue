@@ -31,8 +31,8 @@
               hide-default-footer
               class="elevation-1"
             >
-              <template #item.rsvConferenceHotel="{ item }">
-                {{ item.rsvConferenceHotel ? "Yes" : "No" }}
+              <template #item.isDedicatedConferenceHotelAvailable="{ item }">
+                {{ item.isDedicatedConferenceHotelAvailable ? "Yes" : "No" }}
               </template>
 
               <template #item.checkIn="{ item }">
@@ -113,7 +113,7 @@ export default {
         { text: "City", value: "city", class: "blue-grey lighten-4", sortable: false },
         {
           text: "Conference Hotel?",
-          value: "rsvConferenceHotel",
+          value: "isDedicatedConferenceHotelAvailable",
           class: "blue-grey lighten-4",
           sortable: false,
         },
@@ -165,12 +165,12 @@ export default {
       }
 
       const hotelRequest = {}
-      hotelRequest.hotelID = null
+      hotelRequest.id = null
       hotelRequest.tmpId = null
       hotelRequest.checkIn = ""
       hotelRequest.checkOut = ""
       hotelRequest.city = ""
-      hotelRequest.rsvConferenceHotel = true
+      hotelRequest.isDedicatedConferenceHotelAvailable = true
       hotelRequest.conferenceName = ""
       hotelRequest.conferenceHotelName = ""
       hotelRequest.additionalInformation = ""
@@ -186,10 +186,12 @@ export default {
     removeHotel(item) {
       console.log(item)
       let delIndex = -1
-      if (item.hotelID > 0)
-        delIndex = this.hotels.findIndex((hotel) => hotel.hotelID && hotel.hotelID == item.hotelID)
-      else delIndex = this.hotels.findIndex((hotel) => hotel.tmpId && hotel.tmpId == item.tmpId)
-      console.log(delIndex)
+      if (item.id > 0) {
+        delIndex = this.hotels.findIndex((hotel) => hotel.id && hotel.id == item.id)
+      } else {
+        delIndex = this.hotels.findIndex((hotel) => hotel.tmpId && hotel.tmpId == item.tmpId)
+      }
+
       if (delIndex >= 0) {
         this.hotels.splice(delIndex, 1)
       }

@@ -133,15 +133,27 @@ export class TravelDeskTravelRequest extends Model<
   declare createFlightRequest: HasManyCreateAssociationMixin<TravelDeskFlightRequest>
 
   declare getHotels: HasManyGetAssociationsMixin<TravelDeskHotel>
-  declare setHotels: HasManySetAssociationsMixin<TravelDeskHotel, TravelDeskHotel["requestID"]>
-  declare hasHotel: HasManyHasAssociationMixin<TravelDeskHotel, TravelDeskHotel["requestID"]>
-  declare hasHotels: HasManyHasAssociationsMixin<TravelDeskHotel, TravelDeskHotel["requestID"]>
-  declare addHotel: HasManyAddAssociationMixin<TravelDeskHotel, TravelDeskHotel["requestID"]>
-  declare addHotels: HasManyAddAssociationsMixin<TravelDeskHotel, TravelDeskHotel["requestID"]>
-  declare removeHotel: HasManyRemoveAssociationMixin<TravelDeskHotel, TravelDeskHotel["requestID"]>
+  declare setHotels: HasManySetAssociationsMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare hasHotel: HasManyHasAssociationMixin<TravelDeskHotel, TravelDeskHotel["travelRequestId"]>
+  declare hasHotels: HasManyHasAssociationsMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare addHotel: HasManyAddAssociationMixin<TravelDeskHotel, TravelDeskHotel["travelRequestId"]>
+  declare addHotels: HasManyAddAssociationsMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare removeHotel: HasManyRemoveAssociationMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
   declare removeHotels: HasManyRemoveAssociationsMixin<
     TravelDeskHotel,
-    TravelDeskHotel["requestID"]
+    TravelDeskHotel["travelRequestId"]
   >
   declare countHotels: HasManyCountAssociationsMixin
   declare createHotel: HasManyCreateAssociationMixin<TravelDeskHotel>
@@ -218,7 +230,7 @@ export class TravelDeskTravelRequest extends Model<
     })
     this.hasMany(TravelDeskHotel, {
       as: "hotels",
-      foreignKey: "requestID",
+      foreignKey: "travelReqestId",
     })
     this.hasMany(TravelDeskRentalCar, {
       as: "rentalCars",

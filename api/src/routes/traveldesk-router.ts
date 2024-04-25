@@ -573,16 +573,16 @@ travelDeskRouter.post(
 
           //Hotels
           await TravelDeskHotel.destroy({
-            where: { requestID: travelRequest.id },
+            where: { travelRequestId: travelRequest.id },
             transaction: sequelizeTransaction,
           })
 
           for (const hotel of hotels) {
             delete hotel.tmpId
-            if (hotel.hotelID == null) {
-              delete hotel.hotelID
+            if (hotel.id == null) {
+              delete hotel.id
             }
-            hotel.requestID = travelRequest.id
+            hotel.travelRequestId = travelRequest.id
 
             await TravelDeskHotel.create(hotel, { transaction: sequelizeTransaction })
           }
