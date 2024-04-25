@@ -333,19 +333,19 @@ entity "travelDeskFlightSegment" {
   flightOptionID : int4
 }
 
-entity "travelDeskHotel" {
-  * hotelID : serial4 <<PK>>
+entity "travel_desk_hotels" {
+  * id : serial4 <<PK>>
   --
-  * requestID : int4 <<FK>>
+  * travel_request_id : int4 <<FK>>
+  * city : varchar(255)
+  * is_dedicated_conference_hotel_available : bool
+  * conference_name : varchar(255)
+  * conference_hotel_name : varchar(255)
+  * check_in : date
+  * check_out : date
   * status : varchar(255)
-  city : varchar(255)
-  rsvConferenceHotel : bool
-  conferenceName : varchar(255)
-  conferenceHotelName : varchar(255)
-  checkIn : date
-  checkOut : date
-  additionalInformation : varchar(255)
-  reservedHotelInfo : varchar(255)
+  additional_information : varchar(255)
+  reserved_hotel_info : varchar(255)
   booking : varchar(255)
 }
 
@@ -498,7 +498,7 @@ travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorization
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
 travelDeskFlightSegment }o--|| travelDeskFlightOption
-travelDeskHotel::requestID ||--o{ travel_desk_travel_requests::id
+travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
 travelDeskOtherTransportation }o--|| travel_desk_travel_requests
 travelDeskQuestion }o--|| travel_desk_travel_requests
 
