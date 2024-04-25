@@ -1,30 +1,24 @@
 <template>
-  <div>
-    <v-dialog
-      v-model="hotelDialog"
-      persistent
-      max-width="80%"
-    >
-      <template #activator="{ on, attrs }">
-        <v-btn
-          :class="type == 'Add New' ? 'my-4 right' : 'mx-0 px-0'"
-          :color="type == 'Add New' ? 'primary' : 'transparent'"
-          style="min-width: 0"
-          v-bind="attrs"
-          @click="initForm"
-          v-on="on"
-        >
-          <div v-if="type == 'Add New'">Add Hotel</div>
-          <v-icon
-            v-else
-            class="mx-0 px-0"
-            color="blue"
-            >mdi-pencil</v-icon
-          >
-        </v-btn>
-      </template>
+  <v-dialog
+    v-model="showDialog"
+    persistent
+    max-width="80%"
+  >
+    <template #activator="{ on, attrs }">
+      <v-btn
+        color="primary"
+        v-bind="attrs"
+        v-on="on"
+      >
+        Add Hotel
+      </v-btn>
+    </template>
 
-      <v-card>
+    <v-form
+      ref="form"
+      @submit.prevent="createAndClose"
+    >
+      <v-card :loading="isLoading">
         <v-card-title class="blue">
           <div class="text-h5">Add Hotel</div>
         </v-card-title>
@@ -33,39 +27,39 @@
           <v-row class="mt-5 mx-3">
             <v-col cols="4">
               <v-text-field
-                v-model="hotelRequest.checkIn"
-                :error="state.checkInErr"
-                label="Check-in Date"
-                outlined
+                v-model="hotel.checkIn"
+                label="Check-in Date *"
+                type="date"
+                :rules="[required]"
                 :min="minDate"
                 :max="maxDate"
-                type="date"
-                @input="state.checkInErr = false"
+                outlined
+                required
               />
               <v-text-field
-                v-model="hotelRequest.checkOut"
-                :error="state.checkOutErr"
-                label="Check-out Date"
-                outlined
+                v-model="hotel.checkOut"
+                label="Check-out Date *"
+                type="date"
+                :rules="[required]"
                 :min="minDate"
                 :max="maxDate"
-                type="date"
-                @input="state.checkOutErr = false"
-              />
-              <v-autocomplete
-                v-model="hotelRequest.city"
-                :items="destinations"
-                item-value="text"
-                :error="state.cityErr"
-                label="City"
                 outlined
-                @input="state.cityErr = false"
+                required
+              />
+              <LocationsAutocomplete
+                v-model="hotel.city"
+                label="City *"
+                item-value="city"
+                :rules="[required]"
+                outlined
+                required
               />
               <v-radio-group
-                v-model="hotelRequest.isDedicatedConferenceHotelAvailable"
-                :error="state.isDedicatedConferenceHotelAvailableErr"
-                label="Conference/Meeting Hotel?"
+                v-model="hotel.isDedicatedConferenceHotelAvailable"
+                label="Conference/Meeting Hotel? *"
+                :rules="[required]"
                 outlined
+                required
                 row
               >
                 <v-radio
@@ -80,12 +74,11 @@
             </v-col>
             <v-col cols="8">
               <v-textarea
-                v-model="hotelRequest.additionalInformation"
-                :error="state.additionalInfoErr"
+                v-model="hotel.additionalInformation"
                 label="Additional Information"
                 rows="8"
                 outlined
-                :clearable="!readonly"
+                clearable
               />
             </v-col>
           </v-row>
@@ -93,141 +86,153 @@
           <v-row class="mt-0 mx-3">
             <v-col cols="4">
               <v-text-field
-                v-model="hotelRequest.conferenceName"
-                :error="state.conferenceNameErr"
-                label="Conference/Meeting Name"
+                v-model="hotel.conferenceName"
+                label="Conference/Meeting Name *"
+                :rules="[required]"
                 outlined
-                @input="state.conferenceNameErr = false"
+                required
               />
             </v-col>
             <v-col cols="8">
               <v-text-field
-                v-model="hotelRequest.conferenceHotelName"
-                :error="state.conferenceHotelNameErr"
-                label="Conference/Meeting Hotel"
+                v-model="hotel.conferenceHotelName"
+                label="Conference/Meeting Hotel *"
+                rules="[required]"
                 outlined
-                @input="state.conferenceHotelNameErr = false"
+                required
               />
             </v-col>
           </v-row>
         </v-card-text>
 
         <v-card-actions>
+          <v-spacer />
           <v-btn
+            :loading="isLoading"
             color="grey darken-5"
-            @click="hotelDialog = false"
+            @click="close"
           >
-            <div v-if="type == 'View'">Close</div>
-            <div v-else>Cancel</div>
+            Cancel
           </v-btn>
           <v-btn
-            class="ml-auto"
+            :loading="isLoading"
             color="green darken-1"
-            @click="saveHotelRequest"
+            type="submit"
           >
-            <div v-if="type == 'View'">Save</div>
-            <div v-else>Add</div>
+            Add
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
-  </div>
+    </v-form>
+  </v-dialog>
 </template>
 
-<script>
-import Vue from "vue"
+<script setup>
+import { ref, nextTick, watch } from "vue"
+import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
-export default {
-  name: "TravelDeskHotelCreateDialog",
-  props: {
-    type: {
-      type: String,
-      required: true,
-    },
-    hotelRequest: {
-      type: Object,
-      default: () => ({}),
-    },
-    flightRequests: {
-      type: Array,
-      default: () => [],
-    },
-    minDate: {
-      type: String,
-      default: "",
-    },
-    maxDate: {
-      type: String,
-      default: "",
-    },
+import { required } from "@/utils/validators"
+import { useSnack } from "@/plugins/snack-plugin"
+import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
+
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+
+const props = defineProps({
+  travelDeskTravelRequestId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      checkIn: "",
-      checkOut: "",
-      hotelDialog: false,
-      readonly: false,
+  minDate: {
+    type: String,
+    default: null,
+  },
+  maxDate: {
+    type: String,
+    default: null,
+  },
+  // TODO: consider loading flightStart/End using travelDeskTravelRequestId?
+  flightStart: {
+    type: String,
+    default: null,
+  },
+  flightEnd: {
+    type: String,
+    default: null,
+  },
+})
 
-      state: {
-        checkInErr: false,
-        checkOutErr: false,
-        cityErr: false,
-        isDedicatedConferenceHotelAvailableErr: false,
-        conferenceNameErr: false,
-        conferenceHotelNameErr: false,
-        additionalInfoErr: false,
-      },
-      destinations: [],
+const emit = defineEmits(["created"])
+
+const hotel = ref({
+  travelRequestId: props.travelDeskTravelRequestId,
+  checkIn: props.flightStart,
+  checkOut: props.flightEnd,
+  isDedicatedConferenceHotelAvailable: true,
+})
+
+const snack = useSnack()
+const router = useRouter()
+const route = useRoute()
+const showDialog = ref(route.query.showHotelCreate === "true")
+
+/** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
+const form = ref(null)
+const isLoading = ref(false)
+
+watch(
+  () => props.travelDeskTravelRequestId,
+  () => {
+    resetState()
+  },
+  { immediate: true }
+)
+
+watch(
+  () => showDialog.value,
+  (value) => {
+    if (value) {
+      router.push({ query: { showHotelCreate: "true" } })
+    } else {
+      router.push({ query: { showHotelCreate: undefined } })
     }
-  },
-  mounted() {
-    this.destinations = this.$store.state.traveldesk.destinations
-  },
-  methods: {
-    checkFields() {
-      this.state.checkInErr = this.hotelRequest.checkIn ? false : true
-      this.state.checkOutErr = this.hotelRequest.checkOut ? false : true
-      this.state.cityErr = this.hotelRequest.city ? false : true
-      this.state.isDedicatedConferenceHotelAvailableErr =
-        this.hotelRequest.isDedicatedConferenceHotelAvailable != null ? false : true
-      this.state.conferenceNameErr = this.hotelRequest.conferenceName ? false : true
-      this.state.conferenceHotelNameErr = this.hotelRequest.conferenceHotelName ? false : true
-      this.state.additionalInfoErr = false
+  }
+)
 
-      for (const key of Object.keys(this.state)) {
-        if (this.state[key]) return false
-      }
-      return true
-    },
+function close() {
+  showDialog.value = false
+  resetState()
+  form.value?.resetValidation()
+}
 
-    saveHotelRequest() {
-      if (this.checkFields()) {
-        this.$emit("updateTable", this.type)
-        this.hotelDialog = false
-      }
-    },
+async function createAndClose() {
+  if (!form.value?.validate()) {
+    snack("Please fill in all required fields", { color: "error" })
+    return
+  }
 
-    initForm() {
-      this.initStates()
-      const flightDates = Vue.filter("flightStartEnd")(this.flightRequests)
+  isLoading.value = true
+  try {
+    const { travelDeskHotel: newHotel } = await travelDeskHotelsApi.create(hotel.value)
+    close()
 
-      if (this.type == "Add New") {
-        this.hotelRequest.checkIn = flightDates.start
-        this.hotelRequest.checkOut = flightDates.end
-        this.hotelRequest.city = ""
-        this.hotelRequest.isDedicatedConferenceHotelAvailable = true
-        this.hotelRequest.conferenceName = ""
-        this.hotelRequest.conferenceHotelName = ""
-        this.hotelRequest.additionalInformation = ""
-      }
-    },
+    await nextTick()
+    emit("created", newHotel.id)
+    snack("Hotel request created successfully", { color: "success" })
+  } catch (error) {
+    console.error(error)
+    snack("Failed to create hotel request", { color: "error" })
+  } finally {
+    isLoading.value = false
+  }
+}
 
-    initStates() {
-      for (const key of Object.keys(this.state)) {
-        this.state[key] = false
-      }
-    },
-  },
+function resetState() {
+  hotel.value = {
+    travelRequestId: props.travelDeskTravelRequestId,
+    checkIn: props.flightStart,
+    checkOut: props.flightEnd,
+    isDedicatedConferenceHotelAvailable: true,
+  }
 }
 </script>
 

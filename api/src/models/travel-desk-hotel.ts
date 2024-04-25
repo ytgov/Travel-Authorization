@@ -16,6 +16,10 @@ import sequelize from "@/db/db-client"
 
 import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 
+/**
+ * Keep in sync with web/src/api/travel-desk-hotels-api.js
+ * TODO: normalizes these to snake_case
+ */
 export enum TravelDeskHotelStatuses {
   REQUESTED = "Requested",
   // TODO: confirm this is correct.

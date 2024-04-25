@@ -89,10 +89,8 @@
                 :travel-authorization-id="travelAuthorizationId"
               />
               <TravelDeskHotelEditTable
-                :authorized-travel="travelAuthorization"
-                :readonly="false"
-                :flight-requests="travelDeskTravelRequest.flightRequests"
-                :hotels="travelDeskTravelRequest.hotels"
+                :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                :travel-authorization-id="travelAuthorizationId"
               />
               <TransportationRequestTable
                 :authorized-travel="travelAuthorization"

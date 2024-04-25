@@ -8,66 +8,65 @@
         <div>Hotel Request</div>
       </template>
       <template #body>
-        <v-row class="mt-3 mx-3">
+        <div class="d-flex justify-end pr-4">
           <TravelDeskHotelCreateDialog
-            v-if="!readonly"
             class="ml-auto mr-3"
-            type="Add New"
+            :travel-desk-travel-request-id="travelDeskTravelRequestId"
             :min-date="minDate"
             :max-date="maxDate"
-            :flight-requests="flightRequests"
-            :hotel-request="hotelRequest"
-            @updateTable="updateTable"
+            :flight-start="flightStart"
+            :flight-end="flightEnd"
+            @created="refresh"
           />
-        </v-row>
+        </div>
         <v-row class="mb-3 mx-3">
-          <v-col
-            v-if="hotels?.length > 0"
-            cols="12"
-          >
+          <v-col cols="12">
             <v-data-table
-              :headers="hotelHeaders"
-              :items="hotels"
+              :headers="headers"
+              :items="travelDeskHotels"
               hide-default-footer
               class="elevation-1"
             >
+              <template #top>
+                <TravelDeskHotelEditDialog
+                  ref="editDialog"
+                  :min-date="minDate"
+                  :max-date="maxDate"
+                  :flight-start="flightStart"
+                  :flight-end="flightEnd"
+                  @saved="refresh"
+                />
+              </template>
               <template #item.isDedicatedConferenceHotelAvailable="{ item }">
                 {{ item.isDedicatedConferenceHotelAvailable ? "Yes" : "No" }}
               </template>
 
               <template #item.checkIn="{ item }">
-                {{ item.checkIn | beautifyDateTime }}
+                {{ formatDate(item.checkIn) }}
               </template>
 
               <template #item.checkOut="{ item }">
-                {{ item.checkOut | beautifyDateTime }}
+                {{ formatDate(item.checkOut) }}
               </template>
 
-              <template #item.edit="{ item }">
-                <v-row class="m-0 p-0">
-                  <TravelDeskHotelEditDialog
-                    v-if="!readonly"
-                    type="Edit"
-                    :min-date="minDate"
-                    :max-date="maxDate"
-                    :flight-requests="flightRequests"
-                    :hotel-request="item"
-                    @updateTable="updateTable"
-                  />
+              <template #item.actions="{ item }">
+                <div class="d-flex justify-end">
                   <v-btn
-                    v-if="!readonly"
-                    style="min-width: 0"
-                    color="transparent"
-                    class="px-1 pt-2"
-                    small
-                    @click="removeHotel(item)"
-                    ><v-icon
-                      class=""
-                      color="red"
-                      >mdi-close</v-icon
-                    >
-                  </v-btn>
-                </v-row>
+                    title="Edit"
+                    icon
+                    color="blue"
+                    @click="showEditDialog(item)"
+                    ><v-icon>mdi-pencil</v-icon></v-btn
+                  >
+                  <v-btn
+                    :loading="isLoading"
+                    title="Delete"
+                    icon
+                    color="red"
+                    @click="deleteHotel(item)"
+                    ><v-icon>mdi-close</v-icon></v-btn
+                  >
+                </div>
               </template>
             </v-data-table>
           </v-col>
@@ -77,128 +76,147 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, ref, toRefs, watch } from "vue"
+import { DateTime } from "luxon"
+import { isNil } from "lodash"
+import { useRoute } from "vue2-helpers/vue-router"
+
+import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
+import useTravelAuthorization from "@/use/use-travel-authorization"
+import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
+import useTravelDeskHotels from "@/use/use-travel-desk-hotels"
+
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelDeskHotelCreateDialog from "@/components/travel-desk-hotels/TravelDeskHotelCreateDialog.vue"
 import TravelDeskHotelEditDialog from "@/components/travel-desk-hotels/TravelDeskHotelEditDialog.vue"
 
-export default {
-  name: "TravelDeskHotelEditTable",
-  components: {
-    TitleCard,
-    TravelDeskHotelCreateDialog,
-    TravelDeskHotelEditDialog,
+const props = defineProps({
+  travelDeskTravelRequestId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    readonly: {
-      type: Boolean,
-      default: false,
-    },
-    hotels: {
-      type: Array,
-      default: () => [],
-    },
-    flightRequests: {
-      type: Array,
-      default: () => [],
-    },
-    authorizedTravel: {
-      type: Object,
-      default: () => null,
-    },
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  data() {
-    return {
-      hotelHeaders: [
-        { text: "Check-in", value: "checkIn", class: "blue-grey lighten-4" },
-        { text: "Check-out", value: "checkOut", class: "blue-grey lighten-4" },
-        { text: "City", value: "city", class: "blue-grey lighten-4", sortable: false },
-        {
-          text: "Conference Hotel?",
-          value: "isDedicatedConferenceHotelAvailable",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Conference/Meeting Name",
-          value: "conferenceName",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Conference/Meeting Hotel",
-          value: "conferenceHotelName",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        {
-          text: "Additional Information",
-          value: "additionalInformation",
-          class: "blue-grey lighten-4",
-          sortable: false,
-        },
-        { text: "", value: "edit", class: "blue-grey lighten-4", width: "4rem", sortable: false },
-      ],
-      hotelRequest: {},
-      tmpId: 1,
-      admin: false,
-      travelerDetails: {},
-      savingData: false,
-      minDate: "",
-      maxDate: "",
-    }
+})
+
+const headers = ref([
+  { text: "Check-in", value: "checkIn", class: "blue-grey lighten-4" },
+  { text: "Check-out", value: "checkOut", class: "blue-grey lighten-4" },
+  { text: "City", value: "city", class: "blue-grey lighten-4", sortable: false },
+  {
+    text: "Conference Hotel?",
+    value: "isDedicatedConferenceHotelAvailable",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  mounted() {
-    this.initForm()
+  {
+    text: "Conference/Meeting Name",
+    value: "conferenceName",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
-  methods: {
-    updateTable(type) {
-      if (type == "Add New") {
-        this.hotelRequest.tmpId = this.tmpId
-        this.hotels.push(JSON.parse(JSON.stringify(this.hotelRequest)))
-        this.tmpId++
-      }
-    },
-
-    initForm() {
-      if (this.authorizedTravel?.startDate && this.authorizedTravel?.endDate) {
-        this.minDate = this.authorizedTravel.startDate.slice(0, 10)
-        this.maxDate = this.authorizedTravel.endDate.slice(0, 10)
-      }
-
-      const hotelRequest = {}
-      hotelRequest.id = null
-      hotelRequest.tmpId = null
-      hotelRequest.checkIn = ""
-      hotelRequest.checkOut = ""
-      hotelRequest.city = ""
-      hotelRequest.isDedicatedConferenceHotelAvailable = true
-      hotelRequest.conferenceName = ""
-      hotelRequest.conferenceHotelName = ""
-      hotelRequest.additionalInformation = ""
-      hotelRequest.status = "Requested"
-
-      this.hotelRequest = hotelRequest
-    },
-
-    editHotel(item) {
-      this.hotelRequest = item
-    },
-
-    removeHotel(item) {
-      console.log(item)
-      let delIndex = -1
-      if (item.id > 0) {
-        delIndex = this.hotels.findIndex((hotel) => hotel.id && hotel.id == item.id)
-      } else {
-        delIndex = this.hotels.findIndex((hotel) => hotel.tmpId && hotel.tmpId == item.tmpId)
-      }
-
-      if (delIndex >= 0) {
-        this.hotels.splice(delIndex, 1)
-      }
-    },
+  {
+    text: "Conference/Meeting Hotel",
+    value: "conferenceHotelName",
+    class: "blue-grey lighten-4",
+    sortable: false,
   },
+  {
+    text: "Additional Information",
+    value: "additionalInformation",
+    class: "blue-grey lighten-4",
+    sortable: false,
+  },
+  {
+    text: "",
+    value: "actions",
+    class: "blue-grey lighten-4",
+    width: "4rem",
+    sortable: false,
+  },
+])
+
+const route = useRoute()
+
+const travelDeskHotelsQuery = computed(() => ({
+  travelRequestId: props.travelDeskTravelRequestId,
+}))
+const { travelDeskHotels, isLoading, refresh } = useTravelDeskHotels(travelDeskHotelsQuery)
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const minDate = computed(() => travelAuthorization.value?.startDate?.slice(0, 10))
+const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
+
+// TODO: maybe make an optimized query that returns the start/end dates?
+const travelDeskFlightRequestsQuery = computed(() => ({
+  travelRequestId: props.travelDeskTravelRequestId,
+  perPage: 1000,
+}))
+const { travelDeskFlightRequests } = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
+const sortedFlightRequestDates = computed(() => {
+  const dates = travelDeskFlightRequests.value.map((flight) => flight.datePreference)
+  dates.sort()
+  return dates
+})
+const flightStart = computed(() => {
+  if (sortedFlightRequestDates.value.length > 0) {
+    return sortedFlightRequestDates.value[0]
+  }
+
+  return null
+})
+const flightEnd = computed(() => {
+  if (sortedFlightRequestDates.value.length > 1) {
+    return sortedFlightRequestDates.value[sortedFlightRequestDates.value.length - 1]
+  }
+
+  return null
+})
+
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditDialog> | null>} */
+const editDialog = ref(null)
+
+function formatDate(date) {
+  return DateTime.fromISO(date, { zone: "utc" }).toFormat("MMM dd yyyy")
+}
+
+function showEditDialog(hotel) {
+  editDialog.value?.show(hotel)
+}
+
+function showEditDialogForRouteQuery() {
+  const hotelId = parseInt(route.query.showHotelEdit)
+  if (isNaN(hotelId)) return
+
+  const hotel = travelDeskHotels.value.find((hotel) => hotel.id === hotelId)
+  if (isNil(hotel)) return
+
+  showEditDialog(hotel)
+}
+
+watch(
+  () => travelDeskHotels.value,
+  (hotels) => {
+    if (hotels.length === 0) return
+
+    showEditDialogForRouteQuery()
+  }
+)
+
+async function deleteHotel(hotel) {
+  if (!confirm("Are you sure you want to remove this hotel?")) return
+
+  try {
+    await travelDeskHotelsApi.delete(hotel.id)
+    await refresh()
+  } catch (error) {
+    console.error(error)
+  }
 }
 </script>
 
