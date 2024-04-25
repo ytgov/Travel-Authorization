@@ -128,8 +128,9 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from "vue"
+import { ref, nextTick, watch, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
+import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
@@ -186,6 +187,18 @@ watch(
   },
   { immediate: true }
 )
+
+watchEffect(() => {
+  if (isNil(hotel.value.checkIn)) {
+    hotel.value.checkIn = props.flightStart
+  }
+})
+
+watchEffect(() => {
+  if (isNil(hotel.value.checkOut)) {
+    hotel.value.checkOut = props.flightEnd
+  }
+})
 
 watch(
   () => showDialog.value,
