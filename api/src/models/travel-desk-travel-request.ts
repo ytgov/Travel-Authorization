@@ -230,7 +230,7 @@ export class TravelDeskTravelRequest extends Model<
     })
     this.hasMany(TravelDeskHotel, {
       as: "hotels",
-      foreignKey: "travelReqestId",
+      foreignKey: "travelRequestId",
     })
     this.hasMany(TravelDeskRentalCar, {
       as: "rentalCars",
