@@ -97,7 +97,7 @@
               <v-text-field
                 v-model="hotel.conferenceHotelName"
                 label="Conference/Meeting Hotel *"
-                rules="[required]"
+                :rules="[required]"
                 outlined
                 required
               />
