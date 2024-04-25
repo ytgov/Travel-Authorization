@@ -156,30 +156,10 @@ const { travelDeskTravelRequest, isLoading, save } =
 const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
 const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travelAuthorization)
 
-const internationalTravel = ref(false)
-
 const savingData = ref(false)
 
 const travelerDetailsFormCard = ref(null)
 const state = reactive({
-  firstNameErr: false,
-  middleNameErr: false,
-  lastNameErr: false,
-  birthDateErr: false,
-  travelAuthErr: false,
-  addressErr: false,
-  cityErr: false,
-  provinceErr: false,
-  postalCodeErr: false,
-  passportNumberErr: false,
-  passportCountryErr: false,
-  businessPhoneErr: false,
-  businessEmailErr: false,
-  travelPhoneErr: false,
-  travelEmailErr: false,
-  flightRequestsErr: false,
-  rentalCarsErr: false,
-  hotelsErr: false,
   otherTransportationErr: false,
 })
 
@@ -240,32 +220,6 @@ async function saveNewTravelRequest(saveType) {
 }
 
 function checkFields() {
-  state.firstNameErr = travelDeskTravelRequest.value.legalFirstName ? false : true
-  state.middleNameErr = false
-  state.lastNameErr = travelDeskTravelRequest.value.legalLastName ? false : true
-  state.birthDateErr = travelDeskTravelRequest.value.birthDate ? false : true
-  state.travelAuthErr = false //this.travelDeskTravelRequest.travelAuth? false:true; TODO: add this in backend
-  state.addressErr = travelDeskTravelRequest.value.strAddress ? false : true
-  state.cityErr = travelDeskTravelRequest.value.city ? false : true
-  state.provinceErr = travelDeskTravelRequest.value.province ? false : true
-  state.postalCodeErr = travelDeskTravelRequest.value.postalCode ? false : true
-  state.passportNumberErr =
-    internationalTravel.value && !travelDeskTravelRequest.value.passportNum ? true : false
-  state.passportCountryErr =
-    internationalTravel.value && !travelDeskTravelRequest.value.passportCountry ? true : false
-  state.businessPhoneErr = travelDeskTravelRequest.value.busPhone ? false : true
-  state.businessEmailErr = travelDeskTravelRequest.value.busEmail ? false : true
-  state.travelPhoneErr =
-    travelDeskTravelRequest.value.travelContact && !travelDeskTravelRequest.value.travelPhone
-      ? true
-      : false //show hint
-  state.travelEmailErr =
-    travelDeskTravelRequest.value.travelContact && !travelDeskTravelRequest.value.travelEmail
-      ? true
-      : false //show hint
-  state.flightRequestsErr = false
-  state.rentalCarsErr = false
-  state.hotelsErr = false
   state.otherTransportationErr = false
 
   if (travelDeskTravelRequest.value.status == "options_provided") {
