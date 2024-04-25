@@ -14,8 +14,8 @@
             :travel-desk-travel-request-id="travelDeskTravelRequestId"
             :min-date="minDate"
             :max-date="maxDate"
-            :flight-start="flightStart"
-            :flight-end="flightEnd"
+            :flight-start="earliestFlightDate"
+            :flight-end="latestFlightDate"
             @created="refresh"
           />
         </div>
@@ -33,8 +33,8 @@
                   ref="editDialog"
                   :min-date="minDate"
                   :max-date="maxDate"
-                  :flight-start="flightStart"
-                  :flight-end="flightEnd"
+                  :flight-start="earliestFlightDate"
+                  :flight-end="latestFlightDate"
                   @saved="refresh"
                 />
               </template>
@@ -192,26 +192,9 @@ const travelDeskFlightRequestsQuery = computed(() => ({
   travelRequestId: props.travelDeskTravelRequestId,
   perPage: 1000,
 }))
-const { travelDeskFlightRequests } = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
-const sortedFlightRequestDates = computed(() => {
-  const dates = travelDeskFlightRequests.value.map((flight) => flight.datePreference)
-  dates.sort()
-  return dates
-})
-const flightStart = computed(() => {
-  if (sortedFlightRequestDates.value.length > 0) {
-    return sortedFlightRequestDates.value[0]
-  }
-
-  return null
-})
-const flightEnd = computed(() => {
-  if (sortedFlightRequestDates.value.length > 1) {
-    return sortedFlightRequestDates.value[sortedFlightRequestDates.value.length - 1]
-  }
-
-  return null
-})
+const { earliestFlightDate, latestFlightDate } = useTravelDeskFlightRequests(
+  travelDeskFlightRequestsQuery
+)
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarEditDialog> | null>} */
 const editDialog = ref(null)
