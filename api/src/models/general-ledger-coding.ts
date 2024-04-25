@@ -101,6 +101,7 @@ GeneralLedgerCoding.init(
   },
   {
     sequelize,
+    paranoid: false,
   }
 )
 

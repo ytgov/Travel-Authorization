@@ -139,6 +139,7 @@ Stop.init(
     sequelize,
     modelName: "Stop",
     tableName: "stops",
+    paranoid: false,
   }
 )
 

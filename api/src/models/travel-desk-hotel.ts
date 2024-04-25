@@ -147,7 +147,6 @@ TravelDeskHotel.init(
   },
   {
     sequelize,
-    paranoid: true, // TODO: remove once is default
   }
 )
 

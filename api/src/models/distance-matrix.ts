@@ -49,6 +49,7 @@ DistanceMatrix.init(
     tableName: "distanceMatrix",
     underscored: false,
     timestamps: false,
+    paranoid: false,
   }
 )
 

@@ -8,10 +8,7 @@ import {
 
 import sequelize from "@/db/db-client"
 
-export class Location extends Model<
-  InferAttributes<Location>,
-  InferCreationAttributes<Location>
-> {
+export class Location extends Model<InferAttributes<Location>, InferCreationAttributes<Location>> {
   declare id: CreationOptional<number>
   declare province: string
   declare city: string
@@ -50,6 +47,7 @@ Location.init(
     sequelize,
     modelName: "Location",
     tableName: "locations",
+    paranoid: false,
   }
 )
 export default Location

@@ -263,6 +263,7 @@ TravelSegment.init(
   },
   {
     sequelize,
+    paranoid: false,
     validate: {
       modeOfTransportOtherConsistency() {
         if (this.modeOfTransportOther !== null && this.modeOfTransport !== TravelMethods.OTHER) {

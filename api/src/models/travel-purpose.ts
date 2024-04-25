@@ -45,6 +45,7 @@ TravelPurpose.init(
     sequelize,
     tableName: "travel_purposes",
     modelName: "TravelPurpose",
+    paranoid: false,
   }
 )
 

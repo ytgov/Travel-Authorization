@@ -379,6 +379,7 @@ TravelDeskTravelRequest.init(
     sequelize,
     modelName: "TravelDeskTravelRequest",
     tableName: "travel_desk_travel_requests",
+    paranoid: false,
     validate: {
       allInternationalTravelFieldsOrNone() {
         if (
