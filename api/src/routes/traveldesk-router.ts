@@ -46,7 +46,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
   for (const travelRequest of travelRequests) {
     const traveRequestId = travelRequest.id
 
-    // @ts-ignore - not worth fixing at this time, belongs in a serializer
+    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
     delete travelRequest.travelAuthorization
 
@@ -57,7 +57,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     const otherTransportations = await dbLegacy("travelDeskOtherTransportation")
       .select("*")
       .where("requestID", traveRequestId)
-    // @ts-ignore - not worth fixing at this time, belongs in a serializer
+    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.otherTransportation = otherTransportations
 
     const questions = await dbLegacy("travelDeskQuestion")
@@ -66,10 +66,10 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     for (const question of questions) {
       question.state = { questionErr: false, responseErr: false }
     }
-    // @ts-ignore - not worth fixing at this time, belongs in a serializer
+    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.questions = questions
 
-    // @ts-ignore - not worth fixing at this time, belongs in a serializer
+    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.invoiceNumber =
       travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
   }
@@ -102,16 +102,16 @@ travelDeskRouter.get(
         const earliestStop = minBy(stops, (stop) => {
           return `${stop.departureDate} ${stop.departureTime}`
         })
-        // @ts-ignore - this code is deprecated so not worth fixing the type issues
+        // @ts-expect-error - this code is deprecated so not worth fixing the type issues
         form.departureDate = earliestStop?.departureDate || "Unknown"
-        // @ts-ignore - this code is deprecated so not worth fixing the type issues
+        // @ts-expect-error - this code is deprecated so not worth fixing the type issues
         form.departureTime = earliestStop?.departureTime || "Unknown"
 
-        // @ts-ignore - isn't worth fixing at this time
+        // @ts-expect-error - isn't worth fixing at this time
         form.travelRequest = form.travelDeskTravelRequest
         delete form.travelDeskTravelRequest
 
-        // @ts-ignore - isn't worth fixing at this time
+        // @ts-expect-error - isn't worth fixing at this time
         const travelDeskTravelRequestId = form.travelRequest?.id
         if (travelDeskTravelRequestId) {
           const travelDeskPnrDocument = await TravelDeskPassengerNameRecordDocument.findOne({
@@ -119,7 +119,7 @@ travelDeskRouter.get(
             where: { travelDeskTravelRequestId },
           })
 
-          // @ts-ignore - isn't worth fixing at this time
+          // @ts-expect-error - isn't worth fixing at this time
           form.travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
         }
       }
@@ -301,7 +301,7 @@ travelDeskRouter.get(
           flightOption.flightSegments = flightSegments
           flightOption.state = { costErr: false, legErr: false }
         }
-        // @ts-ignore - not worth fixing at this time
+        // @ts-expect-error - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
       res.status(200).json(flightRequests)
@@ -439,20 +439,20 @@ travelDeskRouter.get(
           flightOption.flightSegments = flightSegments
           flightOption.state = { costErr: false, legErr: false }
         }
-        // @ts-ignore - not worth fixing at this time
+        // @ts-expect-error - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
 
       const hotels = await dbLegacy("travelDeskHotel")
         .select("*")
         .where("requestID", travelRequestId)
-      // @ts-ignore - not worth fixing at this time
+      // @ts-expect-error - not worth fixing at this time
       travelRequest.hotels = hotels
 
       const otherTransportation = await dbLegacy("travelDeskOtherTransportation")
         .select("*")
         .where("requestID", travelRequestId)
-      // @ts-ignore - not worth fixing at this time
+      // @ts-expect-error - not worth fixing at this time
       travelRequest.otherTransportation = otherTransportation
 
       const questions = await dbLegacy("travelDeskQuestion")
@@ -461,10 +461,10 @@ travelDeskRouter.get(
       for (const question of questions) {
         question.state = { questionErr: false, responseErr: false }
       }
-      // @ts-ignore - not worth fixing at this time
+      // @ts-expect-error - not worth fixing at this time
       travelRequest.questions = questions
 
-      // @ts-ignore - not worth fixing at this time
+      // @ts-expect-error - not worth fixing at this time
       travelRequest.invoiceNumber =
         travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
       delete travelRequest.travelDeskPassengerNameRecordDocument
