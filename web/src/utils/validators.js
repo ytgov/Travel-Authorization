@@ -1,6 +1,18 @@
 // TODO: replace this with a standard validation library
 
-export const required = (v) => !!v || "This field is required"
+import { isArray, isEmpty, isString, isNull, isObject, isUndefined } from "lodash"
+
+export const required = (v) => {
+  if (isNull(v) || isUndefined(v)) {
+    return "This field is required"
+  }
+
+  if ((isArray(v) || isString(v) || isObject(v)) && isEmpty(v)) {
+    return "This field is required"
+  }
+
+  return true
+}
 
 export const isInteger = (v) =>
   v == 0 || Number.isInteger(Number(v)) || "This field must be a number"
