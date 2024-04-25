@@ -11,6 +11,7 @@ import {
 import {
   TravelAuthorization,
   TravelDeskFlightRequest,
+  TravelDeskHotel,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,
@@ -31,6 +32,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     },
     include: [
       "flightRequests",
+      "hotels",
       "rentalCars",
       {
         association: "travelAuthorization",
@@ -49,10 +51,6 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
     delete travelRequest.travelAuthorization
-
-    const hotels = await dbLegacy("travelDeskHotel").select("*").where("requestID", traveRequestId)
-    // @ts-ignore - not worth fixing at this time, belongs in a serializer
-    travelRequest.hotels = hotels
 
     const otherTransportations = await dbLegacy("travelDeskOtherTransportation")
       .select("*")
@@ -405,6 +403,7 @@ travelDeskRouter.get(
       where: { travelAuthorizationId },
       include: [
         "flightRequests",
+        "hotels",
         "rentalCars",
         {
           association: "travelDeskPassengerNameRecordDocument",
@@ -442,12 +441,6 @@ travelDeskRouter.get(
         // @ts-expect-error - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
-
-      const hotels = await dbLegacy("travelDeskHotel")
-        .select("*")
-        .where("requestID", travelRequestId)
-      // @ts-expect-error - not worth fixing at this time
-      travelRequest.hotels = hotels
 
       const otherTransportation = await dbLegacy("travelDeskOtherTransportation")
         .select("*")
@@ -579,13 +572,19 @@ travelDeskRouter.post(
           }
 
           //Hotels
-          await dbLegacy("travelDeskHotel").delete().where("requestID", travelRequest.id)
+          await TravelDeskHotel.destroy({
+            where: { requestID: travelRequest.id },
+            transaction: sequelizeTransaction,
+          })
 
           for (const hotel of hotels) {
             delete hotel.tmpId
-            if (hotel.hotelID == null) delete hotel.hotelID
+            if (hotel.hotelID == null) {
+              delete hotel.hotelID
+            }
             hotel.requestID = travelRequest.id
-            await dbLegacy("travelDeskHotel").insert(hotel)
+
+            await TravelDeskHotel.create(hotel, { transaction: sequelizeTransaction })
           }
 
           //Other Transportations
