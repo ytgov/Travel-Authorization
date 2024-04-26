@@ -16,22 +16,26 @@
 
         <div style="border: 1px #ddd solid">
           <v-tabs>
+            <!-- TODO: investigate if I should refresh other tabs -->
             <DetailsTab :travel-authorization-id="travelAuthorizationId" />
             <EstimateTab :travel-authorization-id="travelAuthorizationId" />
-            <RequestTab :travel-authorization-id="travelAuthorizationId" />
+            <RequestTab
+              ref="requestTab"
+              :travel-authorization-id="travelAuthorizationId"
+            />
             <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
             <!-- TODO: add in any tabs that you can normally see in read-only mode -->
           </v-tabs>
         </div>
 
-        <router-view></router-view>
+        <router-view @state-changed="refreshTabs"></router-view>
       </v-card-text>
     </v-card>
   </div>
 </template>
 
 <script setup>
-import { toRefs } from "vue"
+import { ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import useCurrentUser from "@/use/use-current-user"
@@ -58,4 +62,11 @@ const { currentUser } = useCurrentUser()
 
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+/** @type {import("vue").Ref<InstanceType<typeof RequestTab> | null>} */
+const requestTab = ref(null)
+
+function refreshTabs() {
+  requestTab.value?.refresh()
+}
 </script>

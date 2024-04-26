@@ -240,6 +240,7 @@ export function useTravelAuthorization(travelAuthorizationId) {
     lastStop,
     // methods
     fetch,
+    refresh: fetch,
     save,
     saveSilently,
     create,

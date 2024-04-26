@@ -150,6 +150,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["state-changed"])
+
 const { travelDeskTravelRequestId } = toRefs(props)
 const { travelDeskTravelRequest, isLoading, save, submit } =
   useTravelDeskTravelRequest(travelDeskTravelRequestId)
@@ -207,6 +209,7 @@ async function submitAndNotify() {
 
   try {
     await submit()
+    emit("state-changed")
     snack("Request submitted.", { color: "success" })
     router.push({
       name: "MyTravelRequestsRequestReadPage",

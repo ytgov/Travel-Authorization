@@ -57,7 +57,7 @@ const props = defineProps({
 })
 
 const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization, STATUSES } = useTravelAuthorization(travelAuthorizationId)
+const { travelAuthorization, STATUSES, refresh } = useTravelAuthorization(travelAuthorizationId)
 // TODO: lock on denied states.
 const isWaitingForApproval = computed(
   () =>
@@ -81,5 +81,9 @@ const componentName = computed(() => {
   } else {
     return "MyTravelRequestsRequestReadPage"
   }
+})
+
+defineExpose({
+  refresh,
 })
 </script>
