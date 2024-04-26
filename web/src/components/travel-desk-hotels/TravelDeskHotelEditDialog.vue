@@ -15,7 +15,10 @@
 
         <v-card-text>
           <v-row class="mt-5 mx-3">
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <v-text-field
                 v-model="hotel.checkIn"
                 label="Check-in Date *"
@@ -62,7 +65,10 @@
                 ></v-radio>
               </v-radio-group>
             </v-col>
-            <v-col cols="8">
+            <v-col
+              cols="12"
+              md="8"
+            >
               <v-textarea
                 v-model="hotel.additionalInformation"
                 label="Additional Information"
@@ -74,7 +80,10 @@
           </v-row>
 
           <v-row class="mt-0 mx-3">
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <v-text-field
                 v-model="hotel.conferenceName"
                 :rules="[required]"
@@ -83,7 +92,10 @@
                 required
               />
             </v-col>
-            <v-col cols="8">
+            <v-col
+              cols="12"
+              md="8"
+            >
               <v-text-field
                 v-model="hotel.conferenceHotelName"
                 label="Conference/Meeting Hotel *"
