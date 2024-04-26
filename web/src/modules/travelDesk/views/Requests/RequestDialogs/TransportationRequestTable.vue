@@ -138,7 +138,7 @@ export default {
       }
 
       const otherTransportationRequest = {}
-      otherTransportationRequest.transportationID = null
+      otherTransportationRequest.id = null
       otherTransportationRequest.tmpId = null
       otherTransportationRequest.transportationType = ""
       otherTransportationRequest.depart = ""
@@ -157,11 +157,9 @@ export default {
     removeOtherTransportation(item) {
       console.log(item)
       let delIndex = -1
-      if (item.transportationID > 0) {
+      if (item.id > 0) {
         delIndex = this.otherTransportations.findIndex(
-          (otherTransportation) =>
-            otherTransportation.transportationID &&
-            otherTransportation.transportationID == item.transportationID
+          (otherTransportation) => otherTransportation.id && otherTransportation.id == item.id
         )
       } else {
         delIndex = this.otherTransportations.findIndex(

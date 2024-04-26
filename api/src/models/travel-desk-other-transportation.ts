@@ -42,7 +42,7 @@ export class TravelDeskOtherTransportation extends Model<
   static readonly Statuses = TravelDeskOtherTransportationStatuses
   static readonly TransportationTypes = TransportationTypes
 
-  declare transportationID: CreationOptional<number>
+  declare id: CreationOptional<number>
   declare requestID: ForeignKey<TravelDeskTravelRequest["id"]>
   declare depart: string
   declare arrive: string
@@ -77,8 +77,7 @@ export class TravelDeskOtherTransportation extends Model<
 
 TravelDeskOtherTransportation.init(
   {
-    transportationID: {
-      field: "transportationID",
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

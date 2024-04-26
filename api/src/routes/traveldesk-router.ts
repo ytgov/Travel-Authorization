@@ -590,8 +590,9 @@ travelDeskRouter.post(
 
           for (const otherTransportation of otherTransportations) {
             delete otherTransportation.tmpId
-            if (otherTransportation.transportationID == null)
-              delete otherTransportation.transportationID
+            if (otherTransportation.id == null) {
+              delete otherTransportation.id
+            }
             otherTransportation.requestID = travelRequest.id
             await TravelDeskOtherTransportation.create(otherTransportation, {
               transaction: sequelizeTransaction,
