@@ -28,6 +28,7 @@ import sequelize from "@/db/db-client"
 import TravelAuthorization from "@/models/travel-authorization"
 import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
 import TravelDeskHotel from "@/models/travel-desk-hotel"
+import TravelDeskOtherTransportation from "@/models/travel-desk-other-transportation"
 import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
 import TravelDeskRentalCar from "@/models/travel-desk-rental-car"
 import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
@@ -158,6 +159,38 @@ export class TravelDeskTravelRequest extends Model<
   declare countHotels: HasManyCountAssociationsMixin
   declare createHotel: HasManyCreateAssociationMixin<TravelDeskHotel>
 
+  declare getOtherTransportations: HasManyGetAssociationsMixin<TravelDeskOtherTransportation>
+  declare setOtherTransportations: HasManySetAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["requestID"]
+  >
+  declare hasOtherTransportation: HasManyHasAssociationMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["requestID"]
+  >
+  declare hasOtherTransportations: HasManyHasAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["requestID"]
+  >
+  declare addOtherTransportation: HasManyAddAssociationMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["requestID"]
+  >
+  declare addOtherTransportations: HasManyAddAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["requestID"]
+  >
+  declare removeOtherTransportation: HasManyRemoveAssociationMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["requestID"]
+  >
+  declare removeOtherTransportations: HasManyRemoveAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["requestID"]
+  >
+  declare countOtherTransportations: HasManyCountAssociationsMixin
+  declare createOtherTransportation: HasManyCreateAssociationMixin<TravelDeskOtherTransportation>
+
   declare getRentalCars: HasManyGetAssociationsMixin<TravelDeskRentalCar>
   declare setRentalCars: HasManySetAssociationsMixin<
     TravelDeskRentalCar,
@@ -195,6 +228,7 @@ export class TravelDeskTravelRequest extends Model<
   declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
   declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
   declare hotels?: NonAttribute<TravelDeskHotel[]>
+  declare otherTransportations?: NonAttribute<TravelDeskOtherTransportation[]>
   declare rentalCars?: NonAttribute<TravelDeskRentalCar[]>
 
   declare static associations: {
@@ -202,6 +236,7 @@ export class TravelDeskTravelRequest extends Model<
     hotels: Association<TravelDeskTravelRequest, TravelDeskHotel>
     rentalCars: Association<TravelDeskTravelRequest, TravelDeskRentalCar>
     travelAuthorization: Association<TravelDeskTravelRequest, TravelAuthorization>
+    otherTransportations: Association<TravelDeskTravelRequest, TravelDeskOtherTransportation>
     travelDeskPassengerNameRecordDocument: Association<
       TravelDeskTravelRequest,
       TravelDeskPassengerNameRecordDocument
@@ -231,6 +266,10 @@ export class TravelDeskTravelRequest extends Model<
     this.hasMany(TravelDeskHotel, {
       as: "hotels",
       foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskOtherTransportation, {
+      as: "otherTransportations",
+      foreignKey: "requestID",
     })
     this.hasMany(TravelDeskRentalCar, {
       as: "rentalCars",
