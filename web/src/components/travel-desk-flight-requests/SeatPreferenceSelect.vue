@@ -2,7 +2,7 @@
   <v-select
     :value="value"
     :items="seatPreferences"
-    label="Seat Preference"
+    :label="label"
     v-bind="$attrs"
     @input="emit('input', $event)"
     v-on="$listeners"
@@ -16,6 +16,10 @@ defineProps({
   value: {
     type: String,
     default: () => null,
+  },
+  label: {
+    type: String,
+    default: "Seat Preference",
   },
 })
 

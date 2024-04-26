@@ -1,7 +1,7 @@
 <template>
   <v-select
     :value="value"
-    label="Request Type"
+    :label="label"
     :items="transportationTypes"
     v-bind="$attrs"
     @input="emit('input', $event)"
@@ -16,6 +16,10 @@ defineProps({
   value: {
     type: String,
     default: () => null,
+  },
+  label: {
+    type: String,
+    default: "Request Type",
   },
 })
 
