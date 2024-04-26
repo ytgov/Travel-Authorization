@@ -12,6 +12,7 @@ import {
   TravelAuthorization,
   TravelDeskFlightRequest,
   TravelDeskHotel,
+  TravelDeskOtherTransportation,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,
@@ -21,6 +22,7 @@ import {
 import db from "@/db/db-client"
 import dbLegacy from "@/db/db-client-legacy"
 
+/** @deprecated - prefer using controller pattern with per-model CRUD actions */
 export const travelDeskRouter = express.Router()
 
 travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Response) {
@@ -33,6 +35,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     include: [
       "flightRequests",
       "hotels",
+      "otherTransportations",
       "rentalCars",
       {
         association: "travelAuthorization",
@@ -51,12 +54,6 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
     delete travelRequest.travelAuthorization
-
-    const otherTransportations = await dbLegacy("travelDeskOtherTransportation")
-      .select("*")
-      .where("requestID", traveRequestId)
-    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
-    travelRequest.otherTransportation = otherTransportations
 
     const questions = await dbLegacy("travelDeskQuestion")
       .select("*")
@@ -404,6 +401,7 @@ travelDeskRouter.get(
       include: [
         "flightRequests",
         "hotels",
+        "otherTransportations",
         "rentalCars",
         {
           association: "travelDeskPassengerNameRecordDocument",
@@ -442,12 +440,6 @@ travelDeskRouter.get(
         flightRequest.flightOptions = flightOptions
       }
 
-      const otherTransportation = await dbLegacy("travelDeskOtherTransportation")
-        .select("*")
-        .where("requestID", travelRequestId)
-      // @ts-expect-error - not worth fixing at this time
-      travelRequest.otherTransportation = otherTransportation
-
       const questions = await dbLegacy("travelDeskQuestion")
         .select("*")
         .where("requestID", travelRequestId)
@@ -471,6 +463,9 @@ travelDeskRouter.post(
   "/travel-request/:travelAuthorizationId",
   RequiresAuth,
   async function (req: Request, res: Response) {
+    console.warn(
+      "Deprecated: travel requests are now created during TravelAuthorization approval service action."
+    )
     const sequelizeTransaction = await db.transaction()
     try {
       await dbLegacy.transaction(async (trx) => {
@@ -588,16 +583,19 @@ travelDeskRouter.post(
           }
 
           //Other Transportations
-          await dbLegacy("travelDeskOtherTransportation")
-            .delete()
-            .where("requestID", travelRequest.id)
+          await TravelDeskOtherTransportation.destroy({
+            where: { requestID: travelRequest.id },
+            transaction: sequelizeTransaction,
+          })
 
           for (const otherTransportation of otherTransportations) {
             delete otherTransportation.tmpId
             if (otherTransportation.transportationID == null)
               delete otherTransportation.transportationID
             otherTransportation.requestID = travelRequest.id
-            await dbLegacy("travelDeskOtherTransportation").insert(otherTransportation)
+            await TravelDeskOtherTransportation.create(otherTransportation, {
+              transaction: sequelizeTransaction,
+            })
           }
 
           //Questions

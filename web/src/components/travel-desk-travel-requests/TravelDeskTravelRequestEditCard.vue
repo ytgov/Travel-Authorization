@@ -98,7 +98,7 @@
               <TransportationRequestTable
                 :authorized-travel="travelAuthorization"
                 :readonly="false"
-                :other-transportations="travelDeskTravelRequest.otherTransportation"
+                :other-transportations="travelDeskTravelRequest.otherTransportations"
               />
             </template>
           </TitleCard>
