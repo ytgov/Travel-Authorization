@@ -57,6 +57,7 @@
                         :travel-desk-travel-request-id="travelDeskTravelRequestId"
                         :travel-authorization-id="travelAuthorizationId"
                         class="borderless-card"
+                        @updated="refreshTablesUsingFlightInfo"
                       />
                     </v-col>
                   </v-row>
@@ -85,10 +86,12 @@
               </TitleCard>
 
               <TravelDeskRentalCarsEditTable
+                ref="travelDeskRentalCarsEditTable"
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
               <TravelDeskHotelEditTable
+                ref="travelDeskHotelEditTable"
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
@@ -158,7 +161,13 @@ const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travel
 
 const savingData = ref(false)
 
+/** @type {import("vue").Ref<InstanceType<typeof TravelerDetailsFormCard> | null>} */
 const travelerDetailsFormCard = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarsEditTable> | null>} */
+const travelDeskRentalCarsEditTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditTable> | null>} */
+const travelDeskHotelEditTable = ref(null)
+
 const state = reactive({
   otherTransportationErr: false,
 })
@@ -171,6 +180,11 @@ function initStates() {
   for (const key of Object.keys(state)) {
     state[key] = false
   }
+}
+
+function refreshTablesUsingFlightInfo() {
+  travelDeskRentalCarsEditTable.value?.refresh()
+  travelDeskHotelEditTable.value?.refresh()
 }
 
 const snack = useSnack()

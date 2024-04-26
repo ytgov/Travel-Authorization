@@ -8,7 +8,7 @@
         :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :min-date="minDate"
         :max-date="maxDate"
-        @created="refresh"
+        @created="refreshAndEmitUpdated"
       />
     </div>
     <v-row class="mb-3 mx-0">
@@ -25,7 +25,7 @@
               ref="editDialog"
               :min-date="minDate"
               :max-date="maxDate"
-              @saved="refresh"
+              @saved="refreshAndEmitUpdated"
             />
           </template>
           <template #item.datePreference="{ value }">
@@ -80,6 +80,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emit = defineEmits(["updated"])
 
 const headers = [
   {
@@ -165,6 +167,11 @@ async function deleteFlightRequest(flightRequest) {
   } catch (error) {
     console.error(error)
   }
+}
+
+function refreshAndEmitUpdated() {
+  refresh()
+  emit("updated")
 }
 </script>
 

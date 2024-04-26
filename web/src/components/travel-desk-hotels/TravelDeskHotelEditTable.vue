@@ -157,9 +157,11 @@ const travelDeskFlightRequestsQuery = computed(() => ({
   travelRequestId: props.travelDeskTravelRequestId,
   perPage: 1000,
 }))
-const { earliestFlightDate, latestFlightDate } = useTravelDeskFlightRequests(
-  travelDeskFlightRequestsQuery
-)
+const {
+  earliestFlightDate,
+  latestFlightDate,
+  refresh: refreshFlightRequests,
+} = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditDialog> | null>} */
 const editDialog = ref(null)
@@ -201,6 +203,10 @@ async function deleteHotel(hotel) {
     console.error(error)
   }
 }
+
+defineExpose({
+  refresh: refreshFlightRequests,
+})
 </script>
 
 <style scoped></style>
