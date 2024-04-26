@@ -43,7 +43,7 @@ export class TravelDeskOtherTransportation extends Model<
   static readonly TransportationTypes = TransportationTypes
 
   declare id: CreationOptional<number>
-  declare requestID: ForeignKey<TravelDeskTravelRequest["id"]>
+  declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare depart: string
   declare arrive: string
   declare transportationType: CreationOptional<string | null>
@@ -86,11 +86,9 @@ TravelDeskOtherTransportation.init(
       autoIncrement: true,
       allowNull: false,
     },
-    requestID: {
-      field: "requestID",
+    travelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      // foreign key reference doesn't exist in database yet
       references: {
         model: TravelDeskTravelRequest,
         key: "id",

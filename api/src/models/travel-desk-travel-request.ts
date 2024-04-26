@@ -162,31 +162,31 @@ export class TravelDeskTravelRequest extends Model<
   declare getOtherTransportations: HasManyGetAssociationsMixin<TravelDeskOtherTransportation>
   declare setOtherTransportations: HasManySetAssociationsMixin<
     TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["requestID"]
+    TravelDeskOtherTransportation["travelRequestId"]
   >
   declare hasOtherTransportation: HasManyHasAssociationMixin<
     TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["requestID"]
+    TravelDeskOtherTransportation["travelRequestId"]
   >
   declare hasOtherTransportations: HasManyHasAssociationsMixin<
     TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["requestID"]
+    TravelDeskOtherTransportation["travelRequestId"]
   >
   declare addOtherTransportation: HasManyAddAssociationMixin<
     TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["requestID"]
+    TravelDeskOtherTransportation["travelRequestId"]
   >
   declare addOtherTransportations: HasManyAddAssociationsMixin<
     TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["requestID"]
+    TravelDeskOtherTransportation["travelRequestId"]
   >
   declare removeOtherTransportation: HasManyRemoveAssociationMixin<
     TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["requestID"]
+    TravelDeskOtherTransportation["travelRequestId"]
   >
   declare removeOtherTransportations: HasManyRemoveAssociationsMixin<
     TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["requestID"]
+    TravelDeskOtherTransportation["travelRequestId"]
   >
   declare countOtherTransportations: HasManyCountAssociationsMixin
   declare createOtherTransportation: HasManyCreateAssociationMixin<TravelDeskOtherTransportation>
@@ -269,7 +269,7 @@ export class TravelDeskTravelRequest extends Model<
     })
     this.hasMany(TravelDeskOtherTransportation, {
       as: "otherTransportations",
-      foreignKey: "requestID",
+      foreignKey: "travelRequestId",
     })
     this.hasMany(TravelDeskRentalCar, {
       as: "rentalCars",
