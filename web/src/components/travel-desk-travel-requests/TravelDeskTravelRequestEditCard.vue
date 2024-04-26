@@ -95,10 +95,9 @@
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
-              <TransportationRequestTable
-                :authorized-travel="travelAuthorization"
-                :readonly="false"
-                :other-transportations="travelDeskTravelRequest.otherTransportations"
+              <TravelDeskOtherTransportationEditTable
+                :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                :travel-authorization-id="travelAuthorizationId"
               />
             </template>
           </TitleCard>
@@ -138,10 +137,10 @@ import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
 
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
 import TravelDeskHotelEditTable from "@/components/travel-desk-hotels/TravelDeskHotelEditTable.vue"
+import TravelDeskOtherTransportationEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationEditTable.vue"
 import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 
@@ -157,7 +156,6 @@ const { travelDeskTravelRequest, isLoading, save } =
   useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
 const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
-const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travelAuthorization)
 
 const savingData = ref(false)
 
