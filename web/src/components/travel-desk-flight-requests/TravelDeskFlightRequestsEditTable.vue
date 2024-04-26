@@ -8,7 +8,7 @@
         :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :min-date="minDate"
         :max-date="maxDate"
-        @created="refresh"
+        @created="refreshAndEmitUpdated"
       />
     </div>
     <v-row class="mb-3 mx-0">
@@ -25,7 +25,7 @@
               ref="editDialog"
               :min-date="minDate"
               :max-date="maxDate"
-              @saved="refresh"
+              @saved="refreshAndEmitUpdated"
             />
           </template>
           <template #item.datePreference="{ value }">
@@ -63,6 +63,7 @@ import { ref, computed, toRefs, watch } from "vue"
 import { useRoute } from "vue2-helpers/vue-router"
 import { DateTime } from "luxon"
 
+import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
@@ -80,6 +81,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emit = defineEmits(["updated"])
 
 const headers = [
   {
@@ -157,7 +160,7 @@ watch(
 )
 
 async function deleteFlightRequest(flightRequest) {
-  if (!confirm("Are you sure you want to remove this flight request?")) return
+  if (!blockedToTrueConfirm("Are you sure you want to remove this flight request?")) return
 
   try {
     await travelDeskFlightRequestsApi.delete(flightRequest.id)
@@ -165,6 +168,11 @@ async function deleteFlightRequest(flightRequest) {
   } catch (error) {
     console.error(error)
   }
+}
+
+function refreshAndEmitUpdated() {
+  refresh()
+  emit("updated")
 }
 </script>
 

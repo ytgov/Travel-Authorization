@@ -1,4 +1,4 @@
-import { reactive, toRefs, ref, unref, watch } from "vue"
+import { computed, reactive, toRefs, ref, unref, watch } from "vue"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 
@@ -54,6 +54,33 @@ export function useTravelDeskFlightRequests(options = ref({}), { skipWatchIf = (
     }
   }
 
+  /**
+   * Assumes flights are returned in sorted order from back-end.
+   * TODO: move to back-end to handle paginated date
+   * Could use a special endpoint, or the ability to pass ordering to the back-end.
+   */
+  const earliestFlightDate = computed(() => {
+    if (state.travelDeskFlightRequests.length > 0) {
+      const earliestFlight = state.travelDeskFlightRequests[0]
+      return earliestFlight.datePreference
+    }
+
+    return null
+  })
+  /**
+   * Assumes flights are returned in sorted order from back-end.
+   * TODO: move to back-end to handle paginated date
+   * Could use a special endpoint, or the ability to pass ordering to the back-end.
+   */
+  const latestFlightDate = computed(() => {
+    if (state.travelDeskFlightRequests.length > 1) {
+      const latestFlight = state.travelDeskFlightRequests[state.travelDeskFlightRequests.length - 1]
+      return latestFlight.datePreference
+    }
+
+    return null
+  })
+
   watch(
     () => unref(options),
     async () => {
@@ -66,6 +93,8 @@ export function useTravelDeskFlightRequests(options = ref({}), { skipWatchIf = (
 
   return {
     ...toRefs(state),
+    earliestFlightDate,
+    latestFlightDate,
     fetch,
     refresh: fetch,
   }

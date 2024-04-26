@@ -1,43 +1,39 @@
 import db from "@/db/db-client"
 
-import Stop from "./stop"
 import Expense from "./expense"
 import GeneralLedgerCoding from "./general-ledger-coding"
+import Stop from "./stop"
 import TravelAuthorization from "./travel-authorization"
 import TravelAuthorizationActionLog from "./travel-authorization-action-log"
-import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
-import TravelDeskTravelRequest from "./travel-desk-travel-request"
-import User from "./user"
-import TravelSegment from "./travel-segment"
 import TravelAuthorizationPreApproval from "./travel-authorization-pre-approval"
+import TravelAuthorizationPreApprovalDocument from "./travel-authorization-pre-approval-document"
 import TravelAuthorizationPreApprovalProfile from "./travel-authorization-pre-approval-profile"
 import TravelAuthorizationPreApprovalSubmission from "./travel-authorization-pre-approval-submission"
-import TravelAuthorizationPreApprovalDocument from "./travel-authorization-pre-approval-document"
 import TravelDeskFlightRequest from "./travel-desk-flight-request"
+import TravelDeskHotel from "./travel-desk-hotel"
+import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
 import TravelDeskRentalCar from "./travel-desk-rental-car"
+import TravelDeskTravelRequest from "./travel-desk-travel-request"
+import TravelSegment from "./travel-segment"
+import User from "./user"
 
-// Order matters here, though may be somewhat flexible
-Stop.establishAssociations()
 Expense.establishAssociations()
-TravelAuthorization.establishAssociations()
-TravelDeskPassengerNameRecordDocument.establishAssociations()
-TravelDeskTravelRequest.establishAssociations()
-User.establishAssociations()
-TravelAuthorizationActionLog.establishAssociations()
-TravelSegment.establishAssociations()
 GeneralLedgerCoding.establishAssociations()
+Stop.establishAssociations()
+TravelAuthorization.establishAssociations()
+TravelAuthorizationActionLog.establishAssociations()
 TravelAuthorizationPreApproval.establishAssociations()
+TravelAuthorizationPreApprovalDocument.establishAssociations()
 TravelAuthorizationPreApprovalProfile.establishAssociations()
 TravelAuthorizationPreApprovalSubmission.establishAssociations()
-TravelAuthorizationPreApprovalDocument.establishAssociations()
 TravelDeskFlightRequest.establishAssociations()
+TravelDeskHotel.establishAssociations()
+TravelDeskPassengerNameRecordDocument.establishAssociations()
 TravelDeskRentalCar.establishAssociations()
+TravelDeskTravelRequest.establishAssociations()
+TravelSegment.establishAssociations()
+User.establishAssociations()
 
-// Alphabetically - order does not matter
-export { DistanceMatrix } from "./distance-matrix"
-export { Location } from "./location"
-export { PerDiem } from "./per-diem"
-export { TravelPurpose } from "./travel-purpose"
 export {
   Expense,
   GeneralLedgerCoding,
@@ -49,12 +45,17 @@ export {
   TravelAuthorizationPreApprovalProfile,
   TravelAuthorizationPreApprovalSubmission,
   TravelDeskFlightRequest,
+  TravelDeskHotel,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,
   TravelSegment,
   User,
 }
+export { DistanceMatrix } from "./distance-matrix"
+export { Location } from "./location"
+export { PerDiem } from "./per-diem"
+export { TravelPurpose } from "./travel-purpose"
 
 // special db instance that has access to all models.
 export default db

@@ -22,6 +22,7 @@ export class TravelDeskFlightRequestsController extends BaseController {
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
+        order: [["datePreference", "ASC"]],
       })
       return this.response.status(200).json({
         travelDeskFlightRequests,

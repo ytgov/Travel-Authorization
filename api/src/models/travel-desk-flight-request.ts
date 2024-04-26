@@ -127,7 +127,6 @@ TravelDeskFlightRequest.init(
   },
   {
     sequelize,
-    paranoid: true, // TODO: remove once parnoid is default.
   }
 )
 

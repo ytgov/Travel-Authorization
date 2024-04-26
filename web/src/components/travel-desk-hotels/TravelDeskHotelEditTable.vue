@@ -2,14 +2,14 @@
   <div>
     <TitleCard
       class="mt-10 mx-5"
-      title-width="11rem"
+      title-width="8.5rem"
     >
       <template #title>
-        <div>Rental Car Request</div>
+        <div>Hotel Request</div>
       </template>
       <template #body>
         <div class="d-flex justify-end pr-4">
-          <TravelDeskRentalCarCreateDialog
+          <TravelDeskHotelCreateDialog
             class="ml-auto mr-3"
             :travel-desk-travel-request-id="travelDeskTravelRequestId"
             :min-date="minDate"
@@ -23,13 +23,12 @@
           <v-col cols="12">
             <v-data-table
               :headers="headers"
-              :items="travelDeskRentalCars"
-              :loading="isLoading"
+              :items="travelDeskHotels"
               hide-default-footer
               class="elevation-1"
             >
               <template #top>
-                <TravelDeskRentalCarEditDialog
+                <TravelDeskHotelEditDialog
                   ref="editDialog"
                   :min-date="minDate"
                   :max-date="maxDate"
@@ -38,31 +37,16 @@
                   @saved="refresh"
                 />
               </template>
-              <template #item.matchFlightTimes="{ item }">
-                {{ item.matchFlightTimes ? "Yes" : "No" }}
-              </template>
-              <template #item.pickUpLocation="{ item }">
-                <div v-if="item.pickUpLocation === LOCATION_TYPES.OTHER">
-                  {{ item.pickUpLocationOther }}
-                </div>
-                <div v-else>{{ item.pickUpLocation }}</div>
+              <template #item.isDedicatedConferenceHotelAvailable="{ item }">
+                {{ item.isDedicatedConferenceHotelAvailable ? "Yes" : "No" }}
               </template>
 
-              <template #item.dropOffLocation="{ item }">
-                <div
-                  v-if="item.sameDropOffLocation && item.pickUpLocation === LOCATION_TYPES.OTHER"
-                >
-                  {{ item.pickUpLocationOther }}
-                </div>
-                <div v-else-if="item.sameDropOffLocation">{{ item.pickUpLocation }}</div>
-                <div v-else>{{ item.dropOffLocation }}</div>
+              <template #item.checkIn="{ item }">
+                {{ formatDate(item.checkIn) }}
               </template>
 
-              <template #item.pickUpDate="{ value }">
-                {{ formatDate(value) }}
-              </template>
-              <template #item.dropOffDate="{ value }">
-                {{ formatDate(value) }}
+              <template #item.checkOut="{ item }">
+                {{ formatDate(item.checkOut) }}
               </template>
 
               <template #item.actions="{ item }">
@@ -79,7 +63,7 @@
                     title="Delete"
                     icon
                     color="red"
-                    @click="deleteRentalCar(item)"
+                    @click="deleteHotel(item)"
                     ><v-icon>mdi-close</v-icon></v-btn
                   >
                 </div>
@@ -99,14 +83,14 @@ import { isNil } from "lodash"
 import { useRoute } from "vue2-helpers/vue-router"
 
 import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
-import travelDeskRentalCarsApi from "@/api/travel-desk-rental-cars-api"
+import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
-import useTravelDeskRentalCars, { LOCATION_TYPES } from "@/use/use-travel-desk-rental-cars"
+import useTravelDeskHotels from "@/use/use-travel-desk-hotels"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import TravelDeskRentalCarCreateDialog from "@/components/travel-request-rental-cars/TravelDeskRentalCarCreateDialog.vue"
-import TravelDeskRentalCarEditDialog from "@/components/travel-request-rental-cars/TravelDeskRentalCarEditDialog.vue"
+import TravelDeskHotelCreateDialog from "@/components/travel-desk-hotels/TravelDeskHotelCreateDialog.vue"
+import TravelDeskHotelEditDialog from "@/components/travel-desk-hotels/TravelDeskHotelEditDialog.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -120,67 +104,48 @@ const props = defineProps({
 })
 
 const headers = ref([
+  { text: "Check-in", value: "checkIn", class: "blue-grey lighten-4" },
+  { text: "Check-out", value: "checkOut", class: "blue-grey lighten-4" },
+  { text: "City", value: "city", class: "blue-grey lighten-4", sortable: false },
   {
-    text: "Match Flight Times",
-    value: "matchFlightTimes",
+    text: "Conference Hotel?",
+    value: "isDedicatedConferenceHotelAvailable",
     class: "blue-grey lighten-4",
     sortable: false,
   },
   {
-    text: "Pick-Up City",
-    value: "pickUpCity",
+    text: "Conference/Meeting Name",
+    value: "conferenceName",
     class: "blue-grey lighten-4",
     sortable: false,
   },
   {
-    text: "Pick-up Location",
-    value: "pickUpLocation",
+    text: "Conference/Meeting Hotel",
+    value: "conferenceHotelName",
     class: "blue-grey lighten-4",
     sortable: false,
   },
   {
-    text: "Drop-off City",
-    value: "dropOffCity",
+    text: "Additional Information",
+    value: "additionalInformation",
     class: "blue-grey lighten-4",
     sortable: false,
   },
   {
-    text: "Drop-off Location",
-    value: "dropOffLocation",
+    text: "",
+    value: "actions",
     class: "blue-grey lighten-4",
+    width: "4rem",
     sortable: false,
   },
-  { text: "Pick-up Date", value: "pickUpDate", class: "blue-grey lighten-4" },
-  { text: "Drop-off Date", value: "dropOffDate", class: "blue-grey lighten-4" },
-
-  {
-    text: "Vehicle Type",
-    value: "vehicleType",
-    class: "blue-grey lighten-4",
-    sortable: false,
-  },
-  {
-    text: "Reason Change",
-    value: "vehicleChangeRationale",
-    class: "blue-grey lighten-4",
-    sortable: false,
-  },
-  {
-    text: "Additional Notes",
-    value: "additionalNotes",
-    class: "blue-grey lighten-4",
-    sortable: false,
-  },
-  { text: "", value: "actions", class: "blue-grey lighten-4", width: "4rem", sortable: false },
 ])
 
 const route = useRoute()
 
-const travelDeskRentalCarsQuery = computed(() => ({
+const travelDeskHotelsQuery = computed(() => ({
   travelRequestId: props.travelDeskTravelRequestId,
 }))
-const { travelDeskRentalCars, isLoading, refresh } =
-  useTravelDeskRentalCars(travelDeskRentalCarsQuery)
+const { travelDeskHotels, isLoading, refresh } = useTravelDeskHotels(travelDeskHotelsQuery)
 
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
@@ -199,41 +164,41 @@ const {
   refresh: refreshFlightRequests,
 } = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
 
-/** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarEditDialog> | null>} */
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditDialog> | null>} */
 const editDialog = ref(null)
 
 function formatDate(date) {
-  return DateTime.fromISO(date, { zone: "utc" }).toFormat("MMM dd yyyy, HH:mm")
+  return DateTime.fromISO(date, { zone: "utc" }).toFormat("MMM dd yyyy")
 }
 
-function showEditDialog(flightRequest) {
-  editDialog.value?.show(flightRequest)
+function showEditDialog(hotel) {
+  editDialog.value?.show(hotel)
 }
 
 function showEditDialogForRouteQuery() {
-  const rentalCarId = parseInt(route.query.showRentalCarEdit)
-  if (isNaN(rentalCarId)) return
+  const hotelId = parseInt(route.query.showHotelEdit)
+  if (isNaN(hotelId)) return
 
-  const rentalCar = travelDeskRentalCars.value.find((rentalCar) => rentalCar.id === rentalCarId)
-  if (isNil(rentalCar)) return
+  const hotel = travelDeskHotels.value.find((hotel) => hotel.id === hotelId)
+  if (isNil(hotel)) return
 
-  showEditDialog(rentalCar)
+  showEditDialog(hotel)
 }
 
 watch(
-  () => travelDeskRentalCars.value,
-  (rentalCars) => {
-    if (rentalCars.length === 0) return
+  () => travelDeskHotels.value,
+  (hotels) => {
+    if (hotels.length === 0) return
 
     showEditDialogForRouteQuery()
   }
 )
 
-async function deleteRentalCar(flightRequest) {
-  if (!blockedToTrueConfirm("Are you sure you want to remove this rental car?")) return
+async function deleteHotel(hotel) {
+  if (!blockedToTrueConfirm("Are you sure you want to remove this hotel?")) return
 
   try {
-    await travelDeskRentalCarsApi.delete(flightRequest.id)
+    await travelDeskHotelsApi.delete(hotel.id)
     await refresh()
   } catch (error) {
     console.error(error)
