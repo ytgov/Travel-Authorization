@@ -63,6 +63,7 @@ import { ref, computed, toRefs, watch } from "vue"
 import { useRoute } from "vue2-helpers/vue-router"
 import { DateTime } from "luxon"
 
+import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
@@ -159,7 +160,7 @@ watch(
 )
 
 async function deleteFlightRequest(flightRequest) {
-  if (!confirm("Are you sure you want to remove this flight request?")) return
+  if (!blockedToTrueConfirm("Are you sure you want to remove this flight request?")) return
 
   try {
     await travelDeskFlightRequestsApi.delete(flightRequest.id)

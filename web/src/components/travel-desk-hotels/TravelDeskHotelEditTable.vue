@@ -82,6 +82,7 @@ import { DateTime } from "luxon"
 import { isNil } from "lodash"
 import { useRoute } from "vue2-helpers/vue-router"
 
+import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
 import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
@@ -194,7 +195,7 @@ watch(
 )
 
 async function deleteHotel(hotel) {
-  if (!confirm("Are you sure you want to remove this hotel?")) return
+  if (!blockedToTrueConfirm("Are you sure you want to remove this hotel?")) return
 
   try {
     await travelDeskHotelsApi.delete(hotel.id)
