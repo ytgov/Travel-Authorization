@@ -1,7 +1,7 @@
 import http from "@/api/http-client"
 
 /** Keep in sync with api/src/models/travel-desk-hotel.ts */
-export const TRAVEL_DESK_RENTAL_CAR_STATUSES = Object.freeze({
+export const TRAVEL_DESK_HOTEL_STATUSES = Object.freeze({
   REQUESTED: "Requested",
   // TODO: confirm this is correct.
   RESERVED: "Reserved", // Uncofirmed, but seems likely.

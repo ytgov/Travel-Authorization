@@ -1,8 +1,8 @@
 import { reactive, toRefs, ref, unref, watch } from "vue"
 
-import travelDeskHotelsApi, { TRAVEL_DESK_RENTAL_CAR_STATUSES } from "@/api/travel-desk-hotels-api"
+import travelDeskHotelsApi, { TRAVEL_DESK_HOTEL_STATUSES } from "@/api/travel-desk-hotels-api"
 
-export { TRAVEL_DESK_RENTAL_CAR_STATUSES }
+export { TRAVEL_DESK_HOTEL_STATUSES }
 
 /**
  * TODO: add other fields
