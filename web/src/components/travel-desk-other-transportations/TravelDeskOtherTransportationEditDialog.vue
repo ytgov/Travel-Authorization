@@ -10,98 +10,79 @@
     >
       <v-card :loading="isLoading">
         <v-card-title class="blue">
-          <div class="text-h5">Edit Hotel</div>
+          <div class="text-h5">Edit Transportation</div>
         </v-card-title>
 
         <v-card-text>
-          <v-row class="mt-5 mx-3">
+          <v-row class="mt-5 mx-0">
             <v-col
               cols="12"
-              md="4"
+              md="3"
             >
-              <v-text-field
-                v-model="hotel.checkIn"
-                label="Check-in Date *"
-                type="date"
+              <TransportationTypeSelect
+                v-model="otherTransportation.transportationType"
+                label="Request Type *"
                 :rules="[required]"
-                :min="minDate"
-                :max="maxDate"
                 outlined
                 required
               />
-              <v-text-field
-                v-model="hotel.checkOut"
-                label="Check-out Date *"
-                type="date"
-                :rules="[required]"
-                :min="minDate"
-                :max="maxDate"
-                outlined
-                required
-              />
+            </v-col>
+            <v-col
+              class="d-none d-md-block"
+              md="9"
+            ></v-col>
+          </v-row>
+          <v-row class="mt-0 mx-0">
+            <v-col
+              cols="12"
+              md="3"
+            >
               <LocationsAutocomplete
-                v-model="hotel.city"
-                label="City *"
+                v-model="otherTransportation.depart"
+                label="Depart *"
                 item-value="city"
                 :rules="[required]"
                 outlined
                 required
               />
-              <v-radio-group
-                v-model="hotel.isDedicatedConferenceHotelAvailable"
-                label="Conference/Meeting Hotel? *"
-                :rules="[required]"
-                outlined
-                row
-                required
-              >
-                <v-radio
-                  label="Yes"
-                  :value="true"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  :value="false"
-                ></v-radio>
-              </v-radio-group>
             </v-col>
             <v-col
               cols="12"
-              md="8"
+              md="3"
             >
-              <v-textarea
-                v-model="hotel.additionalInformation"
-                label="Additional Information"
-                rows="8"
+              <LocationsAutocomplete
+                v-model="otherTransportation.arrive"
+                label="Arrive *"
+                item-value="city"
+                :rules="[required]"
                 outlined
-                clearable
+                required
               />
             </v-col>
-          </v-row>
-
-          <v-row class="mt-0 mx-3">
+            <v-col
+              cols="12"
+              md="2"
+            >
+              <v-text-field
+                v-model="otherTransportation.date"
+                label="Date *"
+                type="date"
+                :min="minDate"
+                :max="maxDate"
+                :rules="[required]"
+                outlined
+                required
+              />
+            </v-col>
             <v-col
               cols="12"
               md="4"
             >
-              <v-text-field
-                v-model="hotel.conferenceName"
-                :rules="[required]"
-                label="Conference/Meeting Name *"
+              <v-textarea
+                v-model="otherTransportation.additionalNotes"
+                label="Additional Information"
                 outlined
-                required
-              />
-            </v-col>
-            <v-col
-              cols="12"
-              md="8"
-            >
-              <v-text-field
-                v-model="hotel.conferenceHotelName"
-                label="Conference/Meeting Hotel *"
-                :rules="[required]"
-                outlined
-                required
+                clearable
               />
             </v-col>
           </v-row>
@@ -130,17 +111,22 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch, computed } from "vue"
+import { computed, ref, nextTick, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
-import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
+import travelDeskOtherTransportationsApi from "@/api/travel-desk-other-transportations-api"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import TransportationTypeSelect from "@/components/travel-desk-other-transportations/TransportationTypeSelect.vue"
 
 defineProps({
+  travelDeskTravelRequestId: {
+    type: Number,
+    required: true,
+  },
   minDate: {
     type: String,
     default: null,
@@ -149,21 +135,12 @@ defineProps({
     type: String,
     default: null,
   },
-  // TODO: consider computing flightStart/End internally?
-  flightStart: {
-    type: String,
-    default: null,
-  },
-  flightEnd: {
-    type: String,
-    default: null,
-  },
 })
 
 const emit = defineEmits(["saved"])
 
-const hotel = ref({})
-const hotelId = computed(() => hotel.value.id)
+const otherTransportation = ref({})
+const otherTransportationId = computed(() => otherTransportation.value.id)
 
 const snack = useSnack()
 const router = useRouter()
@@ -178,19 +155,19 @@ watch(
   () => showDialog.value,
   (value) => {
     if (value) {
-      if (route.query.showHotelEdit === hotelId.value?.toString()) {
+      if (route.query.showOtherTransportationEdit === otherTransportationId.value?.toString()) {
         return
       }
 
-      router.push({ query: { showHotelEdit: hotelId.value } })
+      router.push({ query: { showOtherTransportationEdit: otherTransportationId.value } })
     } else {
-      router.push({ query: { showHotelEdit: undefined } })
+      router.push({ query: { showOtherTransportationEdit: undefined } })
     }
   }
 )
 
-function show(newHotel) {
-  hotel.value = cloneDeep(newHotel)
+function show(newOtherTransportation) {
+  otherTransportation.value = cloneDeep(newOtherTransportation)
   showDialog.value = true
 }
 
@@ -208,25 +185,26 @@ async function updateAndClose() {
 
   isLoading.value = true
   try {
-    const { travelDeskHotel: newHotel } = await travelDeskHotelsApi.update(
-      hotelId.value,
-      hotel.value
-    )
+    const { travelDeskOtherTransportation: newOtherTransportation } =
+      await travelDeskOtherTransportationsApi.update(
+        otherTransportationId.value,
+        otherTransportation.value
+      )
     close()
 
     await nextTick()
-    emit("saved", newHotel.id)
-    snack("Hotel request saved successfully", { color: "success" })
+    emit("saved", newOtherTransportation.id)
+    snack("Other transportation request saved successfully", { color: "success" })
   } catch (error) {
     console.error(error)
-    snack("Failed to save hotel request", { color: "error" })
+    snack("Failed to save other transportation request", { color: "error" })
   } finally {
     isLoading.value = false
   }
 }
 
 function resetState() {
-  hotel.value = {}
+  otherTransportation.value = {}
 }
 
 defineExpose({
@@ -234,9 +212,4 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
-.label {
-  font-weight: 600;
-  font-size: 10pt !important;
-}
-</style>
+<style scoped lang="css" src="@/styles/_travel_desk.css"></style>

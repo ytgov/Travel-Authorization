@@ -1,8 +1,8 @@
 <template>
   <v-select
     :value="value"
-    :items="seatPreferences"
     :label="label"
+    :items="transportationTypes"
     v-bind="$attrs"
     @input="emit('input', $event)"
     v-on="$listeners"
@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { SEAT_PREFERENCE_TYPES } from "@/api/travel-desk-flight-requests-api"
+import { TRANSPORTATION_TYPES } from "@/api/travel-desk-other-transportations-api"
 
 defineProps({
   value: {
@@ -19,11 +19,11 @@ defineProps({
   },
   label: {
     type: String,
-    default: "Seat Preference",
+    default: "Request Type",
   },
 })
 
 const emit = defineEmits(["input"])
 
-const seatPreferences = Object.values(SEAT_PREFERENCE_TYPES)
+const transportationTypes = Object.values(TRANSPORTATION_TYPES)
 </script>

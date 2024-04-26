@@ -10,7 +10,7 @@
         v-bind="attrs"
         v-on="on"
       >
-        Add Hotel
+        Add Transportation
       </v-btn>
     </template>
 
@@ -20,98 +20,79 @@
     >
       <v-card :loading="isLoading">
         <v-card-title class="blue">
-          <div class="text-h5">Add Hotel</div>
+          <div class="text-h5">Add Transportation</div>
         </v-card-title>
 
         <v-card-text>
-          <v-row class="mt-5 mx-3">
+          <v-row class="mt-5 mx-0">
             <v-col
               cols="12"
-              md="4"
+              md="3"
             >
-              <v-text-field
-                v-model="hotel.checkIn"
-                label="Check-in Date *"
-                type="date"
+              <TransportationTypeSelect
+                v-model="otherTransportation.transportationType"
+                label="Request Type *"
                 :rules="[required]"
-                :min="minDate"
-                :max="maxDate"
                 outlined
                 required
               />
-              <v-text-field
-                v-model="hotel.checkOut"
-                label="Check-out Date *"
-                type="date"
-                :rules="[required]"
-                :min="minDate"
-                :max="maxDate"
-                outlined
-                required
-              />
+            </v-col>
+            <v-col
+              class="d-none d-md-block"
+              md="9"
+            ></v-col>
+          </v-row>
+          <v-row class="mt-0 mx-0">
+            <v-col
+              cols="12"
+              md="3"
+            >
               <LocationsAutocomplete
-                v-model="hotel.city"
-                label="City *"
+                v-model="otherTransportation.depart"
+                label="Depart *"
                 item-value="city"
                 :rules="[required]"
                 outlined
                 required
               />
-              <v-radio-group
-                v-model="hotel.isDedicatedConferenceHotelAvailable"
-                label="Conference/Meeting Hotel? *"
-                :rules="[required]"
-                outlined
-                required
-                row
-              >
-                <v-radio
-                  label="Yes"
-                  :value="true"
-                ></v-radio>
-                <v-radio
-                  label="No"
-                  :value="false"
-                ></v-radio>
-              </v-radio-group>
             </v-col>
             <v-col
               cols="12"
-              md="8"
+              md="3"
             >
-              <v-textarea
-                v-model="hotel.additionalInformation"
-                label="Additional Information"
-                rows="8"
+              <LocationsAutocomplete
+                v-model="otherTransportation.arrive"
+                label="Arrive *"
+                item-value="city"
+                :rules="[required]"
                 outlined
-                clearable
+                required
               />
             </v-col>
-          </v-row>
-
-          <v-row class="mt-0 mx-3">
+            <v-col
+              cols="12"
+              md="2"
+            >
+              <v-text-field
+                v-model="otherTransportation.date"
+                label="Date *"
+                type="date"
+                :min="minDate"
+                :max="maxDate"
+                :rules="[required]"
+                outlined
+                required
+              />
+            </v-col>
             <v-col
               cols="12"
               md="4"
             >
-              <v-text-field
-                v-model="hotel.conferenceName"
-                label="Conference/Meeting Name *"
-                :rules="[required]"
+              <v-textarea
+                v-model="otherTransportation.additionalNotes"
+                label="Additional Information"
                 outlined
-                required
-              />
-            </v-col>
-            <v-col
-              cols="12"
-              md="8"
-            >
-              <v-text-field
-                v-model="hotel.conferenceHotelName"
-                label="Conference/Meeting Hotel *"
-                :rules="[required]"
-                outlined
-                required
+                clearable
               />
             </v-col>
           </v-row>
@@ -140,15 +121,15 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch, watchEffect } from "vue"
+import { ref, nextTick, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
-import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
-import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
+import travelDeskOtherTransportationsApi from "@/api/travel-desk-other-transportations-api"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import TransportationTypeSelect from "@/components/travel-desk-other-transportations/TransportationTypeSelect.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -163,30 +144,18 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  // TODO: consider loading flightStart/End using travelDeskTravelRequestId?
-  flightStart: {
-    type: String,
-    default: null,
-  },
-  flightEnd: {
-    type: String,
-    default: null,
-  },
 })
 
 const emit = defineEmits(["created"])
 
-const hotel = ref({
+const otherTransportation = ref({
   travelRequestId: props.travelDeskTravelRequestId,
-  checkIn: props.flightStart,
-  checkOut: props.flightEnd,
-  isDedicatedConferenceHotelAvailable: true,
 })
 
 const snack = useSnack()
 const router = useRouter()
 const route = useRoute()
-const showDialog = ref(route.query.showHotelCreate === "true")
+const showDialog = ref(route.query.showOtherTransportationCreate === "true")
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
@@ -200,25 +169,13 @@ watch(
   { immediate: true }
 )
 
-watchEffect(() => {
-  if (isNil(hotel.value.checkIn)) {
-    hotel.value.checkIn = props.flightStart
-  }
-})
-
-watchEffect(() => {
-  if (isNil(hotel.value.checkOut)) {
-    hotel.value.checkOut = props.flightEnd
-  }
-})
-
 watch(
   () => showDialog.value,
   (value) => {
     if (value) {
-      router.push({ query: { showHotelCreate: "true" } })
+      router.push({ query: { showOtherTransportationCreate: "true" } })
     } else {
-      router.push({ query: { showHotelCreate: undefined } })
+      router.push({ query: { showOtherTransportationCreate: undefined } })
     }
   }
 )
@@ -237,33 +194,26 @@ async function createAndClose() {
 
   isLoading.value = true
   try {
-    const { travelDeskHotel: newHotel } = await travelDeskHotelsApi.create(hotel.value)
+    const { travelDeskOtherTransportation: newOtherTransportation } =
+      await travelDeskOtherTransportationsApi.create(otherTransportation.value)
     close()
 
     await nextTick()
-    emit("created", newHotel.id)
-    snack("Hotel request created successfully", { color: "success" })
+    emit("created", newOtherTransportation.id)
+    snack("Other transportation request created successfully", { color: "success" })
   } catch (error) {
     console.error(error)
-    snack("Failed to create hotel request", { color: "error" })
+    snack("Failed to create other transportation request", { color: "error" })
   } finally {
     isLoading.value = false
   }
 }
 
 function resetState() {
-  hotel.value = {
+  otherTransportation.value = {
     travelRequestId: props.travelDeskTravelRequestId,
-    checkIn: props.flightStart,
-    checkOut: props.flightEnd,
-    isDedicatedConferenceHotelAvailable: true,
   }
 }
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
-.label {
-  font-weight: 600;
-  font-size: 10pt !important;
-}
-</style>
+<style scoped lang="css" src="@/styles/_travel_desk.css"></style>

@@ -21,6 +21,8 @@ import {
   TravelDeskFlightRequestsController,
   TravelDeskRentalCarsController,
   TravelDeskHotelsController,
+  TravelDeskOtherTransportationsController,
+  TravelDeskTravelRequests,
 } from "@/controllers"
 import { healthCheckRouter } from "./healthcheck-router"
 
@@ -108,6 +110,15 @@ router
   .delete(TravelDeskHotelsController.destroy)
 
 router
+  .route("/api/travel-desk-other-transportations")
+  .get(TravelDeskOtherTransportationsController.index)
+  .post(TravelDeskOtherTransportationsController.create)
+router
+  .route("/api/travel-desk-other-transportations/:travelDeskOtherTransportationId")
+  .patch(TravelDeskOtherTransportationsController.update)
+  .delete(TravelDeskOtherTransportationsController.destroy)
+
+router
   .route("/api/travel-desk-rental-cars")
   .get(TravelDeskRentalCarsController.index)
   .post(TravelDeskRentalCarsController.create)
@@ -121,6 +132,9 @@ router
   .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId")
   .get(TravelDeskTravelRequestsController.show)
   .patch(TravelDeskTravelRequestsController.update)
+router
+  .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId/submit")
+  .post(TravelDeskTravelRequests.SubmitController.create)
 
 router.route("/api/locations").get(LocationsController.index)
 router.route("/api/locations/:locationId").get(LocationsController.show)

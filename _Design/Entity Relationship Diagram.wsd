@@ -349,17 +349,17 @@ entity "travel_desk_hotels" {
   booking : varchar(255)
 }
 
-entity "travelDeskOtherTransportation" {
-  * transportationID : serial4
+entity "travel_desk_other_transportations" {
+  * id : serial4 <<PK>>
   --
-  requestID : int4
-  depart : varchar(255)
-  arrive : varchar(255)
-  transportationType : varchar(255)
-  date : date
-  additionalNotes : varchar(255)
-  status : varchar(255)
-  reservedTranspInfo : varchar(255)
+  * travel_request_id : int4 <<FK>>
+  * depart : varchar(255)
+  * arrive : varchar(255)
+  * transportation_type : varchar(255)
+  * date : date
+  * status : varchar(255)
+  additional_notes : varchar(255)
+  reserved_transportation_info : varchar(255)
   booking : varchar(255)
 }
 
@@ -491,6 +491,8 @@ travel_authorization_pre_approval_profiles::pre_approval_id ||--o{ travel_author
 travel_authorization_pre_approvals::submission_id ||--o{ preapprovedSubmissions::preTSubID
 travel_authorizations::pre_approval_id |o--o{ travel_authorization_pre_approvals::id
 travel_authorizations::purpose_id ||--o{ travel_purposes::id
+travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
+travel_desk_other_transportations::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
 travel_desk_rental_cars::travel_request_id }o--|| travel_desk_travel_requests::id
 travel_desk_travel_requests }o--|| travelDeskTravelAgent
@@ -498,8 +500,6 @@ travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorization
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
 travelDeskFlightSegment }o--|| travelDeskFlightOption
-travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
-travelDeskOtherTransportation }o--|| travel_desk_travel_requests
 travelDeskQuestion }o--|| travel_desk_travel_requests
 
 @enduml

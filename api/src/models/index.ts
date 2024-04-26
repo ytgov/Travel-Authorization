@@ -11,6 +11,7 @@ import TravelAuthorizationPreApprovalProfile from "./travel-authorization-pre-ap
 import TravelAuthorizationPreApprovalSubmission from "./travel-authorization-pre-approval-submission"
 import TravelDeskFlightRequest from "./travel-desk-flight-request"
 import TravelDeskHotel from "./travel-desk-hotel"
+import TravelDeskOtherTransportation from "./travel-desk-other-transportation"
 import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
 import TravelDeskRentalCar from "./travel-desk-rental-car"
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
@@ -28,6 +29,7 @@ TravelAuthorizationPreApprovalProfile.establishAssociations()
 TravelAuthorizationPreApprovalSubmission.establishAssociations()
 TravelDeskFlightRequest.establishAssociations()
 TravelDeskHotel.establishAssociations()
+TravelDeskOtherTransportation.establishAssociations()
 TravelDeskPassengerNameRecordDocument.establishAssociations()
 TravelDeskRentalCar.establishAssociations()
 TravelDeskTravelRequest.establishAssociations()
@@ -46,6 +48,7 @@ export {
   TravelAuthorizationPreApprovalSubmission,
   TravelDeskFlightRequest,
   TravelDeskHotel,
+  TravelDeskOtherTransportation,
   TravelDeskPassengerNameRecordDocument,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,

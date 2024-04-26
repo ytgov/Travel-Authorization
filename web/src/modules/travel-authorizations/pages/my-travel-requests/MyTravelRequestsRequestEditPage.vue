@@ -13,6 +13,7 @@
     <TravelDeskTravelRequestEditCard
       v-else
       :travel-desk-travel-request-id="travelDeskTravelRequestId"
+      @state-changed="emit('state-changed')"
     />
   </v-container>
 </template>
@@ -31,6 +32,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const emit = defineEmits(["state-changed"])
 
 // TODO: Consider loading travelAuthorization and pulling travelDeskTravel request from there.
 const travelDeskTravelRequestQueryOptions = computed(() => ({
