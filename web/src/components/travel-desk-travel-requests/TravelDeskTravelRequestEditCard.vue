@@ -117,8 +117,8 @@
       <v-btn
         class="mr-5 px-5"
         color="brown darken-1"
-        :loading="savingData"
-        @click="saveNewTravelRequest('submit')"
+        :loading="isLoading"
+        @click="submitAndNotify"
         >Submit
       </v-btn>
     </v-card-actions>
@@ -126,11 +126,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, toRefs } from "vue"
-import { cloneDeep, debounce, isNil } from "lodash"
+import { computed, ref, toRefs } from "vue"
+import { debounce, isNil } from "lodash"
+import { useRouter } from "vue2-helpers/vue-router"
 
-import { TRAVEL_DESK_URL } from "@/urls"
-import { securePost } from "@/store/jwt"
 import { useSnack } from "@/plugins/snack-plugin"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
@@ -152,12 +151,10 @@ const props = defineProps({
 })
 
 const { travelDeskTravelRequestId } = toRefs(props)
-const { travelDeskTravelRequest, isLoading, save } =
+const { travelDeskTravelRequest, isLoading, save, submit } =
   useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
 const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
-
-const savingData = ref(false)
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelerDetailsFormCard> | null>} */
 const travelerDetailsFormCard = ref(null)
@@ -166,100 +163,13 @@ const travelDeskRentalCarsEditTable = ref(null)
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditTable> | null>} */
 const travelDeskHotelEditTable = ref(null)
 
-const state = reactive({
-  otherTransportationErr: false,
-})
-
-onMounted(async () => {
-  initStates()
-})
-
-function initStates() {
-  for (const key of Object.keys(state)) {
-    state[key] = false
-  }
-}
-
 function refreshTablesUsingFlightInfo() {
   travelDeskRentalCarsEditTable.value?.refresh()
   travelDeskHotelEditTable.value?.refresh()
 }
 
 const snack = useSnack()
-
-async function saveAndNotify() {
-  if (validate() !== true) {
-    snack("Form validation failed! Please fill out all required fields.", {
-      color: "error",
-    })
-    throw new Error("Form validation failed")
-  }
-
-  await save()
-  snack("Request updated.")
-}
-
-const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
-
-async function saveNewTravelRequest(saveType) {
-  if (validate() !== true) {
-    // TODO: notify user of validation error
-    throw new Error("Form validation failed")
-  }
-
-  if (saveType == "save" || checkFields()) {
-    savingData.value = true
-    const body = cloneDeep(travelDeskTravelRequest.value)
-    delete body.internationalTravel
-    delete body.differentTravelContact
-    delete body.office
-    delete body.department
-    delete body.fullName
-    if (saveType == "submit" && body.status == "draft") {
-      body.status = "submitted"
-    } else if (saveType == "submit" && body.status == "options_provided") {
-      body.status = "options_ranked"
-    }
-    const id = travelAuthorizationId.value
-    try {
-      await securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      savingData.value = false
-    }
-  }
-}
-
-function checkFields() {
-  state.otherTransportationErr = false
-
-  if (travelDeskTravelRequest.value.status == "options_provided") {
-    let error = false
-    for (const question of travelDeskTravelRequest.value.questions) {
-      if (question.response) question.state.responseErr = false
-      else {
-        question.state.responseErr = true
-        error = true
-      }
-    }
-
-    for (const flightRequest of travelDeskTravelRequest.value.flightRequests) {
-      for (const flightOption of flightRequest.flightOptions) {
-        if (!flightOption.flightPreference) {
-          error = true
-        }
-      }
-    }
-
-    if (error) return false
-  }
-
-  for (const key of Object.keys(state)) {
-    if (state[key]) return false
-  }
-  return true
-}
+const router = useRouter()
 
 function validate() {
   if (isNil(travelerDetailsFormCard.value)) {
@@ -267,6 +177,45 @@ function validate() {
   }
 
   return travelerDetailsFormCard.value.validate()
+}
+
+async function saveAndNotify() {
+  if (validate() !== true) {
+    snack("Form validation failed! Please fill out all required fields.", {
+      color: "error",
+    })
+    return
+  }
+
+  try {
+    await save()
+    snack("Request updated.", { color: "success" })
+  } catch (error) {
+    snack(`Failed to save request: ${error}`, { color: "error" })
+  }
+}
+
+const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
+
+async function submitAndNotify() {
+  if (validate() !== true) {
+    snack("Form validation failed! Please fill out all required fields.", {
+      color: "error",
+    })
+    return
+  }
+
+  try {
+    await submit()
+    snack("Request submitted.", { color: "success" })
+    router.push({
+      name: "MyTravelRequestsRequestReadPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    })
+    return
+  } catch (error) {
+    snack(`Failed to submit request: ${error}`, { color: "error" })
+  }
 }
 </script>
 

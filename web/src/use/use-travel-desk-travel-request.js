@@ -73,6 +73,25 @@ export function useTravelDeskTravelRequests(
     }
   }
 
+  async function submit() {
+    state.isLoading = true
+    try {
+      const { travelDeskTravelRequest } = await travelDeskTravelRequestsApi.submit(
+        unref(travelDeskTravelRequestId),
+        state.travelDeskTravelRequest
+      )
+      state.isErrored = false
+      state.travelDeskTravelRequest = travelDeskTravelRequest
+      return travelDeskTravelRequest
+    } catch (error) {
+      console.error("Failed to submit travel desk travel request:", error)
+      state.isErrored = true
+      throw error
+    } finally {
+      state.isLoading = false
+    }
+  }
+
   watch(
     () => unref(travelDeskTravelRequestId),
     async () => {
@@ -88,6 +107,7 @@ export function useTravelDeskTravelRequests(
     fetch,
     refresh: fetch,
     save,
+    submit,
   }
 }
 

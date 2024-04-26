@@ -30,6 +30,15 @@ export const travelDeskTravelRequestsApi = {
     )
     return data
   },
+
+  // Stateful Actions
+  async submit(travelDeskTravelRequestId, attributes) {
+    const { data } = await http.post(
+      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/submit`,
+      attributes
+    )
+    return data
+  },
 }
 
 export default travelDeskTravelRequestsApi
