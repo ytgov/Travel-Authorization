@@ -74,6 +74,7 @@
                 v-model="otherTransportation.additionalNotes"
                 label="Additional Information"
                 outlined
+                clearable
               />
             </v-col>
           </v-row>
