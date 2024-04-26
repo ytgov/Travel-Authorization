@@ -15,7 +15,10 @@
 
         <v-card-text>
           <v-row class="mt-5 mx-0">
-            <v-col cols="3">
+            <v-col
+              cols="12"
+              md="3"
+            >
               <TransportationTypeSelect
                 v-model="otherTransportation.transportationType"
                 label="Request Type *"
@@ -24,10 +27,16 @@
                 required
               />
             </v-col>
-            <v-col cols="9"></v-col>
+            <v-col
+              class="d-none d-md-block"
+              md="9"
+            ></v-col>
           </v-row>
           <v-row class="mt-0 mx-0">
-            <v-col cols="3">
+            <v-col
+              cols="12"
+              md="3"
+            >
               <LocationsAutocomplete
                 v-model="otherTransportation.depart"
                 label="Depart *"
@@ -37,7 +46,10 @@
                 required
               />
             </v-col>
-            <v-col cols="3">
+            <v-col
+              cols="12"
+              md="3"
+            >
               <LocationsAutocomplete
                 v-model="otherTransportation.arrive"
                 label="Arrive *"
@@ -47,7 +59,10 @@
                 required
               />
             </v-col>
-            <v-col cols="2">
+            <v-col
+              cols="12"
+              md="2"
+            >
               <v-text-field
                 v-model="otherTransportation.date"
                 label="Date *"
@@ -59,7 +74,10 @@
                 required
               />
             </v-col>
-            <v-col cols="4">
+            <v-col
+              cols="12"
+              md="4"
+            >
               <v-textarea
                 v-model="otherTransportation.additionalNotes"
                 label="Additional Information"
