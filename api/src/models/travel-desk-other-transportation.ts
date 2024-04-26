@@ -50,7 +50,8 @@ export class TravelDeskOtherTransportation extends Model<
   declare date: Date
   declare additionalNotes: CreationOptional<string | null>
   declare status: string
-  declare reservedTranspInfo: CreationOptional<string | null>
+  // NOTE: reserved_transportation_info, and booking do not appear to be used in the codebase.
+  declare reservedTransportationInfo: CreationOptional<string | null>
   declare booking: CreationOptional<string | null>
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
@@ -95,17 +96,14 @@ TravelDeskOtherTransportation.init(
       },
     },
     depart: {
-      field: "depart",
       type: DataTypes.STRING(255),
       allowNull: false,
     },
     arrive: {
-      field: "arrive",
       type: DataTypes.STRING(255),
       allowNull: false,
     },
     transportationType: {
-      field: "transportationType",
       type: DataTypes.STRING(255),
       allowNull: true,
       validate: {
@@ -118,17 +116,14 @@ TravelDeskOtherTransportation.init(
       },
     },
     date: {
-      field: "date",
       type: DataTypes.DATEONLY,
       allowNull: false,
     },
     additionalNotes: {
-      field: "additionalNotes",
       type: DataTypes.STRING(255),
       allowNull: true,
     },
     status: {
-      field: "status",
       type: DataTypes.STRING(255),
       allowNull: false,
       validate: {
@@ -140,13 +135,11 @@ TravelDeskOtherTransportation.init(
         },
       },
     },
-    reservedTranspInfo: {
-      field: "reservedTranspInfo",
+    reservedTransportationInfo: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
     booking: {
-      field: "booking",
       type: DataTypes.STRING(255),
       allowNull: true,
     },
