@@ -46,7 +46,7 @@ export class TravelDeskOtherTransportation extends Model<
   declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare depart: string
   declare arrive: string
-  declare transportationType: CreationOptional<string | null>
+  declare transportationType: string
   declare date: Date
   declare additionalNotes: CreationOptional<string | null>
   declare status: string
@@ -105,7 +105,7 @@ TravelDeskOtherTransportation.init(
     },
     transportationType: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
       validate: {
         isIn: {
           args: [Object.values(TransportationTypes)],
