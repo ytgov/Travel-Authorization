@@ -168,7 +168,7 @@ const hotelId = computed(() => hotel.value.id)
 const snack = useSnack()
 const router = useRouter()
 const route = useRoute()
-const showDialog = ref(route.query.showHotelEdit === "true")
+const showDialog = ref(false)
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
