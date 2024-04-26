@@ -52,6 +52,9 @@ export class TravelDeskOtherTransportation extends Model<
   declare status: string
   declare reservedTranspInfo: CreationOptional<string | null>
   declare booking: CreationOptional<string | null>
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // Associations
   declare getTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
@@ -149,14 +152,21 @@ TravelDeskOtherTransportation.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    modelName: "TravelDeskOtherTransportation",
-    tableName: "travelDeskOtherTransportation",
-    underscored: false,
-    timestamps: false,
-    paranoid: false,
   }
 )
 
