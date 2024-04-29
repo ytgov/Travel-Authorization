@@ -53,8 +53,8 @@
             </td>
           </template>
 
-          <template #[`item.date`]="{ item }">
-            {{ item.date | beautifyDateTime }}
+          <template #[`item.datePreference`]="{ item }">
+            {{ item.datePreference | beautifyDateTime }}
           </template>
 
           <template #[`item.edit`]="{ item }">
@@ -195,12 +195,12 @@ export default {
       }
       if (this.travelDeskTravelRequestId) await this.loadFlightRequests()
       const flightRequest = {}
-      flightRequest.flightRequestID = null
+      flightRequest.id = null
       flightRequest.tmpId = null
 
       flightRequest.departLocation = ""
       flightRequest.arriveLocation = ""
-      flightRequest.date = ""
+      flightRequest.datePreference = ""
       flightRequest.timePreference = ""
       flightRequest.seatPreference = ""
       flightRequest.flightOptions = []
@@ -216,9 +216,9 @@ export default {
     async removeFlight(item) {
       // console.log(item)
       let delIndex = -1
-      if (item.flightRequestID > 0)
+      if (item.id > 0)
         delIndex = this.flightRequests.findIndex(
-          (flight) => flight.flightRequestID && flight.flightRequestID == item.flightRequestID
+          (flight) => flight.id && flight.id == item.id
         )
       else
         delIndex = this.flightRequests.findIndex(

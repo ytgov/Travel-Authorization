@@ -18,6 +18,11 @@ import {
   Users,
   UsersController,
   TravelDeskTravelRequestsController,
+  TravelDeskFlightRequestsController,
+  TravelDeskRentalCarsController,
+  TravelDeskHotelsController,
+  TravelDeskOtherTransportationsController,
+  TravelDeskTravelRequests,
 } from "@/controllers"
 import { healthCheckRouter } from "./healthcheck-router"
 
@@ -86,11 +91,50 @@ router
   .route("/api/travel-authorizations/:travelAuthorizationId/expenses/prefill")
   .post(TravelAuthorizations.Expenses.PrefillController.create)
 
+router
+  .route("/api/travel-desk-flight-requests")
+  .get(TravelDeskFlightRequestsController.index)
+  .post(TravelDeskFlightRequestsController.create)
+router
+  .route("/api/travel-desk-flight-requests/:travelDeskFlightRequestId")
+  .patch(TravelDeskFlightRequestsController.update)
+  .delete(TravelDeskFlightRequestsController.destroy)
+
+router
+  .route("/api/travel-desk-hotels")
+  .get(TravelDeskHotelsController.index)
+  .post(TravelDeskHotelsController.create)
+router
+  .route("/api/travel-desk-hotels/:travelDeskHotelId")
+  .patch(TravelDeskHotelsController.update)
+  .delete(TravelDeskHotelsController.destroy)
+
+router
+  .route("/api/travel-desk-other-transportations")
+  .get(TravelDeskOtherTransportationsController.index)
+  .post(TravelDeskOtherTransportationsController.create)
+router
+  .route("/api/travel-desk-other-transportations/:travelDeskOtherTransportationId")
+  .patch(TravelDeskOtherTransportationsController.update)
+  .delete(TravelDeskOtherTransportationsController.destroy)
+
+router
+  .route("/api/travel-desk-rental-cars")
+  .get(TravelDeskRentalCarsController.index)
+  .post(TravelDeskRentalCarsController.create)
+router
+  .route("/api/travel-desk-rental-cars/:travelDeskRentalCarId")
+  .patch(TravelDeskRentalCarsController.update)
+  .delete(TravelDeskRentalCarsController.destroy)
+
 router.route("/api/travel-desk-travel-requests").get(TravelDeskTravelRequestsController.index)
 router
   .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId")
   .get(TravelDeskTravelRequestsController.show)
   .patch(TravelDeskTravelRequestsController.update)
+router
+  .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId/submit")
+  .post(TravelDeskTravelRequests.SubmitController.create)
 
 router.route("/api/locations").get(LocationsController.index)
 router.route("/api/locations/:locationId").get(LocationsController.show)

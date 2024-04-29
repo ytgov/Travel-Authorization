@@ -251,7 +251,7 @@ export default {
       if (item.flightRequests?.length > 0) requested.push("flight")
       if (item.hotels?.length > 0) requested.push("hotel")
       if (item.rentalCars?.length > 0) requested.push("rental car")
-      if (item.otherTransportation?.length > 0) requested.push("transportation")
+      if (item.otherTransportations?.length > 0) requested.push("transportation")
 
       return requested.join(", ")
     },

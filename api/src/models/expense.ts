@@ -156,6 +156,7 @@ Expense.init(
     sequelize,
     modelName: "Expense",
     tableName: "expenses",
+    paranoid: false,
     // TODO: consider whether it would be better to use a separate table for uploads
     // e.g. Rails https://guides.rubyonrails.org/active_storage_overview.html
     defaultScope: {

@@ -333,33 +333,33 @@ entity "travelDeskFlightSegment" {
   flightOptionID : int4
 }
 
-entity "travelDeskHotel" {
-  * hotelID : serial4
+entity "travel_desk_hotels" {
+  * id : serial4 <<PK>>
   --
-  requestID : int4
-  city : varchar(255)
-  rsvConferenceHotel : bool
-  conferenceName : varchar(255)
-  conferenceHotelName : varchar(255)
-  checkIn : date
-  checkOut : date
-  additionalInformation : varchar(255)
-  status : varchar(255)
-  reservedHotelInfo : varchar(255)
+  * travel_request_id : int4 <<FK>>
+  * city : varchar(255)
+  * is_dedicated_conference_hotel_available : bool
+  * conference_name : varchar(255)
+  * conference_hotel_name : varchar(255)
+  * check_in : date
+  * check_out : date
+  * status : varchar(255)
+  additional_information : varchar(255)
+  reserved_hotel_info : varchar(255)
   booking : varchar(255)
 }
 
-entity "travelDeskOtherTransportation" {
-  * transportationID : serial4
+entity "travel_desk_other_transportations" {
+  * id : serial4 <<PK>>
   --
-  requestID : int4
-  depart : varchar(255)
-  arrive : varchar(255)
-  transportationType : varchar(255)
-  date : date
-  additionalNotes : varchar(255)
-  status : varchar(255)
-  reservedTranspInfo : varchar(255)
+  * travel_request_id : int4 <<FK>>
+  * depart : varchar(255)
+  * arrive : varchar(255)
+  * transportation_type : varchar(255)
+  * date : date
+  * status : varchar(255)
+  additional_notes : varchar(255)
+  reserved_transportation_info : varchar(255)
   booking : varchar(255)
 }
 
@@ -373,27 +373,30 @@ entity "travelDeskQuestion" {
   response : varchar(255)
 }
 
-entity "travelDeskRentalCar" {
-  * rentalVehicleID : serial4
+entity "travel_desk_rental_cars" {
+  * id : serial4 <<PK>>
   --
-  requestID : int4
-  pickUpCity : varchar(255)
-  pickUpLocation : varchar(255)
-  pickUpLocOther : varchar(255)
-  dropOffCity : varchar(255)
-  dropOffLocation : varchar(255)
-  dropOffLocOther : varchar(255)
-  sameDropOffLocation : bool
-  matchFlightTimes : bool
-  vehicleTypeChangeInd : varchar(255)
-  vehicleType : varchar(255)
-  vehicleChangeRationale : varchar(255)
-  pickUpDate : timestamptz
-  dropOffDate : timestamptz
-  additionalNotes : varchar(255)
-  status : varchar(255)
-  reservedVehicleInfo : varchar(255)
+  * travel_request_id : int4 <<FK>>
+  * pick_up_city : varchar(255)
+  * pick_up_location : varchar(255)
+  * vehicle_type : varchar(255)
+  * vehicle_change_rationale : varchar(255)
+  * pick_up_date : timestamptz
+  * drop_off_date : timestamptz
+  * status : varchar(255)
+  pick_up_location_other : varchar(255)
+  drop_off_city : varchar(255)
+  drop_off_location : varchar(255)
+  drop_off_location_other : varchar(255)
+  same_drop_off_location : bool
+  match_flight_times : bool
+  vehicle_type_change_indicator : varchar(255)
+  additional_notes : varchar(255)
+  reserved_vehicle_info : varchar(255)
   booking : varchar(255)
+  created_at : timestamptz
+  updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travelDeskTravelAgent" {
@@ -480,23 +483,23 @@ entity "YgEmployees" {
 ' Relationships
 expenses::travel_authorization_id ||--o{ travel_authorizations::id
 preapprovedSubmissions::preTSubID }o--o| preapprovedDocuments::preTSubID
-travel_authorization_pre_approval_profiles::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
 stops::travel_authorization_id }o--|| travel_authorizations::id
-travel_authorization_action_logs::travel_authorization_id ||--o{ travel_authorizations::id
 travel_authorization_action_logs::actor_id ||--o{ users::id
 travel_authorization_action_logs::assignee_id ||--o{ users::id
+travel_authorization_action_logs::travel_authorization_id ||--o{ travel_authorizations::id
+travel_authorization_pre_approval_profiles::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
 travel_authorization_pre_approvals::submission_id ||--o{ preapprovedSubmissions::preTSubID
 travel_authorizations::pre_approval_id |o--o{ travel_authorization_pre_approvals::id
 travel_authorizations::purpose_id ||--o{ travel_purposes::id
+travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
+travel_desk_other_transportations::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
-travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
+travel_desk_rental_cars::travel_request_id }o--|| travel_desk_travel_requests::id
 travel_desk_travel_requests }o--|| travelDeskTravelAgent
+travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
 travelDeskFlightSegment }o--|| travelDeskFlightOption
-travelDeskHotel }o--|| travel_desk_travel_requests
-travelDeskOtherTransportation }o--|| travel_desk_travel_requests
 travelDeskQuestion }o--|| travel_desk_travel_requests
-travelDeskRentalCar }o--|| travel_desk_travel_requests
 
 @enduml

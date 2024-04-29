@@ -452,6 +452,7 @@ TravelAuthorization.init(
   },
   {
     sequelize,
+    paranoid: false,
     validate: {
       tripTypeConsistency() {
         if (this.oneWayTrip === true && this.multiStop === true) {

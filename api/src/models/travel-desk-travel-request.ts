@@ -6,21 +6,35 @@ import {
   CreationOptional,
   DataTypes,
   ForeignKey,
+  HasManyAddAssociationMixin,
+  HasManyAddAssociationsMixin,
+  HasManyCountAssociationsMixin,
+  HasManyCreateAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyHasAssociationMixin,
+  HasManyHasAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManyRemoveAssociationsMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
 } from "sequelize"
-import { isEmpty, isNil } from "lodash"
-
-import TravelAuthorization from "./travel-authorization"
-import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
-import TravelDeskTravelAgent from "./travel-desk-travel-agent"
+import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
-// Avoid exporting here, and instead expose via the Expense model to avoid naming conflicts
-enum Statuses {
+import TravelAuthorization from "@/models/travel-authorization"
+import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
+import TravelDeskHotel from "@/models/travel-desk-hotel"
+import TravelDeskOtherTransportation from "@/models/travel-desk-other-transportation"
+import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
+import TravelDeskRentalCar from "@/models/travel-desk-rental-car"
+import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
+
+/** Keep in sync with web/src/api/travel-desk-travel-requests-api.js */
+export enum TravelDeskTravelRequestStatuses {
   BOOKED = "booked",
   DRAFT = "draft",
   OPTIONS_PROVIDED = "options_provided",
@@ -32,7 +46,7 @@ export class TravelDeskTravelRequest extends Model<
   InferAttributes<TravelDeskTravelRequest>,
   InferCreationAttributes<TravelDeskTravelRequest>
 > {
-  static Statuses = Statuses
+  static Statuses = TravelDeskTravelRequestStatuses
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
@@ -87,12 +101,142 @@ export class TravelDeskTravelRequest extends Model<
   >
   declare createTravelDeskTravelAgent: BelongsToCreateAssociationMixin<TravelDeskTravelAgent>
 
+  declare getFlightRequests: HasManyGetAssociationsMixin<TravelDeskFlightRequest>
+  declare setFlightRequests: HasManySetAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare hasFlightRequest: HasManyHasAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare hasFlightRequests: HasManyHasAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare addFlightRequest: HasManyAddAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare addFlightRequests: HasManyAddAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare removeFlightRequest: HasManyRemoveAssociationMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare removeFlightRequests: HasManyRemoveAssociationsMixin<
+    TravelDeskFlightRequest,
+    TravelDeskFlightRequest["travelRequestId"]
+  >
+  declare countFlightRequests: HasManyCountAssociationsMixin
+  declare createFlightRequest: HasManyCreateAssociationMixin<TravelDeskFlightRequest>
+
+  declare getHotels: HasManyGetAssociationsMixin<TravelDeskHotel>
+  declare setHotels: HasManySetAssociationsMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare hasHotel: HasManyHasAssociationMixin<TravelDeskHotel, TravelDeskHotel["travelRequestId"]>
+  declare hasHotels: HasManyHasAssociationsMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare addHotel: HasManyAddAssociationMixin<TravelDeskHotel, TravelDeskHotel["travelRequestId"]>
+  declare addHotels: HasManyAddAssociationsMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare removeHotel: HasManyRemoveAssociationMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare removeHotels: HasManyRemoveAssociationsMixin<
+    TravelDeskHotel,
+    TravelDeskHotel["travelRequestId"]
+  >
+  declare countHotels: HasManyCountAssociationsMixin
+  declare createHotel: HasManyCreateAssociationMixin<TravelDeskHotel>
+
+  declare getOtherTransportations: HasManyGetAssociationsMixin<TravelDeskOtherTransportation>
+  declare setOtherTransportations: HasManySetAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["travelRequestId"]
+  >
+  declare hasOtherTransportation: HasManyHasAssociationMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["travelRequestId"]
+  >
+  declare hasOtherTransportations: HasManyHasAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["travelRequestId"]
+  >
+  declare addOtherTransportation: HasManyAddAssociationMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["travelRequestId"]
+  >
+  declare addOtherTransportations: HasManyAddAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["travelRequestId"]
+  >
+  declare removeOtherTransportation: HasManyRemoveAssociationMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["travelRequestId"]
+  >
+  declare removeOtherTransportations: HasManyRemoveAssociationsMixin<
+    TravelDeskOtherTransportation,
+    TravelDeskOtherTransportation["travelRequestId"]
+  >
+  declare countOtherTransportations: HasManyCountAssociationsMixin
+  declare createOtherTransportation: HasManyCreateAssociationMixin<TravelDeskOtherTransportation>
+
+  declare getRentalCars: HasManyGetAssociationsMixin<TravelDeskRentalCar>
+  declare setRentalCars: HasManySetAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["travelRequestId"]
+  >
+  declare hasRentalCar: HasManyHasAssociationMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["travelRequestId"]
+  >
+  declare hasRentalCars: HasManyHasAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["travelRequestId"]
+  >
+  declare addRentalCar: HasManyAddAssociationMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["travelRequestId"]
+  >
+  declare addRentalCars: HasManyAddAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["travelRequestId"]
+  >
+  declare removeRentalCar: HasManyRemoveAssociationMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["travelRequestId"]
+  >
+  declare removeRentalCars: HasManyRemoveAssociationsMixin<
+    TravelDeskRentalCar,
+    TravelDeskRentalCar["travelRequestId"]
+  >
+  declare countRentalCars: HasManyCountAssociationsMixin
+  declare createRentalCar: HasManyCreateAssociationMixin<TravelDeskRentalCar>
+
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
   declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
+  declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
+  declare hotels?: NonAttribute<TravelDeskHotel[]>
+  declare otherTransportations?: NonAttribute<TravelDeskOtherTransportation[]>
+  declare rentalCars?: NonAttribute<TravelDeskRentalCar[]>
 
   declare static associations: {
+    flightRequests: Association<TravelDeskTravelRequest, TravelDeskFlightRequest>
+    hotels: Association<TravelDeskTravelRequest, TravelDeskHotel>
+    rentalCars: Association<TravelDeskTravelRequest, TravelDeskRentalCar>
     travelAuthorization: Association<TravelDeskTravelRequest, TravelAuthorization>
+    otherTransportations: Association<TravelDeskTravelRequest, TravelDeskOtherTransportation>
     travelDeskPassengerNameRecordDocument: Association<
       TravelDeskTravelRequest,
       TravelDeskPassengerNameRecordDocument
@@ -115,6 +259,22 @@ export class TravelDeskTravelRequest extends Model<
     //   as: "travelDeskTravelAgent",
     //   foreignKey: "agencyID",
     // })
+    this.hasMany(TravelDeskFlightRequest, {
+      as: "flightRequests",
+      foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskHotel, {
+      as: "hotels",
+      foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskOtherTransportation, {
+      as: "otherTransportations",
+      foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskRentalCar, {
+      as: "rentalCars",
+      foreignKey: "travelRequestId",
+    })
   }
 }
 
@@ -131,8 +291,8 @@ TravelDeskTravelRequest.init(
       allowNull: false,
       unique: true,
       references: {
-        model: "travel_authorizations", // using real table name here
-        key: "id", // using real column name here
+        model: TravelAuthorization,
+        key: "id",
       },
       onDelete: "CASCADE",
     },
@@ -193,7 +353,7 @@ TravelDeskTravelRequest.init(
       allowNull: false,
       validate: {
         isIn: {
-          args: [Object.values(Statuses)],
+          args: [Object.values(TravelDeskTravelRequestStatuses)],
           msg: "Invalid status value",
         },
       },
@@ -258,6 +418,7 @@ TravelDeskTravelRequest.init(
     sequelize,
     modelName: "TravelDeskTravelRequest",
     tableName: "travel_desk_travel_requests",
+    paranoid: false,
     validate: {
       allInternationalTravelFieldsOrNone() {
         if (
@@ -273,10 +434,7 @@ TravelDeskTravelRequest.init(
         }
       },
       allTravelContactFieldsOrNone() {
-        if (
-          this.travelContact === true &&
-          (isNil(this.travelPhone) || isNil(this.travelEmail))
-        ) {
+        if (this.travelContact === true && (isNil(this.travelPhone) || isNil(this.travelEmail))) {
           throw new Error("Travel phone and email are required if travel contact is true")
         } else if (
           this.travelContact === false &&
@@ -284,7 +442,7 @@ TravelDeskTravelRequest.init(
         ) {
           throw new Error("Travel phone and email are only permitted if travel contact is true")
         }
-      }
+      },
     },
   }
 )

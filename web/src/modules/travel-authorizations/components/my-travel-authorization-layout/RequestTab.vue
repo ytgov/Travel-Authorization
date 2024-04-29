@@ -25,10 +25,16 @@
     <span v-if="hasNoAirTravel"> Disabled as traveler is not traveling by air.</span>
     <span v-else-if="isWaitingForApproval"> Locked until request is approved. </span>
   </v-tooltip>
+  <!--
+    TODO: add page for different travel request states
+    e.g.
+      - only show edit page when travelDeskTravelRequest.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
+      - when status SUBMITTED, show a read-only page, etc.
+   -->
   <v-tab
     v-else
     :to="{
-      name: 'MyTravelRequestsRequestEditPage',
+      name: componentName,
       params: { travelAuthorizationId },
     }"
   >
@@ -40,6 +46,7 @@
 import { computed, toRefs } from "vue"
 
 import { TRAVEL_METHODS } from "@/api/travel-segments-api"
+import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
@@ -50,7 +57,7 @@ const props = defineProps({
 })
 
 const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization, STATUSES } = useTravelAuthorization(travelAuthorizationId)
+const { travelAuthorization, STATUSES, refresh } = useTravelAuthorization(travelAuthorizationId)
 // TODO: lock on denied states.
 const isWaitingForApproval = computed(
   () =>
@@ -63,4 +70,20 @@ const hasNoAirTravel = computed(() =>
   )
 )
 const isLocked = computed(() => isWaitingForApproval.value || hasNoAirTravel.value)
+
+// TODO: this will likely a different page for each travel desk travel request status.
+const componentName = computed(() => {
+  if (
+    travelAuthorization.value?.travelDeskTravelRequest?.status ===
+    TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
+  ) {
+    return "MyTravelRequestsRequestEditPage"
+  } else {
+    return "MyTravelRequestsRequestReadPage"
+  }
+})
+
+defineExpose({
+  refresh,
+})
 </script>

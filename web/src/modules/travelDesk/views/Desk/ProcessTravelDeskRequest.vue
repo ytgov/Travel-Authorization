@@ -121,7 +121,7 @@
                   />
                   <transportation-request-table
                     :readonly="readonly"
-                    :otherTransportations="travelRequest.otherTransportation"
+                    :otherTransportations="travelRequest.otherTransportations"
                   />
                 </template>
               </title-card>

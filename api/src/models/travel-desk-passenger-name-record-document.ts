@@ -93,6 +93,7 @@ TravelDeskPassengerNameRecordDocument.init(
     sequelize,
     modelName: "TravelDeskPassengerNameRecordDocument",
     tableName: "travel_desk_passenger_name_record_documents",
+    paranoid: false,
   }
 )
 

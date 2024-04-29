@@ -146,7 +146,6 @@ TravelAuthorizationPreApprovalProfile.init(
   },
   {
     sequelize,
-    paranoid: true, // TODO: make this the default
     scopes: {
       approved() {
         return {

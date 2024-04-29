@@ -1,5 +1,5 @@
 <template>
-  <PageLoader v-if="!isReadyTravelAuthorization" />
+  <PageLoader v-if="isNil(travelAuthorization.id)" />
   <div v-else>
     <Breadcrumbs />
 
@@ -16,22 +16,30 @@
 
         <div style="border: 1px #ddd solid">
           <v-tabs>
+            <!-- TODO: investigate if I should refresh other tabs -->
             <DetailsTab :travel-authorization-id="travelAuthorizationId" />
             <EstimateTab :travel-authorization-id="travelAuthorizationId" />
-            <RequestTab :travel-authorization-id="travelAuthorizationId" />
+            <RequestTab
+              ref="requestTab"
+              :travel-authorization-id="travelAuthorizationId"
+            />
             <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
             <!-- TODO: add in any tabs that you can normally see in read-only mode -->
           </v-tabs>
         </div>
 
-        <router-view></router-view>
+        <router-view @state-changed="refreshTabs"></router-view>
       </v-card-text>
     </v-card>
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex"
+<script setup>
+import { ref, toRefs } from "vue"
+import { isNil } from "lodash"
+
+import useCurrentUser from "@/use/use-current-user"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import PageLoader from "@/components/PageLoader"
@@ -43,37 +51,22 @@ import EstimateTab from "@/modules/travel-authorizations/components/my-travel-au
 import ExpenseTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/ExpenseTab"
 import RequestTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/RequestTab"
 
-export default {
-  name: "MyTravelAuthorizationLayout",
-  components: {
-    Breadcrumbs,
-    DetailsTab,
-    EstimateTab,
-    ExpenseTab,
-    PageLoader,
-    RequestTab,
-    SummaryHeaderPanel,
-    VUserChipMenu,
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  computed: {
-    ...mapGetters("current/user", { currentUser: "attributes", isLoadingCurrentUser: "isLoading" }),
-    ...mapGetters("travelAuthorization", { isReadyTravelAuthorization: "isReady" }),
-  },
-  async mounted() {
-    await Promise.all([
-      this.ensureCurrentUser(),
-      this.ensureTravelAuthorization(this.travelAuthorizationId),
-    ])
-  },
-  methods: {
-    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
-    ...mapActions("travelAuthorization", { ensureTravelAuthorization: "ensure" }),
-  },
+})
+
+const { currentUser } = useCurrentUser()
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+/** @type {import("vue").Ref<InstanceType<typeof RequestTab> | null>} */
+const requestTab = ref(null)
+
+function refreshTabs() {
+  requestTab.value?.refresh()
 }
 </script>

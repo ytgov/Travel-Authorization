@@ -134,6 +134,7 @@ TravelAuthorizationActionLog.init(
   },
   {
     sequelize,
+    paranoid: false,
   }
 )
 

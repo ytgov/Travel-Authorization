@@ -24,7 +24,6 @@ import {
 
 import sequelize from "@/db/db-client"
 
-import TravelAuthorization from "@/models/travel-authorization"
 import TravelAuthorizationPreApprovalSubmission from "@/models/travel-authorization-pre-approval-submission"
 import TravelAuthorizationPreApprovalProfile from "@/models/travel-authorization-pre-approval-profile"
 
@@ -224,7 +223,6 @@ TravelAuthorizationPreApproval.init(
   },
   {
     sequelize,
-    paranoid: true, // TODO: make this the default
   }
 )
 

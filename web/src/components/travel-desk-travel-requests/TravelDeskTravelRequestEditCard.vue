@@ -23,18 +23,11 @@
           <TravelerDetailsFormCard
             ref="travelerDetailsFormCard"
             v-model="travelDeskTravelRequest"
+            :show-save-state-progress="true"
+            :is-saving="isLoading"
+            @save-requested="saveAndNotify"
+            @input="debouncedSaveAndNotify"
           />
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col class="d-flex justify-end">
-          <v-btn
-            color="green darken-1"
-            :loading="isLoading"
-            @click="saveAndNotify"
-          >
-            Save Details
-          </v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -55,52 +48,56 @@
                   <div>Flight Request</div>
                 </template>
                 <template #body>
-                  <v-row class="mt-0 mx-0">
-                    <v-col cols="9">
+                  <v-row
+                    class="mt-0"
+                    no-gutters
+                  >
+                    <v-col cols="12">
                       <TravelDeskFlightRequestsEditTable
-                        :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                        :authorized-travel="travelAuthorization"
-                        :readonly="false"
-                        :travel-desk-user="false"
-                        :show-flight-options="travelDeskTravelRequest.status != 'draft'"
-                        :flight-requests="travelDeskTravelRequest.flightRequests"
+                        :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                        :travel-authorization-id="travelAuthorizationId"
+                        class="borderless-card"
+                        @updated="refreshTablesUsingFlightInfo"
                       />
                     </v-col>
-                    <v-col
-                      cols="3"
-                      class="px-0"
-                    >
+                  </v-row>
+                  <v-row
+                    class="ml-3"
+                    no-gutters
+                  >
+                    <v-col cols="12">
+                      <SaveStateProgress
+                        class="float-right my-0 mr-3 ml-3 hidden-sm-and-down"
+                        :saving="isLoading"
+                        @click="saveAndNotify"
+                      />
                       <v-textarea
                         v-model="travelDeskTravelRequest.additionalInformation"
                         class="mt-5 mr-5"
-                        :readonly="readonly"
                         label="Additional Information"
                         outlined
                         auto-grow
                         counter
-                        :clearable="!readonly"
+                        @input="debouncedSaveAndNotify"
                       />
                     </v-col>
                   </v-row>
                 </template>
               </TitleCard>
 
-              <RentalCarRequestTable
-                :authorized-travel="travelAuthorization"
-                :readonly="false"
-                :flight-requests="travelDeskTravelRequest.flightRequests"
-                :rental-cars="travelDeskTravelRequest.rentalCars"
+              <TravelDeskRentalCarsEditTable
+                ref="travelDeskRentalCarsEditTable"
+                :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                :travel-authorization-id="travelAuthorizationId"
               />
-              <HotelRequestTable
-                :authorized-travel="travelAuthorization"
-                :readonly="false"
-                :flight-requests="travelDeskTravelRequest.flightRequests"
-                :hotels="travelDeskTravelRequest.hotels"
+              <TravelDeskHotelEditTable
+                ref="travelDeskHotelEditTable"
+                :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                :travel-authorization-id="travelAuthorizationId"
               />
-              <TransportationRequestTable
-                :authorized-travel="travelAuthorization"
-                :readonly="false"
-                :other-transportations="travelDeskTravelRequest.otherTransportation"
+              <TravelDeskOtherTransportationEditTable
+                :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                :travel-authorization-id="travelAuthorizationId"
               />
             </template>
           </TitleCard>
@@ -110,10 +107,18 @@
 
     <v-card-actions>
       <v-btn
-        class="ml-auto mr-5 px-5"
+        class="ml-auto mr-2"
+        color="green darken-1"
+        :loading="isLoading"
+        @click="saveAndNotify"
+      >
+        Save Draft
+      </v-btn>
+      <v-btn
+        class="mr-5 px-5"
         color="brown darken-1"
-        :loading="savingData"
-        @click="saveNewTravelRequest('submit')"
+        :loading="isLoading"
+        @click="submitAndNotify"
         >Submit
       </v-btn>
     </v-card-actions>
@@ -121,22 +126,21 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref, toRefs } from "vue"
-import { cloneDeep, isNil } from "lodash"
+import { computed, ref, toRefs } from "vue"
+import { debounce, isNil } from "lodash"
+import { useRouter } from "vue2-helpers/vue-router"
 
-import { TRAVEL_DESK_URL } from "@/urls"
-import { securePost } from "@/store/jwt"
 import { useSnack } from "@/plugins/snack-plugin"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
+import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
-import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
-import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
 
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
-
+import TravelDeskHotelEditTable from "@/components/travel-desk-hotels/TravelDeskHotelEditTable.vue"
+import TravelDeskOtherTransportationEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationEditTable.vue"
+import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 
 const props = defineProps({
@@ -146,150 +150,28 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["state-changed"])
+
 const { travelDeskTravelRequestId } = toRefs(props)
-const { travelDeskTravelRequest, isLoading, save } =
+const { travelDeskTravelRequest, isLoading, save, submit } =
   useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
 const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
-const travelAuthorization = computed(() => travelDeskTravelRequest.value?.travelAuthorization)
 
-const readonly = ref(false)
-const internationalTravel = ref(false)
-
-const savingData = ref(false)
-
+/** @type {import("vue").Ref<InstanceType<typeof TravelerDetailsFormCard> | null>} */
 const travelerDetailsFormCard = ref(null)
-const state = reactive({
-  firstNameErr: false,
-  middleNameErr: false,
-  lastNameErr: false,
-  birthDateErr: false,
-  travelAuthErr: false,
-  addressErr: false,
-  cityErr: false,
-  provinceErr: false,
-  postalCodeErr: false,
-  passportNumberErr: false,
-  passportCountryErr: false,
-  businessPhoneErr: false,
-  businessEmailErr: false,
-  travelPhoneErr: false,
-  travelEmailErr: false,
-  flightRequestsErr: false,
-  rentalCarsErr: false,
-  hotelsErr: false,
-  otherTransportationErr: false,
-})
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarsEditTable> | null>} */
+const travelDeskRentalCarsEditTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditTable> | null>} */
+const travelDeskHotelEditTable = ref(null)
 
-onMounted(async () => {
-  initStates()
-})
-
-function initStates() {
-  for (const key of Object.keys(state)) {
-    state[key] = false
-  }
+function refreshTablesUsingFlightInfo() {
+  travelDeskRentalCarsEditTable.value?.refresh()
+  travelDeskHotelEditTable.value?.refresh()
 }
 
 const snack = useSnack()
-
-async function saveAndNotify() {
-  if (validate() !== true) {
-    snack("Form validation failed! Please fill out all required fields.", {
-      color: "error",
-    })
-    throw new Error("Form validation failed")
-  }
-
-  await save()
-  snack("Request updated.")
-}
-
-async function saveNewTravelRequest(saveType) {
-  if (validate() !== true) {
-    // TODO: notify user of validation error
-    throw new Error("Form validation failed")
-  }
-
-  if (saveType == "save" || checkFields()) {
-    savingData.value = true
-    const body = cloneDeep(travelDeskTravelRequest.value)
-    delete body.internationalTravel
-    delete body.differentTravelContact
-    delete body.office
-    delete body.department
-    delete body.fullName
-    if (saveType == "submit" && body.status == "draft") {
-      body.status = "submitted"
-    } else if (saveType == "submit" && body.status == "options_provided") {
-      body.status = "options_ranked"
-    }
-    const id = travelAuthorizationId.value
-    try {
-      await securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      savingData.value = false
-    }
-  }
-}
-
-function checkFields() {
-  state.firstNameErr = travelDeskTravelRequest.value.legalFirstName ? false : true
-  state.middleNameErr = false
-  state.lastNameErr = travelDeskTravelRequest.value.legalLastName ? false : true
-  state.birthDateErr = travelDeskTravelRequest.value.birthDate ? false : true
-  state.travelAuthErr = false //this.travelDeskTravelRequest.travelAuth? false:true; TODO: add this in backend
-  state.addressErr = travelDeskTravelRequest.value.strAddress ? false : true
-  state.cityErr = travelDeskTravelRequest.value.city ? false : true
-  state.provinceErr = travelDeskTravelRequest.value.province ? false : true
-  state.postalCodeErr = travelDeskTravelRequest.value.postalCode ? false : true
-  state.passportNumberErr =
-    internationalTravel.value && !travelDeskTravelRequest.value.passportNum ? true : false
-  state.passportCountryErr =
-    internationalTravel.value && !travelDeskTravelRequest.value.passportCountry ? true : false
-  state.businessPhoneErr = travelDeskTravelRequest.value.busPhone ? false : true
-  state.businessEmailErr = travelDeskTravelRequest.value.busEmail ? false : true
-  state.travelPhoneErr =
-    travelDeskTravelRequest.value.travelContact && !travelDeskTravelRequest.value.travelPhone
-      ? true
-      : false //show hint
-  state.travelEmailErr =
-    travelDeskTravelRequest.value.travelContact && !travelDeskTravelRequest.value.travelEmail
-      ? true
-      : false //show hint
-  state.flightRequestsErr = false
-  state.rentalCarsErr = false
-  state.hotelsErr = false
-  state.otherTransportationErr = false
-
-  if (travelDeskTravelRequest.value.status == "options_provided") {
-    let error = false
-    for (const question of travelDeskTravelRequest.value.questions) {
-      if (question.response) question.state.responseErr = false
-      else {
-        question.state.responseErr = true
-        error = true
-      }
-    }
-
-    for (const flightRequest of travelDeskTravelRequest.value.flightRequests) {
-      for (const flightOption of flightRequest.flightOptions) {
-        if (!flightOption.flightPreference) {
-          error = true
-        }
-      }
-    }
-
-    if (error) return false
-  }
-
-  for (const key of Object.keys(state)) {
-    if (state[key]) return false
-  }
-  return true
-}
+const router = useRouter()
 
 function validate() {
   if (isNil(travelerDetailsFormCard.value)) {
@@ -298,6 +180,53 @@ function validate() {
 
   return travelerDetailsFormCard.value.validate()
 }
+
+async function saveAndNotify() {
+  if (validate() !== true) {
+    snack("Form validation failed! Please fill out all required fields.", {
+      color: "error",
+    })
+    return
+  }
+
+  try {
+    await save()
+    snack("Request updated.", { color: "success" })
+  } catch (error) {
+    snack(`Failed to save request: ${error}`, { color: "error" })
+  }
+}
+
+const debouncedSaveAndNotify = debounce(saveAndNotify, 1000)
+
+async function submitAndNotify() {
+  if (validate() !== true) {
+    snack("Form validation failed! Please fill out all required fields.", {
+      color: "error",
+    })
+    return
+  }
+
+  try {
+    await submit()
+    emit("state-changed")
+    snack("Request submitted.", { color: "success" })
+    router.replace({
+      name: "MyTravelRequestsRequestReadPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    })
+    return
+  } catch (error) {
+    snack(`Failed to submit request: ${error}`, { color: "error" })
+  }
+}
 </script>
 
 <style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+
+<style scoped>
+.v-card.borderless-card {
+  border: none !important;
+  box-shadow: none !important;
+}
+</style>

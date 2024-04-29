@@ -75,6 +75,7 @@ PerDiem.init(
     tableName: "perDiems",
     underscored: false,
     timestamps: false,
+    paranoid: false,
   }
 )
 

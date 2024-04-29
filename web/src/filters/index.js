@@ -64,7 +64,7 @@ Vue.filter("currency", function (currency) {
 
 Vue.filter("flightStartEnd", function (flights) {
   if (flights.length > 0) {
-    const dates = flights.map((flight) => flight.date)
+    const dates = flights.map((flight) => flight.datePreference)
     dates.sort()
     return { start: dates[0], end: flights.length > 1 ? dates[flights.length - 1] : "" }
   } else return { start: "", end: "" }

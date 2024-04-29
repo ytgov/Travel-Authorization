@@ -108,7 +108,7 @@
                   <transportation-request-table
                     :authorizedTravel="authorizedTravel"
                     :readonly="false"
-                    :otherTransportations="travelerDetails.otherTransportation"
+                    :otherTransportations="travelerDetails.otherTransportations"
                   />
                 </template>
               </title-card>
@@ -292,7 +292,7 @@ export default {
             rentalCars: [],
             flightRequests: [],
             hotels: [],
-            otherTransportation: [],
+            otherTransportations: [],
             questions: [],
             status: "draft",
           }
