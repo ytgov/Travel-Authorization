@@ -1,3 +1,7 @@
 src/*/node_modules
 src/*/dist
 npm-debug.log
+
+/now.*
+/*.now.*
+**/now.*

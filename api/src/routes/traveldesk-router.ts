@@ -20,6 +20,7 @@ import {
 } from "@/models"
 
 import db from "@/db/db-client"
+import { knexQueryToSequelizeSelect } from "@/db/utils/knex-query-to-sequelize-select"
 import dbLegacy from "@/db/db-client-legacy"
 
 /** @deprecated - prefer using controller pattern with per-model CRUD actions */
@@ -308,10 +309,8 @@ travelDeskRouter.post(
   "/flight-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    // TODO: use managed Sequelize transaction once all database access is through Sequelize
-    const sequelizeTransaction = await db.transaction()
     try {
-      await dbLegacy.transaction(async (trx) => {
+      return db.transaction(async () => {
         const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const flightRequests = req.body
         // console.log(flightRequests)
@@ -319,7 +318,6 @@ travelDeskRouter.post(
         if (travelDeskTravelRequestId) {
           await TravelDeskFlightRequest.destroy({
             where: { travelRequestId: travelDeskTravelRequestId },
-            transaction: sequelizeTransaction,
           })
 
           for (const flightRequest of flightRequests) {
@@ -330,13 +328,13 @@ travelDeskRouter.post(
 
             flightRequest.travelRequestId = travelDeskTravelRequestId
 
-            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {
-              transaction: sequelizeTransaction,
-            })
+            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
 
-            await dbLegacy("travelDeskFlightOption")
-              .delete()
-              .where("flightRequestID", newFlightRequest.id)
+            await knexQueryToSequelizeSelect(
+              dbLegacy("travelDeskFlightOption")
+                .delete()
+                .where("flightRequestID", newFlightRequest.id)
+            )
 
             for (const newFlightOption of newFlightOptions) {
               delete newFlightOption.state
@@ -346,10 +344,9 @@ travelDeskRouter.post(
 
               newFlightOption.flightRequestID = newFlightRequest.id
 
-              const id = await dbLegacy("travelDeskFlightOption").insert(
-                newFlightOption,
-                "flightOptionID"
-              )
+              const id = await knexQueryToSequelizeSelect<{
+                flightOptionID: number
+              }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
 
               for (const flightSegment of flightSegments) {
                 // console.log(flightSegment)
@@ -360,19 +357,19 @@ travelDeskRouter.post(
                 delete flightSegment.arriveDay
                 delete flightSegment.arriveTime
                 flightSegment.flightOptionID = id[0].flightOptionID
-                await dbLegacy("travelDeskFlightSegment").insert(flightSegment)
+                await knexQueryToSequelizeSelect(
+                  dbLegacy("travelDeskFlightSegment").insert(flightSegment)
+                )
               }
             }
           }
-          await sequelizeTransaction.commit()
-          res.status(200).json("Successful")
+          return res.status(200).json("Successful")
         } else {
-          res.status(500).json("Required fields in submission are blank")
+          return res.status(500).json("Required fields in submission are blank")
         }
       })
     } catch (error: any) {
       console.log(error)
-      await sequelizeTransaction.rollback()
       res.status(500).json("Saving the Flight Request failed")
     }
   }
@@ -466,9 +463,8 @@ travelDeskRouter.post(
     console.warn(
       "Deprecated: travel requests are now created during TravelAuthorization approval service action."
     )
-    const sequelizeTransaction = await db.transaction()
     try {
-      await dbLegacy.transaction(async (trx) => {
+      return db.transaction(async () => {
         const travelAuthorizationId = Number(req.params.travelAuthorizationId)
         const newTravelRequest = req.body
         // console.log(newTravelRequest)
@@ -491,7 +487,7 @@ travelDeskRouter.post(
           const questions = newTravelRequest.questions
           delete newTravelRequest.questions
 
-          const [travelRequest, _created] = await TravelDeskTravelRequest.upsert({
+          const [travelRequest] = await TravelDeskTravelRequest.upsert({
             ...newTravelRequest,
             travelAuthorizationId,
           })
@@ -503,7 +499,6 @@ travelDeskRouter.post(
           //FlightRequests
           await TravelDeskFlightRequest.destroy({
             where: { travelRequestId: travelRequest.id },
-            transaction: sequelizeTransaction,
           })
 
           for (const flightRequest of flightRequests) {
@@ -516,13 +511,13 @@ travelDeskRouter.post(
 
             flightRequest.travelRequestId = travelRequest.id
 
-            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {
-              transaction: sequelizeTransaction,
-            })
+            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {})
 
-            await dbLegacy("travelDeskFlightOption")
-              .delete()
-              .where("flightRequestID", newFlightRequest.id)
+            await knexQueryToSequelizeSelect(
+              dbLegacy("travelDeskFlightOption")
+                .delete()
+                .where("flightRequestID", newFlightRequest.id)
+            )
 
             for (const newFlightOption of newFlightOptions) {
               delete newFlightOption.state
@@ -532,10 +527,9 @@ travelDeskRouter.post(
 
               newFlightOption.flightRequestID = newFlightRequest.id
 
-              const travelDeskFlighOption = await dbLegacy("travelDeskFlightOption").insert(
-                newFlightOption,
-                "flightOptionID"
-              )
+              const travelDeskFlighOption = await knexQueryToSequelizeSelect<{
+                flightOptionID: number
+              }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
 
               for (const flightSegment of flightSegments) {
                 // console.log(flightSegment)
@@ -546,7 +540,9 @@ travelDeskRouter.post(
                 delete flightSegment.arriveDay
                 delete flightSegment.arriveTime
                 flightSegment.flightOptionID = travelDeskFlighOption[0].flightOptionID
-                await dbLegacy("travelDeskFlightSegment").insert(flightSegment)
+                await knexQueryToSequelizeSelect(
+                  dbLegacy("travelDeskFlightSegment").insert(flightSegment)
+                )
               }
             }
           }
@@ -554,7 +550,6 @@ travelDeskRouter.post(
           //RentalCars
           await TravelDeskRentalCar.destroy({
             where: { travelRequestId: travelRequest.id },
-            transaction: sequelizeTransaction,
           })
 
           for (const rentalCar of rentalCars) {
@@ -563,13 +558,12 @@ travelDeskRouter.post(
               delete rentalCar.id
             }
             rentalCar.travelRequestId = travelRequest.id
-            await TravelDeskRentalCar.create(rentalCar, { transaction: sequelizeTransaction })
+            await TravelDeskRentalCar.create(rentalCar)
           }
 
           //Hotels
           await TravelDeskHotel.destroy({
             where: { travelRequestId: travelRequest.id },
-            transaction: sequelizeTransaction,
           })
 
           for (const hotel of hotels) {
@@ -579,13 +573,12 @@ travelDeskRouter.post(
             }
             hotel.travelRequestId = travelRequest.id
 
-            await TravelDeskHotel.create(hotel, { transaction: sequelizeTransaction })
+            await TravelDeskHotel.create(hotel)
           }
 
           //Other Transportations
           await TravelDeskOtherTransportation.destroy({
             where: { travelRequestId: travelRequest.id },
-            transaction: sequelizeTransaction,
           })
 
           for (const otherTransportation of otherTransportations) {
@@ -594,32 +587,29 @@ travelDeskRouter.post(
               delete otherTransportation.id
             }
             otherTransportation.travelRequestId = travelRequest.id
-            await TravelDeskOtherTransportation.create(otherTransportation, {
-              transaction: sequelizeTransaction,
-            })
+            await TravelDeskOtherTransportation.create(otherTransportation, {})
           }
 
           //Questions
-          await dbLegacy("travelDeskQuestion").delete().where("requestID", travelRequest.id)
+          await knexQueryToSequelizeSelect(
+            dbLegacy("travelDeskQuestion").delete().where("requestID", travelRequest.id)
+          )
 
           for (const question of questions) {
             delete question.tmpId
             delete question.state
             if (question.questionID == null) delete question.questionID
             question.requestID = travelRequest.id
-            await dbLegacy("travelDeskQuestion").insert(question)
+            await knexQueryToSequelizeSelect(dbLegacy("travelDeskQuestion").insert(question))
           }
 
-          await sequelizeTransaction.commit()
-
-          res.status(200).json("Successful")
+          return res.status(200).json("Successful")
         } else {
-          res.status(500).json("Required fields in submission are blank")
+          return res.status(500).json("Required fields in submission are blank")
         }
       })
     } catch (error: any) {
       console.log(error)
-      await sequelizeTransaction.rollback()
       res.status(500).json("Saving the Travel Request failed")
     }
   }
