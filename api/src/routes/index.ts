@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction, ErrorRequestHandler } from "ex
 import { DatabaseError } from "sequelize"
 
 import { GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
-import { checkJwt, loadUser } from "@/middleware/authz.middleware"
+import { databaseHealthCheckMiddleware, checkJwt, loadUser } from "@/middleware"
 import { healthCheckRouter } from "@/routes/healthcheck-router"
 import {
   Expenses,
@@ -27,20 +27,19 @@ import {
   TravelDeskTravelRequests,
 } from "@/controllers"
 
-export * from "./owner-router"
-export * from "./users-router"
-export * from "./lookup-router"
-export * from "./healthcheck-router"
-export * from "./form-router"
-export { migrateRouter } from "./migrate-router"
-export * from "./preapproved-router"
-export * from "./traveldesk-router"
-export * from "./travCom-router"
-export * from "./reconcile-router"
-export * from "./lookup-tables-router"
-// export * from "./tmp-travCom-router"
+//// START LEGACY IMPORTS
+import { migrateRouter } from "./migrate-router"
+import { formRouter } from "./form-router"
+import { userRouter } from "./users-router"
+import { preapprovedRouter } from "./preapproved-router"
+import { travelDeskRouter } from "./traveldesk-router"
+import { travComRouter } from "./travCom-router"
+import { reconcileRouter } from "./reconcile-router"
+import { lookupRouter } from "./lookup-router"
+import { lookupTableRouter } from "./lookup-tables-router"
+//// END LEGACY IMPORTS
 
-const router = Router()
+export const router = Router()
 
 // non-api (no authentication is required) routes
 router.route("/_status").get((_req: Request, res: Response) => {
@@ -50,8 +49,26 @@ router.route("/_status").get((_req: Request, res: Response) => {
   })
 })
 
+//// START LEGACY ROUTES
+router.use("/migrate", databaseHealthCheckMiddleware)
+router.use(migrateRouter)
+
+router.use("/api/lookup", databaseHealthCheckMiddleware, lookupRouter)
+router.use("/api/lookup-tables", databaseHealthCheckMiddleware, lookupTableRouter)
+//// END LEGACY ROUTES
+
 // api routes
-router.use("/api", checkJwt, loadUser)
+router.use("/api", databaseHealthCheckMiddleware, checkJwt, loadUser)
+
+//// START MORE LEGACY ROUTES
+router.use("/api/form", formRouter)
+router.use("/api/user", userRouter)
+router.use("/api/preapproved", preapprovedRouter)
+router.use("/api/traveldesk", travelDeskRouter)
+
+router.use("/api/travCom", travComRouter)
+router.use("/api/reconcile", reconcileRouter)
+//// END MORE LEGACY ROUTES
 
 // TODO: move all routing logic to this file, and move all route actions into controllers
 // TODO: convert all routes to use the router.route(/path).action(...).action(...) syntax
@@ -196,13 +213,13 @@ router
 router.use("/api/health-check", healthCheckRouter)
 
 // if no other routes match, return a 404
-router.use("/api", (req: Request, res: Response) => {
+router.use("/api", (_req: Request, res: Response) => {
   return res.status(404).json({ message: "Not Found" })
 })
 
 // Special error handler for all api errors
 // See https://expressjs.com/en/guide/error-handling.html#writing-error-handlers
-router.use("/api", (err: ErrorRequestHandler, req: Request, res: Response, next: NextFunction) => {
+router.use("/api", (err: ErrorRequestHandler, _req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err)
   }

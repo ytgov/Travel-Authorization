@@ -3,8 +3,8 @@ import { validationResult } from "express-validator"
 
 import { User } from "@/models"
 
-export * from "./authz.middleware"
-export * from "./database-health-check-middleware"
+export { loadUser, checkJwt } from "./authz.middleware"
+export { databaseHealthCheckMiddleware } from "./database-health-check-middleware"
 export { requestLoggerMiddleware } from "./request-logger-middleware"
 
 export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
@@ -35,7 +35,7 @@ export function RequiresRoleAdmin(req: Request, res: Response, next: NextFunctio
   next()
 }
 
-export function RequiresAuth(req: Request, res: Response, next: NextFunction) {
+export function RequiresAuth(_req: Request, _res: Response, next: NextFunction) {
   // if (req.isAuthenticated()) {
   return next()
   // }

@@ -4,7 +4,7 @@ import dbLegacy from "@/db/db-client-legacy"
 
 export const migrateRouter = Router()
 
-migrateRouter.get("/migrate/up", async (req: Request, res: Response) => {
+migrateRouter.get("/migrate/up", async (_req: Request, res: Response) => {
   console.log("-------- MIGRATE UP ---------")
   return dbLegacy.migrate
     .up()
@@ -16,7 +16,7 @@ migrateRouter.get("/migrate/up", async (req: Request, res: Response) => {
     })
 })
 
-migrateRouter.get("/migrate/down", async (req: Request, res: Response) => {
+migrateRouter.get("/migrate/down", async (_req: Request, res: Response) => {
   console.log("-------- MIGRATE DOWN ---------")
   return dbLegacy.migrate
     .down()
@@ -28,7 +28,7 @@ migrateRouter.get("/migrate/down", async (req: Request, res: Response) => {
     })
 })
 
-migrateRouter.get("/migrate/latest", async (req: Request, res: Response) => {
+migrateRouter.get("/migrate/latest", async (_req: Request, res: Response) => {
   console.log("-------- MIGRATE LATEST ---------")
   return dbLegacy.migrate
     .latest()
@@ -40,7 +40,7 @@ migrateRouter.get("/migrate/latest", async (req: Request, res: Response) => {
     })
 })
 
-migrateRouter.get("/migrate/seed", async (req: Request, res: Response) => {
+migrateRouter.get("/migrate/seed", async (_req: Request, res: Response) => {
   console.log("-------- MIGRATE SEED ---------")
   return dbLegacy.seed
     .run()
