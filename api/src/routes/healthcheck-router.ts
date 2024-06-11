@@ -1,9 +1,9 @@
 import express, { Request, Response } from "express"
-import { DB_CONFIG, API_PORT, FRONTEND_URL, NODE_ENV } from "@/config"
+import { DB_CONFIG, API_PORT, FRONTEND_URL, NODE_ENV, GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
 
 export const healthCheckRouter = express.Router()
 
-healthCheckRouter.get("/", (req: Request, res: Response) => {
+healthCheckRouter.get("/", (_req: Request, res: Response) => {
   return res.status(200).json({
     appHealth: {
       apiPort: API_PORT,
@@ -16,10 +16,9 @@ healthCheckRouter.get("/", (req: Request, res: Response) => {
       user: DB_CONFIG.connection.user,
       port: DB_CONFIG.connection.port,
     },
-    // TODO: figure out how to inject these into the back-end image.
-    // environment: {
-    //   releaseTag: process.env.RELEASE_TAG,
-    //   gitCommitHash: process.env.GIT_COMMIT_HASH,
-    // },
+    environment: {
+      releaseTag: RELEASE_TAG,
+      gitCommitHash: GIT_COMMIT_HASH,
+    },
   })
 })

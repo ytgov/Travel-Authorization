@@ -2,6 +2,7 @@ import { isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
 import { Op, WhereOptions } from "sequelize"
 
+import logger from "@/utils/logger"
 import {
   RequiresAuth,
   RequiresRoleAdmin,
@@ -121,7 +122,7 @@ travelDeskRouter.get(
       }
       res.status(200).json(forms)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -178,7 +179,7 @@ travelDeskRouter.post(
     try {
       const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
       const newFlightOptions = req.body
-      //console.log(newFlightOptions)
+      //logger.info(newFlightOptions)
       if (newFlightOptions.length < 1 || !travelDeskTravelRequestId)
         return res.status(422).json("Empty Payload for Flight Options")
 
@@ -205,7 +206,7 @@ travelDeskRouter.post(
           )
 
           for (const flightSegment of flightSegments) {
-            // console.log(flightSegment)
+            // logger.info(flightSegment)
             delete flightSegment.tmpId
             delete flightSegment.state
             delete flightSegment.departDay
@@ -219,7 +220,7 @@ travelDeskRouter.post(
         res.status(200).json("Successful")
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Saving the Flight Options failed")
     }
   }
@@ -246,7 +247,7 @@ travelDeskRouter.delete(
         res.status(200).json("Delete Successful")
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Delete failed")
     }
   }
@@ -313,7 +314,7 @@ travelDeskRouter.post(
       return db.transaction(async () => {
         const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const flightRequests = req.body
-        // console.log(flightRequests)
+        // logger.info(flightRequests)
 
         if (travelDeskTravelRequestId) {
           await TravelDeskFlightRequest.destroy({
@@ -349,7 +350,7 @@ travelDeskRouter.post(
               }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
 
               for (const flightSegment of flightSegments) {
-                // console.log(flightSegment)
+                // logger.info(flightSegment)
                 delete flightSegment.tmpId
                 delete flightSegment.state
                 delete flightSegment.departDay
@@ -369,7 +370,7 @@ travelDeskRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Saving the Flight Request failed")
     }
   }
@@ -460,14 +461,14 @@ travelDeskRouter.post(
   "/travel-request/:travelAuthorizationId",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    console.warn(
+    logger.warn(
       "Deprecated: travel requests are now created during TravelAuthorization approval service action."
     )
     try {
       return db.transaction(async () => {
         const travelAuthorizationId = Number(req.params.travelAuthorizationId)
         const newTravelRequest = req.body
-        // console.log(newTravelRequest)
+        // logger.info(newTravelRequest)
 
         if (travelAuthorizationId) {
           delete newTravelRequest.invoiceNumber
@@ -532,7 +533,7 @@ travelDeskRouter.post(
               }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
 
               for (const flightSegment of flightSegments) {
-                // console.log(flightSegment)
+                // logger.info(flightSegment)
                 delete flightSegment.tmpId
                 delete flightSegment.state
                 delete flightSegment.departDay
@@ -609,7 +610,7 @@ travelDeskRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Saving the Travel Request failed")
     }
   }
@@ -641,7 +642,7 @@ travelDeskRouter.delete(
         res.status(200).json("Delete Successful")
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Delete failed")
     }
   }
@@ -656,7 +657,7 @@ travelDeskRouter.post(
       await dbLegacy.transaction(async (trx) => {
         const agencyID = Number(req.params.agencyID)
         const agencyData = req.body
-        //console.log(agencyData)
+        //logger.info(agencyData)
         if (!agencyData.agencyName || !agencyData.agencyInfo)
           return res.status(500).json("Empty Payload for Agency")
 
@@ -671,7 +672,7 @@ travelDeskRouter.post(
         res.status(200).json("Successful")
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Saving the Agency Information failed")
     }
   }
@@ -709,7 +710,7 @@ travelDeskRouter.post(
         res.status(200).json("Successful")
       })
       .catch((error) => {
-        console.log(error)
+        logger.info(error)
         res.status(500).json("Insert failed")
       })
   }
@@ -732,7 +733,7 @@ travelDeskRouter.get(
 
       res.status(200).send(doc.pnrDocument)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("PDF not Found")
     }
   }

@@ -3,28 +3,45 @@ import { Request, Response, NextFunction } from "express"
 import { NODE_ENV } from "@/config"
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
+import logger from "@/utils/logger"
 
-// TODO: make this a generic error hanlder instead and suppress logs?
-// It's clearly not something that should spam the logs on every request.
+let isDatabaseConnectionHealthly = false
+let lastHealthCheckTime = 0
+
+const HEALTH_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+function shouldPerformHealthCheck(
+): boolean {
+  return Date.now() - lastHealthCheckTime >= HEALTH_CHECK_INTERVAL
+}
+
 export async function databaseHealthCheckMiddleware(
   _req: Request,
   res: Response,
   next: NextFunction
 ) {
+  if (isDatabaseConnectionHealthly && !shouldPerformHealthCheck()) {
+    return next()
+  }
+
   try {
     await dbLegacy.raw("SELECT 1")
     if (NODE_ENV !== "test") {
-      console.log("Legacy knex database connection has been established successfully.")
+      logger.info("Legacy knex database connection has been established successfully.")
     }
 
     await db.authenticate()
     if (NODE_ENV !== "test") {
-      console.log("Sequelize database connection has been established successfully.")
+      logger.info("Sequelize database connection has been established successfully.")
     }
+
+    isDatabaseConnectionHealthly = true
+    lastHealthCheckTime = Date.now()
 
     return next()
   } catch (error) {
-    console.error(`Database health check failed with: ${error}`)
+    logger.error(`Database health check failed with: ${error}`)
+    isDatabaseConnectionHealthly = false
     res.status(503).json({ message: "Database health check failed." })
   }
 }

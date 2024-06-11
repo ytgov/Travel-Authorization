@@ -1,3 +1,5 @@
+import logger from "@/utils/logger"
+
 const EWS = require("node-ews");
 const schedule = require("node-schedule");
 const db = require("./queries");
@@ -26,10 +28,10 @@ function sendEmail(receiver: String, subject: String, body: String) {
   ewsChild
     .run("CreateItem", ewsArgs)
     .then((result: any) => {
-      console.log(JSON.stringify(result));
+      logger.info(JSON.stringify(result));
     })
     .catch((err: any) => {
-      console.log(err.stack);
+      logger.info(err.stack);
     });
 }
 
@@ -38,10 +40,10 @@ exports.sendEmail = function (receiver: String, subject: String, body: String) {
   ews
     .run("CreateItem", ewsArgs)
     .then((result: any) => {
-      console.log(JSON.stringify(result));
+      logger.info(JSON.stringify(result));
     })
     .catch((err: any) => {
-      console.log(err.stack);
+      logger.info(err.stack);
     });
 };
 
@@ -51,10 +53,10 @@ exports.sendSuccessfulSubmit = function (receiver: String, code: String) {
   ews
     .run("CreateItem", ewsArgs)
     .then((result: any) => {
-      console.log(JSON.stringify(result));
+      logger.info(JSON.stringify(result));
     })
     .catch((err: any) => {
-      console.log(err.stack);
+      logger.info(err.stack);
     });
 };
 
@@ -64,10 +66,10 @@ exports.sendSuccessfulUpdate = function (receiver: String, code: String) {
   ews
     .run("CreateItem", ewsArgs)
     .then((result: any) => {
-      console.log(JSON.stringify(result));
+      logger.info(JSON.stringify(result));
     })
     .catch((err: any) => {
-      console.log(err.stack);
+      logger.info(err.stack);
     });
 };
 

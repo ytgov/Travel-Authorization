@@ -3,6 +3,7 @@ import { isEmpty, isUndefined } from "lodash"
 
 import db from "@/db/db-client"
 
+import logger from "@/utils/logger"
 import BaseService from "@/services/base-service"
 import { User } from "@/models"
 import { YkGovernmentDirectorySyncService } from "@/services"
@@ -57,7 +58,7 @@ export class CreateService extends BaseService {
       try {
         await YkGovernmentDirectorySyncService.perform(user)
       } catch (error) {
-        console.error(`Failed to sync new user with YG employee directory: ${error}`)
+        logger.error(`Failed to sync new user with YG employee directory: ${error}`)
       }
 
       return user

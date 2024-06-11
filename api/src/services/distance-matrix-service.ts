@@ -1,6 +1,7 @@
 import knex, { Knex } from "knex";
 import { DB_CONFIG } from "../config";
 import _ from "lodash";
+import logger from "@/utils/logger"
 
 export class DistanceMatrixService {
   private db: Knex;
@@ -22,7 +23,7 @@ export class DistanceMatrixService {
         .first();
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -35,7 +36,7 @@ export class DistanceMatrixService {
         .orWhere("destination", location);
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -52,7 +53,7 @@ export class DistanceMatrixService {
         });
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -63,7 +64,7 @@ export class DistanceMatrixService {
       result = await this.db("distanceMatrix").update({ destination: newName }).where("destination", name);
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -77,7 +78,7 @@ export class DistanceMatrixService {
       }
       result = await this.db("distanceMatrix").insert(insertArray);
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -88,7 +89,7 @@ export class DistanceMatrixService {
       result = await this.db("distanceMatrix").delete().where("destination", name);
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -100,7 +101,7 @@ export class DistanceMatrixService {
         return item.origin;
       });
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -110,7 +111,7 @@ export class DistanceMatrixService {
       let result = await this.db("distanceMatrix").select("origin", "destination", "kilometers");
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }

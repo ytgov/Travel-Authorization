@@ -222,16 +222,41 @@ Files:
    DB_USER="app"
    DB_PASS="itsallgood"
    DB_NAME="travel_production"
+
+   AWS_LOGGING_ENABLED="true"
+   AWS_LOGGING_GROUP="travel-authorization"
+   AWS_LOGGING_STREAM="travel-auth-dev.ynet.gov.yk.ca"
+   AWS_LOGGING_REGION="ca-central-1"
+   AWS_LOGGING_ACCESS_ID="some-id"
+   AWS_LOGGING_ACCESS_KEY="some-key"
    ```
 
    - [ ] TODO: investigate if additional custom environment variables are needed
 
-2. Build and boot the production image via
+2. (optional) If testing build arguments do
+
+   ```bash
+   docker compose build \
+      --build-arg RELEASE_TAG=2024.01.8.1 \
+      --build-arg GIT_COMMIT_HASH=532bd759c301ddc3352a1cee41ceac8061bfa3f7
+   ```
+
+   or
+
+   ```bash
+   docker compose build \
+      --build-arg RELEASE_TAG=$(date +%Y.%m.%d) \
+      --build-arg GIT_COMMIT_HASH=$(git rev-parse HEAD)
+   ```
+
+   and then in the next step drop the `--build` flag.
+
+3. Build and boot the production image via
 
    ```bash
    docker compose up --build
    ```
 
-3. Go to http://localhost:3000/ and log in.
+4. Go to http://localhost:3000/ and log in.
 
-4. Navigate around the app and do some stuff and see if it works.
+5. Navigate around the app and do some stuff and see if it works.

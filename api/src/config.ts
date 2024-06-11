@@ -20,17 +20,6 @@ if (process.env.NODE_ENV !== "test") {
   console.log("Loading env: ", dotEnvPath)
 }
 
-let obj = process.env
-let pattern = "VUE_APP_"
-
-export const VUE_APP: any = Object.keys(obj)
-  .filter((k) => k.includes(pattern))
-  .reduce((cur, key) => {
-    return Object.assign(cur, {
-      [key]: obj[key],
-    })
-  }, {})
-
 export const API_PORT = parseInt(process.env.API_PORT || "3000")
 export const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:8080"
 export const AUTH_REDIRECT = process.env.AUTH_REDIRECT || process.env.FRONTEND_URL || ""
@@ -81,3 +70,14 @@ export const TRAVCOM_DB_CONFIG = {
     port: parseInt(process.env.TRAVCOM_DB_PORT || "1433"),
   },
 }
+
+export const RELEASE_TAG = process.env.RELEASE_TAG || ""
+export const GIT_COMMIT_HASH = process.env.GIT_COMMIT_HASH || ""
+
+export const AWS_LOGGING_ENABLED = process.env.AWS_LOGGING_ENABLED || "false"
+export const AWS_LOGGING_GROUP = process.env.AWS_LOGGING_GROUP || ""
+export const AWS_LOGGING_STREAM = process.env.AWS_LOGGING_STREAM || ""
+export const AWS_LOGGING_REGION = process.env.AWS_LOGGING_REGION || "ca-central-1"
+export const AWS_LOGGING_ACCESS_ID = process.env.AWS_LOGGING_ACCESS_ID || ""
+export const AWS_LOGGING_ACCESS_KEY = process.env.AWS_LOGGING_ACCESS_KEY || ""
+export const DEFAULT_LOG_LEVEL = process.env.DEFAULT_LOG_LEVEL || "debug"

@@ -1,4 +1,5 @@
 import dbLegacy from "@/db/db-client-legacy"
+import logger from "@/utils/logger"
 
 export class AuditService {
   async log(userId: number, taid: number, action: string, note?: string): Promise<any | undefined> {
@@ -14,7 +15,7 @@ export class AuditService {
 
       return true
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
     }
   }
 }
