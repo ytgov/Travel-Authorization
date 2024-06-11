@@ -6,15 +6,23 @@ import db from "@/db/db-client"
 import logger from "@/utils/logger"
 
 let isDatabaseConnectionHealthly = false
+let lastHealthCheckTime = 0
 
-// TODO: make this a generic error hanlder instead and suppress logs?
-// It's clearly not something that should spam the logs on every request.
+const HEALTH_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+function shouldPerformHealthCheck(
+): boolean {
+  return Date.now() - lastHealthCheckTime >= HEALTH_CHECK_INTERVAL
+}
+
 export async function databaseHealthCheckMiddleware(
   _req: Request,
   res: Response,
   next: NextFunction
 ) {
-  if (isDatabaseConnectionHealthly) return next()
+  if (isDatabaseConnectionHealthly && !shouldPerformHealthCheck()) {
+    return next()
+  }
 
   try {
     await dbLegacy.raw("SELECT 1")
@@ -28,10 +36,12 @@ export async function databaseHealthCheckMiddleware(
     }
 
     isDatabaseConnectionHealthly = true
+    lastHealthCheckTime = Date.now()
 
     return next()
   } catch (error) {
     logger.error(`Database health check failed with: ${error}`)
+    isDatabaseConnectionHealthly = false
     res.status(503).json({ message: "Database health check failed." })
   }
 }
