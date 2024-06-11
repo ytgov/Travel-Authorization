@@ -1,7 +1,9 @@
 import { Router, Request, Response, NextFunction, ErrorRequestHandler } from "express"
 import { DatabaseError } from "sequelize"
 
+import { GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
 import { checkJwt, loadUser } from "@/middleware/authz.middleware"
+import { healthCheckRouter } from "@/routes/healthcheck-router"
 import {
   Expenses,
   ExpensesController,
@@ -24,7 +26,6 @@ import {
   TravelDeskOtherTransportationsController,
   TravelDeskTravelRequests,
 } from "@/controllers"
-import { healthCheckRouter } from "./healthcheck-router"
 
 export * from "./owner-router"
 export * from "./users-router"
@@ -41,6 +42,15 @@ export * from "./lookup-tables-router"
 
 const router = Router()
 
+// non-api (no authentication is required) routes
+router.route("/_status").get((_req: Request, res: Response) => {
+  return res.json({
+    RELEASE_TAG,
+    GIT_COMMIT_HASH,
+  })
+})
+
+// api routes
 router.use("/api", checkJwt, loadUser)
 
 // TODO: move all routing logic to this file, and move all route actions into controllers

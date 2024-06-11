@@ -56,6 +56,12 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
+ARG RELEASE_TAG
+ARG GIT_COMMIT_HASH
+
+ENV RELEASE_TAG=${RELEASE_TAG}
+ENV GIT_COMMIT_HASH=${GIT_COMMIT_HASH}
+
 # Persists TZ=UTC effect after container build and into container run
 # Ensures dates/times are consistently formated as UTC
 # Conversion to local time should happen in the UI

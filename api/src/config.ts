@@ -81,3 +81,6 @@ export const TRAVCOM_DB_CONFIG = {
     port: parseInt(process.env.TRAVCOM_DB_PORT || "1433"),
   },
 }
+
+export const RELEASE_TAG = process.env.RELEASE_TAG || ""
+export const GIT_COMMIT_HASH = process.env.GIT_COMMIT_HASH || ""
