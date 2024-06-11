@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { applicationName } from "@/config";
+import { APPLICATION_NAME } from "@/config";
 
 import useCurrentUser from "@/use/use-current-user"
 
@@ -56,7 +56,7 @@ const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
 export default {
   name: "SignIn",
   data: () => ({
-    title: `${applicationName}`,
+    title: APPLICATION_NAME,
   }),
   mounted() {
     unsetCurrentUser()

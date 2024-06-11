@@ -12,13 +12,13 @@
 </template>
 
 <script>
-import { applicationName } from "@/config"
+import { APPLICATION_NAME } from "@/config"
 import { getInstance } from "@/auth"
 
 export default {
   name: "AuthLoadingOverlay",
   data: () => ({
-    title: `Loading ${applicationName}`,
+    title: `Loading ${APPLICATION_NAME}`,
   }),
   computed: {
     authService() {

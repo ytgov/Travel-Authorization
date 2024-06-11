@@ -214,7 +214,7 @@ export default {
     headerShow: false,
     menuShow: false,
     loadingClass: "d-none",
-    applicationName: config.applicationName,
+    applicationName: config.APPLICATION_NAME,
     applicationIcon: config.applicationIcon,
     hasSidebar: config.hasSidebar,
     hasSidebarClosable: config.hasSidebarClosable,
