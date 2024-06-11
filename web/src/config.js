@@ -1,5 +1,4 @@
 export const APPLICATION_NAME = "Travel Authorization"
-export const applicationIcon = "mdi-cash-register"
 export const hasSidebar = true
 export const hasSidebarClosable = false
 
