@@ -216,7 +216,6 @@ export default {
     loadingClass: "d-none",
     applicationName: config.applicationName,
     applicationIcon: config.applicationIcon,
-    sections: config.sections,
     hasSidebar: config.hasSidebar,
     hasSidebarClosable: config.hasSidebarClosable,
     currentId: 0,
