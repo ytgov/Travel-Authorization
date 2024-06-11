@@ -2,10 +2,10 @@ import axios from "axios"
 import qs from "qs"
 
 import { getInstance } from "@/auth"
-import { apiBaseUrl } from "@/config"
+import { API_BASE_URL } from "@/config"
 
 export const httpClient = axios.create({
-  baseURL: apiBaseUrl,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

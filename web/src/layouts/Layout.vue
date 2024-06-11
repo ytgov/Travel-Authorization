@@ -188,7 +188,7 @@
 import { mapState } from "vuex"
 
 import { getInstance } from "@/auth"
-import * as config from "@/config"
+import { RELEASE_TAG, APPLICATION_NAME, HAS_SIDEBAR, HAS_SIDEBAR_CLOSABLE } from "@/config"
 import router from "@/router"
 import store from "@/store"
 
@@ -207,16 +207,16 @@ export default {
     PageLoader,
   },
   data: () => ({
-    releaseTag: config.releaseTag,
+    releaseTag: RELEASE_TAG,
     dialog: false,
     drawer: null,
     drawerRight: null,
     headerShow: false,
     menuShow: false,
     loadingClass: "d-none",
-    applicationName: config.APPLICATION_NAME,
-    hasSidebar: config.hasSidebar,
-    hasSidebarClosable: config.hasSidebarClosable,
+    applicationName: APPLICATION_NAME,
+    hasSidebar: HAS_SIDEBAR,
+    hasSidebarClosable: HAS_SIDEBAR_CLOSABLE,
     currentId: 0,
     menuTitle: "Dashboard",
 
@@ -239,7 +239,7 @@ export default {
     },
     isInDevelopmentOrUserAcceptanceTesting() {
       return (
-        config.environment === "development" ||
+        config.ENVIRONMENT === "development" ||
         window.location.hostname === "travel-auth-dev.ynet.gov.yk.ca"
       )
     },
@@ -281,7 +281,7 @@ export default {
       unsetCurrentUser()
 
       // TODO: remove development customization once we update Auth0 environment
-      if (config.environment === "development") {
+      if (config.ENVIRONMENT === "development") {
         this.$auth.logout()
       } else {
         this.$auth.logout({

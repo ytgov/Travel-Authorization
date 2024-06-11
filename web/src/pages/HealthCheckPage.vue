@@ -113,7 +113,7 @@
 <script>
 import http from "@/api/http-client"
 
-import { releaseTag, gitCommitHash } from "@/config"
+import { RELEASE_TAG, GIT_COMMIT_HASH } from "@/config"
 
 export default {
   name: "HealthCheckPage",
@@ -125,8 +125,8 @@ export default {
     },
     // TODO: load from back-end
     environment: {
-      releaseTag,
-      gitCommitHash,
+      releaseTag: RELEASE_TAG,
+      gitCommitHash: GIT_COMMIT_HASH,
     },
   }),
   computed: {

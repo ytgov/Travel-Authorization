@@ -14,7 +14,7 @@ import "@/filters"
 import Notifications from "@/components/Notifications"
 import MapDialog from "@/components/MapDialog"
 
-import { environment, apiBaseUrl, releaseTag, gitCommitHash } from "@/config"
+import { ENVIRONMENT, API_BASE_URL, RELEASE_TAG, GIT_COMMIT_HASH } from "@/config"
 
 Vue.use(VueApexCharts)
 
@@ -58,8 +58,8 @@ new Vue({
 }).$mount("#app")
 
 console.log("App is running", {
-  environment,
-  apiBaseUrl,
-  releaseTag,
-  gitCommitHash,
+  environment: ENVIRONMENT,
+  apiBaseUrl: API_BASE_URL,
+  releaseTag: RELEASE_TAG,
+  gitCommitHash: GIT_COMMIT_HASH,
 })

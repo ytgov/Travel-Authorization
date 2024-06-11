@@ -1,7 +1,7 @@
 import axios from "axios"
 
 import { getInstance } from "../auth"
-import { apiBaseUrl } from "../config"
+import { API_BASE_URL } from "../config"
 
 // TODO: deprecate this file in favor of web/src/api/http-client.js
 export async function prepareAxios() {
@@ -9,7 +9,7 @@ export async function prepareAxios() {
   const token = await auth.getTokenSilently()
 
   return axios.create({
-    baseURL: apiBaseUrl,
+    baseURL: API_BASE_URL,
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
