@@ -2,6 +2,7 @@ import express, { Request, Response } from "express"
 import { ModelStatic, Op } from "sequelize"
 import { isNil } from "lodash"
 
+import logger from "@/utils/logger"
 import { RequiresAuth, RequiresRolePatAdminOrAdmin } from "@/middleware"
 import db, {
   TravelAuthorizationPreApproval,
@@ -49,7 +50,7 @@ preapprovedRouter.get(
       const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
       res.status(200).json(submission)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Record Not Found")
     }
   }
@@ -115,7 +116,7 @@ preapprovedRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -158,7 +159,7 @@ preapprovedRouter.delete(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Delete failed")
     }
   }
@@ -228,7 +229,7 @@ preapprovedRouter.post(
         res.status(422).json("Required fields in submission are blank")
       }
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -248,7 +249,7 @@ preapprovedRouter.get("/document/:submissionId", RequiresAuth, async function (r
 
     res.status(200).send(document.approvalDoc)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("PDF not Found")
   }
 })
@@ -318,7 +319,7 @@ preapprovedRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -343,7 +344,7 @@ preapprovedRouter.delete(
         res.status(200).json("Delete Successful")
       }
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Delete failed")
     }
   }

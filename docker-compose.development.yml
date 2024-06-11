@@ -10,6 +10,8 @@ x-default-environment: &default-environment
   DB_PASS: &default-db-password itsallgood
   DB_USER: &default-db-user app
   DB_PORT: 5432
+  RELEASE_TAG: "${RELEASE_TAG:-development}"
+  GIT_COMMIT_HASH: "${GIT_COMMIT_HASH:-not-set}"
 
 services:
   api:

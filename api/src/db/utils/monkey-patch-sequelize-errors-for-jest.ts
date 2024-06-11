@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Sequelize } from "sequelize"
 
+import logger from "@/utils/logger"
+
 const sequelizeVersion = (Sequelize as any).version
 const major = sequelizeVersion.split(".").map(Number)[0]
 
 if (major >= 7) {
-  console.warn("This patch was probably made redundant in Sequelize v7, you should check!")
+  logger.warn("This patch was probably made redundant in Sequelize v7, you should check!")
 }
 
 /**

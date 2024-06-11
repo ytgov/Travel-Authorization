@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { ReturnValidationErrors } from "../middleware";
 import { DB_CONFIG } from "../config";
 import knex from "knex";
+import logger from "@/utils/logger"
 import { DistanceMatrixService } from "../services";
 
 const db = knex(DB_CONFIG);
@@ -18,7 +19,7 @@ lookupTableRouter.get("/distanceMatrix/distance", ReturnValidationErrors, async 
       res.status(200).json(distance);
     }
   } catch (error: any) {
-    console.log(error);
+    logger.info(error);
     res.status(500).json("Internal Server Error");
   }
 });
@@ -40,7 +41,7 @@ lookupTableRouter.put("/distanceMatrix/distance", ReturnValidationErrors, async 
       res.status(200).json(distance);
     }
   } catch (error: any) {
-    console.log(error);
+    logger.info(error);
     res.status(500).json("Internal Server Error");
   }
 });
@@ -53,7 +54,7 @@ lookupTableRouter.get(
       let distance = await distanceMatrixService.getLocations();
       res.status(200).json(distance);
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       res.status(500).json("Internal Server Error");
     }
   }
@@ -71,7 +72,7 @@ lookupTableRouter.put(
         res.status(200).json(distance);
       }
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       res.status(500).json("Internal Server Error");
     }
   }

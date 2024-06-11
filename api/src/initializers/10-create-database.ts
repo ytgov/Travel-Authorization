@@ -1,6 +1,7 @@
 import knex from "knex"
 
 import { DB_NAME, DB_HOST, DB_PASS, DB_PORT, DB_USER } from "@/config"
+import logger from "@/utils/logger"
 
 const db = knex({
   client: "postgres",
@@ -22,9 +23,9 @@ async function databaseExists(databaseName: string): Promise<boolean> {
 async function createDatabase(): Promise<void> {
   if (await databaseExists(DB_NAME)) return
 
-  console.log(`Database ${DB_NAME} does not exist: creating...`)
+  logger.info(`Database ${DB_NAME} does not exist: creating...`)
   return db.raw(`CREATE DATABASE ${DB_NAME}`).catch((error) => {
-    console.error("Failed to create database:", error)
+    logger.error("Failed to create database:", error)
   })
 }
 

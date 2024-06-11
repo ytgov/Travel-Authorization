@@ -1,5 +1,6 @@
 import knex, { Knex } from "knex";
 import { DB_CONFIG } from "../config";
+import logger from "@/utils/logger"
 
 export class PerDiemsService {
   private db: Knex;
@@ -13,7 +14,7 @@ export class PerDiemsService {
       let result = await this.db("perDiems").select("id", "claim", "location", "amount", "currency");
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -26,7 +27,7 @@ export class PerDiemsService {
         .first();
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -41,7 +42,7 @@ export class PerDiemsService {
       });
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -64,7 +65,7 @@ export class PerDiemsService {
         .where("id", id);
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -74,7 +75,7 @@ export class PerDiemsService {
       let result = await this.db("perDiems").delete().where("id", id);
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }
@@ -87,7 +88,7 @@ export class PerDiemsService {
         .first();
       return result;
     } catch (error: any) {
-      console.log(error);
+      logger.info(error);
       return [];
     }
   }

@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { RequiresAuth, RequiresRoleAdmin, RequiresRoleTdUser, RequiresRoleTdUserOrAdmin } from "../middleware";
 import { DB_CONFIG } from "../config";
 import knex from "knex";
+import logger from "@/utils/logger"
 
 const db = knex(DB_CONFIG);
 
@@ -32,7 +33,7 @@ reconcileRouter.post("/", RequiresAuth, async function (req: Request, res: Respo
       res.status(200).json("Successful");
     });
   } catch (error: any) {
-    console.log(error);
+    logger.info(error);
     res.status(500).json("Saving the Flight Reconciliations failed");
   }
 });

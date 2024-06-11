@@ -1,6 +1,7 @@
 import { isEmpty, isNil, isUndefined } from "lodash"
 import { Attributes } from "sequelize"
 
+import logger from "@/utils/logger"
 import { yukonGovernmentIntegration } from "@/integrations"
 import db, {
   TravelAuthorization,
@@ -104,7 +105,7 @@ export class ApproveService extends BaseService {
     try {
       const employee = await yukonGovernmentIntegration.fetchEmployee(email)
       if (isNil(employee)) {
-        console.debug(`Failed to find employee info for email: ${email}`)
+        logger.debug(`Failed to find employee info for email: ${email}`)
         return {}
       }
 
@@ -133,7 +134,7 @@ export class ApproveService extends BaseService {
         travelEmail,
       }
     } catch (error) {
-      console.error(`Failed to retrieve employee info: ${error}`)
+      logger.error(`Failed to retrieve employee info: ${error}`)
       return {}
     }
   }

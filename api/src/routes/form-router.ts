@@ -4,6 +4,7 @@ import express, { Request, Response } from "express"
 
 import { ReturnValidationErrors } from "@/middleware"
 
+import logger from "@/utils/logger"
 import { FormService, AuditService } from "@/services"
 import { Expense, TravelAuthorization, User } from "@/models"
 
@@ -16,7 +17,7 @@ const auditService = new AuditService()
 
 // Get all forms for a user
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
-  console.warn("DEPRECATED: prefer /api/travel-authorizations instead")
+  logger.warn("DEPRECATED: prefer /api/travel-authorizations instead")
   try {
     const user = req.user
     const forms = await TravelAuthorization.findAll({
@@ -39,7 +40,7 @@ formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: R
 
     res.status(200).json(forms)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -58,7 +59,7 @@ formRouter.get(
 
       res.status(200).json(await formService.getForm(form.id.toString()))
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Error retrieving form")
     }
   }
@@ -80,7 +81,7 @@ formRouter.get("/:formId", ReturnValidationErrors, async function (req: Request,
       res.status(404).json("Form not found")
     }
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -113,7 +114,7 @@ formRouter.post(
         res.status(404).json("Form not found")
       }
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -124,7 +125,7 @@ formRouter.post(
   "/:formId/submit",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    console.warn(
+    logger.warn(
       "This method is deprecated, and will be removed in a future version. Please use POST /api/forms instead."
     )
     try {
@@ -152,7 +153,7 @@ formRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Form submission failed")
     }
   }
@@ -163,7 +164,7 @@ formRouter.post(
   "/:formId/deny",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    console.log("Saving Form")
+    logger.info("Saving Form")
 
     try {
       await dbLegacy.transaction(async (trx) => {
@@ -192,7 +193,7 @@ formRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -203,7 +204,7 @@ formRouter.post(
   "/:formId/approve",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    console.log("Saving Form")
+    logger.info("Saving Form")
 
     try {
       await dbLegacy.transaction(async (trx) => {
@@ -230,7 +231,7 @@ formRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -242,7 +243,7 @@ formRouter.post(
   "/:formId/reassign",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    console.log("Reassigning Form")
+    logger.info("Reassigning Form")
 
     try {
       await dbLegacy.transaction(async (trx) => {
@@ -275,7 +276,7 @@ formRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -285,7 +286,7 @@ formRouter.post(
   "/:formId/requestChange",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    console.log("Request Form Changes")
+    logger.info("Request Form Changes")
 
     try {
       await dbLegacy.transaction(async (trx) => {
@@ -318,7 +319,7 @@ formRouter.post(
         }
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Insert failed")
     }
   }
@@ -345,7 +346,7 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
         status: TravelAuthorization.Statuses.DELETED,
       })
       .then(async () => {
-        console.log("Delete successful", req.params.id)
+        logger.info("Delete successful", req.params.id)
         await auditService.log(user.id, form.id, "Delete", "Deteled form")
         res.status(200).json("Delete successful")
       })
@@ -379,7 +380,7 @@ formRouter.get(
 
       res.status(200).json(expenses)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Update failed")
     }
   }
@@ -417,7 +418,7 @@ formRouter.post(
 
       res.status(200).json("Updated expenses successful")
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Update failed")
     }
   }
@@ -445,7 +446,7 @@ formRouter.post(
         res.status(200).json("Updated report successful")
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Update failed")
     }
   }
@@ -471,7 +472,7 @@ formRouter.post(
 
       res.status(200).json("Updated report successful")
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Update failed")
     }
   }
@@ -491,7 +492,7 @@ formRouter.get(
 
       res.status(200).json(report)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Update failed")
     }
   }
@@ -530,7 +531,7 @@ formRouter.get(
       }
       res.status(200).json(result)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Lookup failed")
     }
   }

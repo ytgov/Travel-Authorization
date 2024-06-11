@@ -1,6 +1,8 @@
 import * as fs from "fs/promises"
 import * as path from "path"
 
+import logger from "@/utils/logger"
+
 const NON_INITIALIZER_REGEX = /^index\.(ts|js)$/
 
 export async function importAndExecuteInitializers() {
@@ -12,12 +14,12 @@ export async function importAndExecuteInitializers() {
     if (NON_INITIALIZER_REGEX.test(file)) return
 
     const modulePath = path.join(__dirname, file)
-    console.log(`Running initializer: ${modulePath}`)
+    logger.info(`Running initializer: ${modulePath}`)
 
     const { default: initializerAction } = await import(modulePath)
 
-    return initializerAction().catch((error: any) => {
-      console.error(`Initialization error in ${modulePath}:`, error)
+    return initializerAction().catch((error: unknown) => {
+      logger.error(`Initialization error in ${modulePath}:`, error)
       return Promise.reject(error)
     })
   }, Promise.resolve())
@@ -28,7 +30,7 @@ if (require.main === module) {
   importAndExecuteInitializers()
     .then(() => process.exit(0))
     .catch(() => {
-      console.log("Failed to complete initialization!")
+      logger.info("Failed to complete initialization!")
       return process.exit(0)
     })
 }

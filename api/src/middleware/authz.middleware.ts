@@ -5,10 +5,11 @@ import axios from "axios"
 import jwksRsa, { type GetVerificationKey } from "jwks-rsa"
 
 import { AUTH0_DOMAIN, AUTH0_AUDIENCE, NODE_ENV } from "@/config"
+import logger from "@/utils/logger"
 import { User } from "@/models"
 
 if (NODE_ENV !== "test") {
-  console.log("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
+  logger.info("AUTH0_DOMAIN", `${AUTH0_DOMAIN}/.well-known/jwks.json`)
 }
 
 export type AuthorizationRequest = JwtRequest & {
@@ -42,7 +43,7 @@ interface Auth0Response {
 }
 
 class Auth0PayloadError extends Error {
-  constructor(data: any) {
+  constructor(data: unknown) {
     super(`Payload from Auth0 is strange or failed for: ${JSON.stringify(data)}`)
     this.name = "Auth0PayloadError"
   }
@@ -77,7 +78,7 @@ function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
       })
 
       if (created) {
-        console.log(`CREATED USER FOR ${email}: ${JSON.stringify(user.dataValues)}`)
+        logger.info(`CREATED USER FOR ${email}: ${JSON.stringify(user.dataValues)}`)
       }
 
       return user
@@ -101,7 +102,7 @@ export async function loadUser(req: AuthorizationRequest, res: Response, next: N
     })
     .catch((error) => {
       if (error instanceof Auth0PayloadError) {
-        console.log(error)
+        logger.info(error)
         return res.status(502).json({ message: "External authorization api failed." })
       } else {
         return res.status(401).json({ message: "User authentication failed." })

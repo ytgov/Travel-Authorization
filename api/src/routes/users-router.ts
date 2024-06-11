@@ -2,6 +2,7 @@ import { isNull } from "lodash"
 import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
+import logger from "@/utils/logger"
 import { RequiresRoleAdmin } from "@/middleware"
 import { RequiresRoleTdUser } from "@/middleware"
 import { User } from "@/models"
@@ -30,7 +31,7 @@ userRouter.get("/", async (req: Request, res: Response) => {
     let users = await User.findAll()
     res.status(200).json(users)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -50,7 +51,7 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
 
     res.status(200).json(users)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -59,7 +60,7 @@ userRouter.put(
   "/:id/permissions",
   /* RequiresRoleAdmin, */ async (req: Request, res: Response) => {
     try {
-      console.log("body", {
+      logger.info("body", {
         firstName: req.body.first_name,
         lastName: req.body.last_name,
         department: req.body.departments,
@@ -76,7 +77,7 @@ userRouter.put(
       )
       res.status(200).json("Saved permissions")
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -97,7 +98,7 @@ userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
     }
     res.status(200).json(permissions)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -111,7 +112,7 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
 
     res.status(200).json(user)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
