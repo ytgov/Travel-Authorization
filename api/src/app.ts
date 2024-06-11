@@ -2,9 +2,15 @@ import express, { Request, Response } from "express"
 import cors from "cors"
 import path from "path"
 import helmet from "helmet"
+import fileUpload from "express-fileupload"
 
 import * as config from "./config"
-
+import {
+  checkJwt,
+  loadUser,
+  databaseHealthCheckMiddleware,
+  requestLoggerMiddleware,
+} from "@/middleware"
 import {
   userRouter,
   lookupRouter,
@@ -18,20 +24,10 @@ import {
   // tmpTravComRouter,
 } from "./routes"
 import routes from "./routes"
-import { checkJwt, loadUser, databaseHealthCheckMiddleware, requestLoggerMiddleware } from "@/middleware"
-
-var fileupload = require("express-fileupload")
 
 const app = express()
 
 app.use(requestLoggerMiddleware)
-app.use(express.json()) // for parsing application/json
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-) // for parsing application/x-www-form-urlencoded
-
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -50,7 +46,6 @@ app.use(
     },
   })
 )
-
 app.use(
   cors({
     origin: config.FRONTEND_URL,
@@ -60,7 +55,16 @@ app.use(
   })
 )
 
-app.use(fileupload()) // Add FormData support
+// for parsing application/json
+app.use(express.json())
+// for parsing application/x-www-form-urlencoded
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+)
+// Adds FormData support
+app.use(fileUpload())
 
 if (config.NODE_ENV !== "test") {
   console.log("host: ", process.env.DB_HOST)
@@ -93,7 +97,7 @@ app.use(routes)
 app.use(express.static(path.join(__dirname, "web")))
 
 // if no other routes match, just send the front-end
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "web") + "/index.html")
 })
 
