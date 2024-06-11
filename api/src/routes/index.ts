@@ -50,6 +50,8 @@ router.route("/_status").get((_req: Request, res: Response) => {
   })
 })
 
+// TODO: move all route actions into controllers
+// TODO: convert all routes to use the router.route(/path).action(...).action(...) syntax
 //// START LEGACY ROUTES
 router.use("/migrate", databaseHealthCheckMiddleware)
 router.use(migrateRouter)
@@ -71,8 +73,6 @@ router.use("/api/travCom", travComRouter)
 router.use("/api/reconcile", reconcileRouter)
 //// END MORE LEGACY ROUTES
 
-// TODO: move all routing logic to this file, and move all route actions into controllers
-// TODO: convert all routes to use the router.route(/path).action(...).action(...) syntax
 router.route("/api/expenses").get(ExpensesController.index).post(ExpensesController.create)
 router
   .route("/api/expenses/:expenseId")
