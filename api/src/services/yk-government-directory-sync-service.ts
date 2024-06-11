@@ -1,5 +1,6 @@
 import { isEmpty, isNil } from "lodash"
 
+import logger from "@/utils/logger"
 import { User } from "@/models"
 import { yukonGovernmentIntegration } from "@/integrations"
 
@@ -19,7 +20,7 @@ export class YkGovernmentDirectorySyncService extends BaseService {
     try {
       const employee = await yukonGovernmentIntegration.fetchEmployee(email)
       if (isNil(employee)) {
-        console.log(`Failed to find any employee info for email=${email}`)
+        logger.info(`Failed to find any employee info for email=${email}`)
         return this.user.update({
           lastSyncFailureAt: new Date(),
         })
@@ -36,7 +37,7 @@ export class YkGovernmentDirectorySyncService extends BaseService {
         lastSyncFailureAt: null,
       })
     } catch (error) {
-      console.error(`User sync failure for ${email} with yukon government directory`, error)
+      logger.error(`User sync failure for ${email} with yukon government directory`, error)
       return this.user.update({
         lastSyncFailureAt: new Date(),
       })

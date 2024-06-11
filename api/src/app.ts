@@ -6,6 +6,7 @@ import fileUpload from "express-fileupload"
 
 import { FRONTEND_URL, NODE_ENV } from "@/config"
 import { requestLoggerMiddleware } from "@/middleware"
+import logger from "@/utils/logger"
 import router from "@/routes"
 
 const app = express()
@@ -50,10 +51,10 @@ app.use(
 app.use(fileUpload())
 
 if (NODE_ENV !== "test") {
-  console.log("host: ", process.env.DB_HOST)
-  console.log("user: ", process.env.DB_USER)
-  console.log("psss: ", "*********")
-  console.log("db name: ", process.env.DB_NAME)
+  logger.info("host: ", process.env.DB_HOST)
+  logger.info("user: ", process.env.DB_USER)
+  logger.info("psss: ", "*********")
+  logger.info("db name: ", process.env.DB_NAME)
 }
 
 app.use(router)

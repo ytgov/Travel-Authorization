@@ -5,6 +5,7 @@ import { uniq } from "lodash"
 
 import { RequiresAuth, ReturnValidationErrors } from "@/middleware"
 import { DB_CONFIG, AZURE_KEY } from "@/config"
+import logger from "@/utils/logger"
 import { TravelPurpose } from "@/models"
 
 export const lookupRouter = express.Router()
@@ -32,7 +33,7 @@ lookupRouter.get(
         })
       res.status(200).json(emailList)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -48,7 +49,7 @@ lookupRouter.get(
         .where("type", "=", "department")
       res.status(200).json(result)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -71,7 +72,7 @@ lookupRouter.get("/branches", ReturnValidationErrors, async function (req: Reque
     })
     res.status(200).json(result)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -87,7 +88,7 @@ lookupRouter.get(
         .andWhere("type", "=", "branch")
       res.status(200).json(result)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -98,7 +99,7 @@ lookupRouter.get("/roles", ReturnValidationErrors, async function (req: Request,
     let result = await db("roles").select("name")
     res.status(200).json(result)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -142,7 +143,7 @@ lookupRouter.get(
 
       res.status(200).json(depList)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -206,7 +207,7 @@ lookupRouter.get(
           res.json({ data: result })
         })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -220,7 +221,7 @@ lookupRouter.get(
       let result = await db("transportMethod").select("id", "method")
       res.status(200).json(result)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -253,7 +254,7 @@ lookupRouter.get(
 
       res.status(200).json(cleanList)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -285,7 +286,7 @@ lookupRouter.get(
       }
       res.status(200).json(cleanList)
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       res.status(500).json("Internal Server Error")
     }
   }
@@ -321,7 +322,7 @@ lookupRouter.get("/employee-info", async function (req: Request, res: Response) 
 
     res.status(200).json(employeeInfo)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
@@ -335,7 +336,7 @@ function timeToUpdate(item: any) {
 }
 
 async function updateYgEmployees() {
-  console.log("___________UPDATING EMPLOYEE LIST___________")
+  logger.info("___________UPDATING EMPLOYEE LIST___________")
   const today = new Date()
   try {
     await axios
@@ -348,7 +349,7 @@ async function updateYgEmployees() {
       .then(async (resp: any) => {
         if (resp?.data?.employees)
           await db.transaction(async (trx) => {
-            console.log("_____START_Updating_Employees_____")
+            logger.info("_____START_Updating_Employees_____")
             await db("YgEmployees").del()
             await db.raw(`ALTER SEQUENCE "YgEmployees_id_seq" RESTART WITH 1;`)
 
@@ -360,20 +361,20 @@ async function updateYgEmployees() {
             for (let ctt = 0; ctt < employees.length; ctt = ctt + 70)
               await db("YgEmployees").insert(employees.slice(ctt, ctt + 70))
 
-            console.log("_____FINISH______")
+            logger.info("_____FINISH______")
           })
       })
       .catch(async () => {
-        console.log("_____err_____________")
+        logger.info("_____err_____________")
         await db("YgEmployees").update({ update_date: today })
       })
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
   }
 }
 
 async function updateYgDepartments() {
-  console.log("___________UPDATING DEPARTMENTS___________")
+  logger.info("___________UPDATING DEPARTMENTS___________")
   const today = new Date()
   try {
     await axios
@@ -386,7 +387,7 @@ async function updateYgDepartments() {
       .then(async (resp: any) => {
         if (resp?.data?.divisions)
           await db.transaction(async (trx) => {
-            console.log("_____START_Updating_Departments______")
+            logger.info("_____START_Updating_Departments______")
             await db("YgDepartments").del()
             await db.raw(`ALTER SEQUENCE "YgDepartments_id_seq" RESTART WITH 1;`)
 
@@ -399,14 +400,14 @@ async function updateYgDepartments() {
             for (let ctt = 0; ctt < departments.length; ctt = ctt + 70)
               await db("YgDepartments").insert(departments.slice(ctt, ctt + 70))
 
-            console.log("_____FINISH______")
+            logger.info("_____FINISH______")
           })
       })
       .catch(async () => {
-        console.log("_____err_____________")
+        logger.info("_____err_____________")
         await db("YgDepartments").update({ update_date: today })
       })
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
   }
 }

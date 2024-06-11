@@ -1,6 +1,8 @@
 import path from "path"
 import * as dotenv from "dotenv"
 
+import logger from "@/utils/logger"
+
 let dotEnvPath
 switch (process.env.NODE_ENV) {
   case "test":
@@ -17,7 +19,7 @@ dotenv.config({
 })
 
 if (process.env.NODE_ENV !== "test") {
-  console.log("Loading env: ", dotEnvPath)
+  logger.info("Loading env: ", dotEnvPath)
 }
 
 export const API_PORT = parseInt(process.env.API_PORT || "3000")

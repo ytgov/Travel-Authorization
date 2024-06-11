@@ -1,5 +1,6 @@
 import { isNull, minBy } from "lodash"
 
+import logger from "@/utils/logger"
 import { Expense, TravelAuthorization } from "@/models"
 import ExpensesService from "./expenses-service"
 import StopsService from "./stops-service"
@@ -8,7 +9,7 @@ import StopsService from "./stops-service"
 export class FormService {
   //returns form
   async getForm(slug: string): Promise<any | undefined> {
-    console.warn(
+    logger.warn(
       "This method is deprecated, and will be removed in a future version. Please use Form.findByPK instead, see FormsController#show"
     )
     try {
@@ -35,13 +36,13 @@ export class FormService {
 
       return form
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       return undefined
     }
   }
 
   async saveForm(userId: number, form: any): Promise<any | undefined> {
-    console.warn(
+    logger.warn(
       "This method is deprecated, and will be removed in a future version. Please use FormsService#update instead."
     )
     try {
@@ -57,7 +58,7 @@ export class FormService {
       form.userId = userId
       form.status = TravelAuthorization.Statuses.DRAFT
 
-      console.log(form)
+      logger.info(form)
 
       const [returnedForm, _] = await TravelAuthorization.upsert(form, {
         conflictFields: ["slug"],
@@ -70,7 +71,7 @@ export class FormService {
 
       return true
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       return false
     }
   }
@@ -84,7 +85,7 @@ export class FormService {
         },
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       return undefined
     }
   }
@@ -94,7 +95,7 @@ export class FormService {
       await ExpensesService.bulkReplace(travelAuthorizationId, expenses)
       return true
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       return false
     }
   }
@@ -108,18 +109,18 @@ export class FormService {
         },
       })
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       return undefined
     }
   }
 
   async saveEstimates(travelAuthorizationId: number, estimates: any): Promise<Boolean> {
-    console.warn("DEPRECATED: use saveEstimates instead.")
+    logger.warn("DEPRECATED: use saveEstimates instead.")
     return this.saveExpenses(travelAuthorizationId, estimates)
   }
 
   async submitForm(userId: number, form: any): Promise<Boolean> {
-    console.warn(
+    logger.warn(
       "This method is deprecated, and will be removed in a future version. Please use FormsService#create instead."
     )
     try {
@@ -152,7 +153,7 @@ export class FormService {
         throw new Error("Form is missing required fields")
       }
     } catch (error: any) {
-      console.log(error)
+      logger.info(error)
       return false
     }
   }

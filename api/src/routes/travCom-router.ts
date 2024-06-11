@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express"
 import knex from "knex"
 
+import logger from "@/utils/logger"
 import { RequiresAuth } from "@/middleware"
 import { airports } from "@/json/airportCodes"
 import { TRAVCOM_DB_CONFIG } from "@/config"
@@ -241,7 +242,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
 
   const statistics: any = {}
   let invoiceCounter = 0
-  console.log(invoices.length)
+  logger.info(invoices.length)
 
   for (const invoice of invoices) {
     const InvoiceID = invoice.InvoiceID
@@ -249,13 +250,13 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     invoiceCounter++
     if (invoiceCounter % 300 == 0) {
       const progress = ((100 * invoiceCounter) / invoices.length) | 0
-      console.log(invoiceCounter + " => " + String(progress) + " %")
+      logger.info(invoiceCounter + " => " + String(progress) + " %")
       try {
         await dbLegacy("StatisticsProgress")
           .update({ last_update: new Date(), progress: progress })
           .where("id", 1)
       } catch (error: any) {
-        console.log(error)
+        logger.info(error)
       }
     }
 
@@ -345,8 +346,8 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     try {
       await dbLegacy("StatisticsRecord").insert(record)
     } catch (error: any) {
-      console.log(error)
-      console.log(record)
+      logger.info(error)
+      logger.info(record)
     }
   }
 
@@ -355,7 +356,7 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
       .update({ last_update: new Date(), progress: 100 })
       .where("id", 1)
   } catch (error: any) {
-    console.log(error)
+    logger.info(error)
   }
 
   res.status(200).json("Done")

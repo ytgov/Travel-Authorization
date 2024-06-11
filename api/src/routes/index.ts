@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction, ErrorRequestHandler } from "express"
 import { DatabaseError } from "sequelize"
 
+import logger from "@/utils/logger"
 import { GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
 import { databaseHealthCheckMiddleware, checkJwt, loadUser } from "@/middleware"
 import { healthCheckRouter } from "@/routes/healthcheck-router"
@@ -225,11 +226,11 @@ router.use("/api", (err: ErrorRequestHandler, _req: Request, res: Response, next
   }
 
   if (err instanceof DatabaseError) {
-    console.error(err)
+    logger.error(err)
     return res.status(422).json({ message: "Invalid query against database." })
   }
 
-  console.error(err)
+  logger.error(err)
   return res.status(500).json({ message: "Internal Server Error" })
 })
 
