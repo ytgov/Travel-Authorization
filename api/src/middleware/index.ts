@@ -5,6 +5,7 @@ import { User } from "@/models"
 
 export * from "./authz.middleware"
 export * from "./database-health-check-middleware"
+export { requestLoggerMiddleware } from "./request-logger-middleware"
 
 export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {

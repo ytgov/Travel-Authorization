@@ -222,6 +222,13 @@ Files:
    DB_USER="app"
    DB_PASS="itsallgood"
    DB_NAME="travel_production"
+
+   AWS_LOGGING_ENABLED="true"
+   AWS_LOGGING_GROUP="travel-authorization"
+   AWS_LOGGING_STREAM="travel-auth-dev.ynet.gov.yk.ca"
+   AWS_LOGGING_REGION="ca-central-1"
+   AWS_LOGGING_ACCESS_ID="some-id"
+   AWS_LOGGING_ACCESS_KEY="some-key"
    ```
 
    - [ ] TODO: investigate if additional custom environment variables are needed

@@ -18,12 +18,13 @@ import {
   // tmpTravComRouter,
 } from "./routes"
 import routes from "./routes"
-import { checkJwt, loadUser, databaseHealthCheckMiddleware } from "@/middleware"
+import { checkJwt, loadUser, databaseHealthCheckMiddleware, requestLoggerMiddleware } from "@/middleware"
 
 var fileupload = require("express-fileupload")
 
 const app = express()
 
+app.use(requestLoggerMiddleware)
 app.use(express.json()) // for parsing application/json
 app.use(
   express.urlencoded({

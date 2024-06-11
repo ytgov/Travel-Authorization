@@ -73,3 +73,11 @@ export const TRAVCOM_DB_CONFIG = {
 
 export const RELEASE_TAG = process.env.RELEASE_TAG || ""
 export const GIT_COMMIT_HASH = process.env.GIT_COMMIT_HASH || ""
+
+export const AWS_LOGGING_ENABLED = process.env.AWS_LOGGING_ENABLED || "false"
+export const AWS_LOGGING_GROUP = process.env.AWS_LOGGING_GROUP || ""
+export const AWS_LOGGING_STREAM = process.env.AWS_LOGGING_STREAM || ""
+export const AWS_LOGGING_REGION = process.env.AWS_LOGGING_REGION || "ca-central-1"
+export const AWS_LOGGING_ACCESS_ID = process.env.AWS_LOGGING_ACCESS_ID || ""
+export const AWS_LOGGING_ACCESS_KEY = process.env.AWS_LOGGING_ACCESS_KEY || ""
+export const DEFAULT_LOG_LEVEL = process.env.DEFAULT_LOG_LEVEL || "debug"
