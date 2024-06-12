@@ -284,7 +284,7 @@
 import Vue from "vue"
 
 import { TRAVEL_DESK_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+import http from "@/api/http-client"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
@@ -395,7 +395,8 @@ export default {
     },
 
     async getTravelRequestInfo(taid) {
-      return secureGet(`${TRAVEL_DESK_URL}/travel-request/` + taid)
+      return http
+        .get(`${TRAVEL_DESK_URL}/travel-request/` + taid)
         .then((resp) => {
           // console.log(resp.data)
           return resp.data
@@ -406,7 +407,8 @@ export default {
     },
 
     async getTravelAgentsInfo() {
-      return secureGet(`${TRAVEL_DESK_URL}/travel-agents/`)
+      return http
+        .get(`${TRAVEL_DESK_URL}/travel-agents/`)
         .then((resp) => {
           return resp.data
         })
@@ -437,7 +439,8 @@ export default {
         }
 
         const travelAuthorizationId = this.travelRequest.travelAuthorizationId
-        securePost(`${TRAVEL_DESK_URL}/travel-request/${travelAuthorizationId}`, body)
+        return http
+          .post(`${TRAVEL_DESK_URL}/travel-request/${travelAuthorizationId}`, body)
           .then(() => {
             this.savingData = false
             this.confirmBookingDialog = false
@@ -508,7 +511,8 @@ export default {
       }
       const travelDeskTravelRequestId = this.travelRequest.id
 
-      secureGet(`${TRAVEL_DESK_URL}/pnr-document/${travelDeskTravelRequestId}`, header)
+      return http
+        .get(`${TRAVEL_DESK_URL}/pnr-document/${travelDeskTravelRequestId}`, header)
         .then((res) => {
           this.savingData = false
           const link = document.createElement("a")
