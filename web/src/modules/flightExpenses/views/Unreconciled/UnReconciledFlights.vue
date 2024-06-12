@@ -126,8 +126,8 @@
 import Vue from "vue"
 import { ExportToCsv } from "export-to-csv"
 
+import http from "@/api/http-client"
 import { FLIGHT_RECONCILE_URL } from "@/urls"
-import { securePost } from "@/store/jwt"
 
 export default {
   name: "UnReconciledFlights",
@@ -234,7 +234,8 @@ export default {
         body.push(reconcile)
       }
 
-      securePost(`${FLIGHT_RECONCILE_URL}/`, body)
+      return http
+        .post(`${FLIGHT_RECONCILE_URL}/`, body)
         .then(() => {
           this.savingData = false
           this.reconcileDialog = false
