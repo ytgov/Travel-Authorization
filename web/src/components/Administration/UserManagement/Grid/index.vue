@@ -16,12 +16,12 @@
               class="d-flex"
             >
               <v-text-field
+                v-model="search"
                 prepend-inner-icon="mdi-magnify"
                 background-color="white"
                 outlined
                 dense
                 label="Search"
-                v-model="search"
                 hide-details
               ></v-text-field>
             </v-col>
@@ -30,10 +30,10 @@
               class="d-flex"
             >
               <v-select
+                v-model="selectedFilter"
                 small-chips
                 multiple
                 :items="filterOptions"
-                v-model="selectedFilter"
                 label="Status filter"
                 dense
                 outlined
@@ -64,12 +64,14 @@
 </template>
 
 <script>
-import Breadcrumbs from "../../../Breadcrumbs.vue"
-import { USERS_URL } from "../../../../urls"
 import { mapActions } from "vuex"
+
+import { USERS_URL } from "@/urls"
 import { secureGet } from "@/store/jwt"
+import Breadcrumbs from "@/components/Breadcrumbs.vue"
+
 export default {
-  name: "usersgrid",
+  name: "UsersGrid",
   components: {
     Breadcrumbs,
   },
@@ -104,6 +106,19 @@ export default {
     selectedFilter: ["Active"],
     filterOptions: ["Active", "Expired", "Inactive"],
   }),
+  computed: {
+    filteredData() {
+      if (this.selectedFilter.length == 0) return this.users
+
+      let data = []
+      for (let usr of this.users) {
+        if (this.selectedFilter.indexOf("Active") >= 0) {
+          if (usr.status == "active") data.push(usr)
+        }
+      }
+      return data
+    },
+  },
   async mounted() {
     //this.getDataFromApi();
     this.laodUsers()
@@ -119,19 +134,6 @@ export default {
       secureGet(`${USERS_URL}`).then((resp) => {
         this.users = resp.data
       })
-    },
-  },
-  computed: {
-    filteredData() {
-      if (this.selectedFilter.length == 0) return this.users
-
-      let data = []
-      for (let usr of this.users) {
-        if (this.selectedFilter.indexOf("Active") >= 0) {
-          if (usr.status == "active") data.push(usr)
-        }
-      }
-      return data
     },
   },
 }
