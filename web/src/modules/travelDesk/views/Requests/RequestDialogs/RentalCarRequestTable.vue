@@ -95,7 +95,7 @@ import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import NewRentalCarRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewRentalCarRequest.vue"
 
 export default {
-  name: "NewTravelDeskRequest",
+  name: "RentalCarRequestTable",
   components: {
     TitleCard,
     NewRentalCarRequest,
