@@ -152,8 +152,9 @@
 
 <script>
 import { Printd } from "printd"
+
 import { TRAVEL_COM_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+import http from "@/api/http-client"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
@@ -186,7 +187,8 @@ export default {
     },
 
     async getFlightInvoice() {
-      return secureGet(`${TRAVEL_COM_URL}/itinerary/${this.invoiceNumber}`)
+      return http
+        .get(`${TRAVEL_COM_URL}/itinerary/${this.invoiceNumber}`)
         .then((resp) => {
           console.log(resp.data)
           const flightSegments = resp.data.segments
