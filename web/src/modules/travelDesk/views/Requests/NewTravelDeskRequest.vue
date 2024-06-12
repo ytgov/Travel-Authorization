@@ -4,13 +4,13 @@
       v-model="addNewTravelDialog"
       persistent
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           style="width: 80%"
           class="mr-5 my-2"
           color="primary"
-          @click="initForm()"
           v-bind="attrs"
+          @click="initForm"
           v-on="on"
         >
           <div v-if="type == 'Submit'">Submit Travel Desk Request</div>
@@ -41,15 +41,15 @@
           <v-row class="mb-3">
             <v-col :cols="type != 'Submit' ? 8 : 12">
               <traveler-details
-                :travelerDetails="travelerDetails"
-                :travelerState="state"
+                :traveler-details="travelerDetails"
+                :traveler-state="state"
                 :readonly="false"
               />
 
               <title-card
                 class="mt-10"
-                titleWidth="12.5rem"
-                largeTitle
+                title-width="12.5rem"
+                large-title
               >
                 <template #title>
                   <div>Travel Information</div>
@@ -57,7 +57,7 @@
                 <template #body>
                   <title-card
                     class="mt-5 mx-5"
-                    titleWidth="8.5rem"
+                    title-width="8.5rem"
                   >
                     <template #title>
                       <div>Flight Request</div>
@@ -67,11 +67,11 @@
                         <v-col cols="9">
                           <flight-request-table
                             :travel-desk-travel-request-id="travelerDetails.id"
-                            :authorizedTravel="authorizedTravel"
+                            :authorized-travel="authorizedTravel"
                             :readonly="false"
-                            :travelDeskUser="false"
-                            :showFlightOptions="travelerDetails.status != 'draft'"
-                            :flightRequests="travelerDetails.flightRequests"
+                            :travel-desk-user="false"
+                            :show-flight-options="travelerDetails.status != 'draft'"
+                            :flight-requests="travelerDetails.flightRequests"
                           />
                         </v-col>
                         <v-col
@@ -79,9 +79,9 @@
                           class="px-0"
                         >
                           <v-textarea
+                            v-model="travelerDetails.additionalInformation"
                             class="mt-5 mr-5"
                             :readonly="readonly"
-                            v-model="travelerDetails.additionalInformation"
                             label="Additional Information"
                             outlined
                             auto-grow
@@ -94,21 +94,21 @@
                   </title-card>
 
                   <rental-car-request-table
-                    :authorizedTravel="authorizedTravel"
+                    :authorized-travel="authorizedTravel"
                     :readonly="false"
-                    :flightRequests="travelerDetails.flightRequests"
-                    :rentalCars="travelerDetails.rentalCars"
+                    :flight-requests="travelerDetails.flightRequests"
+                    :rental-cars="travelerDetails.rentalCars"
                   />
                   <hotel-request-table
-                    :authorizedTravel="authorizedTravel"
+                    :authorized-travel="authorizedTravel"
                     :readonly="false"
-                    :flightRequests="travelerDetails.flightRequests"
+                    :flight-requests="travelerDetails.flightRequests"
                     :hotels="travelerDetails.hotels"
                   />
                   <transportation-request-table
-                    :authorizedTravel="authorizedTravel"
+                    :authorized-travel="authorizedTravel"
                     :readonly="false"
-                    :otherTransportations="travelerDetails.otherTransportations"
+                    :other-transportations="travelerDetails.otherTransportations"
                   />
                 </template>
               </title-card>
@@ -121,10 +121,10 @@
                 <v-col cols="6" />
                 <v-col cols="6">
                   <v-text-field
+                    v-model="travelerDetails.travelDeskOfficer"
                     readonly
                     class="mr-2"
                     label="Travel Desk Agent Assigned"
-                    v-model="travelerDetails.travelDeskOfficer"
                     outlined
                   />
                 </v-col>
@@ -150,16 +150,16 @@
             v-if="type"
             class="ml-auto mr-2 px-5"
             color="green darken-1"
-            @click="saveNewTravelRequest('save')"
             :loading="savingData"
+            @click="saveNewTravelRequest('save')"
             >Save Draft
           </v-btn>
           <v-btn
             v-if="type"
             class="mr-5 px-5"
             color="brown darken-1"
-            @click="saveNewTravelRequest('submit')"
             :loading="savingData"
+            @click="saveNewTravelRequest('submit')"
             >Submit
           </v-btn>
         </v-card-actions>
@@ -169,17 +169,19 @@
 </template>
 
 <script>
-import { LOOKUP_URL, TRAVEL_DESK_URL } from "../../../../urls"
+import { LOOKUP_URL, TRAVEL_DESK_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
-import TitleCard from "../Common/TitleCard.vue"
-import TravelerDetails from "./Components/TravelerDetails.vue"
-import FlightRequestTable from "./RequestDialogs/FlightRequestTable.vue"
-import RentalCarRequestTable from "./RequestDialogs/RentalCarRequestTable.vue"
-import HotelRequestTable from "./RequestDialogs/HotelRequestTable.vue"
-import TransportationRequestTable from "./RequestDialogs/TransportationRequestTable.vue"
-import QuestionsTable from "../Desk/Components/QuestionsTable.vue"
+
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
+import FlightRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightRequestTable.vue"
+import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
+import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
+import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
+import QuestionsTable from "@/modules/travelDesk/views/Desk/Components/QuestionsTable.vue"
 
 export default {
+  name: "NewTravelDeskRequest",
   components: {
     TitleCard,
     TravelerDetails,
@@ -189,12 +191,15 @@ export default {
     HotelRequestTable,
     QuestionsTable,
   },
-  name: "NewTravelDeskRequest",
   props: {
     type: {
       type: String,
+      required: true,
     },
-    authorizedTravel: {},
+    authorizedTravel: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
