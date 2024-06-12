@@ -109,10 +109,10 @@
                 </v-col> -->
                 <v-col cols="12">
                   <v-select
+                    v-model="pendingDepartments"
                     :items="departments"
                     item-text="name"
                     item-value="id"
-                    v-model="pendingDepartments"
                     label="Departments"
                     outlined
                     dense
@@ -126,10 +126,10 @@
                 </v-col>
                 <v-col cols="12">
                   <v-select
+                    v-model="pendingBranches"
                     :items="myBranches"
                     item-text="fullName"
                     item-value="id"
-                    v-model="pendingBranches"
                     label="Branches"
                     outlined
                     dense
@@ -142,9 +142,9 @@
                 </v-col>
                 <v-col cols="12">
                   <v-select
+                    v-model="pendingRoles"
                     label="Roles"
                     :items="roles"
-                    v-model="pendingRoles"
                     outlined
                     dense
                     multiple
@@ -191,9 +191,10 @@
 </template>
 
 <script>
-import { USERS_URL, LOOKUP_URL } from "../../../../urls"
-import Breadcrumbs from "../../../Breadcrumbs.vue"
+import { USERS_URL, LOOKUP_URL } from "@/urls"
 import { secureGet, securePut } from "@/store/jwt"
+import Breadcrumbs from "@/components/Breadcrumbs.vue"
+
 export default {
   components: {
     Breadcrumbs,
@@ -226,12 +227,6 @@ export default {
     roles: [],
     showAccessDialog: false,
   }),
-  async mounted() {
-    await this.loadDepartments()
-    await this.loadRoles()
-    await this.loadUser(this.$route.params.id)
-    this.getBranches()
-  },
   computed: {
     myBranches: function () {
       return this.branches.filter((b) => {
@@ -239,7 +234,12 @@ export default {
       })
     },
   },
-  watch: {},
+  async mounted() {
+    await this.loadDepartments()
+    await this.loadRoles()
+    await this.loadUser(this.$route.params.id)
+    this.getBranches()
+  },
   methods: {
     async doSave() {
       this.saveAccess()
