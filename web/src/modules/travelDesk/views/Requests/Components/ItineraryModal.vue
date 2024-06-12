@@ -171,7 +171,7 @@ export default {
   data() {
     return {
       itineraryDialog: false,
-      flightSegment: {},
+      flightSegments: [],
       loadingData: false,
       invoiceRemarks: "",
       totalCost: 0,
