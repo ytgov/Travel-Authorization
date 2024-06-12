@@ -23,8 +23,8 @@
         </div>
         <div v-else>
           <travel-desk-requests
-            :travelDeskRequests="travelDeskRequests"
-            @updateTable="getTravelDeskRequests()"
+            :travel-desk-requests="travelDeskRequests"
+            @updateTable="getTravelDeskRequests"
           />
         </div>
       </v-card-text>
@@ -34,10 +34,12 @@
 
 <script>
 import Vue from "vue"
-import TravelDeskRequests from "./Desk/TravelDeskRequests.vue"
-import { TRAVEL_DESK_URL, USERS_URL, PROFILE_URL } from "../../../urls"
-import { secureGet } from "../../../store/jwt"
+
+import { TRAVEL_DESK_URL, USERS_URL, PROFILE_URL } from "@/urls"
+import { secureGet } from "@/store/jwt"
 import locationsApi from "@/api/locations-api"
+
+import TravelDeskRequests from "@/modules/travelDesk/views/Desk/TravelDeskRequests.vue"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 
 export default {
