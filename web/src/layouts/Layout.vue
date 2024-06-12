@@ -187,8 +187,13 @@
 <script>
 import { mapState } from "vuex"
 
-import { getInstance } from "@/auth"
-import { RELEASE_TAG, APPLICATION_NAME, HAS_SIDEBAR, HAS_SIDEBAR_CLOSABLE } from "@/config"
+import {
+  ENVIRONMENT,
+  RELEASE_TAG,
+  APPLICATION_NAME,
+  HAS_SIDEBAR,
+  HAS_SIDEBAR_CLOSABLE,
+} from "@/config"
 import router from "@/router"
 import store from "@/store"
 
@@ -197,7 +202,6 @@ import useCurrentUser from "@/use/use-current-user"
 import RequestAlert from "@/components/RequestAlert.vue"
 import PageLoader from "@/components/PageLoader.vue"
 
-const auth = getInstance()
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
 
 export default {
@@ -239,7 +243,7 @@ export default {
     },
     isInDevelopmentOrUserAcceptanceTesting() {
       return (
-        config.ENVIRONMENT === "development" ||
+        ENVIRONMENT === "development" ||
         window.location.hostname === "travel-auth-dev.ynet.gov.yk.ca"
       )
     },
@@ -261,17 +265,7 @@ export default {
     },
   },
   async mounted() {
-    if (auth.auth0Client) {
-      this.doInitialize()
-      return
-    }
-
-    this.interval = window.setInterval(() => {
-      if (auth.auth0Client) {
-        window.clearInterval(this.interval)
-        this.doInitialize()
-      }
-    }, 200)
+    this.doInitialize()
   },
   methods: {
     nav: function (location) {
@@ -281,7 +275,7 @@ export default {
       unsetCurrentUser()
 
       // TODO: remove development customization once we update Auth0 environment
-      if (config.ENVIRONMENT === "development") {
+      if (ENVIRONMENT === "development") {
         this.$auth.logout()
       } else {
         this.$auth.logout({
