@@ -66,8 +66,8 @@
 <script>
 import { mapActions } from "vuex"
 
+import http from "@/api/http-client"
 import { USERS_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 
 export default {
@@ -131,7 +131,7 @@ export default {
       this.$router.push(`/administration/users/edit/${value.id}`)
     },
     laodUsers() {
-      secureGet(`${USERS_URL}`).then((resp) => {
+      http.get(USERS_URL).then((resp) => {
         this.users = resp.data
       })
     },
