@@ -94,7 +94,7 @@
 
 <script>
 import { TRAVEL_DESK_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+import http from "@/api/http-client"
 
 import NewFlightRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewFlightRequest.vue"
 import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
@@ -217,9 +217,7 @@ export default {
       // console.log(item)
       let delIndex = -1
       if (item.id > 0)
-        delIndex = this.flightRequests.findIndex(
-          (flight) => flight.id && flight.id == item.id
-        )
+        delIndex = this.flightRequests.findIndex((flight) => flight.id && flight.id == item.id)
       else
         delIndex = this.flightRequests.findIndex(
           (flight) => flight.tmpId && flight.tmpId == item.tmpId
@@ -234,7 +232,8 @@ export default {
     async loadFlightRequests() {
       this.loadingData = true
 
-      secureGet(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`)
+      return http
+        .get(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`)
         .then((resp) => {
           // console.log(resp.data)
           this.flightRequests.splice(0)
@@ -251,7 +250,8 @@ export default {
       this.loadingData = true
       const body = this.flightRequests
 
-      securePost(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`, body)
+      return http
+        .post(`${TRAVEL_DESK_URL}/flight-request/${this.travelDeskTravelRequestId}`, body)
         .then(() => {
           // console.log(resp)
           this.loadFlightRequests()
