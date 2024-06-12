@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { secureGet, securePut } from "@/store/jwt"
+import http from "@/api/http-client"
 import { USERS_URL, LOOKUP_URL } from "@/urls"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 
@@ -182,7 +182,8 @@ export default {
         departments: this.pendingDepartments,
         roles: this.pendingRoles,
       }
-      securePut(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
+      await http
+        .put(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
         .then((resp) => {
           console.log(resp)
           this.alertMsg = "Permissions and Department Saved Successfully."
@@ -192,18 +193,18 @@ export default {
       // this.showAccessDialog = false;
     },
     async loadUser(id) {
-      secureGet(`${USERS_URL}/${id}`).then((resp) => {
+      await http.get(`${USERS_URL}/${id}`).then((resp) => {
         this.user = resp.data
         if (this.user.is_active == 1) this.user.status = "active"
         else this.user.status = "inactive"
       })
-      secureGet(`${USERS_URL}/${id}/permissions`).then((resp) => {
+      await http.get(`${USERS_URL}/${id}/permissions`).then((resp) => {
         this.pendingDepartments = resp.data.departments
         this.pendingRoles = resp.data.roles
       })
     },
     async loadDepartments() {
-      return secureGet(`${LOOKUP_URL}/department-branch`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/department-branch`).then((resp) => {
         for (const key of Object.keys(resp.data))
           this.departments.push({
             name: key,
@@ -211,7 +212,7 @@ export default {
       })
     },
     async loadRoles() {
-      return secureGet(`${LOOKUP_URL}/roles`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/roles`).then((resp) => {
         console.log(resp.data)
         this.roles = resp.data
       })
