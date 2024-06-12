@@ -170,7 +170,7 @@
 
 <script>
 import { LOOKUP_URL, TRAVEL_DESK_URL } from "@/urls"
-import { secureGet, securePost } from "@/store/jwt"
+import http from "@/api/http-client"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
@@ -253,7 +253,8 @@ export default {
     },
 
     async getTravelRequestInfo() {
-      return secureGet(`${TRAVEL_DESK_URL}/travel-request/` + this.authorizedTravel.id)
+      return http
+        .get(`${TRAVEL_DESK_URL}/travel-request/` + this.authorizedTravel.id)
         .then((resp) => {
           // console.log(resp.data)
           return resp.data
@@ -264,7 +265,8 @@ export default {
     },
 
     async getEmployeeInfo() {
-      return secureGet(`${LOOKUP_URL}/employee-info?email=` + this.authorizedTravel.email)
+      return http
+        .get(`${LOOKUP_URL}/employee-info?email=` + this.authorizedTravel.email)
         .then((resp) => {
           console.log(resp.data)
           const employee = resp.data
@@ -340,7 +342,8 @@ export default {
         }
         // console.log(body);
         const id = this.authorizedTravel.id
-        securePost(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
+        return http
+          .post(`${TRAVEL_DESK_URL}/travel-request/${id}`, body)
           .then(() => {
             this.savingData = false
             this.addNewTravelDialog = false
