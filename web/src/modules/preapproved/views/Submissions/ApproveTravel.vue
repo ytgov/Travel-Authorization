@@ -181,8 +181,7 @@
 
 <script>
 import { PREAPPROVED_URL } from "@/urls"
-import { securePost } from "@/store/jwt"
-
+import http from "@/api/http-client"
 import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
 import { STATUSES as SUBMISSION_STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
 
@@ -337,7 +336,8 @@ export default {
           },
         }
 
-        securePost(`${PREAPPROVED_URL}/approval/${this.submissionId}`, bodyFormData, header)
+        return http
+          .post(`${PREAPPROVED_URL}/approval/${this.submissionId}`, bodyFormData, header)
           .then(() => {
             this.savingData = false
             this.approveTravelDialog = false
