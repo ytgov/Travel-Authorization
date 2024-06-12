@@ -5,13 +5,13 @@
       persistent
       max-width="650px"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           size="x-small"
           style="min-width: 0"
           color="secondary"
-          @click="initForm()"
           v-bind="attrs"
+          @click="initForm"
           v-on="on"
         >
           <div class="px-2">Upload PNR</div>
@@ -30,11 +30,11 @@
           <v-row class="mx-0 mt-5">
             <v-col cols="6">
               <v-text-field
-                :error="invoiceNumberErr"
-                @input="invoiceNumberErr = false"
-                label="Invoice Number"
                 v-model="invoiceNumber"
+                :error="invoiceNumberErr"
+                label="Invoice Number"
                 outlined
+                @input="invoiceNumberErr = false"
               />
             </v-col>
             <v-col cols="6">
@@ -65,8 +65,8 @@
                   type="file"
                   style="display: none"
                   accept="application/pdf,image/x-png,image/jpeg"
-                  @change="handleSelectedFile"
                   onclick="this.value=null;"
+                  @change="handleSelectedFile"
                 />
               </v-btn>
             </v-col>
@@ -106,10 +106,10 @@
             </v-btn>
 
             <v-btn
-              @click="saveDocument()"
               color="#005A65"
               class="ml-auto mr-1 my-0 px-5"
               :loading="savingData"
+              @click="saveDocument"
               >Save
             </v-btn>
           </v-row>
@@ -120,16 +120,21 @@
 </template>
 
 <script>
-// import Vue from "vue";
-import { TRAVEL_DESK_URL } from "../../../../../urls"
-import { securePost } from "../../../../../store/jwt"
+import { TRAVEL_DESK_URL } from "@/urls"
+import { securePost } from "@/store/jwt"
 
 export default {
   name: "UploadPnrModal",
   components: {},
   props: {
-    travelAgentsInfo: {},
-    travelRequest: {},
+    travelAgentsInfo: {
+      type: Array,
+      required: true,
+    },
+    travelRequest: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
