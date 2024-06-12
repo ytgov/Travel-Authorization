@@ -86,7 +86,7 @@ import useCurrentUser from "@/use/use-current-user"
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
 
 export default {
-  name: "SignIn",
+  name: "SignInPage",
   data: () => ({
     title: APPLICATION_NAME,
   }),

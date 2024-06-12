@@ -16,8 +16,6 @@ import travelAuthorizationsRouter from "@/modules/travel-authorizations/router"
 import flightExpenseRouter from "@/modules/flightExpenses/router"
 import reportsRouter from "@/modules/reports/router"
 
-import authenticationRouter from "@/modules/authentication/router"
-
 import store from "@/store"
 
 // import { authGuard } from "../auth/authGuard";
@@ -109,13 +107,23 @@ const routes = [
     ],
   },
 
-  ...authenticationRouter,
   ...preapprovedRouter,
   ...travelDeskRouter,
   ...travelAuthorizationsRouter,
   ...flightExpenseRouter,
   ...reportsRouter,
 
+  {
+    path: "/",
+    component: () => import("@/layouts/BlankLayout"),
+    children: [
+      {
+        name: "SignInPage",
+        path: "sign-in",
+        component: () => import("@/pages/SignInPage.vue"),
+      },
+    ],
+  },
   {
     path: "*",
     name: "Not Found",
