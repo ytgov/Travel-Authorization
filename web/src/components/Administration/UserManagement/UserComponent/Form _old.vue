@@ -191,8 +191,8 @@
 </template>
 
 <script>
+import http from "@/api/http-client"
 import { USERS_URL, LOOKUP_URL } from "@/urls"
-import { secureGet, securePut } from "@/store/jwt"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 
 export default {
@@ -254,18 +254,20 @@ export default {
         departments: [...this.pendingDepartments, ...this.pendingBranches],
         roles: this.pendingRoles,
       }
-      securePut(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject).then((resp) => {
-        console.log(resp)
-      })
+      return http
+        .put(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
+        .then((resp) => {
+          console.log(resp)
+        })
       // this.showAccessDialog = false;
     },
     async loadUser(id) {
-      secureGet(`${USERS_URL}/${id}`).then((resp) => {
+      await http.get(`${USERS_URL}/${id}`).then((resp) => {
         this.user = resp.data
         if (this.user.is_active == 1) this.user.status = "active"
         else this.user.status = "inactive"
       })
-      secureGet(`${USERS_URL}/${id}/permissions`).then((resp) => {
+      await http.get(`${USERS_URL}/${id}/permissions`).then((resp) => {
         for (let i = 0; i < resp.data.departments.length; i++) {
           if (this.departments[resp.data.departments[i].objectid])
             this.pendingDepartments.push(resp.data.departments[i].objectid)
@@ -278,22 +280,22 @@ export default {
       })
     },
     async loadDepartments() {
-      return secureGet(`${LOOKUP_URL}/departments`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/departments`).then((resp) => {
         this.departments = resp.data
       })
     },
     async getBranches() {
-      await secureGet(`${LOOKUP_URL}/branches`).then((resp) => {
+      await http.get(`${LOOKUP_URL}/branches`).then((resp) => {
         this.branches = resp.data
       })
     },
     loadUnits() {
-      secureGet(`${LOOKUP_URL}/departments`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/departments`).then((resp) => {
         this.departments = resp.data
       })
     },
     loadRoles() {
-      secureGet(`${LOOKUP_URL}/roles`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/roles`).then((resp) => {
         this.roles = resp.data
       })
     },
