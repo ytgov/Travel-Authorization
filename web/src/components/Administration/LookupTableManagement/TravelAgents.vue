@@ -52,10 +52,11 @@
 
 <script>
 import Vue from "vue"
-import NewTravelAgent from "./TravelAgentsComponents/NewTravelAgent.vue"
-import { TRAVEL_DESK_URL } from "../../../urls"
-import { secureGet, securePost, secureDelete } from "../../../store/jwt"
-import Breadcrumbs from "../../Breadcrumbs.vue"
+import { TRAVEL_DESK_URL } from "@/urls"
+
+import http from "@/api/http-client"
+import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import NewTravelAgent from "@/components/Administration/LookupTableManagement/TravelAgentsComponents/NewTravelAgent.vue"
 
 export default {
   name: "TravelAgents",
@@ -97,7 +98,8 @@ export default {
 
     async getTravelAgentsInfo() {
       this.alertMsg = ""
-      return secureGet(`${TRAVEL_DESK_URL}/travel-agents/`)
+      return http
+        .get(`${TRAVEL_DESK_URL}/travel-agents/`)
         .then((resp) => {
           return resp.data
         })
@@ -110,7 +112,8 @@ export default {
 
     deleteTravelAgent(item) {
       this.savingData = true
-      secureDelete(`${TRAVEL_DESK_URL}/travel-agents/${item.agencyID}`)
+      http
+        .delete(`${TRAVEL_DESK_URL}/travel-agents/${item.agencyID}`)
         .then(() => {
           //console.log(resp)
           this.initForm()
@@ -125,7 +128,8 @@ export default {
       this.savingData = true
       const body = agencyInfo
 
-      securePost(`${TRAVEL_DESK_URL}/travel-agents/${agencyInfo.agencyID}`, body)
+      http
+        .post(`${TRAVEL_DESK_URL}/travel-agents/${agencyInfo.agencyID}`, body)
         .then(() => {
           //console.log(resp)
           this.initForm()
