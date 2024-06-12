@@ -133,12 +133,13 @@
 </template>
 
 <script>
-import Flights from "./Flights.vue"
-import ReconciledFlights from "./Reconciled/ReconciledFlights.vue"
-import UnReconciledFlights from "./Unreconciled/UnReconciledFlights.vue"
-import { TRAVEL_COM_URL, PROFILE_URL } from "../../../urls"
-import { secureGet } from "../../../store/jwt"
 import Vue from "vue"
+
+import { TRAVEL_COM_URL, PROFILE_URL } from "@/urls"
+import { secureGet } from "@/store/jwt"
+import Flights from "@/modules/flightExpenses/views/Flights.vue"
+import ReconciledFlights from "@/modules/flightExpenses/views/Reconciled/ReconciledFlights.vue"
+import UnReconciledFlights from "@/modules/flightExpenses/views/Unreconciled/UnReconciledFlights.vue"
 
 export default {
   name: "FlightExpense",
