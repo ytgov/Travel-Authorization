@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { securePost } from "@/store/jwt"
+import http from "@/api/http-client"
 import { FORM_URL } from "@/urls"
 
 export default {
@@ -34,11 +34,12 @@ export default {
       }
     },
     uploadImage() {
-      securePost(`${FORM_URL}/uploadReceipt`, this.image, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      return http
+        .post(`${FORM_URL}/uploadReceipt`, this.image, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((res) => {
           console.log(res)
         })
