@@ -4,13 +4,13 @@
       v-model="addNewTravelDialog"
       persistent
     >
-      <template v-slot:activator="{ on, attrs }">
+      <template #Cactivator="{ on, attrs }">
         <v-btn
           style="min-width: 0; height: 1.75rem"
           class="my-0 mx-0 px-0"
           color="primary"
-          @click="initForm()"
           v-bind="attrs"
+          @click="initForm"
           v-on="on"
         >
           <div class="mx-0 px-1"><v-icon style="font-size: 15pt">mdi-pencil</v-icon></div>
@@ -40,15 +40,15 @@
           <v-row class="mb-3">
             <v-col cols="8">
               <traveler-details
-                :travelerDetails="travelRequest"
-                :travelerState="state"
+                :traveler-details="travelRequest"
+                :traveler-state="state"
                 :readonly="readonly"
               />
 
               <title-card
                 class="mt-10"
-                titleWidth="12.5rem"
-                largeTitle
+                title-width="12.5rem"
+                large-title
               >
                 <template #title>
                   <div>Travel Information</div>
@@ -59,15 +59,15 @@
                     class="mt-n2 mb-n9 mr-5"
                   >
                     <travel-port-modal
-                      :flightRequests="travelRequest.flightRequests"
+                      :flight-requests="travelRequest.flightRequests"
                       :travel-desk-travel-request-id="travelDetail.id"
-                      @close="flightKey++"
                       class="my-1 ml-auto"
+                      @close="flightKey++"
                     />
                   </v-row>
                   <title-card
                     class="mt-9 mx-5"
-                    titleWidth="8.5rem"
+                    title-width="8.5rem"
                   >
                     <template #title>
                       <div>Flight Request</div>
@@ -83,9 +83,9 @@
                             class="mr-n5 mt-n1"
                             :readonly="readonly"
                             :travel-desk-travel-request-id="travelDetail.id"
-                            showFlightOptions
-                            travelDeskUser
-                            :flightRequests="travelRequest.flightRequests"
+                            show-flight-options
+                            travel-desk-user
+                            :flight-requests="travelRequest.flightRequests"
                           />
                         </v-col>
                         <v-col
@@ -93,9 +93,9 @@
                           class="px-0"
                         >
                           <v-textarea
+                            v-model="travelRequest.additionalInformation"
                             class="mt-3 ml-0 mr-5"
                             :readonly="readonly"
-                            v-model="travelRequest.additionalInformation"
                             label="Additional Information"
                             outlined
                             auto-grow
@@ -111,17 +111,17 @@
                   </title-card>
                   <rental-car-request-table
                     :readonly="readonly"
-                    :flightRequests="travelRequest.flightRequests"
-                    :rentalCars="travelRequest.rentalCars"
+                    :flight-requests="travelRequest.flightRequests"
+                    :rental-cars="travelRequest.rentalCars"
                   />
                   <hotel-request-table
                     :readonly="readonly"
-                    :flightRequests="travelRequest.flightRequests"
+                    :flight-requests="travelRequest.flightRequests"
                     :hotels="travelRequest.hotels"
                   />
                   <transportation-request-table
                     :readonly="readonly"
-                    :otherTransportations="travelRequest.otherTransportations"
+                    :other-transportations="travelRequest.otherTransportations"
                   />
                 </template>
               </title-card>
@@ -140,22 +140,22 @@
                 </v-col>
                 <v-col cols="6">
                   <v-select
+                    v-model="travelRequest.travelDeskOfficer"
                     :readonly="readonly"
                     class="mr-2"
                     :items="travelDeskAgentList"
                     label="Travel Desk Agent Assigned"
-                    v-model="travelRequest.travelDeskOfficer"
                     outlined
                   />
                 </v-col>
               </v-row>
               <v-row
-                class="mx-0 mb-5 mt-n6"
                 v-if="travelRequest.invoiceNumber"
+                class="mx-0 mb-5 mt-n6"
               >
                 <title-card
                   class="mt-10 mx-4"
-                  titleWidth="4rem"
+                  title-width="4rem"
                   style="width: 100%"
                 >
                   <template #title>
@@ -172,8 +172,8 @@
                       <v-btn
                         class="ml-auto mr-3 px-5"
                         color="secondary"
-                        @click="downloadPdf()"
                         :loading="savingData"
+                        @click="downloadPdf"
                       >
                         <div style="font-size: 13pt">Download PNR</div>
                       </v-btn>
@@ -183,7 +183,7 @@
               </v-row>
               <questions-table
                 :readonly="readonly"
-                :travelDeskUser="true"
+                :travel-desk-user="true"
                 :questions="travelRequest.questions"
               />
             </v-col>
@@ -199,31 +199,31 @@
             <div>Close</div>
           </v-btn>
           <itinerary-modal
-            class="ml-auto mr-3"
             v-if="travelRequest.invoiceNumber"
-            :invoiceNumber="travelRequest.invoiceNumber"
+            class="ml-auto mr-3"
+            :invoice-number="travelRequest.invoiceNumber"
           />
           <upload-pnr-modal
-            @saveData="saveNewTravelRequest('save', false, false)"
-            @close="initForm()"
-            :travelAgentsInfo="travelAgentsInfo"
-            :travelRequest="travelRequest"
+            :travel-agents-info="travelAgentsInfo"
+            :travel-request="travelRequest"
             :class="travelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
+            @saveData="saveNewTravelRequest('save', false, false)"
+            @close="initForm"
           />
           <v-btn
             v-if="!readonly"
             class="ml-2 mr-2 px-5"
             color="#005A65"
-            @click="saveNewTravelRequest('save', false, false)"
             :loading="savingData"
+            @click="saveNewTravelRequest('save', false, false)"
             >Save Draft
           </v-btn>
           <v-btn
             v-if="!readonly"
             class="mr-2 px-5"
             color="secondary"
-            @click="saveNewTravelRequest('sendback', true, false)"
             :loading="savingData"
+            @click="saveNewTravelRequest('sendback', true, false)"
             >Send to Traveler
           </v-btn>
 
@@ -231,8 +231,8 @@
             v-if="!readonly && travelRequest.invoiceNumber"
             class="mr-5 px-5"
             color="#005A65"
-            @click="confirmBookingDialog = true"
             :loading="savingData"
+            @click="confirmBookingDialog = true"
             >Booking Complete
           </v-btn>
         </v-card-actions>
@@ -270,8 +270,8 @@
             v-if="!readonly"
             class="mr-0 ml-auto px-5"
             color="#005A65"
-            @click="saveNewTravelRequest('booked', false, true)"
             :loading="savingData"
+            @click="saveNewTravelRequest('booked', false, true)"
             >Confirm
           </v-btn>
         </v-card-actions>
@@ -282,22 +282,24 @@
 
 <script>
 import Vue from "vue"
-import { TRAVEL_DESK_URL } from "../../../../urls"
+
+import { TRAVEL_DESK_URL } from "@/urls"
 import { secureGet, securePost } from "@/store/jwt"
-import TitleCard from "../Common/TitleCard.vue"
-import TravelerDetails from "../Requests/Components/TravelerDetails.vue"
-import FlightRequestTable from "../Requests/RequestDialogs/FlightRequestTable.vue"
-import RentalCarRequestTable from "../Requests/RequestDialogs/RentalCarRequestTable.vue"
-import HotelRequestTable from "../Requests/RequestDialogs/HotelRequestTable.vue"
-import TransportationRequestTable from "../Requests/RequestDialogs/TransportationRequestTable.vue"
-import TravelPortModal from "./Components/TravelPortModal.vue"
 
-import UploadPnrModal from "./PnrDocument/UploadPnrModal.vue"
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
+import FlightRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightRequestTable.vue"
+import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
+import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
+import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
+import TravelPortModal from "@/modules/travelDesk/views/Desk/Components/TravelPortModal.vue"
 
-import QuestionsTable from "./Components/QuestionsTable.vue"
-import ItineraryModal from "../Requests/Components/ItineraryModal.vue"
+import UploadPnrModal from "@/modules/travelDesk/views/Desk/PnrDocument/UploadPnrModal.vue"
+import QuestionsTable from "@/modules/travelDesk/views/Desk/Components/QuestionsTable.vue"
+import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
 
 export default {
+  name: "ProcessTravelDeskRequest",
   components: {
     TitleCard,
     TravelerDetails,
@@ -310,12 +312,15 @@ export default {
     UploadPnrModal,
     ItineraryModal,
   },
-  name: "ProcessTravelDeskRequest",
   props: {
     type: {
       type: String,
+      required: true,
     },
-    travelDetail: {},
+    travelDetail: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
