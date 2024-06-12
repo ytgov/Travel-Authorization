@@ -79,7 +79,7 @@
 
 <script>
 import { TRAVEL_COM_URL, PROFILE_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+import http from "@/api/http-client"
 
 import FlightReport from "@/modules/reports/views/FlightReport.vue"
 import Filters from "@/modules/reports/views/Filters/Filters.vue"
@@ -128,7 +128,8 @@ export default {
     },
 
     async getUserAuth() {
-      return secureGet(`${PROFILE_URL}`)
+      return http
+        .get(PROFILE_URL)
         .then((resp) => {
           this.$store.commit("auth/setUser", resp.data.user)
         })
@@ -138,7 +139,8 @@ export default {
     },
 
     async getFlights() {
-      return secureGet(`${TRAVEL_COM_URL}/statistics`)
+      return http
+        .get(`${TRAVEL_COM_URL}/statistics`)
         .then(async (resp) => {
           console.log(resp.data)
           this.allFlightReports = resp.data
