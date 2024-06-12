@@ -121,7 +121,7 @@
 
 <script>
 import { TRAVEL_DESK_URL } from "@/urls"
-import { securePost } from "@/store/jwt"
+import http from "@/api/http-client"
 
 export default {
   name: "UploadPnrModal",
@@ -208,7 +208,8 @@ export default {
           },
         }
 
-        securePost(`${TRAVEL_DESK_URL}/pnr-document/${travelRequestId}`, bodyFormData, header)
+        return http
+          .post(`${TRAVEL_DESK_URL}/pnr-document/${travelRequestId}`, bodyFormData, header)
           .then(() => {
             this.savingData = false
             this.$emit("close")
