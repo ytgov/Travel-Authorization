@@ -91,7 +91,7 @@
 
 <script>
 import { TRAVEL_COM_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+import http from "@/api/http-client"
 
 export default {
   name: "UpdateProgressModal",
@@ -117,7 +117,8 @@ export default {
     },
     async getProgress() {
       this.loadingData = true
-      return secureGet(`${TRAVEL_COM_URL}/statistics-update-progress`)
+      return http
+        .get(`${TRAVEL_COM_URL}/statistics-update-progress`)
         .then(async (resp) => {
           if (resp.data.length > 0) {
             this.progress = resp.data[0].progress
@@ -143,7 +144,8 @@ export default {
     },
     async startUpdate() {
       this.loadingData = true
-      return secureGet(`${TRAVEL_COM_URL}/update-statistics`, 1000)
+      return http
+        .get(`${TRAVEL_COM_URL}/update-statistics`, 1000)
         .then(async () => {
           this.loadingData = false
         })
