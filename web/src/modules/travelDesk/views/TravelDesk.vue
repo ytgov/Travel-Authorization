@@ -36,7 +36,7 @@
 import Vue from "vue"
 
 import { TRAVEL_DESK_URL, USERS_URL, PROFILE_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
 import TravelDeskRequests from "@/modules/travelDesk/views/Desk/TravelDeskRequests.vue"
@@ -69,7 +69,8 @@ export default {
   },
   methods: {
     async getUserAuth() {
-      return secureGet(`${PROFILE_URL}`)
+      return http
+        .get(PROFILE_URL)
         .then((resp) => {
           this.$store.commit("auth/setUser", resp.data.user)
         })
@@ -96,7 +97,8 @@ export default {
 
     async getTravelDeskUsers() {
       this.loadingData = true
-      return secureGet(`${USERS_URL}/travel-desk-users`)
+      return http
+        .get(`${USERS_URL}/travel-desk-users`)
         .then((resp) => {
           // console.log(resp.data)
           this.$store.commit("traveldesk/SET_TRAVEL_DESK_USERS", resp.data)
@@ -110,7 +112,8 @@ export default {
 
     async getTravelDeskRequests() {
       this.loadingData = true
-      return secureGet(`${TRAVEL_DESK_URL}/`)
+      return http
+        .get(`${TRAVEL_DESK_URL}/`)
         .then((resp) => {
           this.travelDeskRequests = resp.data
           // console.log(this.travelDeskRequests)
