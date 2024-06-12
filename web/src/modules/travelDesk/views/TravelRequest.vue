@@ -43,7 +43,7 @@ import Vue from "vue"
 import { isNil } from "lodash"
 
 import { TRAVEL_DESK_URL, PROFILE_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
 import TravelerRequests from "@/modules/travelDesk/views/Requests/TravelerRequests.vue"
@@ -74,7 +74,8 @@ export default {
 
   methods: {
     async getUserAuth() {
-      return secureGet(PROFILE_URL)
+      return http
+        .get(PROFILE_URL)
         .then((resp) => {
           this.$store.commit("auth/setUser", resp.data.user)
         })
@@ -100,7 +101,8 @@ export default {
 
     async getAuthorizedTravels() {
       this.loadingData = true
-      return secureGet(`${TRAVEL_DESK_URL}/authorized-travels`)
+      return http
+        .get(`${TRAVEL_DESK_URL}/authorized-travels`)
         .then((resp) => {
           const authorizedTravels = resp.data
           this.extractAuthorizedTravels(authorizedTravels)
