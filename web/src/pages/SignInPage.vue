@@ -63,7 +63,6 @@
                   click the button below.
                 </h6>
                 <v-btn
-                  v-if="!$auth.isAuthenticated"
                   color="primary"
                   @click="login"
                 >
@@ -80,7 +79,7 @@
 
 <script>
 import { APPLICATION_NAME } from "@/config"
-
+import auth0 from "@/plugins/auth0-plugin"
 import useCurrentUser from "@/use/use-current-user"
 
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
@@ -95,7 +94,7 @@ export default {
   },
   methods: {
     async login() {
-      this.$auth.loginWithRedirect()
+      return auth0.loginWithRedirect()
     },
   },
 }
