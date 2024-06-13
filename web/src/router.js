@@ -16,18 +16,9 @@ import travelAuthorizationsRouter from "@/modules/travel-authorizations/router"
 import flightExpenseRouter from "@/modules/flightExpenses/router"
 import reportsRouter from "@/modules/reports/router"
 
-import store from "@/store"
-
-// import { authGuard } from "../auth/authGuard";
-
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    // TODO: make this a route guard
-    path: "/",
-    component: () => import("@/pages/AuthLoadingOverlay"),
-  },
   {
     path: "",
     component: () => import("@/layouts/Layout"),
@@ -135,44 +126,6 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
-})
-
-import { getInstance } from "@/auth"
-let authService
-
-router.beforeEach(async (to, from, next) => {
-  var requiresAuth = to.meta.requiresAuth || false
-
-  if (!requiresAuth) {
-    return next()
-  }
-
-  if (!authService) {
-    authService = await getInstance()
-  }
-
-  const guardAction = () => {
-    if (authService.isAuthenticated) {
-      return next()
-    }
-
-    authService.loginWithRedirect({ appState: { targetUrl: to.fullPath } })
-  }
-
-  // If the Auth0Plugin has loaded already, check the authentication state
-  if (!authService.isLoading) {
-    return guardAction()
-  }
-
-  authService.$watch("isLoading", (isLoading) => {
-    if (isLoading === false) {
-      return guardAction()
-    }
-  })
-})
-
-router.afterEach(async () => {
-  return await store.dispatch("auth/checkAuthentication")
 })
 
 export default router
