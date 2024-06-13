@@ -1,6 +1,8 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 
+import auth0 from "@/plugins/auth0-plugin"
+
 import AdminUserForm from "@/components/Administration/UserManagement/UserComponent/Form"
 import AdminDashboard from "@/components/Administration/Administration"
 import UserManagement from "@/components/Administration/UserManagement/Grid"
@@ -98,6 +100,7 @@ const routes = [
         path: "health-check",
         name: "HealthCheck",
         component: () => import("@/pages/HealthCheckPage"),
+        meta: { requiresAuth: false },
       },
     ],
   },
@@ -109,20 +112,16 @@ const routes = [
   ...reportsRouter,
 
   {
-    path: "/",
-    component: () => import("@/layouts/BlankLayout"),
-    children: [
-      {
-        name: "SignInPage",
-        path: "sign-in",
-        component: () => import("@/pages/SignInPage.vue"),
-      },
-    ],
+    name: "SignInPage",
+    path: "/sign-in",
+    component: () => import("@/pages/SignInPage.vue"),
+    meta: { requiresAuth: false },
   },
   {
     path: "*",
     name: "Not Found",
     component: () => import("@/pages/NotFoundPage"),
+    meta: { requiresAuth: false },
   },
 ]
 
@@ -130,6 +129,15 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+})
+
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth === false) return next()
+
+  const isAuthenticated = await auth0.isAuthenticated()
+  if (isAuthenticated) return next()
+
+  return next(false)
 })
 
 export default router

@@ -1,7 +1,11 @@
 <template>
   <v-app>
     <router-view v-if="isUnauthenticatedRoute" />
-    <router-view v-else-if="isReady" />
+    <router-view v-else-if="isReady || isErrored" />
+    <PageLoader
+      v-else-if="isAuthenticated"
+      message="Fetching and syncing user"
+    />
     <PageLoader
       v-else
       message="Checking authentication status ..."
@@ -10,33 +14,26 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
-import { useRoute } from "vue2-helpers/vue-router"
+import { computed, onBeforeMount, ref } from "vue"
+import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 import auth0 from "@/plugins/auth0-plugin"
-
+import useCurrentUser from "@/use/use-current-user"
 import PageLoader from "@/components/PageLoader.vue"
 
 // TODO: consider moving this to a route guard?
 const route = useRoute()
+const router = useRouter()
 const isUnauthenticatedRoute = computed(() => route.meta.requiresAuth === false)
 
+const isAuthenticated = ref(false)
 const isLoading = ref(false)
-const isReady = computed(() => !isLoading.value)
+const isErrored = ref(false)
+const isReady = computed(() => !isLoading.value && isAuthenticated.value)
 
-// // Check if the user is authenticated when the app loads
-// // Bounces user to login page if they aren't authenticated
-// ;(async () => {
-//   try {
-//     await auth0.getTokenSilently()
-//   } catch (error) {
-//     if (error.error !== "login_required") {
-//       throw error
-//     }
-//   }
-// })()
+const { fetch } = useCurrentUser({ eager: false })
 
-;(async () => {
+async function performLoginFlow() {
   isLoading.value = true
   try {
     if (window.location.search.includes("code=") && window.location.search.includes("state=")) {
@@ -44,7 +41,7 @@ const isReady = computed(() => !isLoading.value)
 
       if (appState && appState.targetUrl) {
         appState.targetUrl
-        console.log("appState.targetUrl:", appState.targetUrl)
+        router.replace(appState.targetUrl)
       }
 
       window.history.replaceState({}, document.title, window.location.pathname)
@@ -53,16 +50,28 @@ const isReady = computed(() => !isLoading.value)
     // Don't bother attempting to load current user for unathenticated routes
     if (isUnauthenticatedRoute.value) return
 
-    const isAuthenticated = await auth0.isAuthenticated()
-    console.log("isAuthenticated:", isAuthenticated)
+    isAuthenticated.value = await auth0.isAuthenticated()
+    if (isAuthenticated.value === false) {
+      return auth0.loginWithRedirect()
+    }
 
-    // logged in. you can get the user profile like this:
-    const user = await auth0.getUser()
-    console.log(user)
+    try {
+      await fetch()
+      isErrored.value = false
+    } catch (error) {
+      console.error("Error fetching current user:", error)
+      console.log("Failed to load current user:", error)
+      isErrored.value = true
+      router.push({ name: "SignInPage" })
+    }
   } catch (error) {
     console.log("error:", error)
   } finally {
     isLoading.value = false
   }
-})()
+}
+
+onBeforeMount(async () => {
+  await performLoginFlow()
+})
 </script>

@@ -77,25 +77,22 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted } from "vue"
+
 import { APPLICATION_NAME } from "@/config"
 import auth0 from "@/plugins/auth0-plugin"
 import useCurrentUser from "@/use/use-current-user"
 
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
 
-export default {
-  name: "SignInPage",
-  data: () => ({
-    title: APPLICATION_NAME,
-  }),
-  mounted() {
-    unsetCurrentUser()
-  },
-  methods: {
-    async login() {
-      return auth0.loginWithRedirect()
-    },
-  },
+const title = APPLICATION_NAME
+
+onMounted(() => {
+  unsetCurrentUser()
+})
+
+function login() {
+  return auth0.loginWithRedirect()
 }
 </script>

@@ -5,7 +5,6 @@ import axios from "axios"
 import vuetify from "@/plugins/vuetify"
 import SnackPlugin from "@/plugins/snack-plugin"
 import createI18n from "@/plugins/vue-i18n-plugin"
-import { Auth0Plugin } from "@/auth"
 
 import App from "@/App"
 import router from "@/router"
@@ -17,15 +16,6 @@ import MapDialog from "@/components/MapDialog"
 import { ENVIRONMENT, API_BASE_URL, RELEASE_TAG, GIT_COMMIT_HASH } from "@/config"
 
 Vue.use(VueApexCharts)
-
-Vue.use(Auth0Plugin, {
-  // domain,
-  // client_id: clientId,
-  // audience,
-  onRedirectCallback: (appState) => {
-    router.push(appState && appState.targetUrl ? appState.targetUrl : window.location.pathname)
-  },
-})
 Vue.use(SnackPlugin)
 const i18n = createI18n(Vue)
 
