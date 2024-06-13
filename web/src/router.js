@@ -1,7 +1,7 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 
-import auth0 from "@/plugins/auth0-plugin"
+import { authGuard } from "@/utils/auth-guard"
 
 import AdminUserForm from "@/components/Administration/UserManagement/UserComponent/Form"
 import AdminDashboard from "@/components/Administration/Administration"
@@ -135,7 +135,7 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth === false) return next()
 
-  const isAuthenticated = await auth0.isAuthenticated()
+  const isAuthenticated = await authGuard(to)
   if (isAuthenticated) return next()
 
   return next(false)

@@ -5,6 +5,7 @@ import axios from "axios"
 import vuetify from "@/plugins/vuetify"
 import SnackPlugin from "@/plugins/snack-plugin"
 import createI18n from "@/plugins/vue-i18n-plugin"
+import Auth0Plugin from "@/plugins/auth0-plugin"
 
 import App from "@/App"
 import router from "@/router"
@@ -18,6 +19,7 @@ import { ENVIRONMENT, API_BASE_URL, RELEASE_TAG, GIT_COMMIT_HASH } from "@/confi
 Vue.use(VueApexCharts)
 Vue.use(SnackPlugin)
 const i18n = createI18n(Vue)
+Vue.use(Auth0Plugin)
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios

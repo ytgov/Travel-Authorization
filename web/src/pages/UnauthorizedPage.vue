@@ -50,7 +50,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue"
 
-import auth0 from "@/plugins/auth0-plugin"
+import { auth0 } from "@/plugins/auth0-plugin"
 import http from "@/api/http-client"
 
 import { APPLICATION_NAME } from "@/config"

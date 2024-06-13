@@ -194,7 +194,7 @@ import {
   HAS_SIDEBAR,
   HAS_SIDEBAR_CLOSABLE,
 } from "@/config"
-import auth0 from "@/plugins/auth0-plugin"
+import { auth0 } from "@/plugins/auth0-plugin"
 import router from "@/router"
 import store from "@/store"
 
