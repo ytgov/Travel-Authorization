@@ -32,13 +32,11 @@ const routes = [
       {
         name: "Dashboard",
         path: "dashboard",
-        meta: { requiresAuth: true },
         component: () => import("@/pages/DashboardPage"),
       },
       {
         name: "Profile",
         path: "profile",
-        meta: { requiresAuth: true },
         component: () => import("@/pages/UserProfilePage"),
       },
 
@@ -86,9 +84,6 @@ const routes = [
       {
         path: "administration/TravelAgents",
         name: "TravelAgents",
-        meta: {
-          requiresAuth: true,
-        },
         component: TravelAgents,
       },
       {

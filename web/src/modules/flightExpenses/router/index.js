@@ -6,9 +6,6 @@ const routes = [
       {
         name: "FlightExpenseHome",
         path: "",
-        meta: {
-          requiresAuth: true,
-        },
         component: () => import("../views/FlightExpense.vue"),
       },
     ],
