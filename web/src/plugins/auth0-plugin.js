@@ -27,12 +27,36 @@ export function useAuth0({ initialize = false } = {}) {
     __checkSession()
   }
 
-  async function handleRedirectCallback(url) {
-    return __proxy(() => auth0.handleRedirectCallback(url))
+  async function loginWithRedirect(options = {}) {
+    return auth0.loginWithRedirect(options)
+  }
+
+  async function loginWithPopup(options = {}, config = {}) {
+    return __proxy(() => auth0.loginWithPopup(options, config))
+  }
+
+  async function logout(options = {}) {
+    if (options?.openUrl || options?.openUrl === false) {
+      return __proxy(() => auth0.logout(options))
+    }
+
+    return auth0.logout(options)
+  }
+
+  async function getAccessTokenSilently(options = {}) {
+    return __proxy(() => auth0.getTokenSilently(options))
+  }
+
+  async function getAccessTokenWithPopup(options = {}, config = {}) {
+    return __proxy(() => auth0.getTokenWithPopup(options, config))
   }
 
   async function checkSession(options = {}) {
     return __proxy(() => auth0.checkSession(options))
+  }
+
+  async function handleRedirectCallback(url) {
+    return __proxy(() => auth0.handleRedirectCallback(url))
   }
 
   // Code copied from https://github.com/auth0/auth0-vue/blob/efe1d39a0244fd072a527df97f87ab355501851d/src/plugin.ts#L144
@@ -89,6 +113,12 @@ export function useAuth0({ initialize = false } = {}) {
 
   return {
     ...toRefs(state),
+    loginWithRedirect,
+    loginWithPopup,
+    logout,
+    getAccessTokenSilently,
+    getAccessTokenWithPopup,
+    checkSession,
     handleRedirectCallback,
   }
 }
