@@ -113,6 +113,12 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
+    name: "UnauthorizedPage",
+    path: "/errors/unauthorized",
+    component: () => import("@/pages/UnauthorizedPage.vue"),
+    meta: { requiresAuth: false },
+  },
+  {
     path: "*",
     name: "Not Found",
     component: () => import("@/pages/NotFoundPage"),
