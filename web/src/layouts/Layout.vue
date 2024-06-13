@@ -194,6 +194,7 @@ import {
   HAS_SIDEBAR,
   HAS_SIDEBAR_CLOSABLE,
 } from "@/config"
+import auth0 from "@/plugins/auth0-plugin"
 import router from "@/router"
 import store from "@/store"
 
@@ -274,14 +275,12 @@ export default {
     signOut() {
       unsetCurrentUser()
 
-      // TODO: remove development customization once we update Auth0 environment
-      if (ENVIRONMENT === "development") {
-        this.$auth.logout()
-      } else {
-        this.$auth.logout({
-          returnTo: `${window.location.origin}/sign-in`,
-        })
-      }
+      const returnTo = encodeURI(window.location.origin + "/sign-in")
+      return auth0.logout({
+        logoutParams: {
+          returnTo,
+        },
+      })
     },
     showHistory() {
       this.$refs.historySidebar.show()
