@@ -20,9 +20,13 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: "",
+    path: "/",
     component: () => import("@/layouts/Layout"),
     children: [
+      {
+        path: "",
+        redirect: "dashboard",
+      },
       {
         name: "Dashboard",
         path: "dashboard",
