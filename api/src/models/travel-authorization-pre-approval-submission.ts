@@ -12,9 +12,6 @@ import {
   HasManyRemoveAssociationMixin,
   HasManyRemoveAssociationsMixin,
   HasManySetAssociationsMixin,
-  HasOneCreateAssociationMixin,
-  HasOneGetAssociationMixin,
-  HasOneSetAssociationMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -52,13 +49,6 @@ export class TravelAuthorizationPreApprovalSubmission extends Model<
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
   // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getPreApproval: HasOneGetAssociationMixin<TravelAuthorizationPreApproval>
-  declare setPreApproval: HasOneSetAssociationMixin<
-    TravelAuthorizationPreApproval,
-    TravelAuthorizationPreApproval["submissionId"]
-  >
-  declare createPreApproval: HasOneCreateAssociationMixin<TravelAuthorizationPreApproval>
-
   declare getDocuments: HasManyGetAssociationsMixin<TravelAuthorizationPreApprovalDocument>
   declare setDocuments: HasManySetAssociationsMixin<
     TravelAuthorizationPreApprovalDocument,
@@ -91,30 +81,62 @@ export class TravelAuthorizationPreApprovalSubmission extends Model<
   declare countDocuments: HasManyCountAssociationsMixin
   declare createDocument: HasManyCreateAssociationMixin<TravelAuthorizationPreApprovalDocument>
 
-  declare preApproval?: NonAttribute<TravelAuthorizationPreApproval>
+  declare getPreApprovals: HasManyGetAssociationsMixin<TravelAuthorizationPreApproval>
+  declare setPreApprovals: HasManySetAssociationsMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare hasPreApproval: HasManyHasAssociationMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare hasPreApprovals: HasManyHasAssociationsMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare addPreApproval: HasManyAddAssociationMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare addPreApprovals: HasManyAddAssociationsMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare removePreApproval: HasManyRemoveAssociationMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare removePreApprovals: HasManyRemoveAssociationsMixin<
+    TravelAuthorizationPreApproval,
+    TravelAuthorizationPreApproval["submissionId"]
+  >
+  declare countPreApprovals: HasManyCountAssociationsMixin
+  declare createPreApproval: HasManyCreateAssociationMixin<TravelAuthorizationPreApproval>
+
   declare documents?: NonAttribute<TravelAuthorizationPreApprovalDocument[]>
+  declare preApprovals?: NonAttribute<TravelAuthorizationPreApproval>
 
   declare static associations: {
-    preApproval: Association<
-      TravelAuthorizationPreApprovalSubmission,
-      TravelAuthorizationPreApproval
-    >
     documents: Association<
       TravelAuthorizationPreApprovalSubmission,
       TravelAuthorizationPreApprovalDocument
     >
+    preApprovals: Association<
+      TravelAuthorizationPreApprovalSubmission,
+      TravelAuthorizationPreApproval
+    >
   }
 
   static establishAssociations() {
-    this.hasOne(TravelAuthorizationPreApproval, {
-      sourceKey: "preTSubID",
-      foreignKey: "submissionId",
-      as: "preApproval",
-    })
     this.hasMany(TravelAuthorizationPreApprovalDocument, {
       sourceKey: "preTSubID",
       foreignKey: "preTSubID",
       as: "documents",
+    })
+    this.hasMany(TravelAuthorizationPreApproval, {
+      sourceKey: "preTSubID",
+      foreignKey: "submissionId",
+      as: "preApprovals",
     })
   }
 }

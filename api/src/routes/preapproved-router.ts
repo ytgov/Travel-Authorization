@@ -31,7 +31,7 @@ preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request
   const submissionList = await scopedSubmissions.findAll({
     include: [
       {
-        association: "preApproval",
+        association: "preApprovals",
         include: ["profiles"],
       },
     ],
