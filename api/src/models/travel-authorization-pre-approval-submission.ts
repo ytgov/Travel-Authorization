@@ -16,6 +16,7 @@ import {
   InferCreationAttributes,
   Model,
   NonAttribute,
+  literal,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
@@ -166,9 +167,7 @@ TravelAuthorizationPreApprovalSubmission.init(
     submissionDate: {
       type: DataTypes.DATE,
       allowNull: true,
-      // TODO: update to use current date
-      defaultValue: "2023-12-21",
-      // defaultValue: DataTypes.NOW,
+      defaultValue: literal("CURRENT_DATE"),
     },
     approvalDate: {
       type: DataTypes.DATE,
