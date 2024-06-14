@@ -160,8 +160,10 @@
 
 <script>
 import { v4 as uuidv4 } from "uuid"
+
+import http from "@/api/http-client"
 import { FORM_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
+
 import DatePicker from "@/components/Utils/DatePicker.vue"
 import TimePicker from "@/components/Utils/TimePicker.vue"
 import UploadReceipts from "@/components/Utils/UploadReceipts.vue"
@@ -255,7 +257,7 @@ export default {
   },
   methods: {
     loadTravelAuthorizations() {
-      secureGet(`${FORM_URL}`).then((resp) => {
+      return http.get(FORM_URL).then((resp) => {
         this.forms = resp.data
       })
     },
@@ -269,7 +271,7 @@ export default {
       this.$router.push(`/TravelRequest/Request/${uuidv4()}`)
     },
     getTrip() {
-      secureGet(`${FORM_URL}/recent`).then((resp) => {
+      return http.get(`${FORM_URL}/recent`).then((resp) => {
         this.data = resp.data
       })
     },

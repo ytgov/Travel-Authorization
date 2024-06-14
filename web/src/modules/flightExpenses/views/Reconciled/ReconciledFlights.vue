@@ -4,53 +4,53 @@
       <v-btn
         v-if="admin"
         :disabled="selectedFlights.length == 0"
-        @click="exportToExcel()"
         class="ml-auto"
         color="primary"
+        @click="exportToExcel"
       >
         Export To Excel
       </v-btn>
       <v-btn
         :disabled="selectedFlights.length == 0"
-        @click="openUnReconcile"
         class="ml-4"
         color="primary"
+        @click="openUnReconcile"
       >
         UnReconcile
       </v-btn>
     </v-row>
 
     <v-data-table
+      v-model="selectedFlights"
       :headers="headers"
       :items="reconciledFlights"
       :items-per-page="15"
       dense
       class="elevation-1 mt-4"
-      v-model="selectedFlights"
       item-key="invoiceDetailID"
       :show-select="admin"
     >
-      <template v-slot:[`item.purchaseDate`]="{ item }">
+      <template #item.purchaseDate="{ item }">
         {{ item.purchaseDate | beautifyDate }}
       </template>
 
-      <template v-slot:[`item.agent`]="{ item }">
+      <template #item.agent="{ item }">
         {{ item.agent | capitalize }}
       </template>
 
-      <template v-slot:[`item.airline`]="{ item }">
+      <template #item.airline="{ item }">
         {{ item.airline | capitalize }}
       </template>
 
-      <template v-slot:[`item.travelerFirstName`]="{ item }">
+      <template #item.travelerFirstName="{ item }">
         {{ item.travelerFirstName | capitalize }}
       </template>
 
-      <template v-slot:[`item.travelerLastName`]="{ item }">
+      <template #item.travelerLastName="{ item }">
         {{ item.travelerLastName | capitalize }}
       </template>
 
-      <template v-slot:[`item.flightInfo`]="{ item }">
+      <template #item.flightInfo="{ item }">
         <div
           v-for="(flight, inx) in item.flightInfo.split(',')"
           :key="'flight-info-' + inx"
@@ -59,17 +59,17 @@
           {{ flight }}
         </div>
       </template>
-      <template v-slot:[`item.cost`]="{ item }"> $ {{ item.cost | currency }} </template>
-      <template v-slot:[`item.reconciled`]="{ item }">
+      <template #item.cost="{ item }"> $ {{ item.cost | currency }} </template>
+      <template #item.reconciled="{ item }">
         <div class="text-center">
           <v-icon
-            color="success"
             v-if="item.reconciled"
+            color="success"
             >mdi-checkbox-marked</v-icon
           >
           <v-icon
-            color="warning"
             v-else
+            color="warning"
             >mdi-close-box</v-icon
           >
         </div>
@@ -117,14 +117,18 @@
 
 <script>
 import Vue from "vue"
-import { FLIGHT_RECONCILE_URL } from "../../../../urls"
-import { securePost } from "../../../../store/jwt"
 import { ExportToCsv } from "export-to-csv"
+
+import http from "@/api/http-client"
+import { FLIGHT_RECONCILE_URL } from "@/urls"
 
 export default {
   name: "ReconciledFlights",
   props: {
-    reconciledFlights: {},
+    reconciledFlights: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -261,7 +265,8 @@ export default {
         body.push(reconcile)
       }
 
-      securePost(`${FLIGHT_RECONCILE_URL}/`, body)
+      return http
+        .post(`${FLIGHT_RECONCILE_URL}/`, body)
         .then(() => {
           this.savingData = false
           this.unReconcileDialog = false

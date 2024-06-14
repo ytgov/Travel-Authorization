@@ -1,74 +1,41 @@
-export const applicationName = "Travel Authorization";
-export const applicationIcon = "mdi-cash-register";
-export const hasSidebar = true;
-export const hasSidebarClosable = false;
+export const APPLICATION_NAME = "Travel Authorization"
+export const ENVIRONMENT = process.env.NODE_ENV
+export const RELEASE_TAG = process.env.VUE_APP_RELEASE_TAG
+export const GIT_COMMIT_HASH = process.env.VUE_APP_GIT_COMMIT_HASH
 
-export const sections = [
-  {
-    name: "Summary",
-    icon: "mdi-note-text-outline",
-    makeUrl: function(id) {
-      return `/sites/${id}/summary`;
-    }
+export const HAS_SIDEBAR = true // TODO: consider removing this
+export const HAS_SIDEBAR_CLOSABLE = false // TODO: consider removing this
+
+const dynamicConfigs = {
+  development: {
+    API_BASE_URL: "http://localhost:3000",
+    AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
+    AUTH0_CLIENT_ID: "ZHjPOeCwYBov6eR1lxGOVYhYi4VPV8eU",
+    AUTH0_AUDIENCE: "testing",
   },
-  {
-    name: "Location",
-    icon: "mdi-map-check",
-    makeUrl: id => {
-      return `/sites/${id}/location`;
-    }
+  production: {
+    API_BASE_URL: window.location.origin,
+    AUTH0_DOMAIN: "https://yukon.eu.auth0.com",
+    AUTH0_CLIENT_ID: "kbp3mBBVji9nIJUvLbq13ypfWZnUbU5j",
+    AUTH0_AUDIENCE: "generic-production",
   },
-  {
-    name: "Dates & Condition",
-    icon: "mdi-calendar-range",
-    makeUrl: function(id) {
-      return `/sites/${id}/dates_&_condition`;
-    }
+  local_production: {
+    API_BASE_URL: window.location.origin,
+    AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
+    AUTH0_CLIENT_ID: "ZHjPOeCwYBov6eR1lxGOVYhYi4VPV8eU",
+    AUTH0_AUDIENCE: "testing",
   },
-  {
-    name: "Themes & Function",
-    icon: "mdi-shape",
-    makeUrl: id => {
-      return `/sites/${id}/themes_&_function`;
-    }
-  },
-  {
-    name: "Associations",
-    icon: "mdi-account-group",
-    makeUrl: id => {
-      return `/sites/${id}/associations`;
-    }
-  },
-  {
-    name: "Legal & Zoning",
-    icon: "mdi-script-text-outline",
-    makeUrl: function(id) {
-      return `/sites/${id}/legal_&_zoning`;
-    }
-  },
-  {
-    name: "Photos",
-    icon: "mdi-image",
-    makeUrl: id => {
-      return `/sites/${id}/photos`;
-    }
-  },
-  {
-    name: "Management",
-    icon: "mdi-hammer-wrench",
-    makeUrl: id => {
-      return `/sites/${id}/management`;
-    }
-  },
-  {
-    name: "Description",
-    icon: "mdi-alphabetical",
-    makeUrl: id => {
-      return `/sites/${id}/description`;
-    }
-  }
-];
-export const environment = process.env.NODE_ENV;
-export const apiBaseUrl = process.env.NODE_ENV == "production" ? "" : "http://localhost:3000";
-export const releaseTag = process.env.VUE_APP_RELEASE_TAG
-export const gitCommitHash = process.env.VUE_APP_GIT_COMMIT_HASH
+}
+
+const isRunningProductionBuildLocally =
+  ENVIRONMENT === "production" && window.location.host == "localhost:8080"
+
+const effectiveEnvironment = isRunningProductionBuildLocally ? "local_production" : ENVIRONMENT
+
+if (!(effectiveEnvironment in dynamicConfigs)) {
+  throw new Error(`Invalid effective environment: ${effectiveEnvironment}`)
+}
+
+const dynamicConfig = dynamicConfigs[effectiveEnvironment]
+
+export const { API_BASE_URL, AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_AUDIENCE } = dynamicConfig

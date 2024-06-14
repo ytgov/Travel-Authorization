@@ -143,8 +143,9 @@
 
 <script>
 import Vue from "vue"
+
 import { TRAVEL_DESK_URL } from "@/urls"
-import { securePost, secureDelete } from "@/store/jwt"
+import http from "@/api/http-client"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import FlightSegmentsTable from "@/modules/travelDesk/views/Desk/Components/FlightSegmentsTable.vue"
@@ -221,7 +222,8 @@ export default {
 
     deleteFlightOptions(removeSegments) {
       this.savingData = true
-      secureDelete(`${TRAVEL_DESK_URL}/flight-options/${this.travelDeskTravelRequestId}`)
+      return http
+        .delete(`${TRAVEL_DESK_URL}/flight-options/${this.travelDeskTravelRequestId}`)
         .then((resp) => {
           console.log(resp)
           this.flightOptions.splice(0)
@@ -249,7 +251,8 @@ export default {
         this.savingData = true
         const body = this.flightOptions
 
-        securePost(`${TRAVEL_DESK_URL}/flight-options/${this.travelDeskTravelRequestId}`, body)
+        return http
+          .post(`${TRAVEL_DESK_URL}/flight-options/${this.travelDeskTravelRequestId}`, body)
           .then((resp) => {
             console.log(resp)
             this.savingData = false

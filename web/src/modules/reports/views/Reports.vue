@@ -29,14 +29,14 @@
 
         <v-card-actions class="mx-8">
           <v-btn
-            @click="switchFilterView(views.filters)"
             :color="views.filters ? 'primary' : 'secondary'"
+            @click="switchFilterView(views.filters)"
             >Filters
           </v-btn>
           <v-btn
-            @click="switchGraphView(views.graphs)"
             class="ml-4"
             :color="views.graphs ? 'primary' : 'secondary'"
+            @click="switchGraphView(views.graphs)"
             >Graph
           </v-btn>
           <update-progress-modal class="ml-auto" />
@@ -44,26 +44,26 @@
       </v-card>
 
       <v-card
-        class="mt-5"
         v-if="views.filters"
+        class="mt-5"
         flat
       >
         <filters
-          :flightReport="allFlightReports"
+          :flight-report="allFlightReports"
           @updateFilters="updateFilters"
         />
       </v-card>
 
       <v-card
-        class="mt-5"
         v-if="views.graphs"
+        class="mt-5"
         flat
       >
         <graphs
-          :updateGraph="updateGraph"
-          :filtersApplied="views.filters"
-          :filteredFlightReport="flightReport"
-          :allFlightReports="allFlightReports"
+          :update-graph="updateGraph"
+          :filters-applied="views.filters"
+          :filtered-flight-report="flightReport"
+          :all-flight-reports="allFlightReports"
         />
       </v-card>
 
@@ -71,22 +71,23 @@
         class="mt-5"
         flat
       >
-        <flight-report :flightReport="flightReport" />
+        <flight-report :flight-report="flightReport" />
       </v-card>
     </div>
   </v-card>
 </template>
 
 <script>
-import FlightReport from "./FlightReport.vue"
-import Filters from "./Filters/Filters.vue"
-import Graphs from "./Graphs/Graphs.vue"
-import { TRAVEL_COM_URL, PROFILE_URL } from "../../../urls"
-import { secureGet } from "../../../store/jwt"
-import UpdateProgressModal from "./Common/UpdateProgressModal.vue"
+import { TRAVEL_COM_URL, PROFILE_URL } from "@/urls"
+import http from "@/api/http-client"
+
+import FlightReport from "@/modules/reports/views/FlightReport.vue"
+import Filters from "@/modules/reports/views/Filters/Filters.vue"
+import Graphs from "@/modules/reports/views/Graphs/Graphs.vue"
+import UpdateProgressModal from "@/modules/reports/views/Common/UpdateProgressModal.vue"
 
 export default {
-  name: "Report",
+  name: "Reports",
   components: {
     FlightReport,
     Filters,
@@ -127,7 +128,8 @@ export default {
     },
 
     async getUserAuth() {
-      return secureGet(`${PROFILE_URL}`)
+      return http
+        .get(PROFILE_URL)
         .then((resp) => {
           this.$store.commit("auth/setUser", resp.data.user)
         })
@@ -137,7 +139,8 @@ export default {
     },
 
     async getFlights() {
-      return secureGet(`${TRAVEL_COM_URL}/statistics`)
+      return http
+        .get(`${TRAVEL_COM_URL}/statistics`)
         .then(async (resp) => {
           console.log(resp.data)
           this.allFlightReports = resp.data

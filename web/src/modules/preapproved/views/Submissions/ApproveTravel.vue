@@ -10,9 +10,9 @@
           small
           class="my-0"
           color="primary"
-          @click="extractTravelRequests()"
           v-bind="attrs"
           v-on="on"
+          @click="extractTravelRequests"
         >
           Approve
         </v-btn>
@@ -27,23 +27,23 @@
           <v-row class="mt-10">
             <v-col cols="6">
               <v-text-field
-                :error="approvedByErr"
-                @input="approvedByErr = false"
                 v-model="approvedBy"
+                :error="approvedByErr"
                 label="Approved By"
                 outlined
                 clearable
+                @input="approvedByErr = false"
               />
             </v-col>
             <v-col cols="1" />
             <v-col cols="3">
               <v-text-field
-                :error="approvalDateErr"
-                @input="approvalDateErr = false"
                 v-model="approvalDate"
+                :error="approvalDateErr"
                 label="Approval Date"
                 outlined
                 type="date"
+                @input="approvalDateErr = false"
               />
             </v-col>
             <v-col cols="1" />
@@ -66,8 +66,8 @@
                   type="file"
                   style="display: none"
                   accept="application/pdf,image/x-png,image/jpeg"
-                  @change="handleSelectedFile"
                   onclick="this.value=null;"
+                  @change="handleSelectedFile"
                 />
               </v-btn>
             </v-col>
@@ -181,8 +181,7 @@
 
 <script>
 import { PREAPPROVED_URL } from "@/urls"
-import { securePost } from "@/store/jwt"
-
+import http from "@/api/http-client"
 import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
 import { STATUSES as SUBMISSION_STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
 
@@ -337,7 +336,8 @@ export default {
           },
         }
 
-        securePost(`${PREAPPROVED_URL}/approval/${this.submissionId}`, bodyFormData, header)
+        return http
+          .post(`${PREAPPROVED_URL}/approval/${this.submissionId}`, bodyFormData, header)
           .then(() => {
             this.savingData = false
             this.approveTravelDialog = false

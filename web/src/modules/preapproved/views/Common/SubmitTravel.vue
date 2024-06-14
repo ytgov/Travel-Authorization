@@ -247,12 +247,11 @@
 <script>
 import { cloneDeep } from "lodash"
 
+import http from "@/api/http-client"
 import { PREAPPROVED_URL } from "@/urls"
-import { securePost, secureDelete } from "@/store/jwt"
-
 import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
 
-import NewTravelRequest from "../Requests/NewTravelRequest.vue"
+import NewTravelRequest from "@/modules/preapproved/views/Requests/NewTravelRequest.vue"
 
 export default {
   name: "SubmitTravel",
@@ -429,7 +428,8 @@ export default {
           preApprovalIds: currentIDs,
         }
         // console.log(body)
-        securePost(`${PREAPPROVED_URL}/submissions/${this.submissionId}`, body)
+        return http
+          .post(`${PREAPPROVED_URL}/submissions/${this.submissionId}`, body)
           .then(() => {
             this.savingData = false
             this.submitTravelDialog = false
@@ -443,7 +443,8 @@ export default {
     },
 
     deleteSubmission() {
-      secureDelete(`${PREAPPROVED_URL}/submissions/${this.submissionId}`)
+      return http
+        .delete(`${PREAPPROVED_URL}/submissions/${this.submissionId}`)
         .then(() => {
           this.savingData = false
           this.submitTravelDialog = false

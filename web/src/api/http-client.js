@@ -1,11 +1,11 @@
 import axios from "axios"
 import qs from "qs"
 
-import { getInstance } from "@/auth"
-import { apiBaseUrl } from "@/config"
+import { auth0 } from "@/plugins/auth0-plugin"
+import { API_BASE_URL } from "@/config"
 
 export const httpClient = axios.create({
-  baseURL: apiBaseUrl,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,7 +17,6 @@ export const httpClient = axios.create({
 })
 
 httpClient.interceptors.request.use(async (config) => {
-  const auth0 = await getInstance()
   const accessToken = await auth0.getTokenSilently()
   config.headers["Authorization"] = `Bearer ${accessToken}`
   return config
@@ -29,8 +28,7 @@ httpClient.interceptors.response.use(null, async (error) => {
   // Bounce the user if they hit a login required error when trying to access a protected route
   // It would probably be better to move this code to a route guard or something?
   if (error?.error === "login_required") {
-    const auth0 = await getInstance()
-    auth0.loginWithRedirect({ appState: { targetUrl: window.location.pathname } })
+    throw new Error("You must be logged in to access this endpoint")
   } else if (error?.response?.data?.message) {
     throw new Error(error.response.data.message)
   } else if (error.message) {
