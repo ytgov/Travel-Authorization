@@ -100,11 +100,12 @@
 </template>
 
 <script>
-import Vue from "vue"
+import Vue, { ref } from "vue"
 import { ExportToCsv } from "export-to-csv"
 import { isNil } from "lodash"
 
 import { STATUSES } from "@/api/travel-authorization-pre-approvals-api"
+import useCurrentUser from "@/use/use-current-user"
 
 import NewTravelRequest from "./NewTravelRequest.vue"
 import PrintReport from "../Common/PrintReport.vue"
@@ -123,9 +124,11 @@ export default {
       default: () => [],
     },
   },
-  data() {
+  setup() {
+    const { isAdmin } = useCurrentUser()
+
     return {
-      headers: [
+      headers: ref([
         {
           text: "Name",
           value: "name",
@@ -174,10 +177,10 @@ export default {
           sortable: false,
           width: "1rem",
         },
-      ],
-      admin: false,
-      selectedRequests: [],
-      firstSelectionDept: "",
+      ]),
+      admin: isAdmin,
+      selectedRequests: ref([]),
+      firstSelectionDept: ref(""),
     }
   },
   computed: {
@@ -192,9 +195,6 @@ export default {
         })
       return travelRequests
     },
-  },
-  mounted() {
-    this.admin = Vue.filter("isAdmin")()
   },
   methods: {
     isNil,
