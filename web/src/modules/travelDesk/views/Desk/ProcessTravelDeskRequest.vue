@@ -4,7 +4,7 @@
       v-model="addNewTravelDialog"
       persistent
     >
-      <template #Cactivator="{ on, attrs }">
+      <template #activator="{ on, attrs }">
         <v-btn
           style="min-width: 0; height: 1.75rem"
           class="my-0 mx-0 px-0"
