@@ -428,7 +428,7 @@
 import Vue from "vue"
 
 import { PREAPPROVED_URL } from "@/urls"
-import { secureDelete, secureGet, securePost } from "@/store/jwt"
+import http from "@/api/http-client"
 import { STATUSES as PRE_APPROVED_STATUSES } from "@/api/travel-authorization-pre-approvals-api"
 import { STATUSES as SUBMISSION_STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
 
@@ -651,7 +651,8 @@ export default {
         }
         // console.log(body);
         const id = this.travelRequest?.id ? this.travelRequest.id : 0
-        securePost(`${PREAPPROVED_URL}/${id}`, body)
+        return http
+          .post(`${PREAPPROVED_URL}/${id}`, body)
           .then(() => {
             this.savingData = false
             this.addNewTravelDialog = false
@@ -742,7 +743,8 @@ export default {
     },
 
     initSubmission(id) {
-      secureGet(`${PREAPPROVED_URL}/submissions/${id}`)
+      return http
+        .get(`${PREAPPROVED_URL}/submissions/${id}`)
         .then((res) => {
           this.showApproval = res.data.status === SUBMISSION_STATUSES.FINISHED
           this.approvedBy = res.data.approvedBy
@@ -762,7 +764,8 @@ export default {
         },
       }
 
-      secureGet(`${PREAPPROVED_URL}/document/${this.travelRequest.submissionId}`, header)
+      return http
+        .get(`${PREAPPROVED_URL}/document/${this.travelRequest.submissionId}`, header)
         .then((res) => {
           this.loadingData = false
           const link = document.createElement("a")
@@ -781,7 +784,8 @@ export default {
     deleteTravelRequest() {
       this.deleteDialog = false
       this.savingData = true
-      secureDelete(`${PREAPPROVED_URL}/${this.travelRequest.id}`)
+      return http
+        .delete(`${PREAPPROVED_URL}/${this.travelRequest.id}`)
         .then(() => {
           this.savingData = false
           this.addNewTravelDialog = false

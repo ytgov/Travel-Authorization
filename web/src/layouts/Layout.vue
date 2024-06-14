@@ -187,8 +187,14 @@
 <script>
 import { mapState } from "vuex"
 
-import { getInstance } from "@/auth"
-import * as config from "@/config"
+import {
+  ENVIRONMENT,
+  RELEASE_TAG,
+  APPLICATION_NAME,
+  HAS_SIDEBAR,
+  HAS_SIDEBAR_CLOSABLE,
+} from "@/config"
+import { auth0 } from "@/plugins/auth0-plugin"
 import router from "@/router"
 import store from "@/store"
 
@@ -197,7 +203,6 @@ import useCurrentUser from "@/use/use-current-user"
 import RequestAlert from "@/components/RequestAlert.vue"
 import PageLoader from "@/components/PageLoader.vue"
 
-const auth = getInstance()
 const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
 
 export default {
@@ -207,18 +212,16 @@ export default {
     PageLoader,
   },
   data: () => ({
-    releaseTag: config.releaseTag,
+    releaseTag: RELEASE_TAG,
     dialog: false,
     drawer: null,
     drawerRight: null,
     headerShow: false,
     menuShow: false,
     loadingClass: "d-none",
-    applicationName: config.applicationName,
-    applicationIcon: config.applicationIcon,
-    sections: config.sections,
-    hasSidebar: config.hasSidebar,
-    hasSidebarClosable: config.hasSidebarClosable,
+    applicationName: APPLICATION_NAME,
+    hasSidebar: HAS_SIDEBAR,
+    hasSidebarClosable: HAS_SIDEBAR_CLOSABLE,
     currentId: 0,
     menuTitle: "Dashboard",
 
@@ -241,7 +244,7 @@ export default {
     },
     isInDevelopmentOrUserAcceptanceTesting() {
       return (
-        config.environment === "development" ||
+        ENVIRONMENT === "development" ||
         window.location.hostname === "travel-auth-dev.ynet.gov.yk.ca"
       )
     },
@@ -263,17 +266,7 @@ export default {
     },
   },
   async mounted() {
-    if (auth.auth0Client) {
-      this.doInitialize()
-      return
-    }
-
-    this.interval = window.setInterval(() => {
-      if (auth.auth0Client) {
-        window.clearInterval(this.interval)
-        this.doInitialize()
-      }
-    }, 200)
+    this.doInitialize()
   },
   methods: {
     nav: function (location) {
@@ -282,14 +275,12 @@ export default {
     signOut() {
       unsetCurrentUser()
 
-      // TODO: remove development customization once we update Auth0 environment
-      if (config.environment === "development") {
-        this.$auth.logout()
-      } else {
-        this.$auth.logout({
-          returnTo: `${window.location.origin}/sign-in`,
-        })
-      }
+      const returnTo = encodeURI(window.location.origin + "/sign-in")
+      return auth0.logout({
+        logoutParams: {
+          returnTo,
+        },
+      })
     },
     showHistory() {
       this.$refs.historySidebar.show()

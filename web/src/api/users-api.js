@@ -2,6 +2,30 @@ import { isString } from "lodash"
 
 import http from "@/api/http-client"
 
+/**
+ * @typedef {Object} User
+ * @property {string} id
+ * @property {string} sub - Auth0 subject attribute
+ * @property {string} email
+ * @property {string} status
+ * @property {(string|null)} firstName
+ * @property {(string|null)} lastName
+ * @property {string[]} roles
+ * @property {(string|null)} department
+ * @property {(string|null)} division
+ * @property {(string|null)} branch
+ * @property {(string|null)} unit
+ * @property {(string|null)} mailcode
+ * @property {(string|null)} manager
+ * @property {(string|null)} lastSyncSuccessAt
+ * @property {(string|null)} lastSyncFailureAt
+ * @property {string} createdAt
+ * @property {string} updatedAt
+ *
+ * extra attributes added by serializer
+ * @property {string} displayName
+ */
+
 // Must match roles in api/src/models/user.ts
 export const ROLES = Object.freeze({
   ADMIN: "admin",
@@ -13,8 +37,12 @@ export const ROLES = Object.freeze({
 
 export const usersApi = {
   ROLES,
-  me() {
-    return http.get("/api/user/me").then(({ data }) => data)
+  /**
+   * @returns {Promise<{ user: User }>}
+   */
+  async me() {
+    const { data } = await http.get("/api/user/me")
+    return data
   },
   search({ email, ...otherParams } = {}) {
     if (isString(email) && email.length >= 3) {

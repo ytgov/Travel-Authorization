@@ -5,7 +5,7 @@ import axios from "axios"
 import vuetify from "@/plugins/vuetify"
 import SnackPlugin from "@/plugins/snack-plugin"
 import createI18n from "@/plugins/vue-i18n-plugin"
-import { Auth0Plugin } from "@/auth"
+import Auth0Plugin from "@/plugins/auth0-plugin"
 
 import App from "@/App"
 import router from "@/router"
@@ -14,20 +14,12 @@ import "@/filters"
 import Notifications from "@/components/Notifications"
 import MapDialog from "@/components/MapDialog"
 
-import { environment, apiBaseUrl, releaseTag, gitCommitHash } from "@/config"
+import { ENVIRONMENT, API_BASE_URL, RELEASE_TAG, GIT_COMMIT_HASH } from "@/config"
 
 Vue.use(VueApexCharts)
-
-Vue.use(Auth0Plugin, {
-  // domain,
-  // client_id: clientId,
-  // audience,
-  onRedirectCallback: (appState) => {
-    router.push(appState && appState.targetUrl ? appState.targetUrl : window.location.pathname)
-  },
-})
 Vue.use(SnackPlugin)
 const i18n = createI18n(Vue)
+Vue.use(Auth0Plugin)
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -58,8 +50,8 @@ new Vue({
 }).$mount("#app")
 
 console.log("App is running", {
-  environment,
-  apiBaseUrl,
-  releaseTag,
-  gitCommitHash,
+  environment: ENVIRONMENT,
+  apiBaseUrl: API_BASE_URL,
+  releaseTag: RELEASE_TAG,
+  gitCommitHash: GIT_COMMIT_HASH,
 })

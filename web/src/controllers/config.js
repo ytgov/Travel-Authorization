@@ -1,9 +1,9 @@
 import store from "../store/index";
 import axios from "axios";
-import { apiBaseUrl } from "../config";
+import { API_BASE_URL } from "../config";
 
 // const BASE_URL =  'https://api.gov.yk.ca/heritage/api/';
-const BASE_URL = `${apiBaseUrl}/api`;
+const BASE_URL = `${API_BASE_URL}/api`;
 // const BASE_URL = `http://localhost:3000/api/`;
 const TEST_TOKEN =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ5Zy1jbGFpbXMiOnsicGVybWlzc2lvbnMiOlsidmlldyIsImNyZWF0ZSIsImVkaXQiXX0sInN1YiI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.BDa7etuFx-QoqTHxEwOpBaWdsbupbrL4YszziI_W7to";

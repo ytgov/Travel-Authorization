@@ -26,7 +26,7 @@
     >
       <v-toolbar-title>Pre-Approved Travel</v-toolbar-title>
 
-      <template v-slot:extension>
+      <template #extension>
         <v-tabs
           v-model="tabs"
           active-class="primary--text teal lighten-5"
@@ -63,8 +63,8 @@
 </template>
 
 <script>
+import http from "@/api/http-client"
 import { PREAPPROVED_URL, LOOKUP_URL, PROFILE_URL } from "@/urls"
-import { secureGet } from "@/store/jwt"
 
 import travelPurposesApi from "@/api/travel-purposes-api"
 import travelAuthorizationPreApprovalsApi, {
@@ -110,7 +110,8 @@ export default {
     },
 
     async getUserAuth() {
-      return secureGet(`${PROFILE_URL}`)
+      return http
+        .get(`${PROFILE_URL}`)
         .then((resp) => {
           this.$store.commit("auth/setUser", resp.data.user)
         })
@@ -120,7 +121,8 @@ export default {
     },
 
     async getEmployees() {
-      return secureGet(`${LOOKUP_URL}/employees`)
+      return http
+        .get(`${LOOKUP_URL}/employees`)
         .then((resp) => {
           this.$store.commit("preapproved/SET_EMPLOYEES", resp.data)
         })
@@ -130,7 +132,8 @@ export default {
     },
 
     async getDepartmentBranch() {
-      return secureGet(`${LOOKUP_URL}/department-branch`)
+      return http
+        .get(`${LOOKUP_URL}/department-branch`)
         .then((resp) => {
           this.$store.commit("preapproved/SET_DEPARTMENT_BRANCH", resp.data)
         })
@@ -165,7 +168,8 @@ export default {
     },
 
     async getPreapprovedTravelSubmissions() {
-      return secureGet(`${PREAPPROVED_URL}/submissions`)
+      return http
+        .get(`${PREAPPROVED_URL}/submissions`)
         .then((resp) => {
           this.travelSubmissions = resp.data
         })

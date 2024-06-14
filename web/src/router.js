@@ -1,6 +1,8 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 
+import { authGuard } from "@/utils/auth-guard"
+
 import AdminUserForm from "@/components/Administration/UserManagement/UserComponent/Form"
 import AdminDashboard from "@/components/Administration/Administration"
 import UserManagement from "@/components/Administration/UserManagement/Grid"
@@ -16,34 +18,25 @@ import travelAuthorizationsRouter from "@/modules/travel-authorizations/router"
 import flightExpenseRouter from "@/modules/flightExpenses/router"
 import reportsRouter from "@/modules/reports/router"
 
-import authenticationRouter from "@/modules/authentication/router"
-
-import store from "@/store"
-
-// import { authGuard } from "../auth/authGuard";
-
 Vue.use(VueRouter)
 
 const routes = [
   {
-    // TODO: make this a route guard
     path: "/",
-    component: () => import("@/pages/AuthLoadingOverlay"),
-  },
-  {
-    path: "",
     component: () => import("@/layouts/Layout"),
     children: [
       {
+        path: "",
+        redirect: "dashboard",
+      },
+      {
         name: "Dashboard",
         path: "dashboard",
-        meta: { requiresAuth: true },
         component: () => import("@/pages/DashboardPage"),
       },
       {
         name: "Profile",
         path: "profile",
-        meta: { requiresAuth: true },
         component: () => import("@/pages/UserProfilePage"),
       },
 
@@ -91,9 +84,6 @@ const routes = [
       {
         path: "administration/TravelAgents",
         name: "TravelAgents",
-        meta: {
-          requiresAuth: true,
-        },
         component: TravelAgents,
       },
       {
@@ -105,11 +95,11 @@ const routes = [
         path: "health-check",
         name: "HealthCheck",
         component: () => import("@/pages/HealthCheckPage"),
+        meta: { requiresAuth: false },
       },
     ],
   },
 
-  ...authenticationRouter,
   ...preapprovedRouter,
   ...travelDeskRouter,
   ...travelAuthorizationsRouter,
@@ -117,9 +107,22 @@ const routes = [
   ...reportsRouter,
 
   {
+    name: "SignInPage",
+    path: "/sign-in",
+    component: () => import("@/pages/SignInPage.vue"),
+    meta: { requiresAuth: false },
+  },
+  {
+    name: "UnauthorizedPage",
+    path: "/errors/unauthorized",
+    component: () => import("@/pages/UnauthorizedPage.vue"),
+    meta: { requiresAuth: false },
+  },
+  {
     path: "*",
     name: "Not Found",
     component: () => import("@/pages/NotFoundPage"),
+    meta: { requiresAuth: false },
   },
 ]
 
@@ -129,42 +132,13 @@ const router = new VueRouter({
   routes,
 })
 
-import { getInstance } from "@/auth"
-let authService
-
 router.beforeEach(async (to, from, next) => {
-  var requiresAuth = to.meta.requiresAuth || false
+  if (to.meta.requiresAuth === false) return next()
 
-  if (!requiresAuth) {
-    return next()
-  }
+  const isAuthenticated = await authGuard(to)
+  if (isAuthenticated) return next()
 
-  if (!authService) {
-    authService = await getInstance()
-  }
-
-  const guardAction = () => {
-    if (authService.isAuthenticated) {
-      return next()
-    }
-
-    authService.loginWithRedirect({ appState: { targetUrl: to.fullPath } })
-  }
-
-  // If the Auth0Plugin has loaded already, check the authentication state
-  if (!authService.isLoading) {
-    return guardAction()
-  }
-
-  authService.$watch("isLoading", (isLoading) => {
-    if (isLoading === false) {
-      return guardAction()
-    }
-  })
-})
-
-router.afterEach(async () => {
-  return await store.dispatch("auth/checkAuthentication")
+  return next(false)
 })
 
 export default router

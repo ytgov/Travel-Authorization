@@ -109,10 +109,10 @@
                 </v-col> -->
                 <v-col cols="12">
                   <v-select
+                    v-model="pendingDepartments"
                     :items="departments"
                     item-text="name"
                     item-value="id"
-                    v-model="pendingDepartments"
                     label="Departments"
                     outlined
                     dense
@@ -126,10 +126,10 @@
                 </v-col>
                 <v-col cols="12">
                   <v-select
+                    v-model="pendingBranches"
                     :items="myBranches"
                     item-text="fullName"
                     item-value="id"
-                    v-model="pendingBranches"
                     label="Branches"
                     outlined
                     dense
@@ -142,9 +142,9 @@
                 </v-col>
                 <v-col cols="12">
                   <v-select
+                    v-model="pendingRoles"
                     label="Roles"
                     :items="roles"
-                    v-model="pendingRoles"
                     outlined
                     dense
                     multiple
@@ -191,9 +191,10 @@
 </template>
 
 <script>
-import { USERS_URL, LOOKUP_URL } from "../../../../urls"
-import Breadcrumbs from "../../../Breadcrumbs.vue"
-import { secureGet, securePut } from "@/store/jwt"
+import http from "@/api/http-client"
+import { USERS_URL, LOOKUP_URL } from "@/urls"
+import Breadcrumbs from "@/components/Breadcrumbs.vue"
+
 export default {
   components: {
     Breadcrumbs,
@@ -226,12 +227,6 @@ export default {
     roles: [],
     showAccessDialog: false,
   }),
-  async mounted() {
-    await this.loadDepartments()
-    await this.loadRoles()
-    await this.loadUser(this.$route.params.id)
-    this.getBranches()
-  },
   computed: {
     myBranches: function () {
       return this.branches.filter((b) => {
@@ -239,7 +234,12 @@ export default {
       })
     },
   },
-  watch: {},
+  async mounted() {
+    await this.loadDepartments()
+    await this.loadRoles()
+    await this.loadUser(this.$route.params.id)
+    this.getBranches()
+  },
   methods: {
     async doSave() {
       this.saveAccess()
@@ -254,18 +254,20 @@ export default {
         departments: [...this.pendingDepartments, ...this.pendingBranches],
         roles: this.pendingRoles,
       }
-      securePut(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject).then((resp) => {
-        console.log(resp)
-      })
+      return http
+        .put(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
+        .then((resp) => {
+          console.log(resp)
+        })
       // this.showAccessDialog = false;
     },
     async loadUser(id) {
-      secureGet(`${USERS_URL}/${id}`).then((resp) => {
+      await http.get(`${USERS_URL}/${id}`).then((resp) => {
         this.user = resp.data
         if (this.user.is_active == 1) this.user.status = "active"
         else this.user.status = "inactive"
       })
-      secureGet(`${USERS_URL}/${id}/permissions`).then((resp) => {
+      await http.get(`${USERS_URL}/${id}/permissions`).then((resp) => {
         for (let i = 0; i < resp.data.departments.length; i++) {
           if (this.departments[resp.data.departments[i].objectid])
             this.pendingDepartments.push(resp.data.departments[i].objectid)
@@ -278,22 +280,22 @@ export default {
       })
     },
     async loadDepartments() {
-      return secureGet(`${LOOKUP_URL}/departments`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/departments`).then((resp) => {
         this.departments = resp.data
       })
     },
     async getBranches() {
-      await secureGet(`${LOOKUP_URL}/branches`).then((resp) => {
+      await http.get(`${LOOKUP_URL}/branches`).then((resp) => {
         this.branches = resp.data
       })
     },
     loadUnits() {
-      secureGet(`${LOOKUP_URL}/departments`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/departments`).then((resp) => {
         this.departments = resp.data
       })
     },
     loadRoles() {
-      secureGet(`${LOOKUP_URL}/roles`).then((resp) => {
+      return http.get(`${LOOKUP_URL}/roles`).then((resp) => {
         this.roles = resp.data
       })
     },

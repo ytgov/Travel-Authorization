@@ -133,12 +133,13 @@
 </template>
 
 <script>
-import Flights from "./Flights.vue"
-import ReconciledFlights from "./Reconciled/ReconciledFlights.vue"
-import UnReconciledFlights from "./Unreconciled/UnReconciledFlights.vue"
-import { TRAVEL_COM_URL, PROFILE_URL } from "../../../urls"
-import { secureGet } from "../../../store/jwt"
 import Vue from "vue"
+
+import http from "@/api/http-client"
+import { TRAVEL_COM_URL, PROFILE_URL } from "@/urls"
+import Flights from "@/modules/flightExpenses/views/Flights.vue"
+import ReconciledFlights from "@/modules/flightExpenses/views/Reconciled/ReconciledFlights.vue"
+import UnReconciledFlights from "@/modules/flightExpenses/views/Unreconciled/UnReconciledFlights.vue"
 
 export default {
   name: "FlightExpense",
@@ -172,7 +173,8 @@ export default {
   },
   methods: {
     async getUserAuth() {
-      return secureGet(`${PROFILE_URL}`)
+      return http
+        .get(PROFILE_URL)
         .then((resp) => {
           this.$store.commit("auth/setUser", resp.data.user)
         })
@@ -182,7 +184,8 @@ export default {
     },
 
     async getFlights() {
-      return secureGet(`${TRAVEL_COM_URL}/flights/${this.startDate}/${this.endDate}`)
+      return http
+        .get(`${TRAVEL_COM_URL}/flights/${this.startDate}/${this.endDate}`)
         .then((resp) => {
           console.log(resp.data)
           this.flights = resp.data

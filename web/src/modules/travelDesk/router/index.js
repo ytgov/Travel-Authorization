@@ -6,9 +6,6 @@ const routes = [
       {
         name: "TravelDesk",
         path: "",
-        meta: {
-          requiresAuth: true,
-        },
         component: () => import("@/modules/travelDesk/views/TravelDesk.vue"),
       },
     ],
@@ -20,9 +17,6 @@ const routes = [
       {
         name: "TravelRequest",
         path: "",
-        meta: {
-          requiresAuth: true,
-        },
         component: () => import("@/modules/travelDesk/views/TravelRequest.vue"),
       },
     ],

@@ -6,13 +6,10 @@ const routes = [
       {
         name: "PreApprovedTravelHome",
         path: "",
-        meta: {
-          requiresAuth: true
-        },
-        component: () => import("../views/Preapproved.vue")
-      }
-    ]
-  }
-];
+        component: () => import("../views/Preapproved.vue"),
+      },
+    ],
+  },
+]
 
-export default routes;
+export default routes
