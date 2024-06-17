@@ -20,7 +20,7 @@ async function runMigrations(): Promise<void> {
       logger.info("All migrations completed successfully.")
     })
     .catch((error) => {
-      logger.error("Error running migrations:", error)
+      logger.error(`Error running migrations: ${error}`, { error })
       throw error
     })
 }
