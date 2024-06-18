@@ -41,6 +41,7 @@ import { toRefs, computed, defineAsyncComponent } from "vue"
 import { isNil } from "lodash"
 
 import { TRAVEL_METHODS } from "@/api/travel-segments-api"
+import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorization, {
   STATUSES as TRAVEL_AUTHORIZATION_STATUSES,
@@ -148,7 +149,10 @@ const requestTabComponent = computed(() => {
     }
   }
 
-  if (policy.value?.update) {
+  if (
+    travelAuthorization.value?.travelDeskTravelRequest?.status ===
+    TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
+  ) {
     return {
       component: VTabComponent,
       tabName: "Request",
