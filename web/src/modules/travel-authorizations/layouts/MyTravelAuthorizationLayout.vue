@@ -16,14 +16,6 @@
 
         <div style="border: 1px #ddd solid">
           <v-tabs>
-            <!-- TODO: investigate if I should refresh other tabs -->
-            <DetailsTab :travel-authorization-id="travelAuthorizationId" />
-            <EstimateTab :travel-authorization-id="travelAuthorizationId" />
-            <RequestTab
-              ref="requestTab"
-              :travel-authorization-id="travelAuthorizationId"
-            />
-            <ExpenseTab :travel-authorization-id="travelAuthorizationId" />
             <!-- TODO: add in any tabs that you can normally see in read-only mode -->
             <template
               v-for="({ component, tabName, props: componentProps }, index) in availableTabs"
@@ -38,14 +30,14 @@
           </v-tabs>
         </div>
 
-        <router-view @state-changed="refreshTabs"></router-view>
+        <router-view @state-changed="refresh"></router-view>
       </v-card-text>
     </v-card>
   </div>
 </template>
 
 <script setup>
-import { ref, toRefs, computed, watch, defineAsyncComponent } from "vue"
+import { toRefs, computed, defineAsyncComponent } from "vue"
 import { isNil } from "lodash"
 
 import { TRAVEL_METHODS } from "@/api/travel-segments-api"
@@ -59,11 +51,6 @@ import PageLoader from "@/components/PageLoader"
 import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
-import DetailsTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/DetailsTab"
-import EstimateTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/EstimateTab"
-import ExpenseTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/ExpenseTab"
-import RequestTab from "@/modules/travel-authorizations/components/my-travel-authorization-layout/RequestTab"
-
 const props = defineProps({
   travelAuthorizationId: {
     type: Number,
@@ -74,31 +61,61 @@ const props = defineProps({
 const { currentUser } = useCurrentUser()
 
 const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization, policy } = useTravelAuthorization(travelAuthorizationId)
+const { travelAuthorization, policy, refresh } = useTravelAuthorization(travelAuthorizationId)
 
-/** @type {import("vue").Ref<InstanceType<typeof RequestTab> | null>} */
-const requestTab = ref(null)
-
-function refreshTabs() {
-  requestTab.value?.refresh()
-}
-const VTabsComponent = defineAsyncComponent(() => import("vuetify/lib"))
+const VTabComponent = defineAsyncComponent(() => import("vuetify/lib/components/VTabs/VTab"))
 const LockedTab = defineAsyncComponent(() => import("@/components/common/LockedTab"))
 
-const detailsTabComponentName = computed(() => {
+const detailsTabComponent = computed(() => {
   if (policy.value?.update) {
-    return "EditMyTravelAuthorizationDetailsPage"
+    return {
+      component: VTabComponent,
+      tabName: "Details",
+      props: {
+        to: {
+          name: "EditMyTravelAuthorizationDetailsPage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+      },
+    }
   }
 
-  return "ReadMyTravelAuthorizationDetailsPage"
+  return {
+    component: VTabComponent,
+    tabName: "Details",
+    props: {
+      to: {
+        name: "ReadMyTravelAuthorizationDetailsPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+    },
+  }
 })
 
-const estimateTabComponentName = computed(() => {
+const estimateTabComponent = computed(() => {
   if (policy.value?.update) {
-    return "EditMyTravelAuthorizationEstimatePage"
+    return {
+      component: VTabComponent,
+      tabName: "Estimate",
+      props: {
+        to: {
+          name: "EditMyTravelAuthorizationEstimatePage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+      },
+    }
   }
 
-  return "ReadMyTravelAuthorizationEstimatePage"
+  return {
+    component: VTabComponent,
+    tabName: "Estimate",
+    props: {
+      to: {
+        name: "ReadMyTravelAuthorizationEstimatePage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+    },
+  }
 })
 
 const requestTabComponent = computed(() => {
@@ -130,17 +147,86 @@ const requestTabComponent = computed(() => {
     }
   }
 
-  let requestTabComponentName = "MyTravelRequestsRequestReadPage"
   if (policy.value?.update) {
-    requestTabComponentName = "MyTravelRequestsRequestEditPage"
+    return {
+      component: VTabComponent,
+      tabName: "Request",
+      props: {
+        to: {
+          name: "MyTravelRequestsRequestEditPage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+      },
+    }
   }
 
   return {
-    component: VTabsComponent,
+    component: VTabComponent,
     tabName: "Request",
     props: {
       to: {
-        name: requestTabComponentName,
+        name: "MyTravelRequestsRequestReadPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+    },
+  }
+})
+
+const isBeforeTravelStartDate = computed(() => {
+  const firstTravelSegment = travelAuthorization.value.travelSegments[0]
+  if (isNil(firstTravelSegment)) return false
+
+  return new Date(firstTravelSegment.departureOn) > new Date()
+})
+
+const expenseTabComponent = computed(() => {
+  const isInPreExpensingStates =
+    travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT ||
+    travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.SUBMITTED
+  const isAfterTravelStartDate = !isBeforeTravelStartDate.value
+  const isLocked = isInPreExpensingStates || isBeforeTravelStartDate.value
+  const isEditable =
+    travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.APPROVED &&
+    isAfterTravelStartDate
+
+  const lockReasons = []
+  if (isInPreExpensingStates) {
+    lockReasons.push("Travel authorization is in pre-expensing states (not approved).")
+  }
+
+  if (isBeforeTravelStartDate.value) {
+    lockReasons.push("Travel has not started yet.")
+  }
+
+  if (isLocked === true) {
+    return {
+      component: LockedTab,
+      tabName: "Expense",
+      props: {
+        lockReasons,
+      },
+    }
+  }
+
+  if (isEditable) {
+    return {
+      component: VTabComponent,
+      tabName: "Expense",
+      props: {
+        to: {
+          name: "EditMyTravelAuthorizationExpensePage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+      },
+    }
+  }
+
+  return {
+    component: VTabComponent,
+    tabName: "Expense",
+    props: {
+      to: {
+        name: "ReadMyTravelAuthorizationExpensePage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
     },
@@ -148,37 +234,9 @@ const requestTabComponent = computed(() => {
 })
 
 const availableTabs = computed(() => [
-  {
-    component: VTabsComponent,
-    tabName: "Details",
-    props: {
-      to: {
-        name: detailsTabComponentName,
-        params: { travelAuthorizationId: travelAuthorizationId.value },
-      },
-    },
-  },
-  {
-    component: VTabsComponent,
-    tabName: "Estimate",
-    props: {
-      to: {
-        name: estimateTabComponentName,
-        params: { travelAuthorizationId: travelAuthorizationId.value },
-      },
-    },
-  },
+  detailsTabComponent.value,
+  estimateTabComponent.value,
   requestTabComponent.value,
-  {
-    name: "Expense",
-    component: ExpenseTab,
-  },
+  expenseTabComponent.value,
 ])
-
-watch(
-  () => availableTabs.value,
-  (newTabs) => {
-    console.log("newTabs:", newTabs)
-  }
-)
 </script>
