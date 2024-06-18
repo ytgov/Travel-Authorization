@@ -38,6 +38,10 @@
 export default {
   name: "LockedTab",
   props: {
+    title: {
+      type: String,
+      required: true,
+    },
     lockReasons: {
       type: Array,
       default: () => [],

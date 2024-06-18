@@ -142,6 +142,7 @@ const requestTabComponent = computed(() => {
       component: LockedTab,
       tabName: "Request",
       props: {
+        title: "Request",
         lockReasons,
       },
     }
@@ -203,6 +204,7 @@ const expenseTabComponent = computed(() => {
       component: LockedTab,
       tabName: "Expense",
       props: {
+        title: "Expense",
         lockReasons,
       },
     }
