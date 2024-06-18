@@ -1,9 +1,3 @@
 # Travel Authorization Pages
 
-Pages are components that can be routed to directly.
-Component names should end in `Page`.
-Page specific components should be in the components/name-of-page-component directory.
-
-e.g.
-- `web/src/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage.vue`
-has specific components in `web/src/modules/travel-authorizations/components/edit-my-travel-authorization-details-page`
+The current naming conventions for pages is pretty random, but over time it will hopefully become more consistent and follow the conventions outlined in [General Page README](web/src/pages/README.md)
