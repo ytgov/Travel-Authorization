@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
 
+require_relative './github_api'
+
 class DevHelper
   # Support dashes in command names
   COMMAND_TO_METHOD = {
-    "ts-node" => :ts_node
+    "ts-node" => :ts_node,
+    "branch-from" => :branch_from,
   }
   METHOD_TO_COMMAND = COMMAND_TO_METHOD.invert
 
@@ -28,11 +31,11 @@ class DevHelper
 
   def compose(*args, **kwargs)
     command = compose_command(*args, **kwargs)
-    puts "Running: #{command}"
+    puts "Running: #{command}" unless kwargs[:slient]
 
     case kwargs[:execution_mode]
     when WAIT_FOR_PROCESS
-      system(command)
+      `#{command}`
     else
       exec(command)
     end
@@ -59,13 +62,32 @@ class DevHelper
     compose(*%w[run --rm], *args, **kwargs)
   end
 
+  def ps(*args, **kwargs)
+    compose(*%w[ps], *args, **kwargs)
+  end
+
   # Custom helpers
-  def sh(*args, **kwargs)
-    run(
-      *%w[api sh],
-      *args,
-      **kwargs
-    )
+  def api(*args, **kwargs)
+    run(*%w[api], *args, **kwargs)
+  end
+
+  def web(*args, **kwargs)
+    run(*%w[web], *args, **kwargs)
+  end
+
+  def test_api(*args, **kwargs)
+    run(*%w[test_api npm run test], *args, **kwargs)
+  end
+
+  alias_method :test, :test_api
+
+  def psql(*args, **kwargs)
+    # TODO: use environment variables for this instead
+    db(*%w[psql "postgresql://app:itsallgood@localhost:5432/travel_development"], *args, **kwargs)
+  end
+
+  def db(*args, **kwargs)
+    compose(*%w[exec db], *args, **kwargs)
   end
 
   def debug
@@ -78,14 +100,6 @@ class DevHelper
     exit 0
   end
 
-  def web(*args, **kwargs)
-    run(*%w[web], *args, **kwargs)
-  end
-
-  def api(*args, **kwargs)
-    run(*%w[api], *args, **kwargs)
-  end
-
   def npm(*args, **kwargs)
     run(*%w[api npm], *args, **kwargs)
   end
@@ -94,73 +108,39 @@ class DevHelper
     run(*%w[api npm run ts-node], *args, **kwargs)
   end
 
-  def test_api(*args, **kwargs)
-    reformat_project_relative_path_filter_for_vitest!(args, 'api/')
-    run(*%w[test_api npm run test], *args, **kwargs)
-  end
+  def knex(*args, **kwargs)
+    if RUBY_PLATFORM =~ /linux/
+      run(*%w[api npm run knex], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
 
-  alias test test_api
+      file_or_directory = "#{project_root}/api/src/db/migrations"
+      exit(0) unless take_over_needed?(file_or_directory)
 
-  def test_web(*args, **kwargs)
-    reformat_project_relative_path_filter_for_vitest!(args, 'web/')
-    run(*%w[test_web npm run test], *args, **kwargs)
+      ownit file_or_directory
+    else
+      run(*%w[api npm run knex], *args, **kwargs)
+    end
   end
 
   def migrate(*args, **kwargs)
-    if RUBY_PLATFORM =~ /linux/
-      run(*%w[api npm run migrate], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
-
-      file_or_directory = 'api/src/db/migrations'
-      exit(0) unless take_over_needed?(file_or_directory)
-
-      ownit file_or_directory
-    else
-      run(*%w[api npm run migrate], *args, **kwargs)
-    end
+    action = args[0]
+    knex("migrate:#{action}", *args.drop(1), **kwargs)
   end
 
   def seed(*args, **kwargs)
-    if RUBY_PLATFORM =~ /linux/
-      run(*%w[api npm run seed], *args, execution_mode: WAIT_FOR_PROCESS, **kwargs)
-
-      file_or_directory = 'api/src/db/seeds'
-      exit(0) unless take_over_needed?(file_or_directory)
-
-      ownit file_or_directory
-    else
-      run(*%w[api npm run seed], *args, **kwargs)
-    end
+    action = args[0]
+    knex("seed:#{action}", *args.drop(1), **kwargs)
   end
 
-  # -I enable quoted identifiers, e.g. "table"."column"
-  def sqlcmd(*args, **kwargs) # rubocop:disable Metrics/MethodLength
-    environment_hoist = ENV.slice(*%w[
-      DB_NAME
-      DB_USER
-      DB_HOST
-      DB_PORT
-    ]).map { |key, value|
-      "export #{key}=\"#{value}\""
-    }.join("\n  ")
-
-    compose(
-      <<~BASH,
-        exec db sh -c '
-          #{environment_hoist}
-          /opt/mssql-tools/bin/sqlcmd \
-            -U "$DB_USER" \
-            -P "$DB_PASS" \
-            -H "$DB_HOST" \
-            -d "$DB_NAME" \
-            -I #{args.join(" ")}
-          '
-      BASH
-      **kwargs
-    )
-  end
-
-  def db(*args, **kwargs)
-    compose(*%w[exec db], *args, **kwargs)
+  ##
+  # Generates and checks out a new branch based on the Jira issue URL.
+  # Example:
+  #   dev branch-from https://github.com/icefoganalytics/internal-data-portal/issues/98
+  #
+  # Produces:
+  #   git checkout -b issue-98/switch-test-suite-from-jest-to-vitest
+  def branch_from(github_issue_url, *args, **kwargs)
+    branch_name = GithubApi.build_branch_name(github_issue_url)
+    system("git checkout -b #{branch_name}")
   end
 
   def ownit(*args, **kwargs)
@@ -194,6 +174,10 @@ class DevHelper
     id_of_container
   end
 
+  def service_running?(container_name)
+    ps(*%w[-q --status=running], execution_mode: WAIT_FOR_PROCESS, slient: true) != ''
+  end
+
   def compose_command(*args, **kwargs)
     environment = kwargs.fetch(:environment, 'development')
     "cd #{project_root} && docker compose -f docker-compose.#{environment}.yml #{args.join(' ')}"
@@ -218,24 +202,6 @@ class DevHelper
     raise NotImplementedError, "Not implement for platform #{RUBY_PLATFORM}" unless RUBY_PLATFORM =~ /linux/
 
     `id -g`.strip
-  end
-
-  def reformat_project_relative_path_filter_for_vitest!(args, prefix)
-    if args.length.positive? && args[0].start_with?(prefix)
-      src_path_prefix = "#{prefix}src/"
-      test_path_regex = Regexp.escape(prefix)
-      src_path_regex = Regexp.escape(src_path_prefix)
-
-      if args[0].start_with?(src_path_prefix)
-        args[0] = args[0].gsub(%r{^#{src_path_regex}}, 'tests/')
-                         .gsub(%r{\.ts$}, '.test.ts')
-                         # TODO: handle other file types
-      else
-        args[0] = args[0].gsub(%r{^#{test_path_regex}}, '')
-      end
-
-      puts "Reformatted path filter from project relative to service relative for vitest."
-    end
   end
 end
 
