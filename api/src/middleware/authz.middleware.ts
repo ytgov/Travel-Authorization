@@ -54,45 +54,42 @@ export async function findUserFromAuth0Token(token: string): Promise<User | null
     headers: {
       authorization: token,
     },
-  });
+  })
 
-  const data = response.data;
-  const sub = data.sub;
+  const data = response.data
+  const sub = data.sub
 
   if (isNil(sub)) {
-    throw new Auth0PayloadError(data);
+    throw new Auth0PayloadError(data)
   }
 
-  const user = await User.findOne({ where: { sub } });
-  return user; // NOTE null if not found
+  const user = await User.findOne({ where: { sub } })
+  return user
 }
 
-export async function createUserFromAuth0Token(token: string): Promise<User | null> {
-  const user = await findUserFromAuth0Token(token);
+export async function ensureUserFromAuth0Token(token: string): Promise<User | null> {
+  const user = await findUserFromAuth0Token(token)
 
-  // user with token is already in database
-  if(user !== null){
+  if (user !== null) {
     logger.error(`ATTEMPTING TO CREATE EXISTING USER: ${JSON.stringify(user.dataValues)}`)
-    return null; // return null since no user was created
+    return null
   }
-  
-  // user with token is not in database
+
   const response = await axios.get(`${AUTH0_DOMAIN}/userinfo`, {
     headers: {
       authorization: token,
     },
-  });
+  })
 
-  const data: Auth0Response = response.data;
-  const sub = data.sub;
+  const auth0Subject = response.data?.sub
 
-  if (isNil(sub)) {
-    throw new Auth0PayloadError(data);
+  if (isNil(auth0Subject)) {
+    throw new Auth0PayloadError(response.data)
   }
 
-  const { email, given_name: firstName, family_name: lastName } = data;
-  const fallbackEmail = `${firstName}.${lastName}@yukon-no-email.ca`;
-  
+  const { email, given_name: firstName, family_name: lastName } = data
+  const fallbackEmail = `${firstName}.${lastName}@yukon-no-email.ca`
+
   const newUser = await User.create({
     sub: sub,
     email: email || fallbackEmail,
@@ -100,29 +97,26 @@ export async function createUserFromAuth0Token(token: string): Promise<User | nu
     lastName: lastName,
     roles: [User.Roles.USER],
     status: User.Statuses.ACTIVE,
-  });
+  })
 
   logger.info(`CREATED USER FOR ${email}: ${JSON.stringify(newUser.dataValues)}`)
-  return newUser;
+  return newUser
 }
 
 export async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
-  const user = await findUserFromAuth0Token(token);
+  const user = await findUserFromAuth0Token(token)
 
-  // user exists in database
-  if(user !== null){
-    return user;
-  }
-  
-  // user does not exist in database
-  const newUser = await createUserFromAuth0Token(token);
-
-  // new user was created in database
-  if(newUser !== null){
-    return newUser;
+  if (user !== null) {
+    return user
   }
 
-  throw new Auth0PayloadError("Unknown Error");
+  const newUser = await ensureUserFromAuth0Token(token)
+
+  if (newUser !== null) {
+    return newUser
+  }
+
+  throw new Auth0PayloadError("Unknown Error")
 }
 
 export async function loadUser(req: AuthorizationRequest, res: Response, next: NextFunction) {
@@ -134,7 +128,7 @@ export async function loadUser(req: AuthorizationRequest, res: Response, next: N
     return next()
   }
 
-  const token = req.headers.authorization || ''
+  const token = req.headers.authorization || ""
   try {
     const user = await findOrCreateUserFromAuth0Token(token)
     req.user = user
