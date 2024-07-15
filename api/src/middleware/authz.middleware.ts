@@ -106,13 +106,13 @@ export async function ensureUserFromAuth0Token(token: string): Promise<User | nu
 export async function findOrCreateUserFromAuth0Token(token: string): Promise<User> {
   const user = await findUserFromAuth0Token(token)
 
-  if (user !== null) {
+  if (!isNil(user)) {
     return user
   }
 
   const newUser = await ensureUserFromAuth0Token(token)
 
-  if (newUser !== null) {
+  if (!isNil(newUser)) {
     return newUser
   }
 
