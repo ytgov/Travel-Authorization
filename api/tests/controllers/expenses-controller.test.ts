@@ -1,32 +1,20 @@
-import { Request, Response, NextFunction } from "express"
 import request from "supertest"
 
 import app from "@/app"
-import { checkJwt, loadUser } from "@/middleware/authz.middleware"
+
 import { Expense, TravelAuthorization, User } from "@/models"
 import { expenseFactory, travelAuthorizationFactory, userFactory } from "@/factories"
 
-// TODO: add some kind of helper that globally mocks authz.middleware for all api tests
-jest.mock("@/middleware/authz.middleware", () => ({
-  checkJwt: jest.fn(),
-  loadUser: jest.fn(),
-}))
-const mockedCheckJwt = checkJwt as unknown as jest.Mock
-const mockedLoadUser = loadUser as unknown as jest.Mock
+import { mockCurrentUser } from "@/support/mock-current-user"
 
 describe("api/src/controllers/expenses-controller.ts", () => {
   let user: User
 
   beforeEach(async () => {
-    mockedCheckJwt.mockImplementation((req: Request, res: Response, next: NextFunction) => next())
-
     user = await userFactory.create({
       roles: [User.Roles.USER],
     })
-    mockedLoadUser.mockImplementation((req: Request, res: Response, next: NextFunction) => {
-      req.user = user
-      next()
-    })
+    mockCurrentUser(user)
   })
 
   describe("ExpensesController", () => {
@@ -47,9 +35,7 @@ describe("api/src/controllers/expenses-controller.ts", () => {
         })
 
         // Act
-        const response = await request(app)
-          .post("/api/expenses")
-          .send(newExpenseAttributes)
+        const response = await request(app).post("/api/expenses").send(newExpenseAttributes)
 
         // Assert
         expect(response.status).toEqual(201)
