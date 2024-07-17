@@ -6,9 +6,18 @@ The name of the page component should end in `Page`.
 
 The current naming conventions for pages is pretty random, but over time it will hopefully become more consistent and similar to this example.
 
+## Constraints
+
+1. It should take minimal effort to figure out where to add a new page component, and what to call for a given user centric URL.
+3. It should be easy to add page variations. e.g. edit vs. non-edit
+4. Route names must be unique.
+5. It should be easy to find a component given the vue-router route name.
+2. It should be easy to find the page component for a given URL.
+
 ## Directory Structure
 
 For example
+
 ```bash
 src/
 ├── pages/
@@ -32,6 +41,7 @@ src/
 ## Routes
 
 For example
+
 ```ts
 const routes = [
   {
