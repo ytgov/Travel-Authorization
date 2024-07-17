@@ -17,6 +17,7 @@ import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
 import TravelDeskHotel from "@/models/travel-desk-hotel"
 import TravelDeskOtherTransportation from "@/models/travel-desk-other-transportation"
 import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
+import TravelDeskQuestion from "@/models/travel-desk-question"
 import TravelDeskRentalCar from "@/models/travel-desk-rental-car"
 import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
 
@@ -70,6 +71,7 @@ export class TravelDeskTravelRequest extends Model<
   declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
   declare hotels?: NonAttribute<TravelDeskHotel[]>
   declare otherTransportations?: NonAttribute<TravelDeskOtherTransportation[]>
+  declare questions?: NonAttribute<TravelDeskQuestion[]>
   declare rentalCars?: NonAttribute<TravelDeskRentalCar[]>
 
   declare static associations: {
@@ -82,6 +84,7 @@ export class TravelDeskTravelRequest extends Model<
       TravelDeskTravelRequest,
       TravelDeskPassengerNameRecordDocument
     >
+    questions: Association<TravelDeskTravelRequest, TravelDeskQuestion>
     travelDeskTravelAgent: Association<TravelDeskTravelRequest, TravelDeskTravelAgent>
   }
 
@@ -111,6 +114,10 @@ export class TravelDeskTravelRequest extends Model<
     this.hasMany(TravelDeskOtherTransportation, {
       as: "otherTransportations",
       foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskQuestion, {
+      as: "questions",
+      foreignKey: "requestID",
     })
     this.hasMany(TravelDeskRentalCar, {
       as: "rentalCars",

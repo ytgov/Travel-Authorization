@@ -364,9 +364,9 @@ entity "travel_desk_other_transportations" {
 }
 
 entity "travelDeskQuestion" {
-  * questionID : serial4
+  * questionID : serial4 <<PK>>
   --
-  requestID : int4
+  requestID : int4 <<FK>>
   creatingDate : timestamptz
   requestType : varchar(255)
   question : varchar(255)
