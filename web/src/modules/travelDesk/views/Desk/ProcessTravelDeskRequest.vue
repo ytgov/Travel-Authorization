@@ -181,7 +181,7 @@
                   </template>
                 </title-card>
               </v-row>
-              <questions-table
+              <QuestionsTable
                 :readonly="readonly"
                 :travel-desk-user="true"
                 :questions="travelRequest.questions"
@@ -285,6 +285,7 @@ import Vue from "vue"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
+import useCurrentUser from "@/use/use-current-user"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
@@ -321,6 +322,13 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  setup() {
+    const { currentUser } = useCurrentUser()
+
+    return {
+      currentUser,
+    }
   },
   data() {
     return {
@@ -377,12 +385,10 @@ export default {
       this.readonly = this.type == "booked" || this.travelRequest.status == "booked"
       const agents = this.$store.state.traveldesk.travelDeskUsers
       this.travelDeskAgentList = agents.map((agent) => agent.first_name + " " + agent.last_name)
+
       if (!this.travelRequest.travelDeskOfficer) {
-        const usrEmail = this.$store.state.auth.user.email
-        const currentUser = agents.filter((agent) => agent.email == usrEmail)[0]
-        if (currentUser)
-          this.travelRequest.travelDeskOfficer =
-            currentUser.first_name + " " + currentUser.last_name
+        this.travelRequest.travelDeskOfficer =
+          this.currentUser.firstName + " " + this.currentUser.lastName
       }
       this.travelRequest.internationalTravel =
         this.travelRequest.passportCountry || this.travelRequest.passportNum
