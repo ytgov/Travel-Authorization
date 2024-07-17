@@ -195,8 +195,10 @@ export default {
       this.currentDate = new Date().toDateString()
       this.printRequests = JSON.parse(JSON.stringify(this.travelDeskRequests))
 
-      for (let index = 1; index < this.printRequests.length / 10 + 1; index++)
+      this.pages = []
+      for (let index = 1; index < this.printRequests.length / 10 + 1; index++) {
         this.pages.push(index)
+      }
 
       Vue.nextTick(() => (this.loadingData = false))
     },
