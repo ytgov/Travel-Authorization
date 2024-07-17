@@ -1,5 +1,5 @@
 <template>
-  <div v-if="tdUser">
+  <div>
     <div class="d-flex mb-4">
       <v-spacer />
       <print-travel-desk-report
@@ -38,15 +38,15 @@
       </template>
 
       <template #item.fullname="{ item }">
-        {{ item.form.firstName + " " + item.form.lastName }}
+        {{ item.travelAuthorization.firstName + " " + item.travelAuthorization.lastName }}
       </template>
 
       <template #item.department="{ item }">
-        {{ item.form.department }}
+        {{ item.travelAuthorization.department }}
       </template>
 
       <template #item.branch="{ item }">
-        {{ item.form.branch }}
+        {{ item.travelAuthorization.branch }}
       </template>
 
       <template #item.startDate="{ item }">
@@ -57,12 +57,12 @@
 
       <template #item.endDate="{ item }">
         <div>
-          {{ item.form.dateBackToWork | beautifyDate }}
+          {{ item.travelAuthorization.dateBackToWork | beautifyDate }}
         </div>
       </template>
 
       <template #item.location="{ item }">
-        {{ getLocationName(item.form.stops) }}
+        {{ getLocationName(item.travelAuthorization.stops) }}
       </template>
 
       <template #item.requested="{ item }">
@@ -106,9 +106,10 @@
 
 <script>
 import Vue from "vue"
-import ProcessTravelDeskRequest from "./ProcessTravelDeskRequest.vue"
-import PrintTravelDeskReport from "../Common/PrintTravelDeskReport.vue"
 import { ExportToCsv } from "export-to-csv"
+
+import ProcessTravelDeskRequest from "@/modules/travelDesk/views/Desk/ProcessTravelDeskRequest.vue"
+import PrintTravelDeskReport from "@/modules/travelDesk/views/Common/PrintTravelDeskReport.vue"
 
 export default {
   name: "TravelDeskRequests",
@@ -117,7 +118,10 @@ export default {
     PrintTravelDeskReport,
   },
   props: {
-    travelDeskRequests: {},
+    travelDeskRequests: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -147,13 +151,10 @@ export default {
       department: "",
       selectedRequests: [],
       update: 0,
-      tdUser: false,
     }
   },
   computed: {},
-  mounted() {
-    this.tdUser = Vue.filter("isTdUser")()
-  },
+  mounted() {},
   methods: {
     updateTable() {
       this.$emit("updateTable")
@@ -190,12 +191,12 @@ export default {
       const csvInfo = this.selectedRequests.map((req) => {
         return {
           createdAt: req.createdAt.slice(0, 10),
-          name: req.form.firstName + " " + req.form.lastName,
-          department: req.form.department,
-          branch: req.form.branch ? req.form.branch : "",
+          name: req.travelAuthorization.firstName + " " + req.travelAuthorization.lastName,
+          department: req.travelAuthorization.department,
+          branch: req.travelAuthorization.branch ? req.travelAuthorization.branch : "",
           travelStartDate: req.startDate.slice(0, 10),
-          travelEndDate: req.form.dateBackToWork.slice(0, 10),
-          location: this.getLocationName(req.form.stops),
+          travelEndDate: req.travelAuthorization.dateBackToWork.slice(0, 10),
+          location: this.getLocationName(req.travelAuthorization.stops),
           requested: this.getRequested(req),
           status:
             req.status == "submitted" && !req.travelDeskOfficer
