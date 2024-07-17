@@ -113,7 +113,6 @@ export default {
         .then((resp) => {
           this.travelDeskRequests = resp.data
           // console.log(this.travelDeskRequests)
-          // console.log(this.$store.state.auth.user.id)
           this.travelDeskRequests.forEach((travelDeskRequest) => {
             travelDeskRequest.userTravel =
               this.$store.state.auth.fullName == travelDeskRequest.travelDeskOfficer ? 1 : 0
