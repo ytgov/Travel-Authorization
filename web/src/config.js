@@ -15,9 +15,9 @@ const dynamicConfigs = {
   },
   production: {
     API_BASE_URL: window.location.origin,
-    AUTH0_DOMAIN: "https://yukon.eu.auth0.com",
-    AUTH0_CLIENT_ID: "kbp3mBBVji9nIJUvLbq13ypfWZnUbU5j",
-    AUTH0_AUDIENCE: "generic-production",
+    AUTH0_DOMAIN: "https://dev-0tc6bn14.eu.auth0.com",
+    AUTH0_CLIENT_ID: "3NjkPu1sSNJDDRzeyfPUnoNmS2VYwaUY",
+    AUTH0_AUDIENCE: "testing",
   },
   local_production: {
     API_BASE_URL: window.location.origin,
