@@ -60,35 +60,27 @@
   </div>
 </template>
 
-<script>
-// import Vue from "vue";
-import TitleCard from "../../Common/TitleCard.vue"
+<script setup>
+import { useI18n } from "@/plugins/vue-i18n-plugin"
+import { TRAVEL_DESK_QUESTION_REQUEST_TYPES } from "@/api/travel-desk-questions-api"
 
-export default {
-  name: "NewQuestion",
-  components: {
-    TitleCard,
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+
+defineProps({
+  question: {
+    type: Object,
+    required: true,
   },
-  props: {
-    question: {
-      type: Object,
-      required: true,
-    },
-    readonly: { type: Boolean, default: false },
-    travelDeskUser: { type: Boolean, default: false },
-  },
-  data() {
-    return {
-      questionList: ["Flight", "Hotel", "Rental Car", "Transportation"],
-    }
-  },
-  mounted() {},
-  methods: {
-    // checkFields() {
-    // 	return true;
-    // },
-  },
-}
+  readonly: { type: Boolean, default: false },
+  travelDeskUser: { type: Boolean, default: false },
+})
+
+const { t } = useI18n()
+
+const questionList = Object.values(TRAVEL_DESK_QUESTION_REQUEST_TYPES).map((requestType) => ({
+  text: t(`travel_desk_question.request_type.${requestType}`, { $default: requestType }),
+  value: requestType,
+}))
 </script>
 
 <style scoped></style>

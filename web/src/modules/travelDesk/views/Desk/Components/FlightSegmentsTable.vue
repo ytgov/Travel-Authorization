@@ -1,6 +1,6 @@
 <template>
   <div>
-    <title-card
+    <TitleCard
       class="mt-5"
       title-width="7.5rem"
       large-title
@@ -51,21 +51,22 @@
         >
           <!-- <template v-slot:[`header.data-table-select`]></template> -->
           <template #item.name="{ item }">
-            <flight-segment
+            <FlightSegment
               class="mx-4 my-8"
               :flight-segment="item"
             />
           </template>
         </v-data-table>
       </template>
-    </title-card>
+    </TitleCard>
   </div>
 </template>
 
 <script>
-// import Vue from "vue";
-import TitleCard from "../../Common/TitleCard.vue"
-import FlightSegment from "./FlightSegment.vue"
+import { TRAVEL_DESK_QUESTION_REQUEST_TYPES } from "@/api/travel-desk-questions-api"
+
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+import FlightSegment from "@/modules/travelDesk/views/Desk/Components/FlightSegment.vue"
 
 export default {
   name: "FlightSegmentsTable",
@@ -124,7 +125,7 @@ export default {
       this.questions.push({
         question: "",
         response: "",
-        requestType: "Hotel",
+        requestType: TRAVEL_DESK_QUESTION_REQUEST_TYPES.HOTEL,
       })
     },
 

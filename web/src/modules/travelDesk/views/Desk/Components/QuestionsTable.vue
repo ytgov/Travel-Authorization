@@ -1,6 +1,6 @@
 <template>
   <div>
-    <title-card
+    <TitleCard
       class="mt-10 mx-4"
       title-width="6rem"
     >
@@ -43,13 +43,15 @@
           </v-col>
         </v-row>
       </template>
-    </title-card>
+    </TitleCard>
   </div>
 </template>
 
 <script>
-import TitleCard from "../../Common/TitleCard.vue"
-import NewQuestion from "./NewQuestion.vue"
+import { TRAVEL_DESK_QUESTION_REQUEST_TYPES } from "@/api/travel-desk-questions-api"
+
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+import NewQuestion from "@/modules/travelDesk/views/Desk/Components/NewQuestion.vue"
 
 export default {
   name: "QuestionsTable",
@@ -82,7 +84,7 @@ export default {
       this.questions.push({
         question: "",
         response: "",
-        requestType: "Hotel",
+        requestType: TRAVEL_DESK_QUESTION_REQUEST_TYPES.HOTEL,
         state: {
           questionErr: false,
           responseErr: false,

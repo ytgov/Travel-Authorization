@@ -12,12 +12,12 @@ import {
 import sequelize from "@/db/db-client"
 import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 
-// TODO: normalize these to lower case, and add UI translations to web/src/locales/en.js
+/** Keep in sync with web/src/api/travel-desk-questions-api.js */
 export enum TravelDeskQuestionRequestTypes {
-  FLIGHT = "Flight",
-  HOTEL = "Hotel",
-  TRANSPORTATION = "Transportation",
-  RENTAL_CAR = "Rental Car",
+  FLIGHT = "flight",
+  HOTEL = "hotel",
+  TRANSPORTATION = "transportation",
+  RENTAL_CAR = "rental_car",
 }
 
 export class TravelDeskQuestion extends Model<
