@@ -465,7 +465,7 @@ travelDeskRouter.post(
           const hotels = newTravelRequest.hotels
           delete newTravelRequest.hotels
 
-          const otherTransportations = newTravelRequest.otherTransportation
+          const otherTransportations = newTravelRequest.otherTransportation || []
           delete newTravelRequest.otherTransportation
 
           const questions = newTravelRequest.questions
@@ -488,14 +488,11 @@ travelDeskRouter.post(
           for (const flightRequest of flightRequests) {
             const newFlightOptions = flightRequest.flightOptions
             delete flightRequest.flightOptions
+
             delete flightRequest.tmpId
-            if (flightRequest.id == null) {
-              delete flightRequest.id
-            }
-
+            delete flightRequest.id
             flightRequest.travelRequestId = travelRequest.id
-
-            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {})
+            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
 
             await knexQueryToSequelizeSelect(
               dbLegacy("travelDeskFlightOption")
@@ -536,43 +533,60 @@ travelDeskRouter.post(
             where: { travelRequestId: travelRequest.id },
           })
 
-          for (const rentalCar of rentalCars) {
-            delete rentalCar.tmpId
-            if (rentalCar.id == null) {
+          const cleanRentalCars = rentalCars.map(
+            (
+              rentalCar: CreationAttributes<TravelDeskRentalCar> & {
+                id?: number
+                tmpId?: number
+              }
+            ) => {
+              delete rentalCar.tmpId
               delete rentalCar.id
+              rentalCar.travelRequestId = travelRequest.id
+              return rentalCar
             }
-            rentalCar.travelRequestId = travelRequest.id
-            await TravelDeskRentalCar.create(rentalCar)
-          }
+          )
+          await TravelDeskRentalCar.bulkCreate(cleanRentalCars)
 
           //Hotels
           await TravelDeskHotel.destroy({
             where: { travelRequestId: travelRequest.id },
           })
 
-          for (const hotel of hotels) {
-            delete hotel.tmpId
-            if (hotel.id == null) {
+          const cleanHotels = hotels.map(
+            (
+              hotel: CreationAttributes<TravelDeskHotel> & {
+                id?: number
+                tmpId?: number
+              }
+            ) => {
+              delete hotel.tmpId
               delete hotel.id
+              hotel.travelRequestId = travelRequest.id
+              return hotel
             }
-            hotel.travelRequestId = travelRequest.id
-
-            await TravelDeskHotel.create(hotel)
-          }
+          )
+          await TravelDeskHotel.bulkCreate(cleanHotels)
 
           //Other Transportations
           await TravelDeskOtherTransportation.destroy({
             where: { travelRequestId: travelRequest.id },
           })
 
-          for (const otherTransportation of otherTransportations) {
-            delete otherTransportation.tmpId
-            if (otherTransportation.id == null) {
+          const cleanOtherTransportations = otherTransportations.map(
+            (
+              otherTransportation: CreationAttributes<TravelDeskOtherTransportation> & {
+                id?: number
+                tmpId?: number
+              }
+            ) => {
+              delete otherTransportation.tmpId
               delete otherTransportation.id
+              otherTransportation.travelRequestId = travelRequest.id
+              return otherTransportation
             }
-            otherTransportation.travelRequestId = travelRequest.id
-            await TravelDeskOtherTransportation.create(otherTransportation, {})
-          }
+          )
+          await TravelDeskOtherTransportation.bulkCreate(cleanOtherTransportations)
 
           //Questions
           await TravelDeskQuestion.destroy({
@@ -588,9 +602,7 @@ travelDeskRouter.post(
             ) => {
               delete question.tmpId
               delete question.state
-              if (question.id == null) {
-                delete question.id
-              }
+              delete question.id
               question.travelRequestId = travelRequest.id
               return question
             }
