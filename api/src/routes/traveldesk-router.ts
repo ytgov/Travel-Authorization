@@ -1,6 +1,6 @@
 import { isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
-import { Op, WhereOptions } from "sequelize"
+import { CreationAttributes, Op, WhereOptions } from "sequelize"
 
 import logger from "@/utils/logger"
 import {
@@ -15,6 +15,7 @@ import {
   TravelDeskHotel,
   TravelDeskOtherTransportation,
   TravelDeskPassengerNameRecordDocument,
+  TravelDeskQuestion,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,
   User,
@@ -38,6 +39,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
       "flightRequests",
       "hotels",
       "otherTransportations",
+      "questions",
       "rentalCars",
       {
         association: "travelAuthorization",
@@ -51,20 +53,9 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
   })
 
   for (const travelRequest of travelRequests) {
-    const traveRequestId = travelRequest.id
-
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
     delete travelRequest.travelAuthorization
-
-    const questions = await dbLegacy("travelDeskQuestion")
-      .select("*")
-      .where("requestID", traveRequestId)
-    for (const question of questions) {
-      question.state = { questionErr: false, responseErr: false }
-    }
-    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
-    travelRequest.questions = questions
 
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.invoiceNumber =
@@ -400,6 +391,7 @@ travelDeskRouter.get(
         "flightRequests",
         "hotels",
         "otherTransportations",
+        "questions",
         "rentalCars",
         {
           association: "travelDeskPassengerNameRecordDocument",
@@ -437,15 +429,6 @@ travelDeskRouter.get(
         // @ts-expect-error - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
-
-      const questions = await dbLegacy("travelDeskQuestion")
-        .select("*")
-        .where("requestID", travelRequestId)
-      for (const question of questions) {
-        question.state = { questionErr: false, responseErr: false }
-      }
-      // @ts-expect-error - not worth fixing at this time
-      travelRequest.questions = questions
 
       // @ts-expect-error - not worth fixing at this time
       travelRequest.invoiceNumber =
@@ -592,17 +575,27 @@ travelDeskRouter.post(
           }
 
           //Questions
-          await knexQueryToSequelizeSelect(
-            dbLegacy("travelDeskQuestion").delete().where("requestID", travelRequest.id)
-          )
+          await TravelDeskQuestion.destroy({
+            where: { requestID: travelRequest.id },
+          })
 
-          for (const question of questions) {
-            delete question.tmpId
-            delete question.state
-            if (question.questionID == null) delete question.questionID
-            question.requestID = travelRequest.id
-            await knexQueryToSequelizeSelect(dbLegacy("travelDeskQuestion").insert(question))
-          }
+          const cleanQuestions = questions.map(
+            (
+              question: CreationAttributes<TravelDeskQuestion> & {
+                tmpId?: number
+                state?: Record<string, boolean>
+              }
+            ) => {
+              delete question.tmpId
+              delete question.state
+              if (question.questionID == null) {
+                delete question.questionID
+              }
+              question.requestID = travelRequest.id
+              return question
+            }
+          )
+          await TravelDeskQuestion.bulkCreate(cleanQuestions)
 
           return res.status(200).json("Successful")
         } else {

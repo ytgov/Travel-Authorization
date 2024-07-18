@@ -390,9 +390,16 @@ export default {
       if (this.travelerDetails.status == "options_provided") {
         let error = false
         for (const question of this.travelerDetails.questions) {
-          if (question.response) question.state.responseErr = false
-          else {
-            question.state.responseErr = true
+          if (question.response) {
+            question.state = {
+              ...question.state,
+              questionErr: question.state?.responseErr ?? false,
+            }
+          } else {
+            question.state = {
+              ...question.state,
+              questionErr: question.state?.responseErr ?? true,
+            }
             error = true
           }
         }

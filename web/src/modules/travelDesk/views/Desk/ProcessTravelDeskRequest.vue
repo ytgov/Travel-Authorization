@@ -468,8 +468,8 @@ export default {
 
     checkFields() {
       this.state.firstNameErr = this.travelRequest.legalFirstName ? false : true
-      ;(this.state.middleNameErr = false),
-        (this.state.lastNameErr = this.travelRequest.legalLastName ? false : true)
+      this.state.middleNameErr = false
+      this.state.lastNameErr = this.travelRequest.legalLastName ? false : true
       this.state.birthDateErr = this.travelRequest.birthDate ? false : true
       this.state.travelAuthErr = false
       this.state.addressErr = this.travelRequest.strAddress ? false : true
@@ -493,9 +493,10 @@ export default {
 
       let error = false
       for (const question of this.travelRequest.questions) {
-        if (question.question) question.state.questionErr = false
+        if (question.question)
+          question.state = { ...question.state, questionErr: question.state?.questionErr ?? false }
         else {
-          question.state.questionErr = true
+          question.state = { ...question.state, questionErr: question.state?.questionErr ?? true }
           error = true
         }
       }

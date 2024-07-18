@@ -25,10 +25,15 @@
             <v-text-field
               v-model="question.question"
               :readonly="!travelDeskUser || readonly"
-              :error="question.state.questionErr"
+              :error="question.state?.questionErr ?? false"
               label="Question"
               outlined
-              @input="question.state.questionErr = false"
+              @input="
+                question.state = {
+                  ...question.state,
+                  questionErr: question.state?.questionErr ?? false,
+                }
+              "
             />
           </v-col>
         </v-row>
@@ -38,10 +43,15 @@
             <v-text-field
               v-model="question.response"
               :readonly="readonly"
-              :error="question.state.responseErr"
+              :error="question.state?.responseErr ?? false"
               label="Response"
               outlined
-              @input="question.state.responseErr = false"
+              @input="
+                question.state = {
+                  ...question.state,
+                  questionErr: question.state?.responseErr ?? false,
+                }
+              "
             />
           </v-col>
         </v-row>
