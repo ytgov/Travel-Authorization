@@ -7,6 +7,8 @@ class DevHelper
   COMMAND_TO_METHOD = {
     "ts-node" => :ts_node,
     "branch-from" => :branch_from,
+    "check-types" => :check_types,
+    "bash-completions" => :bash_completions,
   }
   METHOD_TO_COMMAND = COMMAND_TO_METHOD.invert
 
@@ -73,6 +75,10 @@ class DevHelper
 
   def web(*args, **kwargs)
     run(*%w[web], *args, **kwargs)
+  end
+
+  def check_types(*args, **kwargs)
+    run(*%w[api npm run check-types], *args, **kwargs)
   end
 
   def test_api(*args, **kwargs)

@@ -63,20 +63,14 @@ const routes = [
           },
           {
             path: "request",
-            name: "MyTravelRequestsRequestReadPage",
-            component: () =>
-              import(
-                "@/modules/travel-authorizations/pages/my-travel-requests/MyTravelRequestsRequestReadPage"
-              ),
+            name: "my-travel-requests/request/RequestPage",
+            component: () => import("@/pages/my-travel-requests/request/RequestPage"),
             props: cast("travelAuthorizationId", parseInt),
           },
           {
             path: "request/edit",
-            name: "MyTravelRequestsRequestEditPage",
-            component: () =>
-              import(
-                "@/modules/travel-authorizations/pages/my-travel-requests/MyTravelRequestsRequestEditPage"
-              ),
+            name: "my-travel-requests/request/RequestEditPage",
+            component: () => import("@/pages/my-travel-requests/request/RequestEditPage"),
             props: cast("travelAuthorizationId", parseInt),
           },
           {

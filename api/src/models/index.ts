@@ -13,6 +13,7 @@ import TravelDeskFlightRequest from "./travel-desk-flight-request"
 import TravelDeskHotel from "./travel-desk-hotel"
 import TravelDeskOtherTransportation from "./travel-desk-other-transportation"
 import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
+import TravelDeskQuestion from "./travel-desk-question"
 import TravelDeskRentalCar from "./travel-desk-rental-car"
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
 import TravelSegment from "./travel-segment"
@@ -31,6 +32,7 @@ TravelDeskFlightRequest.establishAssociations()
 TravelDeskHotel.establishAssociations()
 TravelDeskOtherTransportation.establishAssociations()
 TravelDeskPassengerNameRecordDocument.establishAssociations()
+TravelDeskQuestion.establishAssociations()
 TravelDeskRentalCar.establishAssociations()
 TravelDeskTravelRequest.establishAssociations()
 TravelSegment.establishAssociations()
@@ -50,6 +52,7 @@ export {
   TravelDeskHotel,
   TravelDeskOtherTransportation,
   TravelDeskPassengerNameRecordDocument,
+  TravelDeskQuestion,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,
   TravelSegment,

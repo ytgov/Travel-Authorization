@@ -1,6 +1,6 @@
 import { isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
-import { Op, WhereOptions } from "sequelize"
+import { CreationAttributes, Op, WhereOptions } from "sequelize"
 
 import logger from "@/utils/logger"
 import {
@@ -15,6 +15,7 @@ import {
   TravelDeskHotel,
   TravelDeskOtherTransportation,
   TravelDeskPassengerNameRecordDocument,
+  TravelDeskQuestion,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,
   User,
@@ -38,6 +39,7 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
       "flightRequests",
       "hotels",
       "otherTransportations",
+      "questions",
       "rentalCars",
       {
         association: "travelAuthorization",
@@ -51,20 +53,9 @@ travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Respo
   })
 
   for (const travelRequest of travelRequests) {
-    const traveRequestId = travelRequest.id
-
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
     delete travelRequest.travelAuthorization
-
-    const questions = await dbLegacy("travelDeskQuestion")
-      .select("*")
-      .where("requestID", traveRequestId)
-    for (const question of questions) {
-      question.state = { questionErr: false, responseErr: false }
-    }
-    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
-    travelRequest.questions = questions
 
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.invoiceNumber =
@@ -400,6 +391,7 @@ travelDeskRouter.get(
         "flightRequests",
         "hotels",
         "otherTransportations",
+        "questions",
         "rentalCars",
         {
           association: "travelDeskPassengerNameRecordDocument",
@@ -438,15 +430,6 @@ travelDeskRouter.get(
         flightRequest.flightOptions = flightOptions
       }
 
-      const questions = await dbLegacy("travelDeskQuestion")
-        .select("*")
-        .where("requestID", travelRequestId)
-      for (const question of questions) {
-        question.state = { questionErr: false, responseErr: false }
-      }
-      // @ts-expect-error - not worth fixing at this time
-      travelRequest.questions = questions
-
       // @ts-expect-error - not worth fixing at this time
       travelRequest.invoiceNumber =
         travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
@@ -482,7 +465,7 @@ travelDeskRouter.post(
           const hotels = newTravelRequest.hotels
           delete newTravelRequest.hotels
 
-          const otherTransportations = newTravelRequest.otherTransportation
+          const otherTransportations = newTravelRequest.otherTransportation || []
           delete newTravelRequest.otherTransportation
 
           const questions = newTravelRequest.questions
@@ -505,14 +488,11 @@ travelDeskRouter.post(
           for (const flightRequest of flightRequests) {
             const newFlightOptions = flightRequest.flightOptions
             delete flightRequest.flightOptions
+
             delete flightRequest.tmpId
-            if (flightRequest.id == null) {
-              delete flightRequest.id
-            }
-
+            delete flightRequest.id
             flightRequest.travelRequestId = travelRequest.id
-
-            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest, {})
+            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
 
             await knexQueryToSequelizeSelect(
               dbLegacy("travelDeskFlightOption")
@@ -553,56 +533,81 @@ travelDeskRouter.post(
             where: { travelRequestId: travelRequest.id },
           })
 
-          for (const rentalCar of rentalCars) {
-            delete rentalCar.tmpId
-            if (rentalCar.id == null) {
+          const cleanRentalCars = rentalCars.map(
+            (
+              rentalCar: CreationAttributes<TravelDeskRentalCar> & {
+                id?: number
+                tmpId?: number
+              }
+            ) => {
+              delete rentalCar.tmpId
               delete rentalCar.id
+              rentalCar.travelRequestId = travelRequest.id
+              return rentalCar
             }
-            rentalCar.travelRequestId = travelRequest.id
-            await TravelDeskRentalCar.create(rentalCar)
-          }
+          )
+          await TravelDeskRentalCar.bulkCreate(cleanRentalCars)
 
           //Hotels
           await TravelDeskHotel.destroy({
             where: { travelRequestId: travelRequest.id },
           })
 
-          for (const hotel of hotels) {
-            delete hotel.tmpId
-            if (hotel.id == null) {
+          const cleanHotels = hotels.map(
+            (
+              hotel: CreationAttributes<TravelDeskHotel> & {
+                id?: number
+                tmpId?: number
+              }
+            ) => {
+              delete hotel.tmpId
               delete hotel.id
+              hotel.travelRequestId = travelRequest.id
+              return hotel
             }
-            hotel.travelRequestId = travelRequest.id
-
-            await TravelDeskHotel.create(hotel)
-          }
+          )
+          await TravelDeskHotel.bulkCreate(cleanHotels)
 
           //Other Transportations
           await TravelDeskOtherTransportation.destroy({
             where: { travelRequestId: travelRequest.id },
           })
 
-          for (const otherTransportation of otherTransportations) {
-            delete otherTransportation.tmpId
-            if (otherTransportation.id == null) {
+          const cleanOtherTransportations = otherTransportations.map(
+            (
+              otherTransportation: CreationAttributes<TravelDeskOtherTransportation> & {
+                id?: number
+                tmpId?: number
+              }
+            ) => {
+              delete otherTransportation.tmpId
               delete otherTransportation.id
+              otherTransportation.travelRequestId = travelRequest.id
+              return otherTransportation
             }
-            otherTransportation.travelRequestId = travelRequest.id
-            await TravelDeskOtherTransportation.create(otherTransportation, {})
-          }
+          )
+          await TravelDeskOtherTransportation.bulkCreate(cleanOtherTransportations)
 
           //Questions
-          await knexQueryToSequelizeSelect(
-            dbLegacy("travelDeskQuestion").delete().where("requestID", travelRequest.id)
-          )
+          await TravelDeskQuestion.destroy({
+            where: { travelRequestId: travelRequest.id },
+          })
 
-          for (const question of questions) {
-            delete question.tmpId
-            delete question.state
-            if (question.questionID == null) delete question.questionID
-            question.requestID = travelRequest.id
-            await knexQueryToSequelizeSelect(dbLegacy("travelDeskQuestion").insert(question))
-          }
+          const cleanQuestions = questions.map(
+            (
+              question: CreationAttributes<TravelDeskQuestion> & {
+                tmpId?: number
+                state?: Record<string, boolean>
+              }
+            ) => {
+              delete question.tmpId
+              delete question.state
+              delete question.id
+              question.travelRequestId = travelRequest.id
+              return question
+            }
+          )
+          await TravelDeskQuestion.bulkCreate(cleanQuestions)
 
           return res.status(200).json("Successful")
         } else {

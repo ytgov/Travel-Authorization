@@ -89,15 +89,15 @@
               </template>
 
               <template #item.fullname="{ item }">
-                {{ item.form.firstName + " " + item.form.lastName }}
+                {{ item.travelAuthorization.firstName + " " + item.travelAuthorization.lastName }}
               </template>
 
               <template #item.department="{ item }">
-                {{ item.form.department }}
+                {{ item.travelAuthorization.department }}
               </template>
 
               <template #item.branch="{ item }">
-                {{ item.form.branch }}
+                {{ item.travelAuthorization.branch }}
               </template>
 
               <template #item.startDate="{ item }">
@@ -108,12 +108,12 @@
 
               <template #item.endDate="{ item }">
                 <div>
-                  {{ item.form.dateBackToWork | beautifyDate }}
+                  {{ item.travelAuthorization.dateBackToWork | beautifyDate }}
                 </div>
               </template>
 
               <template #item.location="{ item }">
-                {{ getLocationName(item.form.stops) }}
+                {{ getLocationName(item.travelAuthorization.stops) }}
               </template>
 
               <template #item.requested="{ item }">
@@ -151,11 +151,17 @@ import Vue from "vue"
 import { Printd } from "printd"
 
 export default {
-  components: {},
   name: "PrintTravelDeskReport",
+  components: {},
   props: {
-    buttonName: { type: String },
-    travelDeskRequests: {},
+    buttonName: {
+      type: String,
+      required: true,
+    },
+    travelDeskRequests: {
+      type: Array,
+      required: true,
+    },
     disabled: { type: Boolean, default: false },
   },
   data() {
@@ -189,8 +195,10 @@ export default {
       this.currentDate = new Date().toDateString()
       this.printRequests = JSON.parse(JSON.stringify(this.travelDeskRequests))
 
-      for (let index = 1; index < this.printRequests.length / 10 + 1; index++)
+      this.pages = []
+      for (let index = 1; index < this.printRequests.length / 10 + 1; index++) {
         this.pages.push(index)
+      }
 
       Vue.nextTick(() => (this.loadingData = false))
     },

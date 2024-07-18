@@ -1,21 +1,8 @@
 import {
   Association,
-  BelongsToCreateAssociationMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
   ForeignKey,
-  HasManyAddAssociationMixin,
-  HasManyAddAssociationsMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
-  HasManyHasAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
-  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -30,6 +17,7 @@ import TravelDeskFlightRequest from "@/models/travel-desk-flight-request"
 import TravelDeskHotel from "@/models/travel-desk-hotel"
 import TravelDeskOtherTransportation from "@/models/travel-desk-other-transportation"
 import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
+import TravelDeskQuestion from "@/models/travel-desk-question"
 import TravelDeskRentalCar from "@/models/travel-desk-rental-car"
 import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
 
@@ -77,158 +65,13 @@ export class TravelDeskTravelRequest extends Model<
   declare updatedAt: CreationOptional<Date>
 
   // Associations
-  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
-  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getTravelAuthorization: BelongsToGetAssociationMixin<TravelAuthorization>
-  declare setTravelAuthorization: BelongsToSetAssociationMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare createTravelAuthorization: BelongsToCreateAssociationMixin<TravelAuthorization>
-
-  declare getTravelDeskPassengerNameRecordDocument: BelongsToGetAssociationMixin<TravelDeskPassengerNameRecordDocument>
-  declare setTravelDeskPassengerNameRecordDocument: BelongsToSetAssociationMixin<
-    TravelDeskPassengerNameRecordDocument,
-    TravelDeskPassengerNameRecordDocument["travelDeskTravelRequestId"]
-  >
-  declare createTravelDeskPassengerNameRecordDocument: BelongsToCreateAssociationMixin<TravelDeskPassengerNameRecordDocument>
-
-  declare getTravelDeskTravelAgent: BelongsToGetAssociationMixin<TravelDeskTravelAgent>
-  declare setTravelDeskTravelAgent: BelongsToSetAssociationMixin<
-    TravelDeskTravelAgent,
-    TravelDeskTravelAgent["agencyID"]
-  >
-  declare createTravelDeskTravelAgent: BelongsToCreateAssociationMixin<TravelDeskTravelAgent>
-
-  declare getFlightRequests: HasManyGetAssociationsMixin<TravelDeskFlightRequest>
-  declare setFlightRequests: HasManySetAssociationsMixin<
-    TravelDeskFlightRequest,
-    TravelDeskFlightRequest["travelRequestId"]
-  >
-  declare hasFlightRequest: HasManyHasAssociationMixin<
-    TravelDeskFlightRequest,
-    TravelDeskFlightRequest["travelRequestId"]
-  >
-  declare hasFlightRequests: HasManyHasAssociationsMixin<
-    TravelDeskFlightRequest,
-    TravelDeskFlightRequest["travelRequestId"]
-  >
-  declare addFlightRequest: HasManyAddAssociationMixin<
-    TravelDeskFlightRequest,
-    TravelDeskFlightRequest["travelRequestId"]
-  >
-  declare addFlightRequests: HasManyAddAssociationsMixin<
-    TravelDeskFlightRequest,
-    TravelDeskFlightRequest["travelRequestId"]
-  >
-  declare removeFlightRequest: HasManyRemoveAssociationMixin<
-    TravelDeskFlightRequest,
-    TravelDeskFlightRequest["travelRequestId"]
-  >
-  declare removeFlightRequests: HasManyRemoveAssociationsMixin<
-    TravelDeskFlightRequest,
-    TravelDeskFlightRequest["travelRequestId"]
-  >
-  declare countFlightRequests: HasManyCountAssociationsMixin
-  declare createFlightRequest: HasManyCreateAssociationMixin<TravelDeskFlightRequest>
-
-  declare getHotels: HasManyGetAssociationsMixin<TravelDeskHotel>
-  declare setHotels: HasManySetAssociationsMixin<
-    TravelDeskHotel,
-    TravelDeskHotel["travelRequestId"]
-  >
-  declare hasHotel: HasManyHasAssociationMixin<TravelDeskHotel, TravelDeskHotel["travelRequestId"]>
-  declare hasHotels: HasManyHasAssociationsMixin<
-    TravelDeskHotel,
-    TravelDeskHotel["travelRequestId"]
-  >
-  declare addHotel: HasManyAddAssociationMixin<TravelDeskHotel, TravelDeskHotel["travelRequestId"]>
-  declare addHotels: HasManyAddAssociationsMixin<
-    TravelDeskHotel,
-    TravelDeskHotel["travelRequestId"]
-  >
-  declare removeHotel: HasManyRemoveAssociationMixin<
-    TravelDeskHotel,
-    TravelDeskHotel["travelRequestId"]
-  >
-  declare removeHotels: HasManyRemoveAssociationsMixin<
-    TravelDeskHotel,
-    TravelDeskHotel["travelRequestId"]
-  >
-  declare countHotels: HasManyCountAssociationsMixin
-  declare createHotel: HasManyCreateAssociationMixin<TravelDeskHotel>
-
-  declare getOtherTransportations: HasManyGetAssociationsMixin<TravelDeskOtherTransportation>
-  declare setOtherTransportations: HasManySetAssociationsMixin<
-    TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["travelRequestId"]
-  >
-  declare hasOtherTransportation: HasManyHasAssociationMixin<
-    TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["travelRequestId"]
-  >
-  declare hasOtherTransportations: HasManyHasAssociationsMixin<
-    TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["travelRequestId"]
-  >
-  declare addOtherTransportation: HasManyAddAssociationMixin<
-    TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["travelRequestId"]
-  >
-  declare addOtherTransportations: HasManyAddAssociationsMixin<
-    TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["travelRequestId"]
-  >
-  declare removeOtherTransportation: HasManyRemoveAssociationMixin<
-    TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["travelRequestId"]
-  >
-  declare removeOtherTransportations: HasManyRemoveAssociationsMixin<
-    TravelDeskOtherTransportation,
-    TravelDeskOtherTransportation["travelRequestId"]
-  >
-  declare countOtherTransportations: HasManyCountAssociationsMixin
-  declare createOtherTransportation: HasManyCreateAssociationMixin<TravelDeskOtherTransportation>
-
-  declare getRentalCars: HasManyGetAssociationsMixin<TravelDeskRentalCar>
-  declare setRentalCars: HasManySetAssociationsMixin<
-    TravelDeskRentalCar,
-    TravelDeskRentalCar["travelRequestId"]
-  >
-  declare hasRentalCar: HasManyHasAssociationMixin<
-    TravelDeskRentalCar,
-    TravelDeskRentalCar["travelRequestId"]
-  >
-  declare hasRentalCars: HasManyHasAssociationsMixin<
-    TravelDeskRentalCar,
-    TravelDeskRentalCar["travelRequestId"]
-  >
-  declare addRentalCar: HasManyAddAssociationMixin<
-    TravelDeskRentalCar,
-    TravelDeskRentalCar["travelRequestId"]
-  >
-  declare addRentalCars: HasManyAddAssociationsMixin<
-    TravelDeskRentalCar,
-    TravelDeskRentalCar["travelRequestId"]
-  >
-  declare removeRentalCar: HasManyRemoveAssociationMixin<
-    TravelDeskRentalCar,
-    TravelDeskRentalCar["travelRequestId"]
-  >
-  declare removeRentalCars: HasManyRemoveAssociationsMixin<
-    TravelDeskRentalCar,
-    TravelDeskRentalCar["travelRequestId"]
-  >
-  declare countRentalCars: HasManyCountAssociationsMixin
-  declare createRentalCar: HasManyCreateAssociationMixin<TravelDeskRentalCar>
-
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
   declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
   declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
   declare hotels?: NonAttribute<TravelDeskHotel[]>
   declare otherTransportations?: NonAttribute<TravelDeskOtherTransportation[]>
+  declare questions?: NonAttribute<TravelDeskQuestion[]>
   declare rentalCars?: NonAttribute<TravelDeskRentalCar[]>
 
   declare static associations: {
@@ -241,6 +84,7 @@ export class TravelDeskTravelRequest extends Model<
       TravelDeskTravelRequest,
       TravelDeskPassengerNameRecordDocument
     >
+    questions: Association<TravelDeskTravelRequest, TravelDeskQuestion>
     travelDeskTravelAgent: Association<TravelDeskTravelRequest, TravelDeskTravelAgent>
   }
 
@@ -269,6 +113,10 @@ export class TravelDeskTravelRequest extends Model<
     })
     this.hasMany(TravelDeskOtherTransportation, {
       as: "otherTransportations",
+      foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskQuestion, {
+      as: "questions",
       foreignKey: "travelRequestId",
     })
     this.hasMany(TravelDeskRentalCar, {

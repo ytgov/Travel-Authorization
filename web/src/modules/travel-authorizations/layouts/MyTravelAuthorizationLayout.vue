@@ -158,7 +158,7 @@ const requestTabComponent = computed(() => {
       tabName: "Request",
       props: {
         to: {
-          name: "MyTravelRequestsRequestEditPage",
+          name: "my-travel-requests/request/RequestEditPage",
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
       },
@@ -170,7 +170,7 @@ const requestTabComponent = computed(() => {
     tabName: "Request",
     props: {
       to: {
-        name: "MyTravelRequestsRequestReadPage",
+        name: "my-travel-requests/request/RequestPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
     },
