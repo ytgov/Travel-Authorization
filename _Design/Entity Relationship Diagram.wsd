@@ -363,14 +363,16 @@ entity "travel_desk_other_transportations" {
   booking : varchar(255)
 }
 
-entity "travelDeskQuestion" {
-  * questionID : serial4 <<PK>>
+entity "travel_desk_questions" {
+  * id : serial4 <<PK>>
   --
-  requestID : int4 <<FK>>
-  creatingDate : timestamptz
-  requestType : varchar(255)
-  question : varchar(255)
+  * travel_request_id : int4 <<FK>>
+  * request_type : varchar(255)
+  * question : varchar(255)
   response : varchar(255)
+  * creating_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_rental_cars" {
@@ -496,10 +498,9 @@ travel_desk_other_transportations::travel_request_id ||--o{ travel_desk_travel_r
 travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
 travel_desk_rental_cars::travel_request_id }o--|| travel_desk_travel_requests::id
 travel_desk_travel_requests }o--|| travelDeskTravelAgent
+travel_desk_travel_requests::id }o--|| travel_desk_questions::travel_request_id
 travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
 travelDeskFlightSegment }o--|| travelDeskFlightOption
-travelDeskQuestion }o--|| travel_desk_travel_requests
-
 @enduml
