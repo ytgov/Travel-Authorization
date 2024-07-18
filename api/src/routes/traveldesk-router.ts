@@ -576,7 +576,7 @@ travelDeskRouter.post(
 
           //Questions
           await TravelDeskQuestion.destroy({
-            where: { requestID: travelRequest.id },
+            where: { travelRequestId: travelRequest.id },
           })
 
           const cleanQuestions = questions.map(
@@ -588,10 +588,10 @@ travelDeskRouter.post(
             ) => {
               delete question.tmpId
               delete question.state
-              if (question.questionID == null) {
-                delete question.questionID
+              if (question.id == null) {
+                delete question.id
               }
-              question.requestID = travelRequest.id
+              question.travelRequestId = travelRequest.id
               return question
             }
           )

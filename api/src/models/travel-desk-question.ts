@@ -26,12 +26,14 @@ export class TravelDeskQuestion extends Model<
 > {
   static readonly RequestTypes = TravelDeskQuestionRequestTypes
 
-  declare questionID: CreationOptional<number>
-  declare requestID: ForeignKey<TravelDeskTravelRequest["id"]>
-  declare creatingDate: Date
+  declare id: CreationOptional<number>
+  declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare requestType: string
   declare question: string
   declare response: string | null
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
+  declare deletedAt: CreationOptional<Date | null>
 
   // Associations
   declare travelRequest?: NonAttribute<TravelDeskTravelRequest>
@@ -42,7 +44,7 @@ export class TravelDeskQuestion extends Model<
 
   static establishAssociations() {
     this.belongsTo(TravelDeskTravelRequest, {
-      foreignKey: "requestID",
+      foreignKey: "travelRequestId",
       as: "travelRequest",
     })
   }
@@ -50,13 +52,13 @@ export class TravelDeskQuestion extends Model<
 
 TravelDeskQuestion.init(
   {
-    questionID: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
       allowNull: false,
     },
-    requestID: {
+    travelRequestId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -64,10 +66,6 @@ TravelDeskQuestion.init(
         key: "id",
       },
       onDelete: "CASCADE",
-    },
-    creatingDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
     },
     requestType: {
       type: DataTypes.STRING(255),
@@ -85,14 +83,23 @@ TravelDeskQuestion.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: DataTypes.NOW,
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
-    modelName: "TravelDeskQuestion",
-    tableName: "travelDeskQuestion",
-    underscored: false,
-    timestamps: false,
-    paranoid: false,
   }
 )
 

@@ -79,9 +79,7 @@ export default {
   },
   methods: {
     newForm() {
-      const today = new Date()
       this.questions.push({
-        creatingDate: today.toISOString(),
         question: "",
         response: "",
         requestType: "Hotel",
