@@ -78,7 +78,7 @@
           md="2"
         >
           <v-text-field
-            :value="travelAuthorizationId"
+            :value="prettyTravelAuthorizationId"
             label="Travel Auth"
             outlined
             readonly
@@ -264,7 +264,7 @@ const props = defineProps({
 const { travelDeskTravelRequestId } = toRefs(props)
 const { travelDeskTravelRequest, isLoading } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-const travelAuthorizationId = computed(() => {
+const prettyTravelAuthorizationId = computed(() => {
   return travelDeskTravelRequest.value.travelAuthorizationId.toString().padStart(5, "0")
 })
 </script>
