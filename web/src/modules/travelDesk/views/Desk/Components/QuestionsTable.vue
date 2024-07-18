@@ -34,7 +34,7 @@
           class="mb-3 mt-3 mx-2"
         >
           <v-col>
-            <new-question
+            <NewQuestion
               class="mt-n10"
               :readonly="readonly"
               :question="question"
