@@ -61,6 +61,7 @@ describe("api/src/middleware/authorization-middleware.ts", () => {
       [2, "auth0|00002"],
       [5, "auth0|00003"],
       [10, "auth0|00004"],
+      [100, "auth0|00005"],
     ])(
       "when create %i users, only one user should be created",
       async (attempts: number, auth0Subject: string) => {
