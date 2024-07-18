@@ -11,9 +11,10 @@
       Failed to fetch travel desk travel request.
     </v-alert>
 
-    TODO: build read page for TravelDeskTravelRequest#{{ travelDeskTravelRequestId }}
-    <br />
-    status: {{ travelDeskTravelRequest?.status }}
+    <TravelDeskTravelRequestCard
+      v-else
+      :travel-desk-travel-request-id="travelDeskTravelRequestId"
+    />
   </v-container>
 </template>
 
@@ -22,6 +23,8 @@ import { isNil } from "lodash"
 import { computed } from "vue"
 
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
+
+import TravelDeskTravelRequestCard from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
