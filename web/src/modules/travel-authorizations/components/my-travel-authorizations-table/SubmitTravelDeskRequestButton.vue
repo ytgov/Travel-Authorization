@@ -3,7 +3,7 @@
     class="ma-0"
     color="secondary"
     :to="{
-      name: 'MyTravelRequestsRequestEditPage',
+      name: 'my-travel-requests/request/RequestEditPage',
       params: { travelAuthorizationId },
     }"
     @click.stop

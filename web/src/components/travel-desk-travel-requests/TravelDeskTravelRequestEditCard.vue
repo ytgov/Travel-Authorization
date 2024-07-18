@@ -212,7 +212,7 @@ async function submitAndNotify() {
     emit("state-changed")
     snack("Request submitted.", { color: "success" })
     router.replace({
-      name: "MyTravelRequestsRequestReadPage",
+      name: "my-travel-requests/request/RequestPage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     })
     return

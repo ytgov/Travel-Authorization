@@ -1,6 +1,6 @@
 <template>
   <div>
-    <breadcrumbs />
+    <Breadcrumbs />
     <h1>Travel Desk Requests</h1>
     <v-card
       :loading="loadingData"
@@ -22,7 +22,7 @@
           loading ...
         </div>
         <div v-else>
-          <travel-desk-requests
+          <TravelDeskRequests
             :travel-desk-requests="travelDeskRequests"
             @updateTable="getTravelDeskRequests"
           />
@@ -33,14 +33,12 @@
 </template>
 
 <script>
-import Vue from "vue"
-
 import { TRAVEL_DESK_URL, USERS_URL, PROFILE_URL } from "@/urls"
 import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
-import TravelDeskRequests from "@/modules/travelDesk/views/Desk/TravelDeskRequests.vue"
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import TravelDeskRequests from "@/modules/travelDesk/views/Desk/TravelDeskRequests.vue"
 
 export default {
   name: "TravelDesk",
@@ -54,7 +52,6 @@ export default {
       travelDeskRequests: [],
       loadingData: false,
       department: "",
-      admin: false,
       alertMsg: "",
     }
   },
@@ -62,7 +59,6 @@ export default {
     this.loadingData = true
     // await this.getUserAuth();
     this.department = this.$store.state.auth.department
-    this.admin = Vue.filter("isAdmin")()
     await this.getDestinations()
     await this.getTravelDeskUsers()
     await this.getTravelDeskRequests()
@@ -117,11 +113,14 @@ export default {
         .then((resp) => {
           this.travelDeskRequests = resp.data
           // console.log(this.travelDeskRequests)
-          // console.log(this.$store.state.auth.user.id)
-          this.travelDeskRequests.forEach((req) => {
-            req.userTravel = this.$store.state.auth.fullName == req.travelDeskOfficer ? 1 : 0
-            req.bookedStatus = req.status == "booked" ? 1 : 0
-            req.startDate = this.getStartDate(req.form.dateBackToWork, req.form.travelDuration)
+          this.travelDeskRequests.forEach((travelDeskRequest) => {
+            travelDeskRequest.userTravel =
+              this.$store.state.auth.fullName == travelDeskRequest.travelDeskOfficer ? 1 : 0
+            travelDeskRequest.bookedStatus = travelDeskRequest.status == "booked" ? 1 : 0
+            travelDeskRequest.startDate = this.getStartDate(
+              travelDeskRequest.travelAuthorization.dateBackToWork,
+              travelDeskRequest.travelAuthorization.travelDuration
+            )
           })
           this.loadingData = false
         })

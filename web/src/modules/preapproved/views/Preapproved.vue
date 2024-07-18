@@ -71,6 +71,7 @@ import travelPurposesApi from "@/api/travel-purposes-api"
 import travelAuthorizationPreApprovalsApi, {
   STATUSES,
 } from "@/api/travel-authorization-pre-approvals-api"
+import useCurrentUser from "@/use/use-current-user"
 
 import PreapprovedRequests from "./Requests/PreapprovedRequests.vue"
 import Submissions from "./Submissions/Submissions.vue"
@@ -80,6 +81,13 @@ export default {
   components: {
     PreapprovedRequests,
     Submissions,
+  },
+  setup() {
+    const { currentUser } = useCurrentUser()
+
+    return {
+      currentUser,
+    }
   },
   data() {
     return {
@@ -182,7 +190,7 @@ export default {
     determineDepartment() {
       this.alertMsg = ""
       if (!this.$store.state.auth.department) {
-        const email = this.$store.state.auth.user.email
+        const email = this.currentUser.email
         const employee = this.$store.state.preapproved.employees.filter((emp) => emp.email == email)
         if (employee.length > 0) {
           this.$store.dispatch("UpdateUserDepartment", employee[0].department)
