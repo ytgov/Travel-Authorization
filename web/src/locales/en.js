@@ -33,4 +33,12 @@ export default {
       td_user: "Td User",
     },
   },
+  travel_desk_question: {
+    request_type: {
+      flight: "Flight",
+      hotel: "Hotel",
+      transportation: "Transportation",
+      rental_car: "Rental Car",
+    },
+  },
 }
