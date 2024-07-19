@@ -58,6 +58,8 @@
                         outlined
                         auto-grow
                         counter
+                        readonly
+                        append-icon="mdi-lock"
                       />
                     </v-col>
                   </v-row>
