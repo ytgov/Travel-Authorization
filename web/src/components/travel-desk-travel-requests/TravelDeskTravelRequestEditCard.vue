@@ -90,7 +90,7 @@
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
-              <TravelDeskHotelEditTable
+              <TravelDeskHotelsEditTable
                 ref="travelDeskHotelEditTable"
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
@@ -138,7 +138,7 @@ import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
-import TravelDeskHotelEditTable from "@/components/travel-desk-hotels/TravelDeskHotelEditTable.vue"
+import TravelDeskHotelsEditTable from "@/components/travel-desk-hotels/TravelDeskHotelsEditTable.vue"
 import TravelDeskOtherTransportationEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationEditTable.vue"
 import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
@@ -162,7 +162,7 @@ const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.trav
 const travelerDetailsFormCard = ref(null)
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarsEditTable> | null>} */
 const travelDeskRentalCarsEditTable = ref(null)
-/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditTable> | null>} */
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelsEditTable> | null>} */
 const travelDeskHotelEditTable = ref(null)
 
 function refreshTablesUsingFlightInfo() {

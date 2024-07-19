@@ -67,7 +67,7 @@
               <TravelDeskRentalCarsTable
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
               />
-              <TravelDeskHotelTable :travel-desk-travel-request-id="travelDeskTravelRequestId" />
+              <TravelDeskHotelsTable :travel-desk-travel-request-id="travelDeskTravelRequestId" />
               <br />TODO: build TravelDeskOtherTransportationTable
               <v-skeleton-loader
                 v-if="isNil(travelAuthorizationId)"
@@ -94,7 +94,7 @@ import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 import TravelDeskFlightRequestsTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsTable.vue"
-import TravelDeskHotelTable from "@/components/travel-desk-hotels/TravelDeskHotelTable.vue"
+import TravelDeskHotelsTable from "@/components/travel-desk-hotels/TravelDeskHotelsTable.vue"
 // import TravelDeskOtherTransportationTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationTable.vue"
 import TravelDeskRentalCarsTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsTable.vue"
 import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
