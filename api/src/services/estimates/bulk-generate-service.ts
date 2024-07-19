@@ -1,4 +1,4 @@
-import { clone, isNil, max, min, times } from "lodash"
+import { clone, isNil, min, times } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
 import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from "@/models"
@@ -147,7 +147,7 @@ export class BulkGenerateService extends BaseService {
 
     const numberOfNights = BulkGenerate.calculateNumberOfNights(arrivalAt, departureAt)
     return times(numberOfNights, (index) => {
-      let stayedAt = clone(arrivalAt)
+      const stayedAt = clone(arrivalAt)
       stayedAt.setDate(arrivalAt.getDate() + index)
 
       const cost = this.determineAccommodationCost(accommodationType)
@@ -179,8 +179,8 @@ export class BulkGenerateService extends BaseService {
 
     const claimsPerDay = BulkGenerate.determineClaimsPerDay(travelStartAt, travelEndAt)
 
-    let estimates = []
-    for (let { date, claims } of claimsPerDay) {
+    const estimates = []
+    for (const { date, claims } of claimsPerDay) {
       const location = BulkGenerate.determineFinalDestination(this.travelSegments)
       const province = location.province
       const description = claims.join("/")
