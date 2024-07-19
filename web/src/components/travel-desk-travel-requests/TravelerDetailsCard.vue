@@ -269,4 +269,4 @@ const prettyTravelAuthorizationId = computed(() => {
 })
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+<style scoped></style>
