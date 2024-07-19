@@ -111,7 +111,9 @@ export class TravelDeskRentalCarsController extends BaseController {
     const travelDeskRentalCar = TravelDeskRentalCar.build(this.request.body)
 
     const { travelRequestId } = travelDeskRentalCar
-    const travelDeskTravelRequest = await TravelDeskTravelRequest.findByPk(travelRequestId)
+    const travelDeskTravelRequest = await TravelDeskTravelRequest.findByPk(travelRequestId, {
+      include: ["travelAuthorization"],
+    })
     if (isNil(travelDeskTravelRequest)) {
       throw new Error(`Travel request not found for travelRequestId=${travelRequestId}`)
     }
