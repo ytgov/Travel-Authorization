@@ -74,7 +74,7 @@ export class ApproveService extends BaseService {
     purpose: TravelPurpose,
     travelerDetails: Partial<Attributes<TravelDeskTravelRequest>>
   ): Promise<TravelDeskTravelRequest> {
-    const { firstName, lastName, email } = user
+    const { firstName, lastName } = user
     if (isNil(firstName)) {
       throw new Error("User expected to have first name.")
     }
