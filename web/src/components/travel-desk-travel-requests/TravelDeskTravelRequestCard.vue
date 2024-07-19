@@ -39,12 +39,10 @@
                     no-gutters
                   >
                     <v-col cols="12">
-                      TODO: build TravelDeskFlightRequestsTable
-                      <!-- <TravelDeskFlightRequestsTable
+                      <TravelDeskFlightRequestsTable
                         :travel-desk-travel-request-id="travelDeskTravelRequestId"
-                        :travel-authorization-id="travelAuthorizationId"
                         class="borderless-card"
-                      /> -->
+                      />
                     </v-col>
                   </v-row>
                   <v-row
@@ -96,7 +94,7 @@ import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
-// import TravelDeskFlightRequestsTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsTable.vue"
+import TravelDeskFlightRequestsTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsTable.vue"
 // import TravelDeskHotelTable from "@/components/travel-desk-hotels/TravelDeskHotelTable.vue"
 // import TravelDeskOtherTransportationTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationTable.vue"
 // import TravelDeskRentalCarsTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsTable.vue"
