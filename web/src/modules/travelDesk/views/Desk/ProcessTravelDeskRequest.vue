@@ -47,7 +47,6 @@
 
               <title-card
                 class="mt-10"
-                title-width="12.5rem"
                 large-title
               >
                 <template #title>
@@ -65,10 +64,7 @@
                       @close="flightKey++"
                     />
                   </v-row>
-                  <title-card
-                    class="mt-9 mx-5"
-                    title-width="8.5rem"
-                  >
+                  <title-card class="mt-9 mx-5">
                     <template #title>
                       <div>Flight Request</div>
                     </template>
@@ -155,7 +151,6 @@
               >
                 <title-card
                   class="mt-10 mx-4"
-                  title-width="4rem"
                   style="width: 100%"
                 >
                   <template #title>

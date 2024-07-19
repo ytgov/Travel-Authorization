@@ -32,18 +32,12 @@
       </v-row>
       <v-row>
         <v-col>
-          <TitleCard
-            title-width="12.5rem"
-            large-title
-          >
+          <TitleCard large-title>
             <template #title>
               <div>Travel Information</div>
             </template>
             <template #body>
-              <TitleCard
-                class="mt-5 mx-5"
-                title-width="8.5rem"
-              >
+              <TitleCard class="mt-5 mx-5">
                 <template #title>
                   <div>Flight Request</div>
                 </template>

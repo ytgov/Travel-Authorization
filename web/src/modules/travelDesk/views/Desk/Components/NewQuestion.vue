@@ -1,9 +1,6 @@
 <template>
   <div>
-    <title-card
-      class="mt-10"
-      title-width="6rem"
-    >
+    <title-card class="mt-10">
       <template #title>
         <div>Question</div>
       </template>

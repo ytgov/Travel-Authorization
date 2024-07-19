@@ -38,7 +38,6 @@
             <v-col cols="3">
               <TitleCard
                 class="mt-5"
-                title-width="10.5rem"
                 large-title
               >
                 <template #title>
@@ -71,7 +70,6 @@
             <v-col cols="9">
               <TitleCard
                 class="mt-5"
-                title-width="18rem"
                 large-title
               >
                 <template #title>

@@ -1,9 +1,6 @@
 <template>
   <div>
-    <TitleCard
-      class="mt-10 mx-5 mb-5"
-      title-width="16.5rem"
-    >
+    <TitleCard class="mt-10 mx-5 mb-5">
       <template #title>
         <div>Other Transportation Request</div>
       </template>

@@ -1,9 +1,6 @@
 <template>
   <div>
-    <TitleCard
-      class="mt-10 mx-4"
-      title-width="6rem"
-    >
+    <TitleCard class="mt-10 mx-4">
       <template #title>
         <div>Questions</div>
       </template>

@@ -4,8 +4,10 @@
     :style="{ border: border }"
   >
     <div
+      ref="titleSlot"
       :class="largeTitle ? 'custom-large-title-card' : 'custom-title-card'"
       :style="{ width: titleWidth }"
+      class="px-2"
     >
       <slot name="title"></slot>
     </div>
@@ -14,24 +16,50 @@
   </v-card>
 </template>
 
-<script>
-export default {
-  name: "TitleCard",
-  props: {
-    titleWidth: {
-      type: String,
-      required: true,
-    },
-    largeTitle: {
-      type: Boolean,
-      default: false,
-    },
-    border: {
-      type: String,
-      required: false,
-      default: "",
-    },
+<script setup>
+import { ref, onMounted } from "vue"
+
+defineProps({
+  largeTitle: {
+    type: Boolean,
+    default: false,
   },
+  border: {
+    type: String,
+    required: false,
+    default: "",
+  },
+})
+
+/** @type {import("vue").Ref<InstanceType<typeof HtmlDivElement> | null>} */
+const titleSlot = ref(null)
+const titleWidth = ref("auto")
+
+onMounted(() => {
+  setTitleWidth()
+})
+
+function setTitleWidth() {
+  if (titleSlot.value === null) return
+
+  // Create a temporary span element to measure text width
+  const span = document.createElement("span")
+  span.style.visibility = "hidden"
+  span.style.position = "absolute"
+  span.style.whiteSpace = "nowrap"
+  // Must match styling of actual title slot
+  span.classList.add("px-2")
+
+  // Get the text content of the slot
+  const titleText = titleSlot.value.textContent
+  span.textContent = titleText
+
+  // Append span to titleSlot for accurate styling
+  titleSlot.value.appendChild(span)
+  titleWidth.value = `${span.offsetWidth + 1}px`
+
+  // Remove the span element now that we have the size
+  titleSlot.value.removeChild(span)
 }
 </script>
 <style scoped>

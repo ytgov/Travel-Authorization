@@ -1,7 +1,6 @@
 <template>
   <TitleCard
     class="mt-10"
-    title-width="11rem"
     large-title
   >
     <template #title>
