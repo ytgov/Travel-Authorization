@@ -64,13 +64,16 @@
                 </template>
               </TitleCard>
 
-              TODO: build TravelDeskRentalCarsTable
-              <!-- <TravelDeskRentalCarsTable
+              <TravelDeskRentalCarsTable
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
-                :travel-authorization-id="travelAuthorizationId"
-              /> -->
+              />
               <br />TODO: build TravelDeskHotelTable
+              <v-skeleton-loader
+                v-if="isNil(travelAuthorizationId)"
+                type="card"
+              />
               <!-- <TravelDeskHotelTable
+                v-else
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               /> -->
@@ -88,7 +91,8 @@
 </template>
 
 <script setup>
-import { toRefs } from "vue"
+import { computed, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
@@ -97,7 +101,7 @@ import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelDeskFlightRequestsTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsTable.vue"
 // import TravelDeskHotelTable from "@/components/travel-desk-hotels/TravelDeskHotelTable.vue"
 // import TravelDeskOtherTransportationTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationTable.vue"
-// import TravelDeskRentalCarsTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsTable.vue"
+import TravelDeskRentalCarsTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsTable.vue"
 import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
 
 const props = defineProps({
@@ -110,7 +114,7 @@ const props = defineProps({
 const { travelDeskTravelRequestId } = toRefs(props)
 const { travelDeskTravelRequest, isLoading } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-// const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
+const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.travelAuthorizationId)
 </script>
 
 <style scoped lang="css" src="@/styles/_travel_desk.css"></style>
