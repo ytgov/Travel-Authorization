@@ -1,8 +1,5 @@
 <template>
-  <TitleCard
-    class="mt-10 mx-5 mb-5"
-    title-width="16.5rem"
-  >
+  <TitleCard class="mt-10 mx-5 mb-5">
     <template #title>
       <div>Other Transportation Request</div>
     </template>
@@ -174,4 +171,4 @@ async function deleteOtherTransportation(otherTransportation) {
 }
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+<style scoped></style>

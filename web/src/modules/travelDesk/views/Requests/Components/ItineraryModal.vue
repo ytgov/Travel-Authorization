@@ -52,7 +52,6 @@
         <v-card-text v-else>
           <title-card
             class="mt-10"
-            title-width="11rem"
             large-title
           >
             <template #title>

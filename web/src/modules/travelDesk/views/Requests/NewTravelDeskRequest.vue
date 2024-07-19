@@ -48,17 +48,13 @@
 
               <title-card
                 class="mt-10"
-                title-width="12.5rem"
                 large-title
               >
                 <template #title>
                   <div>Travel Information</div>
                 </template>
                 <template #body>
-                  <title-card
-                    class="mt-5 mx-5"
-                    title-width="8.5rem"
-                  >
+                  <title-card class="mt-5 mx-5">
                     <template #title>
                       <div>Flight Request</div>
                     </template>
@@ -424,4 +420,4 @@ export default {
 }
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+<style scoped></style>
