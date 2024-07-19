@@ -95,7 +95,7 @@
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
-              <TravelDeskOtherTransportationEditTable
+              <TravelDeskOtherTransportationsEditTable
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
@@ -139,7 +139,7 @@ import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
 import TravelDeskHotelsEditTable from "@/components/travel-desk-hotels/TravelDeskHotelsEditTable.vue"
-import TravelDeskOtherTransportationEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationEditTable.vue"
+import TravelDeskOtherTransportationsEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsEditTable.vue"
 import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 
