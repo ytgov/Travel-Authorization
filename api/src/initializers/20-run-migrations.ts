@@ -2,7 +2,8 @@ import knex from "@/db/db-client-legacy"
 import logger from "@/utils/logger"
 
 type MigrationInfo = {
-  name: string
+  file: string
+  directory: string
 }
 
 async function runMigrations(): Promise<void> {
@@ -15,10 +16,10 @@ async function runMigrations(): Promise<void> {
   }
 
   return pendingMigrations
-    .reduce(async (previousMigration, { name }) => {
+    .reduce(async (previousMigration, { file, directory }) => {
       await previousMigration
 
-      logger.info(`Running migration: ${name}`)
+      logger.info(`Running migration: ${directory}/${file}`)
       return knex.migrate.up()
     }, Promise.resolve())
     .then(() => {
