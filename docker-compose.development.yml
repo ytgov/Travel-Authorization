@@ -60,6 +60,7 @@ services:
       <<: *default-environment
       NODE_ENV: test
       DB_NAME: travel_test
+      DEFAULT_LOG_LEVEL: "warn"
     tty: true
     volumes:
       - ./api:/usr/src/api
