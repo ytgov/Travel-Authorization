@@ -5,7 +5,7 @@ import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from 
 
 import BaseService from "@/services/base-service"
 import { BulkGenerate } from "@/services/estimates"
-import { ClaimTypes, LocationTypes } from "@/models/per-diem"
+import { ClaimTypes, TravelRegions } from "@/models/per-diem"
 
 const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
 const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
@@ -255,29 +255,29 @@ export class BulkGenerateService extends BaseService {
     }
   }
 
-  private async determinePerDiemCost(province: string, claims: ClaimTypes[]): Promise<number> {
-    const location = this.determineLocationFromProvince(province)
+  private async determinePerDiemCost(province: string, claimTypes: ClaimTypes[]): Promise<number> {
+    const travelRegion = this.determineTravelRegionFromProvince(province)
 
     return PerDiem.sum("amount", {
       where: {
-        claim: { [Op.in]: claims },
-        location,
+        claimType: { [Op.in]: claimTypes },
+        travelRegion,
       },
     })
   }
 
-  private determineLocationFromProvince(province: string): LocationTypes {
+  private determineTravelRegionFromProvince(province: string): TravelRegions {
     switch (province) {
       case "YT":
-        return PerDiem.LocationTypes.YUKON
+        return PerDiem.TravelRegions.YUKON
       case "NT":
-        return PerDiem.LocationTypes.NWT
+        return PerDiem.TravelRegions.NWT
       case "NU":
-        return PerDiem.LocationTypes.NUNAVUT
+        return PerDiem.TravelRegions.NUNAVUT
       // TODO: Handle Alaska and the US in the future
       // I don't see any destination data for this yet, so leaving for now.
       default:
-        return PerDiem.LocationTypes.CANADA
+        return PerDiem.TravelRegions.CANADA
     }
   }
 }

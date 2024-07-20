@@ -16,7 +16,7 @@ export enum ClaimTypes {
   PRIVATE_ACCOMMODATIONS = "Private Accommodations",
 }
 
-export enum LocationTypes {
+export enum TravelRegions {
   US = "US",
   YUKON = "Yukon",
   NWT = "NWT",
@@ -32,12 +32,12 @@ export enum CurrencyTypes {
 
 export class PerDiem extends Model<InferAttributes<PerDiem>, InferCreationAttributes<PerDiem>> {
   static ClaimTypes = ClaimTypes
-  static LocationTypes = LocationTypes
+  static TravelRegions = TravelRegions
   static CurrencyTypes = CurrencyTypes
 
   declare id: CreationOptional<number>
-  declare claim: ClaimTypes | null
-  declare location: LocationTypes | null
+  declare claimType: ClaimTypes | null
+  declare travelRegion: TravelRegions | null
   declare amount: number | null
   declare currency: CurrencyTypes | null
 }
@@ -50,15 +50,25 @@ PerDiem.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    claim: {
+    claimType: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      validate: {
+        isIn: {
+          args: [Object.values(ClaimTypes)],
+          msg: `Claim Type must be one of: ${Object.values(ClaimTypes).join(", ")}`,
+        },
+      },
     },
-    // TODO: convert this column to a foreign key to the "locations" table,
-    // or use an external api to get this data.
-    location: {
+    travelRegion: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      validate: {
+        isIn: {
+          args: [Object.values(TravelRegions)],
+          msg: `Travel Region must be one of: ${Object.values(TravelRegions).join(", ")}`,
+        },
+      },
     },
     amount: {
       type: DataTypes.FLOAT,
@@ -71,11 +81,16 @@ PerDiem.init(
   },
   {
     sequelize,
-    modelName: "PerDiem",
-    tableName: "perDiems",
-    underscored: false,
-    timestamps: false,
-    paranoid: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["claimType", "travelRegion", "currency"],
+        name: "per_diems_claim_type_travel_region_currency_unique",
+        where: {
+          deletedAt: null,
+        },
+      },
+    ],
   }
 )
 
