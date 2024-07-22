@@ -1,7 +1,10 @@
 import db from "@/db/db-client"
 
+import DistanceMatrix from "./distance-matrix"
 import Expense from "./expense"
 import GeneralLedgerCoding from "./general-ledger-coding"
+import Location from "./location"
+import PerDiem from "./per-diem"
 import Stop from "./stop"
 import TravelAllowance from "./travel-allowance"
 import TravelAuthorization from "./travel-authorization"
@@ -17,6 +20,7 @@ import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-
 import TravelDeskQuestion from "./travel-desk-question"
 import TravelDeskRentalCar from "./travel-desk-rental-car"
 import TravelDeskTravelRequest from "./travel-desk-travel-request"
+import TravelPurpose from "./travel-purpose"
 import TravelSegment from "./travel-segment"
 import User from "./user"
 
@@ -40,8 +44,11 @@ TravelSegment.establishAssociations()
 User.establishAssociations()
 
 export {
+  DistanceMatrix,
   Expense,
   GeneralLedgerCoding,
+  Location,
+  PerDiem,
   Stop,
   TravelAllowance,
   TravelAuthorization,
@@ -57,13 +64,10 @@ export {
   TravelDeskQuestion,
   TravelDeskRentalCar,
   TravelDeskTravelRequest,
+  TravelPurpose,
   TravelSegment,
   User,
 }
-export { DistanceMatrix } from "./distance-matrix"
-export { Location } from "./location"
-export { PerDiem } from "./per-diem"
-export { TravelPurpose } from "./travel-purpose"
 
 // special db instance that has access to all models.
 export default db
