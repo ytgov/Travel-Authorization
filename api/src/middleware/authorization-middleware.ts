@@ -11,7 +11,23 @@ export type AuthorizationRequest = JwtRequest & {
   user?: User
 }
 
-const userDebounceCache = new Map<string, Promise<User>>()
+const USER_CACHE_EXPIRATION_MS = 60 * 1000 // 1 minutes
+
+interface CachedUser {
+  promise: Promise<User>
+  timestamp: number
+}
+
+const userDebounceCache = new Map<string, CachedUser>()
+
+function cleanUpCache() {
+  const now = Date.now()
+  for (const [key, cached] of userDebounceCache.entries()) {
+    if (now - cached.timestamp > USER_CACHE_EXPIRATION_MS) {
+      userDebounceCache.delete(key)
+    }
+  }
+}
 
 export async function ensureUserFromAuth0Token(token: string): Promise<User> {
   const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
@@ -47,6 +63,11 @@ export async function authorizationMiddleware(
   res: Response,
   next: NextFunction
 ) {
+  const token = req.headers.authorization || ""
+
+  cleanUpCache()
+
+  // Step 1: check database for user
   const user = await User.findOne({ where: { sub: req.auth?.sub } })
 
   if (!isNil(user)) {
@@ -54,13 +75,17 @@ export async function authorizationMiddleware(
     return next()
   }
 
+  // Step 2: check user cache
+  const cachedUser = userDebounceCache.get(token)
+
+  if (cachedUser) {
+    req.user = await cachedUser.promise
+    return next()
+  }
+
   try {
-    const token = req.headers.authorization || ""
-    let userCreationPromise = userDebounceCache.get(token)
-    if (!userCreationPromise) {
-      userCreationPromise = ensureUserFromAuth0Token(token)
-      userDebounceCache.set(token, userCreationPromise)
-    }
+    const userCreationPromise = ensureUserFromAuth0Token(token)
+    userDebounceCache.set(token, { promise: userCreationPromise, timestamp: Date.now() })
 
     req.user = await userCreationPromise
     return next()
