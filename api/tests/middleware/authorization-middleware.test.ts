@@ -11,11 +11,6 @@ jest.unmock("@/middleware/authorization-middleware")
 jest.mock("@/integrations/auth0-integration")
 jest.mock("@/utils/logger")
 
-let user_data: Auth0UserInfo
-let req: Partial<AuthorizationRequest>
-let res: Partial<Response>
-let next: NextFunction
-
 describe("api/src/middleware/authorization-middleware.ts", () => {
   describe(".authorizationMiddleware", () => {
     test.each([
@@ -31,41 +26,38 @@ describe("api/src/middleware/authorization-middleware.ts", () => {
       "when create %i users, only one user should be created",
       async (attempts: number, auth0Subject: string) => {
         // Arrange
-        user_data = {
+        const userData: Auth0UserInfo = {
           email: "dupe@test.com",
           firstName: "dupe",
           lastName: "UNKNOWN",
-          auth0Subject: "",
+          auth0Subject: auth0Subject,
         }
 
-        req = {
+        const req: Partial<AuthorizationRequest> = {
           headers: {
             authorization: auth0Subject,
           },
-          auth: {},
+          auth: { sub: auth0Subject },
         }
 
-        res = {
+        const res: Partial<Response> = {
           status: jest.fn().mockReturnThis(),
           json: jest.fn(),
         }
 
-        next = jest.fn()
-        user_data.auth0Subject = auth0Subject
-        req.auth = { sub: auth0Subject }
+        const next: NextFunction = jest.fn()
 
-        // force a "new" user in the middleware
-        jest.spyOn(auth0Integration, "getUserInfo").mockResolvedValue(user_data)
+        jest.spyOn(auth0Integration, "getUserInfo").mockResolvedValue(userData)
 
-        const funcs = Array.from({ length: attempts }, async () => {
+        const authorizationsRequestPromises = Array.from({ length: attempts }, async () => {
           await authorizationMiddleware(req as AuthorizationRequest, res as Response, next)
         })
 
         // Act
-        await Promise.all(funcs)
-        const users = await User.findAll({ where: { sub: auth0Subject } })
+        await Promise.all(authorizationsRequestPromises)
 
         // Assert
+        const users = await User.findAll({ where: { sub: auth0Subject } })
         expect(users.length).toEqual(1)
         expect(users[0]).toHaveProperty("sub", auth0Subject)
       }
