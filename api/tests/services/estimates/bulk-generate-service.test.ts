@@ -3,10 +3,11 @@ import { BulkGenerateService } from "@/services/estimates"
 import {
   locationFactory,
   perDiemFactory,
+  travelAllowanceFactory,
   travelAuthorizationFactory,
   travelSegmentFactory,
 } from "@/factories"
-import { PerDiem, Stop } from "@/models"
+import { PerDiem, Stop, TravelAllowance } from "@/models"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
@@ -34,6 +35,31 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         travelRegion: PerDiem.TravelRegions.CANADA,
         amount: 58.6,
         currency: PerDiem.CurrencyTypes.CAD,
+      })
+      await travelAllowanceFactory.create({
+        allowanceType: TravelAllowance.AllowanceTypes.MAXIUM_AIRCRAFT_ALLOWANCE,
+        amount: 1000,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      })
+      await travelAllowanceFactory.create({
+        allowanceType: TravelAllowance.AllowanceTypes.AIRCRAFT_ALLOWANCE_PER_SEGMENT,
+        amount: 350,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      })
+      await travelAllowanceFactory.create({
+        allowanceType: TravelAllowance.AllowanceTypes.DISTANCE_ALLOWANCE_PER_KILOMETER,
+        amount: 0.605,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      })
+      await travelAllowanceFactory.create({
+        allowanceType: TravelAllowance.AllowanceTypes.HOTEL_ALLOWANCE_PER_NIGHT,
+        amount: 250,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      })
+      await travelAllowanceFactory.create({
+        allowanceType: TravelAllowance.AllowanceTypes.PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT,
+        amount: 50,
+        currency: TravelAllowance.CurrencyTypes.CAD,
       })
     })
 

@@ -1,17 +1,19 @@
 import { clone, isNil, min, startCase, times, toLower } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
-import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from "@/models"
+import {
+  DistanceMatrix,
+  Expense,
+  Location,
+  PerDiem,
+  Stop,
+  TravelAllowance,
+  TravelSegment,
+} from "@/models"
 
 import BaseService from "@/services/base-service"
 import { BulkGenerate } from "@/services/estimates"
 import { ClaimTypes, TravelRegions } from "@/models/per-diem"
-
-const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
-const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
-const DISTANCE_ALLOWANCE_PER_KILOMETER = 0.605
-const HOTEL_ALLOWANCE_PER_NIGHT = 250
-const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
 
 type BulkGenerateServiceOptions = {
   daysOffTravelStatus: number
@@ -23,7 +25,12 @@ export class BulkGenerateService extends BaseService {
   private daysOffTravelStatus: number
   private firstTravelSegment: TravelSegment
   private lastTravelSegment: TravelSegment
-  private aircraftAllowanceRemaining: number
+
+  private aircraftAllowanceRemaining = 0
+  private aircraftAllowancePerSegment = 0
+  private distanceAllowancePerKilometer = 0
+  private hotelAllowancePerNight = 0
+  private privateAccommodationAllowancePerNight = 0
 
   constructor(
     travelAuthorizationId: number,
@@ -36,10 +43,15 @@ export class BulkGenerateService extends BaseService {
     this.daysOffTravelStatus = daysOffTravelStatus
     this.firstTravelSegment = this.travelSegments[0]
     this.lastTravelSegment = this.travelSegments[this.travelSegments.length - 1]
-    this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
   async perform(): Promise<Expense[]> {
+    await this.initializeAircraftAllowanceRemaining()
+    await this.initializeAircraftAllowancePerSegment()
+    await this.initializeDistanceAllowancePerKilometer()
+    await this.initializeHotelAllowancePerNight()
+    await this.initializePrivateAccommodationAllowancePerNight()
+
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
     for (const travelSegment of this.travelSegments) {
@@ -225,7 +237,7 @@ export class BulkGenerateService extends BaseService {
   private determineAicraftAllowance(): number {
     const allowance = min([
       this.aircraftAllowanceRemaining,
-      AIRCRAFT_ALLOWANCE_PER_SEGMENT,
+      this.aircraftAllowancePerSegment,
     ]) as number
     this.aircraftAllowanceRemaining -= allowance
     return allowance
@@ -241,16 +253,16 @@ export class BulkGenerateService extends BaseService {
     if (isNil(distanceMatrix) || isNil(distanceMatrix.kilometers)) return 0
 
     const { kilometers } = distanceMatrix
-    return kilometers * DISTANCE_ALLOWANCE_PER_KILOMETER
+    return kilometers * this.distanceAllowancePerKilometer
   }
 
   private determineAccommodationCost(accommodationType: string): number {
     switch (accommodationType) {
       case Stop.AccommodationTypes.HOTEL:
-        return 1 * HOTEL_ALLOWANCE_PER_NIGHT
+        return 1 * this.hotelAllowancePerNight
       // TODO: determine if Private Accommodation is part of the max daily per-diem
       case Stop.AccommodationTypes.PRIVATE:
-        return 1 * PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT
+        return 1 * this.privateAccommodationAllowancePerNight
       default:
         return 0
     }
@@ -280,6 +292,71 @@ export class BulkGenerateService extends BaseService {
       default:
         return PerDiem.TravelRegions.CANADA
     }
+  }
+
+  private async initializeAircraftAllowanceRemaining(): Promise<void> {
+    const maxiumAircraftAllowance = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.MAXIUM_AIRCRAFT_ALLOWANCE,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(maxiumAircraftAllowance)) {
+      throw new Error("Missing maximum aircraft allowance")
+    }
+    this.aircraftAllowanceRemaining = maxiumAircraftAllowance.amount
+  }
+
+  private async initializeAircraftAllowancePerSegment(): Promise<void> {
+    const aircraftAllowancePerSegment = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.AIRCRAFT_ALLOWANCE_PER_SEGMENT,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(aircraftAllowancePerSegment)) {
+      throw new Error("Missing aircraft allowance per segment")
+    }
+    this.aircraftAllowancePerSegment = aircraftAllowancePerSegment.amount
+  }
+
+  private async initializeDistanceAllowancePerKilometer(): Promise<void> {
+    const distanceAllowancePerKilometer = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.DISTANCE_ALLOWANCE_PER_KILOMETER,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(distanceAllowancePerKilometer)) {
+      throw new Error("Missing distance allowance per kilometer")
+    }
+    this.distanceAllowancePerKilometer = distanceAllowancePerKilometer.amount
+  }
+
+  private async initializeHotelAllowancePerNight(): Promise<void> {
+    const hotelAllowancePerNight = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.HOTEL_ALLOWANCE_PER_NIGHT,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(hotelAllowancePerNight)) {
+      throw new Error("Missing hotel allowance per night")
+    }
+    this.hotelAllowancePerNight = hotelAllowancePerNight.amount
+  }
+
+  private async initializePrivateAccommodationAllowancePerNight(): Promise<void> {
+    const privateAccommodationAllowancePerNight = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(privateAccommodationAllowancePerNight)) {
+      throw new Error("Missing private accommodation allowance per night")
+    }
+    this.privateAccommodationAllowancePerNight = privateAccommodationAllowancePerNight.amount
   }
 }
 
