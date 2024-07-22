@@ -1,12 +1,10 @@
 import { expressjwt as jwt } from "express-jwt"
 import jwksRsa, { type GetVerificationKey } from "jwks-rsa"
 
-import { AUTH0_DOMAIN, AUTH0_AUDIENCE, NODE_ENV } from "@/config"
+import { AUTH0_DOMAIN, AUTH0_AUDIENCE } from "@/config"
 import logger from "@/utils/logger"
 
-if (NODE_ENV !== "test") {
-  logger.info(`AUTH0_DOMAIN=${AUTH0_DOMAIN}/.well-known/jwks.json`)
-}
+logger.debug(`AUTH0_DOMAIN=${AUTH0_DOMAIN}/.well-known/jwks.json`)
 
 export const checkJwt = jwt({
   secret: jwksRsa.expressJwtSecret({

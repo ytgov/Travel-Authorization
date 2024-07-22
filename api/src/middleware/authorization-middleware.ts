@@ -13,13 +13,9 @@ export type AuthorizationRequest = JwtRequest & {
   user?: User
 }
 
-async function findUserFromAuth0Subject(auth0Subject: string): Promise<User | null> {
-  return User.findOne({ where: { sub: auth0Subject } })
-}
-
 export async function ensureUserFromAuth0Token(token: string): Promise<User> {
   const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
-  const user = await findUserFromAuth0Subject(auth0Subject)
+  const user = await User.findOne({ where: { sub: auth0Subject } })
 
   if (!isNil(user)) {
     return user
