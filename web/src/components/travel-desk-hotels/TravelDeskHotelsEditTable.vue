@@ -1,9 +1,6 @@
 <template>
   <div>
-    <TitleCard
-      class="mt-10 mx-5"
-      title-width="8.5rem"
-    >
+    <TitleCard class="mt-10 mx-5">
       <template #title>
         <div>Hotel Request</div>
       </template>
@@ -143,7 +140,9 @@ const headers = ref([
 const route = useRoute()
 
 const travelDeskHotelsQuery = computed(() => ({
-  travelRequestId: props.travelDeskTravelRequestId,
+  where: {
+    travelRequestId: props.travelDeskTravelRequestId,
+  },
 }))
 const { travelDeskHotels, isLoading, refresh } = useTravelDeskHotels(travelDeskHotelsQuery)
 
@@ -155,7 +154,9 @@ const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
 
 // TODO: maybe make an optimized query that returns the start/end dates?
 const travelDeskFlightRequestsQuery = computed(() => ({
-  travelRequestId: props.travelDeskTravelRequestId,
+  where: {
+    travelRequestId: props.travelDeskTravelRequestId,
+  },
   perPage: 1000,
 }))
 const {

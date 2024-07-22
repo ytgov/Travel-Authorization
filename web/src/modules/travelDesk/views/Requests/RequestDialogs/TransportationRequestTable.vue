@@ -1,9 +1,6 @@
 <template>
   <div>
-    <TitleCard
-      class="mt-10 mx-5 mb-5"
-      title-width="16.5rem"
-    >
+    <TitleCard class="mt-10 mx-5 mb-5">
       <template #title>
         <div>Other Transportation Request</div>
       </template>
@@ -176,4 +173,4 @@ export default {
 }
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+<style scoped></style>

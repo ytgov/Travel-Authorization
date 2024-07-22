@@ -24,10 +24,7 @@ export class TravelDeskHotelsController extends BaseController {
         limit: this.pagination.limit,
         offset: this.pagination.offset,
       })
-      const serializedTravelDeskHotels = IndexSerializer.perform(
-        travelDeskHotels,
-        this.currentUser
-      )
+      const serializedTravelDeskHotels = IndexSerializer.perform(travelDeskHotels, this.currentUser)
       return this.response.status(200).json({
         travelDeskHotels: serializedTravelDeskHotels,
         totalCount,
@@ -50,10 +47,7 @@ export class TravelDeskHotelsController extends BaseController {
       }
 
       const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
-      const newTravelDeskHotel = await CreateService.perform(
-        permittedAttributes,
-        this.currentUser
-      )
+      const newTravelDeskHotel = await CreateService.perform(permittedAttributes, this.currentUser)
       return this.response.status(201).json({ travelDeskHotel: newTravelDeskHotel })
     } catch (error) {
       return this.response.status(422).json({ message: `Hotel creation failed: ${error}` })
@@ -111,7 +105,9 @@ export class TravelDeskHotelsController extends BaseController {
     const travelDeskHotel = TravelDeskHotel.build(this.request.body)
 
     const { travelRequestId } = travelDeskHotel
-    const travelDeskTravelRequest = await TravelDeskTravelRequest.findByPk(travelRequestId)
+    const travelDeskTravelRequest = await TravelDeskTravelRequest.findByPk(travelRequestId, {
+      include: ["travelAuthorization"],
+    })
     if (isNil(travelDeskTravelRequest)) {
       throw new Error(`Travel request not found for travelRequestId=${travelRequestId}`)
     }

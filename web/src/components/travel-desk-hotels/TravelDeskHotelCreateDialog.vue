@@ -261,7 +261,7 @@ function resetState() {
 }
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
+<style scoped>
 .label {
   font-weight: 600;
   font-size: 10pt !important;

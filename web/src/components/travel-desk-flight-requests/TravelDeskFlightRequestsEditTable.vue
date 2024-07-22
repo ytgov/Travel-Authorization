@@ -116,7 +116,9 @@ const headers = [
 const route = useRoute()
 
 const travelDeskFlightRequestsQuery = computed(() => ({
-  travelRequestId: props.travelDeskTravelRequestId,
+  where: {
+    travelRequestId: props.travelDeskTravelRequestId,
+  },
 }))
 const { travelDeskFlightRequests, isLoading, refresh } = useTravelDeskFlightRequests(
   travelDeskFlightRequestsQuery

@@ -38,7 +38,6 @@
             <v-col cols="3">
               <TitleCard
                 class="mt-5"
-                title-width="10.5rem"
                 large-title
               >
                 <template #title>
@@ -71,7 +70,6 @@
             <v-col cols="9">
               <TitleCard
                 class="mt-5"
-                title-width="18rem"
                 large-title
               >
                 <template #title>
@@ -280,7 +278,7 @@ export default {
 }
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css">
+<style scoped>
 .label {
   font-weight: 600;
   font-size: 10pt !important;

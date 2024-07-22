@@ -32,18 +32,12 @@
       </v-row>
       <v-row>
         <v-col>
-          <TitleCard
-            title-width="12.5rem"
-            large-title
-          >
+          <TitleCard large-title>
             <template #title>
               <div>Travel Information</div>
             </template>
             <template #body>
-              <TitleCard
-                class="mt-5 mx-5"
-                title-width="8.5rem"
-              >
+              <TitleCard class="mt-5 mx-5">
                 <template #title>
                   <div>Flight Request</div>
                 </template>
@@ -90,12 +84,12 @@
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
-              <TravelDeskHotelEditTable
+              <TravelDeskHotelsEditTable
                 ref="travelDeskHotelEditTable"
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
-              <TravelDeskOtherTransportationEditTable
+              <TravelDeskOtherTransportationsEditTable
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
@@ -138,8 +132,8 @@ import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
-import TravelDeskHotelEditTable from "@/components/travel-desk-hotels/TravelDeskHotelEditTable.vue"
-import TravelDeskOtherTransportationEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationEditTable.vue"
+import TravelDeskHotelsEditTable from "@/components/travel-desk-hotels/TravelDeskHotelsEditTable.vue"
+import TravelDeskOtherTransportationsEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsEditTable.vue"
 import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 
@@ -162,7 +156,7 @@ const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.trav
 const travelerDetailsFormCard = ref(null)
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarsEditTable> | null>} */
 const travelDeskRentalCarsEditTable = ref(null)
-/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditTable> | null>} */
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelsEditTable> | null>} */
 const travelDeskHotelEditTable = ref(null)
 
 function refreshTablesUsingFlightInfo() {
@@ -222,7 +216,7 @@ async function submitAndNotify() {
 }
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+<style scoped></style>
 
 <style scoped>
 .v-card.borderless-card {
