@@ -4,7 +4,6 @@ import VueRouter from "vue-router"
 import { authGuard } from "@/utils/auth-guard"
 
 import AdminUserForm from "@/components/Administration/UserManagement/UserComponent/Form"
-import AdminDashboard from "@/components/Administration/Administration"
 import UserManagement from "@/components/Administration/UserManagement/Grid"
 import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
 import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
@@ -53,8 +52,8 @@ const routes = [
       },
       {
         path: "administration",
-        name: "AdminDashboard",
-        component: AdminDashboard,
+        name: "AdministrationPage",
+        component: () => import("@/pages/AdministrationPage"),
       },
       {
         path: "administration/users",
