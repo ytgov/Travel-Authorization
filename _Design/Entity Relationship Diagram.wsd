@@ -179,6 +179,17 @@ entity "transportMethod" {
   method : varchar(255)
 }
 
+entity "travel_allowances" {
+  * id : serial4
+  --
+  * allowance_type : varchar(255)
+  * amount : float4
+  * currency : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
+}
+
 entity "travel_authorization_action_logs" {
   * id : serial4
   --
@@ -504,4 +515,5 @@ travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
 travelDeskFlightSegment }o--|| travelDeskFlightOption
 expenses .. per_diems : estimates generation
+expenses .. travel_allowances : estimates generation
 @enduml
