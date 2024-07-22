@@ -36,10 +36,10 @@ export class PerDiem extends Model<InferAttributes<PerDiem>, InferCreationAttrib
   static CurrencyTypes = CurrencyTypes
 
   declare id: CreationOptional<number>
-  declare claimType: ClaimTypes | null
-  declare travelRegion: TravelRegions | null
-  declare amount: number | null
-  declare currency: CurrencyTypes | null
+  declare claimType: ClaimTypes
+  declare travelRegion: TravelRegions
+  declare amount: number
+  declare currency: CurrencyTypes
 }
 
 PerDiem.init(
@@ -52,7 +52,7 @@ PerDiem.init(
     },
     claimType: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
       validate: {
         isIn: {
           args: [Object.values(ClaimTypes)],
@@ -62,7 +62,7 @@ PerDiem.init(
     },
     travelRegion: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
       validate: {
         isIn: {
           args: [Object.values(TravelRegions)],
@@ -72,11 +72,11 @@ PerDiem.init(
     },
     amount: {
       type: DataTypes.FLOAT,
-      allowNull: true,
+      allowNull: false,
     },
     currency: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: false,
     },
   },
   {
