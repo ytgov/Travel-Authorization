@@ -11,13 +11,9 @@ export type AuthorizationRequest = JwtRequest & {
   user?: User
 }
 
-async function randomSleep(){
-  const ms = Math.floor(Math.random() * (301))
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
+const userDebounceCache = new Map<string, Promise<User>>()
 
 export async function ensureUserFromAuth0Token(token: string): Promise<User> {
-  await randomSleep()
   const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
   const user = await User.findOne({ where: { sub: auth0Subject } })
 
@@ -25,13 +21,12 @@ export async function ensureUserFromAuth0Token(token: string): Promise<User> {
     return user
   }
 
-  await randomSleep()
   const existingUser = await User.findOne({
     where: { sub: auth0Subject },
   })
 
   if (existingUser) {
-    return existingUser;
+    return existingUser
   }
 
   const newUser = await User.create({
@@ -52,7 +47,6 @@ export async function authorizationMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  await randomSleep()
   const user = await User.findOne({ where: { sub: req.auth?.sub } })
 
   if (!isNil(user)) {
@@ -62,8 +56,13 @@ export async function authorizationMiddleware(
 
   try {
     const token = req.headers.authorization || ""
-    const user = await ensureUserFromAuth0Token(token)
-    req.user = user
+    let userCreationPromise = userDebounceCache.get(token)
+    if (!userCreationPromise) {
+      userCreationPromise = ensureUserFromAuth0Token(token)
+      userDebounceCache.set(token, userCreationPromise)
+    }
+
+    req.user = await userCreationPromise
     return next()
   } catch (error) {
     if (error instanceof Auth0PayloadError) {

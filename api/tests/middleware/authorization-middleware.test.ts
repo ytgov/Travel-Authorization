@@ -18,42 +18,39 @@ let next: NextFunction
 
 describe("api/src/middleware/authorization-middleware.ts", () => {
   describe(".authorizationMiddleware", () => {
-    beforeEach(() => {
-      user_data = {
-        email: "dupe@test.com",
-        firstName: "dupe",
-        lastName: "UNKNOWN",
-        auth0Subject: "",
-      }
-
-      req = {
-        headers: {
-          authorization: "mock-token",
-        },
-        auth: {},
-      }
-
-      res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      }
-
-      next = jest.fn()
-    })
-
     test.each([
       [1, "auth0|00001"],
       [2, "auth0|00002"],
-      [3, "auth0|00002"],
-      [4, "auth0|00002"],
-      [5, "auth0|00003"],
-      [10, "auth0|00004"],
-      [50, "auth0|00005"],
-      [100, "auth0|00006"],
+      [3, "auth0|00003"],
+      [4, "auth0|00004"],
+      [5, "auth0|00005"],
+      [10, "auth0|00006"],
+      [50, "auth0|00007"],
+      [100, "auth0|00008"],
     ])(
       "when create %i users, only one user should be created",
       async (attempts: number, auth0Subject: string) => {
         // Arrange
+        user_data = {
+          email: "dupe@test.com",
+          firstName: "dupe",
+          lastName: "UNKNOWN",
+          auth0Subject: "",
+        }
+
+        req = {
+          headers: {
+            authorization: auth0Subject,
+          },
+          auth: {},
+        }
+
+        res = {
+          status: jest.fn().mockReturnThis(),
+          json: jest.fn(),
+        }
+
+        next = jest.fn()
         user_data.auth0Subject = auth0Subject
         req.auth = { sub: auth0Subject }
 
@@ -67,7 +64,7 @@ describe("api/src/middleware/authorization-middleware.ts", () => {
         // Act
         await Promise.all(funcs)
         const users = await User.findAll({ where: { sub: auth0Subject } })
-        
+
         // Assert
         expect(users.length).toEqual(1)
         expect(users[0]).toHaveProperty("sub", auth0Subject)
