@@ -3,6 +3,7 @@ import db from "@/db/db-client"
 import Expense from "./expense"
 import GeneralLedgerCoding from "./general-ledger-coding"
 import Stop from "./stop"
+import TravelAllowance from "./travel-allowance"
 import TravelAuthorization from "./travel-authorization"
 import TravelAuthorizationActionLog from "./travel-authorization-action-log"
 import TravelAuthorizationPreApproval from "./travel-authorization-pre-approval"
@@ -42,6 +43,7 @@ export {
   Expense,
   GeneralLedgerCoding,
   Stop,
+  TravelAllowance,
   TravelAuthorization,
   TravelAuthorizationActionLog,
   TravelAuthorizationPreApproval,
