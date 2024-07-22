@@ -3,7 +3,8 @@ import { validationResult } from "express-validator"
 
 import { User } from "@/models"
 
-export { loadUser, checkJwt } from "./authz.middleware"
+export { checkJwt } from "./jwt-middleware"
+export { authorizationMiddleware } from "./authorization-middleware"
 export { databaseHealthCheckMiddleware } from "./database-health-check-middleware"
 export { requestLoggerMiddleware } from "./request-logger-middleware"
 

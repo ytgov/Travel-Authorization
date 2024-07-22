@@ -1,36 +1,24 @@
 import request from "supertest"
-import { Request, Response, NextFunction } from "express"
 
 import app from "@/app"
 import { BulkGenerateService } from "@/services/estimates"
-import { checkJwt, loadUser } from "@/middleware/authz.middleware"
 import { TravelAuthorization, User } from "@/models"
 import { travelAuthorizationFactory, userFactory } from "@/factories"
 
-// TODO: add some kind of helper that globally mocks authz.middleware for all api tests
-jest.mock("@/middleware/authz.middleware", () => ({
-  checkJwt: jest.fn(),
-  loadUser: jest.fn(),
-}))
+import { mockCurrentUser } from "@/support/mock-current-user"
+
 jest.mock("@/services/estimates", () => ({ BulkGenerateService: { perform: jest.fn() } }))
 
-const mockedCheckJwt = checkJwt as unknown as jest.Mock
-const mockedLoadUser = loadUser as unknown as jest.Mock
 const mockedBulkGenerateServicePerform = BulkGenerateService.perform as unknown as jest.Mock
 
 describe("api/src/controllers/travel-authorizations/estimates/generate-controller.ts", () => {
   let user: User
 
   beforeEach(async () => {
-    mockedCheckJwt.mockImplementation((req: Request, res: Response, next: NextFunction) => next())
-
     user = await userFactory.create({
       roles: [User.Roles.USER],
     })
-    mockedLoadUser.mockImplementation((req: Request, res: Response, next: NextFunction) => {
-      req.user = user
-      next()
-    })
+    mockCurrentUser(user)
   })
 
   describe("POST /api/travel-authorizations/:travelAuthorizationId/estimates/generate", () => {
