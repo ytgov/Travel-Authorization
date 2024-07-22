@@ -7,13 +7,17 @@ import { User } from "@/models"
 
 import auth0Integration, { Auth0PayloadError } from "@/integrations/auth0-integration"
 
-import sequelize from "@/models"
-
 export type AuthorizationRequest = JwtRequest & {
   user?: User
 }
 
+async function randomSleep(){
+  const ms = Math.floor(Math.random() * (301))
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 export async function ensureUserFromAuth0Token(token: string): Promise<User> {
+  await randomSleep()
   const { auth0Subject, email, firstName, lastName } = await auth0Integration.getUserInfo(token)
   const user = await User.findOne({ where: { sub: auth0Subject } })
 
@@ -21,28 +25,25 @@ export async function ensureUserFromAuth0Token(token: string): Promise<User> {
     return user
   }
 
-  const newUser = await sequelize.transaction(async (transaction) => {
-    const existingUser = await User.findOne({
-      where: { sub: auth0Subject },
-      transaction,
-    });
-
-    if (existingUser) {
-      return existingUser;
-    }
-    const newUser = await User.create({
-      sub: auth0Subject,
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      roles: [User.Roles.USER],
-      status: User.Statuses.ACTIVE,
-    }, { transaction })
-  
-    logger.info(`CREATED USER FOR ${email}: ${JSON.stringify(newUser.dataValues)}`)
-    return newUser
+  await randomSleep()
+  const existingUser = await User.findOne({
+    where: { sub: auth0Subject },
   })
 
+  if (existingUser) {
+    return existingUser;
+  }
+
+  const newUser = await User.create({
+    sub: auth0Subject,
+    email: email,
+    firstName: firstName,
+    lastName: lastName,
+    roles: [User.Roles.USER],
+    status: User.Statuses.ACTIVE,
+  })
+
+  logger.info(`CREATED USER FOR ${email}: ${JSON.stringify(newUser.dataValues)}`)
   return newUser
 }
 
@@ -51,6 +52,7 @@ export async function authorizationMiddleware(
   res: Response,
   next: NextFunction
 ) {
+  await randomSleep()
   const user = await User.findOne({ where: { sub: req.auth?.sub } })
 
   if (!isNil(user)) {

@@ -48,7 +48,8 @@ describe("api/src/middleware/authorization-middleware.ts", () => {
       [4, "auth0|00002"],
       [5, "auth0|00003"],
       [10, "auth0|00004"],
-      [100, "auth0|00005"],
+      [50, "auth0|00005"],
+      [100, "auth0|00006"],
     ])(
       "when create %i users, only one user should be created",
       async (attempts: number, auth0Subject: string) => {
@@ -68,7 +69,7 @@ describe("api/src/middleware/authorization-middleware.ts", () => {
         const users = await User.findAll({ where: { sub: auth0Subject } })
         
         // Assert
-        expect(users.length).toBeLessThanOrEqual(5)
+        expect(users.length).toEqual(1)
         expect(users[0]).toHaveProperty("sub", auth0Subject)
       }
     )
