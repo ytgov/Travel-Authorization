@@ -1,5 +1,6 @@
 import fs from "fs"
 
+import { camelCase } from "lodash"
 import { Knex } from "knex"
 import Papa from "papaparse"
 
@@ -18,6 +19,9 @@ export async function seed(_knex: Knex): Promise<void> {
   }>(fileContent, {
     header: true,
     skipEmptyLines: true,
+    transformHeader(header, _index): string {
+      return camelCase(header)
+    },
   })
 
   await PerDiem.destroy({ where: {} })

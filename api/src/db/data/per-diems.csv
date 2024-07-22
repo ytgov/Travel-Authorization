@@ -1,4 +1,4 @@
-location,claim,amount,currency
+travel_region,claim_type,amount,currency
 Yukon,Breakfast,23.20,CAD
 Yukon,Lunch,21.30,CAD
 Yukon,Dinner,61.45,CAD
