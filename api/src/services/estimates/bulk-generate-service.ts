@@ -1,4 +1,4 @@
-import { clone, isNil, min, times } from "lodash"
+import { clone, isNil, min, startCase, times, toLower } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
 import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from "@/models"
@@ -183,7 +183,8 @@ export class BulkGenerateService extends BaseService {
     for (const { date, claims } of claimsPerDay) {
       const location = BulkGenerate.determineFinalDestination(this.travelSegments)
       const province = location.province
-      const description = claims.join("/")
+      // TODO: consider using i18n to convert claim types to human readable strings
+      const description = claims.map((claim) => startCase(toLower(claim))).join("/")
       const cost = await this.determinePerDiemCost(province, claims)
       if (isNil(cost)) {
         throw new Error(`Missing per diem cost for province=${province} and claims=${claims}`)

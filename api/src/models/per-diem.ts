@@ -9,11 +9,11 @@ import {
 import sequelize from "@/db/db-client"
 
 export enum ClaimTypes {
-  BREAKFAST = "Breakfast",
-  LUNCH = "Lunch",
-  DINNER = "Dinner",
-  INCIDENTALS = "Incidentals",
-  PRIVATE_ACCOMMODATIONS = "Private Accommodations",
+  BREAKFAST = "breakfast",
+  LUNCH = "lunch",
+  DINNER = "dinner",
+  INCIDENTALS = "incidentals",
+  PRIVATE_ACCOMMODATIONS = "private_accommodations",
 }
 
 export enum TravelRegions {
