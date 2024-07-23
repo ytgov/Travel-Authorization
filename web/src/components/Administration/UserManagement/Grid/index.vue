@@ -1,7 +1,5 @@
 <template>
   <div>
-    <BreadcrumbsBar :items="breadcrumbs" />
-
     <h1>User Management</h1>
     <div class="mt-2">
       <v-card class="default px-3 py-3">
@@ -64,12 +62,28 @@ import { mapActions } from "vuex"
 
 import http from "@/api/http-client"
 import { USERS_URL } from "@/urls"
-import BreadcrumbsBar from "@/components/BreadcrumbsBar.vue"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 export default {
   name: "UsersGrid",
-  components: {
-    BreadcrumbsBar,
+  components: {},
+  setup() {
+    useBreadcrumbs([
+      {
+        text: "Administration",
+        to: {
+          name: "AdministrationPage",
+        },
+      },
+      {
+        text: "User Management",
+        to: {
+          name: "Administration/UserManagement/Grid/index",
+        },
+      },
+    ])
+
+    return {}
   },
   data: () => ({
     loading: false,
@@ -101,26 +115,6 @@ export default {
     iteamsPerPage: 10,
     selectedFilter: ["Active"],
     filterOptions: ["Active", "Expired", "Inactive"],
-    breadcrumbs: [
-      {
-        text: "Dasboard",
-        to: {
-          name: "Dashboard",
-        },
-      },
-      {
-        text: "Administration",
-        to: {
-          name: "AdministrationPage",
-        },
-      },
-      {
-        text: "User Management",
-        to: {
-          name: "Administration/UserManagement/Grid/index",
-        },
-      },
-    ],
   }),
   computed: {
     filteredData() {

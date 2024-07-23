@@ -47,12 +47,12 @@ const routes = [
             name: "AdministrationPage",
             component: () => import("@/pages/AdministrationPage.vue"),
           },
+          {
+            path: "users",
+            name: "Administration/UserManagement/Grid/index",
+            component: () => import("@/components/Administration/UserManagement/Grid/index.vue"),
+          },
         ],
-      },
-      {
-        path: "administration/users",
-        name: "Administration/UserManagement/Grid/index",
-        component: () => import("@/components/Administration/UserManagement/Grid/index.vue"),
       },
       {
         path: "administration/users/edit/:id",
