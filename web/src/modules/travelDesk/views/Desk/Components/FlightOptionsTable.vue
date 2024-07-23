@@ -2,7 +2,6 @@
   <div>
     <TitleCard
       class="mt-5"
-      title-width="7rem"
       large-title
       :border="'1px solid #FFEEDD !important'"
     >
@@ -21,7 +20,6 @@
           <template #item.name="{ item, index }">
             <TitleCard
               class="my-5"
-              title-width="4.5rem"
               :border="'1px solid #AAEEFF !important'"
             >
               <template #title>

@@ -30,6 +30,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.15",
     "@rushstack/eslint-patch": "^1.5.1",
+    "@types/luxon": "^3.4.2",
     "@vue/cli": "^4.5.19",
     "@vue/cli-plugin-babel": "^4.5.19",
     "@vue/cli-plugin-router": "^4.5.19",

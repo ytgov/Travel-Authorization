@@ -1,7 +1,6 @@
 <template>
   <TitleCard
     class="mt-10"
-    title-width="11rem"
     large-title
   >
     <template #title>
@@ -313,4 +312,4 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="css" src="@/styles/_travel_desk.css"></style>
+<style scoped></style>

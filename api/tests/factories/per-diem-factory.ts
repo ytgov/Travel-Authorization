@@ -7,8 +7,8 @@ export const perDiemFactory = Factory.define<PerDiem>(({ onCreate }) => {
   onCreate((perDiem) => perDiem.save())
 
   return PerDiem.build({
-    claim: faker.helpers.enumValue(PerDiem.ClaimTypes),
-    location: faker.helpers.enumValue(PerDiem.LocationTypes),
+    claimType: faker.helpers.enumValue(PerDiem.ClaimTypes),
+    travelRegion: faker.helpers.enumValue(PerDiem.TravelRegions),
     amount: parseFloat(faker.finance.amount({ min: 50, max: 200 })),
     currency: faker.helpers.enumValue(PerDiem.CurrencyTypes),
   })

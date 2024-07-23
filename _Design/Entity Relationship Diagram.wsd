@@ -89,11 +89,11 @@ entity "locations" {
   updated_at : timestamptz
 }
 
-entity "perDiems" {
+entity "per_diems" {
   * id : serial4
   --
-  claim : varchar(255)
-  location : varchar(255)
+  claim_type : varchar(255)
+  travel_region : varchar(255)
   amount : float4
   currency : varchar(255)
 }
@@ -177,6 +177,17 @@ entity "transportMethod" {
   * id : serial4
   --
   method : varchar(255)
+}
+
+entity "travel_allowances" {
+  * id : serial4
+  --
+  * allowance_type : varchar(255)
+  * amount : float4
+  * currency : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_authorization_action_logs" {
@@ -503,4 +514,6 @@ travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorization
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
 travelDeskFlightSegment }o--|| travelDeskFlightOption
+expenses .. per_diems : estimates generation
+expenses .. travel_allowances : estimates generation
 @enduml

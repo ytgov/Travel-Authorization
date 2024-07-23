@@ -2,7 +2,6 @@
   <div>
     <TitleCard
       class="mt-5"
-      title-width="7.5rem"
       large-title
     >
       <template #title>

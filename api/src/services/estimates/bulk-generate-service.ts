@@ -1,17 +1,19 @@
-import { clone, isNil, max, min, times } from "lodash"
+import { clone, isNil, min, startCase, times, toLower } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
-import { DistanceMatrix, Expense, Location, PerDiem, Stop, TravelSegment } from "@/models"
+import {
+  DistanceMatrix,
+  Expense,
+  Location,
+  PerDiem,
+  Stop,
+  TravelAllowance,
+  TravelSegment,
+} from "@/models"
 
 import BaseService from "@/services/base-service"
 import { BulkGenerate } from "@/services/estimates"
-import { ClaimTypes, LocationTypes } from "@/models/per-diem"
-
-const MAXIUM_AIRCRAFT_ALLOWANCE = 1000
-const AIRCRAFT_ALLOWANCE_PER_SEGMENT = 350
-const DISTANCE_ALLOWANCE_PER_KILOMETER = 0.605
-const HOTEL_ALLOWANCE_PER_NIGHT = 250
-const PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = 50
+import { ClaimTypes, TravelRegions } from "@/models/per-diem"
 
 type BulkGenerateServiceOptions = {
   daysOffTravelStatus: number
@@ -23,7 +25,12 @@ export class BulkGenerateService extends BaseService {
   private daysOffTravelStatus: number
   private firstTravelSegment: TravelSegment
   private lastTravelSegment: TravelSegment
-  private aircraftAllowanceRemaining: number
+
+  private aircraftAllowanceRemaining = 0
+  private aircraftAllowancePerSegment = 0
+  private distanceAllowancePerKilometer = 0
+  private hotelAllowancePerNight = 0
+  private privateAccommodationAllowancePerNight = 0
 
   constructor(
     travelAuthorizationId: number,
@@ -36,10 +43,15 @@ export class BulkGenerateService extends BaseService {
     this.daysOffTravelStatus = daysOffTravelStatus
     this.firstTravelSegment = this.travelSegments[0]
     this.lastTravelSegment = this.travelSegments[this.travelSegments.length - 1]
-    this.aircraftAllowanceRemaining = MAXIUM_AIRCRAFT_ALLOWANCE
   }
 
   async perform(): Promise<Expense[]> {
+    await this.initializeAircraftAllowanceRemaining()
+    await this.initializeAircraftAllowancePerSegment()
+    await this.initializeDistanceAllowancePerKilometer()
+    await this.initializeHotelAllowancePerNight()
+    await this.initializePrivateAccommodationAllowancePerNight()
+
     const estimates: CreationAttributes<Expense>[] = []
     let index = 0
     for (const travelSegment of this.travelSegments) {
@@ -147,7 +159,7 @@ export class BulkGenerateService extends BaseService {
 
     const numberOfNights = BulkGenerate.calculateNumberOfNights(arrivalAt, departureAt)
     return times(numberOfNights, (index) => {
-      let stayedAt = clone(arrivalAt)
+      const stayedAt = clone(arrivalAt)
       stayedAt.setDate(arrivalAt.getDate() + index)
 
       const cost = this.determineAccommodationCost(accommodationType)
@@ -179,11 +191,12 @@ export class BulkGenerateService extends BaseService {
 
     const claimsPerDay = BulkGenerate.determineClaimsPerDay(travelStartAt, travelEndAt)
 
-    let estimates = []
-    for (let { date, claims } of claimsPerDay) {
+    const estimates = []
+    for (const { date, claims } of claimsPerDay) {
       const location = BulkGenerate.determineFinalDestination(this.travelSegments)
       const province = location.province
-      const description = claims.join("/")
+      // TODO: consider using i18n to convert claim types to human readable strings
+      const description = claims.map((claim) => startCase(toLower(claim))).join("/")
       const cost = await this.determinePerDiemCost(province, claims)
       if (isNil(cost)) {
         throw new Error(`Missing per diem cost for province=${province} and claims=${claims}`)
@@ -224,7 +237,7 @@ export class BulkGenerateService extends BaseService {
   private determineAicraftAllowance(): number {
     const allowance = min([
       this.aircraftAllowanceRemaining,
-      AIRCRAFT_ALLOWANCE_PER_SEGMENT,
+      this.aircraftAllowancePerSegment,
     ]) as number
     this.aircraftAllowanceRemaining -= allowance
     return allowance
@@ -240,45 +253,110 @@ export class BulkGenerateService extends BaseService {
     if (isNil(distanceMatrix) || isNil(distanceMatrix.kilometers)) return 0
 
     const { kilometers } = distanceMatrix
-    return kilometers * DISTANCE_ALLOWANCE_PER_KILOMETER
+    return kilometers * this.distanceAllowancePerKilometer
   }
 
   private determineAccommodationCost(accommodationType: string): number {
     switch (accommodationType) {
       case Stop.AccommodationTypes.HOTEL:
-        return 1 * HOTEL_ALLOWANCE_PER_NIGHT
+        return 1 * this.hotelAllowancePerNight
       // TODO: determine if Private Accommodation is part of the max daily per-diem
       case Stop.AccommodationTypes.PRIVATE:
-        return 1 * PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT
+        return 1 * this.privateAccommodationAllowancePerNight
       default:
         return 0
     }
   }
 
-  private async determinePerDiemCost(province: string, claims: ClaimTypes[]): Promise<number> {
-    const location = this.determineLocationFromProvince(province)
+  private async determinePerDiemCost(province: string, claimTypes: ClaimTypes[]): Promise<number> {
+    const travelRegion = this.determineTravelRegionFromProvince(province)
 
     return PerDiem.sum("amount", {
       where: {
-        claim: { [Op.in]: claims },
-        location,
+        claimType: { [Op.in]: claimTypes },
+        travelRegion,
       },
     })
   }
 
-  private determineLocationFromProvince(province: string): LocationTypes {
+  private determineTravelRegionFromProvince(province: string): TravelRegions {
     switch (province) {
       case "YT":
-        return PerDiem.LocationTypes.YUKON
+        return PerDiem.TravelRegions.YUKON
       case "NT":
-        return PerDiem.LocationTypes.NWT
+        return PerDiem.TravelRegions.NWT
       case "NU":
-        return PerDiem.LocationTypes.NUNAVUT
+        return PerDiem.TravelRegions.NUNAVUT
       // TODO: Handle Alaska and the US in the future
       // I don't see any destination data for this yet, so leaving for now.
       default:
-        return PerDiem.LocationTypes.CANADA
+        return PerDiem.TravelRegions.CANADA
     }
+  }
+
+  private async initializeAircraftAllowanceRemaining(): Promise<void> {
+    const maxiumAircraftAllowance = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.MAXIUM_AIRCRAFT_ALLOWANCE,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(maxiumAircraftAllowance)) {
+      throw new Error("Missing maximum aircraft allowance")
+    }
+    this.aircraftAllowanceRemaining = maxiumAircraftAllowance.amount
+  }
+
+  private async initializeAircraftAllowancePerSegment(): Promise<void> {
+    const aircraftAllowancePerSegment = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.AIRCRAFT_ALLOWANCE_PER_SEGMENT,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(aircraftAllowancePerSegment)) {
+      throw new Error("Missing aircraft allowance per segment")
+    }
+    this.aircraftAllowancePerSegment = aircraftAllowancePerSegment.amount
+  }
+
+  private async initializeDistanceAllowancePerKilometer(): Promise<void> {
+    const distanceAllowancePerKilometer = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.DISTANCE_ALLOWANCE_PER_KILOMETER,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(distanceAllowancePerKilometer)) {
+      throw new Error("Missing distance allowance per kilometer")
+    }
+    this.distanceAllowancePerKilometer = distanceAllowancePerKilometer.amount
+  }
+
+  private async initializeHotelAllowancePerNight(): Promise<void> {
+    const hotelAllowancePerNight = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.HOTEL_ALLOWANCE_PER_NIGHT,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(hotelAllowancePerNight)) {
+      throw new Error("Missing hotel allowance per night")
+    }
+    this.hotelAllowancePerNight = hotelAllowancePerNight.amount
+  }
+
+  private async initializePrivateAccommodationAllowancePerNight(): Promise<void> {
+    const privateAccommodationAllowancePerNight = await TravelAllowance.findOne({
+      where: {
+        allowanceType: TravelAllowance.AllowanceTypes.PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT,
+        currency: TravelAllowance.CurrencyTypes.CAD,
+      },
+    })
+    if (isNil(privateAccommodationAllowancePerNight)) {
+      throw new Error("Missing private accommodation allowance per night")
+    }
+    this.privateAccommodationAllowancePerNight = privateAccommodationAllowancePerNight.amount
   }
 }
 
