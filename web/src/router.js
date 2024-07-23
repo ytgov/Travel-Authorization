@@ -38,9 +38,16 @@ const routes = [
         component: () => import("@/pages/UserProfilePage"),
       },
       {
+        // TODO: push readcrumbs into higher layout
         path: "administration",
-        name: "AdministrationPage",
-        component: () => import("@/pages/AdministrationPage.vue"),
+        component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
+        children: [
+          {
+            path: "",
+            name: "AdministrationPage",
+            component: () => import("@/pages/AdministrationPage.vue"),
+          },
+        ],
       },
       {
         path: "administration/users",
