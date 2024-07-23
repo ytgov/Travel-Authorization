@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Breadcrumbs />
+    <!-- TODO: move this to the layout or App level -->
+    <BreadcrumbsBar :items="breadcrumbs" />
+
     <h1>Administration</h1>
 
     <v-row>
@@ -27,8 +29,8 @@
           <v-list class="pb-0 pt-0">
             <v-list-item-group>
               <v-list-item
-                v-for="(item, i) in items"
-                :key="i"
+                v-for="(item, index) in items"
+                :key="index"
                 :href="item.url"
               >
                 <v-list-item-icon>
@@ -48,8 +50,8 @@
           <v-list class="pb-0 pt-0">
             <v-list-item-group>
               <v-list-item
-                v-for="(lookup, i) in lookups"
-                :key="i"
+                v-for="(lookup, index) in lookups"
+                :key="index"
                 :href="lookup.url"
               >
                 <v-list-item-icon>
@@ -67,7 +69,7 @@
   </div>
 </template>
 <script setup>
-import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import BreadcrumbsBar from "@/components/BreadcrumbsBar.vue"
 
 const items = [
   {
@@ -102,6 +104,21 @@ const lookups = [
     icon: "mdi-airplane",
     text: "Travel Agents",
     url: "/administration/TravelAgents",
+  },
+]
+
+const breadcrumbs = [
+  {
+    text: "Dasboard",
+    to: {
+      name: "Dashboard",
+    },
+  },
+  {
+    text: "Administration",
+    to: {
+      name: "AdministrationPage",
+    },
   },
 ]
 </script>
