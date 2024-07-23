@@ -38,18 +38,6 @@ const routes = [
         path: "profile",
         component: () => import("@/pages/UserProfilePage"),
       },
-
-      // CONSIDER: moving these into modules, or moving all route definitions into this file
-      {
-        path: "admin/users/view/:id",
-        name: "AdminUserView",
-        component: AdminUserForm,
-      },
-      {
-        path: "administration/users/edit/:id",
-        name: "AdminUserEdit",
-        component: AdminUserForm,
-      },
       {
         path: "administration",
         name: "AdministrationPage",
@@ -60,6 +48,12 @@ const routes = [
         name: "User Management",
         component: UserManagement,
       },
+      {
+        path: "administration/users/edit/:id",
+        name: "AdminUserEdit",
+        component: AdminUserForm,
+      },
+
       {
         path: "administration/flightEstimate",
         name: "FlightEstimate",
