@@ -1,9 +1,5 @@
 <template>
   <div>
-    <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
-      ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to Administration</v-btn
-    > -->
-
     <BreadcrumbsBar :items="breadcrumbs" />
 
     <h1>User Management</h1>
