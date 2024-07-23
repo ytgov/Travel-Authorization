@@ -62,8 +62,8 @@ const menuCardLists = [
       },
       {
         icon: "mdi-bug",
-        title: "YG Rates",
-        to: { name: "YGRates" },
+        title: "Travel Rates",
+        to: { name: "administration/TravelRatesPage" },
       },
     ],
   },

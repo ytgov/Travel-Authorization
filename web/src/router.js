@@ -7,7 +7,6 @@ import AdminUserForm from "@/components/Administration/UserManagement/UserCompon
 import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
 import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
 import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
-import YGRates from "@/components/Administration/RatesEstimateManagement/YGRates"
 import TravelAgents from "@/components/Administration/LookupTableManagement/TravelAgents"
 
 import preapprovedRouter from "@/modules/preapproved/router"
@@ -58,6 +57,11 @@ const routes = [
             component: () =>
               import("@/components/Administration/LookupTableManagement/Purpose.vue"),
           },
+          {
+            path: "/administration/travel-rates",
+            name: "administration/TravelRatesPage",
+            component: () => import("@/pages/administration/TravelRatesPage.vue"),
+          },
         ],
       },
       {
@@ -80,11 +84,6 @@ const routes = [
         path: "administration/rentalCarEstimates",
         name: "RentalCarEstimates",
         component: RentalCarEstimates,
-      },
-      {
-        path: "administration/ygRates",
-        name: "YGRates",
-        component: YGRates,
       },
       {
         path: "administration/TravelAgents",
