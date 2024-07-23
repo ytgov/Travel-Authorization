@@ -52,6 +52,12 @@ const routes = [
             name: "Administration/UserManagement/Grid/index",
             component: () => import("@/components/Administration/UserManagement/Grid/index.vue"),
           },
+          {
+            path: "/administration/purpose",
+            name: "Administration/LookupTableManagement/Purpose",
+            component: () =>
+              import("@/components/Administration/LookupTableManagement/Purpose.vue"),
+          },
         ],
       },
       {
