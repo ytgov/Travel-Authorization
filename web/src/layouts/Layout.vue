@@ -142,7 +142,7 @@
               </v-list-item-icon>
               <v-list-item-title>My profile</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/administration">
+            <v-list-item :to="{ name: 'AdministrationPage' }">
               <v-list-item-icon>
                 <v-icon>mdi-cogs</v-icon>
               </v-list-item-icon>

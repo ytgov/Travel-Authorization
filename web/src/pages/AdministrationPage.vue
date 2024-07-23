@@ -1,6 +1,6 @@
 <template>
   <div>
-    <breadcrumbs />
+    <Breadcrumbs />
     <h1>Administration</h1>
 
     <v-row>
@@ -8,10 +8,10 @@
         <v-card class="default">
           <v-card-title>User Management</v-card-title>
           <v-list class="pb-0 pt-0">
-            <v-list-item-group v-model="usermodel">
-              <v-list-item @click="goTo('/administration/users')">
+            <v-list-item-group>
+              <v-list-item :to="{ name: 'User Management' }">
                 <v-list-item-icon>
-                  <v-icon v-text="'mdi-account-group'"></v-icon>
+                  <v-icon>mdi-account-group</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>User Management</v-list-item-title>
@@ -25,17 +25,17 @@
         <v-card class="default">
           <v-card-title>Rates and Estimates</v-card-title>
           <v-list class="pb-0 pt-0">
-            <v-list-item-group v-model="tablemodel">
+            <v-list-item-group>
               <v-list-item
                 v-for="(item, i) in items"
                 :key="i"
-                @click="goTo(item.url)"
+                :href="item.url"
               >
                 <v-list-item-icon>
-                  <v-icon v-text="item.icon"></v-icon>
+                  <v-icon>{{ item.icon }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title v-text="item.text"></v-list-item-title>
+                  <v-list-item-title>{{ item.text }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -46,17 +46,17 @@
         <v-card class="default">
           <v-card-title>Look up Management</v-card-title>
           <v-list class="pb-0 pt-0">
-            <v-list-item-group v-model="tablemodel">
+            <v-list-item-group>
               <v-list-item
                 v-for="(lookup, i) in lookups"
                 :key="i"
-                @click="goTo(lookup.url)"
+                :href="lookup.url"
               >
                 <v-list-item-icon>
-                  <v-icon v-text="lookup.icon"></v-icon>
+                  <v-icon>{{ lookup.icon }}</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title v-text="lookup.text"></v-list-item-title>
+                  <v-list-item-title>{{ lookup.text }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -72,9 +72,6 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue"
 export default {
   components: { Breadcrumbs },
   data: () => ({
-    icon: null,
-    usermodel: null,
-    tablemodel: null,
     items: [
       {
         icon: "mdi-wallet-membership",
@@ -109,13 +106,7 @@ export default {
         url: "/administration/TravelAgents",
       },
     ],
-    model: 1,
   }),
-  methods: {
-    goTo(url) {
-      if (url == "") return
-      this.$router.push(url)
-    },
-  },
+  methods: {},
 }
 </script>
