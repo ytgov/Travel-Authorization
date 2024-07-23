@@ -66,47 +66,42 @@
     </v-row>
   </div>
 </template>
-<script>
+<script setup>
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 
-export default {
-  components: { Breadcrumbs },
-  data: () => ({
-    items: [
-      {
-        icon: "mdi-wallet-membership",
-        text: "Flight Estimate",
-        url: "/administration/FlightEstimate",
-      },
-      {
-        icon: "mdi-database",
-        text: "Pool Car Costs",
-        url: "/administration/PoolCarCost",
-      },
-      {
-        icon: "mdi-shape",
-        text: "Rental Car Estimates",
-        url: "/administration/RentalCarEstimates",
-      },
-      {
-        icon: "mdi-bug",
-        text: "YG Rates",
-        url: "/administration/YGRates",
-      },
-    ],
-    lookups: [
-      {
-        icon: "mdi-wallet-membership",
-        text: "Purpose",
-        url: "/administration/Purpose",
-      },
-      {
-        icon: "mdi-airplane",
-        text: "Travel Agents",
-        url: "/administration/TravelAgents",
-      },
-    ],
-  }),
-  methods: {},
-}
+const items = [
+  {
+    icon: "mdi-wallet-membership",
+    text: "Flight Estimate",
+    url: "/administration/FlightEstimate",
+  },
+  {
+    icon: "mdi-database",
+    text: "Pool Car Costs",
+    url: "/administration/PoolCarCost",
+  },
+  {
+    icon: "mdi-shape",
+    text: "Rental Car Estimates",
+    url: "/administration/RentalCarEstimates",
+  },
+  {
+    icon: "mdi-bug",
+    text: "YG Rates",
+    url: "/administration/YGRates",
+  },
+]
+
+const lookups = [
+  {
+    icon: "mdi-wallet-membership",
+    text: "Purpose",
+    url: "/administration/Purpose",
+  },
+  {
+    icon: "mdi-airplane",
+    text: "Travel Agents",
+    url: "/administration/TravelAgents",
+  },
+]
 </script>
