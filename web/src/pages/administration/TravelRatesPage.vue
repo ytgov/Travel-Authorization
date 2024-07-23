@@ -1,6 +1,13 @@
 <template>
   <v-container>
-    <h2>Meals and Incidental Expenses for Employees on Travel Status</h2>
+    <h2 class="d-flex justify-space-between align-center">
+      Meals and Incidental Expenses for Employees on Travel Status
+      <v-btn
+        class="primary"
+        :to="{ name: 'administration/TravelRatesEditPage' }"
+        >Edit</v-btn
+      >
+    </h2>
 
     <FullDayPerDiemsCard />
     <PartialDaysPerDiemsCard class="mt-6" />
