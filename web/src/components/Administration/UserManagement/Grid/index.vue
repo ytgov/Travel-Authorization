@@ -117,7 +117,6 @@ export default {
         to: {
           name: "AdministrationPage",
         },
-        exact: true,
       },
       {
         text: "User Management",
