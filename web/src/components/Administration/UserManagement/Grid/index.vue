@@ -4,7 +4,7 @@
       ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to Administration</v-btn
     > -->
 
-    <Breadcrumbs />
+    <BreadcrumbsBar :items="breadcrumbs" />
 
     <h1>User Management</h1>
     <div class="mt-2">
@@ -68,12 +68,12 @@ import { mapActions } from "vuex"
 
 import http from "@/api/http-client"
 import { USERS_URL } from "@/urls"
-import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import BreadcrumbsBar from "@/components/BreadcrumbsBar.vue"
 
 export default {
   name: "UsersGrid",
   components: {
-    Breadcrumbs,
+    BreadcrumbsBar,
   },
   data: () => ({
     loading: false,
@@ -105,6 +105,27 @@ export default {
     iteamsPerPage: 10,
     selectedFilter: ["Active"],
     filterOptions: ["Active", "Expired", "Inactive"],
+    breadcrumbs: [
+      {
+        text: "Dasboard",
+        to: {
+          name: "Dashboard",
+        },
+      },
+      {
+        text: "Administration",
+        to: {
+          name: "AdministrationPage",
+        },
+        exact: true,
+      },
+      {
+        text: "User Management",
+        to: {
+          name: "Administration/UserManagement/Grid/index",
+        },
+      },
+    ],
   }),
   computed: {
     filteredData() {

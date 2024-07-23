@@ -11,7 +11,7 @@
           <v-card-title>User Management</v-card-title>
           <v-list class="pb-0 pt-0">
             <v-list-item-group>
-              <v-list-item :to="{ name: 'User Management' }">
+              <v-list-item :to="{ name: 'Administration/UserManagement/Grid/index' }">
                 <v-list-item-icon>
                   <v-icon>mdi-account-group</v-icon>
                 </v-list-item-icon>
