@@ -1,8 +1,9 @@
 import { ModelStatic, Op, WhereOptions } from "sequelize"
 
-import BasePolicy from "./base-policy"
-
+import { Path } from "@/utils/deep-pick"
 import { User, TravelAuthorization } from "@/models"
+import UsersPolicy from "@/policies/users-policy"
+import BasePolicy from "@/policies/base-policy"
 
 export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> {
   create(): boolean {
@@ -69,7 +70,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
   }
 
   // NOTE: userId is always restricted after creation.
-  permittedAttributes(): string[] {
+  permittedAttributes(): Path[] {
     return [
       "preApprovalProfileId",
       "purposeId",
@@ -97,22 +98,62 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
       "travelAdvanceInCents",
       "allTravelWithinTerritory",
 
-      // TODO: support limiting nested attributes using the appropriate policy
-      // association attributes
-      "stops",
-      "expenses",
-      "estimates",
+      // TODO: use permitedAttributes from relevant policies once they exist
+      {
+        stops: ["locationId", "departureDate", "departureTime", "transport", "accommodationType"],
+      },
+      {
+        expenses: [
+          "expenseType",
+          "description",
+          "date",
+          "cost",
+          "currency",
+          "receiptImage",
+          "fileName",
+        ],
+      },
+      {
+        estimates: [
+          "expenseType",
+          "description",
+          "date",
+          "cost",
+          "currency",
+          "receiptImage",
+          "fileName",
+        ],
+      },
     ]
   }
 
-  permittedAttributesForCreate() {
-    const permittedAttributes: string[] = [...this.permittedAttributes(), "slug", "stopsAttributes"]
+  permittedAttributesForCreate(): Path[] {
+    const permittedAttributes = [
+      ...this.permittedAttributes(),
+      "slug",
+      // TODO: use permitedAttributes from relevant policies once they exist
+      {
+        stopsAttributes: [
+          "locationId",
+          "departureDate",
+          "departureTime",
+          "transport",
+          "accommodationType",
+        ],
+      },
+    ]
 
     if (this.user.roles.includes(User.Roles.ADMIN)) {
-      permittedAttributes.push("userId", "userAttributes")
+      permittedAttributes.push("userId", {
+        userAttributes: this.userPolicy.permittedAttributesForCreate(),
+      })
     }
 
     return permittedAttributes
+  }
+
+  private get userPolicy(): UsersPolicy {
+    return new UsersPolicy(this.user, User.build())
   }
 }
 

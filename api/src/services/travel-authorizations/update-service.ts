@@ -4,7 +4,7 @@ import { isEmpty } from "lodash"
 import db from "@/db/db-client"
 import BaseService from "@/services/base-service"
 
-import { Expense, Stop, TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
+import { Expense, Stop, TravelAuthorization, User } from "@/models"
 import { StopsService, ExpensesService, Stops } from "@/services"
 
 type StopsCreationAttributes = CreationAttributes<Stop>[]
@@ -58,7 +58,7 @@ export class UpdateService extends BaseService {
     })
   }
 
-  isValidStopCount(attributes: Partial<TravelAuthorization>, stops: Partial<Stop>[]): Boolean {
+  isValidStopCount(attributes: Partial<TravelAuthorization>, stops: Partial<Stop>[]): boolean {
     if (attributes.oneWayTrip) {
       return stops.length === 2
     } else if (attributes.multiStop) {
