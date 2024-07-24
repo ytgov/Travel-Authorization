@@ -1,13 +1,18 @@
+import { Model, Attributes, FindOptions } from "sequelize"
+
 import { User } from "@/models"
 import { Path, deepPick } from "@/utils/deep-pick"
 
 export type Actions = "show" | "create" | "update" | "destroy"
 
-export class BasePolicy<Model> {
+/**
+ * See api/src/policies/policy-factory.ts for policy with scope helpers
+ */
+export class BasePolicy<M extends Model> {
   protected user: User
-  protected record: Model
+  protected record: M
 
-  constructor(user: User, record: Model) {
+  constructor(user: User, record: M) {
     this.user = user
     this.record = record
   }
@@ -28,13 +33,16 @@ export class BasePolicy<Model> {
     return false
   }
 
-  // TODO: add scope method to base policy, see travel-authorizations-policy.ts
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static policyScope<M extends Model>(user: User, ...args: unknown[]): FindOptions<Attributes<M>> {
+    throw new Error("Derived classes must implement policyScope method")
+  }
 
-  permitAttributes(record: Partial<Model>): Partial<Model> {
+  permitAttributes(record: Partial<M>): Partial<M> {
     return deepPick(record, this.permittedAttributes())
   }
 
-  permitAttributesForCreate(record: Partial<Model>): Partial<Model> {
+  permitAttributesForCreate(record: Partial<M>): Partial<M> {
     if (this.permittedAttributesForCreate !== BasePolicy.prototype.permittedAttributesForCreate) {
       return deepPick(record, this.permittedAttributesForCreate())
     } else {
@@ -42,7 +50,7 @@ export class BasePolicy<Model> {
     }
   }
 
-  permitAttributesForUpdate(record: Partial<Model>): Partial<Model> {
+  permitAttributesForUpdate(record: Partial<M>): Partial<M> {
     if (this.permittedAttributesForUpdate !== BasePolicy.prototype.permittedAttributesForUpdate) {
       return deepPick(record, this.permittedAttributesForUpdate())
     } else {
