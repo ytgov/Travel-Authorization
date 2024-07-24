@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <h2>Meals and Incidental Expenses for Employees on Travel Status</h2>
+    <h2>Edit Meals and Incidental Expenses for Employees on Travel Status</h2>
 
-    TODO: add edit table for per-diems
+    <EditPerDiemsCard />
     <br />
     TODO: add edit table for travel allowances
   </v-container>
@@ -10,6 +10,8 @@
 
 <script setup>
 import useBreadcrumbs from "@/use/use-breadcrumbs"
+
+import EditPerDiemsCard from "@/components/per-diems/EditPerDiemsCard.vue"
 
 useBreadcrumbs([
   {
