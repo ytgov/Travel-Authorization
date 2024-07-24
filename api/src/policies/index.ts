@@ -1,6 +1,7 @@
 export { type BaseScopeOptions } from "./policy-factory"
 export { ExpensesPolicy } from "./expenses-policy"
 export { GeneralLedgerCodingsPolicy } from "./general-ledger-codings-policy"
+export { PerDiemsPolicy } from "./per-diems-policy"
 export { TravelAuthorizationPreApprovalProfilesPolicy } from "./travel-authorization-pre-approval-profiles-policy"
 export { TravelAuthorizationPreApprovalsPolicy } from "./travel-authorization-pre-approvals-policy"
 export { TravelAuthorizationsPolicy } from "./travel-authorizations-policy"

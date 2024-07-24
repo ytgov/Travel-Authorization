@@ -10,6 +10,7 @@ import {
   ExpensesController,
   GeneralLedgerCodingsController,
   LocationsController,
+  PerDiemsController,
   TravelAuthorizationPreApprovalProfilesController,
   TravelAuthorizationPreApprovalsController,
   Qa,
@@ -82,6 +83,12 @@ router
   .route("/api/expenses/:expenseId/upload")
   .get(Expenses.UploadController.show)
   .post(Expenses.UploadController.create)
+
+router.route("/api/per-diems").get(PerDiemsController.index)
+router
+  .route("/api/per-diems/:perDiemId")
+  .get(PerDiemsController.show)
+  .patch(PerDiemsController.update)
 
 router.route("/api/stops").get(StopsController.index)
 
