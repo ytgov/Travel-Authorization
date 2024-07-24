@@ -6,7 +6,7 @@
 
     <v-data-table
       :headers="headers"
-      :items="perDiems"
+      :items="perDiemsAsMatrix"
       :loading="isLoading"
     >
       <template #top>
@@ -14,6 +14,36 @@
           ref="editDialog"
           @saved="refresh"
         /> -->
+      </template>
+      <template #item.claimType="{ value }">
+        {{ t(`per_diem.claim_type.${value}`, { $default: value }) }}
+      </template>
+      <template #item.yukonAndAlaska="{ item }">
+        <template
+          v-if="item[PER_DIEM_TRAVEL_REGIONS.YUKON] === item[PER_DIEM_TRAVEL_REGIONS.ALASKA]"
+        >
+          {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.YUKON], "CAD") }}
+        </template>
+        <template v-else>
+          {{
+            [
+              formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.YUKON], "CAD"),
+              formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.ALASKA], "USD"),
+            ].join(" / ")
+          }}
+        </template>
+      </template>
+      <template #item.nwt="{ item }">
+        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.NWT], "CAD") }}
+      </template>
+      <template #item.nunavut="{ item }">
+        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.NUNAVUT], "CAD") }}
+      </template>
+      <template #item.restOfCanada="{ item }">
+        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.CANADA], "CAD") }}
+      </template>
+      <template #item.restOfUsa="{ item }">
+        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.US], "USD") }}
       </template>
       <template #item.actions="{ item }">
         <div class="d-flex justify-end">
@@ -32,8 +62,13 @@
 
 <script setup>
 import { computed, ref } from "vue"
+import { groupBy, mapValues } from "lodash"
+import { useI18n } from "@/plugins/vue-i18n-plugin"
 
-import usePerDiems from "@/use/use-per-diems"
+import { MAX_PER_PAGE } from "@/api/base-api"
+import usePerDiems, { PER_DIEM_TRAVEL_REGIONS } from "@/use/use-per-diems"
+
+const { t } = useI18n()
 
 const headers = ref([
   {
@@ -42,7 +77,7 @@ const headers = ref([
   },
   {
     text: "Yukon/Alaska",
-    value: "yukon/alaska",
+    value: "yukonAndAlaska",
   },
   {
     text: "NWT",
@@ -66,14 +101,41 @@ const headers = ref([
   },
 ])
 
-const perDiemsQuery = computed(() => ({}))
+const perDiemsQuery = computed(() => ({
+  perPage: MAX_PER_PAGE,
+}))
 const { perDiems, isLoading } = usePerDiems(perDiemsQuery)
+
+const perDiemsAsMatrix = computed(() => {
+  const perDiemsByClaimType = groupBy(perDiems.value, "claimType")
+  const matrix = mapValues(perDiemsByClaimType, (items, claimType) => {
+    const row = { claimType }
+    items.forEach(({ amount, travelRegion }) => {
+      row[travelRegion] = amount
+    })
+    return row
+  })
+
+  return Object.values(matrix)
+})
 
 /** @type {import("vue").Ref<InstanceType<typeof EditPerDiemDialog> | null>} */
 const editDialog = ref(null)
 
 function showEditDialog(flightRequest) {
   editDialog.value?.show(flightRequest)
+}
+
+function formatCurrency(amount, currency = "CAD") {
+  if (amount === undefined) {
+    return ""
+  }
+
+  const formatter = new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency,
+  })
+  return formatter.format(amount)
 }
 </script>
 

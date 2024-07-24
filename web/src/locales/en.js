@@ -41,4 +41,13 @@ export default {
       rental_car: "Rental Car",
     },
   },
+  per_diem: {
+    claim_type: {
+      breakfast: "Breakfast",
+      lunch: "Lunch",
+      dinner: "Dinner",
+      incidentals: "Incidentals",
+      private_accommodations: "Private Accommodations",
+    },
+  },
 }
