@@ -1,5 +1,7 @@
 import http from "@/api/http-client"
 
+/** @typedef {import('@/api/base-api.js').Policy} Policy */
+
 /** Keep in sync with api/src/models/per-diem.ts */
 export const PER_DIEM_CLAIM_TYPES = Object.freeze({
   BREAKFAST: "breakfast",
@@ -78,6 +80,7 @@ export const perDiemsApi = {
    * @param {number} perDiemId
    * @returns {{
    *   perDiem: PerDiem;
+   *   policy: Policy;
    * }}
    */
   async get(perDiemId) {
