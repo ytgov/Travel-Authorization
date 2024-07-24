@@ -7,6 +7,7 @@ import fileUpload from "express-fileupload"
 import { DB_HOST, DB_NAME, DB_USER, FRONTEND_URL, NODE_ENV } from "@/config"
 import { requestLoggerMiddleware } from "@/middleware"
 import logger from "@/utils/logger"
+import enhancedQsDecoder from "@/utils/enhanced-qs-decoder"
 import router from "@/routes"
 
 const app = express()
@@ -39,6 +40,7 @@ app.use(
   })
 )
 
+app.set("query parser", enhancedQsDecoder)
 // for parsing application/json
 app.use(express.json())
 // for parsing application/x-www-form-urlencoded
