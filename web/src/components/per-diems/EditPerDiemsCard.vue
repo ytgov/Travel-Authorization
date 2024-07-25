@@ -10,10 +10,10 @@
       :loading="isLoading"
     >
       <template #top>
-        <!-- <EditPerDiemsDialog
+        <EditPerDiemDialog
           ref="editDialog"
           @saved="refresh"
-        /> -->
+        />
       </template>
       <template #item.claimType="{ value }">
         {{ t(`per_diem.claim_type.${value}`, { $default: value }) }}
@@ -68,6 +68,13 @@ import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { MAX_PER_PAGE } from "@/api/base-api"
 import usePerDiems, { PER_DIEM_TRAVEL_REGIONS } from "@/use/use-per-diems"
 
+import EditPerDiemDialog from "@/components/per-diems/EditPerDiemDialog.vue"
+
+/**
+ * @template [T=any]
+ * @typedef {import("vue").Ref<T>} Ref
+ */
+
 const { t } = useI18n()
 
 const headers = ref([
@@ -104,7 +111,7 @@ const headers = ref([
 const perDiemsQuery = computed(() => ({
   perPage: MAX_PER_PAGE,
 }))
-const { perDiems, isLoading } = usePerDiems(perDiemsQuery)
+const { perDiems, isLoading, refresh } = usePerDiems(perDiemsQuery)
 
 const perDiemsAsMatrix = computed(() => {
   const perDiemsByClaimType = groupBy(perDiems.value, "claimType")
@@ -119,7 +126,7 @@ const perDiemsAsMatrix = computed(() => {
   return Object.values(matrix)
 })
 
-/** @type {import("vue").Ref<InstanceType<typeof EditPerDiemDialog> | null>} */
+/** @type {Ref<InstanceType<typeof EditPerDiemDialog> | null>} */
 const editDialog = ref(null)
 
 function showEditDialog(flightRequest) {
