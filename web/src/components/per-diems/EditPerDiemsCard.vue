@@ -5,45 +5,28 @@
     </v-card-title>
 
     <v-data-table
+      :page.sync="page"
+      :per-page.sync="perPage"
       :headers="headers"
-      :items="perDiemsAsMatrix"
+      :items="perDiems"
       :loading="isLoading"
+      :server-items-length="totalCount"
+      @dblclick:row="(_, { item }) => showEditDialog(item)"
     >
       <template #top>
         <EditPerDiemDialog
-          ref="editDialog"
+          ref="editPerDiemDialog"
           @saved="refresh"
         />
       </template>
       <template #item.claimType="{ value }">
         {{ t(`per_diem.claim_type.${value}`, { $default: value }) }}
       </template>
-      <template #item.yukonAndAlaska="{ item }">
-        <template
-          v-if="item[PER_DIEM_TRAVEL_REGIONS.YUKON] === item[PER_DIEM_TRAVEL_REGIONS.ALASKA]"
-        >
-          {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.YUKON], "CAD") }}
-        </template>
-        <template v-else>
-          {{
-            [
-              formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.YUKON], "CAD"),
-              formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.ALASKA], "USD"),
-            ].join(" / ")
-          }}
-        </template>
+      <template #item.travelRegion="{ value }">
+        {{ t(`per_diem.travel_region.${value}`, { $default: value }) }}
       </template>
-      <template #item.nwt="{ item }">
-        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.NWT], "CAD") }}
-      </template>
-      <template #item.nunavut="{ item }">
-        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.NUNAVUT], "CAD") }}
-      </template>
-      <template #item.restOfCanada="{ item }">
-        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.CANADA], "CAD") }}
-      </template>
-      <template #item.restOfUsa="{ item }">
-        {{ formatCurrency(item[PER_DIEM_TRAVEL_REGIONS.US], "USD") }}
+      <template #item.amount="{ item, value }">
+        {{ formatCurrency(value, item.currency) }}
       </template>
       <template #item.actions="{ item }">
         <div class="d-flex justify-end">
@@ -62,11 +45,9 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { groupBy, mapValues } from "lodash"
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 
-import { MAX_PER_PAGE } from "@/api/base-api"
-import usePerDiems, { PER_DIEM_TRAVEL_REGIONS } from "@/use/use-per-diems"
+import usePerDiems from "@/use/use-per-diems"
 
 import EditPerDiemDialog from "@/components/per-diems/EditPerDiemDialog.vue"
 
@@ -79,28 +60,16 @@ const { t } = useI18n()
 
 const headers = ref([
   {
-    text: "",
+    text: "Claim Type",
     value: "claimType",
   },
   {
-    text: "Yukon/Alaska",
-    value: "yukonAndAlaska",
+    text: "Travel Region",
+    value: "travelRegion",
   },
   {
-    text: "NWT",
-    value: "nwt",
-  },
-  {
-    text: "Nunavut",
-    value: "nunavut",
-  },
-  {
-    text: "Rest of Canada",
-    value: "restOfCanada",
-  },
-  {
-    text: "Rest of USA",
-    value: "restOfUsa",
+    text: "Amount",
+    value: "amount",
   },
   {
     text: "",
@@ -108,29 +77,20 @@ const headers = ref([
   },
 ])
 
+const page = ref(1)
+const perPage = ref(6)
+
 const perDiemsQuery = computed(() => ({
-  perPage: MAX_PER_PAGE,
+  page: page.value,
+  perPage: perPage.value,
 }))
-const { perDiems, isLoading, refresh } = usePerDiems(perDiemsQuery)
-
-const perDiemsAsMatrix = computed(() => {
-  const perDiemsByClaimType = groupBy(perDiems.value, "claimType")
-  const matrix = mapValues(perDiemsByClaimType, (items, claimType) => {
-    const row = { claimType }
-    items.forEach(({ amount, travelRegion }) => {
-      row[travelRegion] = amount
-    })
-    return row
-  })
-
-  return Object.values(matrix)
-})
+const { perDiems, totalCount, isLoading, refresh } = usePerDiems(perDiemsQuery)
 
 /** @type {Ref<InstanceType<typeof EditPerDiemDialog> | null>} */
-const editDialog = ref(null)
+const editPerDiemDialog = ref(null)
 
-function showEditDialog(flightRequest) {
-  editDialog.value?.show(flightRequest)
+function showEditDialog(perDiem) {
+  editPerDiemDialog.value?.show(perDiem)
 }
 
 function formatCurrency(amount, currency = "CAD") {

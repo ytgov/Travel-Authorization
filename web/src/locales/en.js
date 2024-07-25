@@ -49,5 +49,13 @@ export default {
       incidentals: "Incidentals",
       private_accommodations: "Private Accommodations",
     },
+    travel_region: {
+      Alaska: "Alaska",
+      Canada: "Rest of Canada",
+      Nunavut: "Nunavut",
+      NWT: "NWT",
+      US: "Rest of USA",
+      Yukon: "Yukon",
+    },
   },
 }

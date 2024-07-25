@@ -2,7 +2,8 @@
   <v-dialog
     v-model="showDialog"
     width="500"
-    @keydown.esc="close"
+    @keydown.esc="hide"
+    @click:outside="hide"
   >
     <v-form
       ref="form"
@@ -15,18 +16,46 @@
 
         <v-skeleton-loader
           v-if="isNil(perDiem)"
-          type="text"
+          class="mt-5 mx-3"
+          type="list-item@4"
         />
         <v-card-text v-else>
           <v-row class="mt-5 mx-3">
             <v-col cols="12">
               <v-text-field
-                v-model="perDiem.checkIn"
+                v-model="perDiem.claimType"
+                label="Claim Type"
+                outlined
+                readonly
+                append-icon="mdi-lock"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                v-model="perDiem.travelRegion"
+                label="Travel Region"
+                outlined
+                readonly
+                append-icon="mdi-lock"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                v-model="perDiem.amount"
                 label="Amount *"
                 type="number"
                 :rules="[required]"
                 outlined
                 required
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                v-model="perDiem.currency"
+                label="Currency"
+                outlined
+                readonly
+                append-icon="mdi-lock"
               />
             </v-col>
           </v-row>
@@ -37,7 +66,7 @@
           <v-btn
             :loading="isLoading"
             color="grey darken-5"
-            @click="close"
+            @click="hide"
           >
             Cancel
           </v-btn>
@@ -57,7 +86,7 @@
 <script setup>
 import { ref, nextTick, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
-import { cloneDeep, isNil } from "lodash"
+import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
@@ -74,7 +103,7 @@ const emit = defineEmits(["saved"])
 
 /** @type {Ref<number | null>} */
 const perDiemId = ref(null)
-const { perDiem } = usePerDiem(perDiemId.value)
+const { perDiem, isLoading } = usePerDiem(perDiemId)
 
 const snack = useSnack()
 const router = useRouter()
@@ -83,33 +112,30 @@ const showDialog = ref(false)
 
 /** @type {Ref<InstanceType<typeof VForm> | null>} */
 const form = ref(null)
-const isLoading = ref(false)
 
 watch(
-  () => showDialog.value,
-  (value) => {
-    if (value) {
-      if (route.query.showPerDiemEdit === perDiemId.value?.toString()) {
-        return
-      }
-
-      router.push({ query: { showPerDiemEdit: perDiemId.value } })
+  () => route.query.showEditPerDiem,
+  (newShowEditPerDiem) => {
+    if (!isNil(newShowEditPerDiem)) {
+      perDiem.value = null
+      perDiemId.value = parseInt(newShowEditPerDiem)
+      showDialog.value = true
     } else {
-      router.push({ query: { showPerDiemEdit: undefined } })
+      showDialog.value = false
+      perDiem.value = null
+      perDiemId.value = null
+      form.value?.resetValidation()
     }
-  }
+  },
+  { immediate: true, deep: true }
 )
 
-function show(newPerDiem) {
-  perDiemId.value = newPerDiem.id
-  perDiem.value = cloneDeep(newPerDiem)
-  showDialog.value = true
+function show(perDiem) {
+  router.push({ query: { showEditPerDiem: perDiem.id } })
 }
 
-function close() {
-  showDialog.value = false
-  resetState()
-  form.value?.resetValidation()
+function hide() {
+  router.push({ query: { showEditPerDiem: undefined } })
 }
 
 async function updateAndClose() {
@@ -121,7 +147,7 @@ async function updateAndClose() {
   isLoading.value = true
   try {
     const { perDiem: newPerDiem } = await perDiemsApi.update(perDiemId.value, perDiem.value)
-    close()
+    hide()
 
     await nextTick()
     emit("saved", newPerDiem.id)
@@ -134,18 +160,17 @@ async function updateAndClose() {
   }
 }
 
-function resetState() {
-  perDiem.value = null
-}
-
 defineExpose({
   show,
 })
 </script>
 
 <style scoped>
-.label {
-  font-weight: 600;
-  font-size: 10pt !important;
+::v-deep(.v-skeleton-loader__list-item) {
+  height: 6rem;
+}
+
+::v-deep(.v-skeleton-loader__text) {
+  height: 3rem;
 }
 </style>
