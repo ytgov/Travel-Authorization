@@ -34,11 +34,7 @@ const isUnauthenticatedRoute = computed(() => route.meta.requiresAuth === false)
 const { isAuthenticated, isLoading: isLoadingAuth0 } = useAuth0()
 const isReadyAuth0 = computed(() => !isLoadingAuth0.value && isAuthenticated.value)
 
-const {
-  fetch,
-  isReady: isReadyCurrentUser,
-  isLoading: isLoadingCurrentUser,
-} = useCurrentUser({ eager: false })
+const { fetch, isReady: isReadyCurrentUser, isLoading: isLoadingCurrentUser } = useCurrentUser()
 
 const isReady = computed(() => isReadyAuth0.value && isReadyCurrentUser.value)
 

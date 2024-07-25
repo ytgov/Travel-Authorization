@@ -1,8 +1,12 @@
 import { computed, reactive, toRefs } from "vue"
 
-import { sleep } from "@/utils/sleep"
-
 import usersApi, { ROLES } from "@/api/users-api"
+
+/**
+ * @template [T=any]
+ * @typedef {import('vue').Ref<T>} Ref
+ */
+/** @typedef {import('@/api/users-api.js').User} User */
 
 // Note that state is global here
 const state = reactive({
@@ -16,52 +20,30 @@ const state = reactive({
 
 /**
  * This stores the global current user state.
- * Immediately ensures current user
+ * Does not load current user until fetch is ran; however,
+ * fetch is run in App, so currentUser will effectively always be ready in all inner components.
  *
- * @params {{ eager: boolean }} [options={}]
- * @param {boolean} [options.eager=true] - Indicates whether to fetch the current user immediately.
  * @returns {{
  *   ROLES: typeof ROLES,
- *   currentUser: import('vue').Ref<User>,
- *   isLoading: import('vue').Ref<boolean>,
- *   isErrored: import('vue').Ref<boolean>,
- *   isCached: import('vue').Ref<boolean>,
- *   isReady: import('vue').Ref<boolean>,
- *   id: import('vue').Ref<number>,
- *   fullName: import('vue').Ref<string>,
- *   isAdmin: import('vue').Ref<boolean>,
- *   ensure: () => Promise<User>,
+ *   currentUser: Ref<User>,
+ *   isLoading: Ref<boolean>,
+ *   isErrored: Ref<boolean>,
+ *   isCached: Ref<boolean>,
+ *   isReady: Ref<boolean>,
+ *   fullName: Ref<string>,
+ *   isAdmin: Ref<boolean>,
  *   fetch: () => Promise<User>,
  *   unset: () => void,
  * }}
  */
-export function useCurrentUser({ eager = true } = {}) {
+export function useCurrentUser() {
   const isReady = computed(() => state.isCached && !state.isLoading && !state.isErrored)
-  const id = computed(() => state.currentUser.id)
+
   const fullName = computed(() => {
     const { firstName, lastName } = state.currentUser
     return [firstName, lastName].filter(Boolean).join(" ")
   })
   const isAdmin = computed(() => state.currentUser.roles?.includes(ROLES.ADMIN))
-
-  if (eager) {
-    ensure() // Normally would go inside a "watch" but this doesn't have any params to watch
-  }
-
-  async function ensure() {
-    while (state.isLoading) {
-      await sleep(75)
-    }
-
-    if (state.isErrored) {
-      console.error("User store has errored, returning {}.")
-      return {}
-    }
-
-    if (state.isCached) return state.currentUser
-
-    return fetch()
-  }
 
   async function fetch() {
     state.isLoading = true
@@ -72,7 +54,7 @@ export function useCurrentUser({ eager = true } = {}) {
       state.isCached = true
       return user
     } catch (error) {
-      console.error("Failed to fetch travel authorization:", error)
+      console.error("Failed to fetch current user:", error)
       state.isErrored = true
       throw error
     } finally {
@@ -94,11 +76,9 @@ export function useCurrentUser({ eager = true } = {}) {
     // getters
     ...toRefs(state),
     isReady,
-    id,
     fullName,
     isAdmin,
     // actions
-    ensure,
     fetch,
     unset,
   }

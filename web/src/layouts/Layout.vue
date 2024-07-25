@@ -203,7 +203,7 @@ import useCurrentUser from "@/use/use-current-user"
 import RequestAlert from "@/components/RequestAlert.vue"
 import PageLoader from "@/components/PageLoader.vue"
 
-const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
+const { unset: unsetCurrentUser } = useCurrentUser()
 
 export default {
   name: "App",
