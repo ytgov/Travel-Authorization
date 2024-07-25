@@ -78,10 +78,10 @@ export const perDiemsApi = {
   },
   /**
    * @param {number} perDiemId
-   * @returns {{
+   * @returns {Promise<{
    *   perDiem: PerDiem;
    *   policy: Policy;
-   * }}
+   * }>}
    */
   async get(perDiemId) {
     const { data } = await http.get(`/api/per-diems/${perDiemId}`)
@@ -90,9 +90,9 @@ export const perDiemsApi = {
   /**
    * @param {number} perDiemId
    * @param {Partial<PerDiem>} attributes
-   * @returns {{
+   * @returns {Promise<{
    *   perDiem: PerDiem;
-   * }}
+   * }>}
    */
   async update(perDiemId, attributes) {
     const { data } = await http.patch(`/api/per-diems/${perDiemId}`, attributes)
