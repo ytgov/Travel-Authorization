@@ -3,6 +3,7 @@
     <h2 class="d-flex justify-space-between align-center">
       Meals and Incidental Expenses for Employees on Travel Status
       <v-btn
+        v-if="isAdmin"
         class="primary"
         :to="{ name: 'administration/TravelRatesEditPage' }"
         >Edit</v-btn
@@ -24,12 +25,15 @@
 
 <script setup>
 import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useCurrentUser from "@/use/use-current-user"
 
 import FullDayPerDiemsCard from "@/components/per-diems/FullDayPerDiemsCard.vue"
 import PartialDaysPerDiemsCard from "@/components/per-diems/PartialDaysPerDiemsCard.vue"
 import IncidentalPerDiemsDataTable from "@/components/per-diems/IncidentalPerDiemsDataTable.vue"
 import PrivateVehicleTravelAllowanceCard from "@/components/travel-allowances/PrivateVehicleTravelAllowanceCard.vue"
 import NonCommercialAccommodationTravelAllowanceCard from "@/components/travel-allowances/NonCommercialAccommodationTravelAllowanceCard.vue"
+
+const { isAdmin } = useCurrentUser()
 
 useBreadcrumbs([
   {
