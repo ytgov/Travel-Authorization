@@ -10,7 +10,7 @@ export class PerDiemsController extends BaseController {
   async index() {
     try {
       const where = this.buildWhere()
-      const scopes = this.buildFilterScopes()
+      const scopes = this.buildFilterScopes(["claimTypeTimeOrder", "travelRegionDistanceOrder"])
       const scopedPerDiems = PerDiemsPolicy.applyScope(scopes, this.currentUser)
 
       const totalCount = await scopedPerDiems.count({ where })
@@ -18,6 +18,11 @@ export class PerDiemsController extends BaseController {
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
+        order: [
+          ["claimTypeTimeOrder", "ASC"],
+          ["claimType", "ASC"],
+          ["travelRegionDistanceOrder", "ASC"],
+        ],
       })
       return this.response.status(200).json({
         perDiems,
