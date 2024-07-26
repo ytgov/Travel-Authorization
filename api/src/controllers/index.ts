@@ -3,6 +3,7 @@ export { GeneralLedgerCodingsController } from "./general-ledger-codings-control
 export { LocationsController } from "./locations-controller"
 export { PerDiemsController } from "./per-diems-controller"
 export { StopsController } from "./stops-controller"
+export { TravelAllowancesController } from "./travel-allowances-controller"
 export { TravelAuthorizationActionLogsController } from "./travel-authorization-action-logs-controller"
 export { TravelAuthorizationPreApprovalProfilesController } from "./travel-authorization-pre-approval-profiles-controller"
 export { TravelAuthorizationPreApprovalsController } from "./travel-authorization-pre-approvals-controller"

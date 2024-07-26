@@ -13,6 +13,7 @@ import {
   PerDiemsController,
   Qa,
   StopsController,
+  TravelAllowancesController,
   TravelAuthorizationActionLogsController,
   TravelAuthorizationPreApprovalProfilesController,
   TravelAuthorizationPreApprovalsController,
@@ -91,6 +92,12 @@ router
   .patch(PerDiemsController.update)
 
 router.route("/api/stops").get(StopsController.index)
+
+router.route("/api/travel-allowances").get(TravelAllowancesController.index)
+router
+  .route("/api/travel-allowances/:travelAllowanceId")
+  .get(TravelAllowancesController.show)
+  .patch(TravelAllowancesController.update)
 
 router
   .route("/api/travel-authorizations")
