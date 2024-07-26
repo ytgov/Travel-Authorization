@@ -19,7 +19,7 @@
           @saved="refresh"
         />
       </template>
-      <template #item.claimType="{ value }">
+      <template #item.allowanceType="{ value }">
         {{ t(`travel_allowance.allowance_type.${value}`, { $default: value }) }}
       </template>
       <template #item.amount="{ item, value }">
