@@ -17,6 +17,7 @@
       @dblclick:row="(_, { item }) => showEditDialog(item)"
     >
       <template #top>
+        <!-- TODO: add selector to filter by claim type -->
         <EditPerDiemDialog
           ref="editPerDiemDialog"
           @saved="refresh"
