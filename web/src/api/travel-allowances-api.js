@@ -8,7 +8,6 @@ export const TRAVEL_ALLOWANCE_ALLOWANCE_TYPES = Object.freeze({
   AIRCRAFT_ALLOWANCE_PER_SEGMENT: "aircraft_allowance_per_segment",
   DISTANCE_ALLOWANCE_PER_KILOMETER: "distance_allowance_per_kilometer",
   HOTEL_ALLOWANCE_PER_NIGHT: "hotel_allowance_per_night",
-  PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT: "private_accommodation_allowance_per_night",
 })
 
 /** Keep in sync with api/src/models/travel-allowance.ts */

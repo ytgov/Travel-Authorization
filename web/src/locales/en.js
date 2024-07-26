@@ -64,7 +64,6 @@ export default {
       aircraft_allowance_per_segment: "Aircraft Allowance Per Segment",
       distance_allowance_per_kilometer: "Distance Allowance Per Kilometer",
       hotel_allowance_per_night: "Hotel Allowance Per Night",
-      private_accommodation_allowance_per_night: "Private Accommodation Allowance Per Night",
     },
   },
 }
