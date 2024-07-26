@@ -23,7 +23,7 @@
           <v-row class="mt-5 mx-3">
             <v-col cols="12">
               <v-text-field
-                v-model="travelAllowance.allowanceType"
+                :value="allowanceType"
                 label="Claim Type"
                 outlined
                 readonly
@@ -43,7 +43,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                v-model="travelAllowance.currency"
+                :value="travelAllowance.currency"
                 label="Currency"
                 outlined
                 readonly
@@ -76,11 +76,12 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from "vue"
+import { computed, ref, nextTick, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
+import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { useSnack } from "@/plugins/snack-plugin"
 import travelAllowancesApi from "@/api/travel-allowances-api"
 import useTravelAllowance from "@/use/use-travel-allowance"
@@ -96,6 +97,14 @@ const emit = defineEmits(["saved"])
 /** @type {Ref<number | null>} */
 const travelAllowanceId = ref(null)
 const { travelAllowance, isLoading } = useTravelAllowance(travelAllowanceId)
+
+const { t } = useI18n()
+const allowanceType = computed(() => {
+  if (isNil(travelAllowance.value)) return ""
+
+  const { allowanceType: value } = travelAllowance.value
+  return t(`travel_allowance.allowance_type.${value}`, { $default: value })
+})
 
 const snack = useSnack()
 const router = useRouter()

@@ -23,7 +23,7 @@
           <v-row class="mt-5 mx-3">
             <v-col cols="12">
               <v-text-field
-                v-model="perDiem.claimType"
+                :value="claimType"
                 label="Claim Type"
                 outlined
                 readonly
@@ -32,7 +32,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                v-model="perDiem.travelRegion"
+                :value="travelRegion"
                 label="Travel Region"
                 outlined
                 readonly
@@ -52,7 +52,7 @@
             </v-col>
             <v-col cols="12">
               <v-text-field
-                v-model="perDiem.currency"
+                :value="perDiem.currency"
                 label="Currency"
                 outlined
                 readonly
@@ -85,12 +85,13 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from "vue"
+import { computed, ref, nextTick, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
+import { useI18n } from "@/plugins/vue-i18n-plugin"
 import perDiemsApi from "@/api/per-diems-api"
 import usePerDiem from "@/use/use-per-diem"
 
@@ -105,6 +106,20 @@ const emit = defineEmits(["saved"])
 /** @type {Ref<number | null>} */
 const perDiemId = ref(null)
 const { perDiem, isLoading } = usePerDiem(perDiemId)
+
+const { t } = useI18n()
+const claimType = computed(() => {
+  if (isNil(perDiem.value)) return ""
+
+  const { claimType: value } = perDiem.value
+  return t(`per_diem.claim_type.${value}`, { $default: value })
+})
+const travelRegion = computed(() => {
+  if (isNil(perDiem.value)) return ""
+
+  const { travelRegion: value } = perDiem.value
+  return t(`per_diem.travel_region.${value}`, { $default: value })
+})
 
 const snack = useSnack()
 const router = useRouter()
