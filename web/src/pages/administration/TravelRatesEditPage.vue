@@ -3,8 +3,7 @@
     <h2>Edit Meals and Incidental Expenses for Employees on Travel Status</h2>
 
     <EditPerDiemsCard />
-    <br />
-    TODO: add edit table for travel allowances
+    <EditTravelAllowancesCard class="mt-6" />
   </v-container>
 </template>
 
@@ -12,6 +11,7 @@
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 import EditPerDiemsCard from "@/components/per-diems/EditPerDiemsCard.vue"
+import EditTravelAllowancesCard from "@/components/travel-allowances/EditTravelAllowancesCard.vue"
 
 useBreadcrumbs([
   {
