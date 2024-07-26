@@ -1,7 +1,27 @@
 <template>
   <v-card>
-    <v-card-title>
-      <h3>Per-Diems</h3>
+    <v-card-title class="d-flex justify-space-between align-baseline">
+      <v-col
+        cols="12"
+        md="6"
+        class="py-0"
+      >
+        <h3>Per-Diems</h3>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+        class="d-flex flex-column flex-md-row align-baseline py-0"
+      >
+        <div>Filters:</div>
+        <ClaimTypeSelect
+          v-model="claimType"
+          class="ml-2"
+          outlined
+          hide-details
+          clearable
+        />
+      </v-col>
     </v-card-title>
 
     <v-data-table
@@ -17,7 +37,6 @@
       @dblclick:row="(_, { item }) => showEditDialog(item)"
     >
       <template #top>
-        <!-- TODO: add selector to filter by claim type -->
         <EditPerDiemDialog
           ref="editPerDiemDialog"
           @saved="refresh"
@@ -55,6 +74,7 @@ import formatCurrency from "@/utils/format-currency"
 import useRouteQuery from "@/use/use-route-query"
 import usePerDiems from "@/use/use-per-diems"
 
+import ClaimTypeSelect from "@/components/per-diems/ClaimTypeSelect.vue"
 import EditPerDiemDialog from "@/components/per-diems/EditPerDiemDialog.vue"
 
 /**
@@ -85,8 +105,12 @@ const headers = ref([
 
 const page = useRouteQuery("perDiemsPage", "1", { transform: parseInt })
 const perPage = useRouteQuery("perDiemsPerPage", "6", { transform: parseInt })
+const claimType = useRouteQuery("perDiemsClaimType")
 
 const perDiemsQuery = computed(() => ({
+  where: {
+    claimType: claimType.value,
+  },
   page: page.value,
   perPage: perPage.value,
 }))
