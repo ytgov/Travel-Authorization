@@ -6,7 +6,7 @@
 
     <v-data-table
       :page.sync="page"
-      :per-page.sync="perPage"
+      :items-per-page.sync="perPage"
       :headers="headers"
       :items="perDiems"
       :loading="isLoading"
@@ -45,8 +45,9 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { useI18n } from "@/plugins/vue-i18n-plugin"
 
+import { useI18n } from "@/plugins/vue-i18n-plugin"
+import useRouteQuery from "@/use/use-route-query"
 import usePerDiems from "@/use/use-per-diems"
 
 import EditPerDiemDialog from "@/components/per-diems/EditPerDiemDialog.vue"
@@ -77,8 +78,8 @@ const headers = ref([
   },
 ])
 
-const page = ref(1)
-const perPage = ref(6)
+const page = useRouteQuery("perDiemsPage", "1", { transform: parseInt })
+const perPage = useRouteQuery("perDiemsPerPage", "6", { transform: parseInt })
 
 const perDiemsQuery = computed(() => ({
   page: page.value,
