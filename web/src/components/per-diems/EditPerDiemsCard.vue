@@ -11,6 +11,9 @@
       :items="perDiems"
       :loading="isLoading"
       :server-items-length="totalCount"
+      :footer-props="{
+        'items-per-page-options': [6, 10, 15, -1],
+      }"
       @dblclick:row="(_, { item }) => showEditDialog(item)"
     >
       <template #top>
