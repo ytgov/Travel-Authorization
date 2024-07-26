@@ -38,6 +38,7 @@
     "node-schedule": "^2.1.0",
     "papaparse": "^5.4.1",
     "pg": "^8.11.5",
+    "pg-minify": "^1.6.5",
     "sequelize": "^6.37.3",
     "sqlite3": "^5.0.8",
     "tedious": "^15.1.3",
