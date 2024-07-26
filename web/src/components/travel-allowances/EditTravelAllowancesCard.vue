@@ -44,6 +44,7 @@
 import { computed, ref } from "vue"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
+import formatCurrency from "@/utils/format-currency"
 import useRouteQuery from "@/use/use-route-query"
 import useTravelAllowances from "@/use/use-travel-allowances"
 
@@ -86,18 +87,6 @@ const editTravelAllowanceDialog = ref(null)
 
 function showEditDialog(perDiem) {
   editTravelAllowanceDialog.value?.show(perDiem)
-}
-
-function formatCurrency(amount, currency = "CAD") {
-  if (amount === undefined) {
-    return ""
-  }
-
-  const formatter = new Intl.NumberFormat("en-CA", {
-    style: "currency",
-    currency,
-  })
-  return formatter.format(amount)
 }
 </script>
 

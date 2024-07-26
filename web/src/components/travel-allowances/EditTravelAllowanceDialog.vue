@@ -35,6 +35,7 @@
                 v-model="travelAllowance.amount"
                 label="Amount *"
                 type="number"
+                :step="travelAllowance.amount > 1 ? 0.01 : 0.001"
                 :rules="[required]"
                 outlined
                 required

@@ -44,6 +44,7 @@
                 v-model="perDiem.amount"
                 label="Amount *"
                 type="number"
+                :step="perDiem.amount > 1 ? 0.01 : 0.001"
                 :rules="[required]"
                 outlined
                 required
