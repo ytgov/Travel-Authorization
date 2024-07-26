@@ -46,6 +46,7 @@ import { computed } from "vue"
 import { isNil } from "lodash"
 
 import formatCurrency from "@/utils/format-currency"
+import { MAX_PER_PAGE } from "@/api/base-api"
 import usePerDiems, { PER_DIEM_CLAIM_TYPES, PER_DIEM_TRAVEL_REGIONS } from "@/use/use-per-diems"
 
 // TODO: consider if we should be doing a separate query for each region
@@ -54,7 +55,7 @@ const perDiemsQuery = computed(() => {
     where: {
       claimType: PER_DIEM_CLAIM_TYPES.PRIVATE_ACCOMMODATIONS,
     },
-    perPage: 2,
+    perPage: MAX_PER_PAGE,
   }
 })
 const { perDiems, isLoading } = usePerDiems(perDiemsQuery)
