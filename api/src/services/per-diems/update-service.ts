@@ -3,12 +3,12 @@ import { Attributes } from "sequelize"
 import { PerDiem, User } from "@/models"
 import BaseService from "@/services/base-service"
 
-type TeamUpdateAttributes = Partial<Attributes<PerDiem>>
+type PerDiemUpdateAttributes = Partial<Attributes<PerDiem>>
 
 export class UpdateService extends BaseService {
   constructor(
     protected perDiem: PerDiem,
-    protected attributes: TeamUpdateAttributes,
+    protected attributes: PerDiemUpdateAttributes,
     protected currentUser: User
   ) {
     super()
