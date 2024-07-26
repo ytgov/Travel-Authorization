@@ -1,6 +1,14 @@
 <template>
   <v-container>
-    <h2>Edit Meals and Incidental Expenses for Employees on Travel Status</h2>
+    <h2 class="d-flex justify-space-between align-center">
+      Edit Meals and Incidental Expenses for Employees on Travel Status
+      <v-btn
+        class="secondary"
+        outlined
+        :to="{ name: 'administration/TravelRatesPage' }"
+        >Back</v-btn
+      >
+    </h2>
 
     <EditPerDiemsCard />
     <EditTravelAllowancesCard class="mt-6" />
