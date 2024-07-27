@@ -20,6 +20,15 @@
 
     <PrivateVehicleTravelAllowanceCard class="mt-6" />
     <NonCommercialAccommodationTravelAllowanceCard class="mt-6" />
+
+    <p class="mt-6">
+      Source data
+      <a
+        href="https://yukon.ca/travel-rates"
+        target="_blank"
+        >Yukon Travel Rates</a
+      >.
+    </p>
   </v-container>
 </template>
 
