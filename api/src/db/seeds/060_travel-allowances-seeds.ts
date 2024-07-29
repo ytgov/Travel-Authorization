@@ -25,11 +25,6 @@ export async function seed(_knex: Knex): Promise<void> {
       amount: 250,
       currency: TravelAllowance.CurrencyTypes.CAD,
     },
-    {
-      allowanceType: TravelAllowance.AllowanceTypes.PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT,
-      amount: 50,
-      currency: TravelAllowance.CurrencyTypes.CAD,
-    },
   ]
   for (const travelAllowanceAttributes of travelAllowancesAttributes) {
     const travelAllowance = await TravelAllowance.findOne({

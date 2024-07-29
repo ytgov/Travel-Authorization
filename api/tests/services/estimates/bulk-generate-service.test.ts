@@ -36,6 +36,12 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
         amount: 58.6,
         currency: PerDiem.CurrencyTypes.CAD,
       })
+      await perDiemFactory.create({
+        claimType: PerDiem.ClaimTypes.PRIVATE_ACCOMMODATIONS,
+        travelRegion: PerDiem.TravelRegions.CANADA,
+        amount: 50,
+        currency: PerDiem.CurrencyTypes.CAD,
+      })
       await travelAllowanceFactory.create({
         allowanceType: TravelAllowance.AllowanceTypes.MAXIUM_AIRCRAFT_ALLOWANCE,
         amount: 1000,
@@ -54,11 +60,6 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
       await travelAllowanceFactory.create({
         allowanceType: TravelAllowance.AllowanceTypes.HOTEL_ALLOWANCE_PER_NIGHT,
         amount: 250,
-        currency: TravelAllowance.CurrencyTypes.CAD,
-      })
-      await travelAllowanceFactory.create({
-        allowanceType: TravelAllowance.AllowanceTypes.PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT,
-        amount: 50,
         currency: TravelAllowance.CurrencyTypes.CAD,
       })
     })

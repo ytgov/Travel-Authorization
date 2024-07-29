@@ -1,5 +1,6 @@
 import BasePolicy from "@/policies/base-policy"
 
+import { Path } from "@/utils/deep-pick"
 import { User, TravelAuthorization } from "@/models"
 import TravelAuthorizationsPolicy from "@/policies/travel-authorizations-policy"
 
@@ -12,7 +13,7 @@ export class SubmitPolicy extends BasePolicy<TravelAuthorization> {
     return false
   }
 
-  permittedAttributes(): string[] {
+  permittedAttributes(): Path[] {
     const policy = new TravelAuthorizationsPolicy(this.user, this.record)
     return policy.permittedAttributes()
   }

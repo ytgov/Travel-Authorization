@@ -13,7 +13,12 @@ describe("api/src/policies/travel-authorizations-policy.ts", () => {
         const policy = new TravelAuthorizationsPolicy(admin, travelAuthorization)
 
         expect(policy.permittedAttributesForCreate()).toEqual(
-          expect.arrayContaining(["userId", "userAttributes"])
+          expect.arrayContaining([
+            "userId",
+            expect.objectContaining({
+              userAttributes: expect.any(Array),
+            }),
+          ])
         )
       })
 

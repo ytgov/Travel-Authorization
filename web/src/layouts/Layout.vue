@@ -142,7 +142,7 @@
               </v-list-item-icon>
               <v-list-item-title>My profile</v-list-item-title>
             </v-list-item>
-            <v-list-item to="/administration">
+            <v-list-item :to="{ name: 'AdministrationPage' }">
               <v-list-item-icon>
                 <v-icon>mdi-cogs</v-icon>
               </v-list-item-icon>
@@ -203,7 +203,7 @@ import useCurrentUser from "@/use/use-current-user"
 import RequestAlert from "@/components/RequestAlert.vue"
 import PageLoader from "@/components/PageLoader.vue"
 
-const { unset: unsetCurrentUser } = useCurrentUser({ eager: false })
+const { unset: unsetCurrentUser } = useCurrentUser()
 
 export default {
   name: "App",

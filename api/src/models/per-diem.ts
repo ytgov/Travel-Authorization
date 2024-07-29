@@ -3,8 +3,10 @@ import {
   DataTypes,
   InferAttributes,
   InferCreationAttributes,
+  literal,
   Model,
 } from "sequelize"
+import minify from "pg-minify"
 
 import sequelize from "@/db/db-client"
 
@@ -91,6 +93,41 @@ PerDiem.init(
         },
       },
     ],
+    scopes: {
+      travelRegionDistanceOrder() {
+        const customRegionBasedOrder = minify(/* sql */ `
+          CASE
+            WHEN travel_region = '${TravelRegions.YUKON}' THEN 1
+            WHEN travel_region = '${TravelRegions.ALASKA}' THEN 2
+            WHEN travel_region = '${TravelRegions.NWT}' THEN 3
+            WHEN travel_region = '${TravelRegions.NUNAVUT}' THEN 4
+            WHEN travel_region = '${TravelRegions.CANADA}' THEN 5
+            WHEN travel_region = '${TravelRegions.US}' THEN 6
+            ELSE 7
+          END
+        `)
+        return {
+          attributes: {
+            include: [[literal(customRegionBasedOrder), "travelRegionDistanceOrder"]],
+          },
+        }
+      },
+      claimTypeTimeOrder() {
+        const customTimeBasedOrder = minify(/* sql */ `
+          CASE
+            WHEN claim_type = '${ClaimTypes.BREAKFAST}' THEN 1
+            WHEN claim_type = '${ClaimTypes.LUNCH}' THEN 2
+            WHEN claim_type = '${ClaimTypes.DINNER}' THEN 3
+            ELSE 4
+          END
+        `)
+        return {
+          attributes: {
+            include: [[literal(customTimeBasedOrder), "claimTypeTimeOrder"]],
+          },
+        }
+      },
+    },
   }
 )
 

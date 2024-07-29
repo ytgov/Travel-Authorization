@@ -1,4 +1,19 @@
-import { cloneDeep } from "lodash"
+import {
+  cloneDeep,
+  isArray,
+  isBoolean,
+  isNull,
+  isNumber,
+  isObject,
+  isString,
+  isUndefined,
+} from "lodash"
+
+export type Path =
+  | string
+  | {
+      [key: string]: (string | Path)[]
+    }
 
 /*
 Usage:
@@ -23,35 +38,65 @@ const object = {
 
 const picked = deepPick(object, ["a", { c: ["d"] }, { g: ["h"] }]);
 console.log(picked); // Output: { a: 1, c: { d: 4 }, g: [{ h: 6 }, { h: 8 }] }
-// TODO: write some tests and de-garbage this code
-*/
-export type Path =
-  | string
-  | {
-      [key: string]: (string | Path)[]
-    }
-export function deepPick(object: any, paths: Path[]) {
-  return paths.reduce((result: any, path: Path) => {
-    if (typeof path === "string") {
-      result[path] = cloneDeep(object[path])
-      return result
-    } else if (typeof path === "object") {
-      Object.entries(path).forEach(([key, nestedPaths]) => {
-        const nestedResult = cloneDeep(object[key])
-        if (nestedResult === undefined) return
 
-        if (Array.isArray(nestedResult)) {
-          result[key] = nestedResult.map((item) => deepPick(item, nestedPaths))
-        } else if (typeof nestedResult === "object") {
-          result[key] = deepPick(nestedResult, nestedPaths)
+TODO: figure out how to do this without "any"
+*/
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function deepPick(object: any, paths: Path[]): any {
+  if (isArray(object)) {
+    return object.map((item) => deepPick(item, paths))
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return paths.reduce((result: any, path: Path) => {
+    if (isString(path)) {
+      if (path in object === false) return result
+
+      const value = cloneDeep(object[path])
+      if (isSimpleType(value)) {
+        result[path] = value
+        return result
+      } else if (isArray(value) && value.every(isSimpleType)) {
+        result[path] = value
+        return result
+      } else if (isArray(value) && value.every(isObject)) {
+        result[path] = []
+        return result
+      } else if (isObject(value)) {
+        result[path] = {}
+        return result
+      } else {
+        throw new Error(`Unsupported value type at path: ${path} -> ${JSON.stringify(value)}`)
+      }
+    } else if (isObject(path)) {
+      Object.entries(path).forEach(([path, nestedPaths]) => {
+        if (path in object === false) return
+
+        const value = cloneDeep(object[path])
+        if (isSimpleType(value)) {
+          result[path] = value
+        } else if (isArray(value) && value.every(isSimpleType)) {
+          result[path] = value
+        } else if (Array.isArray(value) && value.every(isObject)) {
+          result[path] = value.map((item) => deepPick(item, nestedPaths))
+        } else if (isObject(value)) {
+          result[path] = deepPick(value, nestedPaths)
         } else {
-          result[key] = nestedResult
+          throw new Error(
+            `Unsupported value structure at path: ${path} ->  ${JSON.stringify(value)}`
+          )
         }
       })
 
       return result
     } else {
-      throw new Error("Invalid path")
+      throw new Error(`Unsupported path type: ${path}`)
     }
   }, {})
+}
+
+function isSimpleType(value: unknown) {
+  return (
+    isString(value) || isNumber(value) || isBoolean(value) || isNull(value) || isUndefined(value)
+  )
 }

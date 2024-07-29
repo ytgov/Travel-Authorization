@@ -13,7 +13,6 @@ export enum AllowanceTypes {
   AIRCRAFT_ALLOWANCE_PER_SEGMENT = "aircraft_allowance_per_segment",
   DISTANCE_ALLOWANCE_PER_KILOMETER = "distance_allowance_per_kilometer",
   HOTEL_ALLOWANCE_PER_NIGHT = "hotel_allowance_per_night",
-  PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT = "private_accommodation_allowance_per_night",
 }
 
 export enum CurrencyTypes {

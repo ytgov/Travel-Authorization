@@ -4,12 +4,9 @@ import VueRouter from "vue-router"
 import { authGuard } from "@/utils/auth-guard"
 
 import AdminUserForm from "@/components/Administration/UserManagement/UserComponent/Form"
-import AdminDashboard from "@/components/Administration/Administration"
-import UserManagement from "@/components/Administration/UserManagement/Grid"
 import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
 import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
 import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
-import YGRates from "@/components/Administration/RatesEstimateManagement/YGRates"
 import TravelAgents from "@/components/Administration/LookupTableManagement/TravelAgents"
 
 import preapprovedRouter from "@/modules/preapproved/router"
@@ -39,28 +36,45 @@ const routes = [
         path: "profile",
         component: () => import("@/pages/UserProfilePage"),
       },
-
-      // CONSIDER: moving these into modules, or moving all route definitions into this file
       {
-        path: "admin/users/view/:id",
-        name: "AdminUserView",
-        component: AdminUserForm,
+        // TODO: push readcrumbs into higher layout
+        path: "",
+        component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
+        children: [
+          {
+            path: "/administration",
+            name: "AdministrationPage",
+            component: () => import("@/pages/AdministrationPage.vue"),
+          },
+          {
+            path: "/administration/users",
+            name: "Administration/UserManagement/Grid/index",
+            component: () => import("@/components/Administration/UserManagement/Grid/index.vue"),
+          },
+          {
+            path: "/administration/purpose",
+            name: "Administration/LookupTableManagement/Purpose",
+            component: () =>
+              import("@/components/Administration/LookupTableManagement/Purpose.vue"),
+          },
+          {
+            path: "/administration/travel-rates",
+            name: "administration/TravelRatesPage",
+            component: () => import("@/pages/administration/TravelRatesPage.vue"),
+          },
+          {
+            path: "/administration/travel-rates/edit",
+            name: "administration/TravelRatesEditPage",
+            component: () => import("@/pages/administration/TravelRatesEditPage.vue"),
+          },
+        ],
       },
       {
         path: "administration/users/edit/:id",
         name: "AdminUserEdit",
         component: AdminUserForm,
       },
-      {
-        path: "administration",
-        name: "AdminDashboard",
-        component: AdminDashboard,
-      },
-      {
-        path: "administration/users",
-        name: "User Management",
-        component: UserManagement,
-      },
+
       {
         path: "administration/flightEstimate",
         name: "FlightEstimate",
@@ -75,11 +89,6 @@ const routes = [
         path: "administration/rentalCarEstimates",
         name: "RentalCarEstimates",
         component: RentalCarEstimates,
-      },
-      {
-        path: "administration/ygRates",
-        name: "YGRates",
-        component: YGRates,
       },
       {
         path: "administration/TravelAgents",

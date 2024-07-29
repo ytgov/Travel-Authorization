@@ -41,4 +41,29 @@ export default {
       rental_car: "Rental Car",
     },
   },
+  per_diem: {
+    claim_type: {
+      breakfast: "Breakfast",
+      lunch: "Lunch",
+      dinner: "Dinner",
+      incidentals: "Incidentals",
+      private_accommodations: "Private Accommodations",
+    },
+    travel_region: {
+      Alaska: "Alaska",
+      Canada: "Rest of Canada",
+      Nunavut: "Nunavut",
+      NWT: "NWT",
+      US: "Rest of USA",
+      Yukon: "Yukon",
+    },
+  },
+  travel_allowance: {
+    allowance_type: {
+      maxium_aircraft_allowance: "Maximum Aircraft Allowance",
+      aircraft_allowance_per_segment: "Aircraft Allowance Per Segment",
+      distance_allowance_per_kilometer: "Distance Allowance Per Kilometer",
+      hotel_allowance_per_night: "Hotel Allowance Per Night",
+    },
+  },
 }
