@@ -99,11 +99,22 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
       "allTravelWithinTerritory",
 
       // TODO: use permitedAttributes from relevant policies once they exist
+      // Note that these nested attributes are "create" attributes, not "update" attributes
+      // as a full replace is occuring.
       {
-        stops: ["locationId", "departureDate", "departureTime", "transport", "accommodationType"],
+        stops: [
+          "travelAuthorizationId",
+          "locationId",
+          "departureDate",
+          "departureTime",
+          "transport",
+          "accommodationType",
+        ],
       },
       {
         expenses: [
+          "travelAuthorizationId",
+          "type",
           "expenseType",
           "description",
           "date",
@@ -115,6 +126,8 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
       },
       {
         estimates: [
+          "travelAuthorizationId",
+          "type",
           "expenseType",
           "description",
           "date",
@@ -134,11 +147,23 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
       // TODO: use permitedAttributes from relevant policies once they exist
       {
         stopsAttributes: [
+          "travelAuthorizationId",
           "locationId",
           "departureDate",
           "departureTime",
           "transport",
           "accommodationType",
+        ],
+        expensesAttributes: [
+          "travelAuthorizationId",
+          "type",
+          "expenseType",
+          "description",
+          "date",
+          "cost",
+          "currency",
+          "receiptImage",
+          "fileName",
         ],
       },
     ]
