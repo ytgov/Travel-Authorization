@@ -1,5 +1,5 @@
 # Stage 0 - base node customizations
-FROM node:16-alpine3.15 as base-node
+FROM node:20.10.0-alpine3.19 as base-node
 
 RUN npm install -g npm@8.5.5
 
