@@ -8,7 +8,7 @@ import BaseService from "@/services/base-service"
 import { Stops, StopsService, ExpensesService, Users } from "@/services"
 import { AuditService } from "@/services/audit-service"
 import { UserCreationAttributes } from "@/services/users/create-service"
-import { Expense, Stop, TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
+import { Expense, Stop, TravelAuthorization, User } from "@/models"
 
 type StopsCreationAttributes = CreationAttributes<Stop>[]
 type TravelAuthorizationCreationAttributes = Omit<
@@ -110,8 +110,8 @@ export class CreateService extends BaseService {
     // This pattern is a bit off, but I can't think of a better place to put this logic.
     // If the user is not an admin, the userId must come from the current user.
     // TODO: consider putting this code in the policy?
-    if (!this.currentUser.roles.includes(User.Roles.ADMIN)) {
-      return this.currentUser.id
+    if (!currentUser.roles.includes(User.Roles.ADMIN)) {
+      return currentUser.id
     }
 
     if (userId !== undefined && userAttributes !== undefined) {
@@ -121,7 +121,7 @@ export class CreateService extends BaseService {
     } else if (userId !== undefined) {
       return userId
     } else if (userAttributes !== undefined) {
-      const user = await Users.EnsureService.perform(userAttributes, this.currentUser)
+      const user = await Users.EnsureService.perform(userAttributes, currentUser)
       return user.id
     } else {
       throw new Error("This should never be reached, but it makes TypeScript happy.")

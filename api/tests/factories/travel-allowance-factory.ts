@@ -21,9 +21,6 @@ export const travelAllowanceFactory = Factory.define<TravelAllowance>(({ onCreat
     case TravelAllowance.AllowanceTypes.HOTEL_ALLOWANCE_PER_NIGHT:
       amount = parseFloat(faker.finance.amount({ min: 200, max: 400, dec: 0 }))
       break
-    case TravelAllowance.AllowanceTypes.PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT:
-      amount = parseFloat(faker.finance.amount({ min: 40, max: 60, dec: 0 }))
-      break
   }
 
   return TravelAllowance.build({

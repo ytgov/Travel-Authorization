@@ -1,11 +1,5 @@
 <template>
   <div>
-    <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
-      ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to Administration</v-btn
-    > -->
-
-    <Breadcrumbs />
-
     <h1>User Management</h1>
     <div class="mt-2">
       <v-card class="default px-3 py-3">
@@ -68,12 +62,28 @@ import { mapActions } from "vuex"
 
 import http from "@/api/http-client"
 import { USERS_URL } from "@/urls"
-import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 export default {
   name: "UsersGrid",
-  components: {
-    Breadcrumbs,
+  components: {},
+  setup() {
+    useBreadcrumbs([
+      {
+        text: "Administration",
+        to: {
+          name: "AdministrationPage",
+        },
+      },
+      {
+        text: "User Management",
+        to: {
+          name: "Administration/UserManagement/Grid/index",
+        },
+      },
+    ])
+
+    return {}
   },
   data: () => ({
     loading: false,

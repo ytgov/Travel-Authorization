@@ -10,22 +10,24 @@ import {
   ExpensesController,
   GeneralLedgerCodingsController,
   LocationsController,
-  TravelAuthorizationPreApprovalProfilesController,
-  TravelAuthorizationPreApprovalsController,
+  PerDiemsController,
   Qa,
   StopsController,
+  TravelAllowancesController,
   TravelAuthorizationActionLogsController,
+  TravelAuthorizationPreApprovalProfilesController,
+  TravelAuthorizationPreApprovalsController,
   TravelAuthorizations,
   TravelAuthorizationsController,
+  TravelDeskFlightRequestsController,
+  TravelDeskHotelsController,
+  TravelDeskOtherTransportationsController,
+  TravelDeskRentalCarsController,
+  TravelDeskTravelRequests,
+  TravelDeskTravelRequestsController,
   TravelPurposesController,
   Users,
   UsersController,
-  TravelDeskTravelRequestsController,
-  TravelDeskFlightRequestsController,
-  TravelDeskRentalCarsController,
-  TravelDeskHotelsController,
-  TravelDeskOtherTransportationsController,
-  TravelDeskTravelRequests,
 } from "@/controllers"
 
 //// START LEGACY IMPORTS
@@ -83,7 +85,19 @@ router
   .get(Expenses.UploadController.show)
   .post(Expenses.UploadController.create)
 
+router.route("/api/per-diems").get(PerDiemsController.index)
+router
+  .route("/api/per-diems/:perDiemId")
+  .get(PerDiemsController.show)
+  .patch(PerDiemsController.update)
+
 router.route("/api/stops").get(StopsController.index)
+
+router.route("/api/travel-allowances").get(TravelAllowancesController.index)
+router
+  .route("/api/travel-allowances/:travelAllowanceId")
+  .get(TravelAllowancesController.show)
+  .patch(TravelAllowancesController.update)
 
 router
   .route("/api/travel-authorizations")

@@ -347,10 +347,10 @@ export class BulkGenerateService extends BaseService {
   }
 
   private async initializePrivateAccommodationAllowancePerNight(): Promise<void> {
-    const privateAccommodationAllowancePerNight = await TravelAllowance.findOne({
+    const privateAccommodationAllowancePerNight = await PerDiem.findOne({
       where: {
-        allowanceType: TravelAllowance.AllowanceTypes.PRIVATE_ACCOMMODATION_ALLOWANCE_PER_NIGHT,
-        currency: TravelAllowance.CurrencyTypes.CAD,
+        claimType: PerDiem.ClaimTypes.PRIVATE_ACCOMMODATIONS,
+        currency: PerDiem.CurrencyTypes.CAD,
       },
     })
     if (isNil(privateAccommodationAllowancePerNight)) {

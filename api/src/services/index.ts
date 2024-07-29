@@ -8,8 +8,10 @@ export { YkGovernmentDirectorySyncService } from "./yk-government-directory-sync
 // Namespaced services
 export * as Estimates from "./estimates"
 export * as GeneralLedgerCodings from "./general-ledger-codings"
+export * as PerDiems from "./per-diems"
 export * as Qa from "./qa"
 export * as Stops from "./stops"
+export * as TravelAllowances from "./travel-allowances"
 export * as TravelAuthorizations from "./travel-authorizations"
 export * as TravelDeskFlightRequests from "./travel-desk-flight-requests"
 export * as TravelDeskTravelRequests from "./travel-desk-travel-requests"
