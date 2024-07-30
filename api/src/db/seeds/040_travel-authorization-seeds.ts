@@ -78,7 +78,7 @@ export async function seed(_knex: Knex): Promise<void> {
   for (const userAttributes of usersAttributes) {
     let user = await User.findOne({
       where: {
-        email: userAttributes.email,
+        email: userAttributes.email.toLowerCase(),
       },
     })
     if (isNil(user)) {
