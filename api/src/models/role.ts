@@ -13,7 +13,7 @@ export enum RoleNames {
   USER = "user",
   PRE_APPROVED_TRAVEL_ADMIN = "pre_approved_travel_admin",
   DEPARTMENT_ADMIN = "department_admin",
-  TD_USER = "td_user",
+  TRAVEL_DESK_USER = "travel_desk_user",
 }
 
 export function isRole(role: string): role is RoleNames {

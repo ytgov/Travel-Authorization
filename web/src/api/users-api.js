@@ -26,13 +26,13 @@ import http from "@/api/http-client"
  * @property {string} displayName
  */
 
-// Must match roles in api/src/models/user.ts
+// Must match role names in api/src/models/role.ts
 export const ROLES = Object.freeze({
   ADMIN: "admin",
   USER: "user",
   PRE_APPROVED_TRAVEL_ADMIN: "pre_approved_travel_admin",
   DEPARTMENT_ADMIN: "department_admin",
-  TD_USER: "td_user",
+  TRAVEL_DESK_USER: "travel_desk_user",
 })
 
 export const usersApi = {

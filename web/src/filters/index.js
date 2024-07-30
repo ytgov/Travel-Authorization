@@ -20,7 +20,7 @@ Vue.filter("isSystemAdmin", function () {
 Vue.filter("isTdUser", function () {
   const userRoles = store.state.auth?.user?.roles
   const admin = userRoles?.includes("admin")
-  const TdUser = userRoles?.includes("td_user")
+  const TdUser = userRoles?.includes("travel_desk_user")
   return admin || TdUser
 })
 

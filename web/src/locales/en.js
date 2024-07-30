@@ -30,7 +30,7 @@ export default {
       user: "User",
       pre_approved_travel_admin: "Pre-Approved Travel Admin",
       department_admin: "Department Admin",
-      td_user: "Td User",
+      travel_desk_user: "Travel Desk User",
     },
   },
   travel_desk_question: {
