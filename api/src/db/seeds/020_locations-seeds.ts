@@ -8,7 +8,7 @@ import { APP_ROOT } from "@/config"
 import { Location } from "@/models"
 
 export async function seed(_knex: Knex): Promise<void> {
-  const fileName = `${APP_ROOT}/db/data/locations.csv`
+  const fileName = `${APP_ROOT}/db/seeds/data/locations.csv`
   const fileContent = fs.readFileSync(fileName, "utf8")
   const { data: locationsAttributes } = Papa.parse<{ province: string; city: string }>(
     fileContent,
