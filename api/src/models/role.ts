@@ -21,7 +21,7 @@ export function isRole(role: string): role is RoleNames {
 }
 
 export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
-  static Roles = RoleNames
+  static Names = RoleNames
 
   declare id: CreationOptional<number>
   declare name: string
