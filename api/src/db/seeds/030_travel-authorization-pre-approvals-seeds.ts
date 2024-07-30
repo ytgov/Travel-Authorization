@@ -1,11 +1,10 @@
 import { Knex } from "knex"
+import { isNil } from "lodash"
 
 import { TravelAuthorizationPreApproval, TravelAuthorizationPreApprovalProfile } from "@/models"
-import { Statuses } from "@/models/travel-authorization-pre-approval"
 
-export async function seed(knex: Knex): Promise<void> {
-  await TravelAuthorizationPreApproval.destroy({ where: {} })
-  const preApprovals = await TravelAuthorizationPreApproval.bulkCreate([
+export async function seed(_knex: Knex): Promise<void> {
+  const travelAuthorizationPreApprovalsAttributes = [
     {
       submissionId: null,
       estimatedCost: 1500,
@@ -23,7 +22,7 @@ export async function seed(knex: Knex): Promise<void> {
       isOpenForAnyTraveler: false,
       numberTravelers: 3,
       travelerNotes: "All travelers are senior finance officers",
-      status: Statuses.DRAFT,
+      status: TravelAuthorizationPreApproval.Statuses.DRAFT,
     },
     {
       submissionId: null,
@@ -40,7 +39,7 @@ export async function seed(knex: Knex): Promise<void> {
       isOpenForAnyTraveler: true,
       numberTravelers: 2,
       travelerNotes: "Include both a creative director and campaign manager",
-      status: Statuses.DRAFT,
+      status: TravelAuthorizationPreApproval.Statuses.DRAFT,
     },
     {
       submissionId: null,
@@ -57,33 +56,71 @@ export async function seed(knex: Knex): Promise<void> {
       isOpenForAnyTraveler: true,
       numberTravelers: 4,
       travelerNotes: "Includes IT managers and system administrators",
-      status: Statuses.DRAFT,
+      status: TravelAuthorizationPreApproval.Statuses.DRAFT,
     },
-  ])
-
-  if (preApprovals.length < 3) {
-    throw new Error("Need at least 3 pre-approvals to seed pre-approval profiles.")
+  ]
+  const travelAuthorizationPreApprovals = []
+  for (const travelAuthorizationPreApprovalAttributes of travelAuthorizationPreApprovalsAttributes) {
+    let travelAuthorizationPreApproval = await TravelAuthorizationPreApproval.findOne({
+      where: {
+        location: travelAuthorizationPreApprovalAttributes.location,
+        department: travelAuthorizationPreApprovalAttributes.department,
+        branch: travelAuthorizationPreApprovalAttributes.branch,
+        purpose: travelAuthorizationPreApprovalAttributes.purpose,
+        reason: travelAuthorizationPreApprovalAttributes.reason,
+      },
+    })
+    if (isNil(travelAuthorizationPreApproval)) {
+      travelAuthorizationPreApproval = await TravelAuthorizationPreApproval.create(
+        travelAuthorizationPreApprovalAttributes
+      )
+    } else {
+      await travelAuthorizationPreApproval.update(travelAuthorizationPreApprovalAttributes)
+    }
+    travelAuthorizationPreApprovals.push(travelAuthorizationPreApproval)
   }
 
-  await TravelAuthorizationPreApprovalProfile.destroy({ where: {} })
-  await TravelAuthorizationPreApprovalProfile.bulkCreate([
+  if (travelAuthorizationPreApprovals.length < 3) {
+    throw new Error("Need at least 3 pre-approvals to seed pre-approval profiles.")
+  }
+  const travelAuthorizationPreApprovalProfilesAttributes = [
     {
-      preApprovalId: preApprovals[0].id,
+      preApprovalId: travelAuthorizationPreApprovals[0].id,
       profileName: "Finance Officers",
       department: "Economic Development",
       branch: "Human Resources",
     },
     {
-      preApprovalId: preApprovals[1].id,
+      preApprovalId: travelAuthorizationPreApprovals[1].id,
       profileName: "Marketing Team",
       department: "Economic Development",
       branch: "Human Resources",
     },
     {
-      preApprovalId: preApprovals[2].id,
+      preApprovalId: travelAuthorizationPreApprovals[2].id,
       profileName: "IT Team",
       department: "Economic Development",
       branch: "Human Resources",
     },
-  ])
+  ]
+  for (const travelAuthorizationPreApprovalProfileAttributes of travelAuthorizationPreApprovalProfilesAttributes) {
+    const travelAuthorizationPreApprovalProfile =
+      await TravelAuthorizationPreApprovalProfile.findOne({
+        where: {
+          preApprovalId: travelAuthorizationPreApprovalProfileAttributes.preApprovalId,
+          profileName: travelAuthorizationPreApprovalProfileAttributes.profileName,
+          department: travelAuthorizationPreApprovalProfileAttributes.department,
+          branch: travelAuthorizationPreApprovalProfileAttributes.branch,
+        },
+      })
+    if (isNil(travelAuthorizationPreApprovalProfile)) {
+      await TravelAuthorizationPreApprovalProfile.create(
+        travelAuthorizationPreApprovalProfileAttributes
+      )
+    } else {
+      await travelAuthorizationPreApprovalProfile.update(
+        travelAuthorizationPreApprovalProfileAttributes
+      )
+    }
+  }
 }
