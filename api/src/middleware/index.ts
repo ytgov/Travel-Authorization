@@ -48,7 +48,7 @@ export function RequiresRolePatAdminOrAdmin(req: Request, res: Response, next: N
   if (
     req.user &&
     (req.user.roles.indexOf(User.Roles.ADMIN) >= 0 ||
-      req.user.roles.indexOf(User.Roles.PAT_ADMIN) >= 0)
+      req.user.roles.indexOf(User.Roles.PRE_APPROVED_TRAVEL_ADMIN) >= 0)
   ) {
     return next()
   }

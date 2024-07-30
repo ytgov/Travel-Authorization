@@ -28,7 +28,7 @@ export default {
     role: {
       admin: "Admin",
       user: "User",
-      pat_admin: "Pat Admin",
+      pre_approved_travel_admin: "Pre-Approved Travel Admin",
       department_admin: "Department Admin",
       td_user: "Td User",
     },

@@ -30,7 +30,7 @@ import http from "@/api/http-client"
 export const ROLES = Object.freeze({
   ADMIN: "admin",
   USER: "user",
-  PAT_ADMIN: "pat_admin",
+  PRE_APPROVED_TRAVEL_ADMIN: "pre_approved_travel_admin",
   DEPARTMENT_ADMIN: "department_admin",
   TD_USER: "td_user",
 })

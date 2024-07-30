@@ -11,7 +11,7 @@ import sequelize from "@/db/db-client"
 export enum RoleNames {
   ADMIN = "admin",
   USER = "user",
-  PAT_ADMIN = "pat_admin",
+  PRE_APPROVED_TRAVEL_ADMIN = "pre_approved_travel_admin",
   DEPARTMENT_ADMIN = "department_admin",
   TD_USER = "td_user",
 }
