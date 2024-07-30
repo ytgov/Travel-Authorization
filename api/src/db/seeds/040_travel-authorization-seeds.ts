@@ -2,6 +2,7 @@ import { Knex } from "knex"
 import { isNil } from "lodash"
 
 import {
+  Location,
   Stop,
   TravelAuthorization,
   TravelAuthorizationPreApprovalProfile,
@@ -190,45 +191,87 @@ export async function seed(_knex: Knex): Promise<void> {
     travelAuthorizations.push(travelAuthorization)
   }
 
+  const whitehorse = await Location.findOne({
+    where: {
+      province: "YT",
+      city: "Whitehorse",
+    },
+    rejectOnEmpty: true,
+  })
+  const vancouver = await Location.findOne({
+    where: {
+      province: "BC",
+      city: "Vancouver",
+    },
+    rejectOnEmpty: true,
+  })
+  const airdrie = await Location.findOne({
+    where: {
+      province: "AB",
+      city: "Airdrie",
+    },
+    rejectOnEmpty: true,
+  })
+  const grandePrairie = await Location.findOne({
+    where: {
+      province: "AB",
+      city: "Grande Prairie",
+    },
+    rejectOnEmpty: true,
+  })
+  const redDeer = await Location.findOne({
+    where: {
+      province: "AB",
+      city: "Red Deer",
+    },
+    rejectOnEmpty: true,
+  })
+  const beaumont = await Location.findOne({
+    where: {
+      province: "AB",
+      city: "Beaumont",
+    },
+    rejectOnEmpty: true,
+  })
   const stopsAttributes = [
     {
       travelAuthorizationId: travelAuthorizations[0].id,
-      locationId: 1,
+      locationId: whitehorse.id,
       departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
       travelAuthorizationId: travelAuthorizations[0].id,
-      locationId: 2,
+      locationId: vancouver.id,
       departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
       travelAuthorizationId: travelAuthorizations[1].id,
-      locationId: 3,
+      locationId: airdrie.id,
       departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
       travelAuthorizationId: travelAuthorizations[1].id,
-      locationId: 4,
+      locationId: grandePrairie.id,
       departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
       travelAuthorizationId: travelAuthorizations[2].id,
-      locationId: 5,
+      locationId: redDeer.id,
       departureDate: new Date("2023-05-12"),
       departureTime: "12:00:00",
       transport: "Plane",
     },
     {
       travelAuthorizationId: travelAuthorizations[2].id,
-      locationId: 6,
+      locationId: beaumont.id,
       departureDate: new Date("2019-05-15"),
       departureTime: "12:00:00",
       transport: "Plane",
