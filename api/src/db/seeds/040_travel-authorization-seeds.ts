@@ -6,7 +6,9 @@ import {
   TravelAuthorization,
   TravelAuthorizationPreApprovalProfile,
   TravelPurpose,
+  User,
 } from "@/models"
+import { Users } from "@/services"
 
 export async function seed(_knex: Knex): Promise<void> {
   const travelAuthorizationPreApprovalProfiles =
@@ -20,16 +22,85 @@ export async function seed(_knex: Knex): Promise<void> {
     throw new Error("Could not find IT travel purpose.")
   }
 
-  const travelAuthorizationsAttributes = [
+  const systemUserAttributes = {
+    firstName: "System",
+    lastName: "User",
+    email: "system.user@yukon.com",
+    sub: "UNSET",
+    roles: [User.Roles.ADMIN],
+    status: User.Statuses.ACTIVE,
+  }
+  let systemUser = await User.findOne({
+    where: {
+      email: systemUserAttributes.email,
+    },
+  })
+  if (isNil(systemUser)) {
+    systemUser = await User.create(systemUserAttributes)
+  } else {
+    await systemUser.update(systemUserAttributes)
+  }
+
+  const usersAttributes = [
     {
-      userId: 1,
       firstName: "John",
       lastName: "Doe",
       department: "IT",
       division: "IT",
       branch: "IT",
       unit: "IT",
-      email: "Max.parker@yukon.ca",
+      email: "John.Doe@yukon.ca",
+      mailcode: "123",
+    },
+    {
+      firstName: "Jane",
+      lastName: "Doe",
+      department: "IT",
+      division: "IT",
+      branch: "IT",
+      unit: "IT",
+      email: "Jane.Doe@yukon.ca",
+      mailcode: "123",
+    },
+    {
+      firstName: "Some Other",
+      lastName: "Guy",
+      department: "IT",
+      division: "IT",
+      branch: "IT",
+      unit: "IT",
+      email: "SomeOther.Guy@yukon.ca",
+      mailcode: "123",
+    },
+  ]
+  const users = []
+  for (const userAttributes of usersAttributes) {
+    let user = await User.findOne({
+      where: {
+        email: userAttributes.email,
+      },
+    })
+    if (isNil(user)) {
+      user = await Users.CreateService.perform(userAttributes, systemUser)
+    } else {
+      await user.update(userAttributes)
+    }
+    users.push(user)
+  }
+
+  if (users.length < 3) {
+    throw new Error("Could not find enough users.")
+  }
+  const travelAuthorizationsAttributes = [
+    {
+      userId: users[0].id,
+      firstName: "John",
+      lastName: "Doe",
+      department: "IT",
+      division: "IT",
+      branch: "IT",
+      unit: "IT",
+      email: "John.Doe@yukon.ca",
       mailcode: "123",
       daysOffTravelStatus: 1,
       dateBackToWork: new Date("2019-01-01"),
@@ -47,17 +118,17 @@ export async function seed(_knex: Knex): Promise<void> {
       denialReason: "",
       oneWayTrip: true,
       multiStop: false,
-      createdBy: 1,
+      createdBy: users[0].id,
     },
     {
-      userId: 1,
+      userId: users[1].id,
       firstName: "Jane",
       lastName: "Doe",
       department: "IT",
       division: "IT",
       branch: "IT",
       unit: "IT",
-      email: "Max.parker@yukon.ca",
+      email: "Jane.Doe@yukon.ca",
       mailcode: "123",
       daysOffTravelStatus: 1,
       dateBackToWork: new Date("2019-01-01"),
@@ -75,17 +146,17 @@ export async function seed(_knex: Knex): Promise<void> {
       denialReason: "",
       oneWayTrip: true,
       multiStop: false,
-      createdBy: 1,
+      createdBy: users[1].id,
     },
     {
-      userId: 1,
+      userId: users[2].id,
       firstName: "Some Other",
       lastName: "Guy",
       department: "IT",
       division: "IT",
       branch: "IT",
       unit: "IT",
-      email: "Max.parker@yukon.ca",
+      email: "SomeOther.Guy@yukon.ca",
       mailcode: "123",
       daysOffTravelStatus: 1,
       dateBackToWork: new Date("2019-01-01"),
@@ -103,7 +174,7 @@ export async function seed(_knex: Knex): Promise<void> {
       denialReason: "",
       oneWayTrip: true,
       multiStop: false,
-      createdBy: 1,
+      createdBy: users[2].id,
     },
   ]
   const travelAuthorizations = []
