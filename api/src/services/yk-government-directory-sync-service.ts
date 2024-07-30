@@ -1,4 +1,4 @@
-import { isEmpty, isNil } from "lodash"
+import { isNil } from "lodash"
 
 import logger from "@/utils/logger"
 import { User } from "@/models"

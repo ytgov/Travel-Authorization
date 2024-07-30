@@ -81,7 +81,7 @@ export async function seed(_knex: Knex): Promise<void> {
       },
     })
     if (isNil(user)) {
-      user = await Users.CreateService.perform(userAttributes, systemUser)
+      user = await Users.CreateService.perform(userAttributes, systemUser, { skipSync: true })
     } else {
       await user.update(userAttributes)
     }
