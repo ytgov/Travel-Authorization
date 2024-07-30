@@ -46,7 +46,7 @@ export async function seed(_knex: Knex): Promise<void> {
       requestChange: "",
       denialReason: "",
       oneWayTrip: true,
-      multiStop: true,
+      multiStop: false,
       createdBy: 1,
     },
     {
@@ -74,7 +74,7 @@ export async function seed(_knex: Knex): Promise<void> {
       requestChange: "",
       denialReason: "",
       oneWayTrip: true,
-      multiStop: true,
+      multiStop: false,
       createdBy: 1,
     },
     {
@@ -102,7 +102,7 @@ export async function seed(_knex: Knex): Promise<void> {
       requestChange: "",
       denialReason: "",
       oneWayTrip: true,
-      multiStop: true,
+      multiStop: false,
       createdBy: 1,
     },
   ]
