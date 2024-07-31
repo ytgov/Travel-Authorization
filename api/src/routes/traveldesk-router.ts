@@ -539,6 +539,10 @@ travelDeskRouter.post(
           ) => {
             delete rentalCar.tmpId
             delete rentalCar.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
             rentalCar.travelRequestId = travelRequest.id
             return rentalCar
           }
@@ -559,6 +563,10 @@ travelDeskRouter.post(
           ) => {
             delete hotel.tmpId
             delete hotel.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
             hotel.travelRequestId = travelRequest.id
             return hotel
           }
@@ -579,6 +587,10 @@ travelDeskRouter.post(
           ) => {
             delete otherTransportation.tmpId
             delete otherTransportation.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
             otherTransportation.travelRequestId = travelRequest.id
             return otherTransportation
           }
@@ -600,6 +612,10 @@ travelDeskRouter.post(
             delete question.tmpId
             delete question.state
             delete question.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
             question.travelRequestId = travelRequest.id
             return question
           }
