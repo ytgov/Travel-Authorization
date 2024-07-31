@@ -48,8 +48,8 @@ const routes = [
           },
           {
             path: "/administration/users",
-            name: "Administration/UserManagement/Grid/index",
-            component: () => import("@/components/Administration/UserManagement/Grid/index.vue"),
+            name: "administration/UsersPage",
+            component: () => import("@/pages/administration/UsersPage.vue"),
           },
           {
             path: "/administration/purpose",

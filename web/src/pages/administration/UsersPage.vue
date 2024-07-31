@@ -78,7 +78,7 @@ export default {
       {
         text: "User Management",
         to: {
-          name: "Administration/UserManagement/Grid/index",
+          name: "administration/UsersPage",
         },
       },
     ])
