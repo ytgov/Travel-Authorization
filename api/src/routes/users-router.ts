@@ -1,4 +1,4 @@
-import { isNull } from "lodash"
+import { isNull, pick } from "lodash"
 import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
@@ -60,21 +60,9 @@ userRouter.put(
   "/:id/permissions",
   /* RequiresRoleAdmin, */ async (req: Request, res: Response) => {
     try {
-      logger.info("body", {
-        firstName: req.body.first_name,
-        lastName: req.body.last_name,
-        department: req.body.departments,
-        roles: req.body.roles,
-      })
-      await User.update(
-        {
-          firstName: req.body.first_name,
-          lastName: req.body.last_name,
-          department: req.body.departments,
-          roles: req.body.roles,
-        },
-        { where: { id: req.params.id } }
-      )
+      const userId = req.params.id
+      const userAttributes = pick(req.body, ["firstName", "lastName", "department", "roles"])
+      await User.update(userAttributes, { where: { id: userId } })
       res.status(200).json("Saved permissions")
     } catch (error: any) {
       logger.info(error)
