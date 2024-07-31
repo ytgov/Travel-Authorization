@@ -65,7 +65,7 @@ import { USERS_URL } from "@/urls"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 export default {
-  name: "UsersGrid",
+  name: "UsersPage",
   components: {},
   setup() {
     useBreadcrumbs([
