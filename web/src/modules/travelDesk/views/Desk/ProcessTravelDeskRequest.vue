@@ -282,6 +282,7 @@ import { cloneDeep } from "lodash"
 import { TRAVEL_DESK_URL } from "@/urls"
 import { useSnack } from "@/plugins/snack-plugin"
 import http from "@/api/http-client"
+import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
 import useCurrentUser from "@/use/use-current-user"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
@@ -437,12 +438,13 @@ export default {
         return
       }
 
+      // TODO: move status updates to state specific endpoints
       if (saveType == "save") {
         // no-op
       } else if (saveType == "sendback") {
-        body.status = "options_provided"
+        body.status = TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
       } else if (saveType == "booked") {
-        body.status = "booked"
+        body.status = TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
       }
 
       const travelDeskTravelRequestId = this.travelRequest.id
