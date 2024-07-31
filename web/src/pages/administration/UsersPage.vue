@@ -130,8 +130,11 @@ export default {
     },
   },
   async mounted() {
-    //this.getDataFromApi();
-    this.laodUsers()
+    try {
+      this.laodUsers()
+    } finally {
+      this.loading = false
+    }
   },
   methods: {
     ...mapActions("users", ["loadUsers"]),
