@@ -301,8 +301,8 @@ travelDeskRouter.post(
   "/flight-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    try {
-      return db.transaction(async () => {
+    return db
+      .transaction(async () => {
         const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const flightRequests = req.body
         // logger.info(flightRequests)
@@ -360,10 +360,10 @@ travelDeskRouter.post(
           return res.status(500).json("Required fields in submission are blank")
         }
       })
-    } catch (error: unknown) {
-      logger.info(error)
-      res.status(500).json("Saving the Flight Request failed")
-    }
+      .catch((error) => {
+        logger.info(error)
+        return res.status(500).json("Saving the Flight Request failed")
+      })
   }
 )
 
@@ -444,32 +444,31 @@ travelDeskRouter.post(
     logger.warn(
       "Deprecated: travel requests are now created during TravelAuthorization approval service action."
     )
-    try {
-      const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
-      if (isNil(travelDeskTravelRequestId) || isNaN(travelDeskTravelRequestId)) {
-        return res.status(422).json("Missing travelDeskTravelRequestId parameter.")
-      }
+    const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
+    if (isNil(travelDeskTravelRequestId) || isNaN(travelDeskTravelRequestId)) {
+      return res.status(422).json("Missing travelDeskTravelRequestId parameter.")
+    }
 
-      const newTravelRequest = req.body
-      delete newTravelRequest.invoiceNumber
+    const newTravelRequest = req.body
+    delete newTravelRequest.invoiceNumber
 
-      const flightRequests = newTravelRequest.flightRequests
-      delete newTravelRequest.flightRequests
+    const flightRequests = newTravelRequest.flightRequests
+    delete newTravelRequest.flightRequests
 
-      const rentalCars = newTravelRequest.rentalCars
-      delete newTravelRequest.rentalCars
+    const rentalCars = newTravelRequest.rentalCars
+    delete newTravelRequest.rentalCars
 
-      const hotels = newTravelRequest.hotels
-      delete newTravelRequest.hotels
+    const hotels = newTravelRequest.hotels
+    delete newTravelRequest.hotels
 
-      const otherTransportations = newTravelRequest.otherTransportation || []
-      delete newTravelRequest.otherTransportation
+    const otherTransportations = newTravelRequest.otherTransportation || []
+    delete newTravelRequest.otherTransportation
 
-      const questions = newTravelRequest.questions
-      delete newTravelRequest.questions
-      return db.transaction(async () => {
-        // logger.info(newTravelRequest)
+    const questions = newTravelRequest.questions
+    delete newTravelRequest.questions
 
+    return db
+      .transaction(async () => {
         let travelRequest = await TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId)
         if (isNil(travelRequest)) {
           travelRequest = await TravelDeskTravelRequest.create(newTravelRequest)
@@ -621,13 +620,12 @@ travelDeskRouter.post(
           }
         )
         await TravelDeskQuestion.bulkCreate(cleanQuestions)
-
         return res.status(200).json("Successful")
       })
-    } catch (error: unknown) {
-      logger.info(error)
-      res.status(500).json("Saving the Travel Request failed")
-    }
+      .catch((error) => {
+        logger.error(error)
+        res.status(500).json("Saving the Travel Request failed")
+      })
   }
 )
 
