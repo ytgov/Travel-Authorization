@@ -38,7 +38,7 @@ const menuCardLists = [
       {
         icon: "mdi-account-group",
         title: "User Management",
-        to: { name: "Administration/UserManagement/Grid/index" },
+        to: { name: "administration/UsersPage" },
       },
     ],
   },
