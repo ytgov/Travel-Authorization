@@ -73,9 +73,9 @@
                 </v-col>
                 <v-col cols="12">
                   <v-select
+                    v-model="pendingDepartments"
                     :items="departments"
                     item-text="name"
-                    v-model="pendingDepartments"
                     label="Departments"
                     outlined
                     dense
@@ -97,8 +97,6 @@
                     small-chips
                     background-color="white"
                     clearable
-                    item-value="id"
-                    item-text="name"
                     hide-details
                     @change="alertMsg = ''"
                   ></v-select>
@@ -128,8 +126,9 @@
 </template>
 
 <script>
-import http from "@/api/http-client"
 import { USERS_URL, LOOKUP_URL } from "@/urls"
+import http from "@/api/http-client"
+
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 
 export default {
@@ -212,9 +211,11 @@ export default {
       })
     },
     async loadRoles() {
-      return http.get(`${LOOKUP_URL}/roles`).then((resp) => {
-        console.log(resp.data)
-        this.roles = resp.data
+      return http.get(`${LOOKUP_URL}/roles`).then(({ data }) => {
+        this.roles = data.map(({ name }) => ({
+          value: name,
+          text: this.$t(`role.name.${name}`, { $default: name }),
+        }))
       })
     },
   },

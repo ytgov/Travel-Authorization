@@ -5,6 +5,7 @@ import Expense from "./expense"
 import GeneralLedgerCoding from "./general-ledger-coding"
 import Location from "./location"
 import PerDiem from "./per-diem"
+import Role from "./role"
 import Stop from "./stop"
 import TravelAllowance from "./travel-allowance"
 import TravelAuthorization from "./travel-authorization"
@@ -49,6 +50,7 @@ export {
   GeneralLedgerCoding,
   Location,
   PerDiem,
+  Role,
   Stop,
   TravelAllowance,
   TravelAuthorization,

@@ -203,7 +203,7 @@ export default {
   methods: {
     ...mapActions("current/user", ["ensure", "ygGovernmentDirectorySync"]),
     formatRole(value) {
-      return this.$t(`global.role.${value}`, { $default: value })
+      return this.$t(`role.name.${value}`, { $default: value })
     },
     formatStatus(value) {
       return this.$t(`global.status.${value}`, { $default: value })

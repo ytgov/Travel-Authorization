@@ -21,27 +21,16 @@ import { isNil } from "lodash"
 import moment from "moment"
 
 import sequelize from "@/db/db-client"
-import TravelAuthorization from "./travel-authorization"
-
-export enum Roles {
-  ADMIN = "admin",
-  USER = "user",
-  PAT_ADMIN = "pat_admin",
-  DEPARTMENT_ADMIN = "department_admin",
-  TD_USER = "td_user",
-}
+import { isRole, RoleNames } from "@/models/role"
+import TravelAuthorization from "@/models/travel-authorization"
 
 export enum Statuses {
   ACTIVE = "active",
   INACTIVE = "inactive",
 }
 
-function isRole(role: string): role is Roles {
-  return Object.values(Roles).includes(role as Roles)
-}
-
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  static Roles = Roles
+  static Roles = RoleNames
   static Statuses = Statuses
 
   declare id: CreationOptional<number>
@@ -181,7 +170,7 @@ User.init(
             if (isRole(role)) return
 
             throw new Error(
-              `Invalid role: ${role}. Allowed roles are: ${Object.values(Roles).join(", ")}`
+              `Invalid role: ${role}. Allowed roles are: ${Object.values(RoleNames).join(", ")}`
             )
           })
         },

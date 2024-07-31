@@ -37,7 +37,7 @@ class DevHelper
 
     case kwargs[:execution_mode]
     when WAIT_FOR_PROCESS
-      `#{command}`
+      wait_for_process_with_logging(command)
     else
       exec(command)
     end
@@ -171,6 +171,15 @@ class DevHelper
   end
 
   private
+
+  def wait_for_process_with_logging(command)
+    IO.popen("#{command} 2>&1") do |io|
+      until io.eof?
+        line = io.gets
+        puts line
+      end
+    end
+  end
 
   def container_id(container_name, *args, **kwargs)
     command = compose_command(*%w[ps -q], container_name, *args, **kwargs)
