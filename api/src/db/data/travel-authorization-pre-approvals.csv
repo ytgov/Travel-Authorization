@@ -1,6 +1,0 @@
-preTID,department,branch,purpose,reason,startDate,endDate,dateUnkInd,month,estimatedCost,travelerUnkInd,numberTravelers,travelerNotes,location,status,preTSubID
-1,Finance,New York,Conference,Budget Analysis,2023-10-15,2023-10-18,0,October,1500,0,2,"Booked flights and hotels",Chicago,Approved,
-2,Marketing,San Francisco,Training,New Product Launch,2023-11-05,2023-11-08,0,November,2000,0,1,"Need to book a hotel",Los Angeles,Pending,
-3,Engineering,Boston,Project Work,Infrastructure Update,2023-12-01,2023-12-05,0,December,2500,0,3,"All set",San Francisco,Approved,
-4,HR,Chicago,Meeting,Annual Planning,2024-01-10,2024-01-12,0,January,1000,0,1,"",New York,Rejected,
-5,IT,Los Angeles,Site Visit,Network Installation,2024-02-18,2024-02-20,0,February,1800,0,2,"Booked rental cars",Boston,Pending,

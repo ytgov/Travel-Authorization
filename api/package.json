@@ -4,7 +4,7 @@
   "description": "API for YHSI Application",
   "main": "src/server.js",
   "scripts": {
-    "build": "tsc && tsc-alias && mkdir -p dist/src/db/data && cp src/db/data/*.csv dist/src/db/data/",
+    "build": "tsc && tsc-alias",
     "start": "ts-node-dev -r tsconfig-paths/register src/server.ts",
     "ts-node": "ts-node -r tsconfig-paths/register",
     "knex": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex --knexfile src/config.d/knexfile.ts",

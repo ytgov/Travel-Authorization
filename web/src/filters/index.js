@@ -6,7 +6,7 @@ Vue.filter("isAdmin", function () {
   const userDept = store.state.auth?.department
   const userRoles = store.state.auth?.user?.roles
   const admin = userRoles?.includes("admin")
-  const patAdmin = userRoles?.includes("pat_admin") && Boolean(userDept)
+  const patAdmin = userRoles?.includes("pre_approved_travel_admin") && Boolean(userDept)
   const hasAdminRole = admin || patAdmin
   return hasAdminRole
 })
@@ -20,7 +20,7 @@ Vue.filter("isSystemAdmin", function () {
 Vue.filter("isTdUser", function () {
   const userRoles = store.state.auth?.user?.roles
   const admin = userRoles?.includes("admin")
-  const TdUser = userRoles?.includes("td_user")
+  const TdUser = userRoles?.includes("travel_desk_user")
   return admin || TdUser
 })
 

@@ -1,0 +1,436 @@
+origin,destination,kilometers
+Beaver Creek,Braeburn,527
+Beaver Creek,Burwash Landing,170
+Beaver Creek,Carcross,516
+Beaver Creek,Carmacks,594
+Beaver Creek,Champagne,356
+Beaver Creek,Dawson City,950
+Beaver Creek,Destruction Bay,186
+Beaver Creek,Drury Creek,711
+Beaver Creek,Elsa,868
+Beaver Creek,Faro,776
+Beaver Creek,Fraser,584
+Beaver Creek,Haines Junction,291
+Beaver Creek,Keno,881
+Beaver Creek,Marsh Lake,507
+Beaver Creek,Mayo,823
+Beaver Creek,Mendenhall,380
+Beaver Creek,Pelly Crossing,700
+Beaver Creek,Rancheria,763
+Beaver Creek,Ross River,827
+Beaver Creek,Stewart Crossing,771
+Beaver Creek,Swift River,736
+Beaver Creek,Tagish,547
+Beaver Creek,Teslin,622
+Beaver Creek,Tuchitua,989
+Beaver Creek,Upper Liard,870
+Beaver Creek,Watson Lake,882
+Beaver Creek,Whitehorse,446
+Beaver Creek,Skagway,619
+Beaver Creek,Haines,529
+Braeburn,Burwash Landing,358
+Braeburn,Carcross,180
+Braeburn,Carmacks,67
+Braeburn,Champagne,171
+Braeburn,Dawson City,423
+Braeburn,Destruction Bay,341
+Braeburn,Drury Creek,184
+Braeburn,Elsa,341
+Braeburn,Faro,249
+Braeburn,Fraser,248
+Braeburn,Haines Junction,235
+Braeburn,Keno,354
+Braeburn,Marsh Lake,162
+Braeburn,Mayo,296
+Braeburn,Mendenhall,147
+Braeburn,Pelly Crossing,173
+Braeburn,Rancheria,427
+Braeburn,Ross River,300
+Braeburn,Stewart Crossing,244
+Braeburn,Swift River,400
+Braeburn,Tagish,211
+Braeburn,Teslin,286
+Braeburn,Tuchitua,544
+Braeburn,Upper Liard,535
+Braeburn,Watson Lake,546
+Braeburn,Whitehorse,103
+Braeburn,Skagway,619
+Braeburn,Haines,529
+Burwash Landing,Carcross,347
+Burwash Landing,Carmacks,425
+Burwash Landing,Champagne,187
+Burwash Landing,Dawson City,780
+Burwash Landing,Destruction Bay,17
+Burwash Landing,Drury Creek,542
+Burwash Landing,Elsa,699
+Burwash Landing,Faro,607
+Burwash Landing,Fraser,415
+Burwash Landing,Haines Junction,122
+Burwash Landing,Keno,711
+Burwash Landing,Marsh Lake,329
+Burwash Landing,Mayo,654
+Burwash Landing,Mendenhall,210
+Burwash Landing,Pelly Crossing,531
+Burwash Landing,Rancheria,594
+Burwash Landing,Ross River,657
+Burwash Landing,Stewart Crossing,601
+Burwash Landing,Swift River,566
+Burwash Landing,Tagish,377
+Burwash Landing,Teslin,452
+Burwash Landing,Tuchitua,819
+Burwash Landing,Upper Liard,701
+Burwash Landing,Watson Lake,712
+Burwash Landing,Whitehorse,276
+Burwash Landing,Skagway,450
+Burwash Landing,Haines,360
+Carcross,Carmacks,248
+Carcross,Champagne,161
+Carcross,Dawson City,603
+Carcross,Destruction Bay,331
+Carcross,Drury Creek,364
+Carcross,Elsa,522
+Carcross,Faro,429
+Carcross,Fraser,69
+Carcross,Haines Junction,225
+Carcross,Keno,534
+Carcross,Marsh Lake,87
+Carcross,Mayo,477
+Carcross,Mendenhall,137
+Carcross,Pelly Crossing,354
+Carcross,Rancheria,293
+Carcross,Ross River,480
+Carcross,Stewart Crossing,424
+Carcross,Swift River,265
+Carcross,Tagish,34
+Carcross,Teslin,151
+Carcross,Tuchitua,518
+Carcross,Upper Liard,400
+Carcross,Watson Lake,411
+Carcross,Whitehorse,73
+Carcross,Skagway,104
+Carcross,Haines,463
+Carmacks,Champagne,239
+Carmacks,Dawson City,355
+Carmacks,Destruction Bay,408
+Carmacks,Drury Creek,117
+Carmacks,Elsa,274
+Carmacks,Faro,182
+Carmacks,Fraser,316
+Carmacks,Haines Junction,303
+Carmacks,Keno,287
+Carmacks,Marsh Lake,229
+Carmacks,Mayo,229
+Carmacks,Mendenhall,214
+Carmacks,Pelly Crossing,106
+Carmacks,Rancheria,495
+Carmacks,Ross River,233
+Carmacks,Stewart Crossing,177
+Carmacks,Swift River,467
+Carmacks,Tagish,278
+Carmacks,Teslin,353
+Carmacks,Tuchitua,477
+Carmacks,Upper Liard,602
+Carmacks,Watson Lake,613
+Carmacks,Whitehorse,177
+Carmacks,Skagway,351
+Carmacks,Haines,541
+Champagne,Dawson City,594
+Champagne,Destruction Bay,171
+Champagne,Drury Creek,355
+Champagne,Elsa,513
+Champagne,Faro,420
+Champagne,Fraser,229
+Champagne,Haines Junction,65
+Champagne,Keno,525
+Champagne,Marsh Lake,143
+Champagne,Mayo,468
+Champagne,Mendenhall,24
+Champagne,Pelly Crossing,345
+Champagne,Rancheria,408
+Champagne,Ross River,471
+Champagne,Stewart Crossing,415
+Champagne,Swift River,380
+Champagne,Tagish,191
+Champagne,Teslin,266
+Champagne,Tuchitua,633
+Champagne,Upper Liard,515
+Champagne,Watson Lake,526
+Champagne,Whitehorse,90
+Champagne,Skagway,264
+Champagne,Haines,303
+Dawson City,Destruction Bay,764
+Dawson City,Drury Creek,466
+Dawson City,Elsa,275
+Dawson City,Faro,531
+Dawson City,Fraser,671
+Dawson City,Haines Junction,658
+Dawson City,Keno,287
+Dawson City,Marsh Lake,585
+Dawson City,Mayo,230
+Dawson City,Mendenhall,850
+Dawson City,Pelly Crossing,582
+Dawson City,Rancheria,179
+Dawson City,Ross River,582
+Dawson City,Stewart Crossing,179
+Dawson City,Swift River,822
+Dawson City,Tagish,634
+Dawson City,Teslin,708
+Dawson City,Tuchitua,826
+Dawson City,Upper Liard,957
+Dawson City,Watson Lake,968
+Dawson City,Whitehorse,532
+Dawson City,Skagway,706
+Dawson City,Haines,896
+Destruction Bay,Drury Creek,525
+Destruction Bay,Elsa,682
+Destruction Bay,Faro,590
+Destruction Bay,Fraser,399
+Destruction Bay,Haines Junction,106
+Destruction Bay,Keno,695
+Destruction Bay,Marsh Lake,312
+Destruction Bay,Mayo,637
+Destruction Bay,Mendenhall,194
+Destruction Bay,Pelly Crossing,515
+Destruction Bay,Rancheria,578
+Destruction Bay,Ross River,641
+Destruction Bay,Stewart Crossing,585
+Destruction Bay,Swift River,550
+Destruction Bay,Tagish,361
+Destruction Bay,Teslin,436
+Destruction Bay,Tuchitua,803
+Destruction Bay,Upper Liard,685
+Destruction Bay,Watson Lake,696
+Destruction Bay,Whitehorse,260
+Destruction Bay,Skagway,434
+Destruction Bay,Haines,343
+Drury Creek,Elsa,384
+Drury Creek,Faro,65
+Drury Creek,Fraser,433
+Drury Creek,Haines Junction,420
+Drury Creek,Keno,397
+Drury Creek,Marsh Lake,355
+Drury Creek,Mayo,340
+Drury Creek,Mendenhall,331
+Drury Creek,Pelly Crossing,217
+Drury Creek,Rancheria,612
+Drury Creek,Ross River,115
+Drury Creek,Stewart Crossing,287
+Drury Creek,Swift River,584
+Drury Creek,Tagish,395
+Drury Creek,Teslin,470
+Drury Creek,Tuchitua,359
+Drury Creek,Upper Liard,478
+Drury Creek,Watson Lake,467
+Drury Creek,Whitehorse,394
+Drury Creek,Skagway,467
+Drury Creek,Haines,658
+Elsa,Faro,449
+Elsa,Fraser,590
+Elsa,Haines Junction,577
+Elsa,Keno,13
+Elsa,Marsh Lake,503
+Elsa,Mayo,48
+Elsa,Mendenhall,488
+Elsa,Pelly Crossing,169
+Elsa,Rancheria,769
+Elsa,Ross River,500
+Elsa,Stewart Crossing,98
+Elsa,Swift River,741
+Elsa,Tagish,552
+Elsa,Teslin,627
+Elsa,Tuchitua,744
+Elsa,Upper Liard,876
+Elsa,Watson Lake,887
+Elsa,Whitehorse,451
+Elsa,Skagway,625
+Elsa,Haines,815
+Faro,Fraser,497
+Faro,Haines Junction,484
+Faro,Keno,462
+Faro,Marsh Lake,411
+Faro,Mayo,404
+Faro,Mendenhall,396
+Faro,Pelly Crossing,282
+Faro,Rancheria,543
+Faro,Ross River,73
+Faro,Stewart Crossing,352
+Faro,Swift River,649
+Faro,Tagish,460
+Faro,Teslin,535
+Faro,Tuchitua,317
+Faro,Upper Liard,436
+Faro,Watson Lake,425
+Faro,Whitehorse,359
+Faro,Skagway,532
+Faro,Haines,723
+Fraser,Haines Junction,293
+Fraser,Keno,602
+Fraser,Marsh Lake,152
+Fraser,Mayo,545
+Fraser,Mendenhall,205
+Fraser,Pelly Crossing,422
+Fraser,Rancheria,361
+Fraser,Ross River,548
+Fraser,Stewart Crossing,492
+Fraser,Swift River,333
+Fraser,Tagish,102
+Fraser,Teslin,219
+Fraser,Tuchitua,586
+Fraser,Upper Liard,468
+Fraser,Watson Lake,479
+Fraser,Whitehorse,141
+Fraser,Skagway,35
+Fraser,Haines,531
+Haines Junction,Keno,589
+Haines Junction,Marsh Lake,207
+Haines Junction,Mayo,532
+Haines Junction,Mendenhall,89
+Haines Junction,Pelly Crossing,409
+Haines Junction,Rancheria,472
+Haines Junction,Ross River,535
+Haines Junction,Stewart Crossing,479
+Haines Junction,Swift River,444
+Haines Junction,Tagish,255
+Haines Junction,Teslin,330
+Haines Junction,Tuchitua,697
+Haines Junction,Upper Liard,579
+Haines Junction,Watson Lake,590
+Haines Junction,Whitehorse,154
+Haines Junction,Skagway,328
+Haines Junction,Haines,238
+Keno,Marsh Lake,525
+Keno,Mayo,60
+Keno,Mendenhall,501
+Keno,Pelly Crossing,181
+Keno,Rancheria,781
+Keno,Ross River,513
+Keno,Stewart Crossing,110
+Keno,Swift River,753
+Keno,Tagish,565
+Keno,Teslin,639
+Keno,Tuchitua,757
+Keno,Upper Liard,888
+Keno,Watson Lake,900
+Keno,Whitehorse,464
+Keno,Skagway,637
+Keno,Haines,827
+Marsh Lake,Mayo,458
+Marsh Lake,Mendenhall,118
+Marsh Lake,Pelly Crossing,336
+Marsh Lake,Rancheria,267
+Marsh Lake,Ross River,462
+Marsh Lake,Stewart Crossing,406
+Marsh Lake,Swift River,239
+Marsh Lake,Tagish,50
+Marsh Lake,Teslin,125
+Marsh Lake,Tuchitua,492
+Marsh Lake,Upper Liard,374
+Marsh Lake,Watson Lake,385
+Marsh Lake,Whitehorse,63
+Marsh Lake,Skagway,187
+Marsh Lake,Haines,445
+Mayo,Mendenhall,443
+Mayo,Pelly Crossing,124
+Mayo,Rancheria,724
+Mayo,Ross River,455
+Mayo,Stewart Crossing,53
+Mayo,Swift River,696
+Mayo,Tagish,507
+Mayo,Teslin,582
+Mayo,Tuchitua,699
+Mayo,Upper Liard,831
+Mayo,Watson Lake,842
+Mayo,Whitehorse,406
+Mayo,Skagway,580
+Mayo,Haines,770
+Mendenhall,Pelly Crossing,320
+Mendenhall,Rancheria,384
+Mendenhall,Ross River,446
+Mendenhall,Stewart Crossing,391
+Mendenhall,Swift River,356
+Mendenhall,Tagish,167
+Mendenhall,Teslin,242
+Mendenhall,Tuchitua,609
+Mendenhall,Upper Liard,491
+Mendenhall,Watson Lake,502
+Mendenhall,Whitehorse,66
+Mendenhall,Skagway,240
+Mendenhall,Haines,327
+Pelly Crossing,Rancheria,601
+Pelly Crossing,Ross River,333
+Pelly Crossing,Stewart Crossing,71
+Pelly Crossing,Swift River,573
+Pelly Crossing,Tagish,384
+Pelly Crossing,Teslin,459
+Pelly Crossing,Tuchitua,577
+Pelly Crossing,Upper Liard,708
+Pelly Crossing,Watson Lake,719
+Pelly Crossing,Whitehorse,283
+Pelly Crossing,Skagway,457
+Pelly Crossing,Haines,647
+Rancheria,Ross River,490
+Rancheria,Stewart Crossing,671
+Rancheria,Swift River,28
+Rancheria,Tagish,259
+Rancheria,Teslin,142
+Rancheria,Tuchitua,226
+Rancheria,Upper Liard,107
+Rancheria,Watson Lake,119
+Rancheria,Whitehorse,320
+Rancheria,Skagway,396
+Rancheria,Haines,710
+Ross River,Stewart Crossing,402
+Ross River,Swift River,517
+Ross River,Tagish,510
+Ross River,Teslin,631
+Ross River,Tuchitua,264
+Ross River,Upper Liard,382
+Ross River,Watson Lake,372
+Ross River,Whitehorse,410
+Ross River,Skagway,583
+Ross River,Haines,774
+Stewart Crossing,Swift River,643
+Stewart Crossing,Tagish,455
+Stewart Crossing,Teslin,529
+Stewart Crossing,Tuchitua,647
+Stewart Crossing,Upper Liard,778
+Stewart Crossing,Watson Lake,790
+Stewart Crossing,Whitehorse,354
+Stewart Crossing,Skagway,527
+Stewart Crossing,Haines,717
+Swift River,Tagish,231
+Swift River,Teslin,114
+Swift River,Tuchitua,253
+Swift River,Upper Liard,135
+Swift River,Watson Lake,146
+Swift River,Whitehorse,292
+Swift River,Skagway,368
+Swift River,Haines,682
+Tagish,Teslin,117
+Tagish,Tuchitua,485
+Tagish,Upper Liard,366
+Tagish,Watson Lake,378
+Tagish,Whitehorse,103
+Tagish,Skagway,136
+Tagish,Haines,494
+Teslin,Tuchitua,367
+Teslin,Upper Liard,249
+Teslin,Watson Lake,260
+Teslin,Whitehorse,178
+Teslin,Skagway,254
+Teslin,Haines,568
+Tuchitua,Upper Liard,118
+Tuchitua,Watson Lake,108
+Tuchitua,Whitehorse,545
+Tuchitua,Skagway,621
+Tuchitua,Haines,936
+Upper Liard,Watson Lake,11
+Upper Liard,Whitehorse,427
+Upper Liard,Skagway,503
+Upper Liard,Haines,817
+Watson Lake,Whitehorse,438
+Watson Lake,Skagway,514
+Watson Lake,Haines,829
+Whitehorse,Skagway,176
+Whitehorse,Haines,393
+Skagway,Haines,566

@@ -20,7 +20,7 @@ export class EnsureService extends BaseService {
     let user: User | null = null
     if (email !== undefined) {
       user = await User.findOne({
-        where: { email },
+        where: { email: email.toLowerCase() },
       })
     }
 

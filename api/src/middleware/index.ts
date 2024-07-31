@@ -48,7 +48,7 @@ export function RequiresRolePatAdminOrAdmin(req: Request, res: Response, next: N
   if (
     req.user &&
     (req.user.roles.indexOf(User.Roles.ADMIN) >= 0 ||
-      req.user.roles.indexOf(User.Roles.PAT_ADMIN) >= 0)
+      req.user.roles.indexOf(User.Roles.PRE_APPROVED_TRAVEL_ADMIN) >= 0)
   ) {
     return next()
   }
@@ -56,7 +56,7 @@ export function RequiresRolePatAdminOrAdmin(req: Request, res: Response, next: N
 }
 
 export function RequiresRoleTdUser(req: Request, res: Response, next: NextFunction) {
-  if (req.user && req.user.roles.indexOf(User.Roles.TD_USER) >= 0) {
+  if (req.user && req.user.roles.indexOf(User.Roles.TRAVEL_DESK_USER) >= 0) {
     return next()
   }
   return res.status(401).send("You are not a Travel Desk User!")
@@ -66,7 +66,7 @@ export function RequiresRoleTdUserOrAdmin(req: Request, res: Response, next: Nex
   if (
     req.user &&
     (req.user.roles.indexOf(User.Roles.ADMIN) >= 0 ||
-      req.user.roles.indexOf(User.Roles.TD_USER) >= 0)
+      req.user.roles.indexOf(User.Roles.TRAVEL_DESK_USER) >= 0)
   ) {
     return next()
   }

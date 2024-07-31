@@ -12,14 +12,21 @@ type AttributesWithDefaults = "sub" | "email" | "roles" | "status"
 export type UserCreationAttributes = Omit<CreationAttributes<User>, AttributesWithDefaults> &
   Partial<Pick<User, AttributesWithDefaults>>
 
-export class CreateService extends BaseService {
-  private attributes: UserCreationAttributes
-  private currentUser: User
+export type UserCreationOptions = {
+  skipSync?: boolean
+}
 
-  constructor(attributes: UserCreationAttributes, currentUser: User) {
+export class CreateService extends BaseService {
+  constructor(
+    private attributes: UserCreationAttributes,
+    private currentUser: User,
+    private options: UserCreationOptions = {}
+  ) {
     super()
-    this.attributes = attributes
-    this.currentUser = currentUser
+    this.options = {
+      skipSync: false,
+      ...options,
+    }
   }
 
   async perform(): Promise<User> {
@@ -55,10 +62,12 @@ export class CreateService extends BaseService {
 
       // TODO: log creator of this user?
 
-      try {
-        await YkGovernmentDirectorySyncService.perform(user)
-      } catch (error) {
-        logger.error(`Failed to sync new user with YG employee directory: ${error}`)
+      if (this.options.skipSync !== true) {
+        try {
+          await YkGovernmentDirectorySyncService.perform(user)
+        } catch (error) {
+          logger.error(`Failed to sync new user with YG employee directory: ${error}`)
+        }
       }
 
       return user

@@ -44,7 +44,7 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
       where: {
         status: User.Statuses.ACTIVE,
         roles: {
-          [Op.contains]: [User.Roles.TD_USER],
+          [Op.contains]: [User.Roles.TRAVEL_DESK_USER],
         },
       },
     })

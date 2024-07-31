@@ -132,6 +132,9 @@ entity "roles" {
   * id : serial4
   --
   name : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 
@@ -494,6 +497,8 @@ entity "YgEmployees" {
 }
 
 ' Relationships
+expenses .. per_diems : estimates generation
+expenses .. travel_allowances : estimates generation
 expenses::travel_authorization_id ||--o{ travel_authorizations::id
 preapprovedSubmissions::preTSubID }o--o| preapprovedDocuments::preTSubID
 stops::travel_authorization_id }o--|| travel_authorizations::id
@@ -514,6 +519,5 @@ travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorization
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests
 travelDeskFlightSegment }o--|| travelDeskFlightOption
-expenses .. per_diems : estimates generation
-expenses .. travel_allowances : estimates generation
+users::roles }o..o{ roles::name
 @enduml

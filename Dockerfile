@@ -18,6 +18,8 @@ COPY api ./
 
 RUN npm run build
 
+RUN mkdir -p dist/src/db/seeds/data && cp src/db/seeds/data/*.csv dist/src/db/seeds/data/
+
 # Stage 2 - web build - requires development environment to install vue-cli-service
 FROM base-node as web-build-stage
 
