@@ -1,5 +1,15 @@
 export default {
   global: {
+    // TODO: move to per-model key
+    phase: {
+      expensed: "Expensed",
+      expensing: "Expensing",
+      travel_approval: "Travel Approval",
+      travel_complete: "Travel Complete",
+      travel_planning: "Travel Planning",
+      travelling: "Travelling",
+    },
+    // TODO: move to per-model key
     status: {
       active: "Active",
       approved: "Approved",
@@ -16,31 +26,6 @@ export default {
       inactive: "Inactive",
       submitted: "Submitted",
       travelling: "Travelling",
-    },
-    phase: {
-      expensed: "Expensed",
-      expensing: "Expensing",
-      travel_approval: "Travel Approval",
-      travel_complete: "Travel Complete",
-      travel_planning: "Travel Planning",
-      travelling: "Travelling",
-    },
-  },
-  role: {
-    name: {
-      admin: "Admin",
-      user: "User",
-      pre_approved_travel_admin: "Pre-Approved Travel Admin",
-      department_admin: "Department Admin",
-      travel_desk_user: "Travel Desk User",
-    },
-  },
-  travel_desk_question: {
-    request_type: {
-      flight: "Flight",
-      hotel: "Hotel",
-      transportation: "Transportation",
-      rental_car: "Rental Car",
     },
   },
   per_diem: {
@@ -60,12 +45,29 @@ export default {
       Yukon: "Yukon",
     },
   },
+  role: {
+    name: {
+      admin: "Admin",
+      user: "User",
+      pre_approved_travel_admin: "Pre-Approved Travel Admin",
+      department_admin: "Department Admin",
+      travel_desk_user: "Travel Desk User",
+    },
+  },
   travel_allowance: {
     allowance_type: {
       maxium_aircraft_allowance: "Maximum Aircraft Allowance",
       aircraft_allowance_per_segment: "Aircraft Allowance Per Segment",
       distance_allowance_per_kilometer: "Distance Allowance Per Kilometer",
       hotel_allowance_per_night: "Hotel Allowance Per Night",
+    },
+  },
+  travel_desk_question: {
+    request_type: {
+      flight: "Flight",
+      hotel: "Hotel",
+      transportation: "Transportation",
+      rental_car: "Rental Car",
     },
   },
 }
