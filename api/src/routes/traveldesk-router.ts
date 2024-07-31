@@ -482,7 +482,7 @@ travelDeskRouter.post(
         })
 
         for (const flightRequest of flightRequests) {
-          const newFlightOptions = flightRequest.flightOptions
+          const newFlightOptions = flightRequest.flightOptions || []
           delete flightRequest.flightOptions
 
           delete flightRequest.tmpId
