@@ -373,8 +373,8 @@ export default {
       this.initStates()
       this.savingData = false
       this.loadingData = true
-      const travelAuthorizationId = this.travelDetail.travelAuthorizationId
-      this.travelRequest = await this.getTravelRequestInfo(travelAuthorizationId)
+      const travelDeskTravelRequestId = this.travelDetail.id
+      this.travelRequest = await this.getTravelRequestInfo(travelDeskTravelRequestId)
       this.travelAgentsInfo = await this.getTravelAgentsInfo()
       this.travelAgentsInfo.push({ agencyID: null, agencyName: "None", agencyInfo: "" })
       this.readonly = this.type == "booked" || this.travelRequest.status == "booked"
@@ -395,9 +395,9 @@ export default {
       this.addNewTravelDialog = false
     },
 
-    async getTravelRequestInfo(taid) {
+    async getTravelRequestInfo(travelDeskTravelRequestId) {
       return http
-        .get(`${TRAVEL_DESK_URL}/travel-request/` + taid)
+        .get(`${TRAVEL_DESK_URL}/travel-request/` + travelDeskTravelRequestId)
         .then((resp) => {
           // console.log(resp.data)
           return resp.data
@@ -439,9 +439,9 @@ export default {
           body.status = "booked"
         }
 
-        const travelAuthorizationId = this.travelRequest.travelAuthorizationId
+        const travelDeskTravelRequestId = this.travelRequest.id
         return http
-          .post(`${TRAVEL_DESK_URL}/travel-request/${travelAuthorizationId}`, body)
+          .post(`${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId}`, body)
           .then(() => {
             this.savingData = false
             this.confirmBookingDialog = false
