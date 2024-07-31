@@ -25,7 +25,9 @@ export default {
       travel_planning: "Travel Planning",
       travelling: "Travelling",
     },
-    role: {
+  },
+  role: {
+    name: {
       admin: "Admin",
       user: "User",
       pre_approved_travel_admin: "Pre-Approved Travel Admin",
