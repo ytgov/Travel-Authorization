@@ -107,9 +107,16 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     } else if (
       this.isApproved() &&
       this.anyTransportTypeIsAircraft() &&
-      !this.travelDeskRequestIsSubmitted()
+      !this.travelDeskRequestIsSubmitted() &&
+      !this.travelDeskRequestIsOptionsProvided()
     ) {
       return ["submit_travel_desk_request"]
+    } else if (
+      this.isApproved() &&
+      this.anyTransportTypeIsAircraft() &&
+      this.travelDeskRequestIsOptionsProvided()
+    ) {
+      return ["travel_desk_options_provided"]
     } else if (this.isApproved() && this.travellingComplete()) {
       return ["submit_expense_claim"]
     } else if (this.travelDeskRequestIsComplete()) {
@@ -217,6 +224,13 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
   travelDeskRequestIsSubmitted() {
     return (
       this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.SUBMITTED
+    )
+  }
+
+  travelDeskRequestIsOptionsProvided() {
+    return (
+      this.record.travelDeskTravelRequest?.status ===
+      TravelDeskTravelRequest.Statuses.OPTIONS_PROVIDED
     )
   }
 

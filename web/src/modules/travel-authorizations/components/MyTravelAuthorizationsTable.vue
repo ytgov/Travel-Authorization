@@ -46,6 +46,10 @@
           v-else-if="actions.includes('submit_travel_desk_request')"
           :travel-authorization-id="item.id"
         />
+        <TravelDeskOptionsProvidedButton
+          v-else-if="actions.includes('travel_desk_options_provided')"
+          :travel-authorization-id="item.id"
+        />
         <SubmitExpenseClaimButton
           v-else-if="actions.includes('submit_expense_claim')"
           :travel-authorization-id="item.id"
@@ -75,6 +79,7 @@ import { DateTime } from "luxon"
 
 import AddExpenseButton from "./my-travel-authorizations-table/AddExpenseButton"
 import DeleteTravelAuthorizationDialog from "./my-travel-authorizations-table/DeleteTravelAuthorizationDialog"
+import TravelDeskOptionsProvidedButton from "./my-travel-authorizations-table/TravelDeskOptionsProvidedButton"
 import SubmitExpenseClaimButton from "./my-travel-authorizations-table/SubmitExpenseClaimButton"
 import SubmitPoolVehicleRequestButton from "./my-travel-authorizations-table/SubmitPoolVehicleRequestButton"
 import SubmitTravelDeskRequestButton from "./my-travel-authorizations-table/SubmitTravelDeskRequestButton"
@@ -85,6 +90,7 @@ export default {
   components: {
     AddExpenseButton,
     DeleteTravelAuthorizationDialog,
+    TravelDeskOptionsProvidedButton,
     SubmitExpenseClaimButton,
     SubmitPoolVehicleRequestButton,
     SubmitTravelDeskRequestButton,

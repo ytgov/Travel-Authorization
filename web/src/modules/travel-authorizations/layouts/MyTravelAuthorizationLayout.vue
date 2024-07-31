@@ -165,6 +165,22 @@ const requestTabComponent = computed(() => {
     }
   }
 
+  if (
+    travelAuthorization.value?.travelDeskTravelRequest?.status ===
+    TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
+  ) {
+    return {
+      component: VTabComponent,
+      tabName: "Request",
+      props: {
+        to: {
+          name: "my-travel-requests/request/RequestOptionsProvidedPage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+      },
+    }
+  }
+
   return {
     component: VTabComponent,
     tabName: "Request",
