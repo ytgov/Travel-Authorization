@@ -28,7 +28,7 @@ import dbLegacy from "@/db/db-client-legacy"
 /** @deprecated - prefer using controller pattern with per-model CRUD actions */
 export const travelDeskRouter = express.Router()
 
-travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Response) {
+travelDeskRouter.get("/", RequiresAuth, async function (_req: Request, res: Response) {
   const travelRequests = await TravelDeskTravelRequest.findAll({
     where: {
       status: {
@@ -112,7 +112,7 @@ travelDeskRouter.get(
         }
       }
       res.status(200).json(forms)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Internal Server Error")
     }
@@ -180,7 +180,7 @@ travelDeskRouter.post(
       })
       const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
 
-      await dbLegacy.transaction(async (trx) => {
+      await dbLegacy.transaction(async () => {
         await dbLegacy("travelDeskFlightOption")
           .delete()
           .whereIn("flightRequestID", flightRequestIDs)
@@ -210,7 +210,7 @@ travelDeskRouter.post(
         }
         res.status(200).json("Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Saving the Flight Options failed")
     }
@@ -237,7 +237,7 @@ travelDeskRouter.delete(
           .transacting(trx)
         res.status(200).json("Delete Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Delete failed")
     }
@@ -360,7 +360,7 @@ travelDeskRouter.post(
           return res.status(500).json("Required fields in submission are blank")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Saving the Flight Request failed")
     }
@@ -608,7 +608,7 @@ travelDeskRouter.post(
 
         return res.status(200).json("Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Saving the Travel Request failed")
     }
@@ -619,7 +619,7 @@ travelDeskRouter.get(
   "/travel-agents/",
   RequiresAuth,
   RequiresRoleTdUserOrAdmin,
-  async function (req: Request, res: Response) {
+  async function (_req: Request, res: Response) {
     const travelAgents = await dbLegacy("travelDeskTravelAgent").select("*")
     res.status(200).json(travelAgents)
   }
@@ -640,7 +640,7 @@ travelDeskRouter.delete(
           .transacting(trx)
         res.status(200).json("Delete Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Delete failed")
     }
@@ -653,7 +653,7 @@ travelDeskRouter.post(
   RequiresRoleAdmin,
   async function (req: Request, res: Response) {
     try {
-      await dbLegacy.transaction(async (trx) => {
+      await dbLegacy.transaction(async () => {
         const agencyID = Number(req.params.agencyID)
         const agencyData = req.body
         //logger.info(agencyData)
@@ -670,7 +670,7 @@ travelDeskRouter.post(
 
         res.status(200).json("Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Saving the Agency Information failed")
     }
@@ -731,7 +731,7 @@ travelDeskRouter.get(
       }
 
       res.status(200).send(doc.pnrDocument)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("PDF not Found")
     }
