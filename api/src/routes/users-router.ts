@@ -71,26 +71,6 @@ userRouter.put(
   }
 )
 
-userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
-  try {
-    const user = await User.findByPk(req.params.id)
-    if (isNull(user)) {
-      return res.status(404).json({ message: "User not found" })
-    }
-
-    let permissions = {
-      first_name: user.firstName,
-      last_name: user.lastName,
-      departments: user.department,
-      roles: user.roles,
-    }
-    res.status(200).json(permissions)
-  } catch (error: any) {
-    logger.info(error)
-    res.status(500).json("Internal Server Error")
-  }
-})
-
 userRouter.get("/:id", async (req: Request, res: Response) => {
   try {
     const user = await User.findByPk(req.params.id)
