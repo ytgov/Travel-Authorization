@@ -267,6 +267,13 @@ TravelDeskTravelRequest.init(
     modelName: "TravelDeskTravelRequest",
     tableName: "travel_desk_travel_requests",
     paranoid: false,
+    indexes: [
+      {
+        fields: ["travel_authorization_id"],
+        name: "travel_desk_travel_requests_travel_authorization_id_unique",
+        unique: true,
+      },
+    ],
     validate: {
       allInternationalTravelFieldsOrNone() {
         if (
