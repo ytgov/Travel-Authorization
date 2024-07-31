@@ -62,6 +62,16 @@ export default {
       hotel_allowance_per_night: "Hotel Allowance Per Night",
     },
   },
+  travel_desk_travel_request: {
+    status: {
+      booked: "Booked",
+      complete: "Complete",
+      draft: "Draft",
+      options_provided: "Options Provided",
+      options_ranked: "Options Ranked",
+      submitted: "Submitted",
+    },
+  },
   travel_desk_question: {
     request_type: {
       flight: "Flight",

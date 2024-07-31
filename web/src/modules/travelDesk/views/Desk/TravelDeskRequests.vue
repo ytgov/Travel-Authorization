@@ -73,24 +73,24 @@
         {{ getRequested(item) }}
       </template>
 
-      <template #item.status="{ item }">
-        <div v-if="item.status == 'submitted' && !item.travelDeskOfficer">
+      <template #item.status="{ item, value }">
+        <div v-if="value == 'submitted' && !item.travelDeskOfficer">
           Not started <v-icon class="red--text">mdi-flag</v-icon>
         </div>
         <div v-else>
-          {{ item.status | getTravelStatus }}
+          {{ t(`travel_desk_travel_request.status.${value}`, { $default: value }) }}
           <v-icon
-            v-if="item.status == 'submitted'"
+            v-if="value == 'submitted'"
             class="red--text"
             >mdi-flag</v-icon
           >
           <v-icon
-            v-if="item.status == 'options_ranked'"
+            v-if="value == 'options_ranked'"
             class="yellow--text"
             >mdi-flag</v-icon
           >
           <v-icon
-            v-else-if="item.status == 'booked'"
+            v-else-if="value == 'booked'"
             class="green--text"
             >mdi-checkbox-marked</v-icon
           >
@@ -109,9 +109,9 @@
 </template>
 
 <script>
-import Vue from "vue"
 import { ExportToCsv } from "export-to-csv"
 
+import { useI18n } from "@/plugins/vue-i18n-plugin"
 import ProcessTravelDeskRequest from "@/modules/travelDesk/views/Desk/ProcessTravelDeskRequest.vue"
 import PrintTravelDeskReport from "@/modules/travelDesk/views/Common/PrintTravelDeskReport.vue"
 
@@ -126,6 +126,10 @@ export default {
       type: Array,
       required: true,
     },
+  },
+  setup() {
+    const { t } = useI18n()
+    return { t }
   },
   data() {
     return {
@@ -205,7 +209,7 @@ export default {
           status:
             req.status == "submitted" && !req.travelDeskOfficer
               ? "Not started"
-              : Vue.filter("getTravelStatus")(req.status),
+              : this.t(`travel_desk_travel_request.status.${req.status}`, { $default: req.status }),
           travelDeskOfficer: req.travelDeskOfficer ? req.travelDeskOfficer : "",
         }
       })

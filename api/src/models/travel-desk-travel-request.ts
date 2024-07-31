@@ -24,6 +24,7 @@ import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
 /** Keep in sync with web/src/api/travel-desk-travel-requests-api.js */
 export enum TravelDeskTravelRequestStatuses {
   BOOKED = "booked",
+  COMPLETE = "complete",
   DRAFT = "draft",
   OPTIONS_PROVIDED = "options_provided",
   OPTIONS_RANKED = "options_ranked",

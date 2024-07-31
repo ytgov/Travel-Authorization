@@ -3,6 +3,7 @@ import http from "@/api/http-client"
 /** Keep in sync with api/src/models/travel-desk-travel-request.ts */
 export const TRAVEL_DESK_TRAVEL_REQUEST_STATUSES = Object.freeze({
   BOOKED: "booked",
+  COMPLETE: "complete",
   DRAFT: "draft",
   OPTIONS_PROVIDED: "options_provided",
   OPTIONS_RANKED: "options_ranked",

@@ -43,6 +43,7 @@ import Vue from "vue"
 import { isNil } from "lodash"
 
 import { TRAVEL_DESK_URL, PROFILE_URL } from "@/urls"
+import { useI18n } from "@/plugins/vue-i18n-plugin"
 import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
@@ -52,6 +53,10 @@ export default {
   name: "TravelRequest",
   components: {
     TravelerRequests,
+  },
+  setup() {
+    const { t } = useI18n()
+    return { t }
   },
   data() {
     return {
@@ -154,7 +159,8 @@ export default {
     determineTravelPhase(authorizedTravel) {
       if (authorizedTravel.status != "Approved") return "Authorization"
       if (!authorizedTravel?.travelRequest?.status) return "Travel Approved"
-      return Vue.filter("getTravelStatus")(authorizedTravel.travelRequest.status)
+      const { status } = authorizedTravel.travelRequest
+      return this.t(`travel_desk_travel_request.status.${status}`, { $default: status })
     },
   },
 }
