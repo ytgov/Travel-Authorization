@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin/users" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
-        ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to User Management</v-btn
-        > -->
     <h1>
       User Editor:
       <small
@@ -12,7 +9,6 @@
         <small>({{ user.status }})</small>
       </small>
     </h1>
-    <Breadcrumbs />
 
     <v-row>
       <v-col
@@ -128,12 +124,39 @@
 <script>
 import { USERS_URL, LOOKUP_URL } from "@/urls"
 import http from "@/api/http-client"
-
-import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 export default {
-  components: {
-    Breadcrumbs,
+  props: {
+    userId: {
+      type: [String, Number],
+      required: true,
+    },
+  },
+  setup(props) {
+    useBreadcrumbs([
+      {
+        text: "Administration",
+        to: {
+          name: "AdministrationPage",
+        },
+      },
+      {
+        text: "User Management",
+        to: {
+          name: "administration/UsersPage",
+        },
+      },
+      {
+        text: "User Editor",
+        to: {
+          name: "administration/users/UserEditPage",
+          params: { userId: props.userId },
+        },
+      },
+    ])
+
+    return {}
   },
   data: () => ({
     overlay: false,
@@ -168,7 +191,7 @@ export default {
   async mounted() {
     await this.loadDepartments()
     await this.loadRoles()
-    await this.loadUser(this.$route.params.id)
+    await this.loadUser(this.userId)
   },
 
   methods: {
@@ -182,7 +205,7 @@ export default {
         roles: this.pendingRoles,
       }
       await http
-        .put(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
+        .put(`${USERS_URL}/${this.userId}/permissions`, permsObject)
         .then((resp) => {
           console.log(resp)
           this.alertMsg = "Permissions and Department Saved Successfully."

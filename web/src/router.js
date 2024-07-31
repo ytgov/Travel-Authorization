@@ -3,7 +3,6 @@ import VueRouter from "vue-router"
 
 import { authGuard } from "@/utils/auth-guard"
 
-import AdminUserForm from "@/components/Administration/UserManagement/UserComponent/Form"
 import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
 import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
 import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
@@ -47,6 +46,12 @@ const routes = [
             component: () => import("@/pages/AdministrationPage.vue"),
           },
           {
+            path: "administration/users/:userId/edit",
+            name: "administration/users/UserEditPage",
+            component: () => import("@/pages/administration/users/UserEditPage.vue"),
+            props: true,
+          },
+          {
             path: "/administration/users",
             name: "administration/UsersPage",
             component: () => import("@/pages/administration/UsersPage.vue"),
@@ -69,12 +74,6 @@ const routes = [
           },
         ],
       },
-      {
-        path: "administration/users/edit/:id",
-        name: "AdminUserEdit",
-        component: AdminUserForm,
-      },
-
       {
         path: "administration/flightEstimate",
         name: "FlightEstimate",

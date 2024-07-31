@@ -137,8 +137,10 @@ export default {
     ...mapActions("users", ["loadUsers"]),
 
     handleClick(value) {
-      //Redirects the user to the edit user form
-      this.$router.push(`/administration/users/edit/${value.id}`)
+      this.$router.push({
+        name: "administration/users/UserEditPage",
+        params: { userId: value.id },
+      })
     },
     laodUsers() {
       http.get(USERS_URL).then((resp) => {
