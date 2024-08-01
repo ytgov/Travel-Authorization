@@ -129,7 +129,9 @@ import { pick } from "lodash"
 
 import { USERS_URL, LOOKUP_URL } from "@/urls"
 import http from "@/api/http-client"
+import { useSnack } from "@/plugins/snack-plugin"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useCurrentUser from "@/use/use-current-user"
 
 export default {
   name: "UserEditPage",
@@ -162,7 +164,15 @@ export default {
       },
     ])
 
-    return {}
+    const { currentUser, refresh: refreshCurrentUser } = useCurrentUser()
+
+    const snack = useSnack()
+
+    return {
+      currentUser,
+      snack,
+      refreshCurrentUser,
+    }
   },
   data: () => ({
     departments: [],
@@ -194,12 +204,18 @@ export default {
       const userAttributes = pick(this.user, ["firstName", "lastName", "department", "roles"])
       await http
         .put(`${USERS_URL}/${this.userId}/permissions`, userAttributes)
-        .then((resp) => {
-          console.log(resp)
+        .then(() => {
           this.alertMsg = "User Saved Successfully."
           this.alertType = "teal"
         })
         .catch((e) => (this.alertMsg = e.response.data))
+
+      if (this.userId.toString() === this.currentUser.id.toString()) {
+        await this.refreshCurrentUser()
+        this.snack("Page refreshed because current user was edited.", {
+          color: "info",
+        })
+      }
     },
     async loadUser(id) {
       await http.get(`${USERS_URL}/${id}`).then((resp) => {

@@ -120,9 +120,11 @@
                 {{ getRequested(item) }}
               </template>
 
-              <template #item.status="{ item }">
-                <div v-if="item.status == 'submitted' && !item.travelDeskOfficer">Not started</div>
-                <div v-else>{{ item.status | getTravelStatus }}</div>
+              <template #item.status="{ item: value }">
+                <div v-if="value == 'submitted' && !item.travelDeskOfficer">Not started</div>
+                <div v-else>
+                  {{ t(`travel_desk_travel_request.status.${value}`, { $default: value }) }}
+                </div>
               </template>
             </v-data-table>
 
@@ -150,6 +152,8 @@
 import Vue from "vue"
 import { Printd } from "printd"
 
+import { useI18n } from "@/plugins/vue-i18n-plugin"
+
 export default {
   name: "PrintTravelDeskReport",
   components: {},
@@ -163,6 +167,10 @@ export default {
       required: true,
     },
     disabled: { type: Boolean, default: false },
+  },
+  setup() {
+    const { t } = useI18n()
+    return { t }
   },
   data() {
     return {

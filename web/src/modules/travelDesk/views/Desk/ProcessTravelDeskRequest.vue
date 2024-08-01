@@ -202,7 +202,7 @@
             :travel-agents-info="travelAgentsInfo"
             :travel-request="travelRequest"
             :class="travelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
-            @saveData="saveNewTravelRequest('save', false, false)"
+            @saveData="saveNewTravelRequest('save')"
             @close="initForm"
           />
           <v-btn
@@ -210,7 +210,7 @@
             class="ml-2 mr-2 px-5"
             color="#005A65"
             :loading="savingData"
-            @click="saveNewTravelRequest('save', false, false)"
+            @click="saveNewTravelRequest('save')"
             >Save Draft
           </v-btn>
           <v-btn
@@ -218,7 +218,7 @@
             class="mr-2 px-5"
             color="secondary"
             :loading="savingData"
-            @click="saveNewTravelRequest('sendback', true, false)"
+            @click="saveNewTravelRequest('sendback', { close: true })"
             >Send to Traveler
           </v-btn>
 
@@ -266,7 +266,7 @@
             class="mr-0 ml-auto px-5"
             color="#005A65"
             :loading="savingData"
-            @click="saveNewTravelRequest('booked', false, true)"
+            @click="saveNewTravelRequest('booked', { refresh: true })"
             >Confirm
           </v-btn>
         </v-card-actions>
@@ -277,9 +277,12 @@
 
 <script>
 import Vue from "vue"
+import { cloneDeep } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
+import { useSnack } from "@/plugins/snack-plugin"
 import http from "@/api/http-client"
+import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
 import useCurrentUser from "@/use/use-current-user"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
@@ -320,9 +323,11 @@ export default {
   },
   setup() {
     const { currentUser } = useCurrentUser()
+    const snack = useSnack()
 
     return {
       currentUser,
+      snack,
     }
   },
   data() {
@@ -373,8 +378,8 @@ export default {
       this.initStates()
       this.savingData = false
       this.loadingData = true
-      const travelAuthorizationId = this.travelDetail.travelAuthorizationId
-      this.travelRequest = await this.getTravelRequestInfo(travelAuthorizationId)
+      const travelDeskTravelRequestId = this.travelDetail.id
+      this.travelRequest = await this.getTravelRequestInfo(travelDeskTravelRequestId)
       this.travelAgentsInfo = await this.getTravelAgentsInfo()
       this.travelAgentsInfo.push({ agencyID: null, agencyName: "None", agencyInfo: "" })
       this.readonly = this.type == "booked" || this.travelRequest.status == "booked"
@@ -395,9 +400,9 @@ export default {
       this.addNewTravelDialog = false
     },
 
-    async getTravelRequestInfo(taid) {
+    async getTravelRequestInfo(travelDeskTravelRequestId) {
       return http
-        .get(`${TRAVEL_DESK_URL}/travel-request/` + taid)
+        .get(`${TRAVEL_DESK_URL}/travel-request/` + travelDeskTravelRequestId)
         .then((resp) => {
           // console.log(resp.data)
           return resp.data
@@ -418,41 +423,49 @@ export default {
         })
     },
 
-    saveNewTravelRequest(saveType, close, refresh) {
-      console.log(saveType)
-      console.log(close)
-      // 	console.log(this.travelerDetails)
+    saveNewTravelRequest(saveType, { close = false, refresh = false } = {}) {
+      const body = cloneDeep(this.travelRequest)
+      delete body.internationalTravel
+      delete body.differentTravelContact
+      delete body.office
+      delete body.department
+      delete body.fullName
 
-      if (saveType == "save" || this.checkFields()) {
-        this.savingData = true
-        const body = this.travelRequest
-        delete body.internationalTravel
-        delete body.differentTravelContact
-        delete body.office
-        delete body.department
-        delete body.fullName
-        console.log(body)
-        if (saveType == "sendback") {
-          body.status = "options_provided"
-          //TODO EMail
-        } else if (saveType == "booked") {
-          body.status = "booked"
-        }
-
-        const travelAuthorizationId = this.travelRequest.travelAuthorizationId
-        return http
-          .post(`${TRAVEL_DESK_URL}/travel-request/${travelAuthorizationId}`, body)
-          .then(() => {
-            this.savingData = false
-            this.confirmBookingDialog = false
-            if (close) this.closeDialog()
-            if (refresh) this.initForm()
-          })
-          .catch((e) => {
-            this.savingData = false
-            console.log(e)
-          })
+      if (!this.checkFields()) {
+        this.snack("Please fill out all required fields.", {
+          color: "error",
+        })
+        return
       }
+
+      // TODO: move status updates to state specific endpoints
+      if (saveType == "save") {
+        // no-op
+      } else if (saveType == "sendback") {
+        body.status = TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
+      } else if (saveType == "booked") {
+        body.status = TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
+      }
+
+      const travelDeskTravelRequestId = this.travelRequest.id
+      this.savingData = true
+      return http
+        .post(`${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId}`, body)
+        .then(() => {
+          this.snack("Travel request saved.", {
+            color: "success",
+          })
+          this.savingData = false
+          this.confirmBookingDialog = false
+          if (close) this.closeDialog()
+          if (refresh) this.initForm()
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+        .finally(() => {
+          this.savingData = false
+        })
     },
 
     initStates() {

@@ -53,10 +53,11 @@
           >
             <v-text-field
               v-model="travelerDetails.birthDate"
-              label="Birth Date"
-              outlined
-              :max="dobMaxDate"
+              label="Birth Date *"
               type="date"
+              :max="dobMaxDate"
+              :rules="[required]"
+              outlined
             />
           </v-col>
           <v-col

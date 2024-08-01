@@ -24,6 +24,7 @@ import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
 /** Keep in sync with web/src/api/travel-desk-travel-requests-api.js */
 export enum TravelDeskTravelRequestStatuses {
   BOOKED = "booked",
+  COMPLETE = "complete",
   DRAFT = "draft",
   OPTIONS_PROVIDED = "options_provided",
   OPTIONS_RANKED = "options_ranked",
@@ -267,6 +268,13 @@ TravelDeskTravelRequest.init(
     modelName: "TravelDeskTravelRequest",
     tableName: "travel_desk_travel_requests",
     paranoid: false,
+    indexes: [
+      {
+        fields: ["travel_authorization_id"],
+        name: "travel_desk_travel_requests_travel_authorization_id_unique",
+        unique: true,
+      },
+    ],
     validate: {
       allInternationalTravelFieldsOrNone() {
         if (
