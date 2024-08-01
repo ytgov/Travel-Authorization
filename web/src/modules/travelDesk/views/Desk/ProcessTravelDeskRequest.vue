@@ -452,6 +452,9 @@ export default {
       return http
         .post(`${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId}`, body)
         .then(() => {
+          this.snack("Travel request saved.", {
+            color: "success",
+          })
           this.savingData = false
           this.confirmBookingDialog = false
           if (close) this.closeDialog()
