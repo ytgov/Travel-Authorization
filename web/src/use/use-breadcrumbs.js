@@ -7,6 +7,7 @@ import { isEmpty } from "lodash"
  * @property {string} title
  * @property {Object} to
  * @property {string} to.name
+ * @property {Object} [to.params]
  */
 
 const BASE_CRUMB = {

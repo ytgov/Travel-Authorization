@@ -1,4 +1,4 @@
-import { isNull } from "lodash"
+import { isNull, pick } from "lodash"
 import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
@@ -60,21 +60,9 @@ userRouter.put(
   "/:id/permissions",
   /* RequiresRoleAdmin, */ async (req: Request, res: Response) => {
     try {
-      logger.info("body", {
-        firstName: req.body.first_name,
-        lastName: req.body.last_name,
-        department: req.body.departments,
-        roles: req.body.roles,
-      })
-      await User.update(
-        {
-          firstName: req.body.first_name,
-          lastName: req.body.last_name,
-          department: req.body.departments,
-          roles: req.body.roles,
-        },
-        { where: { id: req.params.id } }
-      )
+      const userId = req.params.id
+      const userAttributes = pick(req.body, ["firstName", "lastName", "department", "roles"])
+      await User.update(userAttributes, { where: { id: userId } })
       res.status(200).json("Saved permissions")
     } catch (error: any) {
       logger.info(error)
@@ -82,26 +70,6 @@ userRouter.put(
     }
   }
 )
-
-userRouter.get("/:id/permissions", async (req: Request, res: Response) => {
-  try {
-    const user = await User.findByPk(req.params.id)
-    if (isNull(user)) {
-      return res.status(404).json({ message: "User not found" })
-    }
-
-    let permissions = {
-      first_name: user.firstName,
-      last_name: user.lastName,
-      departments: user.department,
-      roles: user.roles,
-    }
-    res.status(200).json(permissions)
-  } catch (error: any) {
-    logger.info(error)
-    res.status(500).json("Internal Server Error")
-  }
-})
 
 userRouter.get("/:id", async (req: Request, res: Response) => {
   try {

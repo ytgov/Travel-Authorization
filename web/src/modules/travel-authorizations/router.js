@@ -74,6 +74,13 @@ const routes = [
             props: cast("travelAuthorizationId", parseInt),
           },
           {
+            path: "request/rank-options",
+            name: "my-travel-requests/request/RequestOptionsProvidedPage",
+            component: () =>
+              import("@/pages/my-travel-requests/request/RequestOptionsProvidedPage.vue"),
+            props: cast("travelAuthorizationId", parseInt),
+          },
+          {
             path: "expense",
             name: "ReadMyTravelAuthorizationExpensePage",
             component: () =>

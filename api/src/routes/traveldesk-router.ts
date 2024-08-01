@@ -1,4 +1,4 @@
-import { isNull, minBy } from "lodash"
+import { isNil, isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
 import { CreationAttributes, Op, WhereOptions } from "sequelize"
 
@@ -28,7 +28,7 @@ import dbLegacy from "@/db/db-client-legacy"
 /** @deprecated - prefer using controller pattern with per-model CRUD actions */
 export const travelDeskRouter = express.Router()
 
-travelDeskRouter.get("/", RequiresAuth, async function (req: Request, res: Response) {
+travelDeskRouter.get("/", RequiresAuth, async function (_req: Request, res: Response) {
   const travelRequests = await TravelDeskTravelRequest.findAll({
     where: {
       status: {
@@ -112,7 +112,7 @@ travelDeskRouter.get(
         }
       }
       res.status(200).json(forms)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Internal Server Error")
     }
@@ -180,7 +180,7 @@ travelDeskRouter.post(
       })
       const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
 
-      await dbLegacy.transaction(async (trx) => {
+      await dbLegacy.transaction(async () => {
         await dbLegacy("travelDeskFlightOption")
           .delete()
           .whereIn("flightRequestID", flightRequestIDs)
@@ -210,7 +210,7 @@ travelDeskRouter.post(
         }
         res.status(200).json("Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Saving the Flight Options failed")
     }
@@ -237,7 +237,7 @@ travelDeskRouter.delete(
           .transacting(trx)
         res.status(200).json("Delete Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Delete failed")
     }
@@ -301,8 +301,8 @@ travelDeskRouter.post(
   "/flight-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    try {
-      return db.transaction(async () => {
+    return db
+      .transaction(async () => {
         const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const flightRequests = req.body
         // logger.info(flightRequests)
@@ -360,15 +360,15 @@ travelDeskRouter.post(
           return res.status(500).json("Required fields in submission are blank")
         }
       })
-    } catch (error: any) {
-      logger.info(error)
-      res.status(500).json("Saving the Flight Request failed")
-    }
+      .catch((error) => {
+        logger.info(error)
+        return res.status(500).json("Saving the Flight Request failed")
+      })
   }
 )
 
 travelDeskRouter.get(
-  "/travel-request/:travelAuthorizationId",
+  "/travel-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     const flightSegmentState = {
@@ -384,9 +384,8 @@ travelDeskRouter.get(
       statusErr: false,
     }
 
-    const travelAuthorizationId = req.params.travelAuthorizationId
-    const travelRequest = await TravelDeskTravelRequest.findOne({
-      where: { travelAuthorizationId },
+    const travelDeskTravelRequestId = req.params.travelDeskTravelRequestId
+    const travelRequest = await TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId, {
       include: [
         "flightRequests",
         "hotels",
@@ -399,225 +398,234 @@ travelDeskRouter.get(
         },
       ],
     })
+    if (isNil(travelRequest)) {
+      return res.status(404).json({ message: "No Travel Request found" })
+    }
 
     // TODO: move this code to a serializer
-    if (travelRequest) {
-      const travelRequestId = travelRequest.id
-
-      let tmpId = 1000
-
-      for (const flightRequest of travelRequest.flightRequests || []) {
-        const flightOptions = await dbLegacy("travelDeskFlightOption")
+    let tmpId = 1000
+    for (const flightRequest of travelRequest.flightRequests || []) {
+      const flightOptions = await dbLegacy("travelDeskFlightOption")
+        .select("*")
+        .where("flightRequestID", flightRequest.id)
+      for (const flightOption of flightOptions) {
+        const flightSegments = await dbLegacy("travelDeskFlightSegment")
           .select("*")
-          .where("flightRequestID", flightRequest.id)
-        for (const flightOption of flightOptions) {
-          const flightSegments = await dbLegacy("travelDeskFlightSegment")
-            .select("*")
-            .where("flightOptionID", flightOption.flightOptionID)
-          for (const flightSegment of flightSegments) {
-            flightSegment.state = flightSegmentState
-            flightSegment.tmpId = tmpId
-            flightSegment.departDay = flightSegment.departDate.substring(0, 10)
-            flightSegment.departTime = flightSegment.departDate.substring(11, 16)
-            flightSegment.arriveDay = flightSegment.arriveDate.substring(0, 10)
-            flightSegment.arriveTime = flightSegment.arriveDate.substring(11, 16)
-            tmpId++
-          }
-          flightOption.flightSegments = flightSegments
-          flightOption.state = { costErr: false, legErr: false }
+          .where("flightOptionID", flightOption.flightOptionID)
+        for (const flightSegment of flightSegments) {
+          flightSegment.state = flightSegmentState
+          flightSegment.tmpId = tmpId
+          flightSegment.departDay = flightSegment.departDate.substring(0, 10)
+          flightSegment.departTime = flightSegment.departDate.substring(11, 16)
+          flightSegment.arriveDay = flightSegment.arriveDate.substring(0, 10)
+          flightSegment.arriveTime = flightSegment.arriveDate.substring(11, 16)
+          tmpId++
         }
-        // @ts-expect-error - not worth fixing at this time
-        flightRequest.flightOptions = flightOptions
+        flightOption.flightSegments = flightSegments
+        flightOption.state = { costErr: false, legErr: false }
       }
-
       // @ts-expect-error - not worth fixing at this time
-      travelRequest.invoiceNumber =
-        travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
-      delete travelRequest.travelDeskPassengerNameRecordDocument
+      flightRequest.flightOptions = flightOptions
     }
+
+    // @ts-expect-error - not worth fixing at this time
+    travelRequest.invoiceNumber =
+      travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
+    delete travelRequest.travelDeskPassengerNameRecordDocument
 
     res.status(200).json(travelRequest)
   }
 )
 
 travelDeskRouter.post(
-  "/travel-request/:travelAuthorizationId",
+  "/travel-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
     logger.warn(
       "Deprecated: travel requests are now created during TravelAuthorization approval service action."
     )
-    try {
-      return db.transaction(async () => {
-        const travelAuthorizationId = Number(req.params.travelAuthorizationId)
-        const newTravelRequest = req.body
-        // logger.info(newTravelRequest)
-
-        if (travelAuthorizationId) {
-          delete newTravelRequest.invoiceNumber
-
-          const flightRequests = newTravelRequest.flightRequests
-          delete newTravelRequest.flightRequests
-
-          const rentalCars = newTravelRequest.rentalCars
-          delete newTravelRequest.rentalCars
-
-          const hotels = newTravelRequest.hotels
-          delete newTravelRequest.hotels
-
-          const otherTransportations = newTravelRequest.otherTransportation || []
-          delete newTravelRequest.otherTransportation
-
-          const questions = newTravelRequest.questions
-          delete newTravelRequest.questions
-
-          const [travelRequest] = await TravelDeskTravelRequest.upsert({
-            ...newTravelRequest,
-            travelAuthorizationId,
-          })
-
-          if (isNull(travelRequest)) {
-            return res.status(422).json({ message: "Failed to upsert travel request" })
-          }
-
-          //FlightRequests
-          await TravelDeskFlightRequest.destroy({
-            where: { travelRequestId: travelRequest.id },
-          })
-
-          for (const flightRequest of flightRequests) {
-            const newFlightOptions = flightRequest.flightOptions
-            delete flightRequest.flightOptions
-
-            delete flightRequest.tmpId
-            delete flightRequest.id
-            flightRequest.travelRequestId = travelRequest.id
-            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
-
-            await knexQueryToSequelizeSelect(
-              dbLegacy("travelDeskFlightOption")
-                .delete()
-                .where("flightRequestID", newFlightRequest.id)
-            )
-
-            for (const newFlightOption of newFlightOptions) {
-              delete newFlightOption.state
-
-              const flightSegments = newFlightOption.flightSegments
-              delete newFlightOption.flightSegments
-
-              newFlightOption.flightRequestID = newFlightRequest.id
-
-              const travelDeskFlighOption = await knexQueryToSequelizeSelect<{
-                flightOptionID: number
-              }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
-
-              for (const flightSegment of flightSegments) {
-                // logger.info(flightSegment)
-                delete flightSegment.tmpId
-                delete flightSegment.state
-                delete flightSegment.departDay
-                delete flightSegment.departTime
-                delete flightSegment.arriveDay
-                delete flightSegment.arriveTime
-                flightSegment.flightOptionID = travelDeskFlighOption[0].flightOptionID
-                await knexQueryToSequelizeSelect(
-                  dbLegacy("travelDeskFlightSegment").insert(flightSegment)
-                )
-              }
-            }
-          }
-
-          //RentalCars
-          await TravelDeskRentalCar.destroy({
-            where: { travelRequestId: travelRequest.id },
-          })
-
-          const cleanRentalCars = rentalCars.map(
-            (
-              rentalCar: CreationAttributes<TravelDeskRentalCar> & {
-                id?: number
-                tmpId?: number
-              }
-            ) => {
-              delete rentalCar.tmpId
-              delete rentalCar.id
-              rentalCar.travelRequestId = travelRequest.id
-              return rentalCar
-            }
-          )
-          await TravelDeskRentalCar.bulkCreate(cleanRentalCars)
-
-          //Hotels
-          await TravelDeskHotel.destroy({
-            where: { travelRequestId: travelRequest.id },
-          })
-
-          const cleanHotels = hotels.map(
-            (
-              hotel: CreationAttributes<TravelDeskHotel> & {
-                id?: number
-                tmpId?: number
-              }
-            ) => {
-              delete hotel.tmpId
-              delete hotel.id
-              hotel.travelRequestId = travelRequest.id
-              return hotel
-            }
-          )
-          await TravelDeskHotel.bulkCreate(cleanHotels)
-
-          //Other Transportations
-          await TravelDeskOtherTransportation.destroy({
-            where: { travelRequestId: travelRequest.id },
-          })
-
-          const cleanOtherTransportations = otherTransportations.map(
-            (
-              otherTransportation: CreationAttributes<TravelDeskOtherTransportation> & {
-                id?: number
-                tmpId?: number
-              }
-            ) => {
-              delete otherTransportation.tmpId
-              delete otherTransportation.id
-              otherTransportation.travelRequestId = travelRequest.id
-              return otherTransportation
-            }
-          )
-          await TravelDeskOtherTransportation.bulkCreate(cleanOtherTransportations)
-
-          //Questions
-          await TravelDeskQuestion.destroy({
-            where: { travelRequestId: travelRequest.id },
-          })
-
-          const cleanQuestions = questions.map(
-            (
-              question: CreationAttributes<TravelDeskQuestion> & {
-                tmpId?: number
-                state?: Record<string, boolean>
-              }
-            ) => {
-              delete question.tmpId
-              delete question.state
-              delete question.id
-              question.travelRequestId = travelRequest.id
-              return question
-            }
-          )
-          await TravelDeskQuestion.bulkCreate(cleanQuestions)
-
-          return res.status(200).json("Successful")
-        } else {
-          return res.status(500).json("Required fields in submission are blank")
-        }
-      })
-    } catch (error: any) {
-      logger.info(error)
-      res.status(500).json("Saving the Travel Request failed")
+    const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
+    if (isNil(travelDeskTravelRequestId) || isNaN(travelDeskTravelRequestId)) {
+      return res.status(422).json("Missing travelDeskTravelRequestId parameter.")
     }
+
+    const newTravelRequest = req.body
+    delete newTravelRequest.invoiceNumber
+
+    const flightRequests = newTravelRequest.flightRequests
+    delete newTravelRequest.flightRequests
+
+    const rentalCars = newTravelRequest.rentalCars
+    delete newTravelRequest.rentalCars
+
+    const hotels = newTravelRequest.hotels
+    delete newTravelRequest.hotels
+
+    const otherTransportations = newTravelRequest.otherTransportation || []
+    delete newTravelRequest.otherTransportation
+
+    const questions = newTravelRequest.questions
+    delete newTravelRequest.questions
+
+    return db
+      .transaction(async () => {
+        let travelRequest = await TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId)
+        if (isNil(travelRequest)) {
+          travelRequest = await TravelDeskTravelRequest.create(newTravelRequest)
+        } else {
+          await travelRequest.update(newTravelRequest)
+        }
+
+        //FlightRequests
+        await TravelDeskFlightRequest.destroy({
+          where: { travelRequestId: travelRequest.id },
+        })
+
+        for (const flightRequest of flightRequests) {
+          const newFlightOptions = flightRequest.flightOptions || []
+          delete flightRequest.flightOptions
+
+          delete flightRequest.tmpId
+          delete flightRequest.id
+          flightRequest.travelRequestId = travelRequest.id
+          const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
+
+          await knexQueryToSequelizeSelect(
+            dbLegacy("travelDeskFlightOption")
+              .delete()
+              .where("flightRequestID", newFlightRequest.id)
+          )
+
+          for (const newFlightOption of newFlightOptions) {
+            delete newFlightOption.state
+
+            const flightSegments = newFlightOption.flightSegments
+            delete newFlightOption.flightSegments
+
+            newFlightOption.flightRequestID = newFlightRequest.id
+
+            const travelDeskFlighOption = await knexQueryToSequelizeSelect<{
+              flightOptionID: number
+            }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
+
+            for (const flightSegment of flightSegments) {
+              // logger.info(flightSegment)
+              delete flightSegment.tmpId
+              delete flightSegment.state
+              delete flightSegment.departDay
+              delete flightSegment.departTime
+              delete flightSegment.arriveDay
+              delete flightSegment.arriveTime
+              flightSegment.flightOptionID = travelDeskFlighOption[0].flightOptionID
+              await knexQueryToSequelizeSelect(
+                dbLegacy("travelDeskFlightSegment").insert(flightSegment)
+              )
+            }
+          }
+        }
+
+        //RentalCars
+        await TravelDeskRentalCar.destroy({
+          where: { travelRequestId: travelRequest.id },
+        })
+
+        const cleanRentalCars = rentalCars.map(
+          (
+            rentalCar: CreationAttributes<TravelDeskRentalCar> & {
+              id?: number
+              tmpId?: number
+            }
+          ) => {
+            delete rentalCar.tmpId
+            delete rentalCar.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
+            rentalCar.travelRequestId = travelRequest.id
+            return rentalCar
+          }
+        )
+        await TravelDeskRentalCar.bulkCreate(cleanRentalCars)
+
+        //Hotels
+        await TravelDeskHotel.destroy({
+          where: { travelRequestId: travelRequest.id },
+        })
+
+        const cleanHotels = hotels.map(
+          (
+            hotel: CreationAttributes<TravelDeskHotel> & {
+              id?: number
+              tmpId?: number
+            }
+          ) => {
+            delete hotel.tmpId
+            delete hotel.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
+            hotel.travelRequestId = travelRequest.id
+            return hotel
+          }
+        )
+        await TravelDeskHotel.bulkCreate(cleanHotels)
+
+        //Other Transportations
+        await TravelDeskOtherTransportation.destroy({
+          where: { travelRequestId: travelRequest.id },
+        })
+
+        const cleanOtherTransportations = otherTransportations.map(
+          (
+            otherTransportation: CreationAttributes<TravelDeskOtherTransportation> & {
+              id?: number
+              tmpId?: number
+            }
+          ) => {
+            delete otherTransportation.tmpId
+            delete otherTransportation.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
+            otherTransportation.travelRequestId = travelRequest.id
+            return otherTransportation
+          }
+        )
+        await TravelDeskOtherTransportation.bulkCreate(cleanOtherTransportations)
+
+        //Questions
+        await TravelDeskQuestion.destroy({
+          where: { travelRequestId: travelRequest.id },
+        })
+
+        const cleanQuestions = questions.map(
+          (
+            question: CreationAttributes<TravelDeskQuestion> & {
+              tmpId?: number
+              state?: Record<string, boolean>
+            }
+          ) => {
+            delete question.tmpId
+            delete question.state
+            delete question.id
+            if (isNil(travelRequest)) {
+              throw new Error("Travel Request is null")
+            }
+
+            question.travelRequestId = travelRequest.id
+            return question
+          }
+        )
+        await TravelDeskQuestion.bulkCreate(cleanQuestions)
+        return res.status(200).json("Successful")
+      })
+      .catch((error) => {
+        logger.error(error)
+        res.status(500).json("Saving the Travel Request failed")
+      })
   }
 )
 
@@ -625,7 +633,7 @@ travelDeskRouter.get(
   "/travel-agents/",
   RequiresAuth,
   RequiresRoleTdUserOrAdmin,
-  async function (req: Request, res: Response) {
+  async function (_req: Request, res: Response) {
     const travelAgents = await dbLegacy("travelDeskTravelAgent").select("*")
     res.status(200).json(travelAgents)
   }
@@ -646,7 +654,7 @@ travelDeskRouter.delete(
           .transacting(trx)
         res.status(200).json("Delete Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Delete failed")
     }
@@ -659,7 +667,7 @@ travelDeskRouter.post(
   RequiresRoleAdmin,
   async function (req: Request, res: Response) {
     try {
-      await dbLegacy.transaction(async (trx) => {
+      await dbLegacy.transaction(async () => {
         const agencyID = Number(req.params.agencyID)
         const agencyData = req.body
         //logger.info(agencyData)
@@ -676,7 +684,7 @@ travelDeskRouter.post(
 
         res.status(200).json("Successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Saving the Agency Information failed")
     }
@@ -737,7 +745,7 @@ travelDeskRouter.get(
       }
 
       res.status(200).send(doc.pnrDocument)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("PDF not Found")
     }

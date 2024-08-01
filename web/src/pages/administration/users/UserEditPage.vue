@@ -1,18 +1,14 @@
 <template>
   <div>
-    <!-- <v-btn color="secondary" class="float-right mb-0 mt-2 pl-2" to="/admin/users" exact style="height: auto; font-size: .8rem; padding: 6px 10px;"
-        ><v-icon class="mr-2" small>mdi-arrow-left</v-icon> Back to User Management</v-btn
-        > -->
     <h1>
       User Editor:
       <small
         >{{ user.firstName }}
-        {{ user.last_name }}
+        {{ user.lastName }}
 
         <small>({{ user.status }})</small>
       </small>
     </h1>
-    <Breadcrumbs />
 
     <v-row>
       <v-col
@@ -27,7 +23,10 @@
           dismissible
           >{{ alertMsg }}</v-alert
         >
-        <v-card class="default">
+        <v-card
+          class="default"
+          :loading="isLoading"
+        >
           <v-card-title>User Details</v-card-title>
           <v-card-text>
             <v-form>
@@ -73,7 +72,7 @@
                 </v-col>
                 <v-col cols="12">
                   <v-select
-                    v-model="pendingDepartments"
+                    v-model="user.department"
                     :items="departments"
                     item-text="name"
                     label="Departments"
@@ -88,7 +87,7 @@
                 </v-col>
                 <v-col cols="12">
                   <v-select
-                    v-model="pendingRoles"
+                    v-model="user.roles"
                     label="Roles"
                     :items="roles"
                     outlined
@@ -126,80 +125,101 @@
 </template>
 
 <script>
+import { pick } from "lodash"
+
 import { USERS_URL, LOOKUP_URL } from "@/urls"
 import http from "@/api/http-client"
-
-import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import { useSnack } from "@/plugins/snack-plugin"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useCurrentUser from "@/use/use-current-user"
 
 export default {
-  components: {
-    Breadcrumbs,
+  name: "UserEditPage",
+  props: {
+    userId: {
+      type: [String, Number],
+      required: true,
+    },
+  },
+  setup(props) {
+    useBreadcrumbs([
+      {
+        text: "Administration",
+        to: {
+          name: "AdministrationPage",
+        },
+      },
+      {
+        text: "User Management",
+        to: {
+          name: "administration/UsersPage",
+        },
+      },
+      {
+        text: "User Editor",
+        to: {
+          name: "administration/users/UserEditPage",
+          params: { userId: props.userId },
+        },
+      },
+    ])
+
+    const { currentUser, refresh: refreshCurrentUser } = useCurrentUser()
+
+    const snack = useSnack()
+
+    return {
+      currentUser,
+      snack,
+      refreshCurrentUser,
+    }
   },
   data: () => ({
-    overlay: false,
-    accessItem: {
-      AccessType: 1,
-      AccessText: 1,
-    },
-    /* VALIDATION*/
-    dataAccessValidation: false,
-    menu: null,
-
-    rules: [(value) => !!value || "Required."],
-
+    departments: [],
+    roles: [],
     user: {
-      first_name: "",
-      last_name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       roles: [],
     },
-
-    pendingRoles: [],
-    pendingDepartments: ["Employee"],
-    pendingBranches: [],
-
-    departments: [],
-    branches: [],
-    roles: [],
-    showAccessDialog: false,
     alertMsg: "",
     alertType: "",
+    isLoading: true,
   }),
   async mounted() {
-    await this.loadDepartments()
-    await this.loadRoles()
-    await this.loadUser(this.$route.params.id)
+    try {
+      await this.loadDepartments()
+      await this.loadRoles()
+      await this.loadUser(this.userId)
+    } finally {
+      this.isLoading = false
+    }
   },
 
   methods: {
     async saveUser() {
       this.alertMsg = ""
       this.alertType = "red"
-      let permsObject = {
-        first_name: this.user.first_name,
-        last_name: this.user.last_name,
-        departments: this.pendingDepartments,
-        roles: this.pendingRoles,
-      }
+      const userAttributes = pick(this.user, ["firstName", "lastName", "department", "roles"])
       await http
-        .put(`${USERS_URL}/${this.$route.params.id}/permissions`, permsObject)
-        .then((resp) => {
-          console.log(resp)
-          this.alertMsg = "Permissions and Department Saved Successfully."
+        .put(`${USERS_URL}/${this.userId}/permissions`, userAttributes)
+        .then(() => {
+          this.alertMsg = "User Saved Successfully."
           this.alertType = "teal"
         })
         .catch((e) => (this.alertMsg = e.response.data))
-      // this.showAccessDialog = false;
+
+      if (this.userId.toString() === this.currentUser.id.toString()) {
+        await this.refreshCurrentUser()
+        this.snack("Page refreshed because current user was edited.", {
+          color: "info",
+        })
+      }
     },
     async loadUser(id) {
       await http.get(`${USERS_URL}/${id}`).then((resp) => {
         this.user = resp.data
-        if (this.user.is_active == 1) this.user.status = "active"
-        else this.user.status = "inactive"
-      })
-      await http.get(`${USERS_URL}/${id}/permissions`).then((resp) => {
-        this.pendingDepartments = resp.data.departments
-        this.pendingRoles = resp.data.roles
       })
     },
     async loadDepartments() {

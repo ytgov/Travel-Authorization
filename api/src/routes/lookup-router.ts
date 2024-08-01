@@ -34,7 +34,7 @@ lookupRouter.get(
       res.status(200).json(emailList)
     } catch (error: any) {
       logger.info(error)
-      res.status(500).json("Internal Server Error")
+      res.status(400).json("Failed to find user.")
     }
   }
 )
