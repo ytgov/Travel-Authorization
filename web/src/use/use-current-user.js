@@ -80,6 +80,7 @@ export function useCurrentUser() {
     isAdmin,
     // actions
     fetch,
+    refresh: fetch,
     unset,
   }
 }
