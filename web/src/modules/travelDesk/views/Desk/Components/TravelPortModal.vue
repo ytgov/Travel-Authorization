@@ -189,7 +189,7 @@ export default {
       this.legs = []
 
       for (const flightRequest of this.flightRequests) {
-        //this.flightOptions.push(flightRequest)
+        this.flightOptions.push(...(flightRequest.flightOptions || []))
         // console.log(flightRequest)
         this.legs.push({
           flightRequestID: flightRequest.id,
