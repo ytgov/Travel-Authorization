@@ -125,7 +125,7 @@
                       class="ml-3 mr-3 my-5 px-3 py-4"
                       :loading="savingData"
                       small
-                      @click="saveAllFlightOptions()"
+                      @click="saveAllFlightOptions"
                       >Save Groupings
                     </v-btn>
                   </v-row>
@@ -173,7 +173,7 @@ export default {
       savingData: false,
       portText: "",
       flightOptions: {},
-      flightText: {},
+      flightText: [],
       flightSegments: [],
       state: {
         portTextErr: false,
@@ -187,15 +187,15 @@ export default {
       this.flightSegments = []
       this.flightOptions = []
       this.legs = []
+
       for (const flightRequest of this.flightRequests) {
-        this.flightOptions.push(...flightRequest.flightOptions)
+        //this.flightOptions.push(flightRequest)
         // console.log(flightRequest)
         this.legs.push({
           flightRequestID: flightRequest.id,
           text: this.getFlightRequestTxt(flightRequest),
         })
       }
-      // console.log(this.legs)
     },
 
     getFlightRequestTxt(flightRequest) {
@@ -209,8 +209,9 @@ export default {
     },
     checkStates() {
       let complete = true
+
       for (const flightOption of this.flightOptions) {
-        // console.log(flightOption)
+        flightOption.state = flightOption.state || {}
         flightOption.state.costErr = flightOption.cost ? false : true
         flightOption.state.legErr = flightOption.flightRequestID ? false : true
         if (flightOption.state.costErr || flightOption.state.legErr) complete = false
@@ -245,6 +246,8 @@ export default {
     },
 
     saveAllFlightOptions() {
+      console.log("HERE", this.checkStates())
+
       if (this.checkStates()) {
         this.savingData = true
         const body = this.flightOptions
