@@ -30,12 +30,11 @@
                   <v-col cols="3">
                     <v-text-field
                       v-model="item.cost"
-                      :error="item.state.costErr"
+                      :error="item.state?.costErr"
                       label="Cost"
                       prefix="$"
                       type="number"
                       outlined
-                      @input="item.state.costErr = false"
                     />
                   </v-col>
                   <v-col cols="3">
@@ -50,11 +49,10 @@
                     <v-select
                       v-model="item.flightRequestID"
                       :items="legs"
-                      :error="item.state.legErr"
+                      :error="item.state?.legErr"
                       item-value="flightRequestID"
                       label="Leg"
                       outlined
-                      @input="item.state.legErr = false"
                     />
                   </v-col>
                 </v-row>

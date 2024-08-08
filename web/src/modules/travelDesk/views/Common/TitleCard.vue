@@ -6,8 +6,8 @@
     <div
       ref="titleSlot"
       :class="largeTitle ? 'custom-large-title-card' : 'custom-title-card'"
-      :style="{ width: titleWidth }"
       class="px-2"
+      :style="{ width: titleWidth }"
     >
       <slot name="title"></slot>
     </div>
@@ -56,7 +56,8 @@ function setTitleWidth() {
 
   // Append span to titleSlot for accurate styling
   titleSlot.value.appendChild(span)
-  titleWidth.value = `${span.offsetWidth + 1}px`
+
+  if (span.offsetWidth > 10) titleWidth.value = `${span.offsetWidth + 1}px`
 
   // Remove the span element now that we have the size
   titleSlot.value.removeChild(span)
