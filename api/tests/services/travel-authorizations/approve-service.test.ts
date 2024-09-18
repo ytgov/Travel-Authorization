@@ -8,19 +8,15 @@ import {
   userFactory,
 } from "@/factories"
 
-jest.mock("@/integrations")
+vi.mock("@/integrations", () => ({
+  yukonGovernmentIntegration: {
+    fetchEmployee: vi.fn(),
+  },
+}))
+const yukonGovernmentIntegrationMock = vi.mocked(yukonGovernmentIntegration)
 
 describe("api/src/services/travel-authorizations/approve-service.ts", () => {
   describe("ApproveService#perform", () => {
-    let mockedYukonGovernmentIntegration: jest.MockedObjectDeep<typeof yukonGovernmentIntegration>
-
-    beforeEach(() => {
-      mockedYukonGovernmentIntegration = jest.mocked(yukonGovernmentIntegration)
-
-      // Suppress debug logging messages
-      jest.spyOn(console, "debug").mockImplementation(() => {})
-    })
-
     test("when travel authorization is in a submitted state, it updates the status to approved", async () => {
       // Arrange
       const approver = await userFactory.create()
@@ -95,7 +91,7 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
           status: TravelAuthorization.Statuses.SUBMITTED,
         })
 
-      mockedYukonGovernmentIntegration.fetchEmployee.mockResolvedValue(null)
+      yukonGovernmentIntegrationMock.fetchEmployee.mockResolvedValue(null)
 
       // Act
       await ApproveService.perform(travelAuthorization, approver)
@@ -142,7 +138,7 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
           status: TravelAuthorization.Statuses.SUBMITTED,
         })
 
-      mockedYukonGovernmentIntegration.fetchEmployee.mockResolvedValue({
+      yukonGovernmentIntegrationMock.fetchEmployee.mockResolvedValue({
         full_name: "John.Doe",
         first_name: "John",
         last_name: "Doe",

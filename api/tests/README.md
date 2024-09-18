@@ -2,19 +2,19 @@
 
 ## Implementation
 
-Tests are written in [jest](https://jestjs.io/docs/getting-started) and served via [ts-jest](https://kulshekhar.github.io/ts-jest/docs/)
+Tests are written in [vitest](https://vitest.dev/guide/)
 
 Test initialization goes like this:
 
-1. `api/jest.config.ts` loads the ts config and finds the appropriate setup functions.
+1. `api/vitest.config.mts` loads the ts config and finds the appropriate setup functions.
 
-2. Before running the tests, it runs the `globalSetup` function from `api/tests/global-setup.ts`. Things like setting up the database and running migrations and base seeds.
+2. Before running the tests, it runs the `globalSetup` function from `api/tests/global-setup.ts`. This does things like setting up the database and running migrations and base seeds.
 
-3. Next it loads a specific test file triggers the `setupFilesAfterEnv` files, currently only `api/tests/setup.ts`. These setup files add callbacks that will run before/after _each test file_ runs, so they should be performant. Mostly cleanup functions.
+3. Next it loads a specific test file triggers the `setupFiles` files, currently only `api/tests/setup.ts`. These setup files add callbacks that will run before/after _each test file_ runs, so they should be performant. Mostly cleanup functions.
 
 4. It runs the actual tests in the loaded file.
 
-5. (Currently) Runs `afterAll` callback that cleans the database after each test file has completed all its tests. This may need to run as an `afterEach` instead ...
+5. (Currently) Runs `beforeEach` callback that cleans the database before each test file is run.
 
 6. Runs the next test file, and repeats from step 3.
 
@@ -33,7 +33,7 @@ Test initialization goes like this:
    ```typescript
    describe("api/src/services/centre-services.ts", () => { // references file under test
      describe("CentreServices", () => { // references class or model under test
-       describe(".create", () => { // references a specific method on the class or model
+       describe(".create", () => { // referneces a specific method on the class or model
        test("creates a new centre in the database", async () => { // descriptive message about the specific behaviour under test
        })
      })
@@ -43,7 +43,7 @@ Test initialization goes like this:
 
    It requires this config (in your workspace or `.vscode/settings.json`).
 
-   > Note that if this is in your workspace config must be inside the "settings" entry. i.e. `{ "settings": { // these settings } }`.
+   > Note that if this is in your worspace config must be inside the "settings" entry. i.e. `{ "settings": { // these settings } }`.
 
    ```json
    {
