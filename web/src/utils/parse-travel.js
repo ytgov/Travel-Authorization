@@ -1,5 +1,4 @@
 export function parseTravel(text) {
-  console.log("PARSE")
   const cleanText =
     /^(?:Passenger:\s*\n(?<passengers>(?:\s*.*\n)*))^(?:Flights:\s*\n(?<flights>(?:\s*.*\n)*))^(?:Hotels:\s*\n(?<hotels>(?:\s*.*\n)*))^(?:Cars:\s*\n(?<cars>(?:\s*.*)*))/gm
 
@@ -22,10 +21,7 @@ export function parseTravel(text) {
   let sections = cleanText.exec(text)
 
   if (sections?.groups) {
-    // console.log("Groups: ", sections?.groups);
-
     if (sections?.groups.passengers) {
-      // console.log("Passengers raw: ", sections?.groups.passengers);
       let match
       while ((match = passengersRegex.exec(sections?.groups.passengers)) !== null) {
         passengers.push({
@@ -34,12 +30,10 @@ export function parseTravel(text) {
           passengerType: match.groups?.passengerType || "",
         })
       }
-      // console.log("Passengers: ", passengers);
       parseObject.passengers = passengers
     }
 
     if (sections?.groups.flights) {
-      //console.log("Flights raw: ", sections?.groups.flights);
       let match
       while ((match = flightsRegex.exec(sections?.groups.flights)) !== null) {
         flights.push({
@@ -59,12 +53,10 @@ export function parseTravel(text) {
           class: match.groups?.class || "",
         })
       }
-      //   console.log("Flights: ", flights);
       parseObject.flights = flights
     }
 
     if (sections?.groups.hotels) {
-      // console.log("Hotels raw: ", sections?.groups.hotels);
       let match
       while ((match = hotelRegex.exec(sections?.groups.hotels)) !== null) {
         hotels.push({
@@ -79,12 +71,10 @@ export function parseTravel(text) {
           cost: match.groups?.cost || "",
         })
       }
-      //   console.log("Hotels: ", hotels);
       parseObject.hotels = hotels
     }
 
     if (sections?.groups.cars) {
-      // console.log("Cars raw: ", sections?.groups.cars);
       let match
       while ((match = carRegex.exec(sections?.groups.cars)) !== null) {
         cars.push({
@@ -98,7 +88,6 @@ export function parseTravel(text) {
           cost: match.groups?.cost || "",
         })
       }
-      //   console.log("Cars: ", cars);
       parseObject.cars = cars
     }
     return parseObject
