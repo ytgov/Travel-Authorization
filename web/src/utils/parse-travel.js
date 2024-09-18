@@ -1,5 +1,5 @@
 export function parseTravel(text) {
-  const cleanText =
+  const travelSectionRegex =
     /^(?:Passenger:\s*\n(?<passengers>(?:\s*.*\n)*))^(?:Flights:\s*\n(?<flights>(?:\s*.*\n)*))^(?:Hotels:\s*\n(?<hotels>(?:\s*.*\n)*))^(?:Cars:\s*\n(?<cars>(?:\s*.*)*))/gm
 
   const passengersRegex = /(?<passengerNumber>\d+)\. (?<passengerName>.+) - (?<passengerType>.+)/gm
@@ -18,12 +18,12 @@ export function parseTravel(text) {
   let cars = []
   let parseObject = {}
 
-  let sections = cleanText.exec(text)
+  let travelSections = travelSectionRegex.exec(text)
 
-  if (sections?.groups) {
-    if (sections?.groups.passengers) {
+  if (travelSections?.groups) {
+    if (travelSections?.groups.passengers) {
       let match
-      while ((match = passengersRegex.exec(sections?.groups.passengers)) !== null) {
+      while ((match = passengersRegex.exec(travelSections?.groups.passengers)) !== null) {
         passengers.push({
           passengerNumber: match.groups?.passengerNumber || "",
           passengerName: match.groups?.passengerName || "",
@@ -33,9 +33,9 @@ export function parseTravel(text) {
       parseObject.passengers = passengers
     }
 
-    if (sections?.groups.flights) {
+    if (travelSections?.groups.flights) {
       let match
-      while ((match = flightsRegex.exec(sections?.groups.flights)) !== null) {
+      while ((match = flightsRegex.exec(travelSections?.groups.flights)) !== null) {
         flights.push({
           airline: match.groups?.airline || "",
           flightNumber: match.groups?.flightNumber || "",
@@ -56,9 +56,9 @@ export function parseTravel(text) {
       parseObject.flights = flights
     }
 
-    if (sections?.groups.hotels) {
+    if (travelSections?.groups.hotels) {
       let match
-      while ((match = hotelRegex.exec(sections?.groups.hotels)) !== null) {
+      while ((match = hotelRegex.exec(travelSections?.groups.hotels)) !== null) {
         hotels.push({
           hotelName: match.groups?.hotelName || "",
           city: match.groups?.city || "",
@@ -74,9 +74,9 @@ export function parseTravel(text) {
       parseObject.hotels = hotels
     }
 
-    if (sections?.groups.cars) {
+    if (travelSections?.groups.cars) {
       let match
-      while ((match = carRegex.exec(sections?.groups.cars)) !== null) {
+      while ((match = carRegex.exec(travelSections?.groups.cars)) !== null) {
         cars.push({
           confirmationNumber: match.groups?.confirmationNumber || "",
           pickupTime: match.groups?.pickupTime || "",
