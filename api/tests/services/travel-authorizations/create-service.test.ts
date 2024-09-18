@@ -7,7 +7,7 @@ import { CreateService } from "@/services/travel-authorizations"
 import { travelAuthorizationFactory, userFactory } from "@/factories"
 
 describe("api/src/services/travel-authorizations/create-service.ts", () => {
-  const userEnsureServicePerformMock = jest.fn()
+  const userEnsureServicePerformMock = vi.fn()
 
   beforeEach(async () => {
     Users.EnsureService.perform = userEnsureServicePerformMock
