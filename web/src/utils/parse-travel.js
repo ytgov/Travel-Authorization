@@ -105,3 +105,5 @@ export function parseTravel(text) {
   }
   return null
 }
+
+export default parseTravel

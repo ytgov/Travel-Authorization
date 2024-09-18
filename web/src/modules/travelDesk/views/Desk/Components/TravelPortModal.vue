@@ -136,7 +136,7 @@
 import Vue from "vue"
 
 import { TRAVEL_DESK_URL } from "@/urls"
-import { parseTravel } from "@/utils/parse-travel"
+import parseTravel from "@/utils/parse-travel"
 import http from "@/api/http-client"
 
 import FlightSegmentsTable from "@/modules/travelDesk/views/Desk/Components/FlightSegmentsTable.vue"
