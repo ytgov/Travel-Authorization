@@ -14,8 +14,8 @@ export default defineConfig({
     globalSetup: "./tests/global-setup.ts",
     setupFiles: ["./tests/setup.ts"],
     poolOptions: {
-      threads: {
-        singleThread: true,
+      forks: {
+        singleFork: true,
       },
     },
     // Mocking
