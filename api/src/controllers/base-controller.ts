@@ -7,6 +7,8 @@ import { type BaseScopeOptions } from "@/policies"
 
 export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | "destroy"
 
+type AuthorizedRequest = Request & { user: User }
+
 // Keep in sync with web/src/api/base-api.ts
 const MAX_PER_PAGE = 1000
 const MAX_PER_PAGE_EQUIVALENT = -1
@@ -39,7 +41,7 @@ const DEFAULT_PER_PAGE = 10
  * maps `/api/users` to `UsersController#index` method.
  */
 export class BaseController<TModel extends Model = never> {
-  protected request: Request
+  protected request: AuthorizedRequest
   protected response: Response
   protected next: NextFunction
 
@@ -48,7 +50,7 @@ export class BaseController<TModel extends Model = never> {
     // api/src/middlewares/jwt-middleware.ts and api/src/middlewares/authorization-middleware.ts
     // At some future point it would make sense to do all that logic as
     // controller actions
-    this.request = req
+    this.request = req as AuthorizedRequest
     this.response = res
     this.next = next
   }
