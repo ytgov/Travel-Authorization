@@ -56,7 +56,7 @@
                   <v-spacer />
                   <v-btn
                     color="primary"
-                    @click="parseTravel"
+                    @click="parseTravelWrapper"
                   >
                     Clean and Seperate Options
                   </v-btn>
@@ -134,6 +134,7 @@
 
 <script>
 import Vue from "vue"
+import { isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import parseTravel from "@/utils/parse-travel"
@@ -261,7 +262,11 @@ export default {
     parseTravelWrapper() {
       if (!this.portText) return
       const parsedTravel = parseTravel(this.portText)
-      console.log(parsedTravel)
+      if (isNil(parsedTravel)) {
+        this.$snack("Failed to parse travel text", { color: "error" })
+        return
+      }
+
       this.flightText = parsedTravel.flights
     },
 
