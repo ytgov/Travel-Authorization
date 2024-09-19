@@ -94,7 +94,8 @@
       </template>
 
       <template #item.edit="{ item }">
-        <process-travel-desk-request
+        <ProcessTravelDeskRequest
+          class="pr-2"
           :type="item.status == 'booked' ? 'booked' : 'edit'"
           :travel-detail="item"
           @updateTable="updateTable()"
