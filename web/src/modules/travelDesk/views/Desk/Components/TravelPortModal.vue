@@ -44,7 +44,7 @@
                         v-model="portText"
                         :error="state.portTextErr"
                         label="Paste Text Here"
-                        rows="20"
+                        rows="8"
                         clearable
                         outlined
                         @input="state.portTextErr = false"
