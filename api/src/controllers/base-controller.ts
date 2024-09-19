@@ -2,12 +2,11 @@ import { NextFunction, Request, Response } from "express"
 import { Attributes, Model, WhereOptions } from "sequelize"
 import { isEmpty } from "lodash"
 
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import User from "@/models/user"
 import { type BaseScopeOptions } from "@/policies"
 
 export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | "destroy"
-
-type AuthorizedRequest = Request & { user: User }
 
 // Keep in sync with web/src/api/base-api.ts
 const MAX_PER_PAGE = 1000

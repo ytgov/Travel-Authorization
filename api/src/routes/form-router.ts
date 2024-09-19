@@ -3,15 +3,14 @@ import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
 import { ReturnValidationErrors } from "@/middleware"
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 
 import logger from "@/utils/logger"
 import { FormService, AuditService } from "@/services"
-import { Expense, TravelAuthorization, User } from "@/models"
+import { Expense, TravelAuthorization } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
-
-type AuthorizedRequest = Request & { user: User }
 
 export const formRouter = express.Router()
 const formService = new FormService()

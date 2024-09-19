@@ -4,6 +4,7 @@ import { isNil } from "lodash"
 
 import logger from "@/utils/logger"
 import { RequiresAuth, RequiresRolePatAdminOrAdmin } from "@/middleware"
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import db, {
   TravelAuthorizationPreApproval,
   TravelAuthorizationPreApprovalDocument,
@@ -11,8 +12,6 @@ import db, {
   TravelAuthorizationPreApprovalProfile,
   User,
 } from "@/models"
-
-type AuthorizedRequest = Request & { user: User }
 
 export const preapprovedRouter = express.Router()
 
