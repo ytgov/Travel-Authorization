@@ -1,6 +1,5 @@
 <template>
-  <div class="my-5 mx-10">
-    <breadcrumbs class="mb-1" />
+  <v-container>
     <v-alert
       v-if="alertMsg"
       class="mt-5"
@@ -47,7 +46,7 @@
         </template>
       </v-data-table>
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script setup>
@@ -55,9 +54,9 @@ import { onMounted, ref } from "vue"
 import { TRAVEL_DESK_URL } from "@/urls"
 
 import http from "@/api/http-client"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
 
-import Breadcrumbs from "@/components/Breadcrumbs.vue"
 import NewTravelAgent from "@/components/Administration/LookupTableManagement/TravelAgentsComponents/NewTravelAgent.vue"
 
 const { isAdmin } = useCurrentUser()
@@ -130,6 +129,17 @@ async function saveTravelAgent(agencyInfo) {
       savingData.value = false
     })
 }
+
+useBreadcrumbs([
+  {
+    text: "Administration",
+    to: { name: "AdministrationPage" },
+  },
+  {
+    text: "Travel Agents",
+    to: { name: "administration/TravelAgentsPage" },
+  },
+])
 </script>
 
 <style scoped></style>

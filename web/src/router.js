@@ -6,7 +6,6 @@ import { authGuard } from "@/utils/auth-guard"
 import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
 import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
 import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
-import TravelAgents from "@/components/Administration/LookupTableManagement/TravelAgents"
 
 import preapprovedRouter from "@/modules/preapproved/router"
 import travelDeskRouter from "@/modules/travelDesk/router"
@@ -68,9 +67,15 @@ const routes = [
             component: () => import("@/pages/administration/TravelRatesPage.vue"),
           },
           {
-            path: "/administration/travel-rates/edit",
+            path: "TravelRatesPage/administration/travel-rates/edit",
             name: "administration/TravelRatesEditPage",
             component: () => import("@/pages/administration/TravelRatesEditPage.vue"),
+          },
+          {
+            path: "administration/travel-agents",
+            name: "administration/TravelAgentsPage",
+            component: () =>
+              import("@/pages/administration/TravelAgentsPage.vue"),
           },
         ],
       },
@@ -88,11 +93,6 @@ const routes = [
         path: "administration/rentalCarEstimates",
         name: "RentalCarEstimates",
         component: RentalCarEstimates,
-      },
-      {
-        path: "administration/TravelAgents",
-        name: "TravelAgents",
-        component: TravelAgents,
       },
       {
         path: "qa/scenarios",

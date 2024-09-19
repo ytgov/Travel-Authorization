@@ -78,7 +78,7 @@ const menuCardLists = [
       {
         icon: "mdi-airplane",
         title: "Travel Agents",
-        to: { name: "TravelAgents" },
+        to: { name: "administration/TravelAgentsPage" },
       },
     ],
   },
