@@ -38,11 +38,7 @@
       </template>
 
       <template #item.fullname="{ item }">
-        {{
-          [item.travelAuthorization.firstName, item.travelAuthorization.lastName]
-            .filter(Boolean)
-            .join(" ") || "Unknown"
-        }}
+        {{ [item.legalFirstName, item.legalLastName].filter(Boolean).join(" ") || "Unknown" }}
       </template>
 
       <template #item.department="{ item }">
