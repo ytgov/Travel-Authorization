@@ -12,6 +12,8 @@ import db, {
   User,
 } from "@/models"
 
+type AuthorizedRequest = Request & { user: User }
+
 export const preapprovedRouter = express.Router()
 
 preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request, res: Response) {
@@ -27,7 +29,10 @@ preapprovedRouter.get("/submissions", RequiresAuth, async function (req: Request
     })
   }
 
-  const scopedSubmissions = applyScope(TravelAuthorizationPreApprovalSubmission, req.user)
+  const scopedSubmissions = applyScope(
+    TravelAuthorizationPreApprovalSubmission,
+    (req as AuthorizedRequest).user
+  )
   const submissionList = await scopedSubmissions.findAll({
     include: [
       {
@@ -49,7 +54,7 @@ preapprovedRouter.get(
     try {
       const submission = await TravelAuthorizationPreApprovalSubmission.findByPk(submissionId)
       res.status(200).json(submission)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Record Not Found")
     }
@@ -70,8 +75,7 @@ preapprovedRouter.post(
         const newSubmission = req.body
 
         if (newSubmission.department && newSubmission.status && preApprovalIds.length > 0) {
-          var id = []
-          newSubmission.submitter = req.user.displayName
+          newSubmission.submitter = (req as AuthorizedRequest).user.displayName
 
           // TODO: fix legacy patterm - split creation and update into separate endpoints
           let submission
@@ -115,7 +119,7 @@ preapprovedRouter.post(
           res.status(500).json("Required fields in submission are blank")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -158,7 +162,7 @@ preapprovedRouter.delete(
           res.status(200).json("Delete Successful")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Delete failed")
     }
@@ -228,7 +232,7 @@ preapprovedRouter.post(
       } else {
         res.status(422).json("Required fields in submission are blank")
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -248,7 +252,7 @@ preapprovedRouter.get("/document/:submissionId", RequiresAuth, async function (r
     }
 
     res.status(200).send(document.approvalDoc)
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.info(error)
     res.status(500).json("PDF not Found")
   }
@@ -299,7 +303,7 @@ preapprovedRouter.post(
             if (profile.id) {
               profileIdList = profileIdList.filter((profileId) => profileId != profile.id)
             } else {
-              let profileInfo = {
+              const profileInfo = {
                 preApprovalId: preApproval.id,
                 ...profile,
               }
@@ -318,7 +322,7 @@ preapprovedRouter.post(
           res.status(500).json("Required fields in submission are blank")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -343,7 +347,7 @@ preapprovedRouter.delete(
         await preApproval.destroy()
         res.status(200).json("Delete Successful")
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Delete failed")
     }
