@@ -89,7 +89,7 @@
               </template>
 
               <template #item.fullname="{ item }">
-                {{ item.travelAuthorization.firstName + " " + item.travelAuthorization.lastName }}
+                {{ item.legalFirstName + " " + item.legalLastName }}
               </template>
 
               <template #item.department="{ item }">
@@ -120,8 +120,15 @@
                 {{ getRequested(item) }}
               </template>
 
-              <template #item.status="{ item: value }">
-                <div v-if="value == 'submitted' && !item.travelDeskOfficer">Not started</div>
+              <template #item.status="{ item, value }">
+                <div
+                  v-if="
+                    value === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED &&
+                    isNil(item.travelDeskOfficer)
+                  "
+                >
+                  Not started
+                </div>
                 <div v-else>
                   {{ t(`travel_desk_travel_request.status.${value}`, { $default: value }) }}
                 </div>
@@ -150,9 +157,11 @@
 
 <script>
 import Vue from "vue"
+import { isNil } from "lodash"
 import { Printd } from "printd"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
+import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
 
 export default {
   name: "PrintTravelDeskReport",
@@ -170,7 +179,11 @@ export default {
   },
   setup() {
     const { t } = useI18n()
-    return { t }
+    return {
+      TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
+      isNil,
+      t,
+    }
   },
   data() {
     return {

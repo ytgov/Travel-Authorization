@@ -6,14 +6,18 @@
     >
       <template #activator="{ on, attrs }">
         <v-btn
-          style="min-width: 0; height: 1.75rem"
-          class="my-0 mx-0 px-0"
           color="primary"
           v-bind="attrs"
           @click="initForm"
           v-on="on"
         >
-          <div class="mx-0 px-1"><v-icon style="font-size: 15pt">mdi-pencil</v-icon></div>
+          Edit
+          <v-icon
+            right
+            dark
+          >
+            mdi-pencil
+          </v-icon>
         </v-btn>
       </template>
 
