@@ -9,6 +9,7 @@ import {
   RequiresRoleTdUser,
   RequiresRoleTdUserOrAdmin,
 } from "@/middleware"
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import {
   TravelAuthorization,
   TravelDeskFlightRequest,
@@ -70,12 +71,12 @@ travelDeskRouter.get(
   RequiresAuth,
   async function (req: Request, res: Response) {
     const adminScoping: WhereOptions<TravelAuthorization> = {}
-    if (req?.user?.roles?.includes(User.Roles.ADMIN)) {
+    if ((req as AuthorizedRequest).user?.roles?.includes(User.Roles.ADMIN)) {
       // No additional conditions for Admin, selects all records
-    } else if (req?.user?.roles?.includes(User.Roles.DEPARTMENT_ADMIN)) {
-      adminScoping.department = req.user.department
+    } else if ((req as AuthorizedRequest).user?.roles?.includes(User.Roles.DEPARTMENT_ADMIN)) {
+      adminScoping.department = (req as AuthorizedRequest).user.department
     } else {
-      adminScoping.userId = req.user.id
+      adminScoping.userId = (req as AuthorizedRequest).user.id
     }
 
     try {

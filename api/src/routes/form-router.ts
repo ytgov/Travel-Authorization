@@ -3,10 +3,11 @@ import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
 import { ReturnValidationErrors } from "@/middleware"
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 
 import logger from "@/utils/logger"
 import { FormService, AuditService } from "@/services"
-import { Expense, TravelAuthorization, User } from "@/models"
+import { Expense, TravelAuthorization } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 import db from "@/db/db-client"
@@ -19,7 +20,7 @@ const auditService = new AuditService()
 formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: Response) {
   logger.warn("DEPRECATED: prefer /api/travel-authorizations instead")
   try {
-    const user = req.user
+    const user = (req as AuthorizedRequest).user
     const forms = await TravelAuthorization.findAll({
       where: { userId: user.id },
       include: ["stops"],
@@ -32,14 +33,14 @@ formRouter.get("/", ReturnValidationErrors, async function (req: Request, res: R
       })
       const { departureDate, departureTime } = earliestStop || {}
 
-      // @ts-ignore - this code is deprecated so not worth fixing the type issues
+      // @ts-expect-error - this code is deprecated so not worth fixing the type issues
       form.departureDate = departureDate || "Unknown"
-      // @ts-ignore - this code is deprecated so not worth fixing the type issues
+      // @ts-expect-error - this code is deprecated so not worth fixing the type issues
       form.departureTime = departureTime || "Unknown"
     })
 
     res.status(200).json(forms)
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.info(error)
     res.status(500).json("Internal Server Error")
   }
@@ -49,7 +50,7 @@ formRouter.get(
   "/upcomingTrips",
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
-    const user = req.user
+    const user = (req as AuthorizedRequest).user
 
     try {
       const form = await TravelAuthorization.findOne({ where: { userId: user.id } })
@@ -58,7 +59,7 @@ formRouter.get(
       }
 
       res.status(200).json(await formService.getForm(form.id.toString()))
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Error retrieving form")
     }
@@ -68,8 +69,8 @@ formRouter.get(
 //Get one of your own forms
 formRouter.get("/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    const user = req.user
-    let form = await formService.getForm(req.params.formId)
+    const user = (req as AuthorizedRequest).user
+    const form = await formService.getForm(req.params.formId)
 
     if (form && form.userId === user.id) {
       res.status(200).json(form)
@@ -80,7 +81,7 @@ formRouter.get("/:formId", ReturnValidationErrors, async function (req: Request,
     } else {
       res.status(404).json("Form not found")
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.info(error)
     res.status(500).json("Internal Server Error")
   }
@@ -92,8 +93,8 @@ formRouter.post(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      const user = req.user
-      let form = await formService.getForm(req.params.formId)
+      const user = (req as AuthorizedRequest).user
+      const form = await formService.getForm(req.params.formId)
 
       if (!form || (form && form.userId === user.id)) {
         const result = await formService.saveForm(user.id, req.body)
@@ -113,7 +114,7 @@ formRouter.post(
         )
         res.status(404).json("Form not found")
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -129,9 +130,9 @@ formRouter.post(
       "This method is deprecated, and will be removed in a future version. Please use POST /api/forms instead."
     )
     try {
-      await dbLegacy.transaction(async (trx) => {
-        const user = req.user
-        let form = await formService.getForm(req.params.formId)
+      await dbLegacy.transaction(async () => {
+        const user = (req as AuthorizedRequest).user
+        const form = await formService.getForm(req.params.formId)
 
         if (!form || (form && form.userId === user.id)) {
           const result = await formService.submitForm(user.id, req.body)
@@ -152,7 +153,7 @@ formRouter.post(
           res.status(404).json("Form not found")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Form submission failed")
     }
@@ -167,8 +168,8 @@ formRouter.post(
     logger.info("Saving Form")
 
     try {
-      await dbLegacy.transaction(async (trx) => {
-        const user = req.user
+      await dbLegacy.transaction(async () => {
+        const user = (req as AuthorizedRequest).user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -176,7 +177,7 @@ formRouter.post(
 
         const supervisorEmail = form.email
         if (supervisorEmail?.toLowerCase() === user.email.toLowerCase()) {
-          let denialReason = req.body.denialReason
+          const denialReason = req.body.denialReason
 
           await form.update({
             denialReason: denialReason,
@@ -192,7 +193,7 @@ formRouter.post(
           res.status(500).json("Not authorized to deny this request")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -207,8 +208,8 @@ formRouter.post(
     logger.info("Saving Form")
 
     try {
-      await dbLegacy.transaction(async (trx) => {
-        const user = req.user
+      await dbLegacy.transaction(async () => {
+        const user = (req as AuthorizedRequest).user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -230,7 +231,7 @@ formRouter.post(
           res.status(403).json("Must be assigned supervisor to approve request")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -246,8 +247,8 @@ formRouter.post(
     logger.info("Reassigning Form")
 
     try {
-      await dbLegacy.transaction(async (trx) => {
-        const user = req.user
+      await dbLegacy.transaction(async () => {
+        const user = (req as AuthorizedRequest).user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -256,7 +257,7 @@ formRouter.post(
         const supervisorEmail = form.email
 
         if (supervisorEmail?.toLowerCase() == user.email.toLowerCase()) {
-          let reassign = req.body.reassign
+          const reassign = req.body.reassign
 
           await form.update({
             supervisorEmail: reassign,
@@ -275,7 +276,7 @@ formRouter.post(
           res.status(403).json("Must be supervisor to approve request")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -289,8 +290,8 @@ formRouter.post(
     logger.info("Request Form Changes")
 
     try {
-      await dbLegacy.transaction(async (trx) => {
-        const user = req.user
+      await dbLegacy.transaction(async () => {
+        const user = (req as AuthorizedRequest).user
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
@@ -318,7 +319,7 @@ formRouter.post(
           res.status(403).json("Must be supervisor to approve request")
         }
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Insert failed")
     }
@@ -329,7 +330,7 @@ formRouter.post(
 //SHould just hide it in db with staus change
 formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Request, res: Response) {
   try {
-    const user = req.user
+    const user = (req as AuthorizedRequest).user
     const form = await TravelAuthorization.findOne({
       where: {
         slug: req.params.formId,
@@ -353,7 +354,7 @@ formRouter.delete("/:formId", ReturnValidationErrors, async function (req: Reque
       .catch(() => {
         res.status(422).json("Delete failed")
       })
-  } catch (error: any) {
+  } catch {
     res.status(500).json("Delete failed")
   }
 })
@@ -379,7 +380,7 @@ formRouter.get(
       })
 
       res.status(200).json(expenses)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Update failed")
     }
@@ -417,7 +418,7 @@ formRouter.post(
       })
 
       res.status(200).json("Updated expenses successful")
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Update failed")
     }
@@ -429,23 +430,23 @@ formRouter.post(
   ReturnValidationErrors,
   async function (req: Request, res: Response) {
     try {
-      await dbLegacy.transaction(async (trx) => {
+      await dbLegacy.transaction(async () => {
         const form = await TravelAuthorization.findOne({ where: { slug: req.params.formId } })
         if (isNull(form)) {
           return res.status(404).json({ message: "Form not found" })
         }
 
-        let reportInsert = {
+        const reportInsert = {
           ...req.body,
           reportStatus: "Submitted",
           taid: form.id,
         }
 
-        let id = await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge()
+        await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge()
 
         res.status(200).json("Updated report successful")
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Update failed")
     }
@@ -462,7 +463,7 @@ formRouter.post(
         return res.status(404).json({ message: "Form not found" })
       }
 
-      let reportInsert = {
+      const reportInsert = {
         ...req.body,
         reportStatus: "Submitted",
         taid: form.id,
@@ -471,7 +472,7 @@ formRouter.post(
       await dbLegacy("tripReports").insert(reportInsert, "id").onConflict("taid").merge()
 
       res.status(200).json("Updated report successful")
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Update failed")
     }
@@ -491,7 +492,7 @@ formRouter.get(
       const report = await dbLegacy("tripReports").select("*").where("taid", "=", form.id).first()
 
       res.status(200).json(report)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Update failed")
     }
@@ -530,7 +531,7 @@ formRouter.get(
         expenses: expensesFloat,
       }
       res.status(200).json(result)
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Lookup failed")
     }

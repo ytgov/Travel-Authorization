@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { Attributes, Model, WhereOptions } from "sequelize"
 import { isEmpty } from "lodash"
 
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import User from "@/models/user"
 import { type BaseScopeOptions } from "@/policies"
 
@@ -39,7 +40,7 @@ const DEFAULT_PER_PAGE = 10
  * maps `/api/users` to `UsersController#index` method.
  */
 export class BaseController<TModel extends Model = never> {
-  protected request: Request
+  protected request: AuthorizedRequest
   protected response: Response
   protected next: NextFunction
 
@@ -48,7 +49,7 @@ export class BaseController<TModel extends Model = never> {
     // api/src/middlewares/jwt-middleware.ts and api/src/middlewares/authorization-middleware.ts
     // At some future point it would make sense to do all that logic as
     // controller actions
-    this.request = req
+    this.request = req as AuthorizedRequest
     this.response = res
     this.next = next
   }

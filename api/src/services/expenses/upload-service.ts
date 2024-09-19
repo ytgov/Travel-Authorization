@@ -17,7 +17,7 @@ type ExpressFileUpload = {
       return isFunc(callback) ? moveFunc(callback) : new Promise(moveFunc);
     }
   */
-  mv: (...args: unknown[]) => unknown // A function to move the file elsewhere on your server. Can take a callback or return a promise.
+  mv: (path: string, callback: (err: unknown) => void) => void | ((path: string) => Promise<void>) // A function to move the file elsewhere on your server. Can take a callback or return a promise.
   mimetype: string // The mimetype of your file
   data: Buffer // A buffer representation of your file, returns empty buffer in case useTempFiles option was set to true.
   tempFilePath: string // A path to the temporary file in case useTempFiles option was set to true.
