@@ -72,10 +72,10 @@ const routes = [
             component: () => import("@/pages/administration/TravelRatesEditPage.vue"),
           },
           {
-            path: "administration/travel-agents",
-            name: "administration/TravelAgentsPage",
+            path: "administration/travel-agencies",
+            name: "administration/TravelAgenciesPage",
             component: () =>
-              import("@/pages/administration/TravelAgentsPage.vue"),
+              import("@/pages/administration/TravelAgenciesPage.vue"),
           },
         ],
       },

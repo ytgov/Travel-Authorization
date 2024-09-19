@@ -1,5 +1,7 @@
 <template>
   <v-container>
+    <h2>Travel Agencies</h2>
+
     <v-alert
       v-if="alertMsg"
       class="mt-5"
@@ -136,8 +138,8 @@ useBreadcrumbs([
     to: { name: "AdministrationPage" },
   },
   {
-    text: "Travel Agents",
-    to: { name: "administration/TravelAgentsPage" },
+    text: "Travel Agencies",
+    to: { name: "administration/TravelAgenciesPage" },
   },
 ])
 </script>
