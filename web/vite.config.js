@@ -6,6 +6,7 @@ export default {
   resolve: {
     alias: {
       "@/": `${path.resolve(__dirname, "src")}/`,
+      "@/support": `${path.resolve(__dirname, "tests/support")}/`,
     },
     extensions: [".js", ".json", ".mjs", ".vue"],
   },

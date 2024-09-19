@@ -3,6 +3,10 @@
   "extends": "../jsconfig.json",
   "include": ["./**/*.test.js"],
   "compilerOptions": {
+    "baseUrl": "./../",
+    "paths": {
+      "@/*": ["./src/*", "./src/*.js", "./src/*.vue", "./tests/*"]
+    },
     "types": ["vitest/globals"] // https://vitest.dev/config/#globals
   }
 }

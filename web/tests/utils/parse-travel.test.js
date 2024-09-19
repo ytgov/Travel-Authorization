@@ -1,9 +1,10 @@
 import parseTravel from "@/utils/parse-travel"
+import simpleDedent from "@/support/simple-dedent"
 
 describe("web/src/utils/travel/parse-travel.js", () => {
   describe(".parseTravel", () => {
     test("when given example data, parses it correctly", () => {
-      const text = `
+      const text = simpleDedent(`
         Passenger:
         Pasenger details here...
 
@@ -26,9 +27,9 @@ describe("web/src/utils/travel/parse-travel.js", () => {
 
         Cars:
         Car rental details here...
-      `
-      const textWithoutPrecedingWhitespace = text.replace(/^[ \t]+/gm, "").trim()
-      const result = parseTravel(textWithoutPrecedingWhitespace)
+      `)
+      console.log(text)
+      const result = parseTravel(text)
 
       expect(result).toEqual({
         cars: [],
