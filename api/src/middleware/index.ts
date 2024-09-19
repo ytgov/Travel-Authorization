@@ -8,14 +8,6 @@ export { authorizationMiddleware } from "./authorization-middleware"
 export { databaseHealthCheckMiddleware } from "./database-health-check-middleware"
 export { requestLoggerMiddleware } from "./request-logger-middleware"
 
-export function RequiresAuthentication(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) {
-    return next()
-  }
-
-  res.status(401).send("You are not authorized to view this page")
-}
-
 export function ReturnValidationErrors(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req)
 
