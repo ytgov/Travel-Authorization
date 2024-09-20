@@ -40,10 +40,10 @@
             <v-col cols="6">
               <v-select
                 v-model="travelRequest.travelAgencyId"
-                :items="travelAgentsInfo"
+                :items="travelAgencies"
                 item-text="agencyName"
                 item-value="id"
-                label="Assign Agent"
+                label="Assign Agency"
                 outlined
               />
             </v-col>
@@ -127,7 +127,7 @@ export default {
   name: "UploadPnrModal",
   components: {},
   props: {
-    travelAgentsInfo: {
+    travelAgencies: {
       type: Array,
       required: true,
     },

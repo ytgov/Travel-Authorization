@@ -202,8 +202,8 @@
             class="ml-auto mr-3"
             :invoice-number="travelRequest.invoiceNumber"
           />
-          <upload-pnr-modal
-            :travel-agents-info="travelAgencies"
+          <UploadPnrModal
+            :travel-agencies="travelAgencies"
             :travel-request="travelRequest"
             :class="travelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
             @saveData="saveNewTravelRequest('save')"
