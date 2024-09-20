@@ -83,6 +83,13 @@ const routes = [
             component: () =>
               import("@/pages/administration/travel-agencies/TravelAgencyNewPage.vue"),
           },
+          {
+            path: "administration/travel-agencies/:travelDeskTravelAgencyId/edit",
+            name: "administration/travel-agencies/TravelAgencyEditPage",
+            component: () =>
+              import("@/pages/administration/travel-agencies/TravelAgencyEditPage.vue"),
+            props: true
+          },
         ],
       },
       {

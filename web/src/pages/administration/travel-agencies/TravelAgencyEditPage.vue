@@ -2,9 +2,16 @@
   <v-container class="pa-0 py-md-3 px-md-6">
     <v-form
       ref="form"
-      @submit.prevent="createTravelAgency"
+      @submit.prevent="validateAndSave"
     >
-      <v-card>
+      <v-skeleton-loader
+        v-if="isNil(travelDeskTravelAgency)"
+        type="card"
+      />
+      <v-card
+        v-else
+        :loading="isLoading"
+      >
         <v-card-title>
           <h2>Create Travel Agency</h2>
         </v-card-title>
@@ -15,7 +22,7 @@
               md="4"
             >
               <v-text-field
-                v-model="attributes.agencyName"
+                v-model="travelDeskTravelAgency.agencyName"
                 label="Agency Name *"
                 outlined
                 required
@@ -27,7 +34,7 @@
               md="8"
             >
               <v-textarea
-                v-model="attributes.agencyInfo"
+                v-model="travelDeskTravelAgency.agencyInfo"
                 label="Paste Travel Agency Information Here"
                 clearable
                 outlined
@@ -45,13 +52,13 @@
               name: 'administration/TravelAgenciesPage',
             }"
           >
-            Cancel
+            Back
           </v-btn>
 
           <v-btn
             :loading="isLoading"
             class="ml-4"
-            color="success"
+            color="primary"
             type="submit"
             >Save
           </v-btn>
@@ -62,13 +69,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { useRouter } from "vue2-helpers/vue-router"
+import { ref, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import { required } from "@/utils/validators"
-import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useTravelDeskTravelAgency from "@/use/use-travel-desk-travel-agency"
 
 /**
  * @template [T=any]
@@ -76,20 +83,27 @@ import useBreadcrumbs from "@/use/use-breadcrumbs"
  */
 /** @typedef {import('vuetify/lib').VForm} VForm */
 
-const isLoading = ref(false)
+/**
+ * @type {{
+ *   travelDeskTravelAgencyId: string | number
+ * }}
+ */
+const props = defineProps({
+  travelDeskTravelAgencyId: {
+    type: [String, Number],
+    required: true,
+  },
+})
+
+const { travelDeskTravelAgencyId } = toRefs(props)
+const { travelDeskTravelAgency, isLoading, save } =
+  useTravelDeskTravelAgency(travelDeskTravelAgencyId)
 
 /** @type {Ref<InstanceType<typeof VForm> | null>} */
 const form = ref(null)
-
-const attributes = ref({
-  agencyName: "",
-  agencyInfo: null,
-})
-const router = useRouter()
-
 const snack = useSnack()
 
-async function createTravelAgency() {
+async function validateAndSave() {
   if (!form.value?.validate()) {
     snack("Please fill in all required fields.", { color: "error" })
     return
@@ -97,13 +111,11 @@ async function createTravelAgency() {
 
   isLoading.value = true
   try {
-    await travelDeskTravelAgenciesApi.create(attributes.value)
-    return router.push({
-      name: "administration/TravelAgenciesPage",
-    })
+    await save()
+    return
   } catch (error) {
     console.error(error)
-    snack(`Failed to create travel agency: ${error}`, { color: "error" })
+    snack(`Failed to save travel agency: ${error}`, { color: "error" })
   } finally {
     isLoading.value = false
   }
@@ -119,8 +131,8 @@ useBreadcrumbs([
     to: { name: "administration/TravelAgenciesPage" },
   },
   {
-    text: "New Travel Agency",
-    to: { name: "administration/travel-agencies/TravelAgencyNewPage" },
+    text: "Edit Travel Agency",
+    to: { name: "administration/travel-agencies/TravelAgencyEditPage" },
   },
 ])
 </script>

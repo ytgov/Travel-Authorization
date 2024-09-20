@@ -18,6 +18,7 @@
           :loading="isLoading"
           :server-items-length="totalCount"
           class="elevation-1 mt-4"
+          @dblclick:row="(_, { item }) => goToEditPage(item.id)"
         >
           <template #item.agencyInfo="{ value }">
             <span class="preserve-whitespace">
@@ -25,24 +26,27 @@
             </span>
           </template>
           <template #item.edit="{ item }">
-            <v-row class="mx-0">
-              <NewTravelAgency
-                type="Edit"
-                :agency-info="item"
-                :loading="isUpdating"
-                @save="saveTravelAgency(item.id, item)"
-              />
-              <v-btn
-                :loading="isUpdating"
-                style="min-width: 0; padding: 1.115rem 0"
-                color="red"
-                class="ml-3 px-3"
-                small
-                @click="deleteTravelAgency(item.id)"
-              >
-                <v-icon> mdi-close </v-icon>
-              </v-btn>
-            </v-row>
+            <v-btn
+              title="Edit"
+              color="info"
+              icon
+              :to="{
+                name: 'administration/travel-agencies/TravelAgencyEditPage',
+                params: { travelDeskTravelAgencyId: item.id },
+              }"
+            >
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn
+              title="Delete"
+              class="ml-2"
+              :loading="isDeleting"
+              color="error"
+              icon
+              @click="deleteTravelAgency(item.id)"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
           </template>
         </v-data-table>
       </v-card-text>
@@ -52,13 +56,12 @@
 
 <script setup>
 import { computed, ref } from "vue"
+import { useRouter } from "vue2-helpers/vue-router"
 
 import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useTravelDeskTravelAgencies from "@/use/use-travel-desk-travel-agencies"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useRouteQuery from "@/use/use-route-query"
-
-import NewTravelAgency from "@/components/Administration/LookupTableManagement/TravelAgentsComponents/NewTravelAgency.vue"
 
 const headers = ref([
   { text: "Agency Name", value: "agencyName", class: "blue-grey lighten-4" },
@@ -84,30 +87,30 @@ const { travelDeskTravelAgencies, totalCount, isLoading, refresh } = useTravelDe
   travelDeskTravelAgenciesQuery
 )
 
-const isUpdating = ref(false)
+const isDeleting = ref(false)
 
 async function deleteTravelAgency(id) {
-  isUpdating.value = true
+  const result = confirm("Are you sure you want to remove this?")
+  if (result === false) return
+
+  isDeleting.value = true
   try {
     await travelDeskTravelAgenciesApi.delete(id)
     await refresh()
   } catch (error) {
     console.error(error)
   } finally {
-    isUpdating.value = false
+    isDeleting.value = false
   }
 }
 
-async function saveTravelAgency(id, attributes) {
-  isUpdating.value = true
-  try {
-    await travelDeskTravelAgenciesApi.update(id, attributes)
-    await refresh()
-  } catch (error) {
-    console.error(error)
-  } finally {
-    isUpdating.value = false
-  }
+const router = useRouter()
+
+function goToEditPage(travelDeskTravelAgencyId) {
+  return router.push({
+    name: "administration/travel-agencies/TravelAgencyEditPage",
+    params: { travelDeskTravelAgencyId },
+  })
 }
 
 useBreadcrumbs([
