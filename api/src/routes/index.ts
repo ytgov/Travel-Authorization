@@ -23,6 +23,7 @@ import {
   TravelDeskHotelsController,
   TravelDeskOtherTransportationsController,
   TravelDeskRentalCarsController,
+  TravelDeskTravelAgenciesController,
   TravelDeskTravelRequests,
   TravelDeskTravelRequestsController,
   TravelPurposesController,
@@ -168,6 +169,16 @@ router
   .route("/api/travel-desk-rental-cars/:travelDeskRentalCarId")
   .patch(TravelDeskRentalCarsController.update)
   .delete(TravelDeskRentalCarsController.destroy)
+
+router
+  .route("/api/travel-desk-travel-agencies")
+  .get(TravelDeskTravelAgenciesController.index)
+  .post(TravelDeskTravelAgenciesController.create)
+router
+  .route("/api/travel-desk-travel-agencies/:travelDeskTravelAgencyId")
+  .get(TravelDeskTravelAgenciesController.show)
+  .patch(TravelDeskTravelAgenciesController.update)
+  .delete(TravelDeskTravelAgenciesController.destroy)
 
 router.route("/api/travel-desk-travel-requests").get(TravelDeskTravelRequestsController.index)
 router
