@@ -1,16 +1,61 @@
-import { CreationOptional, InferAttributes, InferCreationAttributes, Model } from "sequelize"
+import {
+  Association,
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  NonAttribute,
+} from "sequelize"
+
+import sequelize from "@/db/db-client"
+import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 
 export class TravelDeskTravelAgency extends Model<
   InferAttributes<TravelDeskTravelAgency>,
   InferCreationAttributes<TravelDeskTravelAgency>
 > {
   declare id: CreationOptional<number>
+  declare agencyName: string
+  declare agencyInfo: string | null
 
-  // TODO: add other fields
+  // Associations
+  declare travelRequest?: NonAttribute<TravelDeskTravelRequest>
 
-  // TODO: add associations
+  declare static associations: {
+    travelRequest: Association<TravelDeskTravelAgency, TravelDeskTravelRequest>
+  }
+
+  static establishAssociations() {
+    this.hasOne(TravelDeskTravelRequest, {
+      as: "travelRequest",
+      foreignKey: "travelAgencyId",
+    })
+  }
 }
 
-// TODO: add model initialization
+TravelDeskTravelAgency.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false,
+    },
+    agencyName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    agencyInfo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+  },
+  {
+    sequelize,
+    timestamps: false,
+    paranoid: false,
+  }
+)
 
 export default TravelDeskTravelAgency
