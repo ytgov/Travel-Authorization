@@ -2,30 +2,21 @@
   <v-container>
     <h2>Travel Agencies</h2>
 
-    <v-alert
-      v-if="alertMsg"
-      class="mt-5"
-      type="info"
-      >{{ alertMsg }}</v-alert
-    >
-    <v-card
-      :loading="savingData"
-      class="px-5 pb-5"
-    >
+    <v-card class="px-5 pb-5">
       <v-row class="mx-0 my-1">
         <NewTravelAgent
-          :disabled="!isAdmin"
           class="mt-4 mr-5 ml-auto"
           type="New"
-          :agency-info="agencyInfo"
-          @save="saveTravelAgent"
+          :agency-info="agencyAttributes"
+          :loading="isSaving"
+          @save="createTravelAgency"
         />
       </v-row>
       <v-data-table
-        v-if="!savingData"
         :headers="headers"
-        :items="travelAgentsInfo"
+        :items="travelAgencies"
         :items-per-page="15"
+        :loading="isLoading"
         class="elevation-1 mt-4"
       >
         <template #item.edit="{ item }">
@@ -33,14 +24,16 @@
             <NewTravelAgent
               type="Edit"
               :agency-info="item"
-              @save="saveTravelAgent(item)"
+              :loading="isUpdating"
+              @save="saveTravelAgency(item.id, item)"
             />
             <v-btn
+              :loading="isUpdating"
               style="min-width: 0; padding: 1.115rem 0"
               color="red"
               class="ml-3 px-3"
               small
-              @click="deleteTravelAgent(item)"
+              @click="deleteTravelAgency(item.id)"
             >
               <v-icon> mdi-close </v-icon>
             </v-btn>
@@ -53,20 +46,12 @@
 
 <script setup>
 import { onMounted, ref } from "vue"
-import { TRAVEL_DESK_URL } from "@/urls"
 
-import http from "@/api/http-client"
+import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useCurrentUser from "@/use/use-current-user"
 
 import NewTravelAgent from "@/components/Administration/LookupTableManagement/TravelAgentsComponents/NewTravelAgent.vue"
 
-const { isAdmin } = useCurrentUser()
-
-const agencyInfo = ref({ agencyName: "", agencyInfo: "" })
-const travelAgentsInfo = ref([])
-const savingData = ref(false)
-const alertMsg = ref("")
 const headers = ref([
   { text: "Agency Name", value: "agencyName", class: "blue-grey lighten-4" },
   { text: "Agency Info", value: "agencyInfo", class: "blue-grey lighten-4", sortable: false },
@@ -80,56 +65,66 @@ const headers = ref([
   },
 ])
 
+const travelAgencies = ref([])
+const agencyAttributes = ref({ agencyName: "", agencyInfo: "" })
+const isLoading = ref(false)
+const isSaving = ref(false)
+const isUpdating = ref(false)
+
 onMounted(async () => {
-  await initForm()
+  travelAgencies.value = await loadTravelAgencies()
 })
 
-async function initForm() {
-  savingData.value = true
-  travelAgentsInfo.value = await getTravelAgentsInfo()
-  savingData.value = false
+async function loadTravelAgencies() {
+  isLoading.value = true
+  try {
+    const { travelDeskTravelAgencies } = await travelDeskTravelAgenciesApi.list()
+    return travelDeskTravelAgencies
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isLoading.value = false
+  }
 }
 
-async function getTravelAgentsInfo() {
-  alertMsg.value = ""
-  return http
-    .get(`${TRAVEL_DESK_URL}/travel-agents/`)
-    .then((resp) => {
-      return resp.data
-    })
-    .catch((e) => {
-      console.log(e)
-      alertMsg.value = e.response.data
-      savingData.value = false
-    })
+async function refreshTravelAgencies() {
+  travelAgencies.value = await loadTravelAgencies()
 }
 
-async function deleteTravelAgent(item) {
-  savingData.value = true
-  http
-    .delete(`${TRAVEL_DESK_URL}/travel-agents/${item.agencyID}`)
-    .then(() => {
-      initForm()
-    })
-    .catch((e) => {
-      console.log(e)
-      savingData.value = false
-    })
+async function deleteTravelAgency(id) {
+  isUpdating.value = true
+  try {
+    await travelDeskTravelAgenciesApi.delete(id)
+    await refreshTravelAgencies()
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isUpdating.value = false
+  }
 }
 
-async function saveTravelAgent(agencyInfo) {
-  savingData.value = true
-  const body = agencyInfo
+async function createTravelAgency(attributes) {
+  isSaving.value = true
+  try {
+    await travelDeskTravelAgenciesApi.create(attributes)
+    await refreshTravelAgencies()
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isSaving.value = false
+  }
+}
 
-  http
-    .post(`${TRAVEL_DESK_URL}/travel-agents/${agencyInfo.id}`, body)
-    .then(() => {
-      initForm()
-    })
-    .catch((e) => {
-      console.log(e)
-      savingData.value = false
-    })
+async function saveTravelAgency(id, attributes) {
+  isUpdating.value = true
+  try {
+    await travelDeskTravelAgenciesApi.update(id, attributes)
+    await refreshTravelAgencies()
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isUpdating.value = false
+  }
 }
 
 useBreadcrumbs([

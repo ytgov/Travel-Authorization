@@ -9,7 +9,7 @@
         <v-btn
           :disabled="disabled"
           style="min-width: 0"
-          color="blue lighten-2"
+          color="primary"
           @click="initForm()"
           v-bind="attrs"
           v-on="on"
