@@ -3,12 +3,7 @@ import express, { Request, Response } from "express"
 import { CreationAttributes, Op, WhereOptions } from "sequelize"
 
 import logger from "@/utils/logger"
-import {
-  RequiresAuth,
-  RequiresRoleAdmin,
-  RequiresRoleTdUser,
-  RequiresRoleTdUserOrAdmin,
-} from "@/middleware"
+import { RequiresAuth, RequiresRoleTdUser } from "@/middleware"
 import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import {
   TravelAuthorization,
@@ -627,68 +622,6 @@ travelDeskRouter.post(
         logger.error(error)
         res.status(500).json("Saving the Travel Request failed")
       })
-  }
-)
-
-travelDeskRouter.get(
-  "/travel-agents/",
-  RequiresAuth,
-  RequiresRoleTdUserOrAdmin,
-  async function (_req: Request, res: Response) {
-    const travelAgents = await dbLegacy("travelDeskTravelAgency").select("*")
-    res.status(200).json(travelAgents)
-  }
-)
-
-travelDeskRouter.delete(
-  "/travel-agents/:travelDeskTravelRequestId",
-  RequiresAuth,
-  RequiresRoleAdmin,
-  async function (req: Request, res: Response) {
-    try {
-      const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
-
-      await dbLegacy.transaction(async (trx) => {
-        await dbLegacy("travelDeskTravelAgency")
-          .delete()
-          .where("id", travelDeskTravelRequestId)
-          .transacting(trx)
-        res.status(200).json("Delete Successful")
-      })
-    } catch (error: unknown) {
-      logger.info(error)
-      res.status(500).json("Delete failed")
-    }
-  }
-)
-
-travelDeskRouter.post(
-  "/travel-agents/:travelDeskTravelRequestId",
-  RequiresAuth,
-  RequiresRoleAdmin,
-  async function (req: Request, res: Response) {
-    try {
-      await dbLegacy.transaction(async () => {
-        const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
-        const agencyData = req.body
-        //logger.info(agencyData)
-        if (!agencyData.agencyName || !agencyData.agencyInfo)
-          return res.status(500).json("Empty Payload for Agency")
-
-        if (travelDeskTravelRequestId > 0) {
-          await dbLegacy("travelDeskTravelAgency")
-            .update({ agencyInfo: agencyData.agencyInfo })
-            .where("id", travelDeskTravelRequestId)
-        } else {
-          await dbLegacy("travelDeskTravelAgency").insert(agencyData)
-        }
-
-        res.status(200).json("Successful")
-      })
-    } catch (error: unknown) {
-      logger.info(error)
-      res.status(500).json("Saving the Agency Information failed")
-    }
   }
 )
 
