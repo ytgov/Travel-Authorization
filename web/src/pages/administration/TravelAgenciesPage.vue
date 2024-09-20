@@ -17,6 +17,11 @@
           :loading="isLoading"
           class="elevation-1 mt-4"
         >
+          <template #item.agencyInfo="{ value }">
+            <span class="preserve-whitespace">
+              {{ value }}
+            </span>
+          </template>
           <template #item.edit="{ item }">
             <v-row class="mx-0">
               <NewTravelAgency
@@ -105,4 +110,8 @@ useBreadcrumbs([
 ])
 </script>
 
-<style scoped></style>
+<style scoped>
+.preserve-whitespace {
+  white-space: pre-wrap;
+}
+</style>
