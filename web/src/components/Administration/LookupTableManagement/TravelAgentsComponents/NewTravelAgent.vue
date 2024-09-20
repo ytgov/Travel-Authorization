@@ -98,7 +98,7 @@ export default {
       if (this.type == "New") {
         this.agencyInfo.agencyName = ""
         this.agencyInfo.agencyInfo = ""
-        this.agencyInfo.agencyID = 0
+        this.agencyInfo.id = 0
       }
       this.state.agencyNameErr = false
       this.state.agencyInfoErr = false

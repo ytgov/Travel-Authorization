@@ -635,23 +635,23 @@ travelDeskRouter.get(
   RequiresAuth,
   RequiresRoleTdUserOrAdmin,
   async function (_req: Request, res: Response) {
-    const travelAgents = await dbLegacy("travelDeskTravelAgent").select("*")
+    const travelAgents = await dbLegacy("travelDeskTravelAgency").select("*")
     res.status(200).json(travelAgents)
   }
 )
 
 travelDeskRouter.delete(
-  "/travel-agents/:agencyID",
+  "/travel-agents/:travelDeskTravelRequestId",
   RequiresAuth,
   RequiresRoleAdmin,
   async function (req: Request, res: Response) {
     try {
-      const agencyID = Number(req.params.agencyID)
+      const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
 
       await dbLegacy.transaction(async (trx) => {
-        await dbLegacy("travelDeskTravelAgent")
+        await dbLegacy("travelDeskTravelAgency")
           .delete()
-          .where("agencyID", agencyID)
+          .where("id", travelDeskTravelRequestId)
           .transacting(trx)
         res.status(200).json("Delete Successful")
       })
@@ -663,24 +663,24 @@ travelDeskRouter.delete(
 )
 
 travelDeskRouter.post(
-  "/travel-agents/:agencyID",
+  "/travel-agents/:travelDeskTravelRequestId",
   RequiresAuth,
   RequiresRoleAdmin,
   async function (req: Request, res: Response) {
     try {
       await dbLegacy.transaction(async () => {
-        const agencyID = Number(req.params.agencyID)
+        const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const agencyData = req.body
         //logger.info(agencyData)
         if (!agencyData.agencyName || !agencyData.agencyInfo)
           return res.status(500).json("Empty Payload for Agency")
 
-        if (agencyID > 0) {
-          await dbLegacy("travelDeskTravelAgent")
+        if (travelDeskTravelRequestId > 0) {
+          await dbLegacy("travelDeskTravelAgency")
             .update({ agencyInfo: agencyData.agencyInfo })
-            .where("agencyID", agencyID)
+            .where("id", travelDeskTravelRequestId)
         } else {
-          await dbLegacy("travelDeskTravelAgent").insert(agencyData)
+          await dbLegacy("travelDeskTravelAgency").insert(agencyData)
         }
 
         res.status(200).json("Successful")

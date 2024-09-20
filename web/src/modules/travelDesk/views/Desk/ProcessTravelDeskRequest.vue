@@ -133,7 +133,7 @@
                     v-model="travelRequest.travelAgencyId"
                     :items="travelAgentsInfo"
                     item-text="agencyName"
-                    item-value="agencyID"
+                    item-value="id"
                     label="Assign Agent"
                     outlined
                   />
@@ -368,7 +368,7 @@ export default {
         otherTransportationErr: false,
       },
       travelAgentsInfo: [],
-      agencyID: null,
+      id: null,
       loadingData: false,
     }
   },
@@ -385,7 +385,7 @@ export default {
       const travelDeskTravelRequestId = this.travelDetail.id
       this.travelRequest = await this.getTravelRequestInfo(travelDeskTravelRequestId)
       this.travelAgentsInfo = await this.getTravelAgentsInfo()
-      this.travelAgentsInfo.push({ agencyID: null, agencyName: "None", agencyInfo: "" })
+      this.travelAgentsInfo.push({ id: null, agencyName: "None", agencyInfo: "" })
       this.readonly = this.type == "booked" || this.travelRequest.status == "booked"
       const agents = this.$store.state.traveldesk.travelDeskUsers
       this.travelDeskAgentList = agents.map((agent) => agent.first_name + " " + agent.last_name)

@@ -19,7 +19,7 @@ import TravelDeskOtherTransportation from "@/models/travel-desk-other-transporta
 import TravelDeskPassengerNameRecordDocument from "@/models/travel-desk-passenger-name-record-document"
 import TravelDeskQuestion from "@/models/travel-desk-question"
 import TravelDeskRentalCar from "@/models/travel-desk-rental-car"
-import TravelDeskTravelAgent from "@/models/travel-desk-travel-agent"
+import TravelDeskTravelAgency from "@/models/travel-desk-travel-agency"
 
 /** Keep in sync with web/src/api/travel-desk-travel-requests-api.js */
 export enum TravelDeskTravelRequestStatuses {
@@ -39,7 +39,7 @@ export class TravelDeskTravelRequest extends Model<
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
-  declare travelAgencyId: ForeignKey<TravelDeskTravelAgent["agencyID"]> | null
+  declare travelAgencyId: ForeignKey<TravelDeskTravelAgency["id"]> | null
   declare legalFirstName: string
   declare legalMiddleName: string | null
   declare legalLastName: string
@@ -68,7 +68,7 @@ export class TravelDeskTravelRequest extends Model<
   // Associations
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
-  declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgent>
+  declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgency>
   declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
   declare hotels?: NonAttribute<TravelDeskHotel[]>
   declare otherTransportations?: NonAttribute<TravelDeskOtherTransportation[]>
@@ -86,7 +86,7 @@ export class TravelDeskTravelRequest extends Model<
       TravelDeskPassengerNameRecordDocument
     >
     questions: Association<TravelDeskTravelRequest, TravelDeskQuestion>
-    travelDeskTravelAgent: Association<TravelDeskTravelRequest, TravelDeskTravelAgent>
+    travelDeskTravelAgent: Association<TravelDeskTravelRequest, TravelDeskTravelAgency>
   }
 
   static establishAssociations() {
@@ -99,11 +99,10 @@ export class TravelDeskTravelRequest extends Model<
       as: "travelAuthorization",
       foreignKey: "travelAuthorizationId",
     })
-    // TODO: enable this once TravelDeskTravelRequest model is set up
-    // this.belongsTo(TravelDeskTravelAgent, {
-    //   as: "travelDeskTravelAgent",
-    //   foreignKey: "agencyID",
-    // })
+    this.belongsTo(TravelDeskTravelAgency, {
+      as: "travelAgency",
+      foreignKey: "travelAgencyId",
+    })
     this.hasMany(TravelDeskFlightRequest, {
       as: "flightRequests",
       foreignKey: "travelRequestId",
@@ -149,8 +148,8 @@ TravelDeskTravelRequest.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "travelDeskTravelAgent", // using real table name here
-        key: "agencyID", // using real column name here
+        model: TravelDeskTravelAgency,
+        key: "id",
       },
       onDelete: "RESTRICT",
     },

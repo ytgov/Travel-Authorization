@@ -42,7 +42,7 @@
                 v-model="travelRequest.travelAgencyId"
                 :items="travelAgentsInfo"
                 item-text="agencyName"
-                item-value="agencyID"
+                item-value="id"
                 label="Assign Agent"
                 outlined
               />

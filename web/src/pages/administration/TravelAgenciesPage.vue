@@ -122,7 +122,7 @@ async function saveTravelAgent(agencyInfo) {
   const body = agencyInfo
 
   http
-    .post(`${TRAVEL_DESK_URL}/travel-agents/${agencyInfo.agencyID}`, body)
+    .post(`${TRAVEL_DESK_URL}/travel-agents/${agencyInfo.id}`, body)
     .then(() => {
       initForm()
     })
