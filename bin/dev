@@ -9,6 +9,7 @@ class DevHelper
     "branch-from" => :branch_from,
     "check-types" => :check_types,
     "bash-completions" => :bash_completions,
+    "plantuml-to-png" => :plantuml_to_png,
   }
   METHOD_TO_COMMAND = COMMAND_TO_METHOD.invert
 
@@ -175,6 +176,22 @@ class DevHelper
     else
       raise NotImplementedError, "Not implement for platform #{RUBY_PLATFORM}"
     end
+  end
+
+  def plantuml_to_png(*args, **kwargs)
+    file_path = args.pop
+    raise ScriptError, "Must provide a file path." if file_path.nil?
+
+    png_path = file_path.gsub(/\.(wsd|pu|puml|plantuml|uml)$/, '.png')
+
+    command = <<~BASH
+      curl #{args.join(' ')} \
+        --data-binary @'#{file_path}' \
+        http://localhost:9999/png > '#{png_path}'
+    BASH
+
+    puts "Running: #{command}"
+    exec(command)
   end
 
   def bash_completions
