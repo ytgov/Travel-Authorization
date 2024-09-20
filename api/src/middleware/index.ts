@@ -21,18 +21,6 @@ export function ReturnValidationErrors(req: Request, res: Response, next: NextFu
   next()
 }
 
-/** @deprecated - prefer policy pattern */
-export function RequiresRoleAdmin(req: Request, res: Response, next: NextFunction) {
-  const isAdmin =
-    "user" in req && req.user instanceof User && req.user.roles.includes(User.Roles.ADMIN)
-
-  if (!isAdmin) {
-    return res.status(401).send("You are not an Administrator")
-  }
-
-  next()
-}
-
 /** @deprecated - prefer secure by default; everything requires auth unless explicity excluded from authorization check. */
 export function RequiresAuth(_req: Request, _res: Response, next: NextFunction) {
   // if (req.isAuthenticated()) {
@@ -70,20 +58,4 @@ export function RequiresRoleTdUser(req: Request, res: Response, next: NextFuncti
   }
 
   return res.status(401).send("You are not a Travel Desk User!")
-}
-
-/** @deprecated - prefer policy pattern */
-export function RequiresRoleTdUserOrAdmin(req: Request, res: Response, next: NextFunction) {
-  const isAdmin =
-    "user" in req && req.user instanceof User && req.user.roles.includes(User.Roles.ADMIN)
-  const isTravelDeskUser =
-    "user" in req &&
-    req.user instanceof User &&
-    req.user.roles.includes(User.Roles.TRAVEL_DESK_USER)
-
-  if (isAdmin || isTravelDeskUser) {
-    return next()
-  }
-
-  return res.status(401).send("You are not an Administrator or Travel Desk User!")
 }
