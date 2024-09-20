@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-dialog
-      v-model="travelAgentsDialog"
+      v-model="showModal"
       persistent
       max-width="800px"
     >
@@ -61,7 +61,7 @@
             </v-btn>
 
             <v-btn
-              @click="saveTravelAgent()"
+              @click="save()"
               style="min-width: 0"
               color="success"
               class="ml-auto mr-1 my-0 px-5"
@@ -76,7 +76,7 @@
 
 <script>
 export default {
-  name: "NewTravelAgent",
+  name: "NewTravelAgency",
   components: {},
   props: {
     disabled: { type: Boolean },
@@ -85,7 +85,7 @@ export default {
   },
   data() {
     return {
-      travelAgentsDialog: false,
+      showModal: false,
       state: {
         agencyNameErr: false,
         agencyInfoErr: false,
@@ -104,7 +104,7 @@ export default {
       this.state.agencyInfoErr = false
     },
 
-    saveTravelAgent() {
+    save() {
       if (this.checkStates()) {
         this.$emit("save", this.agencyInfo)
         this.closeModal()
@@ -118,7 +118,7 @@ export default {
     },
 
     closeModal() {
-      this.travelAgentsDialog = false
+      this.showModal = false
     },
   },
 }

@@ -4,7 +4,7 @@
 
     <v-card class="px-5 pb-5">
       <v-row class="mx-0 my-1">
-        <NewTravelAgent
+        <NewTravelAgency
           class="mt-4 mr-5 ml-auto"
           type="New"
           :agency-info="agencyAttributes"
@@ -21,7 +21,7 @@
       >
         <template #item.edit="{ item }">
           <v-row class="mx-0">
-            <NewTravelAgent
+            <NewTravelAgency
               type="Edit"
               :agency-info="item"
               :loading="isUpdating"
@@ -50,7 +50,7 @@ import { onMounted, ref } from "vue"
 import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 
-import NewTravelAgent from "@/components/Administration/LookupTableManagement/TravelAgentsComponents/NewTravelAgent.vue"
+import NewTravelAgency from "@/components/Administration/LookupTableManagement/TravelAgentsComponents/NewTravelAgency.vue"
 
 const headers = ref([
   { text: "Agency Name", value: "agencyName", class: "blue-grey lighten-4" },
