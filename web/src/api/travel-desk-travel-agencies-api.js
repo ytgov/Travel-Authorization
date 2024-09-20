@@ -17,9 +17,8 @@ import http from "@/api/http-client"
  */
 
 /**
- * @typedef {{
- *  // match with model scopes signatures
- * }} TravelDeskTravelAgencyFiltersOptions
+ * // match with model scopes signatures
+ * @typedef {{}} TravelDeskTravelAgencyFiltersOptions
  */
 
 export const travelDeskTravelAgenciesApi = {
