@@ -20,6 +20,7 @@ export function isRole(role: string): role is RoleNames {
   return Object.values(RoleNames).includes(role as RoleNames)
 }
 
+/** @deprecated - users now store roles in a users.roles -> string[] column */
 export class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
   static Names = RoleNames
 

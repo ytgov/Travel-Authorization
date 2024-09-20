@@ -6,18 +6,34 @@ import PolicyFactory from "@/policies/policy-factory"
 
 export class TravelDeskTravelAgenciesPolicy extends PolicyFactory(TravelDeskTravelAgency) {
   show(): boolean {
+    if (this.user.isAdmin || this.user.isTravelDeskUser) {
+      return true
+    }
+
     return false
   }
 
   create(): boolean {
+    if (this.user.isAdmin || this.user.isTravelDeskUser) {
+      return true
+    }
+
     return false
   }
 
   update(): boolean {
+    if (this.user.isAdmin || this.user.isTravelDeskUser) {
+      return true
+    }
+
     return false
   }
 
   destroy(): boolean {
+    if (this.user.isAdmin || this.user.isTravelDeskUser) {
+      return true
+    }
+
     return false
   }
 
@@ -29,9 +45,13 @@ export class TravelDeskTravelAgenciesPolicy extends PolicyFactory(TravelDeskTrav
     return [...this.permittedAttributes()]
   }
 
-  static policyScope(_user: User): FindOptions<Attributes<TravelDeskTravelAgency>> {
+  static policyScope(user: User): FindOptions<Attributes<TravelDeskTravelAgency>> {
+    if (user.isAdmin || user.isTravelDeskUser) {
+      return {} // all records
+    }
+
     return {
-      where: literal("1 = 0"),
+      where: literal("1 = 0"), // no records
     }
   }
 }

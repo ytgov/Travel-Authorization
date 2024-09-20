@@ -41,6 +41,15 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
+  // Special attributes
+  get isAdmin(): NonAttribute<boolean> {
+    return this.roles.includes(RoleNames.ADMIN)
+  }
+
+  get isTravelDeskUser(): NonAttribute<boolean> {
+    return this.roles.includes(RoleNames.TRAVEL_DESK_USER)
+  }
+
   // Associations
   declare travelAuthorizations?: NonAttribute<TravelAuthorization[]>
 
