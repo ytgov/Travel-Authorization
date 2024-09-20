@@ -11,10 +11,12 @@
       </v-card-title>
       <v-card-text>
         <v-data-table
+          :page.sync="page"
+          :items-per-page.sync="perPage"
           :headers="headers"
           :items="travelDeskTravelAgencies"
-          :items-per-page="15"
           :loading="isLoading"
+          :server-items-length="totalCount"
           class="elevation-1 mt-4"
         >
           <template #item.agencyInfo="{ value }">
@@ -49,11 +51,12 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
 
 import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useTravelDeskTravelAgencies from "@/use/use-travel-desk-travel-agencies"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useRouteQuery from "@/use/use-route-query"
 
 import NewTravelAgency from "@/components/Administration/LookupTableManagement/TravelAgentsComponents/NewTravelAgency.vue"
 
@@ -70,7 +73,16 @@ const headers = ref([
   },
 ])
 
-const { travelDeskTravelAgencies, isLoading, refresh } = useTravelDeskTravelAgencies()
+const page = useRouteQuery("page", "1", { transform: parseInt })
+const perPage = useRouteQuery("perPage", "5", { transform: parseInt })
+
+const travelDeskTravelAgenciesQuery = computed(() => ({
+  page: page.value,
+  perPage: perPage.value,
+}))
+const { travelDeskTravelAgencies, totalCount, isLoading, refresh } = useTravelDeskTravelAgencies(
+  travelDeskTravelAgenciesQuery
+)
 
 const isUpdating = ref(false)
 
