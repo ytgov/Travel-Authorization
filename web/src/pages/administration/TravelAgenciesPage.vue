@@ -5,7 +5,7 @@
         <h2>Travel Agencies</h2>
         <v-btn
           color="primary"
-          :to="{ name: 'administration/travel-agencies/TravelAgenciesNewPage' }"
+          :to="{ name: 'administration/travel-agencies/TravelAgencyNewPage' }"
           >Add Travel Agency</v-btn
         >
       </v-card-title>

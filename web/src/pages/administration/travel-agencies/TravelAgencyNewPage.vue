@@ -122,7 +122,7 @@ useBreadcrumbs([
   },
   {
     text: "New Travel Agency",
-    to: { name: "administration/travel-agencies/TravelAgenciesNewPage" },
+    to: { name: "administration/travel-agencies/TravelAgencyNewPage" },
   },
 ])
 </script>

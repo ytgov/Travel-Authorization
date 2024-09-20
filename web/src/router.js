@@ -79,9 +79,9 @@ const routes = [
           },
           {
             path: "administration/travel-agencies/new",
-            name: "administration/travel-agencies/TravelAgenciesNewPage",
+            name: "administration/travel-agencies/TravelAgencyNewPage",
             component: () =>
-              import("@/pages/administration/travel-agencies/TravelAgenciesNewPage.vue"),
+              import("@/pages/administration/travel-agencies/TravelAgencyNewPage.vue"),
           },
         ],
       },
