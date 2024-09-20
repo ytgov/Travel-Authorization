@@ -700,7 +700,7 @@ travelDeskRouter.post(
     const file = req.body.file
     const travelDeskTravelRequestId = parseInt(req.params.travelDeskTravelRequestId)
     const data = JSON.parse(req.body.data)
-    const { invoiceNumber, travelDeskTravelAgentId } = data
+    const { invoiceNumber, travelAgencyId } = data
 
     return db
       .transaction(async () => {
@@ -710,10 +710,10 @@ travelDeskRouter.post(
           pnrDocument: file,
         })
 
-        if (travelDeskTravelAgentId) {
+        if (travelAgencyId) {
           await TravelDeskTravelRequest.update(
             {
-              travelDeskTravelAgentId,
+              travelAgencyId,
             },
             {
               where: { id: travelDeskTravelRequestId },

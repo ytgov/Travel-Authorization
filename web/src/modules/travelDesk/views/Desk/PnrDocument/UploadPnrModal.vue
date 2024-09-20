@@ -39,7 +39,7 @@
             </v-col>
             <v-col cols="6">
               <v-select
-                v-model="travelRequest.travelDeskTravelAgentId"
+                v-model="travelRequest.travelAgencyId"
                 :items="travelAgentsInfo"
                 item-text="agencyName"
                 item-value="agencyID"
@@ -195,7 +195,7 @@ export default {
         this.savingData = true
         const data = {
           invoiceNumber: this.invoiceNumber,
-          travelDeskTravelAgentId: this.travelRequest.travelDeskTravelAgentId,
+          travelAgencyId: this.travelRequest.travelAgencyId,
         }
         const bodyFormData = new FormData()
         bodyFormData.append("file", this.reader.result)

@@ -53,7 +53,7 @@ export class TravelDeskTravelRequestsPolicy extends BasePolicy<TravelDeskTravelR
 
   permittedAttributes(): Path[] {
     return [
-      "travelDeskTravelAgentId",
+      "travelAgencyId",
       "legalFirstName",
       "legalLastName",
       "strAddress",

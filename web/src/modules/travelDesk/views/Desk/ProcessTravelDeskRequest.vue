@@ -130,7 +130,7 @@
               <v-row class="mt-3 mb-0 mx-0">
                 <v-col cols="6">
                   <v-select
-                    v-model="travelRequest.travelDeskTravelAgentId"
+                    v-model="travelRequest.travelAgencyId"
                     :items="travelAgentsInfo"
                     item-text="agencyName"
                     item-value="agencyID"

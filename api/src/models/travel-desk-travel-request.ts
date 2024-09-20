@@ -39,7 +39,7 @@ export class TravelDeskTravelRequest extends Model<
 
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
-  declare travelDeskTravelAgentId: ForeignKey<TravelDeskTravelAgent["agencyID"]> | null
+  declare travelAgencyId: ForeignKey<TravelDeskTravelAgent["agencyID"]> | null
   declare legalFirstName: string
   declare legalMiddleName: string | null
   declare legalLastName: string
@@ -145,14 +145,14 @@ TravelDeskTravelRequest.init(
       },
       onDelete: "CASCADE",
     },
-    travelDeskTravelAgentId: {
+    travelAgencyId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
         model: "travelDeskTravelAgent", // using real table name here
         key: "agencyID", // using real column name here
       },
-      onDelete: "SET NULL",
+      onDelete: "RESTRICT",
     },
     legalFirstName: {
       type: DataTypes.STRING(255),
