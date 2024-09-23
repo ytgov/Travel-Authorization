@@ -129,13 +129,13 @@
             <v-col cols="4">
               <v-row class="mt-3 mb-0 mx-0">
                 <v-col cols="6">
-                  <v-select
+                  <TravelDeskTravelAgencySelect
                     v-model="travelRequest.travelAgencyId"
-                    :items="travelAgencies"
-                    item-text="agencyName"
-                    item-value="id"
                     label="Assign Agency"
+                    placeholder="None"
+                    clearable
                     outlined
+                    persistent-placeholder
                   />
                 </v-col>
                 <v-col cols="6">
@@ -203,7 +203,6 @@
             :invoice-number="travelRequest.invoiceNumber"
           />
           <UploadPnrModal
-            :travel-agencies="travelAgencies"
             :travel-request="travelRequest"
             :class="travelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
             @saveData="saveNewTravelRequest('save')"
@@ -287,7 +286,6 @@ import { TRAVEL_DESK_URL } from "@/urls"
 import { useSnack } from "@/plugins/snack-plugin"
 import http from "@/api/http-client"
 import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
-import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useCurrentUser from "@/use/use-current-user"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
@@ -302,19 +300,22 @@ import UploadPnrModal from "@/modules/travelDesk/views/Desk/PnrDocument/UploadPn
 import QuestionsTable from "@/modules/travelDesk/views/Desk/Components/QuestionsTable.vue"
 import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
 
+import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
+
 export default {
   name: "ProcessTravelDeskRequest",
   components: {
-    TitleCard,
-    TravelerDetails,
     FlightRequestTable,
-    RentalCarRequestTable,
-    TransportationRequestTable,
     HotelRequestTable,
+    ItineraryModal,
     QuestionsTable,
+    RentalCarRequestTable,
+    TitleCard,
+    TransportationRequestTable,
+    TravelDeskTravelAgencySelect,
+    TravelerDetails,
     TravelPortModal,
     UploadPnrModal,
-    ItineraryModal,
   },
   props: {
     type: {
@@ -368,7 +369,6 @@ export default {
         hotelsErr: false,
         otherTransportationErr: false,
       },
-      travelAgencies: [],
       id: null,
       loadingData: false,
     }
@@ -385,8 +385,6 @@ export default {
       this.loadingData = true
       const travelDeskTravelRequestId = this.travelDetail.id
       this.travelRequest = await this.getTravelRequestInfo(travelDeskTravelRequestId)
-      this.travelAgencies = await this.loadTravelAgencies()
-      this.travelAgencies.push({ id: null, agencyName: "None", agencyInfo: "" })
       this.readonly = this.type == "booked" || this.travelRequest.status == "booked"
       const agents = this.$store.state.traveldesk.travelDeskUsers
       this.travelDeskAgentList = agents.map((agent) => agent.first_name + " " + agent.last_name)
@@ -415,15 +413,6 @@ export default {
         .catch((e) => {
           console.log(e)
         })
-    },
-
-    async loadTravelAgencies() {
-      try {
-        const { travelDeskTravelAgencies } = await travelDeskTravelAgenciesApi.list()
-        return travelDeskTravelAgencies
-      } catch (error) {
-        console.error(error)
-      }
     },
 
     saveNewTravelRequest(saveType, { close = false, refresh = false } = {}) {

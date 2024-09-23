@@ -38,13 +38,13 @@
               />
             </v-col>
             <v-col cols="6">
-              <v-select
+              <TravelDeskTravelAgencySelect
                 v-model="travelRequest.travelAgencyId"
-                :items="travelAgencies"
-                item-text="agencyName"
-                item-value="id"
                 label="Assign Agency"
+                placeholder="None"
+                clearable
                 outlined
+                persistent-placeholder
               />
             </v-col>
           </v-row>
@@ -123,14 +123,14 @@
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
+import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
+
 export default {
   name: "UploadPnrModal",
-  components: {},
+  components: {
+    TravelDeskTravelAgencySelect,
+  },
   props: {
-    travelAgencies: {
-      type: Array,
-      required: true,
-    },
     travelRequest: {
       type: Object,
       required: true,
