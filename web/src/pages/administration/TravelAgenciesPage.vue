@@ -65,6 +65,9 @@ import useRouteQuery from "@/use/use-route-query"
 
 const headers = ref([
   { text: "Agency Name", value: "agencyName", class: "blue-grey lighten-4" },
+  { text: "Contact Name", value: "contactName", class: "blue-grey lighten-4" },
+  { text: "Contact Phone Number", value: "contactPhoneNumber", class: "blue-grey lighten-4" },
+  { text: "Contact Email", value: "contactEmail", class: "blue-grey lighten-4" },
   { text: "Agency Info", value: "agencyInfo", class: "blue-grey lighten-4", sortable: false },
   {
     text: "",
