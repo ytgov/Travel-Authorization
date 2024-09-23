@@ -12,7 +12,7 @@
           <v-row>
             <v-col
               cols="12"
-              md="4"
+              md="6"
             >
               <v-text-field
                 v-model="attributes.agencyName"
@@ -24,11 +24,48 @@
             </v-col>
             <v-col
               cols="12"
+              md="6"
+            >
+              <v-text-field
+                v-model="attributes.contactName"
+                label="Contact Name"
+                outlined
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-text-field
+                v-model="attributes.contactEmail"
+                label="Contact Email"
+                type="email"
+                outlined
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-text-field
+                v-model="attributes.contactPhoneNumber"
+                label="Contact Phone Number"
+                hint="Format: 123-456-7890"
+                type="tel"
+                outlined
+              />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col
+              cols="12"
               md="8"
             >
               <v-textarea
                 v-model="attributes.agencyInfo"
-                label="Paste Travel Agency Information Here"
+                label="Additional Information"
                 clearable
                 outlined
               />
