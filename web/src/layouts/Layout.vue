@@ -123,6 +123,7 @@
         >
           <template #activator="{ on, attrs }">
             <v-btn
+              title="System Options"
               icon
               color="primary"
               v-bind="attrs"

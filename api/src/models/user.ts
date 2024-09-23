@@ -2,16 +2,6 @@ import {
   Association,
   CreationOptional,
   DataTypes,
-  HasManyAddAssociationMixin,
-  HasManyAddAssociationsMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
-  HasManyHasAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
-  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -51,42 +41,16 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
 
-  // Associations
-  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
-  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getTravelAuthorizations: HasManyGetAssociationsMixin<TravelAuthorization>
-  declare setTravelAuthorizations: HasManySetAssociationsMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare hasTravelAuthorization: HasManyHasAssociationMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare hasTravelAuthorizations: HasManyHasAssociationsMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare addTravelAuthorization: HasManyAddAssociationMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare addTravelAuthorizations: HasManyAddAssociationsMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare removeTravelAuthorization: HasManyRemoveAssociationMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare removeTravelAuthorizations: HasManyRemoveAssociationsMixin<
-    TravelAuthorization,
-    TravelAuthorization["id"]
-  >
-  declare countTravelAuthorizations: HasManyCountAssociationsMixin
-  declare createTravelAuthorization: HasManyCreateAssociationMixin<TravelAuthorization>
+  // Special attributes
+  get isAdmin(): NonAttribute<boolean> {
+    return this.roles.includes(RoleNames.ADMIN)
+  }
 
+  get isTravelDeskUser(): NonAttribute<boolean> {
+    return this.roles.includes(RoleNames.TRAVEL_DESK_USER)
+  }
+
+  // Associations
   declare travelAuthorizations?: NonAttribute<TravelAuthorization[]>
 
   declare static associations: {
