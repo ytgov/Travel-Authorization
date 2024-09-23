@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TitleCard class="mt-10 mx-5">
+    <TitleCard class="mt-10">
       <template #title>
         <div>Hotel Request</div>
       </template>

@@ -30,12 +30,12 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-card>
+          <v-card style="border: none !important">
             <v-card-title>
               <h4 class="text-h6">Travel Information</h4>
             </v-card-title>
             <v-card-text>
-              <TitleCard class="mt-5 mx-5">
+              <TitleCard class="mt-5">
                 <template #title>
                   <div>Flight Request</div>
                 </template>
