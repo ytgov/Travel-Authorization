@@ -38,7 +38,7 @@ export class TravelDeskTravelAgenciesPolicy extends PolicyFactory(TravelDeskTrav
   }
 
   permittedAttributes(): Path[] {
-    return ["agencyName", "agencyInfo"]
+    return ["agencyName", "agencyInfo", "contactName", "contactEmail", "contactPhoneNumber"]
   }
 
   permittedAttributesForCreate(): Path[] {

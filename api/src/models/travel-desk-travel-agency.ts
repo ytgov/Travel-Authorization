@@ -18,6 +18,9 @@ export class TravelDeskTravelAgency extends Model<
   declare id: CreationOptional<number>
   declare agencyName: string
   declare agencyInfo: string | null
+  declare contactName: string | null
+  declare contactEmail: string | null
+  declare contactPhoneNumber: string | null
 
   // Associations
   declare travelRequest?: NonAttribute<TravelDeskTravelRequest>
@@ -48,6 +51,18 @@ TravelDeskTravelAgency.init(
     },
     agencyInfo: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    contactName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    contactEmail: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    contactPhoneNumber: {
+      type: DataTypes.STRING(20),
       allowNull: true,
     },
   },
