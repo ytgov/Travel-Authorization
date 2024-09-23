@@ -18,20 +18,3 @@ export * as TravelDeskTravelAgencies from "./travel-desk-travel-agencies"
 export * as TravelDeskTravelRequests from "./travel-desk-travel-requests"
 export * as TravelSegments from "./travel-segments"
 export * as Users from "./users"
-
-// TODO: move these to their own files, or deprecate and remove them completely
-export interface QueryStatement {
-  field: string
-  operator: string
-  value: any
-}
-
-export interface SortStatement {
-  field: string
-  direction: SortDirection
-}
-
-export enum SortDirection {
-  ASCENDING = "asc",
-  DESCENDING = "desc",
-}
