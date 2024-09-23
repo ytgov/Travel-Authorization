@@ -68,7 +68,7 @@ export class TravelDeskTravelRequest extends Model<
   // Associations
   declare travelAuthorization?: NonAttribute<TravelAuthorization>
   declare travelDeskPassengerNameRecordDocument?: NonAttribute<TravelDeskPassengerNameRecordDocument>
-  declare travelDeskTravelAgent?: NonAttribute<TravelDeskTravelAgency>
+  declare travelAgency?: NonAttribute<TravelDeskTravelAgency>
   declare flightRequests?: NonAttribute<TravelDeskFlightRequest[]>
   declare hotels?: NonAttribute<TravelDeskHotel[]>
   declare otherTransportations?: NonAttribute<TravelDeskOtherTransportation[]>
@@ -86,7 +86,7 @@ export class TravelDeskTravelRequest extends Model<
       TravelDeskPassengerNameRecordDocument
     >
     questions: Association<TravelDeskTravelRequest, TravelDeskQuestion>
-    travelDeskTravelAgent: Association<TravelDeskTravelRequest, TravelDeskTravelAgency>
+    travelAgency: Association<TravelDeskTravelRequest, TravelDeskTravelAgency>
   }
 
   static establishAssociations() {
