@@ -3,11 +3,8 @@
     :loading="isLoading"
     :disabled="isLoading"
   >
-    <v-card-title
-      class="primary"
-      style="border-bottom: 1px solid black"
-    >
-      <div class="text-h5">Travel Desk Request</div>
+    <v-card-title class="primary">
+      <h3 class="mb-1">Travel Desk Request</h3>
     </v-card-title>
 
     <div
