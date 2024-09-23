@@ -42,7 +42,9 @@
                 v-model="attributes.contactEmail"
                 label="Contact Email"
                 type="email"
+                :rules="[isEmail]"
                 outlined
+                validate-on-blur
               />
             </v-col>
             <v-col
@@ -52,9 +54,11 @@
               <v-text-field
                 v-model="attributes.contactPhoneNumber"
                 label="Contact Phone Number"
-                hint="Format: 123-456-7890"
+                hint="e.g. 123-456-7890"
                 type="tel"
+                :rules="[isPhoneNumber]"
                 outlined
+                validate-on-blur
               />
             </v-col>
           </v-row>
@@ -103,7 +107,7 @@ import { ref } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import { required } from "@/utils/validators"
+import { required, isEmail, isPhoneNumber } from "@/utils/validators"
 import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 

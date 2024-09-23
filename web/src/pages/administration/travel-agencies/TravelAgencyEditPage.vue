@@ -49,7 +49,9 @@
                 v-model="travelDeskTravelAgency.contactEmail"
                 label="Contact Email"
                 type="email"
+                :rules="[isEmail]"
                 outlined
+                validate-on-blur
               />
             </v-col>
             <v-col
@@ -59,9 +61,11 @@
               <v-text-field
                 v-model="travelDeskTravelAgency.contactPhoneNumber"
                 label="Contact Phone Number"
-                hint="Format: 123-456-7890"
+                hint="e.g. 123-456-7890"
                 type="tel"
+                :rules="[isPhoneNumber]"
                 outlined
+                validate-on-blur
               />
             </v-col>
           </v-row>
@@ -110,7 +114,7 @@ import { ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import { required } from "@/utils/validators"
+import { required, isEmail, isPhoneNumber } from "@/utils/validators"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelDeskTravelAgency from "@/use/use-travel-desk-travel-agency"
 
