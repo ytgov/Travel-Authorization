@@ -58,6 +58,7 @@
 import { computed, ref } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 
+import { useSnack } from "@/plugins/snack-plugin"
 import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useTravelDeskTravelAgencies from "@/use/use-travel-desk-travel-agencies"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
@@ -91,6 +92,7 @@ const { travelDeskTravelAgencies, totalCount, isLoading, refresh } = useTravelDe
 )
 
 const isDeleting = ref(false)
+const snack = useSnack()
 
 async function deleteTravelAgency(id) {
   const result = confirm("Are you sure you want to remove this?")
@@ -102,6 +104,9 @@ async function deleteTravelAgency(id) {
     await refresh()
   } catch (error) {
     console.error(error)
+    snack(`Failed to delete travel agency: ${error}`, {
+      color: "error",
+    })
   } finally {
     isDeleting.value = false
   }
