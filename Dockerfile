@@ -18,7 +18,7 @@ COPY api ./
 
 RUN npm run build
 
-RUN mkdir -p dist/src/db/seeds/data && cp src/db/seeds/data/*.csv dist/src/db/seeds/data/
+RUN mkdir -p dist/db/seeds/data && cp src/db/seeds/data/*.csv dist/db/seeds/data/
 
 # Stage 2 - web build - requires development environment to install vue-cli-service
 FROM base-node AS web-build-stage
@@ -82,7 +82,7 @@ WORKDIR /home/node/app
 COPY --from=api-build-stage --chown=node:node /usr/src/api/package*.json ./
 RUN npm install && npm cache clean --force --loglevel=error
 
-COPY --from=api-build-stage --chown=node:node /usr/src/api/dist/src ./dist
+COPY --from=api-build-stage --chown=node:node /usr/src/api/dist ./dist
 COPY --from=web-build-stage --chown=node:node /usr/src/web/dist ./dist/web
 
 EXPOSE 3000
