@@ -74,7 +74,7 @@ export class CreateService extends BaseService {
     const travelerDetails = await this.getTravelerDetails(busEmail)
 
     return db.transaction(async () => {
-      const travelDeskTravelRequest = TravelDeskTravelRequest.create({
+      const travelDeskTravelRequest = await TravelDeskTravelRequest.create({
         ...optionalAttributes,
         travelAuthorizationId,
         legalFirstName,
