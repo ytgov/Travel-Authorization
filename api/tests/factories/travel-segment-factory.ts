@@ -1,12 +1,17 @@
 import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
+import { Includeable } from "sequelize"
 
 import { TravelSegment } from "@/models"
 import { locationFactory, travelAuthorizationFactory } from "@/factories"
 import { anytime, presence } from "@/factories/helpers"
 
-export const travelSegmentFactory = Factory.define<TravelSegment>(
-  ({ associations, params, onCreate }) => {
+type TransientParam = {
+  include?: Includeable | Includeable[]
+}
+
+export const travelSegmentFactory = Factory.define<TravelSegment, TransientParam>(
+  ({ associations, params, onCreate, transientParams }) => {
     onCreate(async (travelSegment) => {
       if (travelSegment.travelAuthorizationId === undefined) {
         const travelAuthorization =
@@ -27,7 +32,15 @@ export const travelSegmentFactory = Factory.define<TravelSegment>(
         travelSegment.arrivalLocationId = arrivalLocation.id
       }
 
-      return travelSegment.save()
+      await travelSegment.save()
+
+      if (transientParams.include === undefined) {
+        return travelSegment
+      }
+
+      return travelSegment.reload({
+        include: transientParams.include,
+      })
     })
 
     const modeOfTransport = presence(
