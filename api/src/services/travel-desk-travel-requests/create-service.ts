@@ -3,8 +3,9 @@ import { Attributes } from "sequelize"
 
 import logger from "@/utils/logger"
 import { yukonGovernmentIntegration } from "@/integrations"
-import db, { TravelDeskTravelRequest, User } from "@/models"
+import db, { TravelDeskTravelRequest, TravelSegment, User } from "@/models"
 import BaseService from "@/services/base-service"
+import PrefillFlightRequestsService from "@/services/travel-desk-travel-requests/prefill-flight-requests-service"
 
 type TravelDeskTravelRequestCreationAttributes = Partial<Attributes<TravelDeskTravelRequest>>
 
@@ -90,6 +91,15 @@ export class CreateService extends BaseService {
         status: TravelDeskTravelRequest.Statuses.DRAFT,
       })
 
+      const travelSegments = await this.loadTravelSegments(travelAuthorizationId)
+      if (!isEmpty(travelSegments)) {
+        await PrefillFlightRequestsService.perform(
+          travelDeskTravelRequest,
+          travelSegments,
+          this.currentUser
+        )
+      }
+
       return travelDeskTravelRequest
     })
   }
@@ -132,6 +142,17 @@ export class CreateService extends BaseService {
       logger.error(`Failed to retrieve employee info: ${error}`)
       return {}
     }
+  }
+
+  private async loadTravelSegments(travelAuthorizationId: number): Promise<TravelSegment[]> {
+    const travelSegments = await TravelSegment.findAll({
+      where: {
+        travelAuthorizationId,
+      },
+      include: ["departureLocation", "arrivalLocation"],
+      order: [["segmentNumber", "ASC"]],
+    })
+    return travelSegments
   }
 }
 
