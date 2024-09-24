@@ -8,6 +8,12 @@ export const SEAT_PREFERENCE_TYPES = Object.freeze({
   NO_PREFERENCE: "No Preference",
 })
 
+/** Keep in sync with api/src/models/travel-desk-flight-request.ts */
+export const TRAVEL_DESK_FLIGHT_REQUEST_TIME_PREFERENCES = Object.freeze({
+  AM: "AM",
+  PM: "PM",
+})
+
 export const travelDeskFlightRequestsApi = {
   async list({ where, page, perPage, ...otherParams } = {}) {
     const { data } = await http.get("/api/travel-desk-flight-requests", {
