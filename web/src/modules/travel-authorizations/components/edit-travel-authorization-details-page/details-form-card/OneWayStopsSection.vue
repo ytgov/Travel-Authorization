@@ -43,6 +43,7 @@
           :value="firstStop.departureDate"
           :rules="[required]"
           label="Date"
+          dense
           persistent-hint
           @input="updateStop(0, 'departureDate', $event)"
         />

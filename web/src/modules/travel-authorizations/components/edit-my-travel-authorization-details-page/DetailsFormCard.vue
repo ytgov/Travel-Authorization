@@ -64,6 +64,7 @@
               :min="lastStop.departureDate"
               :rules="[required]"
               label="Expected Date return to work"
+              dense
               required
             />
           </v-col>

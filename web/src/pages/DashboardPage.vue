@@ -21,7 +21,10 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <DatePicker label="Start Date"></DatePicker>
+                    <DatePicker
+                      label="Start Date"
+                      dense
+                    ></DatePicker>
                   </v-col>
                   <v-col>
                     <TimePicker label="Start Time"></TimePicker>
@@ -29,7 +32,10 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <DatePicker label="End Date"></DatePicker>
+                    <DatePicker
+                      label="End Date"
+                      dense
+                    ></DatePicker>
                   </v-col>
                   <v-col>
                     <TimePicker label="End Date"></TimePicker>
