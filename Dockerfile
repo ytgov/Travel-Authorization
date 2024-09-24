@@ -1,10 +1,10 @@
 # Stage 0 - base node customizations
-FROM node:20.10.0-alpine3.19 as base-node
+FROM node:20.10.0-alpine3.19 AS base-node
 
 RUN npm install -g npm@10.8.2
 
 # Stage 1 - api build - requires development environment because typescript
-FROM base-node as api-build-stage
+FROM base-node AS api-build-stage
 
 ENV NODE_ENV=development
 
@@ -21,7 +21,7 @@ RUN npm run build
 RUN mkdir -p dist/src/db/seeds/data && cp src/db/seeds/data/*.csv dist/src/db/seeds/data/
 
 # Stage 2 - web build - requires development environment to install vue-cli-service
-FROM base-node as web-build-stage
+FROM base-node AS web-build-stage
 
 ARG RELEASE_TAG
 ARG GIT_COMMIT_HASH
