@@ -5,7 +5,7 @@ import { isNil } from "lodash"
 
 import { TravelAuthorization, TravelSegment } from "@/models"
 import { travelPurposeFactory, userFactory } from "@/factories"
-import { POSTGRES_INT_4_MAX, presence } from "./helpers"
+import { POSTGRES_INT_4_MAX, presence } from "@/factories/helpers"
 
 type TransientParam = {
   include?: Includeable | Includeable[]

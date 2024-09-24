@@ -4,7 +4,7 @@ import { isNil } from "lodash"
 
 import { Stop } from "@/models"
 import { locationFactory, travelAuthorizationFactory } from "@/factories"
-import { anytime } from "./helpers"
+import { anytime } from "@/factories/helpers"
 
 export const stopFactory = Factory.define<Stop>(({ associations, onCreate }) => {
   onCreate(async (stop) => {
