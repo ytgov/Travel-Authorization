@@ -1,6 +1,6 @@
 import { yukonGovernmentIntegration } from "@/integrations"
-import { TravelAuthorization, TravelDeskTravelRequest, TravelSegment } from "@/models"
-import { CreateService } from "@/services/travel-desk-travel-requests"
+import { TravelAuthorization, TravelDeskTravelRequest } from "@/models"
+import { CreateService, PrefillFlightRequestsService } from "@/services/travel-desk-travel-requests"
 import {
   travelAuthorizationFactory,
   travelPurposeFactory,
@@ -15,6 +15,17 @@ vi.mock("@/integrations/yukon-government-integration", () => ({
 }))
 const yukonGovernmentIntegrationMock = vi.mocked(yukonGovernmentIntegration)
 
+vi.mock("@/services/travel-desk-travel-requests/prefill-flight-requests-service", () => {
+  const PrefillFlightRequestsServiceMock = {
+    perform: vi.fn(),
+  }
+
+  return {
+    PrefillFlightRequestsService: PrefillFlightRequestsServiceMock,
+    default: PrefillFlightRequestsServiceMock,
+  }
+})
+
 describe("api/src/services/travel-desk-travel-requests/create-service.ts", () => {
   describe("CreateServices", () => {
     describe(".perform", () => {
@@ -22,14 +33,10 @@ describe("api/src/services/travel-desk-travel-requests/create-service.ts", () =>
         // Arrange
         const currentUser = await userFactory.create()
         const user = await userFactory.create()
-        const travelSegments = travelSegmentFactory.buildList(3, {
-          modeOfTransport: TravelSegment.TravelMethods.AIRCRAFT,
-        })
         const purpose = await travelPurposeFactory.create()
         const travelAuthorization = await travelAuthorizationFactory
           .associations({
             purpose,
-            travelSegments,
             user,
           })
           .create({
@@ -106,14 +113,10 @@ describe("api/src/services/travel-desk-travel-requests/create-service.ts", () =>
         // Arrange
         const currentUser = await userFactory.create()
         const user = await userFactory.create()
-        const travelSegments = travelSegmentFactory.buildList(3, {
-          modeOfTransport: TravelSegment.TravelMethods.AIRCRAFT,
-        })
         const purpose = await travelPurposeFactory.create()
         const travelAuthorization = await travelAuthorizationFactory
           .associations({
             purpose,
-            travelSegments,
             user,
           })
           .create({
@@ -156,6 +159,104 @@ describe("api/src/services/travel-desk-travel-requests/create-service.ts", () =>
             status: TravelDeskTravelRequest.Statuses.DRAFT,
           })
         )
+      })
+
+      test("when travel segments exist, it calls the prefill flight requests service", async () => {
+        // Arrange
+        const currentUser = await userFactory.create()
+        const user = await userFactory.create()
+        const purpose = await travelPurposeFactory.create()
+        const travelAuthorization = await travelAuthorizationFactory
+          .associations({
+            purpose,
+            user,
+          })
+          .create({
+            status: TravelAuthorization.Statuses.SUBMITTED,
+          })
+        const travelSegment1 = await travelSegmentFactory.create({
+          travelAuthorizationId: travelAuthorization.id,
+          segmentNumber: 1,
+        })
+        const travelSegment2 = await travelSegmentFactory.create({
+          travelAuthorizationId: travelAuthorization.id,
+          segmentNumber: 2,
+        })
+
+        yukonGovernmentIntegrationMock.fetchEmployee.mockResolvedValue(null)
+        const prefillFlightRequestsServicePerformSpy = vi.spyOn(
+          PrefillFlightRequestsService,
+          "perform"
+        )
+
+        // Act
+        const travelDeskTravelRequest = await CreateService.perform(
+          {
+            travelAuthorizationId: travelAuthorization.id,
+            legalFirstName: user.firstName || "",
+            legalLastName: user.lastName || "",
+            strAddress: "",
+            city: "",
+            province: "",
+            postalCode: "",
+            busPhone: "",
+            busEmail: user.email,
+            travelPurpose: purpose.purpose,
+          },
+          currentUser
+        )
+
+        // Assert
+        expect.assertions(1)
+        expect(prefillFlightRequestsServicePerformSpy).toHaveBeenCalledWith(
+          travelDeskTravelRequest,
+          [
+            expect.objectContaining({ id: travelSegment1.id, segmentNumber: 1 }),
+            expect.objectContaining({ id: travelSegment2.id, segmentNumber: 2 }),
+          ],
+          currentUser
+        )
+      })
+
+      test("when travel segments do not exist, it does not call the prefill flight requests service", async () => {
+        // Arrange
+        const currentUser = await userFactory.create()
+        const user = await userFactory.create()
+        const purpose = await travelPurposeFactory.create()
+        const travelAuthorization = await travelAuthorizationFactory
+          .associations({
+            purpose,
+            user,
+          })
+          .create({
+            status: TravelAuthorization.Statuses.SUBMITTED,
+          })
+
+        yukonGovernmentIntegrationMock.fetchEmployee.mockResolvedValue(null)
+        const prefillFlightRequestsServicePerformSpy = vi.spyOn(
+          PrefillFlightRequestsService,
+          "perform"
+        )
+
+        // Act
+        await CreateService.perform(
+          {
+            travelAuthorizationId: travelAuthorization.id,
+            legalFirstName: user.firstName || "",
+            legalLastName: user.lastName || "",
+            strAddress: "",
+            city: "",
+            province: "",
+            postalCode: "",
+            busPhone: "",
+            busEmail: user.email,
+            travelPurpose: purpose.purpose,
+          },
+          currentUser
+        )
+
+        // Assert
+        expect(prefillFlightRequestsServicePerformSpy).not.toHaveBeenCalled()
       })
     })
   })
