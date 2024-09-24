@@ -7,7 +7,8 @@ export const travelPurposeFactory = Factory.define<TravelPurpose>(({ sequence, o
   onCreate((travelPurpose) => travelPurpose.save())
 
   return TravelPurpose.build({
-    purpose: `${faker.lorem.words(2)}-${sequence}`,
+    id: sequence,
+    purpose: `${faker.lorem.words(3)}-${sequence}`,
   })
 })
 
