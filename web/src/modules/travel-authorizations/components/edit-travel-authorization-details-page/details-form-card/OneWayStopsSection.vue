@@ -94,7 +94,7 @@ import { computed } from "vue"
 
 import { required } from "@/utils/validators"
 
-import DatePicker from "@/components/Utils/DatePicker"
+import DatePicker from "@/components/common/DatePicker"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete"
 import TimePicker from "@/components/Utils/TimePicker"
 import AccommodationTypeSelect from "@/modules/travel-authorizations/components/AccommodationTypeSelect"
