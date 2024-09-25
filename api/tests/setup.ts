@@ -17,6 +17,7 @@
  */
 
 import { QueryTypes } from "sequelize"
+import { isNil } from "lodash"
 
 import db from "@/db/db-client"
 
@@ -44,15 +45,20 @@ async function getTableNames() {
   }
 }
 
+let truncateQuery: string | null = null
+
 async function cleanDatabase() {
-  const tableNames = await getTableNames()
-  const quotedTableNames = tableNames.map((name) => `"${name}"`)
-  const truncateQuery = `
+  if (isNil(truncateQuery)) {
+    const tableNames = await getTableNames()
+    const quotedTableNames = tableNames.map((name) => `"${name}"`)
+    truncateQuery = `
     TRUNCATE TABLE
       ${quotedTableNames.join(",\n      ")}
     RESTART IDENTITY
     CASCADE;
   `
+  }
+
   try {
     // TODO: once all tables are in Sequelize models, use this instead:
     // await db.truncate({ cascade: true, restartIdentity: true })
