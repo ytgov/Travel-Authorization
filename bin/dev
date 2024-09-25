@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require_relative './github_api'
+require_relative './pull-request-editor'
 
 class DevHelper
   # Support dashes in command names
@@ -10,6 +11,7 @@ class DevHelper
     "check-types" => :check_types,
     "bash-completions" => :bash_completions,
     "plantuml-to-png" => :plantuml_to_png,
+    "edit-pr" => :edit_pr,
   }
   METHOD_TO_COMMAND = COMMAND_TO_METHOD.invert
 
@@ -164,6 +166,15 @@ class DevHelper
   def branch_from(github_issue_url, *args, **kwargs)
     branch_name = GithubApi.build_branch_name(github_issue_url)
     system("git checkout -b #{branch_name}")
+  end
+
+  ##
+  # Edits the description of a pull request.
+  # Example:
+  #   dev edit-pr https://github.com/icefoganalytics/travel-authorization/pull/218
+  def edit_pr(pull_request_url, *args, **kwargs)
+    PullRequestEditor.edit_pull_request_description(pull_request_url, *args, **kwargs)
+    exit(0)
   end
 
   def ownit(*args, **kwargs)
