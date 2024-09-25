@@ -18,12 +18,16 @@ export async function nestedSaveAndAssociateIfNew<M extends Model>(modelInstance
     const associationAlias = associationDefinition.as as keyof M
     const associatedInstance = modelInstance[associationAlias] as Model | undefined
     if (associatedInstance === undefined) continue
-    if (associatedInstance.isNewRecord !== true) continue
-
-    const updatedAssocationInstance = await nestedSaveAndAssociateIfNew(associatedInstance)
 
     // @ts-expect-error - TS doesn't know that targetKey is a property of associationDefinition
     const { targetKey }: { targetKey: keyof Model } = associationDefinition
+    if (associatedInstance.isNewRecord !== true) {
+      foreignKeyValue = associatedInstance.get(targetKey)
+      modelInstance.set(foreignKeyName, foreignKeyValue)
+      continue
+    }
+
+    const updatedAssocationInstance = await nestedSaveAndAssociateIfNew(associatedInstance)
     foreignKeyValue = updatedAssocationInstance.get(targetKey)
     modelInstance.set(foreignKeyName, foreignKeyValue)
   }
