@@ -2,7 +2,7 @@ import { Includeable } from "sequelize"
 import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 
-import { TravelAuthorization, TravelSegment } from "@/models"
+import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, userFactory } from "@/factories"
 import { ensureModelId, presence, saveModelIfNew } from "@/factories/helpers"
 import { isNil } from "lodash"
@@ -32,13 +32,10 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
         await travelAuthorization.save()
 
         if (associations.travelSegments) {
-          const travelSegmentAttributes = associations.travelSegments.map((travelSegment) => {
-            return {
-              ...travelSegment.dataValues,
-              travelAuthorizationId: travelAuthorization.id,
-            }
-          })
-          await TravelSegment.bulkCreate(travelSegmentAttributes)
+          for (const travelSegment of associations.travelSegments) {
+            travelSegment.travelAuthorizationId = travelAuthorization.id
+            await saveModelIfNew(travelSegment, { nested: true })
+          }
         }
 
         if (transientParams.include === undefined) {

@@ -62,7 +62,7 @@ export const travelSegmentFactory = Factory.define<TravelSegment, TransientParam
       faker.helpers.enumValue(TravelSegment.TravelMethods)
     )
 
-    return TravelSegment.build({
+    const travelSegment = TravelSegment.build({
       id: sequence,
       travelAuthorizationId,
       departureLocationId,
@@ -72,6 +72,10 @@ export const travelSegmentFactory = Factory.define<TravelSegment, TransientParam
       modeOfTransportOther:
         modeOfTransport === TravelSegment.TravelMethods.OTHER ? faker.hacker.ingverb() : null,
     })
+    travelSegment.travelAuthorization = travelAuthorizationModel // required for nested save
+    travelSegment.departureLocation = departureLocationModel // required for nested save
+    travelSegment.arrivalLocation = arrivalLocationModel // required for nested save
+    return travelSegment
   }
 )
 
