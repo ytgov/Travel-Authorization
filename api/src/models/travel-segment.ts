@@ -15,9 +15,9 @@ import { isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
-import Location from "./location"
-import Stop from "./stop"
-import TravelAuthorization from "./travel-authorization"
+import Location from "@/models/location"
+import Stop from "@/models/stop"
+import TravelAuthorization from "@/models/travel-authorization"
 
 export enum FallbackTimes {
   BEGINNING_OF_DAY = "00:00:00",
@@ -163,9 +163,7 @@ export class TravelSegment extends Model<
     return this.departureAtWithTimeFallback(FallbackTimes.BEGINNING_OF_DAY)
   }
 
-  departureAtWithTimeFallback(
-    fallbackTime: FallbackTimes
-  ): NonAttribute<Date | null> {
+  departureAtWithTimeFallback(fallbackTime: FallbackTimes): NonAttribute<Date | null> {
     const departureOn = this.departureOn
     if (isNil(departureOn)) return null
 
@@ -229,7 +227,7 @@ TravelSegment.init(
           msg: "Invalid accommodation type value",
         },
         accommodationTypeOtherIsNull(value: string) {
-          if (this.accommodationTypeOther !== null && value !== AccommodationTypes.OTHER) {
+          if (!isNil(this.accommodationTypeOther) && value !== AccommodationTypes.OTHER) {
             throw new Error(
               `accommodationType must be ${AccommodationTypes.OTHER} when accommodationTypeOther is set`
             )
@@ -242,7 +240,7 @@ TravelSegment.init(
       allowNull: true,
       validate: {
         accommodationTypeIsOther(value: string | null) {
-          if (value !== null && this.accommodationType !== AccommodationTypes.OTHER) {
+          if (!isNil(value) && this.accommodationType !== AccommodationTypes.OTHER) {
             throw new Error(
               `accommodationTypeOther can only have a value if accommodationType is ${AccommodationTypes.OTHER}`
             )
@@ -266,13 +264,13 @@ TravelSegment.init(
     paranoid: false,
     validate: {
       modeOfTransportOtherConsistency() {
-        if (this.modeOfTransportOther !== null && this.modeOfTransport !== TravelMethods.OTHER) {
+        if (!isNil(this.modeOfTransportOther) && this.modeOfTransport !== TravelMethods.OTHER) {
           throw new Error(
             `modeOfTransport must be ${TravelMethods.OTHER} when modeOfTransportOther is set`
           )
         } else if (
           this.modeOfTransport === TravelMethods.OTHER &&
-          this.modeOfTransportOther === null
+          isNil(this.modeOfTransportOther)
         ) {
           throw new Error(
             `modeOfTransportOther can only have a value if modeOfTransport is ${TravelMethods.OTHER}`
@@ -281,7 +279,7 @@ TravelSegment.init(
       },
       accommodationTypeOtherConsistency() {
         if (
-          this.accommodationTypeOther !== null &&
+          !isNil(this.accommodationTypeOther) &&
           this.accommodationType !== AccommodationTypes.OTHER
         ) {
           throw new Error(
@@ -289,7 +287,7 @@ TravelSegment.init(
           )
         } else if (
           this.accommodationType === AccommodationTypes.OTHER &&
-          this.accommodationTypeOther === null
+          isNil(this.accommodationTypeOther)
         ) {
           throw new Error(
             `accommodationTypeOther can only have a value if accommodationType is ${AccommodationTypes.OTHER}`
