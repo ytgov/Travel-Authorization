@@ -18,10 +18,17 @@ export const stopFactory = Factory.define<Stop>(({ associations, params, onCreat
   )
 
   onCreate(async (stop) => {
-    await saveModelIfNew(travelAuthorizationModel, { nested: true })
-    await saveModelIfNew(locationModel)
+    try {
+      await saveModelIfNew(travelAuthorizationModel, { nested: true })
+      await saveModelIfNew(locationModel)
 
-    return stop.save()
+      return stop.save()
+    } catch (error) {
+      console.error(error)
+      throw new Error(
+        `Could not create Stop with attributes: ${JSON.stringify(stop.dataValues, null, 2)}`
+      )
+    }
   })
 
   const stop = Stop.build({

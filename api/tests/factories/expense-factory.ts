@@ -42,9 +42,16 @@ export const expenseFactory = ExpenseFactory.define(({ associations, onCreate, p
   )
 
   onCreate(async (expense) => {
-    await saveModelIfNew(travelAuthorizationModel, { nested: true })
+    try {
+      await saveModelIfNew(travelAuthorizationModel, { nested: true })
 
-    return expense.save()
+      return expense.save()
+    } catch (error) {
+      console.error(error)
+      throw new Error(
+        `Could not create Expense with attributes: ${JSON.stringify(expense.dataValues, null, 2)}`
+      )
+    }
   })
 
   const expense = Expense.build({

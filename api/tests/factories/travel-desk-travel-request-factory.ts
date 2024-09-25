@@ -14,9 +14,20 @@ export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelReq
     )
 
     onCreate(async (travelDeskTravelRequest) => {
-      await saveModelIfNew(travelAuthorizationModel, { nested: true })
+      try {
+        await saveModelIfNew(travelAuthorizationModel, { nested: true })
 
-      return travelDeskTravelRequest.save()
+        return travelDeskTravelRequest.save()
+      } catch (error) {
+        console.error(error)
+        throw new Error(
+          `Could not create TravelDeskTravelRequest with attributes: ${JSON.stringify(
+            travelDeskTravelRequest.dataValues,
+            null,
+            2
+          )}`
+        )
+      }
     })
 
     const travelDeskTravelRequest = TravelDeskTravelRequest.build({
