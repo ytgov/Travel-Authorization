@@ -1,7 +1,8 @@
 import { isEmpty, isNil } from "lodash"
 import { DateTime } from "luxon"
 
-import db, { TravelDeskFlightRequest, TravelDeskTravelRequest, TravelSegment, User } from "@/models"
+import transaction from "@/utils/transaction"
+import { TravelDeskFlightRequest, TravelDeskTravelRequest, TravelSegment, User } from "@/models"
 import { TravelDeskFlightRequestTimePreferences } from "@/models/travel-desk-flight-request"
 import BaseService from "@/services/base-service"
 import { TravelDeskFlightRequests } from "@/services"
@@ -22,7 +23,7 @@ export class PrefillFlightRequestsService extends BaseService {
 
     const travelDeskFlightRequests: TravelDeskFlightRequest[] = []
 
-    return db.transaction(async () => {
+    return transaction(async () => {
       for (const travelSegment of this.travelSegments) {
         const newTravelDeskFlightRequest = await this.createFlightRequestFrom(travelSegment)
         travelDeskFlightRequests.push(newTravelDeskFlightRequest)
