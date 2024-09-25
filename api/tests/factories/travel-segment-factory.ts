@@ -4,7 +4,7 @@ import { Includeable } from "sequelize"
 
 import { TravelSegment } from "@/models"
 import { locationFactory, travelAuthorizationFactory } from "@/factories"
-import { presence, saveAndAssociateIfNew } from "@/factories/helpers"
+import { presence, nestedSaveAndAssociateIfNew } from "@/factories/helpers"
 
 type TransientParam = {
   include?: Includeable | Includeable[]
@@ -14,11 +14,7 @@ export const travelSegmentFactory = Factory.define<TravelSegment, TransientParam
   ({ associations, params, onCreate, transientParams }) => {
     onCreate(async (travelSegment) => {
       try {
-        await saveAndAssociateIfNew(travelSegment, "travelAuthorization", { nested: true })
-        await saveAndAssociateIfNew(travelSegment, "departureLocation")
-        await saveAndAssociateIfNew(travelSegment, "arrivalLocation")
-
-        await travelSegment.save()
+        await nestedSaveAndAssociateIfNew(travelSegment)
 
         if (transientParams.include === undefined) {
           return travelSegment

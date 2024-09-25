@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker"
 import { Expense, PerDiem, TravelSegment } from "@/models"
 import BaseFactory from "@/factories/base-factory"
 import { travelAuthorizationFactory } from "@/factories"
-import { saveAndAssociateIfNew } from "@/factories/helpers"
+import { nestedSaveAndAssociateIfNew } from "@/factories/helpers"
 
 class ExpenseFactory extends BaseFactory<Expense> {
   estimate(params: Pick<DeepPartial<Expense>, "expenseType">) {
@@ -37,9 +37,8 @@ class ExpenseFactory extends BaseFactory<Expense> {
 export const expenseFactory = ExpenseFactory.define(({ associations, onCreate }) => {
   onCreate(async (expense) => {
     try {
-      await saveAndAssociateIfNew(expense, "travelAuthorization", { nested: true })
-
-      return expense.save()
+      await nestedSaveAndAssociateIfNew(expense)
+      return expense
     } catch (error) {
       console.error(error)
       throw new Error(

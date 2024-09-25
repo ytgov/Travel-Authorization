@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker"
 
 import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, userFactory } from "@/factories"
-import { presence, saveAndAssociateIfNew, saveModelIfNew } from "@/factories/helpers"
+import { presence, nestedSaveAndAssociateIfNew } from "@/factories/helpers"
 
 type TransientParam = {
   include?: Includeable | Includeable[]
@@ -15,15 +15,12 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
   ({ associations, params, transientParams, onCreate }) => {
     onCreate(async (travelAuthorization) => {
       try {
-        await saveAndAssociateIfNew(travelAuthorization, "purpose")
-        await saveAndAssociateIfNew(travelAuthorization, "user")
-
-        await travelAuthorization.save()
+        await nestedSaveAndAssociateIfNew(travelAuthorization)
 
         if (associations.travelSegments) {
           for (const travelSegment of associations.travelSegments) {
             travelSegment.travelAuthorizationId = travelAuthorization.id
-            await saveModelIfNew(travelSegment, { nested: true })
+            await nestedSaveAndAssociateIfNew(travelSegment)
           }
         }
 

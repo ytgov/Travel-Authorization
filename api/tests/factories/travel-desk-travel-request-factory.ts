@@ -2,18 +2,15 @@ import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 
 import { TravelDeskTravelRequest } from "@/models"
-import { saveAndAssociateIfNew } from "@/factories/helpers"
+import { nestedSaveAndAssociateIfNew } from "@/factories/helpers"
 import travelAuthorizationFactory from "@/factories/travel-authorization-factory"
 
 export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelRequest>(
   ({ onCreate, associations }) => {
     onCreate(async (travelDeskTravelRequest) => {
       try {
-        await saveAndAssociateIfNew(travelDeskTravelRequest, "travelAuthorization", {
-          nested: true,
-        })
-
-        return travelDeskTravelRequest.save()
+        await nestedSaveAndAssociateIfNew(travelDeskTravelRequest)
+        return travelDeskTravelRequest
       } catch (error) {
         console.error(error)
         throw new Error(

@@ -3,15 +3,13 @@ import { faker } from "@faker-js/faker"
 
 import { Stop } from "@/models"
 import { locationFactory, travelAuthorizationFactory } from "@/factories"
-import { anytime, saveAndAssociateIfNew } from "@/factories/helpers"
+import { anytime, nestedSaveAndAssociateIfNew } from "@/factories/helpers"
 
 export const stopFactory = Factory.define<Stop>(({ associations, onCreate }) => {
   onCreate(async (stop) => {
     try {
-      await saveAndAssociateIfNew(stop, "travelAuthorization", { nested: true })
-      await saveAndAssociateIfNew(stop, "location")
-
-      return stop.save()
+      await nestedSaveAndAssociateIfNew(stop)
+      return stop
     } catch (error) {
       console.error(error)
       throw new Error(
