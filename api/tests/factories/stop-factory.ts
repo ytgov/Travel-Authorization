@@ -1,35 +1,40 @@
 import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
-import { isNil } from "lodash"
 
 import { Stop } from "@/models"
 import { locationFactory, travelAuthorizationFactory } from "@/factories"
-import { anytime } from "@/factories/helpers"
+import { anytime, ensureModelId, saveModelIfNew } from "@/factories/helpers"
 
-export const stopFactory = Factory.define<Stop>(({ associations, onCreate }) => {
+export const stopFactory = Factory.define<Stop>(({ associations, params, onCreate }) => {
+  const { id: travelAuthorizationId, model: travelAuthorizationModel } = ensureModelId(
+    params.travelAuthorizationId,
+    associations.travelAuthorization,
+    () => travelAuthorizationFactory.build()
+  )
+  const { id: locationId, model: locationModel } = ensureModelId(
+    params.locationId,
+    associations.location,
+    () => locationFactory.build()
+  )
+
   onCreate(async (stop) => {
-    if (isNil(stop.travelAuthorizationId)) {
-      const travelAuthorization =
-        associations.travelAuthorization || travelAuthorizationFactory.build()
-      await travelAuthorization.save()
-      stop.travelAuthorizationId = travelAuthorization.id
-    }
-
-    if (stop.locationId === undefined) {
-      const location = associations.location || locationFactory.build()
-      await location.save()
-      stop.locationId = location.id
-    }
+    await saveModelIfNew(travelAuthorizationModel, { nested: true })
+    await saveModelIfNew(locationModel)
 
     return stop.save()
   })
 
-  return Stop.build({
+  const stop = Stop.build({
+    travelAuthorizationId,
+    locationId,
     departureDate: faker.date.soon(),
     departureTime: anytime(),
     transport: faker.helpers.arrayElement(Object.values(Stop.TravelMethods)),
     accommodationType: faker.helpers.arrayElement(Object.values(Stop.AccommodationTypes)),
   })
+  stop.travelAuthorization = travelAuthorizationModel // required for nested save
+  stop.location = locationModel
+  return stop
 })
 
 export default stopFactory
