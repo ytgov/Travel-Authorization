@@ -5,7 +5,7 @@ import { Stop } from "@/models"
 import { locationFactory, travelAuthorizationFactory } from "@/factories"
 import { anytime, ensureModelId, saveModelIfNew } from "@/factories/helpers"
 
-export const stopFactory = Factory.define<Stop>(({ associations, params, onCreate }) => {
+export const stopFactory = Factory.define<Stop>(({ associations, params, onCreate, sequence }) => {
   const { id: travelAuthorizationId, model: travelAuthorizationModel } = ensureModelId(
     params.travelAuthorizationId,
     associations.travelAuthorization,
@@ -32,6 +32,7 @@ export const stopFactory = Factory.define<Stop>(({ associations, params, onCreat
   })
 
   const stop = Stop.build({
+    id: sequence,
     travelAuthorizationId,
     locationId,
     departureDate: faker.date.soon(),

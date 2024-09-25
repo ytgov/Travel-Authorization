@@ -34,37 +34,40 @@ class ExpenseFactory extends BaseFactory<Expense> {
   }
 }
 
-export const expenseFactory = ExpenseFactory.define(({ associations, onCreate, params }) => {
-  const { id: travelAuthorizationId, model: travelAuthorizationModel } = ensureModelId(
-    params.travelAuthorizationId,
-    associations.travelAuthorization,
-    () => travelAuthorizationFactory.build()
-  )
+export const expenseFactory = ExpenseFactory.define(
+  ({ associations, onCreate, params, sequence }) => {
+    const { id: travelAuthorizationId, model: travelAuthorizationModel } = ensureModelId(
+      params.travelAuthorizationId,
+      associations.travelAuthorization,
+      () => travelAuthorizationFactory.build()
+    )
 
-  onCreate(async (expense) => {
-    try {
-      await saveModelIfNew(travelAuthorizationModel, { nested: true })
+    onCreate(async (expense) => {
+      try {
+        await saveModelIfNew(travelAuthorizationModel, { nested: true })
 
-      return expense.save()
-    } catch (error) {
-      console.error(error)
-      throw new Error(
-        `Could not create Expense with attributes: ${JSON.stringify(expense.dataValues, null, 2)}`
-      )
-    }
-  })
+        return expense.save()
+      } catch (error) {
+        console.error(error)
+        throw new Error(
+          `Could not create Expense with attributes: ${JSON.stringify(expense.dataValues, null, 2)}`
+        )
+      }
+    })
 
-  const expense = Expense.build({
-    travelAuthorizationId,
-    type: faker.helpers.enumValue(Expense.Types),
-    currency: "CAD",
-    expenseType: faker.helpers.enumValue(Expense.ExpenseTypes),
-    description: faker.lorem.sentence({ min: 3, max: 6 }),
-    cost: parseFloat(faker.finance.amount({ min: 17.3, max: 500 })),
-    date: faker.date.soon({ days: 30 }),
-  })
-  expense.travelAuthorization = travelAuthorizationModel // required for nested save
-  return expense
-})
+    const expense = Expense.build({
+      id: sequence,
+      travelAuthorizationId,
+      type: faker.helpers.enumValue(Expense.Types),
+      currency: "CAD",
+      expenseType: faker.helpers.enumValue(Expense.ExpenseTypes),
+      description: faker.lorem.sentence({ min: 3, max: 6 }),
+      cost: parseFloat(faker.finance.amount({ min: 17.3, max: 500 })),
+      date: faker.date.soon({ days: 30 }),
+    })
+    expense.travelAuthorization = travelAuthorizationModel // required for nested save
+    return expense
+  }
+)
 
 export default expenseFactory

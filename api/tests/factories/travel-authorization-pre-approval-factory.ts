@@ -5,7 +5,7 @@ import { TravelAuthorizationPreApproval } from "@/models"
 import { Statuses } from "@/models/travel-authorization-pre-approval"
 
 export const travelAuthorizationPreApprovalFactory = Factory.define<TravelAuthorizationPreApproval>(
-  ({ onCreate }) => {
+  ({ onCreate, sequence }) => {
     onCreate((travelAuthorizationPreApproval) => {
       try {
         return travelAuthorizationPreApproval.save()
@@ -22,6 +22,7 @@ export const travelAuthorizationPreApprovalFactory = Factory.define<TravelAuthor
     })
 
     return TravelAuthorizationPreApproval.build({
+      id: sequence,
       estimatedCost: faker.number.int({ min: 500, max: 2000 }),
       location: faker.helpers.arrayElement(["Whitehorse", "Dawson", "Watson Lake"]),
       department: "Economic Development",

@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker/locale/en_CA"
 
 import { TravelAllowance } from "@/models"
 
-export const travelAllowanceFactory = Factory.define<TravelAllowance>(({ onCreate }) => {
+export const travelAllowanceFactory = Factory.define<TravelAllowance>(({ onCreate, sequence }) => {
   onCreate((travelAllowance) => {
     try {
       return travelAllowance.save()
@@ -33,6 +33,7 @@ export const travelAllowanceFactory = Factory.define<TravelAllowance>(({ onCreat
   }
 
   return TravelAllowance.build({
+    id: sequence,
     allowanceType,
     amount,
     currency: faker.helpers.enumValue(TravelAllowance.CurrencyTypes),

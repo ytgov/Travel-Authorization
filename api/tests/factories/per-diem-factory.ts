@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker/locale/en_CA"
 
 import { PerDiem } from "@/models"
 
-export const perDiemFactory = Factory.define<PerDiem>(({ onCreate }) => {
+export const perDiemFactory = Factory.define<PerDiem>(({ onCreate, sequence }) => {
   onCreate((perDiem) => {
     try {
       return perDiem.save()
@@ -16,6 +16,7 @@ export const perDiemFactory = Factory.define<PerDiem>(({ onCreate }) => {
   })
 
   return PerDiem.build({
+    id: sequence,
     claimType: faker.helpers.enumValue(PerDiem.ClaimTypes),
     travelRegion: faker.helpers.enumValue(PerDiem.TravelRegions),
     amount: parseFloat(faker.finance.amount({ min: 50, max: 200 })),
