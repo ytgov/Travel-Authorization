@@ -31,19 +31,30 @@ export const travelSegmentFactory = Factory.define<TravelSegment, TransientParam
     )
 
     onCreate(async (travelSegment) => {
-      await saveModelIfNew(travelAuthorizationModel, { nested: true })
-      await saveModelIfNew(departureLocationModel)
-      await saveModelIfNew(arrivalLocationModel)
+      try {
+        await saveModelIfNew(travelAuthorizationModel, { nested: true })
+        await saveModelIfNew(departureLocationModel)
+        await saveModelIfNew(arrivalLocationModel)
 
-      await travelSegment.save()
+        await travelSegment.save()
 
-      if (transientParams.include === undefined) {
-        return travelSegment
+        if (transientParams.include === undefined) {
+          return travelSegment
+        }
+
+        return travelSegment.reload({
+          include: transientParams.include,
+        })
+      } catch (error) {
+        console.error(error)
+        throw new Error(
+          `Could not create TravelSegment with attributes: ${JSON.stringify(
+            travelSegment.dataValues,
+            null,
+            2
+          )}`
+        )
       }
-
-      return travelSegment.reload({
-        include: transientParams.include,
-      })
     })
 
     const modeOfTransport = presence(

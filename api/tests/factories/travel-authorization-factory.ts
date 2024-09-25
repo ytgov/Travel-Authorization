@@ -25,28 +25,39 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
     )
 
     onCreate(async (travelAuthorization) => {
-      await saveModelIfNew(purposeModel)
-      await saveModelIfNew(userModel)
+      try {
+        await saveModelIfNew(purposeModel)
+        await saveModelIfNew(userModel)
 
-      await travelAuthorization.save()
+        await travelAuthorization.save()
 
-      if (associations.travelSegments) {
-        const travelSegmentAttributes = associations.travelSegments.map((travelSegment) => {
-          return {
-            ...travelSegment.dataValues,
-            travelAuthorizationId: travelAuthorization.id,
-          }
+        if (associations.travelSegments) {
+          const travelSegmentAttributes = associations.travelSegments.map((travelSegment) => {
+            return {
+              ...travelSegment.dataValues,
+              travelAuthorizationId: travelAuthorization.id,
+            }
+          })
+          await TravelSegment.bulkCreate(travelSegmentAttributes)
+        }
+
+        if (transientParams.include === undefined) {
+          return travelAuthorization
+        }
+
+        return travelAuthorization.reload({
+          include: transientParams.include,
         })
-        await TravelSegment.bulkCreate(travelSegmentAttributes)
+      } catch (error) {
+        console.error(error)
+        throw new Error(
+          `Could not create TravelAuthorization with attributes: ${JSON.stringify(
+            travelAuthorization.dataValues,
+            null,
+            2
+          )}`
+        )
       }
-
-      if (transientParams.include === undefined) {
-        return travelAuthorization
-      }
-
-      return travelAuthorization.reload({
-        include: transientParams.include,
-      })
     })
 
     let oneWayTrip = presence(params.oneWayTrip, !params.multiStop && faker.datatype.boolean())

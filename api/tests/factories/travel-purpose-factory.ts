@@ -4,7 +4,20 @@ import { faker } from "@faker-js/faker"
 import { TravelPurpose } from "@/models"
 
 export const travelPurposeFactory = Factory.define<TravelPurpose>(({ sequence, onCreate }) => {
-  onCreate((travelPurpose) => travelPurpose.save())
+  onCreate(async (travelPurpose) => {
+    try {
+      return travelPurpose.save()
+    } catch (error) {
+      console.error(error)
+      throw new Error(
+        `Could not create TravelPurpose with attributes: ${JSON.stringify(
+          travelPurpose.dataValues,
+          null,
+          2
+        )}`
+      )
+    }
+  })
 
   return TravelPurpose.build({
     id: sequence,
