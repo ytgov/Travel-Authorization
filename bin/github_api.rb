@@ -1,6 +1,6 @@
-require 'net/http'
-require 'json'
-require 'uri'
+require "net/http"
+require "json"
+require "uri"
 
 ##
 # Supports building a branch name from a Github issue URL
@@ -9,13 +9,13 @@ require 'uri'
 # If issue is from a replated repo (presumably the upstream one), the branch name will be in the format:
 #   <issue_owner>-issue-<issue_number>/<issue_title>
 class GithubApi
-  GITHUB_TOKEN = ENV['GITHUB_TOKEN']
-  GITHUB_REPO = 'icefoganalytics/travel-authorization' # Format: 'owner/repo'
-  GITHUB_API_BASE = 'https://api.github.com'
+  GITHUB_TOKEN = ENV["GITHUB_TOKEN"]
+  GITHUB_REPO = "icefoganalytics/travel-authorization" # Format: 'owner/repo'
+  GITHUB_API_BASE = "https://api.github.com"
 
   def self.build_branch_name(github_issue_url)
     if GITHUB_TOKEN.nil?
-      puts 'Please set GITHUB_TOKEN environment variable'
+      puts "Please set GITHUB_TOKEN environment variable"
       return
     end
 
@@ -39,28 +39,22 @@ class GithubApi
   def self.fetch_issue_title(repo, issue_number)
     uri = URI("#{GITHUB_API_BASE}/repos/#{repo}/issues/#{issue_number}")
     request = Net::HTTP::Get.new(uri)
-    request['Authorization'] = "token #{GITHUB_TOKEN}"
+    request["Authorization"] = "token #{GITHUB_TOKEN}"
 
-    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
-      http.request(request)
-    end
+    response =
+      Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(request) }
 
     data = JSON.parse(response.body)
-    data['title']
+    data["title"]
   end
 
   def self.format_branch_name(issue_repo, issue_number, issue_title)
-    formatted_title = issue_title.downcase
-                                 .strip
-                                 .gsub(/\s+/, '-')
-                                 .gsub(/[^a-z0-9\-]/, '')
-                                 .gsub(/-+/, '-')
+    formatted_title =
+      issue_title.downcase.strip.gsub(/\s+/, "-").gsub(/[^a-z0-9\-]/, "").gsub(/-+/, "-")
 
-    if issue_repo == GITHUB_REPO
-      return "issue-#{issue_number}/#{formatted_title}"
-    end
+    return "issue-#{issue_number}/#{formatted_title}" if issue_repo == GITHUB_REPO
 
-    issue_owner = issue_repo.split('/')[0]
+    issue_owner = issue_repo.split("/")[0]
     "#{issue_owner}-issue-#{issue_number}/#{formatted_title}"
   end
 end
