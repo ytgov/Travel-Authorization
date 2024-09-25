@@ -13,6 +13,8 @@ db.transaction((t1) => {
 });
 
 But without the hassle of having to pass the transaction object around.
+
+NOTE: No longer required in Sequelize 7.
 */
 function transaction<T>(
   options: TransactionOptions,
@@ -49,3 +51,4 @@ function transaction<T>(
 }
 
 export { transaction }
+export default transaction
