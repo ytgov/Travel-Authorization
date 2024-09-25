@@ -2,20 +2,16 @@ import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 
 import { TravelDeskTravelRequest } from "@/models"
-import { ensureModelId, saveModelIfNew } from "@/factories/helpers"
+import { saveAndAssociateIfNew } from "@/factories/helpers"
 import travelAuthorizationFactory from "@/factories/travel-authorization-factory"
 
 export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelRequest>(
-  ({ sequence, onCreate, params, associations }) => {
-    const { id: travelAuthorizationId, model: travelAuthorizationModel } = ensureModelId(
-      params.travelAuthorizationId,
-      associations.travelAuthorization,
-      () => travelAuthorizationFactory.build()
-    )
-
+  ({ onCreate, associations }) => {
     onCreate(async (travelDeskTravelRequest) => {
       try {
-        await saveModelIfNew(travelAuthorizationModel, { nested: true })
+        await saveAndAssociateIfNew(travelDeskTravelRequest, "travelAuthorization", {
+          nested: true,
+        })
 
         return travelDeskTravelRequest.save()
       } catch (error) {
@@ -31,8 +27,6 @@ export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelReq
     })
 
     const travelDeskTravelRequest = TravelDeskTravelRequest.build({
-      id: sequence,
-      travelAuthorizationId,
       legalFirstName: faker.person.firstName(),
       legalLastName: faker.person.lastName(),
       strAddress: faker.location.streetAddress(),
@@ -44,7 +38,8 @@ export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelReq
       busEmail: faker.internet.email(),
       status: faker.helpers.enumValue(TravelDeskTravelRequest.Statuses),
     })
-    travelDeskTravelRequest.travelAuthorization = travelAuthorizationModel // required for nested save
+    travelDeskTravelRequest.travelAuthorization =
+      associations.travelAuthorization ?? travelAuthorizationFactory.build()
     return travelDeskTravelRequest
   }
 )

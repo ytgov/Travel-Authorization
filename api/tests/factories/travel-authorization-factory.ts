@@ -4,8 +4,7 @@ import { faker } from "@faker-js/faker"
 
 import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, userFactory } from "@/factories"
-import { ensureModelId, presence, saveModelIfNew } from "@/factories/helpers"
-import { isNil } from "lodash"
+import { presence, saveAndAssociateIfNew, saveModelIfNew } from "@/factories/helpers"
 
 type TransientParam = {
   include?: Includeable | Includeable[]
@@ -13,21 +12,11 @@ type TransientParam = {
 }
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization, TransientParam>(
-  ({ sequence, associations, params, transientParams, onCreate }) => {
-    const { id: purposeId, model: purposeModel } = ensureModelId(
-      params.purposeId,
-      associations.purpose,
-      () => travelPurposeFactory.build()
-    )
-
-    const { id: userId, model: userModel } = ensureModelId(params.userId, associations.user, () =>
-      userFactory.build()
-    )
-
+  ({ associations, params, transientParams, onCreate }) => {
     onCreate(async (travelAuthorization) => {
       try {
-        await saveModelIfNew(purposeModel)
-        await saveModelIfNew(userModel)
+        await saveAndAssociateIfNew(travelAuthorization, "purpose")
+        await saveAndAssociateIfNew(travelAuthorization, "user")
 
         await travelAuthorization.save()
 
@@ -71,17 +60,14 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
     }
 
     const travelAuthorization = TravelAuthorization.build({
-      id: sequence,
-      purposeId,
-      userId,
       slug: faker.string.uuid(),
       oneWayTrip,
       multiStop,
     })
-    travelAuthorization.purpose = purposeModel // required for nested save
-    if (!isNil(userModel)) {
-      travelAuthorization.user = userModel // required for nested save
-    }
+
+    travelAuthorization.purpose = associations.purpose ?? travelPurposeFactory.build()
+    travelAuthorization.user = associations.user ?? userFactory.build()
+
     return travelAuthorization
   }
 )

@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker/locale/en_CA"
 
 import { User } from "@/models"
 
-export const userFactory = Factory.define<User>(({ sequence, params, onCreate }) => {
+export const userFactory = Factory.define<User>(({ params, onCreate }) => {
   onCreate((user) => {
     try {
       return user.save()
@@ -19,7 +19,6 @@ export const userFactory = Factory.define<User>(({ sequence, params, onCreate })
   const lastName = params.lastName || faker.person.lastName()
 
   return User.build({
-    id: sequence,
     sub: `auth0|${faker.string.uuid()}`,
     email: faker.internet.email({ firstName, lastName }),
     status: User.Statuses.ACTIVE,

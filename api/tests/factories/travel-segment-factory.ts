@@ -4,37 +4,19 @@ import { Includeable } from "sequelize"
 
 import { TravelSegment } from "@/models"
 import { locationFactory, travelAuthorizationFactory } from "@/factories"
-import { ensureModelId, presence, saveModelIfNew } from "@/factories/helpers"
+import { presence, saveAndAssociateIfNew } from "@/factories/helpers"
 
 type TransientParam = {
   include?: Includeable | Includeable[]
 }
 
 export const travelSegmentFactory = Factory.define<TravelSegment, TransientParam>(
-  ({ associations, params, onCreate, sequence, transientParams }) => {
-    const { id: travelAuthorizationId, model: travelAuthorizationModel } = ensureModelId(
-      params.travelAuthorizationId,
-      associations.travelAuthorization,
-      () => travelAuthorizationFactory.build()
-    )
-
-    const { id: departureLocationId, model: departureLocationModel } = ensureModelId(
-      params.departureLocationId,
-      associations.departureLocation,
-      () => locationFactory.build()
-    )
-
-    const { id: arrivalLocationId, model: arrivalLocationModel } = ensureModelId(
-      params.arrivalLocationId,
-      associations.arrivalLocation,
-      () => locationFactory.build()
-    )
-
+  ({ associations, params, onCreate, transientParams }) => {
     onCreate(async (travelSegment) => {
       try {
-        await saveModelIfNew(travelAuthorizationModel, { nested: true })
-        await saveModelIfNew(departureLocationModel)
-        await saveModelIfNew(arrivalLocationModel)
+        await saveAndAssociateIfNew(travelSegment, "travelAuthorization", { nested: true })
+        await saveAndAssociateIfNew(travelSegment, "departureLocation")
+        await saveAndAssociateIfNew(travelSegment, "arrivalLocation")
 
         await travelSegment.save()
 
@@ -63,18 +45,17 @@ export const travelSegmentFactory = Factory.define<TravelSegment, TransientParam
     )
 
     const travelSegment = TravelSegment.build({
-      id: sequence,
-      travelAuthorizationId,
-      departureLocationId,
-      arrivalLocationId,
       segmentNumber: faker.number.int({ min: 0, max: 100 }),
       modeOfTransport,
       modeOfTransportOther:
         modeOfTransport === TravelSegment.TravelMethods.OTHER ? faker.hacker.ingverb() : null,
     })
-    travelSegment.travelAuthorization = travelAuthorizationModel // required for nested save
-    travelSegment.departureLocation = departureLocationModel // required for nested save
-    travelSegment.arrivalLocation = arrivalLocationModel // required for nested save
+
+    travelSegment.travelAuthorization =
+      associations.travelAuthorization ?? travelAuthorizationFactory.build()
+    travelSegment.departureLocation = associations.departureLocation ?? locationFactory.build()
+    travelSegment.arrivalLocation = associations.arrivalLocation ?? locationFactory.build()
+
     return travelSegment
   }
 )

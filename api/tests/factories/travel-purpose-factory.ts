@@ -20,7 +20,6 @@ export const travelPurposeFactory = Factory.define<TravelPurpose>(({ sequence, o
   })
 
   return TravelPurpose.build({
-    id: sequence,
     purpose: `${faker.lorem.words(3)}-${sequence}`,
   })
 })
