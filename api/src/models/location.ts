@@ -4,7 +4,6 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
-  NonAttribute,
 } from "sequelize"
 
 import sequelize from "@/db/db-client"
@@ -15,10 +14,6 @@ export class Location extends Model<InferAttributes<Location>, InferCreationAttr
   declare city: string
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
-
-  get displayName(): NonAttribute<string> {
-    return `${this.city} (${this.province})`
-  }
 }
 
 Location.init(

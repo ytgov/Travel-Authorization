@@ -52,8 +52,8 @@ export class PrefillFlightRequestsService extends BaseService {
     const travelDeskFlightRequest = await TravelDeskFlightRequests.CreateService.perform(
       {
         travelRequestId: this.travelDeskTravelRequest.id,
-        departLocation: departureLocation.displayName,
-        arriveLocation: arrivalLocation.displayName,
+        departLocation: departureLocation.city,
+        arriveLocation: arrivalLocation.city,
         datePreference: departureOn,
         timePreference,
         seatPreference: TravelDeskFlightRequest.SeatPreferencesTypes.NO_PREFERENCE,
