@@ -13,8 +13,8 @@ export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelReq
       () => travelAuthorizationFactory.build()
     )
 
-    onCreate((travelDeskTravelRequest) => {
-      saveModelIfNew(travelAuthorizationModel, { nested: true })
+    onCreate(async (travelDeskTravelRequest) => {
+      await saveModelIfNew(travelAuthorizationModel, { nested: true })
 
       return travelDeskTravelRequest.save()
     })
