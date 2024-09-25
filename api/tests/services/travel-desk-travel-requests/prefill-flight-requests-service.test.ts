@@ -1,3 +1,5 @@
+import { faker } from "@faker-js/faker"
+
 import {
   locationFactory,
   travelAuthorizationFactory,
@@ -27,6 +29,8 @@ describe("api/src/services/travel-desk-travel-requests/prefill-flight-requests-s
             travelAuthorizationId: travelAuthorization.id,
             departureLocationId: departureLocation1.id,
             arrivalLocationId: arrivalLocation1.id,
+            departureOn: faker.date.soon(),
+            departureTime: "11:00",
           })
         const departureLocation2 = await locationFactory.create()
         const arrivalLocation2 = await locationFactory.create()
@@ -38,6 +42,8 @@ describe("api/src/services/travel-desk-travel-requests/prefill-flight-requests-s
             travelAuthorizationId: travelAuthorization.id,
             departureLocationId: departureLocation2.id,
             arrivalLocationId: arrivalLocation2.id,
+            departureOn: faker.date.soon(),
+            departureTime: "12:00",
           })
         const departureLocation3 = await locationFactory.create()
         const arrivalLocation3 = await locationFactory.create()
@@ -49,6 +55,8 @@ describe("api/src/services/travel-desk-travel-requests/prefill-flight-requests-s
             travelAuthorizationId: travelAuthorization.id,
             departureLocationId: departureLocation3.id,
             arrivalLocationId: arrivalLocation3.id,
+            departureOn: faker.date.soon(),
+            departureTime: "00:00",
           })
         const currentUser = await userFactory.create()
 
@@ -65,21 +73,21 @@ describe("api/src/services/travel-desk-travel-requests/prefill-flight-requests-s
             departLocation: departureLocation1.displayName,
             arriveLocation: arrivalLocation1.displayName,
             datePreference: travelSegment1.departureOn,
-            timePreference: expect.any(TravelDeskFlightRequest.TimePreferences),
+            timePreference: TravelDeskFlightRequest.TimePreferences.AM,
             seatPreference: TravelDeskFlightRequest.SeatPreferencesTypes.NO_PREFERENCE,
           }),
           expect.objectContaining({
             departLocation: departureLocation2.displayName,
             arriveLocation: arrivalLocation2.displayName,
             datePreference: travelSegment2.departureOn,
-            timePreference: expect.any(TravelDeskFlightRequest.TimePreferences),
+            timePreference: TravelDeskFlightRequest.TimePreferences.PM,
             seatPreference: TravelDeskFlightRequest.SeatPreferencesTypes.NO_PREFERENCE,
           }),
           expect.objectContaining({
             departLocation: departureLocation3.displayName,
             arriveLocation: arrivalLocation3.displayName,
             datePreference: travelSegment3.departureOn,
-            timePreference: expect.any(TravelDeskFlightRequest.TimePreferences),
+            timePreference: TravelDeskFlightRequest.TimePreferences.AM,
             seatPreference: TravelDeskFlightRequest.SeatPreferencesTypes.NO_PREFERENCE,
           }),
         ])
