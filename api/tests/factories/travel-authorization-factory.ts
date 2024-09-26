@@ -17,13 +17,6 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
       try {
         await nestedSaveAndAssociateIfNew(travelAuthorization)
 
-        if (associations.travelSegments) {
-          for (const travelSegment of associations.travelSegments) {
-            travelSegment.travelAuthorizationId = travelAuthorization.id
-            await nestedSaveAndAssociateIfNew(travelSegment)
-          }
-        }
-
         if (transientParams.include === undefined) {
           return travelAuthorization
         }
