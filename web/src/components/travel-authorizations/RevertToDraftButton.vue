@@ -8,7 +8,40 @@
   >
     Revert to Draft
   </v-btn>
+  <v-tooltip
+    v-else
+    bottom
+  >
+    <template #activator="{ on, attrs }">
+      <span
+        v-bind="attrs"
+        v-on="on"
+      >
+        <v-btn
+          v-bind="$attrs"
+          disabled
+          :class="classesForDisabledButton"
+          v-on="$listeners"
+        >
+          Revert to Draft
+          <v-icon
+            class="ml-1"
+            small
+          >
+            mdi-help-circle-outline
+          </v-icon>
+        </v-btn>
+      </span>
+    </template>
+    <span>You can only revert a submission that has not been approved.</span>
+  </v-tooltip>
 </template>
+
+<script>
+export default {
+  inheritAttrs: false,
+}
+</script>
 
 <script setup>
 import { computed, ref, toRefs } from "vue"
@@ -22,6 +55,10 @@ const props = defineProps({
   travelAuthorizationId: {
     type: Number,
     required: true,
+  },
+  classesForDisabledButton: {
+    type: String | Array | Object,
+    default: "",
   },
 })
 

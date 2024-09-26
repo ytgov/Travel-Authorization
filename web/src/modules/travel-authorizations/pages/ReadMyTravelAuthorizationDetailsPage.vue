@@ -24,6 +24,7 @@
       <RevertToDraftButton
         :travel-authorization-id="travelAuthorizationId"
         class="ml-3"
+        classes-for-disabled-button="ml-3"
         color="warning"
       />
     </div>
