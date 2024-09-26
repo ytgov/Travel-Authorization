@@ -21,23 +21,17 @@
         :to="{ name: 'MyTravelAuthorizationsPage' }"
         >Back</v-btn
       >
-      <v-btn
-        :loading="isLoading"
+      <RevertToDraftButton
+        :travel-authorization-id="travelAuthorizationId"
         class="ml-3"
         color="warning"
-        @click="revertToDraftAndRedirect"
-      >
-        Revert to Draft
-      </v-btn>
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue"
-
-import { useSnack } from "@/plugins/snack-plugin"
-import travelAuthorizationApi from "@/api/travel-authorizations-api"
+import RevertToDraftButton from "@/components/travel-authorizations/RevertToDraftButton.vue"
 
 import PurposeCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/PurposeCard"
 import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard"
@@ -49,27 +43,4 @@ const props = defineProps({
     required: true,
   },
 })
-
-const isLoading = ref(false)
-const snack = useSnack()
-
-async function revertToDraftAndRedirect() {
-  isLoading.value = true
-  try {
-    await travelAuthorizationApi.revertToDraft(props.travelAuthorizationId)
-    return router.push({
-      name: "EditMyTravelAuthorizationDetailsPage",
-      params: {
-        travelAuthorizationId: props.travelAuthorizationId,
-      },
-    })
-  } catch (error) {
-    console.error(error)
-    snack(`Failed to revert to draft: ${error}`, {
-      color: "error",
-    })
-  } finally {
-    isLoading.value = false
-  }
-}
 </script>
