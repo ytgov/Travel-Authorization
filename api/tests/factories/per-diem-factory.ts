@@ -4,7 +4,16 @@ import { faker } from "@faker-js/faker/locale/en_CA"
 import { PerDiem } from "@/models"
 
 export const perDiemFactory = Factory.define<PerDiem>(({ onCreate }) => {
-  onCreate((perDiem) => perDiem.save())
+  onCreate((perDiem) => {
+    try {
+      return perDiem.save()
+    } catch (error) {
+      console.error(error)
+      throw new Error(
+        `Could not create PerDiem with attributes: ${JSON.stringify(perDiem.dataValues, null, 2)}`
+      )
+    }
+  })
 
   return PerDiem.build({
     claimType: faker.helpers.enumValue(PerDiem.ClaimTypes),

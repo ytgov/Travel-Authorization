@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { isNil } from "lodash"
+import { isNil, first, last } from "lodash"
 import { ref, computed, toRefs, watch } from "vue"
 import { useRoute } from "vue2-helpers/vue-router"
 import { DateTime } from "luxon"
@@ -126,8 +126,11 @@ const { travelDeskFlightRequests, isLoading, refresh } = useTravelDeskFlightRequ
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
 
-const minDate = computed(() => travelAuthorization.value?.startDate?.slice(0, 10))
-const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
+const firstTravelSegment = computed(() => first(travelAuthorization.value?.travelSegments))
+const lastTravelSegment = computed(() => last(travelAuthorization.value?.travelSegments))
+
+const minDate = computed(() => firstTravelSegment.value?.departureOn)
+const maxDate = computed(() => lastTravelSegment.value?.departureOn)
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestEditDialog> | null>} */
 const editDialog = ref(null)

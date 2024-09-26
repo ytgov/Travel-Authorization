@@ -46,6 +46,13 @@ export class TravelAuthorizationsSerializer extends BaseSerializer<TravelAuthori
     this.lastStop = last(this.record.stops)
     this.lastTravelSegment = last(this.record.travelSegments)
     this.currentDate = new Date()
+
+    // TODO: re-write this to use newer serializer pattern
+    // and move this to a getter
+    if (record.user === undefined) {
+      throw new Error("TravelAuthorization must include an associated User")
+    }
+
     this.user = record.user
   }
 

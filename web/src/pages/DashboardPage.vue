@@ -21,7 +21,10 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <DatePicker label="Start Date"></DatePicker>
+                    <DatePicker
+                      label="Start Date"
+                      dense
+                    ></DatePicker>
                   </v-col>
                   <v-col>
                     <TimePicker label="Start Time"></TimePicker>
@@ -29,7 +32,10 @@
                 </v-row>
                 <v-row>
                   <v-col>
-                    <DatePicker label="End Date"></DatePicker>
+                    <DatePicker
+                      label="End Date"
+                      dense
+                    ></DatePicker>
                   </v-col>
                   <v-col>
                     <TimePicker label="End Date"></TimePicker>
@@ -164,7 +170,7 @@ import { v4 as uuidv4 } from "uuid"
 import http from "@/api/http-client"
 import { FORM_URL } from "@/urls"
 
-import DatePicker from "@/components/Utils/DatePicker.vue"
+import DatePicker from "@/components/common/DatePicker"
 import TimePicker from "@/components/Utils/TimePicker.vue"
 import UploadReceipts from "@/components/Utils/UploadReceipts.vue"
 

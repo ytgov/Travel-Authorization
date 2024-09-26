@@ -1,6 +1,6 @@
 import { CreationAttributes } from "sequelize"
 
-import { transaction } from "@/db/db-utils"
+import { transaction } from "@/utils/transaction"
 import BaseService from "@/services/base-service"
 
 import { TravelSegment } from "@/models"

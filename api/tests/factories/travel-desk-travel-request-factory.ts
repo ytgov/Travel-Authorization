@@ -1,17 +1,29 @@
-import { DeepPartial, Factory } from "fishery"
+import { Factory } from "fishery"
 import { faker } from "@faker-js/faker"
 
 import { TravelDeskTravelRequest } from "@/models"
+import { nestedSaveAndAssociateIfNew } from "@/factories/helpers"
+import travelAuthorizationFactory from "@/factories/travel-authorization-factory"
 
 export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelRequest>(
-  ({ sequence, onCreate, params }) => {
-    onCreate((travelDeskTravelRequest) => travelDeskTravelRequest.save())
+  ({ onCreate, associations }) => {
+    onCreate(async (travelDeskTravelRequest) => {
+      try {
+        await nestedSaveAndAssociateIfNew(travelDeskTravelRequest)
+        return travelDeskTravelRequest
+      } catch (error) {
+        console.error(error)
+        throw new Error(
+          `Could not create TravelDeskTravelRequest with attributes: ${JSON.stringify(
+            travelDeskTravelRequest.dataValues,
+            null,
+            2
+          )}`
+        )
+      }
+    })
 
-    assertParamsHasTravelAuthorizationId(params)
-
-    return TravelDeskTravelRequest.build({
-      id: sequence,
-      travelAuthorizationId: params.travelAuthorizationId,
+    const travelDeskTravelRequest = TravelDeskTravelRequest.build({
       legalFirstName: faker.person.firstName(),
       legalLastName: faker.person.lastName(),
       strAddress: faker.location.streetAddress(),
@@ -23,15 +35,10 @@ export const travelDeskTravelRequestFactory = Factory.define<TravelDeskTravelReq
       busEmail: faker.internet.email(),
       status: faker.helpers.enumValue(TravelDeskTravelRequest.Statuses),
     })
+    travelDeskTravelRequest.travelAuthorization =
+      associations.travelAuthorization ?? travelAuthorizationFactory.build()
+    return travelDeskTravelRequest
   }
 )
-
-function assertParamsHasTravelAuthorizationId(
-  params: DeepPartial<TravelDeskTravelRequest>
-): asserts params is DeepPartial<TravelDeskTravelRequest> & { travelAuthorizationId: number } {
-  if (typeof params.travelAuthorizationId !== "number") {
-    throw new Error("travelAuthorizationId is must be a number")
-  }
-}
 
 export default travelDeskTravelRequestFactory

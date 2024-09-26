@@ -56,7 +56,7 @@ export const DB_CONFIG = {
     directory: path.resolve(__dirname, "./db/migrations"),
   },
   seeds: {
-    directory: path.resolve(__dirname, "./db/seeds"),
+    directory: path.resolve(__dirname, `./db/seeds/${NODE_ENV}`),
   },
 }
 

@@ -4,7 +4,16 @@ import { faker } from "@faker-js/faker/locale/en_CA"
 import { TravelAllowance } from "@/models"
 
 export const travelAllowanceFactory = Factory.define<TravelAllowance>(({ onCreate }) => {
-  onCreate((travelAllowance) => travelAllowance.save())
+  onCreate((travelAllowance) => {
+    try {
+      return travelAllowance.save()
+    } catch (error) {
+      console.error(error)
+      throw new Error(
+        `Could not create TravelAllowance with attributes: ${JSON.stringify(travelAllowance.dataValues, null, 2)}`
+      )
+    }
+  })
 
   const allowanceType = faker.helpers.enumValue(TravelAllowance.AllowanceTypes)
   let amount = 0

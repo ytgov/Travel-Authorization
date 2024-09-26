@@ -1,10 +1,10 @@
 import { DeepPartial } from "fishery"
 import { faker } from "@faker-js/faker"
-import { isNil } from "lodash"
 
 import { Expense, PerDiem, TravelSegment } from "@/models"
-import { travelAuthorizationFactory } from "@/factories"
 import BaseFactory from "@/factories/base-factory"
+import { travelAuthorizationFactory } from "@/factories"
+import { nestedSaveAndAssociateIfNew } from "@/factories/helpers"
 
 class ExpenseFactory extends BaseFactory<Expense> {
   estimate(params: Pick<DeepPartial<Expense>, "expenseType">) {
@@ -36,17 +36,18 @@ class ExpenseFactory extends BaseFactory<Expense> {
 
 export const expenseFactory = ExpenseFactory.define(({ associations, onCreate }) => {
   onCreate(async (expense) => {
-    if (isNil(expense.travelAuthorizationId)) {
-      const travelAuthorization =
-        associations.travelAuthorization || travelAuthorizationFactory.build()
-      await travelAuthorization.save()
-      expense.travelAuthorizationId = travelAuthorization.id
+    try {
+      await nestedSaveAndAssociateIfNew(expense)
+      return expense
+    } catch (error) {
+      console.error(error)
+      throw new Error(
+        `Could not create Expense with attributes: ${JSON.stringify(expense.dataValues, null, 2)}`
+      )
     }
-
-    return expense.save()
   })
 
-  return Expense.build({
+  const expense = Expense.build({
     type: faker.helpers.enumValue(Expense.Types),
     currency: "CAD",
     expenseType: faker.helpers.enumValue(Expense.ExpenseTypes),
@@ -54,6 +55,11 @@ export const expenseFactory = ExpenseFactory.define(({ associations, onCreate })
     cost: parseFloat(faker.finance.amount({ min: 17.3, max: 500 })),
     date: faker.date.soon({ days: 30 }),
   })
+
+  expense.travelAuthorization =
+    associations.travelAuthorization ?? travelAuthorizationFactory.build()
+
+  return expense
 })
 
 export default expenseFactory

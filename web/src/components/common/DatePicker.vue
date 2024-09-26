@@ -14,7 +14,6 @@
         :rules="rules"
         background-color="white"
         prepend-icon="mdi-calendar"
-        dense
         outlined
         readonly
         v-bind="{ ...$attrs, ...attrs }"

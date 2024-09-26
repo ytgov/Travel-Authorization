@@ -13,7 +13,7 @@
         height="44"
       />
       <v-toolbar-title>
-        <span style="font-weight: 700">{{ applicationName }}</span>
+        <h1 class="text-h6 font-weight-bold mb-0">{{ applicationName }}</h1>
 
         <v-progress-circular
           :class="loadingClass"

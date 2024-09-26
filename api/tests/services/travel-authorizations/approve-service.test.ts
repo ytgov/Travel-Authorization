@@ -1,6 +1,6 @@
-import { yukonGovernmentIntegration } from "@/integrations"
-import { TravelAuthorization, TravelDeskTravelRequest, TravelSegment } from "@/models"
+import { TravelAuthorization, TravelSegment } from "@/models"
 import { ApproveService } from "@/services/travel-authorizations"
+import { TravelDeskTravelRequests } from "@/services"
 import {
   travelAuthorizationFactory,
   travelPurposeFactory,
@@ -8,12 +8,11 @@ import {
   userFactory,
 } from "@/factories"
 
-vi.mock("@/integrations", () => ({
-  yukonGovernmentIntegration: {
-    fetchEmployee: vi.fn(),
+vi.mock("@/services/travel-desk-travel-requests", () => ({
+  CreateService: {
+    perform: vi.fn(),
   },
 }))
-const yukonGovernmentIntegrationMock = vi.mocked(yukonGovernmentIntegration)
 
 describe("api/src/services/travel-authorizations/approve-service.ts", () => {
   describe("ApproveService#perform", () => {
@@ -73,7 +72,7 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
       }
     })
 
-    test("when travel is by air, and employee not found in directory, it creates a travel desk travel request", async () => {
+    test("when travel is by air, it calls the travel desk travel requests create services", async () => {
       // Arrange
       const approver = await userFactory.create()
       const user = await userFactory.create()
@@ -90,20 +89,13 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
         .create({
           status: TravelAuthorization.Statuses.SUBMITTED,
         })
-
-      yukonGovernmentIntegrationMock.fetchEmployee.mockResolvedValue(null)
+      const createServicePerformSpy = vi.spyOn(TravelDeskTravelRequests.CreateService, "perform")
 
       // Act
       await ApproveService.perform(travelAuthorization, approver)
 
       // Assert
-      expect.assertions(1)
-      const travelDeskTravelRequest = await TravelDeskTravelRequest.findOne({
-        where: {
-          travelAuthorizationId: travelAuthorization.id,
-        },
-      })
-      expect(travelDeskTravelRequest).toEqual(
+      expect(createServicePerformSpy).toHaveBeenCalledWith(
         expect.objectContaining({
           travelAuthorizationId: travelAuthorization.id,
           legalFirstName: user.firstName,
@@ -113,19 +105,21 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
           province: "",
           postalCode: "",
           busPhone: "",
-          busEmail: "",
+          busEmail: user.email,
           travelPurpose: purpose.purpose,
-          status: TravelDeskTravelRequest.Statuses.DRAFT,
+        }),
+        expect.objectContaining({
+          id: approver.id,
         })
       )
     })
 
-    test("when travel is by air, and employee found in directory, it creates a travel desk travel request with traveler details from directory", async () => {
+    test("when travel is not by air, it does not call the travel desk travel requests create services", async () => {
       // Arrange
       const approver = await userFactory.create()
       const user = await userFactory.create()
       const travelSegments = travelSegmentFactory.buildList(3, {
-        modeOfTransport: TravelSegment.TravelMethods.AIRCRAFT,
+        modeOfTransport: TravelSegment.TravelMethods.PERSONAL_VEHICLE,
       })
       const purpose = await travelPurposeFactory.create()
       const travelAuthorization = await travelAuthorizationFactory
@@ -137,63 +131,13 @@ describe("api/src/services/travel-authorizations/approve-service.ts", () => {
         .create({
           status: TravelAuthorization.Statuses.SUBMITTED,
         })
-
-      yukonGovernmentIntegrationMock.fetchEmployee.mockResolvedValue({
-        full_name: "John.Doe",
-        first_name: "John",
-        last_name: "Doe",
-        address: "1234 Example Street",
-        postal_code: "X0X 0X0",
-        community: "Whitehorse",
-        organization: null,
-        department: "Example Department",
-        division: null,
-        branch: null,
-        unit: null,
-        title: "Example Title",
-        email: "John.Doe@yukon.ca",
-        suite: "",
-        phone_office: "123-456-7890",
-        fax_office: "",
-        mobile: "987-654-3210",
-        office: "Example Office Location",
-        po_box: "100",
-        mailcode: "XYZ",
-        manager: "Jane.Manager",
-        username: "jdoe",
-        latitude: null,
-        longitude: null,
-      })
+      const createServicePerformSpy = vi.spyOn(TravelDeskTravelRequests.CreateService, "perform")
 
       // Act
       await ApproveService.perform(travelAuthorization, approver)
 
       // Assert
-      expect.assertions(1)
-      const travelDeskTravelRequest = await TravelDeskTravelRequest.findOne({
-        where: {
-          travelAuthorizationId: travelAuthorization.id,
-        },
-      })
-
-      expect(travelDeskTravelRequest).toEqual(
-        expect.objectContaining({
-          travelAuthorizationId: travelAuthorization.id,
-          legalFirstName: "John",
-          legalLastName: "Doe",
-          strAddress: "1234 Example Street",
-          city: "Whitehorse",
-          province: "Yukon",
-          postalCode: "X0X 0X0",
-          busPhone: "123-456-7890",
-          busEmail: "john.doe@yukon.ca",
-          travelContact: true,
-          travelEmail: user.email,
-          travelPhone: "987-654-3210",
-          travelPurpose: purpose.purpose,
-          status: TravelDeskTravelRequest.Statuses.DRAFT,
-        })
-      )
+      expect(createServicePerformSpy).not.toHaveBeenCalled()
     })
   })
 })

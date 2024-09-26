@@ -1,18 +1,14 @@
-import { isEmpty, isNil, isUndefined } from "lodash"
-import { Attributes } from "sequelize"
+import { isUndefined } from "lodash"
 
-import logger from "@/utils/logger"
-import { yukonGovernmentIntegration } from "@/integrations"
 import db, {
   TravelAuthorization,
   TravelAuthorizationActionLog,
-  TravelDeskTravelRequest,
-  TravelPurpose,
   TravelSegment,
   User,
 } from "@/models"
 
 import BaseService from "@/services/base-service"
+import { TravelDeskTravelRequests } from "@/services"
 
 export class ApproveService extends BaseService {
   private travelAuthorization: TravelAuthorization
@@ -48,8 +44,21 @@ export class ApproveService extends BaseService {
       })
 
       if (this.isTravelingByAir(travelSegments)) {
-        const travelerDetails = await this.getTravelerDetails(user.email)
-        await this.createTravelDeskTravelRequest(user, purpose, travelerDetails)
+        await TravelDeskTravelRequests.CreateService.perform(
+          {
+            travelAuthorizationId: this.travelAuthorization.id,
+            legalFirstName: user.firstName || "",
+            legalLastName: user.lastName || "",
+            strAddress: "",
+            city: "",
+            province: "",
+            postalCode: "",
+            busPhone: "",
+            busEmail: user.email,
+            travelPurpose: purpose.purpose,
+          },
+          this.approver
+        )
       }
 
       await TravelAuthorizationActionLog.create({
@@ -67,76 +76,6 @@ export class ApproveService extends BaseService {
     return travelSegments.some(
       (segment) => segment.modeOfTransport === TravelSegment.TravelMethods.AIRCRAFT
     )
-  }
-
-  private async createTravelDeskTravelRequest(
-    user: User,
-    purpose: TravelPurpose,
-    travelerDetails: Partial<Attributes<TravelDeskTravelRequest>>
-  ): Promise<TravelDeskTravelRequest> {
-    const { firstName, lastName } = user
-    if (isNil(firstName)) {
-      throw new Error("User expected to have first name.")
-    }
-
-    if (isNil(lastName)) {
-      throw new Error("User expected to have last name.")
-    }
-
-    return TravelDeskTravelRequest.create({
-      travelAuthorizationId: this.travelAuthorization.id,
-      legalFirstName: firstName,
-      legalLastName: lastName,
-      strAddress: "",
-      city: "",
-      province: "",
-      postalCode: "",
-      busPhone: "",
-      busEmail: "",
-      ...travelerDetails,
-      travelPurpose: purpose.purpose,
-      status: TravelDeskTravelRequest.Statuses.DRAFT,
-    })
-  }
-
-  private async getTravelerDetails(
-    email: string
-  ): Promise<Partial<Attributes<TravelDeskTravelRequest>>> {
-    try {
-      const employee = await yukonGovernmentIntegration.fetchEmployee(email)
-      if (isNil(employee)) {
-        logger.debug(`Failed to find employee info for email: ${email}`)
-        return {}
-      }
-
-      const province = employee.community?.toLowerCase() == "whitehorse" ? "Yukon" : ""
-      const travelContact =
-        isNil(employee.mobile) ||
-        isEmpty(employee.mobile) ||
-        isNil(employee.email) ||
-        isEmpty(employee.email)
-          ? false
-          : true
-      const travelPhone = travelContact === true ? employee.mobile : null
-      const travelEmail = travelContact === true ? email : null
-
-      return {
-        legalFirstName: employee.first_name,
-        legalLastName: employee.last_name,
-        strAddress: employee.address,
-        city: employee.community,
-        province,
-        postalCode: employee.postal_code,
-        busPhone: employee.phone_office,
-        busEmail: employee.email,
-        travelContact,
-        travelPhone,
-        travelEmail,
-      }
-    } catch (error) {
-      logger.error(`Failed to retrieve employee info: ${error}`)
-      return {}
-    }
   }
 }
 

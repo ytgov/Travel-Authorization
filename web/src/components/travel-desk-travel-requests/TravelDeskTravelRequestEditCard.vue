@@ -3,11 +3,8 @@
     :loading="isLoading"
     :disabled="isLoading"
   >
-    <v-card-title
-      class="primary"
-      style="border-bottom: 1px solid black"
-    >
-      <div class="text-h5">Travel Desk Request</div>
+    <v-card-title class="primary">
+      <h3 class="mb-1">Travel Desk Request</h3>
     </v-card-title>
 
     <div
@@ -25,6 +22,7 @@
             v-model="travelDeskTravelRequest"
             :show-save-state-progress="true"
             :is-saving="isLoading"
+            class="mt-4"
             @save-requested="saveAndNotify"
             @input="debouncedSaveAndNotify"
           />
@@ -32,12 +30,12 @@
       </v-row>
       <v-row>
         <v-col>
-          <TitleCard large-title>
-            <template #title>
-              <div>Travel Information</div>
-            </template>
-            <template #body>
-              <TitleCard class="mt-5 mx-5">
+          <v-card style="border: none !important">
+            <v-card-title>
+              <h4 class="text-h6">Travel Information</h4>
+            </v-card-title>
+            <v-card-text>
+              <TitleCard class="mt-5">
                 <template #title>
                   <div>Flight Request</div>
                 </template>
@@ -93,8 +91,8 @@
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
                 :travel-authorization-id="travelAuthorizationId"
               />
-            </template>
-          </TitleCard>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
     </v-card-text>

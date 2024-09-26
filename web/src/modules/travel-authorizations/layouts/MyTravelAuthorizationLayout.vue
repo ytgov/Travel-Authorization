@@ -4,10 +4,10 @@
     <Breadcrumbs />
 
     <div class="d-flex justify-space-between align-baseline my-5">
-      <h1>
+      <h2 class="mb-0">
         Travel -
         <VUserChipMenu :user-id="currentUser.id" />
-      </h1>
+      </h2>
     </div>
 
     <v-card class="default">
