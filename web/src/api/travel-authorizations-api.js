@@ -17,34 +17,40 @@ export const STATUSES = Object.freeze({
 
 export const travelAuthorizationsApi = {
   STATUSES,
-  list({ where, page, perPage, ...otherParams } = {}) {
-    return http
-      .get("/api/travel-authorizations", { params: { where, page, perPage, ...otherParams } })
-      .then(({ data }) => data)
+  async list({ where, page, perPage, ...otherParams } = {}) {
+    const { data } = await http.get("/api/travel-authorizations", {
+      params: { where, page, perPage, ...otherParams },
+    })
+    return data
   },
-  get(travelAuthorizationId, params = {}) {
-    return http
-      .get(`/api/travel-authorizations/${travelAuthorizationId}`, { params })
-      .then(({ data }) => data)
+  async get(travelAuthorizationId, params = {}) {
+    const { data } = await http.get(`/api/travel-authorizations/${travelAuthorizationId}`, {
+      params,
+    })
+    return data
   },
-  create(attributes) {
-    return http.post("/api/travel-authorizations", attributes).then(({ data }) => data)
+  async create(attributes) {
+    const { data } = await http.post("/api/travel-authorizations", attributes)
+    return data
   },
-  update(travelAuthorizationId, attributes) {
-    return http
-      .patch(`/api/travel-authorizations/${travelAuthorizationId}`, attributes)
-      .then(({ data }) => data)
+  async update(travelAuthorizationId, attributes) {
+    const { data } = await http.patch(
+      `/api/travel-authorizations/${travelAuthorizationId}`,
+      attributes
+    )
+    return data
   },
-  delete(travelAuthorizationId) {
-    return http
-      .delete(`/api/travel-authorizations/${travelAuthorizationId}`)
-      .then(({ data }) => data)
+  async delete(travelAuthorizationId) {
+    const { data } = await http.delete(`/api/travel-authorizations/${travelAuthorizationId}`)
+    return data
   },
   // State Management Actions
-  submit(travelAuthorizationId, attributes) {
-    return http
-      .post(`/api/travel-authorizations/${travelAuthorizationId}/submit`, attributes)
-      .then(({ data }) => data)
+  async submit(travelAuthorizationId, attributes) {
+    const { data } = await http.post(
+      `/api/travel-authorizations/${travelAuthorizationId}/submit`,
+      attributes
+    )
+    return data
   },
   async approve(travelAuthorizationId) {
     const { data } = await http.post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)
@@ -62,10 +68,12 @@ export const travelAuthorizationsApi = {
     })
     return data
   },
-  expenseClaim(travelAuthorizationId, attributes) {
-    return http
-      .post(`/api/travel-authorizations/${travelAuthorizationId}/expense-claim`, attributes)
-      .then(({ data }) => data)
+  async expenseClaim(travelAuthorizationId, attributes) {
+    const { data } = await http.post(
+      `/api/travel-authorizations/${travelAuthorizationId}/expense-claim`,
+      attributes
+    )
+    return data
   },
 }
 
