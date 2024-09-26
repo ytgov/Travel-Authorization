@@ -52,6 +52,12 @@ export const travelAuthorizationsApi = {
     )
     return data
   },
+  async revertToDraft(travelAuthorizationId) {
+    const { data } = await http.post(
+      `/api/travel-authorizations/${travelAuthorizationId}/refer-to-draft`
+    )
+    return data
+  },
   async approve(travelAuthorizationId) {
     const { data } = await http.post(`/api/travel-authorizations/${travelAuthorizationId}/approve`)
     return data
