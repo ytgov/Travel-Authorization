@@ -1,24 +1,27 @@
-/*
-See https://jestjs.io/docs/configuration#setupfilesafterenv-array
-
-Run some code to configure or set up the testing framework before each test
-file in the suite is executed. Since setupFiles executes before the test framework is
-installed in the environment, this script file presents you the opportunity of running
-some code immediately after the test framework has been installed in the environment
-but before the test code itself.
-
-In other words, setupFilesAfterEnv modules are meant for code which is repeating in
-each test file. Having the test framework installed makes Jest globals,
-jest object and expect accessible in the modules. For example, you can add extra matchers
-from jest-extended library or call setup and teardown hooks.
-*/
+/**
+ * See https://vitest.dev/config/#setupfiles
+ *
+ * Run some code before each test file.
+ *
+ * WARNING: Be very careful of imports in this file!!!
+ * Vitest will not mock modules that were imported inside a setup file because they are
+ * cached by the time a test file is running.
+ * You can do
+ * ```ts
+ * vi.hoisted(() => {
+ *   vi.resetModules()
+ * })
+ * ```
+ * to clear all module caches before running a test file.
+ * See: https://vitest.dev/api/vi#vi-mock
+ */
 
 import { QueryTypes } from "sequelize"
+import { isNil } from "lodash"
 
-import db from "@/models"
+import db from "@/db/db-client"
 
 // Global Mocks
-import "@/support/mock-current-user"
 import { mockedAxios } from "@/support/mock-axios"
 
 async function getTableNames() {
@@ -42,15 +45,20 @@ async function getTableNames() {
   }
 }
 
+let truncateQuery: string | null = null
+
 async function cleanDatabase() {
-  const tableNames = await getTableNames()
-  const quotedTableNames = tableNames.map((name) => `"${name}"`)
-  const truncateQuery = `
+  if (isNil(truncateQuery)) {
+    const tableNames = await getTableNames()
+    const quotedTableNames = tableNames.map((name) => `"${name}"`)
+    truncateQuery = `
     TRUNCATE TABLE
       ${quotedTableNames.join(",\n      ")}
     RESTART IDENTITY
     CASCADE;
   `
+  }
+
   try {
     // TODO: once all tables are in Sequelize models, use this instead:
     // await db.truncate({ cascade: true, restartIdentity: true })

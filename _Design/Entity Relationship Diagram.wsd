@@ -277,6 +277,7 @@ entity "travel_desk_travel_requests" {
   * id : <<PK>> serial4
   --
   * travel_authorization_id : <<FK>> int4
+  travel_agency_id :  <<FK>> int4
   * bus_email : varchar(255)
   * bus_phone : varchar(255)
   * city : varchar(255)
@@ -287,7 +288,6 @@ entity "travel_desk_travel_requests" {
   * status : varchar(255)
   * str_address : varchar(255)
   * travel_purpose : varchar(255)
-  travel_desk_travel_agent_id :  <<FK>> int4
   legal_middle_name : varchar(255)
   birth_date : varchar(255)
   passport_country : varchar(255)
@@ -415,11 +415,11 @@ entity "travel_desk_rental_cars" {
   deleted_at : timestamptz
 }
 
-entity "travelDeskTravelAgent" {
-  * agencyID : serial4
+entity "travel_desk_travel_agencies" {
+  * id : serial4
   --
-  agencyName : varchar(255)
-  agencyInfo : varchar(255)
+  * agency_name : varchar(255)
+  agency_info : text
 }
 
 entity "tripReports" {
@@ -513,8 +513,8 @@ travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_other_transportations::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
 travel_desk_rental_cars::travel_request_id }o--|| travel_desk_travel_requests::id
-travel_desk_travel_requests }o--|| travelDeskTravelAgent
 travel_desk_travel_requests::id }o--|| travel_desk_questions::travel_request_id
+travel_desk_travel_requests::travel_agency_id |o--o{ travel_desk_travel_agencies::id
 travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
 travelDeskFlightOption }o--|| travelDeskFlightRequest
 travelDeskFlightRequest }o--|| travel_desk_travel_requests

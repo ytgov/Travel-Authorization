@@ -58,13 +58,25 @@ services:
       <<: *default-environment
       NODE_ENV: test
       DB_NAME: travel_test
-      DEFAULT_LOG_LEVEL: "warn"
+      DEFAULT_LOG_LEVEL: "info"
     tty: true
     volumes:
       - ./api:/usr/src/api
       - ./api/.env.development:/usr/src/api/.env.test
     depends_on:
       - db
+
+  test_web:
+    build:
+      context: ./web
+      dockerfile: development.Dockerfile
+    command: /bin/true
+    environment:
+      <<: *default-environment
+      NODE_ENV: test
+    tty: true
+    volumes:
+      - ./web:/usr/src/web
 
   db:
     image: "postgres:14.4"

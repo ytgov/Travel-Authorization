@@ -1,15 +1,12 @@
-import request from "supertest"
-
-import app from "@/app"
 import { BulkGenerateService } from "@/services/estimates"
 import { TravelAuthorization, User } from "@/models"
 import { travelAuthorizationFactory, userFactory } from "@/factories"
 
-import { mockCurrentUser } from "@/support/mock-current-user"
+import { mockCurrentUser, request } from "@/support"
 
-jest.mock("@/services/estimates", () => ({ BulkGenerateService: { perform: jest.fn() } }))
+vi.mock("@/services/estimates", () => ({ BulkGenerateService: { perform: vi.fn() } }))
 
-const mockedBulkGenerateServicePerform = BulkGenerateService.perform as unknown as jest.Mock
+const mockedBulkGenerateServicePerform = vi.mocked(BulkGenerateService.perform)
 
 describe("api/src/controllers/travel-authorizations/estimates/generate-controller.ts", () => {
   let user: User
@@ -32,7 +29,7 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
         return Promise.resolve(mockBulkGenerateServicePerformResponse)
       })
 
-      return request(app)
+      return request()
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
         .expect(201, {
@@ -51,7 +48,7 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
         return Promise.reject(mockBulkGenerateServicePerformResponse)
       })
 
-      return request(app)
+      return request()
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
         .expect(422, {
@@ -64,7 +61,7 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
         status: TravelAuthorization.Statuses.SUBMITTED,
       })
 
-      return request(app)
+      return request()
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
         .expect(403, { message: "You are not authorized to create this expense." })
@@ -72,7 +69,7 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
 
     test("when travel authorization does not exist", async () => {
       const invalidTravelAuthorizationId = -1
-      return request(app)
+      return request()
         .post(`/api/travel-authorizations/${invalidTravelAuthorizationId}/estimates/generate`)
         .expect("Content-Type", /json/)
         .expect(404, { message: "Travel authorization not found." })

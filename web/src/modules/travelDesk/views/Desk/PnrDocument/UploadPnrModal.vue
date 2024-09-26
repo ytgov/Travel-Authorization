@@ -38,13 +38,13 @@
               />
             </v-col>
             <v-col cols="6">
-              <v-select
-                v-model="travelRequest.travelDeskTravelAgentId"
-                :items="travelAgentsInfo"
-                item-text="agencyName"
-                item-value="agencyID"
-                label="Assign Agent"
+              <TravelDeskTravelAgencySelect
+                v-model="travelRequest.travelAgencyId"
+                label="Assign Agency"
+                placeholder="None"
+                clearable
                 outlined
+                persistent-placeholder
               />
             </v-col>
           </v-row>
@@ -123,14 +123,14 @@
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
+import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
+
 export default {
   name: "UploadPnrModal",
-  components: {},
+  components: {
+    TravelDeskTravelAgencySelect,
+  },
   props: {
-    travelAgentsInfo: {
-      type: Array,
-      required: true,
-    },
     travelRequest: {
       type: Object,
       required: true,
@@ -195,7 +195,7 @@ export default {
         this.savingData = true
         const data = {
           invoiceNumber: this.invoiceNumber,
-          travelDeskTravelAgentId: this.travelRequest.travelDeskTravelAgentId,
+          travelAgencyId: this.travelRequest.travelAgencyId,
         }
         const bodyFormData = new FormData()
         bodyFormData.append("file", this.reader.result)

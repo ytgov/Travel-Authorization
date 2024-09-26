@@ -1,11 +1,7 @@
-import request from "supertest"
-
-import app from "@/app"
-
 import { Expense, TravelAuthorization, User } from "@/models"
 import { expenseFactory, travelAuthorizationFactory, userFactory } from "@/factories"
 
-import { mockCurrentUser } from "@/support/mock-current-user"
+import { mockCurrentUser, request } from "@/support"
 
 describe("api/src/controllers/expenses-controller.ts", () => {
   let user: User
@@ -35,7 +31,7 @@ describe("api/src/controllers/expenses-controller.ts", () => {
         })
 
         // Act
-        const response = await request(app).post("/api/expenses").send(newExpenseAttributes)
+        const response = await request().post("/api/expenses").send(newExpenseAttributes)
 
         // Assert
         expect(response.status).toEqual(201)

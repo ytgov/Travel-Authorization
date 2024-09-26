@@ -1,12 +1,9 @@
 <template>
-  <TitleCard
-    class="mt-10"
-    large-title
-  >
-    <template #title>
-      <div>Traveler Details</div>
-    </template>
-    <template #body>
+  <v-card>
+    <v-card-title>
+      <h4 class="text-h6">Traveler Details</h4>
+    </v-card-title>
+    <v-card-text>
       <SaveStateProgress
         v-if="showSaveStateProgress"
         class="float-right my-0 mr-3 hidden-sm-and-down"
@@ -219,8 +216,8 @@
           </v-col>
         </v-row>
       </v-form>
-    </template>
-  </TitleCard>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
@@ -231,7 +228,6 @@ import { isPhoneNumber, isEmail, required } from "@/utils/validators"
 
 import SaveStateProgress from "@/components/SaveStateProgress.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
-import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 const props = defineProps({
   value: {

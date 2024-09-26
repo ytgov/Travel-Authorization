@@ -1,4 +1,5 @@
 import { isNil } from "lodash"
+import { UploadedFile } from "express-fileupload"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -50,7 +51,8 @@ export class UploadController extends BaseController {
         .json({ message: "You are not authorized to upload receipts to this expense." })
     }
 
-    const file = this.request.files?.["receipt"] // must match field name in web/src/api/expenses-api.js#upload
+    // must match field name in web/src/api/expenses-api.js#upload
+    const file = this.request.files?.["receipt"] as UploadedFile | undefined
     if (isNil(file)) {
       return this.response.status(422).json({ message: "No receipt was uploaded." })
     }

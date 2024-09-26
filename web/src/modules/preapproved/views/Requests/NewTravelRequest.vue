@@ -321,7 +321,7 @@
             <div v-else>Cancel</div>
           </v-btn>
           <v-btn
-            v-if="type == 'Edit' && admin"
+            v-if="type == 'Edit' && isAdmin"
             class="ml-5"
             color="red darken-5"
             :loading="savingData"
@@ -431,6 +431,7 @@ import { PREAPPROVED_URL } from "@/urls"
 import http from "@/api/http-client"
 import { STATUSES as PRE_APPROVED_STATUSES } from "@/api/travel-authorization-pre-approvals-api"
 import { STATUSES as SUBMISSION_STATUSES } from "@/api/travel-authorization-pre-approval-submissions-api"
+import useCurrentUser from "@/use/use-current-user"
 
 export default {
   name: "NewTravelRequest",
@@ -443,6 +444,13 @@ export default {
       type: Object,
       default: () => {},
     },
+  },
+  setup() {
+    const { isAdmin } = useCurrentUser()
+
+    return {
+      isAdmin,
+    }
   },
   data() {
     return {
@@ -517,7 +525,6 @@ export default {
       approvalDate: "",
       readonly: false,
       deleteDialog: false,
-      admin: false,
 
       state: {
         purposeErr: false,
@@ -666,10 +673,9 @@ export default {
     },
 
     initForm() {
-      this.admin = Vue.filter("isAdmin")()
 
       const userDept = this.$store.state.auth.department
-      this.lockDepartment = !Vue.filter("isSystemAdmin")() || this.type != "Add New"
+      this.lockDepartment = !this.isAdmin || this.type != "Add New"
 
       this.initStates()
       this.initEmployeeList()

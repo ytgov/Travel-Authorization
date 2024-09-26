@@ -64,6 +64,7 @@
               :min="lastStop.departureDate"
               :rules="[required]"
               label="Expected Date return to work"
+              dense
               required
             />
           </v-col>
@@ -79,7 +80,7 @@ import { pick } from "lodash"
 
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import { required, isInteger } from "@/utils/validators"
-import DatePicker from "@/components/Utils/DatePicker"
+import DatePicker from "@/components/common/DatePicker"
 import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
 import { useTravelAuthorization } from "@/use/use-travel-authorization"
 

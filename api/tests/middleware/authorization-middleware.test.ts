@@ -6,10 +6,10 @@ import {
   type AuthorizationRequest,
 } from "@/middleware/authorization-middleware"
 
-jest.unmock("@/middleware/authorization-middleware")
+vi.unmock("@/middleware/authorization-middleware")
 
-jest.mock("@/integrations/auth0-integration")
-jest.mock("@/utils/logger")
+vi.mock("@/integrations/auth0-integration")
+vi.mock("@/utils/logger")
 
 describe("api/src/middleware/authorization-middleware.ts", () => {
   describe(".authorizationMiddleware", () => {
@@ -41,13 +41,13 @@ describe("api/src/middleware/authorization-middleware.ts", () => {
         }
 
         const res: Partial<Response> = {
-          status: jest.fn().mockReturnThis(),
-          json: jest.fn(),
+          status: vi.fn().mockReturnThis(),
+          json: vi.fn(),
         }
 
-        const next: NextFunction = jest.fn()
+        const next: NextFunction = vi.fn()
 
-        jest.spyOn(auth0Integration, "getUserInfo").mockResolvedValue(userData)
+        vi.spyOn(auth0Integration, "getUserInfo").mockResolvedValue(userData)
 
         const authorizationsRequestPromises = Array.from({ length: attempts }, async () => {
           await authorizationMiddleware(req as AuthorizationRequest, res as Response, next)

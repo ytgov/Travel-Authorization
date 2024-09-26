@@ -4,10 +4,10 @@
   "[plantuml]": {
     "editor.defaultFormatter": "jebbs.plantuml"
   },
-  "plantuml.exportOutDir": "./",
   "plantuml.server": "http://localhost:9999/",
   "plantuml.render": "PlantUMLServer",
   "plantuml.exportFormat": "png",
-  "plantuml.diagramsRoot": "./",
-  "plantuml.exportSubFolder": false
+  "plantuml.exportSubFolder": false,
+  "plantuml.includepaths": ["_Design"],
+  "plantuml.exportIncludeFolderHeirarchy": true
 }

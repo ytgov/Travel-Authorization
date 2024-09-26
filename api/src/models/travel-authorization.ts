@@ -181,7 +181,7 @@ export class TravelAuthorization extends Model<
   declare preApprovalProfile?: NonAttribute<TravelAuthorizationPreApprovalProfile>
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
-  declare user: NonAttribute<User>
+  declare user?: NonAttribute<User>
   declare expenses?: NonAttribute<Expense[]>
   declare stops?: NonAttribute<Stop[]>
   declare travelSegments?: NonAttribute<TravelSegment[]>

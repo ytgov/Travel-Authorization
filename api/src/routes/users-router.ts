@@ -3,8 +3,8 @@ import { Op } from "sequelize"
 import express, { Request, Response } from "express"
 
 import logger from "@/utils/logger"
-import { RequiresRoleAdmin } from "@/middleware"
 import { RequiresRoleTdUser } from "@/middleware"
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import { User } from "@/models"
 import { YkGovernmentDirectorySyncService } from "@/services"
 import { UsersSerializer } from "@/serializers"
@@ -12,7 +12,7 @@ import { UsersSerializer } from "@/serializers"
 export const userRouter = express.Router()
 
 userRouter.get("/me", async (req: Request, res: Response) => {
-  const user = req.user
+  const user = (req as AuthorizedRequest).user
 
   // See api/src/controllers/users/yg-government-directory-sync-controller.ts for force sync endpoint
   if (!user.isTimeToSyncWithEmployeeDirectory()) {
@@ -26,17 +26,17 @@ userRouter.get("/me", async (req: Request, res: Response) => {
   })
 })
 
-userRouter.get("/", async (req: Request, res: Response) => {
+userRouter.get("/", async (_req: Request, res: Response) => {
   try {
-    let users = await User.findAll()
+    const users = await User.findAll()
     res.status(200).json(users)
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.info(error)
     res.status(500).json("Internal Server Error")
   }
 })
 
-userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, res: Response) => {
+userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (_req: Request, res: Response) => {
   try {
     // TODO: update the front-end so renaming is no longer needed
     const users = await User.findAll({
@@ -50,7 +50,7 @@ userRouter.get("/travel-desk-users", RequiresRoleTdUser, async (req: Request, re
     })
 
     res.status(200).json(users)
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.info(error)
     res.status(500).json("Internal Server Error")
   }
@@ -64,7 +64,7 @@ userRouter.put(
       const userAttributes = pick(req.body, ["firstName", "lastName", "department", "roles"])
       await User.update(userAttributes, { where: { id: userId } })
       res.status(200).json("Saved permissions")
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Internal Server Error")
     }
@@ -79,7 +79,7 @@ userRouter.get("/:id", async (req: Request, res: Response) => {
     }
 
     res.status(200).json(user)
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.info(error)
     res.status(500).json("Internal Server Error")
   }

@@ -3,12 +3,8 @@ import express, { Request, Response } from "express"
 import { CreationAttributes, Op, WhereOptions } from "sequelize"
 
 import logger from "@/utils/logger"
-import {
-  RequiresAuth,
-  RequiresRoleAdmin,
-  RequiresRoleTdUser,
-  RequiresRoleTdUserOrAdmin,
-} from "@/middleware"
+import { RequiresAuth, RequiresRoleTdUser } from "@/middleware"
+import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import {
   TravelAuthorization,
   TravelDeskFlightRequest,
@@ -70,12 +66,12 @@ travelDeskRouter.get(
   RequiresAuth,
   async function (req: Request, res: Response) {
     const adminScoping: WhereOptions<TravelAuthorization> = {}
-    if (req?.user?.roles?.includes(User.Roles.ADMIN)) {
+    if ((req as AuthorizedRequest).user?.roles?.includes(User.Roles.ADMIN)) {
       // No additional conditions for Admin, selects all records
-    } else if (req?.user?.roles?.includes(User.Roles.DEPARTMENT_ADMIN)) {
-      adminScoping.department = req.user.department
+    } else if ((req as AuthorizedRequest).user?.roles?.includes(User.Roles.DEPARTMENT_ADMIN)) {
+      adminScoping.department = (req as AuthorizedRequest).user.department
     } else {
-      adminScoping.userId = req.user.id
+      adminScoping.userId = (req as AuthorizedRequest).user.id
     }
 
     try {
@@ -629,68 +625,6 @@ travelDeskRouter.post(
   }
 )
 
-travelDeskRouter.get(
-  "/travel-agents/",
-  RequiresAuth,
-  RequiresRoleTdUserOrAdmin,
-  async function (_req: Request, res: Response) {
-    const travelAgents = await dbLegacy("travelDeskTravelAgent").select("*")
-    res.status(200).json(travelAgents)
-  }
-)
-
-travelDeskRouter.delete(
-  "/travel-agents/:agencyID",
-  RequiresAuth,
-  RequiresRoleAdmin,
-  async function (req: Request, res: Response) {
-    try {
-      const agencyID = Number(req.params.agencyID)
-
-      await dbLegacy.transaction(async (trx) => {
-        await dbLegacy("travelDeskTravelAgent")
-          .delete()
-          .where("agencyID", agencyID)
-          .transacting(trx)
-        res.status(200).json("Delete Successful")
-      })
-    } catch (error: unknown) {
-      logger.info(error)
-      res.status(500).json("Delete failed")
-    }
-  }
-)
-
-travelDeskRouter.post(
-  "/travel-agents/:agencyID",
-  RequiresAuth,
-  RequiresRoleAdmin,
-  async function (req: Request, res: Response) {
-    try {
-      await dbLegacy.transaction(async () => {
-        const agencyID = Number(req.params.agencyID)
-        const agencyData = req.body
-        //logger.info(agencyData)
-        if (!agencyData.agencyName || !agencyData.agencyInfo)
-          return res.status(500).json("Empty Payload for Agency")
-
-        if (agencyID > 0) {
-          await dbLegacy("travelDeskTravelAgent")
-            .update({ agencyInfo: agencyData.agencyInfo })
-            .where("agencyID", agencyID)
-        } else {
-          await dbLegacy("travelDeskTravelAgent").insert(agencyData)
-        }
-
-        res.status(200).json("Successful")
-      })
-    } catch (error: unknown) {
-      logger.info(error)
-      res.status(500).json("Saving the Agency Information failed")
-    }
-  }
-)
-
 travelDeskRouter.post(
   "/pnr-document/:travelDeskTravelRequestId",
   RequiresAuth,
@@ -699,7 +633,7 @@ travelDeskRouter.post(
     const file = req.body.file
     const travelDeskTravelRequestId = parseInt(req.params.travelDeskTravelRequestId)
     const data = JSON.parse(req.body.data)
-    const { invoiceNumber, travelDeskTravelAgentId } = data
+    const { invoiceNumber, travelAgencyId } = data
 
     return db
       .transaction(async () => {
@@ -709,10 +643,10 @@ travelDeskRouter.post(
           pnrDocument: file,
         })
 
-        if (travelDeskTravelAgentId) {
+        if (travelAgencyId) {
           await TravelDeskTravelRequest.update(
             {
-              travelDeskTravelAgentId,
+              travelAgencyId,
             },
             {
               where: { id: travelDeskTravelRequestId },

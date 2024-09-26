@@ -13,6 +13,10 @@ export type AuthorizationRequest = JwtRequest & {
   user?: User
 }
 
+export type AuthorizedRequest = AuthorizationRequest & {
+  user: User
+}
+
 interface CachedUser {
   promise: Promise<User>
   timestamp: number

@@ -57,7 +57,7 @@
               cols="12"
               md="4"
             >
-              <v-text-field
+              <DatePicker
                 v-model="flightRequest.datePreference"
                 :min="minDate"
                 :max="maxDate"
@@ -137,6 +137,7 @@ import { useSnack } from "@/plugins/snack-plugin"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 
+import DatePicker from "@/components/common/DatePicker.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import SeatPreferenceSelect from "@/components/travel-desk-flight-requests/SeatPreferenceSelect.vue"
 

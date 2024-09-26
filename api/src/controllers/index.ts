@@ -12,6 +12,7 @@ export { TravelDeskFlightRequestsController } from "./travel-desk-flight-request
 export { TravelDeskHotelsController } from "./travel-desk-hotels-controller"
 export { TravelDeskOtherTransportationsController } from "./travel-desk-other-transportations-controller"
 export { TravelDeskRentalCarsController } from "./travel-desk-rental-cars-controller"
+export { TravelDeskTravelAgenciesController } from "./travel-desk-travel-agencies-controller"
 export { TravelDeskTravelRequestsController } from "./travel-desk-travel-requests-controller"
 export { TravelPurposesController } from "./travel-purposes-controller"
 export { UsersController } from "./users-controller"

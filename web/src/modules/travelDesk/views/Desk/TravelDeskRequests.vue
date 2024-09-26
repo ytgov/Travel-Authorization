@@ -38,11 +38,7 @@
       </template>
 
       <template #item.fullname="{ item }">
-        {{
-          [item.travelAuthorization.firstName, item.travelAuthorization.lastName]
-            .filter(Boolean)
-            .join(" ") || "Unknown"
-        }}
+        {{ [item.legalFirstName, item.legalLastName].filter(Boolean).join(" ") || "Unknown" }}
       </template>
 
       <template #item.department="{ item }">
@@ -98,7 +94,8 @@
       </template>
 
       <template #item.edit="{ item }">
-        <process-travel-desk-request
+        <ProcessTravelDeskRequest
+          class="pr-2"
           :type="item.status == 'booked' ? 'booked' : 'edit'"
           :travel-detail="item"
           @updateTable="updateTable()"

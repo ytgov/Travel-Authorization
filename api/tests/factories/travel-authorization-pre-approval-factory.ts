@@ -6,7 +6,20 @@ import { Statuses } from "@/models/travel-authorization-pre-approval"
 
 export const travelAuthorizationPreApprovalFactory = Factory.define<TravelAuthorizationPreApproval>(
   ({ onCreate }) => {
-    onCreate((travelAuthorizationPreApproval) => travelAuthorizationPreApproval.save())
+    onCreate((travelAuthorizationPreApproval) => {
+      try {
+        return travelAuthorizationPreApproval.save()
+      } catch (error) {
+        console.error(error)
+        throw new Error(
+          `Could not create TravelAuthorizationPreApproval with attributes: ${JSON.stringify(
+            travelAuthorizationPreApproval.dataValues,
+            null,
+            2
+          )}`
+        )
+      }
+    })
 
     return TravelAuthorizationPreApproval.build({
       estimatedCost: faker.number.int({ min: 500, max: 2000 }),
