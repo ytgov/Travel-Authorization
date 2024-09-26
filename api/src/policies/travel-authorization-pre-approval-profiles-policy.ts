@@ -1,9 +1,9 @@
-import { ModelStatic, WhereOptions, literal } from "sequelize"
+import { ModelStatic, WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { TravelAuthorizationPreApprovalProfile, User } from "@/models"
 
-import BasePolicy from "@/policies/base-policy"
+import BasePolicy, { noRecordsScope } from "@/policies/base-policy"
 
 export class TravelAuthorizationPreApprovalProfilesPolicy extends BasePolicy<TravelAuthorizationPreApprovalProfile> {
   static applyScope(
@@ -15,8 +15,7 @@ export class TravelAuthorizationPreApprovalProfilesPolicy extends BasePolicy<Tra
     }
 
     if (isNil(currentUser.department)) {
-      const never = literal("1=0")
-      return modelClass.scope({ where: never })
+      return modelClass.scope(noRecordsScope)
     }
 
     const where: WhereOptions<TravelAuthorizationPreApprovalProfile> = {
