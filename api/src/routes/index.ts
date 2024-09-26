@@ -115,6 +115,9 @@ router
   .route("/api/travel-authorizations/:travelAuthorizationId/submit")
   .post(TravelAuthorizations.SubmitController.create)
 router
+  .route("/api/travel-authorizations/:travelAuthorizationId/revert-to-draft")
+  .post(TravelAuthorizations.RevertToDraftController.create)
+router
   .route("/api/travel-authorizations/:travelAuthorizationId/approve")
   .post(TravelAuthorizations.ApproveController.create)
 router
