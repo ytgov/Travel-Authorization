@@ -24,13 +24,25 @@
         <v-card-title class="text-h5"> Re-assign Request </v-card-title>
 
         <v-card-text :loading="isLoading">
-          <p>Note for the next approver</p>
+          <v-row>
+            <v-col>
+              <SearchableUserEmailCombobox
+                v-model="supervisorEmail"
+                :rules="[required]"
+                label="Re-assign to *"
+                dense
+                outlined
+                required
+                validate-on-blur
+              />
+            </v-col>
+          </v-row>
           <v-row>
             <v-col>
               <v-textarea
                 v-model="note"
                 :rules="[required]"
-                label="Note"
+                label="Note for the next approver"
                 rows="5"
                 required
                 outlined
@@ -70,6 +82,8 @@ import { useSnack } from "@/plugins/snack-plugin"
 import travelAuthorizationApi from "@/api/travel-authorizations-api"
 import useRouteQuery from "@/use/use-route-query"
 
+import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox.vue"
+
 const props = defineProps({
   travelAuthorizationId: {
     type: Number,
@@ -87,11 +101,11 @@ const props = defineProps({
 
 const emit = defineEmits(["re-assigned"])
 
-const snack = useSnack()
-console.log("snack:", snack)
-const isLoading = ref(false)
-const form = ref(null)
 const showDialog = useRouteQuery("showReAssign", false)
+const form = ref(null)
+const isLoading = ref(false)
+
+const supervisorEmail = ref(null)
 const note = ref(null)
 
 function close() {
@@ -99,11 +113,18 @@ function close() {
   form.value.resetValidation()
 }
 
+const snack = useSnack()
+
 async function reAssignAndClose() {
+  if (!form.value.validate()) return
+
   isLoading.value = true
   try {
-    await travelAuthorizationApi.reAssign({
-      note: note.value,
+    await travelAuthorizationApi.submit(props.travelAuthorizationId, {
+      supervisorEmail: supervisorEmail.value,
+      travelAuthorizationActionLogAttributes: {
+        note: note.value,
+      },
     })
     close()
     snack.success("Travel authorization denied.")

@@ -8,14 +8,18 @@ import { UpdateService } from "@/services/travel-authorizations"
 
 import { TravelAuthorization, TravelAuthorizationActionLog, User } from "@/models"
 
+type SubmitServiceAttributes = Partial<TravelAuthorization> & {
+  travelAuthorizationActionLogAttributes?: Partial<TravelAuthorizationActionLog>
+}
+
 export class SubmitService extends BaseService {
   private travelAuthorization: TravelAuthorization
-  private attributes: Partial<TravelAuthorization>
+  private attributes: SubmitServiceAttributes
   private currentUser: User
 
   constructor(
     travelAuthorization: TravelAuthorization,
-    attributes: Partial<TravelAuthorization>,
+    attributes: SubmitServiceAttributes,
     currentUser: User
   ) {
     super()
@@ -25,11 +29,16 @@ export class SubmitService extends BaseService {
   }
 
   async perform(): Promise<TravelAuthorization> {
-    if (this.travelAuthorization.status !== TravelAuthorization.Statuses.DRAFT) {
-      throw new Error("Travel authorization must be in draft state to submit.")
+    if (
+      isNil(this.travelAuthorization.status) ||
+      ![TravelAuthorization.Statuses.DRAFT, TravelAuthorization.Statuses.SUBMITTED].includes(
+        this.travelAuthorization.status
+      )
+    ) {
+      throw new Error("Travel authorization must be in draft or submitted state to submit.")
     }
 
-    const { supervisorEmail } = this.attributes
+    const { supervisorEmail, travelAuthorizationActionLogAttributes } = this.attributes
     if (isNil(supervisorEmail)) {
       throw new Error("Supervisor email is required for travel authorization submission.")
     }
@@ -54,6 +63,7 @@ export class SubmitService extends BaseService {
       })
 
       await TravelAuthorizationActionLog.create({
+        ...travelAuthorizationActionLogAttributes,
         travelAuthorizationId: this.travelAuthorization.id,
         actorId: this.currentUser.id,
         assigneeId: supervisor.id,
