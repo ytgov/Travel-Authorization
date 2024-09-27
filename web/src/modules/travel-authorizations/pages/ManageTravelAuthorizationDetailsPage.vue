@@ -24,6 +24,7 @@
           :travel-authorization-id="travelAuthorizationId"
           @approved="refresh"
           @denied="refresh"
+          @re-assigned="refresh"
         />
       </v-col>
     </v-row>
