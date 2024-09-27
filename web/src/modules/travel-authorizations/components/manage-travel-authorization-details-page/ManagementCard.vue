@@ -27,7 +27,6 @@
             :travel-authorization-id="travelAuthorizationId"
             :is-disabled="isDisabled"
             button-classes="ml-2"
-            @re-assigned="refreshAndEmit('re-assigned')"
           />
         </v-col>
       </v-row>
@@ -52,7 +51,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["approved", "denied", "re-assigned"])
+const emit = defineEmits(["approved", "denied"])
 
 const { travelAuthorization, isLoading, refresh, STATUSES } = useTravelAuthorization(
   props.travelAuthorizationId

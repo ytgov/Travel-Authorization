@@ -100,8 +100,6 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["re-assigned"])
-
 const showDialog = useRouteQuery("showReAssign", false)
 const form = ref(null)
 const isLoading = ref(false)
