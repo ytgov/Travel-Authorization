@@ -309,7 +309,7 @@ export default {
         { name: "Dashboard", to: "/dashboard" },
         { name: "My Travel Requests", to: { name: "MyTravelAuthorizationsPage" } },
         { name: "PreApproved", to: "/preapproved" },
-        { name: "Travel Desk", to: "/travel-desk" },
+        { name: "Travel Desk", to: { name: "TravelDeskPage" } },
         { name: "Travel Request", to: "/travel-request" },
         { name: "Flight Expense", to: "/flight-expense" },
         { name: "Reports", to: "/reporting-summary" },
