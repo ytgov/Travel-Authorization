@@ -127,12 +127,13 @@ async function reAssignAndClose() {
       },
     })
     close()
-    snack.success("Travel authorization denied.")
+    snack.success("Travel authorization re-assigned.")
     nextTick(() => {
       emit("re-assigned")
     })
   } catch (error) {
-    snack.error(error.message)
+    console.error(error)
+    snack.error(`Failed to re-assign travel authorization: ${error}`)
   } finally {
     isLoading.value = false
   }
