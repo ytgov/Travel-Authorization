@@ -83,7 +83,7 @@ import { useSnack } from "@/plugins/snack-plugin"
 import travelAuthorizationApi from "@/api/travel-authorizations-api"
 import useRouteQuery from "@/use/use-route-query"
 
-import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox.vue"
+import SearchableUserEmailCombobox from "@/components/users/UserEmailSearchableCombobox.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
