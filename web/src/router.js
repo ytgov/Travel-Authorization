@@ -35,12 +35,12 @@ const routes = [
         component: () => import("@/pages/UserProfilePage"),
       },
       {
-        path: "/travel-desk",
-        component: () => import("@/layouts/Layout"),
+        component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
+        path: "",
         children: [
           {
             name: "TravelDeskPage",
-            path: "",
+            path: "travel-desk",
             component: () => import("@/pages/TravelDeskPage.vue"),
           },
         ],

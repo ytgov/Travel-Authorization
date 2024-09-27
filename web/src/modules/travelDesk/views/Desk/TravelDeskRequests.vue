@@ -106,9 +106,15 @@
 </template>
 
 <script>
+import { onMounted, ref } from "vue"
+import { useStore } from "vue2-helpers/vuex"
 import { ExportToCsv } from "export-to-csv"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
+import { TRAVEL_DESK_URL, USERS_URL } from "@/urls"
+import http from "@/api/http-client"
+import locationsApi from "@/api/locations-api"
+
 import ProcessTravelDeskRequest from "@/modules/travelDesk/views/Desk/ProcessTravelDeskRequest.vue"
 import PrintTravelDeskReport from "@/modules/travelDesk/views/Common/PrintTravelDeskReport.vue"
 
@@ -118,15 +124,73 @@ export default {
     ProcessTravelDeskRequest,
     PrintTravelDeskReport,
   },
-  props: {
-    travelDeskRequests: {
-      type: Array,
-      required: true,
-    },
-  },
   setup() {
+    const travelDeskRequests = ref([])
+    const loadingData = ref(false)
+    const department = ref("")
+    const alertMsg = ref("")
+
+    onMounted(async () => {
+      loadingData.value = true
+      department.value = store.state.auth.department
+      await getDestinations()
+      await getTravelDeskUsers()
+      await getTravelDeskRequests()
+      loadingData.value = false
+    })
+
+    const store = useStore()
+
+    async function getDestinations() {
+      const { locations } = await locationsApi.list()
+      const formattedLocations = locations.map(({ id, city, province }) => {
+        return {
+          value: id,
+          text: `${city} (${province})`,
+          city,
+          province,
+        }
+      })
+      store.commit("traveldesk/SET_DESTINATIONS", formattedLocations)
+      return formattedLocations
+    }
+
+    async function getTravelDeskUsers() {
+      try {
+        const { data } = await http.get(`${USERS_URL}/travel-desk-users`)
+        store.commit("traveldesk/SET_TRAVEL_DESK_USERS", data)
+      } catch (error) {
+        alertMsg.value = error.response.data
+      }
+    }
+
+    async function getTravelDeskRequests() {
+      try {
+        const { data } = await http.get(`${TRAVEL_DESK_URL}/`)
+        travelDeskRequests.value = data
+        travelDeskRequests.value.forEach((travelDeskRequest) => {
+          travelDeskRequest.userTravel =
+            store.state.auth.fullName == travelDeskRequest.travelDeskOfficer ? 1 : 0
+          travelDeskRequest.bookedStatus = travelDeskRequest.status == "booked" ? 1 : 0
+          travelDeskRequest.startDate = getStartDate(
+            travelDeskRequest.travelAuthorization.dateBackToWork,
+            travelDeskRequest.travelAuthorization.travelDuration
+          )
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    function getStartDate(endDate, travelDuration) {
+      const startDate = new Date(endDate)
+      startDate.setDate(startDate.getDate() - 1 * Number(travelDuration))
+      return startDate.toISOString()
+    }
+
     const { t } = useI18n()
-    return { t }
+
+    return { t, travelDeskRequests }
   },
   data() {
     return {
