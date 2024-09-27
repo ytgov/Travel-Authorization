@@ -74,7 +74,8 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue"
+import { ref } from "vue"
+import { useRouter } from "vue2-helpers/vue-router"
 
 import { required } from "@/utils/validators"
 
@@ -114,6 +115,7 @@ function close() {
 }
 
 const snack = useSnack()
+const router = useRouter()
 
 async function reAssignAndClose() {
   if (!form.value.validate()) return
@@ -126,10 +128,9 @@ async function reAssignAndClose() {
         note: note.value,
       },
     })
-    close()
     snack.success("Travel authorization re-assigned.")
-    nextTick(() => {
-      emit("re-assigned")
+    await router.replace({
+      name: "ManageTravelAuthorizationsPage",
     })
   } catch (error) {
     console.error(error)
