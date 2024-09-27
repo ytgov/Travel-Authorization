@@ -23,6 +23,11 @@
             button-classes="ml-2"
             @denied="refreshAndEmit('denied')"
           />
+          <ReAssignButtonDialog
+            :travel-authorization-id="travelAuthorizationId"
+            :is-disabled="isDisabled"
+            button-classes="ml-2"
+          />
         </v-col>
       </v-row>
     </v-card-text>
@@ -35,6 +40,7 @@ import { isEmpty } from "lodash"
 
 import ApproveTravelRequestDialogButton from "./ApproveTravelRequestDialogButton.vue"
 import DenyTravelRequestDialogButton from "./DenyTravelRequestDialogButton.vue"
+import ReAssignButtonDialog from "@/components/travel-authorizations/manange/ReAssignButtonDialog.vue"
 
 import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
@@ -47,7 +53,7 @@ const props = defineProps({
 
 const emit = defineEmits(["approved", "denied"])
 
-const { travelAuthorization, isLoading, fetch, STATUSES } = useTravelAuthorization(
+const { travelAuthorization, isLoading, refresh, STATUSES } = useTravelAuthorization(
   props.travelAuthorizationId
 )
 
@@ -69,7 +75,7 @@ const requestorDisplayName = computed(() => {
 })
 
 async function refreshAndEmit(eventName) {
-  await fetch()
+  await refresh()
   emit(eventName)
 }
 </script>

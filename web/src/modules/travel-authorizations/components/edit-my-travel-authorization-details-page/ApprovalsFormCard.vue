@@ -108,7 +108,7 @@
 <script>
 import { mapActions, mapGetters } from "vuex"
 
-import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+import SearchableUserEmailCombobox from "@/components/users/UserEmailSearchableCombobox.vue"
 import TravelAuthorizationPreApprovalProfileSelect from "@/components/travel-authorization-pre-approval-profiles/TravelAuthorizationPreApprovalProfileSelect"
 import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"

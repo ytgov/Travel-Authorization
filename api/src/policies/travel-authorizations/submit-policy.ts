@@ -15,7 +15,7 @@ export class SubmitPolicy extends BasePolicy<TravelAuthorization> {
 
   permittedAttributes(): Path[] {
     const policy = new TravelAuthorizationsPolicy(this.user, this.record)
-    return policy.permittedAttributes()
+    return [...policy.permittedAttributes(), { travelAuthorizationActionLogAttributes: ["note"] }]
   }
 }
 

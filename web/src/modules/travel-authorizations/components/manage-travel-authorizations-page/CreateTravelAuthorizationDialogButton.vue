@@ -81,7 +81,7 @@ import { computed, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 import { isEmpty } from "lodash"
 
-import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+import SearchableUserEmailCombobox from "@/components/users/UserEmailSearchableCombobox.vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"

@@ -43,7 +43,7 @@ import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+import SearchableUserEmailCombobox from "@/components/users/UserEmailSearchableCombobox.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
