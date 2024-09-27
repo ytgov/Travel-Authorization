@@ -129,7 +129,7 @@ async function reAssignAndClose() {
     close()
     snack.success("Travel authorization denied.")
     nextTick(() => {
-      emit("denied")
+      emit("re-assigned")
     })
   } catch (error) {
     snack.error(error.message)
