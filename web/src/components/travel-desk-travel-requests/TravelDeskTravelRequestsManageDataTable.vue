@@ -9,14 +9,14 @@
         button-name="Print Report"
         @update="update++"
       />
-      <v-btn
+      <ExportToCsvButton
+        :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"
         :disabled="selectedRequests.length == 0"
         class="my-0"
         color="primary"
-        @click="exportToExcel()"
       >
         Export To Excel
-      </v-btn>
+      </ExportToCsvButton>
     </div>
 
     <v-data-table
@@ -108,19 +108,20 @@
 <script>
 import { onMounted, ref } from "vue"
 import { useStore } from "vue2-helpers/vuex"
-import { ExportToCsv } from "export-to-csv"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { TRAVEL_DESK_URL, USERS_URL } from "@/urls"
 import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
+import ExportToCsvButton from "@/components/travel-desk-travel-requests/ExportToCsvButton.vue"
 import ProcessTravelDeskRequest from "@/modules/travelDesk/views/Desk/ProcessTravelDeskRequest.vue"
 import PrintTravelDeskReport from "@/modules/travelDesk/views/Common/PrintTravelDeskReport.vue"
 
 export default {
   name: "TravelDeskRequests",
   components: {
+    ExportToCsvButton,
     ProcessTravelDeskRequest,
     PrintTravelDeskReport,
   },
@@ -253,53 +254,6 @@ export default {
 
     itemRowBackground: function (item) {
       return item.userTravel > 0 ? "red lighten-5" : ""
-    },
-
-    exportToExcel() {
-      console.log(this.selectedRequests)
-      const csvInfo = this.selectedRequests.map((req) => {
-        return {
-          createdAt: req.createdAt.slice(0, 10),
-          name: req.travelAuthorization.firstName + " " + req.travelAuthorization.lastName,
-          department: req.travelAuthorization.department,
-          branch: req.travelAuthorization.branch ? req.travelAuthorization.branch : "",
-          travelStartDate: req.startDate.slice(0, 10),
-          travelEndDate: req.travelAuthorization.dateBackToWork.slice(0, 10),
-          location: this.getLocationName(req.travelAuthorization.stops),
-          requested: this.getRequested(req),
-          status:
-            req.status == "submitted" && !req.travelDeskOfficer
-              ? "Not started"
-              : this.t(`travel_desk_travel_request.status.${req.status}`, { $default: req.status }),
-          travelDeskOfficer: req.travelDeskOfficer ? req.travelDeskOfficer : "",
-        }
-      })
-      const options = {
-        fieldSeparator: ",",
-        quoteStrings: '"',
-        decimalSeparator: ".",
-        showLabels: true,
-        showTitle: false,
-        title: "",
-        filename: "Travel-Desk-Requests",
-        useTextFile: false,
-        useBom: true,
-        useKeysAsHeaders: false,
-        headers: [
-          "Submit Date",
-          "Name",
-          "Department",
-          "Branch",
-          "Travel Start Date",
-          "Travel End Date",
-          "Location",
-          "Requested",
-          "Status",
-          "Travel Desk Officer",
-        ],
-      }
-      const csvExporter = new ExportToCsv(options)
-      csvExporter.generateCsv(csvInfo)
     },
   },
 }
