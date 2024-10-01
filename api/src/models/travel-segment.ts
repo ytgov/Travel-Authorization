@@ -58,7 +58,7 @@ export class TravelSegment extends Model<
   declare departureLocationId: ForeignKey<Location["id"]> | null
   declare arrivalLocationId: ForeignKey<Location["id"]> | null
   declare segmentNumber: number
-  declare departureOn: Date | null
+  declare departureOn: Date | string | null // DATEONLY accepts Date or string, but returns string
   declare departureTime: string | null
   declare modeOfTransport: string
   declare modeOfTransportOther: string | null
