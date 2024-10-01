@@ -7,11 +7,11 @@
         :disabled="selectedRequests.length == 0"
         :travel-desk-requests="selectedRequests"
         button-name="Print Report"
-        @update="update++"
+        @update="getTravelDeskRequests"
       />
       <ExportToCsvButton
         :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"
-        :disabled="selectedRequests.length == 0"
+        :disabled="isNil(selectedRequests) || isEmpty(selectedRequests)"
         class="my-0"
         color="primary"
       >
@@ -98,16 +98,17 @@
           class="pr-2"
           :type="item.status == 'booked' ? 'booked' : 'edit'"
           :travel-detail="item"
-          @updateTable="updateTable()"
+          @update-table="getTravelDeskRequests"
         />
       </template>
     </v-data-table>
   </div>
 </template>
 
-<script>
+<script setup>
 import { onMounted, ref } from "vue"
 import { useStore } from "vue2-helpers/vuex"
+import { isNil, isEmpty } from "lodash"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { TRAVEL_DESK_URL, USERS_URL } from "@/urls"
@@ -118,144 +119,118 @@ import ExportToCsvButton from "@/components/travel-desk-travel-requests/ExportTo
 import ProcessTravelDeskRequest from "@/modules/travelDesk/views/Desk/ProcessTravelDeskRequest.vue"
 import PrintTravelDeskReport from "@/modules/travelDesk/views/Common/PrintTravelDeskReport.vue"
 
-export default {
-  name: "TravelDeskRequests",
-  components: {
-    ExportToCsvButton,
-    ProcessTravelDeskRequest,
-    PrintTravelDeskReport,
+const { t } = useI18n()
+const store = useStore()
+
+const travelDeskRequests = ref([])
+const selectedRequests = ref([])
+const loadingData = ref(false)
+const department = ref("")
+const alertMsg = ref("")
+
+const headers = ref([
+  { text: "Submit Date", value: "createdAt" },
+  { text: "Name", value: "fullname", sortable: false },
+  { text: "Department", value: "department" },
+  { text: "Branch", value: "branch" },
+  { text: "Travel Start Date", value: "startDate" },
+  {
+    text: "Travel End Date",
+    value: "endDate",
+    sortable: false,
   },
-  setup() {
-    const travelDeskRequests = ref([])
-    const loadingData = ref(false)
-    const department = ref("")
-    const alertMsg = ref("")
-
-    onMounted(async () => {
-      loadingData.value = true
-      department.value = store.state.auth.department
-      await getDestinations()
-      await getTravelDeskUsers()
-      await getTravelDeskRequests()
-      loadingData.value = false
-    })
-
-    const store = useStore()
-
-    async function getDestinations() {
-      const { locations } = await locationsApi.list()
-      const formattedLocations = locations.map(({ id, city, province }) => {
-        return {
-          value: id,
-          text: `${city} (${province})`,
-          city,
-          province,
-        }
-      })
-      store.commit("traveldesk/SET_DESTINATIONS", formattedLocations)
-      return formattedLocations
-    }
-
-    async function getTravelDeskUsers() {
-      try {
-        const { data } = await http.get(`${USERS_URL}/travel-desk-users`)
-        store.commit("traveldesk/SET_TRAVEL_DESK_USERS", data)
-      } catch (error) {
-        alertMsg.value = error.response.data
-      }
-    }
-
-    async function getTravelDeskRequests() {
-      try {
-        const { data } = await http.get(`${TRAVEL_DESK_URL}/`)
-        travelDeskRequests.value = data
-        travelDeskRequests.value.forEach((travelDeskRequest) => {
-          travelDeskRequest.userTravel =
-            store.state.auth.fullName == travelDeskRequest.travelDeskOfficer ? 1 : 0
-          travelDeskRequest.bookedStatus = travelDeskRequest.status == "booked" ? 1 : 0
-          travelDeskRequest.startDate = getStartDate(
-            travelDeskRequest.travelAuthorization.dateBackToWork,
-            travelDeskRequest.travelAuthorization.travelDuration
-          )
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    function getStartDate(endDate, travelDuration) {
-      const startDate = new Date(endDate)
-      startDate.setDate(startDate.getDate() - 1 * Number(travelDuration))
-      return startDate.toISOString()
-    }
-
-    const { t } = useI18n()
-
-    return { t, travelDeskRequests }
+  { text: "Location", value: "location" },
+  { text: "Requested", value: "requested" },
+  { text: "Status", value: "status" },
+  { text: "Travel Desk Officer", value: "travelDeskOfficer" },
+  {
+    text: "",
+    value: "edit",
+    cellClass: "px-0 mx-0",
+    sortable: false,
   },
-  data() {
+])
+
+onMounted(async () => {
+  loadingData.value = true
+  department.value = store.state.auth.department
+  await getDestinations()
+  await getTravelDeskUsers()
+  await getTravelDeskRequests()
+  loadingData.value = false
+})
+
+async function getDestinations() {
+  const { locations } = await locationsApi.list()
+  const formattedLocations = locations.map(({ id, city, province }) => {
     return {
-      headers: [
-        { text: "Submit Date", value: "createdAt" },
-        { text: "Name", value: "fullname", sortable: false },
-        { text: "Department", value: "department" },
-        { text: "Branch", value: "branch" },
-        { text: "Travel Start Date", value: "startDate" },
-        {
-          text: "Travel End Date",
-          value: "endDate",
-          sortable: false,
-        },
-        { text: "Location", value: "location" },
-        { text: "Requested", value: "requested" },
-        { text: "Status", value: "status" },
-        { text: "Travel Desk Officer", value: "travelDeskOfficer" },
-        {
-          text: "",
-          value: "edit",
-          cellClass: "px-0 mx-0",
-          sortable: false,
-        },
-      ],
-      admin: false,
-      department: "",
-      selectedRequests: [],
-      update: 0,
+      value: id,
+      text: `${city} (${province})`,
+      city,
+      province,
     }
-  },
-  computed: {},
-  mounted() {},
-  methods: {
-    updateTable() {
-      this.$emit("updateTable")
-    },
+  })
+  store.commit("traveldesk/SET_DESTINATIONS", formattedLocations)
+  return formattedLocations
+}
 
-    getLocationName(stops) {
-      const names = []
-      const destinations = this.$store.state.traveldesk.destinations
-      for (const stop of stops) {
-        const location = destinations.filter((dest) => dest.value == stop.locationId)
-        if (location.length > 0) {
-          names.push(location[0].text)
-        }
-      }
-      return names.join(", ")
-    },
+async function getTravelDeskUsers() {
+  try {
+    const { data } = await http.get(`${USERS_URL}/travel-desk-users`)
+    store.commit("traveldesk/SET_TRAVEL_DESK_USERS", data)
+  } catch (error) {
+    alertMsg.value = error.response.data
+  }
+}
 
-    getRequested(item) {
-      const requested = []
-      if (item.flightRequests?.length > 0) requested.push("flight")
-      if (item.hotels?.length > 0) requested.push("hotel")
-      if (item.rentalCars?.length > 0) requested.push("rental car")
-      if (item.otherTransportations?.length > 0) requested.push("transportation")
+async function getTravelDeskRequests() {
+  try {
+    const { data } = await http.get(`${TRAVEL_DESK_URL}/`)
+    travelDeskRequests.value = data
+    travelDeskRequests.value.forEach((travelDeskRequest) => {
+      travelDeskRequest.userTravel =
+        store.state.auth.fullName == travelDeskRequest.travelDeskOfficer ? 1 : 0
+      travelDeskRequest.bookedStatus = travelDeskRequest.status == "booked" ? 1 : 0
+      travelDeskRequest.startDate = getStartDate(
+        travelDeskRequest.travelAuthorization.dateBackToWork,
+        travelDeskRequest.travelAuthorization.travelDuration
+      )
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
 
-      return requested.join(", ")
-    },
+function getStartDate(endDate, travelDuration) {
+  const startDate = new Date(endDate)
+  startDate.setDate(startDate.getDate() - 1 * Number(travelDuration))
+  return startDate.toISOString()
+}
 
-    itemRowBackground: function (item) {
-      return item.userTravel > 0 ? "red lighten-5" : ""
-    },
-  },
+function getLocationName(stops) {
+  const names = []
+  const destinations = store.state.traveldesk.destinations
+  for (const stop of stops) {
+    const location = destinations.filter((dest) => dest.value == stop.locationId)
+    if (location.length > 0) {
+      names.push(location[0].text)
+    }
+  }
+  return names.join(", ")
+}
+
+function getRequested(item) {
+  const requested = []
+  if (item.flightRequests?.length > 0) requested.push("flight")
+  if (item.hotels?.length > 0) requested.push("hotel")
+  if (item.rentalCars?.length > 0) requested.push("rental car")
+  if (item.otherTransportations?.length > 0) requested.push("transportation")
+
+  return requested.join(", ")
+}
+
+function itemRowBackground(item) {
+  return item.userTravel > 0 ? "red lighten-5" : ""
 }
 </script>
 
