@@ -1,6 +1,10 @@
 import { reactive, toRefs, ref, unref, watch } from "vue"
 
-import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
+import travelDeskTravelRequestsApi, {
+  TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
+} from "@/api/travel-desk-travel-requests-api"
+
+export { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES }
 
 /**
  * TODO: add other fields

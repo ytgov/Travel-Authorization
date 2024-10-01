@@ -23,9 +23,19 @@ export class TravelDeskTravelRequestsController extends BaseController {
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         include: [
+          "flightRequests",
+          "hotels",
+          "otherTransportations",
+          "rentalCars",
           {
             association: "travelAuthorization",
-            include: ["stops", "user"],
+            include: [
+              "user",
+              {
+                association: "travelSegments",
+                include: ["departureLocation", "arrivalLocation"],
+              },
+            ],
           },
         ],
       })
