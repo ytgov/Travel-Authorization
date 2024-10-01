@@ -14,7 +14,7 @@
 <script setup>
 import { computed } from "vue"
 import { ExportToCsv } from "export-to-csv"
-import { isNil, isEmpty, first, last } from "lodash"
+import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
@@ -47,20 +47,21 @@ const { travelDeskTravelRequests, isLoading } = useTravelDeskTravelRequests(
 // TODO: move to back-end see https://github.com/icefoganalytics/internal-data-portal/blob/main/api/src/controllers/download/datasets-controller.ts
 async function exportToCsv() {
   const csvInfo = travelDeskTravelRequests.value.map((travelDeskTravelRequest) => {
-    const { status, travelAuthorization, travelDeskOfficer } = travelDeskTravelRequest
-    const { travelSegments, user } = travelAuthorization
+    const {
+      createdAt,
+      userDisplayName,
+      department,
+      branch,
+      travelStartDate,
+      travelEndDate,
+      locationsTraveled,
+      requestedOptions,
+      status,
+      travelDeskOfficer,
+    } = travelDeskTravelRequest
 
-    const submissionDate = travelDeskTravelRequest.createdAt.slice(0, 10)
+    const submissionDate = createdAt.slice(0, 10)
 
-    const { firstName, lastName } = user
-    const userDisplayName = [firstName, lastName].filter(Boolean).join(" ")
-
-    const department = travelAuthorization.department ?? ""
-    const branch = travelAuthorization.branch ?? ""
-    const travelStartDate = determineStartDate(travelSegments)
-    const travelEndDate = determineEndDate(travelSegments, travelAuthorization.dateBackToWork)
-    const locationsTraveled = determineLocationsTraveled(travelSegments)
-    const requestedOptions = determineRequestedOptions(travelDeskTravelRequest)
     const formattedStatus = determineStatus(status, travelDeskOfficer)
     const formattedTravelDeskOfficer = travelDeskOfficer ?? ""
 
@@ -95,54 +96,6 @@ async function exportToCsv() {
   }
   const csvExporter = new ExportToCsv(options)
   csvExporter.generateCsv(csvInfo)
-}
-
-function determineStartDate(travelSegments) {
-  const firstTravelSegment = first(travelSegments)
-  return firstTravelSegment.departureOn
-}
-
-function determineEndDate(travelSegments, dateBackToWork) {
-  if (dateBackToWork) {
-    return dateBackToWork.slice(0, 10)
-  }
-
-  const lastTravelSegment = last(travelSegments)
-  return lastTravelSegment.departureOn
-}
-
-function determineLocationsTraveled(travelSegments) {
-  const names = new Set()
-
-  for (const travelSegment of travelSegments) {
-    const { departureLocation, arrivalLocation } = travelSegment
-    const name = `${departureLocation.city} (${departureLocation.province})`
-    names.add(name)
-  }
-
-  return Array.from(names).join(", ")
-}
-
-function determineRequestedOptions(travelDeskTravelRequest) {
-  const requested = []
-
-  if (!isEmpty(travelDeskTravelRequest.flightRequests)) {
-    requested.push("flight")
-  }
-
-  if (!isEmpty(travelDeskTravelRequest.hotels)) {
-    requested.push("hotel")
-  }
-
-  if (!isEmpty(travelDeskTravelRequest.rentalCars)) {
-    requested.push("rental car")
-  }
-
-  if (!isEmpty(travelDeskTravelRequest.otherTransportations)) {
-    requested.push("transportation")
-  }
-
-  return requested.join(", ")
 }
 
 function determineStatus(status, travelDeskOfficer) {

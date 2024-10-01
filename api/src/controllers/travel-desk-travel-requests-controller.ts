@@ -3,6 +3,7 @@ import { isNil } from "lodash"
 import { TravelDeskTravelRequest } from "@/models"
 import { TravelDeskTravelRequestsPolicy } from "@/policies"
 import { UpdateService } from "@/services/travel-desk-travel-requests"
+import { IndexSerializer } from "@/serializers/travel-desk-travel-requests"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -38,8 +39,12 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
           },
         ],
       })
-      return this.response.status(200).json({
+      const serializedTravelDeskTravelRequests = IndexSerializer.perform(
         travelDeskTravelRequests,
+        this.currentUser
+      )
+      return this.response.status(200).json({
+        travelDeskTravelRequests: serializedTravelDeskTravelRequests,
         totalCount,
       })
     } catch (error) {

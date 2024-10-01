@@ -12,6 +12,7 @@ import {
   NonAttribute,
 } from "sequelize"
 import { isNil } from "lodash"
+import { DateTime } from "luxon"
 
 import sequelize from "@/db/db-client"
 
@@ -66,6 +67,15 @@ export class TravelSegment extends Model<
   declare accommodationTypeOther: string | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
+
+  // Magic methods
+  get departureOnAsString(): NonAttribute<string | null> {
+    if (this.departureOn instanceof Date) {
+      return DateTime.fromJSDate(this.departureOn).toFormat("yyyy-LL-dd")
+    }
+
+    return this.departureOn
+  }
 
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage
   // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances

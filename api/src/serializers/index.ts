@@ -7,3 +7,4 @@ export { UsersSerializer } from "./users-serializer"
 
 // Bundles
 export * as TravelDeskRentalCars from "./travel-desk-rental-cars"
+export * as TravelDeskTravelRequests from "./travel-desk-travel-requests"

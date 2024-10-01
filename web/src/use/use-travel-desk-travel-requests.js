@@ -10,7 +10,7 @@ export { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES }
  * @template [T=any]
  * @typedef {import('vue').Ref<T>} Ref
  */
-/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequest} TravelDeskTravelRequest */
+/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestIndexView} TravelDeskTravelRequestIndexView */
 /** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestWhereOptions} TravelDeskTravelRequestWhereOptions */
 /** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestFiltersOptions} TravelDeskTravelRequestFiltersOptions */
 
@@ -28,12 +28,12 @@ export { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES }
  *  skipWatchIf?: () => boolean;
  * }} [config={ skipWatchIf = () => false } = {}] - Configuration to conditionally skip API calls.
  * @returns {{
- *   travelDeskTravelRequests: Ref<TravelDeskTravelRequest[]>,
+ *   travelDeskTravelRequests: Ref<TravelDeskTravelRequestIndexView[]>,
  *   totalCount: Ref<number>,
  *   isLoading: Ref<boolean>,
  *   isErrored: Ref<boolean>,
- *   fetch: () => Promise<TravelDeskTravelRequest[]>,
- *   refresh: () => Promise<TravelDeskTravelRequest[]>
+ *   fetch: () => Promise<TravelDeskTravelRequestIndexView[]>,
+ *   refresh: () => Promise<TravelDeskTravelRequestIndexView[]>
  * }}
  */
 
