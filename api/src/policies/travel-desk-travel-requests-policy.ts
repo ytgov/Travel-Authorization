@@ -1,18 +1,19 @@
-import { ModelStatic, Op } from "sequelize"
+import { Attributes, FindOptions, Op } from "sequelize"
 import { isUndefined } from "lodash"
 
 import { Path } from "@/utils/deep-pick"
 import { User, TravelDeskTravelRequest, TravelAuthorization } from "@/models"
+import { allRecordsScope } from "@/policies/base-policy"
+import PolicyFactory from "@/policies/policy-factory"
 import TravelAuthorizationsPolicy from "@/policies/travel-authorizations-policy"
-import BasePolicy from "@/policies/base-policy"
 
-export class TravelDeskTravelRequestsPolicy extends BasePolicy<TravelDeskTravelRequest> {
+export class TravelDeskTravelRequestsPolicy extends PolicyFactory(TravelDeskTravelRequest) {
   show(): boolean {
     return this.travelAuthorizationsPolicy.show()
   }
 
   update(): boolean {
-    if (this.user.roles.includes(User.Roles.ADMIN)) return true
+    if (this.user.isAdmin) return true
     if (this.travelAuthorization.supervisorEmail === this.user.email) return true
     if (
       this.travelAuthorization.userId === this.user.id &&
@@ -23,32 +24,6 @@ export class TravelDeskTravelRequestsPolicy extends BasePolicy<TravelDeskTravelR
     }
 
     return false
-  }
-
-  static applyScope(
-    modelClass: ModelStatic<TravelDeskTravelRequest>,
-    currentUser: User
-  ): ModelStatic<TravelDeskTravelRequest> {
-    if (currentUser.roles.includes(User.Roles.ADMIN)) {
-      return modelClass
-    }
-
-    return modelClass.scope({
-      // @ts-expect-error - Bad types in sequelize, all FindOptions are valid.
-      include: [
-        {
-          association: "travelAuthorization",
-          where: {
-            [Op.or]: [
-              {
-                supervisorEmail: currentUser.email,
-              },
-              { userId: currentUser.id },
-            ],
-          },
-        },
-      ],
-    })
   }
 
   permittedAttributes(): Path[] {
@@ -77,6 +52,28 @@ export class TravelDeskTravelRequestsPolicy extends BasePolicy<TravelDeskTravelR
       "additionalInformation",
       "travelDeskOfficer",
     ]
+  }
+
+  static policyScope(user: User): FindOptions<Attributes<TravelDeskTravelRequest>> {
+    if (user.isAdmin) {
+      return allRecordsScope
+    }
+
+    return {
+      include: [
+        {
+          association: "travelAuthorization",
+          where: {
+            [Op.or]: [
+              {
+                supervisorEmail: user.email,
+              },
+              { userId: user.id },
+            ],
+          },
+        },
+      ],
+    }
   }
 
   private get travelAuthorization(): TravelAuthorization {

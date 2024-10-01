@@ -1,4 +1,3 @@
-import { WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { TravelDeskTravelRequest } from "@/models"
@@ -7,12 +6,12 @@ import { UpdateService } from "@/services/travel-desk-travel-requests"
 
 import BaseController from "@/controllers/base-controller"
 
-export class TravelDeskTravelRequestsController extends BaseController {
+export class TravelDeskTravelRequestsController extends BaseController<TravelDeskTravelRequest> {
   async index() {
-    const where = this.query.where as WhereOptions<TravelDeskTravelRequest>
-
+    const where = this.buildWhere()
+    const scopes = this.buildFilterScopes()
     const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
-      TravelDeskTravelRequest,
+      scopes,
       this.currentUser
     )
 
