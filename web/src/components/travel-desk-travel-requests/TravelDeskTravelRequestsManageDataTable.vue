@@ -3,11 +3,12 @@
     <div class="d-flex mb-4">
       <v-spacer />
       <PrintTravelDeskReport
-        class="my-0 mr-4"
-        :disabled="selectedRequests.length == 0"
-        :travel-desk-requests="selectedRequests"
-        button-name="Print Report"
-        @update="getTravelDeskRequests"
+        :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"
+        :activator-props="{
+          class: 'my-0 mr-4',
+          color: 'primary',
+          disabled: isNil(selectedRequests) || isEmpty(selectedRequests),
+        }"
       />
       <ExportToCsvButton
         :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"

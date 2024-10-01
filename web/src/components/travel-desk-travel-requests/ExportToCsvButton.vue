@@ -28,7 +28,6 @@ const props = defineProps({
 
 const { t } = useI18n()
 
-// TODO: include travel authorization in response
 const travelDeskTravelRequestsQuery = computed(() => {
   return {
     where: {
@@ -103,7 +102,7 @@ function determineStatus(status, travelDeskOfficer) {
     status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED &&
     (isNil(travelDeskOfficer) || isEmpty(travelDeskOfficer))
   ) {
-    return "Not started"
+    return "Not Started"
   }
 
   return t(`travel_desk_travel_request.status.${status}`, {
