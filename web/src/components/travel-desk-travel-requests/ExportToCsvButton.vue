@@ -78,7 +78,8 @@ async function exportToCsv() {
     showLabels: true,
     showTitle: false,
     title: "",
-    filename: "Travel-Desk-Requests",
+    // TODO: use better, or new library to get _ (underscores) out of file name
+    filename: `Export, Travel Desk Requests, ${new Date().toISOString()}`,
     useTextFile: false,
     useBom: true,
     useKeysAsHeaders: false,
