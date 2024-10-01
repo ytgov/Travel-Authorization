@@ -25,7 +25,7 @@ export class TravelDeskTravelRequestsController extends BaseController {
         include: [
           {
             association: "travelAuthorization",
-            include: ["stops"],
+            include: ["stops", "user"],
           },
         ],
       })

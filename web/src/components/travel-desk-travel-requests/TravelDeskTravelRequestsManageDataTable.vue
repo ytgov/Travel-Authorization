@@ -42,11 +42,11 @@
       </template>
 
       <template #item.department="{ item }">
-        {{ item.travelAuthorization.department }}
+        {{ item.travelAuthorization.user.department }}
       </template>
 
       <template #item.branch="{ item }">
-        {{ item.travelAuthorization.branch }}
+        {{ item.travelAuthorization.user.branch }}
       </template>
 
       <template #item.startDate="{ item }">

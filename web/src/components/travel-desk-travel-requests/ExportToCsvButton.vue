@@ -49,9 +49,9 @@ async function exportToCsv() {
     return {
       createdAt: travelDeskTravelRequest.createdAt.slice(0, 10),
       name:
-        travelDeskTravelRequest.travelAuthorization.firstName +
+        travelDeskTravelRequest.travelAuthorization.user.firstName +
         " " +
-        travelDeskTravelRequest.travelAuthorization.lastName,
+        travelDeskTravelRequest.travelAuthorization.user.lastName,
       department: travelDeskTravelRequest.travelAuthorization.department,
       branch: travelDeskTravelRequest.travelAuthorization.branch
         ? travelDeskTravelRequest.travelAuthorization.branch
