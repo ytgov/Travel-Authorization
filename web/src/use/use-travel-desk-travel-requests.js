@@ -55,9 +55,9 @@ export function useTravelDeskTravelRequests(options = ref({}), { skipWatchIf = (
   }
 
   watch(
-    () => unref(options),
-    async () => {
-      if (skipWatchIf()) return
+    () => [skipWatchIf(), unref(options)],
+    async ([skip]) => {
+      if (skip) return
 
       await fetch()
     },

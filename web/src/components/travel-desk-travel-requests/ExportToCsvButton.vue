@@ -15,6 +15,7 @@
 import { computed } from "vue"
 import { useStore } from "vue2-helpers/vuex"
 import { ExportToCsv } from "export-to-csv"
+import { isNil, isEmpty } from "lodash"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
@@ -35,7 +36,11 @@ const travelDeskTravelRequestsQuery = computed(() => {
   }
 })
 const { travelDeskTravelRequests, isLoading } = useTravelDeskTravelRequests(
-  travelDeskTravelRequestsQuery
+  travelDeskTravelRequestsQuery,
+  {
+    skipWatchIf: () =>
+      isNil(props.travelDeskTravelRequestIds) || isEmpty(props.travelDeskTravelRequestIds),
+  }
 )
 
 // TODO: move to back-end see https://github.com/icefoganalytics/internal-data-portal/blob/main/api/src/controllers/download/datasets-controller.ts
@@ -51,7 +56,7 @@ async function exportToCsv() {
       branch: travelDeskTravelRequest.travelAuthorization.branch
         ? travelDeskTravelRequest.travelAuthorization.branch
         : "",
-      travelStartDate: travelDeskTravelRequest.startDate.slice(0, 10),
+      travelStartDate: travelDeskTravelRequest.startDate?.slice(0, 10),
       travelEndDate: travelDeskTravelRequest.travelAuthorization.dateBackToWork?.slice(0, 10),
       location: getLocationName(travelDeskTravelRequest.travelAuthorization.stops),
       requested: getRequested(travelDeskTravelRequest),

@@ -22,6 +22,12 @@ export class TravelDeskTravelRequestsController extends BaseController {
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
+        include: [
+          {
+            association: "travelAuthorization",
+            include: ["stops"],
+          },
+        ],
       })
       return this.response.status(200).json({
         travelDeskTravelRequests,
