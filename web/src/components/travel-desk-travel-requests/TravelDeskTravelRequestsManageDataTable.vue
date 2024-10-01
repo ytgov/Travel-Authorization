@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex mb-4">
       <v-spacer />
-      <print-travel-desk-report
+      <PrintTravelDeskReport
         class="my-0 mr-4"
         :disabled="selectedRequests.length == 0"
         :travel-desk-requests="selectedRequests"
@@ -23,13 +23,13 @@
       v-model="selectedRequests"
       :headers="headers"
       :items="travelDeskRequests"
+      item-key="id"
       :sort-by="['bookedStatus', 'userTravel', 'startDate']"
       :sort-desc="[false, true, false]"
       :item-class="itemRowBackground"
       multi-sort
       :items-per-page="15"
       show-select
-      item-key="id"
     >
       <template #item.createdAt="{ item }">
         <div>
@@ -38,7 +38,11 @@
       </template>
 
       <template #item.fullname="{ item }">
-        {{ [item.legalFirstName, item.legalLastName].filter(Boolean).join(" ") || "Unknown" }}
+        {{
+          [item.travelAuthorization.user.firstName, item.travelAuthorization.user.lastName]
+            .filter(Boolean)
+            .join(" ") || "Unknown"
+        }}
       </template>
 
       <template #item.department="{ item }">
@@ -51,22 +55,27 @@
 
       <template #item.startDate="{ item }">
         <div>
-          {{ item.startDate | beautifyDate }}
+          {{ determineStartDate(item.travelAuthorization.travelSegments) }}
         </div>
       </template>
 
       <template #item.endDate="{ item }">
         <div>
-          {{ item.travelAuthorization.dateBackToWork | beautifyDate }}
+          {{
+            determineEndDate(
+              item.travelAuthorization.travelSegments,
+              item.travelAuthorization.dateBackToWork
+            )
+          }}
         </div>
       </template>
 
       <template #item.location="{ item }">
-        {{ getLocationName(item.travelAuthorization.stops) }}
+        {{ determineLocationsTraveled(item.travelAuthorization.travelSegments) }}
       </template>
 
       <template #item.requested="{ item }">
-        {{ getRequested(item) }}
+        {{ determineRequestedOptions(item) }}
       </template>
 
       <template #item.status="{ item, value }">
@@ -108,7 +117,7 @@
 <script setup>
 import { onMounted, ref } from "vue"
 import { useStore } from "vue2-helpers/vuex"
-import { isNil, isEmpty } from "lodash"
+import { isNil, isEmpty, first, last } from "lodash"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { TRAVEL_DESK_URL, USERS_URL } from "@/urls"
@@ -191,9 +200,8 @@ async function getTravelDeskRequests() {
       travelDeskRequest.userTravel =
         store.state.auth.fullName == travelDeskRequest.travelDeskOfficer ? 1 : 0
       travelDeskRequest.bookedStatus = travelDeskRequest.status == "booked" ? 1 : 0
-      travelDeskRequest.startDate = getStartDate(
-        travelDeskRequest.travelAuthorization.dateBackToWork,
-        travelDeskRequest.travelAuthorization.travelDuration
+      travelDeskRequest.startDate = determineStartDate(
+        travelDeskRequest.travelAuthorization.travelSegments
       )
     })
   } catch (error) {
@@ -201,30 +209,50 @@ async function getTravelDeskRequests() {
   }
 }
 
-function getStartDate(endDate, travelDuration) {
-  const startDate = new Date(endDate)
-  startDate.setDate(startDate.getDate() - 1 * Number(travelDuration))
-  return startDate.toISOString()
+function determineStartDate(travelSegments) {
+  const firstTravelSegment = first(travelSegments)
+  return firstTravelSegment.departureOn
 }
 
-function getLocationName(stops) {
-  const names = []
-  const destinations = store.state.traveldesk.destinations
-  for (const stop of stops) {
-    const location = destinations.filter((dest) => dest.value == stop.locationId)
-    if (location.length > 0) {
-      names.push(location[0].text)
-    }
+function determineEndDate(travelSegments, dateBackToWork) {
+  if (dateBackToWork) {
+    return dateBackToWork.slice(0, 10)
   }
-  return names.join(", ")
+
+  const lastTravelSegment = last(travelSegments)
+  return lastTravelSegment.departureOn
 }
 
-function getRequested(item) {
+function determineLocationsTraveled(travelSegments) {
+  const names = new Set()
+
+  for (const travelSegment of travelSegments) {
+    const { departureLocation, arrivalLocation } = travelSegment
+    const name = `${departureLocation.city} (${departureLocation.province})`
+    names.add(name)
+  }
+
+  return Array.from(names).join(", ")
+}
+
+function determineRequestedOptions(travelDeskTravelRequest) {
   const requested = []
-  if (item.flightRequests?.length > 0) requested.push("flight")
-  if (item.hotels?.length > 0) requested.push("hotel")
-  if (item.rentalCars?.length > 0) requested.push("rental car")
-  if (item.otherTransportations?.length > 0) requested.push("transportation")
+
+  if (!isEmpty(travelDeskTravelRequest.flightRequests)) {
+    requested.push("flight")
+  }
+
+  if (!isEmpty(travelDeskTravelRequest.hotels)) {
+    requested.push("hotel")
+  }
+
+  if (!isEmpty(travelDeskTravelRequest.rentalCars)) {
+    requested.push("rental car")
+  }
+
+  if (!isEmpty(travelDeskTravelRequest.otherTransportations)) {
+    requested.push("transportation")
+  }
 
   return requested.join(", ")
 }
