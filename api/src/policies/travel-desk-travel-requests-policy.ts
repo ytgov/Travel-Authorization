@@ -54,6 +54,7 @@ export class TravelDeskTravelRequestsPolicy extends PolicyFactory(TravelDeskTrav
     ]
   }
 
+  // CONSIDER: should draft records be hidden from non-creator?
   static policyScope(user: User): FindOptions<Attributes<TravelDeskTravelRequest>> {
     if (user.isAdmin) {
       return allRecordsScope
