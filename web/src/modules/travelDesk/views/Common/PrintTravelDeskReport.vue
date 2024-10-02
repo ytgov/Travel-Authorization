@@ -208,21 +208,26 @@ function initPrint() {
 function print() {
   const styles = [
     `@media print {
-        @page {
-          size: letter landscape !important;
-        }
-        div.form-footer {
-          position: fixed;
-          bottom: 0;
-          width: 100%;
-          display: inline-block;
-        }
-        .new-page {
-          page-break-before: always;
-          position: relative;
-          top: 8em;
-        }
-      }`,
+      @page {
+        size: letter landscape !important;
+      }
+      #pdf-page {
+        transform: scale(0.80); /* Adjust scale as needed */
+        transform-origin: top left;
+        width: 125%;
+      }
+      div.form-footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        display: inline-block;
+      }
+      .new-page {
+        page-break-before: always;
+        position: relative;
+        top: 8em;
+      }
+    }`,
     `https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css`,
     `thead th {
       font-size: 11pt !important;
