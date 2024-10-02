@@ -54,8 +54,8 @@ export class IndexSerializer extends BaseSerializer<TravelDeskTravelRequest> {
     const { firstName, lastName } = this.travelAuthorizationUser
     const userDisplayName = [firstName, lastName].filter(Boolean).join(" ") || "Unknown"
 
-    const department = this.travelAuthorization.department ?? ""
-    const branch = this.travelAuthorization.branch ?? ""
+    const department = this.travelAuthorizationUser.department ?? ""
+    const branch = this.travelAuthorizationUser.branch ?? ""
     const travelStartDate = this.determineStartDate(this.travelSegments)
     const travelEndDate = this.determineEndDate(
       this.travelSegments,
