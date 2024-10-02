@@ -1,4 +1,4 @@
-import { isNil, pick } from "lodash"
+import { pick } from "lodash"
 
 import { TravelDeskRentalCar, User } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"

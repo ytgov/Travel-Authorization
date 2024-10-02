@@ -47,6 +47,13 @@ export class PrefillFlightRequestsService extends BaseService {
       throw new Error(`Departure date not found for travel segment: ${travelSegment.id}`)
     }
 
+    let departureOnAsDate
+    if (departureOn instanceof Date) {
+      departureOnAsDate = departureOn
+    } else {
+      departureOnAsDate = DateTime.fromFormat(departureOn, "yyyy-LL-dd").toJSDate()
+    }
+
     const timePreference = this.determineTimePreference(departureTime)
 
     const travelDeskFlightRequest = await TravelDeskFlightRequests.CreateService.perform(
@@ -54,7 +61,7 @@ export class PrefillFlightRequestsService extends BaseService {
         travelRequestId: this.travelDeskTravelRequest.id,
         departLocation: departureLocation.city,
         arriveLocation: arrivalLocation.city,
-        datePreference: departureOn,
+        datePreference: departureOnAsDate,
         timePreference,
         seatPreference: TravelDeskFlightRequest.SeatPreferencesTypes.NO_PREFERENCE,
       },

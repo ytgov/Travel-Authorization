@@ -5,6 +5,7 @@ import { Path, deepPick } from "@/utils/deep-pick"
 
 export type Actions = "show" | "create" | "update" | "destroy"
 export const noRecordsScope = { where: literal("1 = 0") }
+export const allRecordsScope = {}
 
 /**
  * See api/src/policies/policy-factory.ts for policy with scope helpers

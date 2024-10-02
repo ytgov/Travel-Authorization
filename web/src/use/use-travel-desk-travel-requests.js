@@ -1,32 +1,43 @@
 import { reactive, toRefs, ref, unref, watch } from "vue"
 
-import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
+import travelDeskTravelRequestsApi, {
+  TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
+} from "@/api/travel-desk-travel-requests-api"
+
+export { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES }
 
 /**
- * TODO: add other fields
- * @typedef {Object} TravelDeskTravelRequest
- * @property {number} id
+ * @template [T=any]
+ * @typedef {import('vue').Ref<T>} Ref
  */
+/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestIndexView} TravelDeskTravelRequestIndexView */
+/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestWhereOptions} TravelDeskTravelRequestWhereOptions */
+/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestFiltersOptions} TravelDeskTravelRequestFiltersOptions */
 
 /**
- * Provides reactive state management for travelDeskTravelRequests with API integration.
+ * Provides reactive state management for travel allowances with API integration.
  *
- * @param {import('vue').Ref<{
- *   where?: { [key: string]: any },
- *   page?: number,
+ * @callback UseTravelDeskTravelRequests
+ * @param {Ref<{
+ *   where?: TravelDeskTravelRequestWhereOptions;
+ *   filters?: TravelDeskTravelRequestFiltersOptions;
+ *   page?: number;
  *   perPage?: number
- * }>} [options=ref({})] - Configuration options containing filters and pagination settings for fetching travelDeskTravelRequests.
- * @param {Object} [{ skipWatchIf = () => false }={}] - Configuration to conditionally skip API calls.
- * @param {Function} [skipWatchIf] - Function that returns a boolean to determine if fetching should be skipped.
+ * }>} [options=ref({})] - Configuration options containing filters and pagination settings for fetching travel allowances.
+ * @param {{
+ *  skipWatchIf?: () => boolean;
+ * }} [config={ skipWatchIf = () => false } = {}] - Configuration to conditionally skip API calls.
  * @returns {{
- *   travelDeskTravelRequests: import('vue').Ref<TravelDeskTravelRequest[]>,
- *   totalCount: import('vue').Ref<number>,
- *   isLoading: import('vue').Ref<boolean>,
- *   isErrored: import('vue').Ref<boolean>,
- *   fetch: () => Promise<TravelDeskTravelRequest[]>,
- *   refresh: () => Promise<TravelDeskTravelRequest[]>
+ *   travelDeskTravelRequests: Ref<TravelDeskTravelRequestIndexView[]>,
+ *   totalCount: Ref<number>,
+ *   isLoading: Ref<boolean>,
+ *   isErrored: Ref<boolean>,
+ *   fetch: () => Promise<TravelDeskTravelRequestIndexView[]>,
+ *   refresh: () => Promise<TravelDeskTravelRequestIndexView[]>
  * }}
  */
+
+/** @type {UseTravelDeskTravelRequests} */
 export function useTravelDeskTravelRequests(options = ref({}), { skipWatchIf = () => false } = {}) {
   const state = reactive({
     travelDeskTravelRequests: [],
@@ -55,9 +66,9 @@ export function useTravelDeskTravelRequests(options = ref({}), { skipWatchIf = (
   }
 
   watch(
-    () => unref(options),
-    async () => {
-      if (skipWatchIf()) return
+    () => [skipWatchIf(), unref(options)],
+    async ([skip]) => {
+      if (skip) return
 
       await fetch()
     },

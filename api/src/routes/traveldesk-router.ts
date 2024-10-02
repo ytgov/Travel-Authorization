@@ -39,7 +39,14 @@ travelDeskRouter.get("/", RequiresAuth, async function (_req: Request, res: Resp
       "rentalCars",
       {
         association: "travelAuthorization",
-        include: ["stops"],
+        include: [
+          "stops",
+          "user",
+          {
+            association: "travelSegments",
+            include: ["departureLocation", "arrivalLocation"],
+          },
+        ],
       },
       {
         association: "travelDeskPassengerNameRecordDocument",
