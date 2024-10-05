@@ -66,8 +66,43 @@ const SnackComponent = Vue.extend({
   },
 })
 
+/**
+ * @typedef {{
+ *   [key: string]: unknown;
+ *   color: string;
+ * }} SnackOptions
+ */
+
+/**
+ * @template [PreBakedOptions=any]
+ * @typedef {(message: string, options?: PreBakedOptions & SnackOptions) => void} SnackFunction
+ */
+
+/**
+ * @param {string} message
+ * @param {SnackOptions} [options] - Any Vuetify VSnackbar props
+ *
+ * @returns {SnackFunction & {
+ *   success: SnackFunction<{ color: "success"}>,
+ *   error: SnackFunction<{ color: "error"}>,
+ *   info: SnackFunction<{ color: "info"}>,
+ *   warning: SnackFunction<{ color: "warning"}>,
+ * }} A snack function with additional helper methods
+ *
+ * @example
+ * const snack = useSnack()
+ * snack("Hello world", { color: "success" })
+ *
+ * @example
+ * const snack = useSnack()
+ * snack.success("Hello world")
+ */
 export function useSnack(defaultOptions = { timeout: 4000 }) {
-  return (message, options = {}) => {
+  /**
+   * The main snack function
+   * @type {SnackFunction}
+   */
+  const snackFunction = (message, options = {}) => {
     const snackInstance = new SnackComponent({
       data: {
         options: {
@@ -87,6 +122,19 @@ export function useSnack(defaultOptions = { timeout: 4000 }) {
       throw new Error("Could not find app element.")
     }
   }
+
+  ;[
+    ["success", { color: "success" }],
+    ["error", { color: "error" }],
+    ["info", { color: "info" }],
+    ["warning", { color: "warning" }],
+  ].forEach(([helperMethod, preBakedOptions]) => {
+    snackFunction[helperMethod] = (message, options = {}) => {
+      snackFunction(message, { ...preBakedOptions, ...options })
+    }
+  })
+
+  return snackFunction
 }
 
 // NOTE: Requires Vuetify to work.

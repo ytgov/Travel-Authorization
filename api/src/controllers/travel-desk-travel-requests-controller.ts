@@ -1,18 +1,18 @@
-import { WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { TravelDeskTravelRequest } from "@/models"
 import { TravelDeskTravelRequestsPolicy } from "@/policies"
 import { UpdateService } from "@/services/travel-desk-travel-requests"
+import { IndexSerializer } from "@/serializers/travel-desk-travel-requests"
 
 import BaseController from "@/controllers/base-controller"
 
-export class TravelDeskTravelRequestsController extends BaseController {
+export class TravelDeskTravelRequestsController extends BaseController<TravelDeskTravelRequest> {
   async index() {
-    const where = this.query.where as WhereOptions<TravelDeskTravelRequest>
-
+    const where = this.buildWhere()
+    const scopes = this.buildFilterScopes()
     const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
-      TravelDeskTravelRequest,
+      scopes,
       this.currentUser
     )
 
@@ -22,9 +22,29 @@ export class TravelDeskTravelRequestsController extends BaseController {
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
+        include: [
+          "flightRequests",
+          "hotels",
+          "otherTransportations",
+          "rentalCars",
+          {
+            association: "travelAuthorization",
+            include: [
+              "user",
+              {
+                association: "travelSegments",
+                include: ["departureLocation", "arrivalLocation"],
+              },
+            ],
+          },
+        ],
       })
-      return this.response.status(200).json({
+      const serializedTravelDeskTravelRequests = IndexSerializer.perform(
         travelDeskTravelRequests,
+        this.currentUser
+      )
+      return this.response.status(200).json({
+        travelDeskTravelRequests: serializedTravelDeskTravelRequests,
         totalCount,
       })
     } catch (error) {

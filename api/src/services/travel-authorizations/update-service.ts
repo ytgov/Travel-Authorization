@@ -1,5 +1,5 @@
 import { CreationAttributes } from "sequelize"
-import { isEmpty } from "lodash"
+import { isEmpty, isUndefined } from "lodash"
 
 import db from "@/db/db-client"
 import BaseService from "@/services/base-service"
@@ -59,6 +59,10 @@ export class UpdateService extends BaseService {
   }
 
   isValidStopCount(attributes: Partial<TravelAuthorization>, stops: Partial<Stop>[]): boolean {
+    if (isUndefined(attributes.oneWayTrip) && isUndefined(attributes.multiStop) && isEmpty(stops)) {
+      return true
+    }
+
     if (attributes.oneWayTrip) {
       return stops.length === 2
     } else if (attributes.multiStop) {

@@ -74,7 +74,7 @@ import { useTravelAuthorization } from "@/use/use-travel-authorization"
 import { useGeneralLedgerCodings } from "@/use/use-general-ledger-codings"
 import { useExpenses, TYPES, EXPENSE_TYPES } from "@/use/use-expenses"
 
-import SearchableUserEmailCombobox from "@/components/SearchableUserEmailCombobox"
+import SearchableUserEmailCombobox from "@/components/users/UserEmailSearchableCombobox.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
