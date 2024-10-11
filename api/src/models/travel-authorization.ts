@@ -79,7 +79,7 @@ export class TravelAuthorization extends Model<
   declare email: string | null
   declare mailcode: string | null
   declare daysOffTravelStatus: number | null
-  declare dateBackToWork: Date | null
+  declare dateBackToWork: Date | string | null // DATEONLY accepts Date or string, but returns string
   declare travelDuration: number | null
   declare travelAdvance: number | null
   declare eventName: string | null

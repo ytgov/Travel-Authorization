@@ -47,7 +47,7 @@ export class TravelDeskOtherTransportation extends Model<
   declare depart: string
   declare arrive: string
   declare transportationType: string
-  declare date: Date
+  declare date: Date | string // DATEONLY accepts Date or string, but returns string
   declare additionalNotes: CreationOptional<string | null>
   declare status: string
   // NOTE: reserved_transportation_info, and booking do not appear to be used in the codebase.
