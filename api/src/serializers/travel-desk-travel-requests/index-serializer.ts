@@ -59,7 +59,7 @@ export class IndexSerializer extends BaseSerializer<TravelDeskTravelRequest> {
     const travelStartDate = this.determineStartDate(this.travelSegments)
     const travelEndDate = this.determineEndDate(
       this.travelSegments,
-      this.travelAuthorization.dateBackToWork
+      this.travelAuthorization.dateBackToWorkAsString
     )
     const locationsTraveled = this.determineLocationsTraveled(this.travelSegments)
     const requestedOptions = this.determineRequestedOptions(this.record)
@@ -147,9 +147,9 @@ export class IndexSerializer extends BaseSerializer<TravelDeskTravelRequest> {
     return departureOnAsString
   }
 
-  private determineEndDate(travelSegments: TravelSegment[], dateBackToWork: Date | null): string {
+  private determineEndDate(travelSegments: TravelSegment[], dateBackToWork: string | null): string {
     if (!isNil(dateBackToWork)) {
-      return dateBackToWork.toISOString().slice(0, 10)
+      return dateBackToWork
     }
 
     const lastTravelSegment = last(travelSegments)
