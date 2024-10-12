@@ -21,6 +21,7 @@ import {
   Model,
   NonAttribute,
 } from "sequelize"
+import { DateTime } from "luxon"
 
 import sequelize from "@/db/db-client"
 
@@ -79,7 +80,7 @@ export class TravelAuthorization extends Model<
   declare email: string | null
   declare mailcode: string | null
   declare daysOffTravelStatus: number | null
-  declare dateBackToWork: Date | null
+  declare dateBackToWork: Date | string | null // DATEONLY accepts Date or string, but returns string
   declare travelDuration: number | null
   declare travelAdvance: number | null
   declare eventName: string | null
@@ -97,6 +98,15 @@ export class TravelAuthorization extends Model<
   declare allTravelWithinTerritory: boolean | null
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
+
+  // Magic methods
+  get dateBackToWorkAsString(): NonAttribute<string | null> {
+    if (this.dateBackToWork instanceof Date) {
+      return DateTime.fromJSDate(this.dateBackToWork).toFormat("yyyy-LL-dd")
+    }
+
+    return this.dateBackToWork
+  }
 
   // Associations
   // https://sequelize.org/docs/v6/other-topics/typescript/#usage

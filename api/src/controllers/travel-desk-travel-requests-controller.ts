@@ -1,5 +1,6 @@
 import { isNil } from "lodash"
 
+import logger from "@/utils/logger"
 import { TravelDeskTravelRequest } from "@/models"
 import { TravelDeskTravelRequestsPolicy } from "@/policies"
 import { UpdateService } from "@/services/travel-desk-travel-requests"
@@ -48,8 +49,9 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
         totalCount,
       })
     } catch (error) {
+      logger.error(`Failed to retrieve travel desk requests: ${error}`, { error })
       return this.response
-        .status(500)
+        .status(400)
         .json({ message: `Failed to retrieve travel desk requests: ${error}` })
     }
   }

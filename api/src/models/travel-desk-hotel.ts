@@ -38,8 +38,8 @@ export class TravelDeskHotel extends Model<
   declare isDedicatedConferenceHotelAvailable: boolean
   declare conferenceName: string
   declare conferenceHotelName: string
-  declare checkIn: Date
-  declare checkOut: Date
+  declare checkIn: Date | string // DATEONLY accepts Date or string, but returns string
+  declare checkOut: Date | string // DATEONLY accepts Date or string, but returns string
   declare additionalInformation: CreationOptional<string | null>
   declare status: string
   declare reservedHotelInfo: CreationOptional<string | null>

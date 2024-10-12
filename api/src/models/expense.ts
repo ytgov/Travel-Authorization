@@ -40,7 +40,7 @@ export class Expense extends Model<InferAttributes<Expense>, InferCreationAttrib
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare description: string
-  declare date: Date | null
+  declare date: Date | string | null // DATEONLY accepts Date or string, but returns string
   declare cost: number
   declare currency: string
   declare type: Types
