@@ -43,13 +43,13 @@
         <v-card-text v-if="!loadingData">
           <v-row class="mb-3">
             <v-col cols="8">
-              <traveler-details
+              <TravelerDetails
                 :traveler-details="travelRequest"
                 :traveler-state="state"
                 :readonly="readonly"
               />
 
-              <title-card
+              <TitleCard
                 class="mt-10"
                 large-title
               >
@@ -61,7 +61,7 @@
                     v-if="!readonly"
                     class="mt-n2 mb-n9 mr-5"
                   >
-                    <travel-port-modal
+                    <TravelPortModal
                       :flight-requests="travelRequest.flightRequests"
                       :travel-desk-travel-request-id="travelDetail.id"
                       class="my-1 ml-auto"
@@ -78,7 +78,7 @@
                           cols="9"
                           class="my-0 mx-0 py-4"
                         >
-                          <flight-request-table
+                          <FlightRequestTable
                             :key="flightKey"
                             class="mr-n5 mt-n1"
                             :readonly="readonly"
@@ -109,22 +109,22 @@
                       </v-row>
                     </template>
                   </title-card>
-                  <rental-car-request-table
+                  <RentalCarRequestTable
                     :readonly="readonly"
                     :flight-requests="travelRequest.flightRequests"
                     :rental-cars="travelRequest.rentalCars"
                   />
-                  <hotel-request-table
+                  <HotelRequestTable
                     :readonly="readonly"
                     :flight-requests="travelRequest.flightRequests"
                     :hotels="travelRequest.hotels"
                   />
-                  <transportation-request-table
+                  <TransportationRequestTable
                     :readonly="readonly"
                     :other-transportations="travelRequest.otherTransportations"
                   />
                 </template>
-              </title-card>
+              </TitleCard>
             </v-col>
             <v-col cols="4">
               <v-row class="mt-3 mb-0 mx-0">
@@ -153,7 +153,7 @@
                 v-if="travelRequest.invoiceNumber"
                 class="mx-0 mb-5 mt-n6"
               >
-                <title-card
+                <TitleCard
                   class="mt-10 mx-4"
                   style="width: 100%"
                 >
@@ -178,7 +178,7 @@
                       </v-btn>
                     </v-row>
                   </template>
-                </title-card>
+                </TitleCard>
               </v-row>
               <QuestionsTable
                 :readonly="readonly"
@@ -197,7 +197,7 @@
           >
             <div>Close</div>
           </v-btn>
-          <itinerary-modal
+          <ItineraryModal
             v-if="travelRequest.invoiceNumber"
             class="ml-auto mr-3"
             :invoice-number="travelRequest.invoiceNumber"
