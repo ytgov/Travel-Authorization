@@ -34,7 +34,7 @@ export class Stop extends Model<InferAttributes<Stop>, InferCreationAttributes<S
   declare id: CreationOptional<number>
   declare travelAuthorizationId: ForeignKey<TravelAuthorization["id"]>
   declare locationId: ForeignKey<Location["id"]>
-  declare departureDate: Date | null
+  declare departureDate: Date | string | null // DATEONLY accepts Date or string, but returns string
   declare departureTime: string | null
   declare transport: string | null
   declare accommodationType: string | null
