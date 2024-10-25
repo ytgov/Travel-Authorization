@@ -4,23 +4,6 @@
       v-model="addNewTravelDialog"
       persistent
     >
-      <template #activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          v-bind="attrs"
-          @click="initForm"
-          v-on="on"
-        >
-          Edit
-          <v-icon
-            right
-            dark
-          >
-            mdi-pencil
-          </v-icon>
-        </v-btn>
-      </template>
-
       <v-card>
         <v-card-title class="primary">
           <div class="text-h5">Travel Desk Request</div>
@@ -52,7 +35,7 @@
                   >
                     <TravelPortModal
                       :flight-requests="travelDeskTravelRequest.flightRequests"
-                      :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                      :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                       class="my-1 ml-auto"
                       @close="flightKey++"
                     />
@@ -71,7 +54,7 @@
                             :key="flightKey"
                             class="mr-n5 mt-n1"
                             :readonly="readonly"
-                            :travel-desk-travel-request-id="travelDeskTravelRequestId"
+                            :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                             show-flight-options
                             travel-desk-user
                             :flight-requests="travelDeskTravelRequest.flightRequests"
@@ -186,7 +169,7 @@
           <v-btn
             color="grey darken-5"
             class="px-5"
-            @click="closeDialog"
+            @click="close"
           >
             <div>Close</div>
           </v-btn>
@@ -268,7 +251,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, watch } from "vue"
 import { useStore } from "vue2-helpers/vuex"
 import { cloneDeep, isNil } from "lodash"
 
@@ -278,7 +261,7 @@ import http from "@/api/http-client"
 import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
 
 import useCurrentUser from "@/use/use-current-user"
-import useRouteQuery from "@/use/use-route-query"
+import useRouteQuery, { integerTransformer } from "@/use/use-route-query"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
@@ -294,13 +277,6 @@ import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/Itine
 
 import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
 
-const props = defineProps({
-  travelDeskTravelRequestId: {
-    type: Number,
-    required: true,
-  },
-})
-
 const emit = defineEmits({
   close: null,
 })
@@ -308,9 +284,10 @@ const emit = defineEmits({
 const snack = useSnack()
 const { currentUser } = useCurrentUser()
 
-const addNewTravelDialog = useRouteQuery("addNewTravelDialog", false, {
+const addNewTravelDialog = ref(false)
+const travelDeskTravelRequestId = useRouteQuery("showEditTravelDeskRequest", null, {
   mode: "push",
-  transform: Boolean,
+  transform: integerTransformer,
 })
 const confirmBookingDialog = useRouteQuery("confirmBookingDialog", false, {
   transform: Boolean,
@@ -326,24 +303,24 @@ const isLoading = ref(false)
 
 const store = useStore()
 const travelDeskAgentList = computed(() =>
-  store.state.traveldesk.travelDeskUsers.map(({ first_name, last_name }) =>
-    [first_name, last_name].join(" ")
+  store.state.traveldesk.travelDeskUsers.map(({ firstName, lastName }) =>
+    [firstName, lastName].join(" ")
   )
 )
 
 async function initForm() {
   travelDeskTravelRequest.value = await fetchTravelDeskTravelRequest(
-    props.travelDeskTravelRequestId
+    travelDeskTravelRequestId.value
   )
 
   if (isNil(travelDeskTravelRequest.value)) {
     snack.error("Failed to load travel request.")
-    closeDialog()
+    close()
     return
   }
 
   if (isNil(travelDeskTravelRequest.value.travelDeskOfficer)) {
-    travelDeskTravelRequest.value.travelDeskOfficer = currentUser.value.fullName
+    travelDeskTravelRequest.value.travelDeskOfficer = currentUser.value.displayName
   }
 
   travelDeskTravelRequest.value.internationalTravel =
@@ -384,7 +361,7 @@ async function saveNewTravelRequest(saveType, { close = false, refresh = false }
 
   savingData.value = true
   try {
-    await http.post(`${TRAVEL_DESK_URL}/travel-request/${props.travelDeskTravelRequestId}`, body)
+    await http.post(`${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId.value}`, body)
 
     snack.success("Travel request saved.", {
       color: "success",
@@ -393,7 +370,7 @@ async function saveNewTravelRequest(saveType, { close = false, refresh = false }
     confirmBookingDialog.value = false
 
     if (close) {
-      closeDialog()
+      close()
     }
 
     if (refresh) {
@@ -411,7 +388,7 @@ async function downloadPdf() {
   savingData.value = true
   try {
     const { data } = await http.get(
-      `${TRAVEL_DESK_URL}/pnr-document/${props.travelDeskTravelRequestId}`,
+      `${TRAVEL_DESK_URL}/pnr-document/${travelDeskTravelRequestId.value}`,
       {
         responseType: "application/pdf",
         headers: {
@@ -434,10 +411,33 @@ async function downloadPdf() {
   }
 }
 
-function closeDialog() {
-  addNewTravelDialog.value = false
-  emit("closed")
+watch(
+  travelDeskTravelRequestId,
+  (newTravelDeskTravelRequestId) => {
+    if (isNil(newTravelDeskTravelRequestId)) {
+      addNewTravelDialog.value = false
+      emit("close")
+    } else {
+      addNewTravelDialog.value = true
+      initForm()
+    }
+  },
+  {
+    immediate: true,
+  }
+)
+
+function open(newTravelDeskTravelRequestId) {
+  travelDeskTravelRequestId.value = newTravelDeskTravelRequestId
 }
+
+function close() {
+  travelDeskTravelRequestId.value = null
+}
+
+defineExpose({
+  open,
+})
 </script>
 
 <style scoped></style>
