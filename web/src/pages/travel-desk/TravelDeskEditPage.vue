@@ -179,7 +179,7 @@
         :travel-request="travelDeskTravelRequest"
         :class="travelDeskTravelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
         @saveData="saveNewTravelRequest('save')"
-        @close="initForm"
+        @close="refresh"
       />
       <v-btn
         v-if="!readonly"
@@ -199,7 +199,7 @@
       </v-btn>
 
       <v-btn
-        v-if="true || (!readonly && travelDeskTravelRequest.invoiceNumber)"
+        v-if="!readonly && travelDeskTravelRequest.invoiceNumber"
         class="mr-5 px-5"
         color="#005A65"
         :loading="savingData"
@@ -210,7 +210,7 @@
 
     <TravelDeskTravelRequestConfirmBookingDialog
       ref="confirmBookingDialog"
-      @booked="fetchTravelDeskTravelRequest"
+      @booked="refresh"
     />
   </v-card>
 </template>
@@ -278,7 +278,7 @@ watch(
       addNewTravelDialog.value = false
     } else {
       addNewTravelDialog.value = true
-      initForm()
+      refresh()
     }
   },
   {
@@ -286,15 +286,10 @@ watch(
   }
 )
 
-async function initForm() {
+async function refresh() {
   travelDeskTravelRequest.value = await fetchTravelDeskTravelRequest(
     props.travelDeskTravelRequestId
   )
-
-  if (isNil(travelDeskTravelRequest.value)) {
-    snack.error("Failed to load travel request.")
-    return
-  }
 
   if (isNil(travelDeskTravelRequest.value.travelDeskOfficer)) {
     travelDeskTravelRequest.value.travelDeskOfficer = currentUser.value.displayName
@@ -310,6 +305,11 @@ async function fetchTravelDeskTravelRequest(travelDeskTravelRequestId) {
     const { data } = await http.get(
       `${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId}`
     )
+
+    if (isNil(data)) {
+      snack.error("Failed to load travel request.")
+      return
+    }
     return data
   } catch (error) {
     console.log(error)
@@ -351,6 +351,8 @@ async function saveNewTravelRequest(saveType, { returnToTravelDeskPageAfter = fa
       return router.push({
         name: "TravelDeskPage",
       })
+    } else {
+      refresh()
     }
   } catch (error) {
     console.error(error)

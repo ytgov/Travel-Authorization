@@ -23,10 +23,9 @@
           <div>Cancel</div>
         </v-btn>
         <v-btn
-          v-if="!readonly"
           class="mr-0 ml-auto px-5"
           color="#005A65"
-          :loading="savingData"
+          :loading="isSaving"
           @click="bookTravelRequest"
           >Confirm
         </v-btn>
@@ -36,7 +35,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue"
+import { ref, watch } from "vue"
 import { cloneDeep, isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
@@ -56,26 +55,11 @@ const travelDeskTravelRequestId = useRouteQuery("showConfirmBooking", null, {
 })
 
 const travelDeskTravelRequest = ref(null)
-const readonly = computed(
-  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
-)
 
 const isLoading = ref(false)
-const savingData = ref(false)
+const isSaving = ref(false)
 
 const snack = useSnack()
-
-async function initForm() {
-  travelDeskTravelRequest.value = await fetchTravelDeskTravelRequest(
-    travelDeskTravelRequestId.value
-  )
-
-  if (isNil(travelDeskTravelRequest.value)) {
-    snack.error("Failed to load travel request.")
-    close()
-    return
-  }
-}
 
 async function fetchTravelDeskTravelRequest(travelDeskTravelRequestId) {
   isLoading.value = true
@@ -83,6 +67,7 @@ async function fetchTravelDeskTravelRequest(travelDeskTravelRequestId) {
     const { data } = await http.get(
       `${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId}`
     )
+    travelDeskTravelRequest.value = data
     return data
   } catch (error) {
     console.log(error)
@@ -103,16 +88,17 @@ async function bookTravelRequest() {
   // TODO: move status updates to state specific endpoints
   body.status = TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
 
-  savingData.value = true
+  isSaving.value = true
   try {
-    await http.post(`${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId.value}`, body)
+    await http.post(`${TRAVEL_DESK_URL}/travel-request/${body.id}`, body)
     snack.success("Travel request saved.")
     emit("booked")
+    close()
   } catch (error) {
     console.error(error)
     snack.error(`Failed to save travel request: ${error}`)
   } finally {
-    savingData.value = false
+    isSaving.value = false
   }
 }
 
@@ -123,7 +109,7 @@ watch(
       confirmBookingDialog.value = false
     } else {
       confirmBookingDialog.value = true
-      initForm()
+      fetchTravelDeskTravelRequest(newTravelDeskTravelRequestId)
     }
   },
   {
