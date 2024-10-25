@@ -106,9 +106,8 @@
       <template #item.edit="{ item }">
         <ProcessTravelDeskRequest
           class="pr-2"
-          :type="item.status == 'booked' ? 'booked' : 'edit'"
-          :travel-detail="item"
-          @update-table="getTravelDeskRequests"
+          :travel-desk-travel-request-id="item.id"
+          @closed="getTravelDeskRequests"
         />
       </template>
     </v-data-table>
