@@ -1,10 +1,11 @@
 <template>
   <v-dialog
     v-model="confirmBookingDialog"
-    persistent
-    width="30%"
+    width="500"
+    @keydown.esc="close"
+    @click:outside="close"
   >
-    <v-card :loading="isLoading">
+    <v-card>
       <v-card-title class="warning">
         <div class="text-h5">Confirm Booking is Complete</div>
       </v-card-title>
@@ -25,7 +26,7 @@
         <v-btn
           class="mr-0 ml-auto px-5"
           color="#005A65"
-          :loading="isSaving"
+          :loading="isLoading"
           @click="bookTravelRequest"
           >Confirm
         </v-btn>
@@ -36,12 +37,10 @@
 
 <script setup>
 import { ref, watch } from "vue"
-import { cloneDeep, isNil } from "lodash"
+import { isNil } from "lodash"
 
-import { TRAVEL_DESK_URL } from "@/urls"
 import { useSnack } from "@/plugins/snack-plugin"
-import http from "@/api/http-client"
-import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
+import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
 import useRouteQuery, { integerTransformer } from "@/use/use-route-query"
 
 const emit = defineEmits({
@@ -49,56 +48,26 @@ const emit = defineEmits({
 })
 
 const confirmBookingDialog = ref(false)
+const isLoading = ref(false)
 const travelDeskTravelRequestId = useRouteQuery("showConfirmBooking", null, {
   mode: "push",
   transform: integerTransformer,
 })
 
-const travelDeskTravelRequest = ref(null)
-
-const isLoading = ref(false)
-const isSaving = ref(false)
-
 const snack = useSnack()
 
-async function fetchTravelDeskTravelRequest(travelDeskTravelRequestId) {
+async function bookTravelRequest() {
   isLoading.value = true
   try {
-    const { data } = await http.get(
-      `${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId}`
-    )
-    travelDeskTravelRequest.value = data
-    return data
-  } catch (error) {
-    console.log(error)
-    snack.error(`Failed to load travel request: ${error}`)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-async function bookTravelRequest() {
-  const body = cloneDeep(travelDeskTravelRequest.value)
-  delete body.internationalTravel
-  delete body.differentTravelContact
-  delete body.office
-  delete body.department
-  delete body.fullName
-
-  // TODO: move status updates to state specific endpoints
-  body.status = TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
-
-  isSaving.value = true
-  try {
-    await http.post(`${TRAVEL_DESK_URL}/travel-request/${body.id}`, body)
-    snack.success("Travel request saved.")
+    await travelDeskTravelRequestsApi.book(travelDeskTravelRequestId.value)
+    snack.success("Travel request booked.")
     emit("booked")
     close()
   } catch (error) {
     console.error(error)
-    snack.error(`Failed to save travel request: ${error}`)
+    snack.error(`Failed to book travel request: ${error}`)
   } finally {
-    isSaving.value = false
+    isLoading.value = false
   }
 }
 
@@ -109,7 +78,6 @@ watch(
       confirmBookingDialog.value = false
     } else {
       confirmBookingDialog.value = true
-      fetchTravelDeskTravelRequest(newTravelDeskTravelRequestId)
     }
   },
   {
