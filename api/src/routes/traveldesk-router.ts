@@ -61,8 +61,6 @@ travelDeskRouter.get("/", RequiresAuth, async function (_req: Request, res: Resp
   for (const travelRequest of travelRequestsJson) {
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
-    // @ts-expect-error - not worth fixing at this time, belongs in a serializer
-    delete travelRequest.travelAuthorization
 
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.invoiceNumber =
@@ -108,8 +106,6 @@ travelDeskRouter.get(
 
         // @ts-expect-error - isn't worth fixing at this time
         form.travelRequest = form.travelDeskTravelRequest
-        // @ts-expect-error - this code is deprecated so not worth fixing the type issues
-        delete form.travelDeskTravelRequest
 
         // @ts-expect-error - isn't worth fixing at this time
         const travelDeskTravelRequestId = form.travelRequest?.id
@@ -491,9 +487,6 @@ travelDeskRouter.get(
     travelRequestJson.invoiceNumber =
       // @ts-expect-error - not worth fixing at this time
       travelRequestJson.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
-
-    // @ts-expect-error - not worth fixing at this time
-    delete travelRequestJson.travelDeskPassengerNameRecordDocument
 
     res.status(200).json(travelRequestJson)
   }
