@@ -402,8 +402,16 @@ useBreadcrumbs([
       name: "TravelDeskPage",
     },
   },
+  // TODO: Replace with read-only route once that exists.
   {
-    text: "Travel Desk Request",
+    text: "Request",
+    to: {
+      name: "TravelDeskEditPage",
+      params: { travelDeskTravelRequestId: props.travelDeskTravelRequestId },
+    },
+  },
+  {
+    text: "Edit",
     to: {
       name: "TravelDeskEditPage",
       params: { travelDeskTravelRequestId: props.travelDeskTravelRequestId },
