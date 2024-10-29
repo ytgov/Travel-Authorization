@@ -13,7 +13,8 @@ class PullRequestEditor
 
     pull_request_body = fetch_pull_request_body(repo, pull_request_number)
 
-    tmp_dir = File.join(Dir.home, "tmp")
+    app_root = File.expand_path(File.join(File.dirname(__FILE__), ".."))
+    tmp_dir = File.join(app_root, "tmp")
     Dir.mkdir(tmp_dir) unless Dir.exist?(tmp_dir)
 
     Tempfile.create(["pull_request_description_#{pull_request_number}", ".md"], tmp_dir) do |file|

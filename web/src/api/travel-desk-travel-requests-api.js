@@ -137,6 +137,20 @@ export const travelDeskTravelRequestsApi = {
     )
     return data
   },
+  /**
+   * @param {number} travelDeskTravelRequestId
+   * @param {Partial<TravelDeskTravelRequest>} attributes
+   * @returns {Promise<{
+  *   travelDeskTravelRequest: TravelDeskTravelRequest;
+  * }>}
+  */
+  async book(travelDeskTravelRequestId, attributes) {
+    const { data } = await http.post(
+      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/book`,
+      attributes
+    )
+    return data
+  }
 }
 
 export default travelDeskTravelRequestsApi

@@ -8,7 +8,7 @@
         class="mb-5"
         color="primary"
       ></v-progress-circular>
-      <h1>{{ message }}</h1>
+      <h1 class="text-center">{{ message }}</h1>
     </div>
   </div>
 </template>

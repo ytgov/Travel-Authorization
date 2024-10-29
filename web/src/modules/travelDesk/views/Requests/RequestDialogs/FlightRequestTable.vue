@@ -28,7 +28,7 @@
           :headers="flightHeaders"
           :items="flightRequests"
           :expanded.sync="expanded"
-          :show-expand="false"
+          :show-expand="showFlightOptions"
           hide-default-footer
           class="elevation-1"
         >
@@ -134,6 +134,7 @@ export default {
   data() {
     return {
       flightHeaders: [
+        { text: "", value: "data-table-expand", class: "blue-grey lighten-4" },
         {
           text: "Depart Location",
           value: "departLocation",

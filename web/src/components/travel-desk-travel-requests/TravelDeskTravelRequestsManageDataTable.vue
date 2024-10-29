@@ -1,118 +1,128 @@
 <template>
-  <div>
-    <div class="d-flex mb-4">
-      <v-spacer />
-      <PrintTravelDeskReport
-        :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"
-        :activator-props="{
-          class: 'my-0 mr-4',
-          color: 'primary',
-          disabled: isNil(selectedRequests) || isEmpty(selectedRequests),
-        }"
-      />
-      <ExportToCsvButton
-        :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"
-        :disabled="isNil(selectedRequests) || isEmpty(selectedRequests)"
-        class="my-0"
-        color="primary"
-      >
-        Export To Excel
-      </ExportToCsvButton>
-    </div>
-
-    <v-data-table
-      v-model="selectedRequests"
-      :headers="headers"
-      :items="travelDeskRequests"
-      item-key="id"
-      :sort-by="['bookedStatus', 'userTravel', 'startDate']"
-      :sort-desc="[false, true, false]"
-      :item-class="itemRowBackground"
-      multi-sort
-      :items-per-page="15"
-      show-select
-    >
-      <template #item.createdAt="{ item }">
-        <div>
-          {{ item.createdAt | beautifyDate }}
-        </div>
-      </template>
-
-      <template #item.fullname="{ item }">
-        {{
-          [item.travelAuthorization.user.firstName, item.travelAuthorization.user.lastName]
-            .filter(Boolean)
-            .join(" ") || "Unknown"
-        }}
-      </template>
-
-      <template #item.department="{ item }">
-        {{ item.travelAuthorization.user.department }}
-      </template>
-
-      <template #item.branch="{ item }">
-        {{ item.travelAuthorization.user.branch }}
-      </template>
-
-      <template #item.startDate="{ item }">
-        <div>
-          {{ determineStartDate(item.travelAuthorization.travelSegments) }}
-        </div>
-      </template>
-
-      <template #item.endDate="{ item }">
-        <div>
-          {{
-            determineEndDate(
-              item.travelAuthorization.travelSegments,
-              item.travelAuthorization.dateBackToWork
-            )
-          }}
-        </div>
-      </template>
-
-      <template #item.location="{ item }">
-        {{ determineLocationsTraveled(item.travelAuthorization.travelSegments) }}
-      </template>
-
-      <template #item.requested="{ item }">
-        {{ determineRequestedOptions(item) }}
-      </template>
-
-      <template #item.status="{ item, value }">
-        <div v-if="value == 'submitted' && !item.travelDeskOfficer">
-          Not started <v-icon class="red--text">mdi-flag</v-icon>
-        </div>
-        <div v-else>
-          {{ t(`travel_desk_travel_request.status.${value}`, { $default: value }) }}
-          <v-icon
-            v-if="value == 'submitted'"
-            class="red--text"
-            >mdi-flag</v-icon
-          >
-          <v-icon
-            v-if="value == 'options_ranked'"
-            class="yellow--text"
-            >mdi-flag</v-icon
-          >
-          <v-icon
-            v-else-if="value == 'booked'"
-            class="green--text"
-            >mdi-checkbox-marked</v-icon
-          >
-        </div>
-      </template>
-
-      <template #item.edit="{ item }">
-        <ProcessTravelDeskRequest
-          class="pr-2"
-          :type="item.status == 'booked' ? 'booked' : 'edit'"
-          :travel-detail="item"
-          @update-table="getTravelDeskRequests"
+  <v-data-table
+    v-model="selectedRequests"
+    :headers="headers"
+    :items="travelDeskRequests"
+    item-key="id"
+    :sort-by="['bookedStatus', 'userTravel', 'startDate']"
+    :sort-desc="[false, true, false]"
+    :item-class="itemRowBackground"
+    multi-sort
+    :items-per-page="15"
+    show-select
+  >
+    <template #top>
+      <div class="d-flex mb-4">
+        <v-spacer />
+        <PrintTravelDeskReport
+          :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"
+          :activator-props="{
+            class: 'my-0 mr-4',
+            color: 'primary',
+            disabled: isNil(selectedRequests) || isEmpty(selectedRequests),
+          }"
         />
-      </template>
-    </v-data-table>
-  </div>
+        <ExportToCsvButton
+          :travel-desk-travel-request-ids="selectedRequests.map((request) => request.id)"
+          :disabled="isNil(selectedRequests) || isEmpty(selectedRequests)"
+          class="my-0"
+          color="primary"
+        >
+          Export To Excel
+        </ExportToCsvButton>
+      </div>
+    </template>
+    <template #item.createdAt="{ item }">
+      <div>
+        {{ item.createdAt | beautifyDate }}
+      </div>
+    </template>
+
+    <template #item.fullname="{ item }">
+      {{
+        [item.travelAuthorization.user.firstName, item.travelAuthorization.user.lastName]
+          .filter(Boolean)
+          .join(" ") || "Unknown"
+      }}
+    </template>
+
+    <template #item.department="{ item }">
+      {{ item.travelAuthorization.user.department }}
+    </template>
+
+    <template #item.branch="{ item }">
+      {{ item.travelAuthorization.user.branch }}
+    </template>
+
+    <template #item.startDate="{ item }">
+      <div>
+        {{ determineStartDate(item.travelAuthorization.travelSegments) }}
+      </div>
+    </template>
+
+    <template #item.endDate="{ item }">
+      <div>
+        {{
+          determineEndDate(
+            item.travelAuthorization.travelSegments,
+            item.travelAuthorization.dateBackToWork
+          )
+        }}
+      </div>
+    </template>
+
+    <template #item.location="{ item }">
+      {{ determineLocationsTraveled(item.travelAuthorization.travelSegments) }}
+    </template>
+
+    <template #item.requested="{ item }">
+      {{ determineRequestedOptions(item) }}
+    </template>
+
+    <template #item.status="{ item, value }">
+      <div v-if="value == 'submitted' && !item.travelDeskOfficer">
+        Not started <v-icon class="red--text">mdi-flag</v-icon>
+      </div>
+      <div v-else>
+        {{ t(`travel_desk_travel_request.status.${value}`, { $default: value }) }}
+        <v-icon
+          v-if="value == 'submitted'"
+          class="red--text"
+          >mdi-flag</v-icon
+        >
+        <v-icon
+          v-if="value == 'options_ranked'"
+          class="yellow--text"
+          >mdi-flag</v-icon
+        >
+        <v-icon
+          v-else-if="value == 'booked'"
+          class="green--text"
+          >mdi-checkbox-marked</v-icon
+        >
+      </div>
+    </template>
+
+    <template #item.edit="{ item }">
+      <v-btn
+        color="primary"
+        :to="{
+          name: 'TravelDeskEditPage',
+          params: {
+            travelDeskTravelRequestId: item.id,
+          },
+        }"
+      >
+        <v-icon
+          left
+          dark
+        >
+          mdi-pencil
+        </v-icon>
+        Edit
+      </v-btn>
+    </template>
+  </v-data-table>
 </template>
 
 <script setup>
@@ -126,7 +136,6 @@ import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
 import ExportToCsvButton from "@/components/travel-desk-travel-requests/ExportToCsvButton.vue"
-import ProcessTravelDeskRequest from "@/modules/travelDesk/views/Desk/ProcessTravelDeskRequest.vue"
 import PrintTravelDeskReport from "@/modules/travelDesk/views/Common/PrintTravelDeskReport.vue"
 
 const { t } = useI18n()

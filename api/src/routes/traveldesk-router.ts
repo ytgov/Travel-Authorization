@@ -1,6 +1,7 @@
 import { isNil, isNull, minBy } from "lodash"
 import express, { Request, Response } from "express"
 import { CreationAttributes, Op, WhereOptions } from "sequelize"
+import { DateTime } from "luxon"
 
 import logger from "@/utils/logger"
 import { RequiresAuth, RequiresRoleTdUser } from "@/middleware"
@@ -55,17 +56,19 @@ travelDeskRouter.get("/", RequiresAuth, async function (_req: Request, res: Resp
     ],
   })
 
-  for (const travelRequest of travelRequests) {
+  const travelRequestsJson = travelRequests.map((travelRequest) => travelRequest.toJSON())
+
+  for (const travelRequest of travelRequestsJson) {
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.form = travelRequest.travelAuthorization
-    delete travelRequest.travelAuthorization
 
     // @ts-expect-error - not worth fixing at this time, belongs in a serializer
     travelRequest.invoiceNumber =
+      // @ts-expect-error - not worth fixing at this time, belongs in a serializer
       travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
   }
 
-  res.status(200).json(travelRequests)
+  res.status(200).json(travelRequestsJson)
 })
 
 travelDeskRouter.get(
@@ -86,11 +89,14 @@ travelDeskRouter.get(
         where: adminScoping,
         include: ["stops", "travelDeskTravelRequest"],
       })
+      const formsJson = forms.map((form) => form.toJSON())
 
       // TODO: move this code to a serializer
-      for (const form of forms) {
+      for (const form of formsJson) {
+        // @ts-expect-error - this code is deprecated so not worth fixing the type issues
         const stops = form.stops
         const earliestStop = minBy(stops, (stop) => {
+          // @ts-expect-error - this code is deprecated so not worth fixing the type issues
           return `${stop.departureDate} ${stop.departureTime}`
         })
         // @ts-expect-error - this code is deprecated so not worth fixing the type issues
@@ -100,7 +106,6 @@ travelDeskRouter.get(
 
         // @ts-expect-error - isn't worth fixing at this time
         form.travelRequest = form.travelDeskTravelRequest
-        delete form.travelDeskTravelRequest
 
         // @ts-expect-error - isn't worth fixing at this time
         const travelDeskTravelRequestId = form.travelRequest?.id
@@ -114,7 +119,7 @@ travelDeskRouter.get(
           form.travelRequest.invoiceNumber = travelDeskPnrDocument?.invoiceNumber || ""
         }
       }
-      res.status(200).json(forms)
+      res.status(200).json(formsJson)
     } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Internal Server Error")
@@ -251,28 +256,34 @@ travelDeskRouter.get(
   "/flight-request/:travelDeskTravelRequestId",
   RequiresAuth,
   async function (req: Request, res: Response) {
-    const flightSegmentState = {
-      flightErr: false,
-      departDateErr: false,
-      departTimeErr: false,
-      departLocationErr: false,
-      arriveDateErr: false,
-      arriveTimeErr: false,
-      arriveLocationErr: false,
-      durationErr: false,
-      classErr: false,
-      statusErr: false,
-    }
+    try {
+      const flightSegmentState = {
+        flightErr: false,
+        departDateErr: false,
+        departTimeErr: false,
+        departLocationErr: false,
+        arriveDateErr: false,
+        arriveTimeErr: false,
+        arriveLocationErr: false,
+        durationErr: false,
+        classErr: false,
+        statusErr: false,
+      }
 
-    const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
+      const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
 
-    if (travelDeskTravelRequestId) {
-      let tmpId = 3000
+      if (isNil(travelDeskTravelRequestId)) {
+        return res.status(422).json({
+          message: "Missing travelDeskTravelRequestId parameter.",
+        })
+      }
 
       const flightRequests = await TravelDeskFlightRequest.findAll({
         where: { travelRequestId: travelDeskTravelRequestId },
       })
-      for (const flightRequest of flightRequests) {
+      const flightRequestsJson = flightRequests.map((flightRequest) => flightRequest.toJSON())
+
+      for (const flightRequest of flightRequestsJson) {
         const flightOptions = await dbLegacy("travelDeskFlightOption")
           .select("*")
           .where("flightRequestID", flightRequest.id)
@@ -282,12 +293,29 @@ travelDeskRouter.get(
             .where("flightOptionID", flightOption.flightOptionID)
           for (const flightSegment of flightSegments) {
             flightSegment.state = flightSegmentState
-            flightSegment.tmpId = tmpId
-            flightSegment.departDay = flightSegment.departDate.substring(0, 10)
-            flightSegment.departTime = flightSegment.departDate.substring(11, 16)
-            flightSegment.arriveDay = flightSegment.arriveDate.substring(0, 10)
-            flightSegment.arriveTime = flightSegment.arriveDate.substring(11, 16)
-            tmpId++
+
+            if (flightSegment.departDate) {
+              const departDateTime = DateTime.fromISO(flightSegment.departDate, { zone: "utc" })
+              flightSegment.departDay = departDateTime.toISODate()
+              flightSegment.departTime = departDateTime.toISOTime({
+                suppressSeconds: true,
+                includeOffset: false,
+              })
+            } else {
+              console.warn("Warning: departDate is undefined for flightSegment.")
+            }
+
+            // Parsing arrival date and time
+            if (flightSegment.arriveDate) {
+              const arriveDateTime = DateTime.fromISO(flightSegment.arriveDate, { zone: "utc" })
+              flightSegment.arriveDay = arriveDateTime.toISODate()
+              flightSegment.arriveTime = arriveDateTime.toISOTime({
+                suppressSeconds: true,
+                includeOffset: false,
+              })
+            } else {
+              console.warn("Warning: arriveDate is undefined for flightSegment.")
+            }
           }
           flightOption.flightSegments = flightSegments
           flightOption.state = { costErr: false, legErr: false }
@@ -295,8 +323,14 @@ travelDeskRouter.get(
         // @ts-expect-error - not worth fixing at this time
         flightRequest.flightOptions = flightOptions
       }
-      res.status(200).json(flightRequests)
-    } else res.status(500).json("Missing all parameters!")
+
+      return res.status(200).json(flightRequestsJson)
+    } catch (error: unknown) {
+      logger.error(`Failed to get flight requests: ${error}`, { error })
+      return res.status(500).json({
+        message: "Failed to get flight requests",
+      })
+    }
   }
 )
 
@@ -405,9 +439,11 @@ travelDeskRouter.get(
       return res.status(404).json({ message: "No Travel Request found" })
     }
 
+    const travelRequestJson = travelRequest.toJSON()
+
     // TODO: move this code to a serializer
-    let tmpId = 1000
-    for (const flightRequest of travelRequest.flightRequests || []) {
+    // @ts-expect-error - not worth fixing at this time
+    for (const flightRequest of travelRequestJson.flightRequests || []) {
       const flightOptions = await dbLegacy("travelDeskFlightOption")
         .select("*")
         .where("flightRequestID", flightRequest.id)
@@ -417,26 +453,42 @@ travelDeskRouter.get(
           .where("flightOptionID", flightOption.flightOptionID)
         for (const flightSegment of flightSegments) {
           flightSegment.state = flightSegmentState
-          flightSegment.tmpId = tmpId
-          flightSegment.departDay = flightSegment.departDate.substring(0, 10)
-          flightSegment.departTime = flightSegment.departDate.substring(11, 16)
-          flightSegment.arriveDay = flightSegment.arriveDate.substring(0, 10)
-          flightSegment.arriveTime = flightSegment.arriveDate.substring(11, 16)
-          tmpId++
+
+          if (flightSegment.departDate) {
+            const departDateTime = DateTime.fromISO(flightSegment.departDate, { zone: "utc" })
+            flightSegment.departDay = departDateTime.toISODate()
+            flightSegment.departTime = departDateTime.toISOTime({
+              suppressSeconds: true,
+              includeOffset: false,
+            })
+          } else {
+            console.warn("Warning: departDate is undefined for flightSegment.")
+          }
+
+          // Parsing arrival date and time
+          if (flightSegment.arriveDate) {
+            const arriveDateTime = DateTime.fromISO(flightSegment.arriveDate, { zone: "utc" })
+            flightSegment.arriveDay = arriveDateTime.toISODate()
+            flightSegment.arriveTime = arriveDateTime.toISOTime({
+              suppressSeconds: true,
+              includeOffset: false,
+            })
+          } else {
+            console.warn("Warning: arriveDate is undefined for flightSegment.")
+          }
         }
         flightOption.flightSegments = flightSegments
         flightOption.state = { costErr: false, legErr: false }
       }
-      // @ts-expect-error - not worth fixing at this time
       flightRequest.flightOptions = flightOptions
     }
 
     // @ts-expect-error - not worth fixing at this time
-    travelRequest.invoiceNumber =
-      travelRequest.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
-    delete travelRequest.travelDeskPassengerNameRecordDocument
+    travelRequestJson.invoiceNumber =
+      // @ts-expect-error - not worth fixing at this time
+      travelRequestJson.travelDeskPassengerNameRecordDocument?.invoiceNumber || ""
 
-    res.status(200).json(travelRequest)
+    res.status(200).json(travelRequestJson)
   }
 )
 

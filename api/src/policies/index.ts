@@ -16,3 +16,4 @@ export { UsersPolicy } from "./users-policy"
 
 // Namespaced policies
 export * as TravelAuthorizations from "./travel-authorizations"
+export * as TravelDeskTravelRequests from "./travel-desk-travel-requests"
