@@ -1,6 +1,9 @@
 export { CreateService } from "./create-service"
-export { SubmitService } from "./submit-service"
 export { UpdateService } from "./update-service"
+
+// Stateful Services
+export { BookService } from "./book-service"
+export { SubmitService } from "./submit-service"
 
 // Special Services
 export { PrefillFlightRequestsService } from "./prefill-flight-requests-service"
