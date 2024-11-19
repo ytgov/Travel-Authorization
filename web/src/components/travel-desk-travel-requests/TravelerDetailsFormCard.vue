@@ -215,6 +215,17 @@
             />
           </v-col>
         </v-row>
+        <v-row class="mt-0 mx-3">
+          <v-col cols="12">
+            <v-textarea
+              v-model="travelerDetails.additionalInformation"
+              label="Additional Information"
+              outlined
+              auto-grow
+              counter
+            />
+          </v-col>
+        </v-row>
       </v-form>
     </v-card-text>
   </v-card>
@@ -263,6 +274,7 @@ const travelerDetails = reactive({
   travelContact: false,
   travelPhone: "",
   travelEmail: "",
+  additionalInformation: "",
   ...props.value,
 })
 const form = ref(null)

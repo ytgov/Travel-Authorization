@@ -39,24 +39,6 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row
-                    class="ml-3"
-                    no-gutters
-                  >
-                    <v-col cols="12">
-                      <v-textarea
-                        :value="travelDeskTravelRequest?.additionalInformation"
-                        :loading="isLoading"
-                        class="mt-5 mr-5"
-                        label="Additional Information"
-                        outlined
-                        auto-grow
-                        counter
-                        readonly
-                        append-icon="mdi-lock"
-                      />
-                    </v-col>
-                  </v-row>
                 </template>
               </TitleCard>
 

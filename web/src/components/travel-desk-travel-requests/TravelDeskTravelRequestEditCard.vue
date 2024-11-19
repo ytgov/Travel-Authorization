@@ -53,27 +53,6 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row
-                    class="ml-3"
-                    no-gutters
-                  >
-                    <v-col cols="12">
-                      <SaveStateProgress
-                        class="float-right my-0 mr-3 ml-3 hidden-sm-and-down"
-                        :saving="isLoading"
-                        @click="saveAndNotify"
-                      />
-                      <v-textarea
-                        v-model="travelDeskTravelRequest.additionalInformation"
-                        class="mt-5 mr-5"
-                        label="Additional Information"
-                        outlined
-                        auto-grow
-                        counter
-                        @input="debouncedSaveAndNotify"
-                      />
-                    </v-col>
-                  </v-row>
                 </template>
               </TitleCard>
 
