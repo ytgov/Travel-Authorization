@@ -321,19 +321,22 @@ entity "travelDeskFlightOption" {
   duration : varchar(255)
 }
 
-entity "travelDeskFlightRequest" {
-  * flightRequestID : serial4
+entity "travel_desk_flight_requests" {
+  * id : serial4
   --
-  requestID : int4
-  departLocation : varchar(255)
-  arriveLocation : varchar(255)
-  date : date
-  timePreference : varchar(255)
-  seatPreference : varchar(255)
+  * travel_request_id : int4
+  * depart_location : varchar(255)
+  * arrive_location : varchar(255)
+  * date_preference : date
+  * time_preference : varchar(255)
+  * seat_preference : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travelDeskFlightSegment" {
-  * flightSegmentID : serial4
+  * id : serial4
   --
   flightNumber : varchar(255)
   departDate : timestamptz
@@ -513,11 +516,11 @@ travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_other_transportations::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
 travel_desk_rental_cars::travel_request_id }o--|| travel_desk_travel_requests::id
+travel_desk_travel_requests::id }o--|| travel_desk_flight_requests::travel_request_id
 travel_desk_travel_requests::id }o--|| travel_desk_questions::travel_request_id
 travel_desk_travel_requests::travel_agency_id |o--o{ travel_desk_travel_agencies::id
 travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
-travelDeskFlightOption }o--|| travelDeskFlightRequest
-travelDeskFlightRequest }o--|| travel_desk_travel_requests
+travelDeskFlightOption::flightRequestID ||--o{ travel_desk_flight_requests::id
 travelDeskFlightSegment }o--|| travelDeskFlightOption
 users::roles }o..o{ roles::name
 @enduml
