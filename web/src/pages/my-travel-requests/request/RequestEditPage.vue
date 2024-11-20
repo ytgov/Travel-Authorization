@@ -19,9 +19,11 @@
 </template>
 
 <script setup>
+import { computed, toRefs } from "vue"
 import { isNil } from "lodash"
-import { computed } from "vue"
 
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
 
 import TravelDeskTravelRequestEditCard from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestEditCard.vue"
@@ -51,4 +53,31 @@ const { travelDeskTravelRequests, isErrored } = useTravelDeskTravelRequests(
 const travelDeskTravelRequestId = computed(() => {
   return travelDeskTravelRequests.value[0]?.id
 })
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const breadcrumbs = computed(() => [
+  {
+    text: "My Travel Requests",
+    to: {
+      name: "MyTravelAuthorizationsPage",
+    },
+  },
+  {
+    text: travelAuthorization.value?.eventName || "loading ...",
+    to: {
+      name: "my-travel-requests/request/RequestPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+  {
+    text: "Edit",
+    to: {
+      name: "my-travel-requests/request/RequestEditPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+])
+useBreadcrumbs(breadcrumbs)
 </script>

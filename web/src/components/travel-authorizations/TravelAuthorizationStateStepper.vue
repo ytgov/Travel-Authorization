@@ -172,7 +172,7 @@ const optionsProvideStep = computed(() => {
     TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
   ) {
     return {
-      title: "Request: Options Provided",
+      title: "Request: Rank Options",
       subtitle: "Rank flight options",
       to: {
         name: "my-travel-requests/request/RequestOptionsProvidedPage",
@@ -183,7 +183,7 @@ const optionsProvideStep = computed(() => {
   }
 
   return {
-    title: "Request: Options Provided",
+    title: "Request: Rank Options",
     subtitle: "Requires completing request section.",
     complete: false,
   }

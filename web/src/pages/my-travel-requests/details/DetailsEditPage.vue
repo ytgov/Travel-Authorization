@@ -38,7 +38,10 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, toRefs } from "vue"
+
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import PurposeFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/PurposeFormCard"
 import DetailsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/DetailsFormCard"
@@ -69,4 +72,31 @@ function validateForm() {
 
   return false
 }
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const breadcrumbs = computed(() => [
+  {
+    text: "My Travel Requests",
+    to: {
+      name: "MyTravelAuthorizationsPage",
+    },
+  },
+  {
+    text: travelAuthorization.value?.eventName || "loading ...",
+    to: {
+      name: "my-travel-requests/details/DetailsPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+  {
+    text: "Edit",
+    to: {
+      name: "my-travel-requests/details/DetailsEditPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+])
+useBreadcrumbs(breadcrumbs)
 </script>

@@ -80,9 +80,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, toRefs } from "vue"
 
-import { useExpenses, TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
@@ -140,4 +142,31 @@ async function refreshCodingsCreatedDependencies() {
 async function refreshCodingsChangedDependencies() {
   await requestApprovalForm.value?.refresh()
 }
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const breadcrumbs = computed(() => [
+  {
+    text: "My Travel Requests",
+    to: {
+      name: "MyTravelAuthorizationsPage",
+    },
+  },
+  {
+    text: travelAuthorization.value?.eventName || "loading ...",
+    to: {
+      name: "my-travel-requests/expense/ExpensePage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+  {
+    text: "Edit",
+    to: {
+      name: "my-travel-requests/expense/ExpenseEditPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+])
+useBreadcrumbs(breadcrumbs)
 </script>

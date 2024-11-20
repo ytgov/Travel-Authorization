@@ -21,10 +21,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, toRefs } from "vue"
 
-import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
-import useExpenses from "@/use/use-expenses"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import EstimateCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateCreateDialog"
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
@@ -59,4 +60,31 @@ const estimatesTable = ref(null)
 async function refreshEstimates() {
   await estimatesTable.value?.refresh()
 }
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const breadcrumbs = computed(() => [
+  {
+    text: "My Travel Requests",
+    to: {
+      name: "MyTravelAuthorizationsPage",
+    },
+  },
+  {
+    text: travelAuthorization.value?.eventName || "loading ...",
+    to: {
+      name: "my-travel-requests/estimate/EstimatePage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+  {
+    text: "Edit",
+    to: {
+      name: "my-travel-requests/estimate/EstimateEditPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+])
+useBreadcrumbs(breadcrumbs)
 </script>
