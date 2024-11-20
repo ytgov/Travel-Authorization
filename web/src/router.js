@@ -142,7 +142,40 @@ const routes = [
   ...travelAuthorizationsRouter,
   ...flightExpenseRouter,
   ...reportsRouter,
-
+  {
+    path: "",
+    component: () => import("@/layouts/Layout"),
+    children: [
+      {
+        // TODO: push readcrumbs into higher layout
+        path: "",
+        component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
+        children: [
+          {
+            path: "my-travel-requests/:travelAuthorizationId",
+            component: () =>
+              import("@/layouts/travel-authorizations/MyTravelAuthorizationLayout.vue"),
+            props: true,
+            children: [
+              {
+                path: "",
+                redirect: "details",
+              },
+              {
+                path: "details",
+                name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
+                component: () =>
+                  import(
+                    "@/pages/my-travel-authorizations/TravelAuthorizationDetailsPage.vue"
+                  ),
+                props: true,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
   {
     name: "SignInPage",
     path: "/sign-in",

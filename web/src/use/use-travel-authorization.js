@@ -23,7 +23,7 @@ export { STATUSES }
  * TODO: consider requiring the id, and building a separate function for use without an id
  *
  * @callback UseTravelAuthorization
- * @param {import('vue').Ref<number>} [travelAuthorizationId]
+ * @param {import('vue').Ref<string | number>} [travelAuthorizationId]
  * @returns {{
  *   travelAuthorization: import('vue').Ref<TravelAuthorization>,
  *   isLoading: import('vue').Ref<boolean>,

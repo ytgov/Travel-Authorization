@@ -86,7 +86,7 @@ const detailsTabComponent = computed(() => {
     tabName: "Details",
     props: {
       to: {
-        name: "ReadMyTravelAuthorizationDetailsPage",
+        name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
     },

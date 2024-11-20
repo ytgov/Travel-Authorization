@@ -171,7 +171,7 @@ export default {
         })
       } else {
         this.$router.push({
-          name: "ReadMyTravelAuthorizationDetailsPage",
+          name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
           params: { travelAuthorizationId },
         })
       }
