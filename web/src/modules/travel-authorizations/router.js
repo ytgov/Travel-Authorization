@@ -20,67 +20,6 @@ const routes = [
     ],
   },
   {
-    path: "/my-travel-requests",
-    component: () => import("@/layouts/Layout"),
-    children: [
-      {
-        path: ":travelAuthorizationId",
-        component: () =>
-          import("@/modules/travel-authorizations/layouts/MyTravelAuthorizationLayout"),
-        props: cast("travelAuthorizationId", parseInt),
-        children: [
-          {
-            path: "estimate",
-            name: "ReadMyTravelAuthorizationEstimatePage",
-            component: () =>
-              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationEstimatePage"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-          {
-            path: "estimate/edit",
-            name: "EditMyTravelAuthorizationEstimatePage",
-            component: () =>
-              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationEstimatePage"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-          {
-            path: "request",
-            name: "my-travel-requests/request/RequestPage",
-            component: () => import("@/pages/my-travel-requests/request/RequestPage"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-          {
-            path: "request/edit",
-            name: "my-travel-requests/request/RequestEditPage",
-            component: () => import("@/pages/my-travel-requests/request/RequestEditPage"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-          {
-            path: "request/rank-options",
-            name: "my-travel-requests/request/RequestOptionsProvidedPage",
-            component: () =>
-              import("@/pages/my-travel-requests/request/RequestOptionsProvidedPage.vue"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-          {
-            path: "expense",
-            name: "ReadMyTravelAuthorizationExpensePage",
-            component: () =>
-              import("@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationExpensePage"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-          {
-            path: "expense/edit",
-            name: "EditMyTravelAuthorizationExpensePage",
-            component: () =>
-              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationExpensePage"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-        ],
-      },
-    ],
-  },
-  {
     path: "/travel-requests",
     component: () => import("@/layouts/Layout"),
     children: [

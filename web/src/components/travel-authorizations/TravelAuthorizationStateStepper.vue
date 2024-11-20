@@ -95,7 +95,7 @@ const estimateStep = computed(() => {
       title: "Estimate",
       subtitle: "Generate estimate",
       to: {
-        name: "EditMyTravelAuthorizationEstimatePage",
+        name: "my-travel-authorizations/TravelAuthorizationEditEstimatePage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
       complete: estimates.value.length > 0,
@@ -106,7 +106,7 @@ const estimateStep = computed(() => {
     title: "Estimate",
     subtitle: "Review submitted estimate",
     to: {
-      name: "ReadMyTravelAuthorizationEstimatePage",
+      name: "my-travel-authorizations/TravelAuthorizationEstimatePage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
     complete: true,
