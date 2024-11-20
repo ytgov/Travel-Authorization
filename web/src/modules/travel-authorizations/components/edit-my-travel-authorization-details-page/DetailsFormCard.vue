@@ -35,7 +35,7 @@
         <v-row>
           <v-col
             cols="12"
-            md="1"
+            md="2"
           >
             <TravelDurationTextField
               v-model="travelAuthorization.travelDuration"
