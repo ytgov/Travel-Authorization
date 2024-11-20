@@ -65,7 +65,7 @@ const breadcrumbs = computed(() => [
   {
     text: travelAuthorization.value?.eventName || "loading ...",
     to: {
-      name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
+      name: "my-travel-requests/details/DetailsPage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
   },

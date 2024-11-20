@@ -79,7 +79,7 @@ export default {
       try {
         await this.submit()
         this.$router.push({
-          name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
+          name: "my-travel-requests/details/DetailsPage",
           params: { travelAuthorizationId: this.travelAuthorizationId },
         })
       } catch (error) {

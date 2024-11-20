@@ -78,7 +78,7 @@ async function revertToDraftAndRedirect() {
   try {
     await travelAuthorizationApi.revertToDraft(props.travelAuthorizationId)
     return router.push({
-      name: "my-travel-authorizations/TravelAuthorizationEditDetailsPage",
+      name: "my-travel-requests/details/DetailsEditPage",
       params: {
         travelAuthorizationId: props.travelAuthorizationId,
       },

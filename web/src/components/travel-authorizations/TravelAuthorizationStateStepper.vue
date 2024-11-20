@@ -64,7 +64,7 @@ const detailsStep = computed(() => {
       title: "Details",
       subtitle: "Enter trip details",
       to: {
-        name: "my-travel-authorizations/TravelAuthorizationEditDetailsPage",
+        name: "my-travel-requests/details/DetailsEditPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
       complete: false,
@@ -75,7 +75,7 @@ const detailsStep = computed(() => {
     title: "Details",
     subtitle: "Review submitted trip details",
     to: {
-      name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
+      name: "my-travel-requests/details/DetailsPage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
     complete: true,
@@ -95,7 +95,7 @@ const estimateStep = computed(() => {
       title: "Estimate",
       subtitle: "Generate estimate",
       to: {
-        name: "my-travel-authorizations/TravelAuthorizationEditEstimatePage",
+        name: "my-travel-requests/estimate/EstimateEditPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
       complete: estimates.value.length > 0,
@@ -106,7 +106,7 @@ const estimateStep = computed(() => {
     title: "Estimate",
     subtitle: "Review submitted estimate",
     to: {
-      name: "my-travel-authorizations/TravelAuthorizationEstimatePage",
+      name: "my-travel-requests/estimate/EstimatePage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
     complete: true,
@@ -227,7 +227,7 @@ const expenseStep = computed(() => {
       title: "Expense",
       subtitle: "Submit expenses",
       to: {
-        name: "EditMyTravelAuthorizationExpensePage",
+        name: "my-travel-requests/expense/ExpenseEditPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
       complete: false,
@@ -238,7 +238,7 @@ const expenseStep = computed(() => {
     title: "Expense",
     subtitle: "Review submitted expense",
     to: {
-      name: "ReadMyTravelAuthorizationExpensePage",
+      name: "my-travel-requests/expense/ExpensePage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
     complete: true,

@@ -166,12 +166,12 @@ export default {
       const travelAuthorizationId = travelAuthorization.id
       if (travelAuthorization.status === "draft") {
         this.$router.push({
-          name: "my-travel-authorizations/TravelAuthorizationEditDetailsPage",
+          name: "my-travel-requests/details/DetailsEditPage",
           params: { travelAuthorizationId },
         })
       } else {
         this.$router.push({
-          name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
+          name: "my-travel-requests/details/DetailsPage",
           params: { travelAuthorizationId },
         })
       }

@@ -163,32 +163,26 @@ const routes = [
               },
               {
                 path: "details",
-                name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
-                component: () =>
-                  import("@/pages/my-travel-authorizations/TravelAuthorizationDetailsPage.vue"),
+                name: "my-travel-requests/details/DetailsPage",
+                component: () => import("@/pages/my-travel-requests/details/DetailsPage.vue"),
                 props: true,
               },
               {
                 path: "details/edit",
-                name: "my-travel-authorizations/TravelAuthorizationEditDetailsPage",
-                component: () =>
-                  import("@/pages/my-travel-authorizations/TravelAuthorizationEditDetailsPage.vue"),
+                name: "my-travel-requests/details/DetailsEditPage",
+                component: () => import("@/pages/my-travel-requests/details/DetailsEditPage.vue"),
                 props: true,
               },
               {
                 path: "estimate",
-                name: "my-travel-authorizations/TravelAuthorizationEstimatePage",
-                component: () =>
-                  import("@/pages/my-travel-authorizations/TravelAuthorizationEstimatePage.vue"),
+                name: "my-travel-requests/estimate/EstimatePage",
+                component: () => import("@/pages/my-travel-requests/estimate/EstimatePage.vue"),
                 props: true,
               },
               {
                 path: "estimate/edit",
-                name: "my-travel-authorizations/TravelAuthorizationEditEstimatePage",
-                component: () =>
-                  import(
-                    "@/pages/my-travel-authorizations/TravelAuthorizationEditEstimatePage.vue"
-                  ),
+                name: "my-travel-requests/estimate/EstimateEditPage",
+                component: () => import("@/pages/my-travel-requests/estimate/EstimateEditPage.vue"),
                 props: true,
               },
               {
@@ -212,20 +206,14 @@ const routes = [
               },
               {
                 path: "expense",
-                name: "ReadMyTravelAuthorizationExpensePage",
-                component: () =>
-                  import(
-                    "@/modules/travel-authorizations/pages/ReadMyTravelAuthorizationExpensePage"
-                  ),
+                name: "my-travel-requests/expense/ExpensePage",
+                component: () => import("@/pages/my-travel-requests/expense/ExpensePage.vue"),
                 props: true,
               },
               {
                 path: "expense/edit",
-                name: "EditMyTravelAuthorizationExpensePage",
-                component: () =>
-                  import(
-                    "@/modules/travel-authorizations/pages/EditMyTravelAuthorizationExpensePage"
-                  ),
+                name: "my-travel-requests/expense/ExpenseEditPage",
+                component: () => import("@/pages/my-travel-requests/expense/ExpenseEditPage.vue"),
                 props: true,
               },
             ],

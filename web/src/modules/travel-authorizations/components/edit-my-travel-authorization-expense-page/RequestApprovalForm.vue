@@ -149,7 +149,7 @@ async function requestApprovalForExpenseClaim() {
     })
     snack("Expense claim submitted for approval.", { color: "success" })
     router.push({
-      name: "ReadMyTravelAuthorizationExpensePage",
+      name: "my-travel-requests/expense/ExpensePage",
       params: { travelAuthorizationId: props.travelAuthorizationId },
     })
   } catch (error) {

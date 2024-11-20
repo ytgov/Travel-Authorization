@@ -75,7 +75,7 @@ async function submitAndRedirect() {
   try {
     await submit()
     router.push({
-      name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
+      name: "my-travel-requests/details/DetailsPage",
       params: { travelAuthorizationId: props.travelAuthorizationId },
     })
   } catch (error) {
