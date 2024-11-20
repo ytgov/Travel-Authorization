@@ -76,8 +76,15 @@ function validateForm() {
 }
 
 const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+const { travelAuthorization, isLoading } = useTravelAuthorization(travelAuthorizationId)
 
+const travelAuthorizationEventName = computed(() => {
+  if (isLoading.value) {
+    return "loading ..."
+  }
+
+  return travelAuthorization.value?.eventName || "New Travel Request"
+})
 const breadcrumbs = computed(() => [
   {
     text: "My Travel Requests",
@@ -86,7 +93,7 @@ const breadcrumbs = computed(() => [
     },
   },
   {
-    text: travelAuthorization.value?.eventName || "loading ...",
+    text: travelAuthorizationEventName.value,
     to: {
       name: "my-travel-requests/details/DetailsPage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
