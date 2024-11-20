@@ -30,13 +30,6 @@ const routes = [
         props: cast("travelAuthorizationId", parseInt),
         children: [
           {
-            path: "details/edit",
-            name: "EditMyTravelAuthorizationDetailsPage",
-            component: () =>
-              import("@/modules/travel-authorizations/pages/EditMyTravelAuthorizationDetailsPage"),
-            props: cast("travelAuthorizationId", parseInt),
-          },
-          {
             path: "estimate",
             name: "ReadMyTravelAuthorizationEstimatePage",
             component: () =>

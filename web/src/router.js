@@ -165,9 +165,14 @@ const routes = [
                 path: "details",
                 name: "my-travel-authorizations/TravelAuthorizationDetailsPage",
                 component: () =>
-                  import(
-                    "@/pages/my-travel-authorizations/TravelAuthorizationDetailsPage.vue"
-                  ),
+                  import("@/pages/my-travel-authorizations/TravelAuthorizationDetailsPage.vue"),
+                props: true,
+              },
+              {
+                path: "details/edit",
+                name: "my-travel-authorizations/TravelAuthorizationEditDetailsPage",
+                component: () =>
+                  import("@/pages/my-travel-authorizations/TravelAuthorizationEditDetailsPage.vue"),
                 props: true,
               },
             ],
