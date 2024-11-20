@@ -18,7 +18,9 @@
     <div class="d-flex justify-end">
       <v-btn
         color="secondary"
-        :to="{ name: 'MyTravelAuthorizationsPage' }"
+        :to="{
+          name: 'my-travel-requests/MyTravelRequestsPage',
+        }"
         >Back</v-btn
       >
       <RevertToDraftButton
@@ -59,7 +61,7 @@ const breadcrumbs = computed(() => [
   {
     text: "My Travel Requests",
     to: {
-      name: "MyTravelAuthorizationsPage",
+      name: "my-travel-requests/MyTravelRequestsPage",
     },
   },
   {

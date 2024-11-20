@@ -6,12 +6,6 @@ const routes = [
     component: () => import("@/layouts/Layout"),
     children: [
       {
-        name: "MyTravelAuthorizationsPage",
-        path: "my-travel-requests",
-        component: () => import("@/modules/travel-authorizations/pages/MyTravelAuthorizationsPage"),
-      },
-
-      {
         name: "ManageTravelAuthorizationsPage",
         path: "manage-travel-requests",
         component: () =>

@@ -152,6 +152,11 @@ const routes = [
         component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
         children: [
           {
+            path: "my-travel-requests",
+            name: "my-travel-requests/MyTravelRequestsPage",
+            component: () => import("@/pages/my-travel-requests/MyTravelRequestsPage.vue"),
+          },
+          {
             path: "my-travel-requests/:travelAuthorizationId",
             component: () =>
               import("@/layouts/travel-authorizations/MyTravelAuthorizationLayout.vue"),

@@ -31,7 +31,7 @@ const breadcrumbs = computed(() => [
   {
     text: "My Travel Requests",
     to: {
-      name: "MyTravelAuthorizationsPage",
+      name: "my-travel-requests/MyTravelRequestsPage",
     },
   },
   {
