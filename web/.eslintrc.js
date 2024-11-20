@@ -3,10 +3,17 @@ require("@rushstack/eslint-patch/modern-module-resolution")
 module.exports = {
   root: true,
   env: {
+    browser: true,
+    es2021: true,
     node: true,
-    "vitest/globals": true,
+    "vitest-globals/env": true,
   },
-  extends: ["plugin:vue/recommended", "eslint:recommended", "plugin:prettier/recommended"],
+  extends: [
+    "plugin:vitest-globals/recommended",
+    "plugin:vue/recommended",
+    "eslint:recommended",
+    "plugin:prettier/recommended",
+  ],
   parserOptions: {
     parser: "@babel/eslint-parser",
   },
