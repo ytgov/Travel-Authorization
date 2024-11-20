@@ -28,15 +28,17 @@ import TravelDeskTravelRequestCard from "@/components/travel-desk-travel-request
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: Number,
+    type: [String, Number],
     required: true,
   },
 })
 
+const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
+
 // TODO: Consider loading travelAuthorization and pulling travelDeskTravel request from there.
 const travelDeskTravelRequestQueryOptions = computed(() => ({
   where: {
-    travelAuthorizationId: props.travelAuthorizationId,
+    travelAuthorizationId: travelAuthorizationIdAsNumber.value,
   },
   perPage: 1,
 }))
