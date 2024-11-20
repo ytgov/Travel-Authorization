@@ -64,7 +64,7 @@ const detailsStep = computed(() => {
       title: "Details",
       subtitle: "Enter trip details",
       to: {
-        name: "EditMyTravelAuthorizationDetailsPage",
+        name: "my-travel-authorizations/TravelAuthorizationEditDetailsPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
       complete: false,
@@ -252,8 +252,6 @@ const steps = computed(() => [
   optionsProvideStep.value,
   expenseStep.value,
 ])
-
-console.log(`steps.value:`, steps.value)
 
 async function refresh() {
   await refreshTravelAuthorization()

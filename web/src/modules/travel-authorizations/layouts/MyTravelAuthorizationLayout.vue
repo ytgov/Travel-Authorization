@@ -49,7 +49,7 @@ import useTravelAuthorization, {
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import PageLoader from "@/components/PageLoader"
-import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
+import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 const props = defineProps({
@@ -74,7 +74,7 @@ const detailsTabComponent = computed(() => {
       tabName: "Details",
       props: {
         to: {
-          name: "EditMyTravelAuthorizationDetailsPage",
+          name: "my-travel-authorizations/TravelAuthorizationEditDetailsPage",
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
       },

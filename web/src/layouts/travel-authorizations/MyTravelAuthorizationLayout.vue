@@ -32,8 +32,8 @@ import { computed, ref } from "vue"
 import useCurrentUser from "@/use/use-current-user"
 
 import VUserChipMenu from "@/components/VUserChipMenu.vue"
-import TravelAuthorizationStateStepper from "@/components/layouts/my-travel-authorization/TravelAuthorizationStateStepper.vue"
-import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel.vue"
+import TravelAuthorizationStateStepper from "@/components/travel-authorizations/TravelAuthorizationStateStepper.vue"
+import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 
 /**
  * @template [T=any]

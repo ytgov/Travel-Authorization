@@ -52,7 +52,7 @@ import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs"
 import PageLoader from "@/components/PageLoader"
-import SummaryHeaderPanel from "@/modules/travel-authorizations/components/SummaryHeaderPanel"
+import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import VUserChipMenu from "@/components/VUserChipMenu"
 
 import DetailsTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/DetailsTab"
