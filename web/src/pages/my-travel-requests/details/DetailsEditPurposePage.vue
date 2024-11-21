@@ -1,36 +1,12 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <PurposeFormCard
-          ref="purposeFormCard"
-          :travel-authorization-id="travelAuthorizationIdAsNumber"
-        />
-      </v-col>
-    </v-row>
-    <div class="d-flex justify-end">
-      <v-btn
-        color="secondary"
-        :to="{
-          name: 'my-travel-requests/MyTravelRequestsPage',
-        }"
-        >Back</v-btn
-      >
-      <v-btn
-        class="ml-3"
-        :loading="isLoading"
-        color="primary"
-        @click="saveWrapper"
-      >
-        Continue
-      </v-btn>
-    </div>
-  </v-container>
+  <PurposeFormCard
+    ref="purposeFormCard"
+    :travel-authorization-id="travelAuthorizationIdAsNumber"
+  />
 </template>
 
 <script setup>
 import { computed, ref, toRefs } from "vue"
-import { useRouter } from "vue2-helpers/vue-router"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
@@ -45,7 +21,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["state-changed"])
+const emit = defineEmits(["updated"])
 
 const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
@@ -54,9 +30,8 @@ const { travelAuthorization, isLoading } = useTravelAuthorization(travelAuthoriz
 
 const purposeFormCard = ref(null)
 const snack = useSnack()
-const router = useRouter()
 
-async function saveWrapper() {
+async function validateAndSave() {
   isLoading.value = true
   try {
     if (purposeFormCard.value.validate() === false) {
@@ -68,13 +43,8 @@ async function saveWrapper() {
       stepNumber: 2,
     })
     snack.success("Travel request saved.")
-    emit("state-changed", travelAuthorization.value.id)
-    return router.push({
-      name: "my-travel-requests/details/DetailsEditPage",
-      params: {
-        travelAuthorizationId: props.travelAuthorizationId,
-      },
-    })
+    emit("updated", travelAuthorization.value.id)
+    return
   } catch (error) {
     snack.error(error.message)
   } finally {
@@ -112,4 +82,8 @@ const breadcrumbs = computed(() => [
   },
 ])
 useBreadcrumbs(breadcrumbs)
+
+defineExpose({
+  continue: validateAndSave,
+})
 </script>

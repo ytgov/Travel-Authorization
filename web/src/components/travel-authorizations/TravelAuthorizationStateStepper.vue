@@ -14,10 +14,10 @@
   >
     <template v-for="step in steps">
       <v-stepper-step
-        v-if="step.complete !== true && currentStepNumber !== step.number"
+        v-if="currentStepNumber !== step.number"
         :key="`${step.title}-${step.number}`"
         :step="step.number"
-        :complete="step.complete"
+        :complete="step.number < currentStepNumber"
       >
         {{ step.title }}
         <small v-if="step.subtitle">
@@ -32,7 +32,7 @@
       >
         <v-stepper-step
           :step="step.number"
-          :complete="step.complete"
+          :complete="step.number < currentStepNumber"
         >
           {{ step.title }}
           <small v-if="step.subtitle">
@@ -46,6 +46,7 @@
 
 <script setup>
 import { toRefs, computed } from "vue"
+import { useRoute } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
 import { TRAVEL_METHODS } from "@/api/travel-segments-api"
@@ -76,7 +77,6 @@ const detailsSteps = computed(() => {
           name: "my-travel-requests/details/DetailsEditPurposePage",
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
-        complete: travelAuthorization.value.stepNumber > 1,
       },
       {
         title: "Details",
@@ -85,7 +85,6 @@ const detailsSteps = computed(() => {
           name: "my-travel-requests/details/DetailsEditPage",
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
-        complete: travelAuthorization.value.stepNumber > 2,
       },
     ]
   }
@@ -98,7 +97,6 @@ const detailsSteps = computed(() => {
         name: "my-travel-requests/details/DetailsPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
-      complete: true,
     },
   ]
 })
@@ -130,7 +128,6 @@ const estimateStep = computed(() => {
       name: "my-travel-requests/estimate/EstimatePage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
-    complete: true,
   }
 })
 
@@ -172,7 +169,6 @@ const requestStep = computed(() => {
         name: "my-travel-requests/request/RequestEditPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
-      complete: false,
     }
   }
 
@@ -183,7 +179,6 @@ const requestStep = computed(() => {
       name: "my-travel-requests/request/RequestPage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
-    complete: true,
   }
 })
 
@@ -199,14 +194,12 @@ const optionsProvideStep = computed(() => {
         name: "my-travel-requests/request/RequestOptionsProvidedPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
-      complete: false,
     }
   }
 
   return {
     title: "Request: Rank Options",
     subtitle: "Requires completing request section.",
-    complete: false,
   }
 })
 
@@ -239,7 +232,6 @@ const expenseStep = computed(() => {
     return {
       title: "Expense",
       subtitle: lockReasons.join(" "),
-      complete: false,
     }
   }
 
@@ -251,7 +243,6 @@ const expenseStep = computed(() => {
         name: "my-travel-requests/expense/ExpenseEditPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
-      complete: false,
     }
   }
 
@@ -262,7 +253,6 @@ const expenseStep = computed(() => {
       name: "my-travel-requests/expense/ExpensePage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
-    complete: true,
   }
 })
 
@@ -279,13 +269,44 @@ const steps = computed(() =>
   }))
 )
 
+const route = useRoute()
+
 const currentStepNumber = computed(() => {
-  const step = steps.value.find((step) => step.complete === false)
+  const step = steps.value.find((step) => step.to?.name === route.name)
   if (isNil(step)) {
     return 1
   }
 
   return step.number
+})
+
+const previousStepTo = computed(() => {
+  const previousStepIndex = currentStepNumber.value - 2
+  if (previousStepIndex < 0) {
+    return {
+      name: "my-travel-requests/MyTravelRequestsPage",
+    }
+  }
+
+  const previousStep = steps.value[previousStepIndex]
+  if (isNil(previousStep)) {
+    return {
+      name: "my-travel-requests/MyTravelRequestsPage",
+    }
+  }
+
+  return previousStep.to
+})
+
+const nextStepTo = computed(() => {
+  const nextStep = steps.value[currentStepNumber.value]
+  if (isNil(nextStep)) {
+    return {
+      name: "my-travel-requests/MyTravelRequestsPage",
+    }
+  }
+
+  return nextStep.to
 })
 
 async function refresh() {
@@ -295,5 +316,7 @@ async function refresh() {
 
 defineExpose({
   refresh,
+  previousStepTo,
+  nextStepTo,
 })
 </script>

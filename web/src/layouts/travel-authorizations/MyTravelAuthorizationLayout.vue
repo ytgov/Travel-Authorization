@@ -19,7 +19,27 @@
             class="mt-5"
           />
 
-          <router-view @state-changed="refresh"></router-view>
+          <router-view
+            ref="currentStepComponent"
+            @updated="refresh"
+          ></router-view>
+
+          <div class="d-flex justify-end">
+            <v-btn
+              color="secondary"
+              :to="previousStepTo"
+              >Back</v-btn
+            >
+            <v-btn
+              class="ml-3"
+              :loading="isLoading"
+              color="primary"
+              :to="nextStepTo"
+              @click.stop="goToNextStep"
+            >
+              Continue
+            </v-btn>
+          </div>
         </v-card-text>
       </v-card>
     </div>
@@ -51,12 +71,28 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 
 const { currentUser } = useCurrentUser()
 
+const isLoading = ref(false)
+
 /** @type {Ref<InstanceType<typeof EditPerDiemDialog> | null>} */
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelAuthorizationStateStepper> | null>} */
 const travelAuthorizationStateStepper = ref(null)
 
+const previousStepTo = computed(() => travelAuthorizationStateStepper.value?.previousStepTo)
+const nextStepTo = computed(() => travelAuthorizationStateStepper.value?.nextStepTo)
+
 async function refresh() {
   await travelAuthorizationStateStepper.value?.refresh()
+}
+
+const currentStepComponent = ref(null)
+
+async function goToNextStep() {
+  isLoading.value = true
+  try {
+    await currentStepComponent.value?.continue()
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
