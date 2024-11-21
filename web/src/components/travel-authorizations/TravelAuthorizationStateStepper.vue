@@ -3,13 +3,14 @@
   <v-skeleton-loader
     v-if="isNil(travelAuthorization.id)"
     type="list-item@4"
-    min-width="300px"
+    :width="$vuetify.breakpoint.mdAndUp ? 300 : undefined"
   />
   <v-stepper
     v-else
     :value="currentStepNumber"
     vertical
     outlined
+    :width="$vuetify.breakpoint.mdAndUp ? 300 : undefined"
   >
     <template v-for="(step, index) in steps">
       <v-stepper-step
