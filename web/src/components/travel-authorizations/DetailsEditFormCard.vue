@@ -84,7 +84,7 @@ import { required, isInteger } from "@/utils/validators"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import DatePicker from "@/components/common/DatePicker.vue"
-import TravelDurationTextField from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/TravelDurationTextField"
+import TravelDurationTextField from "@/components/travel-authorizations/details-edit-form-card/TravelDurationTextField.vue"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -111,17 +111,15 @@ const tripTypeComponent = computed(() => {
     case TRIP_TYPES.ROUND_TRIP:
       return () =>
         import(
-          "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/RoundTripStopsSection"
+          "@/components/travel-authorizations/details-edit-form-card/RoundTripStopsSection.vue"
         )
     case TRIP_TYPES.ONE_WAY:
       return () =>
-        import(
-          "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/OneWayStopsSection"
-        )
+        import("@/components/travel-authorizations/details-edit-form-card/OneWayStopsSection.vue")
     case TRIP_TYPES.MULTI_DESTINATION:
       return () =>
         import(
-          "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/details-form-card/MultiDestinationStopsSection"
+          "@/components/travel-authorizations/details-edit-form-card/MultiDestinationStopsSection.vue"
         )
     default:
       return null
