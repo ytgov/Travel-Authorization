@@ -57,7 +57,7 @@ const props = defineProps({
     required: true,
   },
   classesForDisabledButton: {
-    type: String | Array | Object,
+    type: [String, Array, Object],
     default: "",
   },
 })
