@@ -1,6 +1,6 @@
 <template>
-  <PurposeFormCard
-    ref="purposeFormCard"
+  <PurposeEditFormCard
+    ref="purposeEditFormCard"
     :travel-authorization-id="travelAuthorizationIdAsNumber"
   />
 </template>
@@ -12,7 +12,7 @@ import { useSnack } from "@/plugins/snack-plugin"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import PurposeFormCard from "@/components/travel-authorizations/PurposeEditFormCard.vue"
+import PurposeEditFormCard from "@/components/travel-authorizations/PurposeEditFormCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -28,19 +28,19 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, isLoading } = useTravelAuthorization(travelAuthorizationId)
 
-/** @type {import('vue').Ref<InstanceType<typeof PurposeFormCard> | null>} */
-const purposeFormCard = ref(null)
+/** @type {import('vue').Ref<InstanceType<typeof PurposeEditFormCard> | null>} */
+const purposeEditFormCard = ref(null)
 const snack = useSnack()
 
 async function validateAndSave() {
   isLoading.value = true
   try {
-    if (purposeFormCard.value.validate() === false) {
+    if (purposeEditFormCard.value.validate() === false) {
       snack.error("Please fill in all required fields.")
       return false
     }
 
-    await purposeFormCard.value.save({
+    await purposeEditFormCard.value.save({
       stepNumber: travelAuthorization.value.stepNumber + 1,
     })
     snack.success("Travel request saved.")
