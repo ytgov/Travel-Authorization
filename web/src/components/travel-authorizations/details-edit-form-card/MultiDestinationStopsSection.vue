@@ -23,7 +23,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          :value="stops[1].locationId"
+          :value="value[1].locationId"
           :in-territory="allTravelWithinTerritory"
           :rules="[required]"
           label="To"
@@ -90,7 +90,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          :value="stops[1].locationId"
+          :value="value[1].locationId"
           :in-territory="allTravelWithinTerritory"
           :rules="[required]"
           label="To"
@@ -107,7 +107,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          :value="stops[2].locationId"
+          :value="value[2].locationId"
           :in-territory="allTravelWithinTerritory"
           :rules="[required]"
           label="From"
@@ -124,7 +124,7 @@
         md="2"
       >
         <DatePicker
-          :value="stops[1].departureDate"
+          :value="value[1].departureDate"
           :min="firstStop.departureDate"
           :rules="[
             required,
@@ -143,7 +143,7 @@
         md="2"
       >
         <TimePicker
-          :value="stops[1].departureTime"
+          :value="value[1].departureTime"
           label="Time (24 hour)"
           persistent-hint
           @input="updateStop(1, 'departureTime', $event)"
@@ -154,7 +154,7 @@
         md="4"
       >
         <TravelMethodSelect
-          :value="stops[1].transport"
+          :value="value[1].transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -164,7 +164,7 @@
           @input="updateStop(1, 'transport', $event)"
         />
         <AccommodationTypeSelect
-          :value="stops[1].accommodationType"
+          :value="value[1].accommodationType"
           :rules="[required]"
           background-color="white"
           dense
@@ -180,7 +180,7 @@
         md="2"
       >
         <LocationsAutocomplete
-          :value="stops[2].locationId"
+          :value="value[2].locationId"
           :in-territory="allTravelWithinTerritory"
           :rules="[required]"
           label="From"
@@ -214,11 +214,11 @@
         md="2"
       >
         <DatePicker
-          :value="stops[2].departureDate"
-          :min="stops[1].departureDate"
+          :value="value[2].departureDate"
+          :min="value[1].departureDate"
           :rules="[
             required,
-            greaterThanOrEqualToDate(stops[1].departureDate, {
+            greaterThanOrEqualToDate(value[1].departureDate, {
               referenceFieldLabel: 'previous departure date',
             }),
           ]"
@@ -233,7 +233,7 @@
         md="2"
       >
         <TimePicker
-          :value="stops[2].departureTime"
+          :value="value[2].departureTime"
           label="Time (24 hour)"
           persistent-hint
           @input="updateStop(2, 'departureTime', $event)"
@@ -244,7 +244,7 @@
         md="4"
       >
         <TravelMethodSelect
-          :value="stops[2].transport"
+          :value="value[2].transport"
           :rules="[required]"
           background-color="white"
           dense
@@ -254,7 +254,7 @@
           @input="updateStop(2, 'transport', $event)"
         />
         <AccommodationTypeSelect
-          :value="stops[2].accommodationType"
+          :value="value[2].accommodationType"
           :default-value="null"
           hint="Optional, set only if neccessary"
           placeholder="N/A"
