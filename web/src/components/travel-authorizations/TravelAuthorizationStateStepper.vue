@@ -14,7 +14,7 @@
   >
     <template v-for="step in steps">
       <v-stepper-step
-        v-if="currentStepNumber !== step.number"
+        v-if="currentStepNumber !== step.number || step.disabled"
         :key="`${step.title}-${step.number}`"
         :step="step.number"
         :complete="step.number < currentStepNumber"
@@ -66,40 +66,6 @@ const props = defineProps({
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, refresh: refreshTravelAuthorization } =
   useTravelAuthorization(travelAuthorizationId)
-
-const detailsSteps = computed(() => {
-  if (travelAuthorization.value?.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT) {
-    return [
-      {
-        title: "Details: purpose",
-        subtitle: "Enter trip purpose",
-        to: {
-          name: "my-travel-requests/details/DetailsEditPurposePage",
-          params: { travelAuthorizationId: travelAuthorizationId.value },
-        },
-      },
-      {
-        title: "Details",
-        subtitle: "Edit trip details",
-        to: {
-          name: "my-travel-requests/details/DetailsEditPage",
-          params: { travelAuthorizationId: travelAuthorizationId.value },
-        },
-      },
-    ]
-  }
-
-  return [
-    {
-      title: "Details",
-      subtitle: "Review submitted trip details",
-      to: {
-        name: "my-travel-requests/details/DetailsPage",
-        params: { travelAuthorizationId: travelAuthorizationId.value },
-      },
-    },
-  ]
-})
 
 const expenseOptions = computed(() => ({
   where: {
@@ -258,7 +224,32 @@ const expenseStep = computed(() => {
 
 const steps = computed(() =>
   [
-    ...detailsSteps.value,
+    {
+      title: "Details: purpose",
+      subtitle: "Enter trip purpose",
+      to: {
+        name: "my-travel-requests/details/DetailsEditPurposePage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+      disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
+    },
+    {
+      title: "Details",
+      subtitle: "Edit trip details",
+      to: {
+        name: "my-travel-requests/details/DetailsEditPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+      disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
+    },
+    {
+      title: "Details",
+      subtitle: "Review submitted trip details",
+      to: {
+        name: "my-travel-requests/details/DetailsPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+    },
     estimateStep.value,
     requestStep.value,
     optionsProvideStep.value,
