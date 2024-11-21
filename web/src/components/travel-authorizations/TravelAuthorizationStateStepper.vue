@@ -12,35 +12,19 @@
     outlined
     :width="$vuetify.breakpoint.mdAndUp ? 300 : undefined"
   >
-    <template v-for="step in steps">
-      <v-stepper-step
-        v-if="currentStepNumber !== step.number || step.disabled"
-        :key="`${step.title}-${step.number}`"
-        :step="step.number"
-        :complete="step.number < currentStepNumber"
-      >
-        {{ step.title }}
-        <small v-if="step.subtitle">
-          {{ step.subtitle }}
-        </small>
-      </v-stepper-step>
-      <router-link
-        v-else
-        :key="`${step.title}-${step.number}`"
-        :to="step.to"
-        exact
-      >
-        <v-stepper-step
-          :step="step.number"
-          :complete="step.number < currentStepNumber"
-        >
-          {{ step.title }}
-          <small v-if="step.subtitle">
-            {{ step.subtitle }}
-          </small>
-        </v-stepper-step>
-      </router-link>
-    </template>
+    <v-stepper-step
+      v-for="step in steps"
+      :key="`${step.title}-${step.number}`"
+      :step="step.number"
+      :complete="step.number < currentStepNumber"
+      :editable="step.disabled !== true && step.number <= currentStepNumber"
+      @click="goToStep(step)"
+    >
+      {{ step.title }}
+      <small v-if="step.subtitle">
+        {{ step.subtitle }}
+      </small>
+    </v-stepper-step>
   </v-stepper>
 </template>
 
@@ -51,10 +35,10 @@ import { isNil } from "lodash"
 
 import { TRAVEL_METHODS } from "@/api/travel-segments-api"
 import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
-import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
 import useTravelAuthorization, {
   STATUSES as TRAVEL_AUTHORIZATION_STATUSES,
 } from "@/use/use-travel-authorization"
+import router from "@/router"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -66,36 +50,6 @@ const props = defineProps({
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, refresh: refreshTravelAuthorization } =
   useTravelAuthorization(travelAuthorizationId)
-
-const expenseOptions = computed(() => ({
-  where: {
-    travelAuthorizationId: props.travelAuthorizationId,
-    type: EXPENSE_TYPES.ESTIMATE,
-  },
-}))
-const { expenses: estimates, refresh: refreshEstimates } = useExpenses(expenseOptions)
-const estimateStep = computed(() => {
-  if (travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT) {
-    return {
-      title: "Estimate",
-      subtitle: "Generate estimate",
-      to: {
-        name: "my-travel-requests/estimate/EstimateEditPage",
-        params: { travelAuthorizationId: travelAuthorizationId.value },
-      },
-      complete: estimates.value.length > 0,
-    }
-  }
-
-  return {
-    title: "Estimate",
-    subtitle: "Review submitted estimate",
-    to: {
-      name: "my-travel-requests/estimate/EstimatePage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  }
-})
 
 const requestStep = computed(() => {
   // TODO: lock on denied states.
@@ -243,6 +197,23 @@ const steps = computed(() =>
       disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
     },
     {
+      title: "Estimate: edit",
+      subtitle: "Generate estimate",
+      to: {
+        name: "my-travel-requests/estimate/EstimateEditPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+      disabled: travelAuthorization.value.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
+    },
+    {
+      title: "Estimate",
+      subtitle: "Review submitted estimate",
+      to: {
+        name: "my-travel-requests/estimate/EstimatePage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+    },
+    {
       title: "Details",
       subtitle: "Review submitted trip details",
       to: {
@@ -250,7 +221,6 @@ const steps = computed(() =>
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
     },
-    estimateStep.value,
     requestStep.value,
     optionsProvideStep.value,
     expenseStep.value,
@@ -300,9 +270,16 @@ const nextStepTo = computed(() => {
   return nextStep.to
 })
 
+function goToStep(step) {
+  if (isNil(step.to) || step.disabled === true || step.number > currentStepNumber.value) {
+    return
+  }
+
+  router.push(step.to)
+}
+
 async function refresh() {
   await refreshTravelAuthorization()
-  await refreshEstimates()
 }
 
 defineExpose({
