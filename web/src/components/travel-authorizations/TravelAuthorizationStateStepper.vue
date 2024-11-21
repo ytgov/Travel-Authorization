@@ -12,11 +12,11 @@
     outlined
     :width="$vuetify.breakpoint.mdAndUp ? 300 : undefined"
   >
-    <template v-for="(step, index) in steps">
+    <template v-for="step in steps">
       <v-stepper-step
-        v-if="isNil(step.to)"
-        :key="index"
-        :step="index + 1"
+        v-if="step.complete !== true && currentStepNumber !== step.number"
+        :key="`${step.title}-${step.number}`"
+        :step="step.number"
         :complete="step.complete"
       >
         {{ step.title }}
@@ -26,12 +26,12 @@
       </v-stepper-step>
       <router-link
         v-else
-        :key="index"
+        :key="`${step.title}-${step.number}`"
         :to="step.to"
         exact
       >
         <v-stepper-step
-          :step="index + 1"
+          :step="step.number"
           :complete="step.complete"
         >
           {{ step.title }}
@@ -266,21 +266,26 @@ const expenseStep = computed(() => {
   }
 })
 
-const steps = computed(() => [
-  ...detailsSteps.value,
-  estimateStep.value,
-  requestStep.value,
-  optionsProvideStep.value,
-  expenseStep.value,
-])
+const steps = computed(() =>
+  [
+    ...detailsSteps.value,
+    estimateStep.value,
+    requestStep.value,
+    optionsProvideStep.value,
+    expenseStep.value,
+  ].map((step, index) => ({
+    ...step,
+    number: index + 1,
+  }))
+)
 
 const currentStepNumber = computed(() => {
-  const index = steps.value.findIndex((step) => step.complete === false)
-  if (index === -1) {
+  const step = steps.value.find((step) => step.complete === false)
+  if (isNil(step)) {
     return 1
   }
 
-  return index + 1
+  return step.number
 })
 
 async function refresh() {
