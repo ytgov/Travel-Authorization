@@ -6,31 +6,23 @@ import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-a
 export { STATUSES }
 
 /**
- * TODO: add other fields
- * @typedef {Object} TravelAuthorization
- * @property {number} id
- * @property {number} userId
- * @property {Expense[]} expenses
- * @property {Purpose} purpose
- * @property {Stop[]} stops
- * @property {TravelSegment[]} travelSegments
- * @property {User} user
+ * @template [T=any]
+ * @typedef {import('vue').Ref<T>} Ref
  */
+/** @typedef {import('@/api/travel-authorizations-api.js').TravelAuthorization} TravelAuthorization */
 
 /**
  * This stores a global user state per id.
  *
- * TODO: consider requiring the id, and building a separate function for use without an id
- *
  * @callback UseTravelAuthorization
- * @param {import('vue').Ref<string | number>} [travelAuthorizationId]
+ * @param {Ref<string | number>} [travelAuthorizationId]
  * @returns {{
- *   travelAuthorization: import('vue').Ref<TravelAuthorization>,
- *   isLoading: import('vue').Ref<boolean>,
- *   isErrored: import('vue').Ref<boolean>,
- *   stops: import('vue').Ref<Stop[]>,
- *   firstStop: import('vue').Ref<Stop>,
- *   lastStop: import('vue').Ref<Stop>,
+ *   travelAuthorization: Ref<TravelAuthorization>,
+ *   isLoading: Ref<boolean>,
+ *   isErrored: Ref<boolean>,
+ *   stops: Ref<Stop[]>,
+ *   firstStop: Ref<Stop>,
+ *   lastStop: Ref<Stop>,
  *   fetch: () => Promise<TravelAuthorization>,
  *   save: () => Promise<TravelAuthorization>, // save that triggers loading state
  *   saveSilently: () => Promise<TravelAuthorization>, // save that does not trigger loading state
@@ -78,20 +70,23 @@ export function useTravelAuthorization(travelAuthorizationId) {
     }
   }
 
-  async function save() {
+  async function save(attributeOverrides = {}) {
     state.isLoading = true
     try {
-      return saveSilently()
+      return saveSilently(attributeOverrides)
     } finally {
       state.isLoading = false
     }
   }
 
-  async function saveSilently() {
+  async function saveSilently(attributeOverrides = {}) {
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.update(
         unref(travelAuthorizationId),
-        state.travelAuthorization
+        {
+          ...state.travelAuthorization,
+          ...attributeOverrides,
+        }
       )
       state.isErrored = false
       state.travelAuthorization = travelAuthorization

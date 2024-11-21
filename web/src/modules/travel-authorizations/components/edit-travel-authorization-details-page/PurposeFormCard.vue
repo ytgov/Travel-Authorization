@@ -110,7 +110,7 @@
 import { ref, watch } from "vue"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete"
-import TravelPurposeSelect from "@/components/TravelPurposeSelect"
+import TravelPurposeSelect from "@/components/travel-purposes/TravelPurposeSelect.vue"
 
 import { required } from "@/utils/validators"
 import { useTravelAuthorization } from "@/use/use-travel-authorization"

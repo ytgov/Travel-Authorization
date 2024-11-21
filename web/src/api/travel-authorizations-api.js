@@ -1,5 +1,7 @@
 import http from "@/api/http-client"
 
+/** @typedef {import('@/api/base-api.js').Policy} Policy */
+
 /** Keep in sync with api/src/models/travel-authorization.ts */
 export const STATUSES = Object.freeze({
   APPROVED: "approved",
@@ -15,6 +17,45 @@ export const STATUSES = Object.freeze({
   SUBMITTED: "submitted",
 })
 
+/** @typedef {STATUSES[keyof STATUSES]} Statuses */
+
+/**
+ * @typedef {{
+ *   id: string;
+ *   userId: string;
+ *   createdBy: string | null;
+ *   purposeId: string | null;
+ *   preApprovalProfileId: string | null;
+ *   slug: string;
+ *   firstName: string | null;
+ *   lastName: string | null;
+ *   department: string | null;
+ *   division: string | null;
+ *   branch: string | null;
+ *   unit: string | null;
+ *   email: string | null;
+ *   mailcode: string | null;
+ *   daysOffTravelStatus: string | null;
+ *   dateBackToWork: string | null;
+ *   travelDuration: string | null;
+ *   travelAdvance: string | null;
+ *   eventName: string | null;
+ *   summary: string | null;
+ *   benefits: string | null;
+ *   status: Statuses;
+ *   stepNumber: string;
+ *   supervisorEmail: string | null;
+ *   requestChange: string | null;
+ *   denialReason: string | null;
+ *   oneWayTrip: boolean | null;
+ *   multiStop: boolean | null;
+ *   travelAdvanceInCents: string | null;
+ *   allTravelWithinTerritory: boolean | null;
+ *   createdAt: string;
+ *   updatedAt: string;
+ * }} TravelAuthorization
+ */
+
 export const travelAuthorizationsApi = {
   STATUSES,
   async list({ where, page, perPage, ...otherParams } = {}) {
@@ -23,6 +64,13 @@ export const travelAuthorizationsApi = {
     })
     return data
   },
+  /**
+   * @param {number} travelAuthorizationId
+   * @returns {Promise<{
+   *   travelAuthorization: TravelAuthorization;
+   *   policy: Policy;
+   * }>}
+   */
   async get(travelAuthorizationId, params = {}) {
     const { data } = await http.get(`/api/travel-authorizations/${travelAuthorizationId}`, {
       params,

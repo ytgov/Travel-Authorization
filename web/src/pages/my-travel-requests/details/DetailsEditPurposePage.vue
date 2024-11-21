@@ -1,61 +1,42 @@
 <template>
-  <v-form
-    ref="form"
-    class="mt-4"
-    lazy-validation
-  >
+  <v-container>
     <v-row>
       <v-col>
-        <PurposeFormCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <DetailsFormCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <ApprovalsFormCard
+        <PurposeFormCard
+          ref="purposeFormCard"
           :travel-authorization-id="travelAuthorizationIdAsNumber"
-          :validate-form="validateForm"
         />
       </v-col>
     </v-row>
     <div class="d-flex justify-end">
-      <SaveDraftButton
-        :travel-authorization-id="travelAuthorizationIdAsNumber"
-        :validate-form="validateForm"
-      />
       <v-btn
-        class="ml-3"
         color="secondary"
         :to="{
           name: 'my-travel-requests/MyTravelRequestsPage',
         }"
         >Back</v-btn
       >
+      <v-btn
+        class="ml-3"
+        :loading="isLoading"
+        color="primary"
+        @click="saveWrapper"
+      >
+        Continue
+      </v-btn>
     </div>
-  </v-form>
+  </v-container>
 </template>
 
 <script setup>
 import { computed, ref, toRefs } from "vue"
+import { useRouter } from "vue2-helpers/vue-router"
 
+import { useSnack } from "@/plugins/snack-plugin"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import PurposeFormCard from "@/components/travel-authorizations/PurposeEditFormCard.vue"
-import DetailsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/DetailsFormCard.vue"
-import ApprovalsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/ApprovalsFormCard.vue"
-
-import SaveDraftButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/SaveDraftButton.vue"
-
-/**
- * @template [T=any]
- * @typedef {import("vue").Ref<T>} Ref
- */
-/** @typedef {import('vuetify/lib/components/VForm').VForm} VForm */
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -64,19 +45,42 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["state-changed"])
+
 const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
-/** @type {Ref<InstanceType<typeof VForm> | null>} */
-const form = ref(null)
-
-function validateForm() {
-  if (form.value?.validate()) return true
-
-  return false
-}
 
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, isLoading } = useTravelAuthorization(travelAuthorizationId)
+
+const purposeFormCard = ref(null)
+const snack = useSnack()
+const router = useRouter()
+
+async function saveWrapper() {
+  isLoading.value = true
+  try {
+    if (purposeFormCard.value.validate() === false) {
+      snack.error("Please fill in all required fields.")
+      return
+    }
+
+    await purposeFormCard.value.save({
+      stepNumber: 2,
+    })
+    snack.success("Travel request saved.")
+    emit("state-changed", travelAuthorization.value.id)
+    return router.push({
+      name: "my-travel-requests/details/DetailsEditPage",
+      params: {
+        travelAuthorizationId: props.travelAuthorizationId,
+      },
+    })
+  } catch (error) {
+    snack.error(error.message)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 const travelAuthorizationEventName = computed(() => {
   if (isLoading.value) {
@@ -102,7 +106,7 @@ const breadcrumbs = computed(() => [
   {
     text: "Edit",
     to: {
-      name: "my-travel-requests/details/DetailsEditPage",
+      name: "my-travel-requests/details/DetailsEditPurposePage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
   },

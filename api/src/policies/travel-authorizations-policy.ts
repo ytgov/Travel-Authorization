@@ -74,6 +74,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     return [
       "preApprovalProfileId",
       "purposeId",
+      "stepNumber",
       "firstName",
       "lastName",
       "department",

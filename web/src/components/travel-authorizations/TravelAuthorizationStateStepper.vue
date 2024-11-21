@@ -1,6 +1,13 @@
 <template>
   <!-- TODO: consider if this should be a v-navigation-drawer + v-list instead? -->
+  <v-skeleton-loader
+    v-if="isNil(travelAuthorization.id)"
+    type="list-item@4"
+    min-width="300px"
+  />
   <v-stepper
+    v-else
+    :value="currentStepNumber"
     vertical
     outlined
   >
@@ -58,28 +65,41 @@ const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, refresh: refreshTravelAuthorization } =
   useTravelAuthorization(travelAuthorizationId)
 
-const detailsStep = computed(() => {
-  if (travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT) {
-    return {
-      title: "Details",
-      subtitle: "Enter trip details",
-      to: {
-        name: "my-travel-requests/details/DetailsEditPage",
-        params: { travelAuthorizationId: travelAuthorizationId.value },
+const detailsSteps = computed(() => {
+  if (travelAuthorization.value?.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT) {
+    return [
+      {
+        title: "Details: purpose",
+        subtitle: "Enter trip purpose",
+        to: {
+          name: "my-travel-requests/details/DetailsEditPurposePage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+        complete: travelAuthorization.value.stepNumber > 1,
       },
-      complete: false,
-    }
+      {
+        title: "Details",
+        subtitle: "Edit trip details",
+        to: {
+          name: "my-travel-requests/details/DetailsEditPage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+        complete: travelAuthorization.value.stepNumber > 2,
+      },
+    ]
   }
 
-  return {
-    title: "Details",
-    subtitle: "Review submitted trip details",
-    to: {
-      name: "my-travel-requests/details/DetailsPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
+  return [
+    {
+      title: "Details",
+      subtitle: "Review submitted trip details",
+      to: {
+        name: "my-travel-requests/details/DetailsPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+      complete: true,
     },
-    complete: true,
-  }
+  ]
 })
 
 const expenseOptions = computed(() => ({
@@ -246,12 +266,21 @@ const expenseStep = computed(() => {
 })
 
 const steps = computed(() => [
-  detailsStep.value,
+  ...detailsSteps.value,
   estimateStep.value,
   requestStep.value,
   optionsProvideStep.value,
   expenseStep.value,
 ])
+
+const currentStepNumber = computed(() => {
+  const index = steps.value.findIndex((step) => step.complete === false)
+  if (index === -1) {
+    return 1
+  }
+
+  return index + 1
+})
 
 async function refresh() {
   await refreshTravelAuthorization()

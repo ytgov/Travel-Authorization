@@ -16,10 +16,8 @@
                 cols="12"
                 md="6"
               >
-                <v-select
+                <TravelPurposeSelect
                   v-model="travelAuthorization.purposeId"
-                  :items="travelPurposes"
-                  :loading="isLoadingTravelPurposes"
                   :rules="[required]"
                   dense
                   item-text="purpose"
@@ -28,7 +26,7 @@
                   outlined
                   required
                   validate-on-blur
-                ></v-select>
+                />
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -113,57 +111,40 @@
   </v-card>
 </template>
 
-<script>
-import { mapState, mapActions, mapGetters } from "vuex"
+<script setup>
+import { ref, toRefs } from "vue"
 
-import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete"
+import { required } from "@/utils/validators"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
-export default {
-  name: "PurposeFormCard",
-  components: {
-    LocationsAutocomplete,
+import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
+import TravelPurposeSelect from "@/components/travel-purposes/TravelPurposeSelect.vue"
+
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
+})
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization, stops, lastStop, replaceStops, save } =
+  useTravelAuthorization(travelAuthorizationId)
+
+function updateLastStopLocationId(locationId) {
+  replaceStops([
+    ...stops.value.slice(0, -1),
+    {
+      ...lastStop.value,
+      locationId,
     },
-  },
-  data: () => ({
-    required: (v) => !!v || "This field is required",
-  }),
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-      stops: "stops",
-      lastStop: "lastStop",
-    }),
-    ...mapState("travelPurposes", {
-      travelPurposes: "items",
-      isLoadingTravelPurposes: "isLoading",
-    }),
-  },
-  async mounted() {
-    await Promise.all([
-      await this.ensureTravelAuthorization(this.travelAuthorizationId),
-      await this.ensureTravelPurposes(),
-    ])
-  },
-  methods: {
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-      replaceStops: "replaceStops",
-    }),
-    ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
-    async updateLastStopLocationId(locationId) {
-      await this.replaceStops([
-        ...this.stops.slice(0, -1),
-        {
-          ...this.lastStop,
-          locationId,
-        },
-      ])
-    },
-  },
+  ])
 }
+
+const form = ref(null)
+
+defineExpose({
+  save,
+  validate: () => form.value?.validate(),
+})
 </script>
