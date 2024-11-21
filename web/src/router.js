@@ -180,6 +180,13 @@ const routes = [
                 props: true,
               },
               {
+                path: "details/edit-trip",
+                name: "my-travel-requests/details/DetailsEditTripPage",
+                component: () =>
+                  import("@/pages/my-travel-requests/details/DetailsEditTripPage.vue"),
+                props: true,
+              },
+              {
                 path: "details/edit",
                 name: "my-travel-requests/details/DetailsEditPage",
                 component: () => import("@/pages/my-travel-requests/details/DetailsEditPage.vue"),

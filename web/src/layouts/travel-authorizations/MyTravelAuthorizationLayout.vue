@@ -35,7 +35,7 @@
               :loading="isLoading"
               color="primary"
               :to="nextStepTo"
-              @click.stop="goToNextStep"
+              @click.capture="goToNextStep($event)"
             >
               Continue
             </v-btn>
@@ -87,10 +87,14 @@ async function refresh() {
 
 const currentStepComponent = ref(null)
 
-async function goToNextStep() {
+async function goToNextStep(event) {
   isLoading.value = true
   try {
-    await currentStepComponent.value?.continue()
+    const stepSuccess = await currentStepComponent.value?.continue()
+    if (stepSuccess !== true) {
+      event.preventDefault()
+      return
+    }
   } finally {
     isLoading.value = false
   }

@@ -188,6 +188,15 @@ const steps = computed(() =>
       disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
     },
     {
+      title: "Details: trip",
+      subtitle: "Enter trip details",
+      to: {
+        name: "my-travel-requests/details/DetailsEditTripPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+      disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
+    },
+    {
       title: "Details",
       subtitle: "Edit trip details",
       to: {
