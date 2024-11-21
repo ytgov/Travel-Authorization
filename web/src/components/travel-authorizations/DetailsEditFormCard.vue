@@ -141,7 +141,7 @@ const hasEnoughStops = computed(() => {
   }
 })
 
-/** @typedef {import('vuetify/lib/components/VForm').VForm} VForm */
+/** @typedef {import('vuetify/lib/components').VForm} VForm */
 /** @type {import('vue').Ref<typeof VForm | null>} */
 const form = ref(null)
 

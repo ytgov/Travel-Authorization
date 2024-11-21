@@ -51,12 +51,6 @@ import ApprovalsFormCard from "@/modules/travel-authorizations/components/edit-m
 
 import SaveDraftButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/SaveDraftButton.vue"
 
-/**
- * @template [T=any]
- * @typedef {import("vue").Ref<T>} Ref
- */
-/** @typedef {import('vuetify/lib/components/VForm').VForm} VForm */
-
 const props = defineProps({
   travelAuthorizationId: {
     type: [String, Number],
@@ -66,7 +60,8 @@ const props = defineProps({
 
 const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
-/** @type {Ref<InstanceType<typeof VForm> | null>} */
+/** @typedef {import('vuetify/lib/components').VForm} VForm */
+/** @type {import("vue").Ref<InstanceType<typeof VForm> | null>} */
 const form = ref(null)
 
 function validateForm() {
