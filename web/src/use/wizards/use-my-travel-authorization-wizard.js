@@ -276,6 +276,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
       isNil(step) ||
       isNil(step.to) ||
       step.disabled === true ||
+      step.number === state.currentStepNumber ||
       step.number > state.currentStepNumber
     ) {
       return
