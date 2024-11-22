@@ -36,6 +36,7 @@
           cols="12"
           md="6"
         >
+          <!-- TODO: make this a re-usable component -->
           <v-text-field
             :value="travelAuthorizationPreApprovalProfileText"
             :loading="isLoadingTravelAuthorizationPreApprovalProfile"
@@ -67,13 +68,12 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs, watch } from "vue"
+import { computed, toRefs } from "vue"
 import { isNil, sumBy } from "lodash"
 
 import formatCurrency from "@/utils/format-currency"
 import useTravelAuthorization from "@/use/use-travel-authorization"
-
-import travelAuthorizationPreApprovalProfilesApi from "@/api/travel-authorization-pre-approval-profiles-api"
+import useTravelAuthorizationPreApprovalProfile from "@/use/use-travel-authorization-pre-approval-profile"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -85,10 +85,15 @@ const props = defineProps({
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, estimates } = useTravelAuthorization(travelAuthorizationId)
 
-const travelAuthorizationPreApprovalProfile = ref(null)
-const isLoadingTravelAuthorizationPreApprovalProfile = ref(false)
-
 const estimatedCost = computed(() => sumBy(estimates.value, "cost"))
+
+const travelAuthorizationPreApprovalProfileId = computed(() => {
+  return travelAuthorization.value?.preApprovalProfileId
+})
+const {
+  travelAuthorizationPreApprovalProfile,
+  isLoading: isLoadingTravelAuthorizationPreApprovalProfile,
+} = useTravelAuthorizationPreApprovalProfile(travelAuthorizationPreApprovalProfileId)
 
 const travelAuthorizationPreApprovalProfileText = computed(() => {
   if (
@@ -104,32 +109,4 @@ const travelAuthorizationPreApprovalProfileText = computed(() => {
 const travelAdvanceInDollars = computed(() =>
   Math.ceil(travelAuthorization.value.travelAdvanceInCents / 100.0)
 )
-
-// TODO: move to a use file
-watch(
-  () => travelAuthorization.value,
-  async (newTravelAuthorization) => {
-    if (isNil(newTravelAuthorization)) {
-      return
-    }
-
-    const { preApprovalProfileId } = newTravelAuthorization
-    if (isNil(preApprovalProfileId)) {
-      return
-    }
-
-    await loadTravelAuthorizationPreApprovedProfile(preApprovalProfileId)
-  }
-)
-
-async function loadTravelAuthorizationPreApprovedProfile(preApprovalProfileId) {
-  isLoadingTravelAuthorizationPreApprovalProfile.value = true
-  try {
-    const { travelAuthorizationPreApprovalProfile: newProfile } =
-      await travelAuthorizationPreApprovalProfilesApi.get(preApprovalProfileId)
-    travelAuthorizationPreApprovalProfile.value = newProfile
-  } finally {
-    isLoadingTravelAuthorizationPreApprovalProfile.value = false
-  }
-}
 </script>
