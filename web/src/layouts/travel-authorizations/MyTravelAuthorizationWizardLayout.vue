@@ -28,14 +28,21 @@
 
             <div class="d-flex justify-end">
               <v-btn
-                color="secondary"
-                @click="goToPreviousStep"
-                >Back</v-btn
+                v-bind="{
+                  color: 'secondary',
+                  ...currentStep.backButtonProps,
+                }"
+                @click="backAndGoToPreviousStep"
               >
+                {{ currentStep.backButtonText || "Back" }}
+              </v-btn>
               <v-btn
                 class="ml-3"
-                :loading="isLoading"
-                color="primary"
+                v-bind="{
+                  color: 'primary',
+                  ...currentStep.continueButtonProps,
+                  loading: isLoading,
+                }"
                 @click="continueAndGoToNextStep"
               >
                 {{ currentStep.continueButtonText || "Continue" }}
@@ -108,6 +115,23 @@ onMounted(() => {
 })
 
 const currentStepComponent = ref(null)
+
+async function backAndGoToPreviousStep() {
+  if (isNil(currentStepComponent.value?.back)) {
+    return goToPreviousStep()
+  }
+
+  isLoading.value = true
+  try {
+    const stepSuccess = await currentStepComponent.value?.back()
+    if (stepSuccess !== true) {
+      return
+    }
+    return goToPreviousStep()
+  } finally {
+    isLoading.value = false
+  }
+}
 
 async function continueAndGoToNextStep() {
   isLoading.value = true

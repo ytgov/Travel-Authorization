@@ -15,35 +15,20 @@
         <ApprovalsCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
       </v-col>
     </v-row>
-    <div class="d-flex justify-end">
-      <v-btn
-        color="secondary"
-        :to="{
-          name: 'my-travel-requests/MyTravelRequestsPage',
-        }"
-        >Back</v-btn
-      >
-      <RevertToDraftButton
-        :travel-authorization-id="travelAuthorizationIdAsNumber"
-        class="ml-3"
-        classes-for-disabled-button="ml-3"
-        color="warning"
-      />
-    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, toRefs } from "vue"
+import { computed, ref, toRefs } from "vue"
 
+import { useSnack } from "@/plugins/snack-plugin"
+import travelAuthorizationApi from "@/api/travel-authorizations-api"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import RevertToDraftButton from "@/components/travel-authorizations/RevertToDraftButton.vue"
-
 import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
 import DetailsCard from "@/components/travel-authorizations/DetailsCard.vue"
-import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard.vue"
+import ApprovalsCard from "@/components/travel-authorizations/ApprovalsCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -56,6 +41,24 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const isLoading = ref(false)
+const snack = useSnack()
+
+async function revertToDraft() {
+  isLoading.value = true
+  try {
+    await travelAuthorizationApi.revertToDraft(props.travelAuthorizationId)
+    snack.success("Travel request reverted to draft.")
+    return true
+  } catch (error) {
+    console.error(error)
+    snack.error(`Failed to revert to draft: ${error}`)
+    return false
+  } finally {
+    isLoading.value = false
+  }
+}
 
 const breadcrumbs = computed(() => [
   {
@@ -73,4 +76,9 @@ const breadcrumbs = computed(() => [
   },
 ])
 useBreadcrumbs(breadcrumbs)
+
+defineExpose({
+  back: revertToDraft,
+  continue: () => {},
+})
 </script>

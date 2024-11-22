@@ -188,6 +188,10 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
           name: "my-travel-requests/details/DetailsPage",
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
+        backButtonText: "Revert to Draft",
+        backButtonProps: {
+          color: "warning",
+        },
       },
       {
         title: "Estimate",
