@@ -14,7 +14,8 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     currentStepNumber: 1,
   })
 
-  const { travelAuthorization, refresh, save } = useTravelAuthorization(travelAuthorizationId)
+  const { travelAuthorization, isLoading, refresh, save } =
+    useTravelAuthorization(travelAuthorizationId)
 
   const requestStep = computed(() => {
     // TODO: lock on denied states.
@@ -253,6 +254,18 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
 
   const router = useRouter()
 
+  async function goToPreviousStep() {
+    const previousStepTo = previousStep.value.to
+    state.currentStepNumber -= 1
+    return router.push(previousStepTo)
+  }
+
+  async function goToNextStep() {
+    const nextStepTo = nextStep.value.to
+    state.currentStepNumber += 1
+    return router.push(nextStepTo)
+  }
+
   async function goToStep(stepNumber) {
     const step = steps.value.find((step) => step.number === stepNumber)
     if (
@@ -278,9 +291,12 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     currentStep,
     previousStep,
     nextStep,
+    isLoading,
     save,
     refresh,
     goToStep,
+    goToPreviousStep,
+    goToNextStep,
   }
 }
 

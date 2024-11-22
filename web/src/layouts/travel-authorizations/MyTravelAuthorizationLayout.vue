@@ -35,7 +35,7 @@
               class="ml-3"
               :loading="isLoading"
               color="primary"
-              @click="goToNextStep"
+              @click="continueAndGoToNextStep"
             >
               {{ currentStep.continueButtonText || "Continue" }}
             </v-btn>
@@ -84,8 +84,16 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 const { currentUser } = useCurrentUser()
 
 const { travelAuthorizationId } = toRefs(props)
-const { currentStepNumber, steps, currentStep, goToStep, refresh } =
-  useMyTravelRequestWizard(travelAuthorizationId)
+const {
+  currentStepNumber,
+  steps,
+  currentStep,
+  isLoading,
+  refresh,
+  goToStep,
+  goToNextStep,
+  goToPreviousStep,
+} = useMyTravelRequestWizard(travelAuthorizationId)
 
 const route = useRoute()
 
@@ -98,29 +106,16 @@ onMounted(() => {
   }
 })
 
-const isLoading = ref(false)
-
 const currentStepComponent = ref(null)
 
-async function goToNextStep() {
+async function continueAndGoToNextStep() {
   isLoading.value = true
   try {
     const stepSuccess = await currentStepComponent.value?.continue()
     if (stepSuccess !== true) {
       return
     }
-    currentStepNumber.value += 1
-    goToStep(currentStepNumber.value)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-async function goToPreviousStep() {
-  isLoading.value = true
-  try {
-    currentStepNumber.value -= 1
-    goToStep(currentStepNumber.value)
+    return goToNextStep()
   } finally {
     isLoading.value = false
   }
