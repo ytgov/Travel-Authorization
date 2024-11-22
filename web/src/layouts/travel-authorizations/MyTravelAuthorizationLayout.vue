@@ -37,9 +37,17 @@
               :to="nextStepTo"
               @click.capture="goToNextStep($event)"
             >
-              Continue
+              {{ currentStepContinueButtonText }}
             </v-btn>
           </div>
+
+          <v-row class="mt-10">
+            <v-col>
+              <TravelAuthorizationActionLogsTable
+                :travel-authorization-id="travelAuthorizationIdAsNumber"
+              />
+            </v-col>
+          </v-row>
         </v-card-text>
       </v-card>
     </div>
@@ -54,6 +62,7 @@ import useCurrentUser from "@/use/use-current-user"
 import VUserChipMenu from "@/components/VUserChipMenu.vue"
 import TravelAuthorizationStateStepper from "@/components/travel-authorizations/TravelAuthorizationStateStepper.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
+import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable.vue"
 
 /**
  * @template [T=any]
@@ -78,6 +87,9 @@ const isLoading = ref(false)
 /** @type {import("vue").Ref<InstanceType<typeof TravelAuthorizationStateStepper> | null>} */
 const travelAuthorizationStateStepper = ref(null)
 
+const currentStepContinueButtonText = computed(
+  () => travelAuthorizationStateStepper.value?.currentStepContinueButtonText ?? "Continue"
+)
 const previousStepTo = computed(() => travelAuthorizationStateStepper.value?.previousStepTo)
 const nextStepTo = computed(() => travelAuthorizationStateStepper.value?.nextStepTo)
 

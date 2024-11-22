@@ -117,18 +117,21 @@ export function useTravelAuthorization(travelAuthorizationId) {
   }
 
   // Stateful actions
-  async function submit() {
+  async function submit(attributeOverrides = {}) {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.submit(
         unref(travelAuthorizationId),
-        state.travelAuthorization
+        {
+          ...state.travelAuthorization,
+          ...attributeOverrides,
+        }
       )
       state.isErrored = false
       state.travelAuthorization = travelAuthorization
       return travelAuthorization
     } catch (error) {
-      console.error("Failed to update travel authorization:", error)
+      console.error("Failed to submit travel authorization:", error)
       state.isErrored = true
       throw error
     } finally {

@@ -215,6 +215,7 @@ const steps = computed(() =>
         name: "my-travel-requests/details/DetailsSubmitPage",
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
+      continueButtonText: "Submit to Supervisor",
       disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
     },
     {
@@ -251,6 +252,15 @@ const currentStepNumber = computed(() => {
   }
 
   return step.number
+})
+
+const currentStepContinueButtonText = computed(() => {
+  const currentStep = steps.value[currentStepNumber.value - 1]
+  if (isNil(currentStep)) {
+    return null
+  }
+
+  return currentStep.continueButtonText
 })
 
 const previousStepTo = computed(() => {
@@ -300,6 +310,7 @@ async function refresh() {
 
 defineExpose({
   refresh,
+  currentStepContinueButtonText,
   previousStepTo,
   nextStepTo,
 })
