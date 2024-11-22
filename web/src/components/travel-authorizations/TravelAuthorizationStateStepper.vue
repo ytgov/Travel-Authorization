@@ -197,15 +197,6 @@ const steps = computed(() =>
       disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
     },
     {
-      title: "Details",
-      subtitle: "Edit trip details",
-      to: {
-        name: "my-travel-requests/details/DetailsEditPage",
-        params: { travelAuthorizationId: travelAuthorizationId.value },
-      },
-      disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
-    },
-    {
       title: "Estimate: edit",
       subtitle: "Generate estimate",
       to: {
@@ -213,6 +204,15 @@ const steps = computed(() =>
         params: { travelAuthorizationId: travelAuthorizationId.value },
       },
       disabled: travelAuthorization.value.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
+    },
+    {
+      title: "Details",
+      subtitle: "Edit trip details",
+      to: {
+        name: "my-travel-requests/details/DetailsEditPage",
+        params: { travelAuthorizationId: travelAuthorizationId.value },
+      },
+      disabled: travelAuthorization.value?.status !== TRAVEL_AUTHORIZATION_STATUSES.DRAFT,
     },
     {
       title: "Estimate",

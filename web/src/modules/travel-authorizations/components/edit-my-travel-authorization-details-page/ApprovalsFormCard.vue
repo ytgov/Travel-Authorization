@@ -20,7 +20,7 @@
             <v-btn
               v-if="!refreshingEstimatesSilently && hasEstimates"
               :to="{
-                name: 'EditMyTravelAuthorizationEstimatePage',
+                name: 'my-travel-requests/estimate/EstimateEditPage',
                 params: { travelAuthorizationId: travelAuthorizationId },
               }"
               class="mt-1"

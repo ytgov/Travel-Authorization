@@ -23,6 +23,7 @@
 <script setup>
 import { computed, ref, toRefs } from "vue"
 
+import { useSnack } from "@/plugins/snack-plugin"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
 import useTravelAuthorization from "@/use/use-travel-authorization"
@@ -87,4 +88,19 @@ const breadcrumbs = computed(() => [
   },
 ])
 useBreadcrumbs(breadcrumbs)
+
+const snack = useSnack()
+
+async function validate() {
+  if (hasEstimates.value !== true) {
+    snack.warning("Please add at least one estimate.")
+    return false
+  }
+
+  return true
+}
+
+defineExpose({
+  continue: validate,
+})
 </script>
