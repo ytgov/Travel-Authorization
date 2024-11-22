@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div>
     <EstimatesTable
       ref="estimatesTable"
       :travel-authorization-id="travelAuthorizationIdAsNumber"
