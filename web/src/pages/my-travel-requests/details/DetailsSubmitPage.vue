@@ -97,7 +97,7 @@ const breadcrumbs = computed(() => [
   {
     text: "Edit",
     to: {
-      name: "my-travel-requests/details/DetailsEditPage",
+      name: "my-travel-requests/details/DetailsSubmitPage",
       params: { travelAuthorizationId: travelAuthorizationId.value },
     },
   },

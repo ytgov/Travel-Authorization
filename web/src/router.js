@@ -187,9 +187,9 @@ const routes = [
                 props: true,
               },
               {
-                path: "details/edit",
-                name: "my-travel-requests/details/DetailsEditPage",
-                component: () => import("@/pages/my-travel-requests/details/DetailsEditPage.vue"),
+                path: "details/submit",
+                name: "my-travel-requests/details/DetailsSubmitPage",
+                component: () => import("@/pages/my-travel-requests/details/DetailsSubmitPage.vue"),
                 props: true,
               },
               {
