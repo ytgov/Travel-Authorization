@@ -2,6 +2,8 @@ import { isString } from "lodash"
 
 import http from "@/api/http-client"
 
+import debounceWithArgsCache from "@/utils/debounce-with-args-cache"
+
 /**
  * @typedef {Object} User
  * @property {string} id
@@ -61,5 +63,7 @@ export const usersApi = {
     return data
   },
 }
+
+usersApi.get = debounceWithArgsCache(usersApi.get)
 
 export default usersApi
