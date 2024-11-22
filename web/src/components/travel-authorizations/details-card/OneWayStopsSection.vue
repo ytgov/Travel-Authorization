@@ -37,6 +37,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -51,6 +52,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -64,6 +66,7 @@
           persistent-hint
           outlined
           readonly
+          append-icon="mdi-lock"
         />
         <v-text-field
           :value="originStop.accommodationType"
@@ -72,49 +75,30 @@
           persistent-hint
           outlined
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
     </v-row>
   </div>
 </template>
 
-<script>
-import { mapGetters, mapActions } from "vuex"
+<script setup>
+import { computed, toRefs } from "vue"
+
+import { useTravelAuthorization } from "@/store/travel-authorization"
 
 import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
-export default {
-  name: "OneWayStopsSection",
-  components: {
-    VReadonlyLocationTextField,
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      originStop: {},
-      destinationStop: {},
-    }
-  },
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-    }),
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+})
 
-    this.originStop = this.travelAuthorization.stops[0]
-    this.destinationStop = this.travelAuthorization.stops[1]
-  },
-  methods: {
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-    }),
-  },
-}
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const originStop = computed(() => travelAuthorization.value.stops[0] || {})
+const destinationStop = computed(() => travelAuthorization.value.stops[1] || {})
 </script>

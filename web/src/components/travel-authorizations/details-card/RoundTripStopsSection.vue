@@ -162,43 +162,23 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapActions } from "vuex"
+<script setup>
+import { computed, toRefs } from "vue"
+
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
-export default {
-  name: "RoundTripStopsSection",
-  components: {
-    VReadonlyLocationTextField,
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      originStop: {},
-      destinationStop: {},
-    }
-  },
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-    }),
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+})
 
-    this.originStop = this.travelAuthorization.stops[0]
-    this.destinationStop = this.travelAuthorization.stops[1]
-  },
-  methods: {
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-    }),
-  },
-}
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const originStop = computed(() => travelAuthorization.value.stops[0] || {})
+const destinationStop = computed(() => travelAuthorization.value.stops[1] || {})
 </script>

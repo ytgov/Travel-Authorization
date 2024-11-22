@@ -37,6 +37,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -51,6 +52,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -64,6 +66,7 @@
           persistent-hint
           outlined
           readonly
+          append-icon="mdi-lock"
         />
         <v-text-field
           :value="stop1.accommodationType"
@@ -71,6 +74,7 @@
           dense
           outlined
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
     </v-row>
@@ -111,6 +115,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -125,6 +130,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -138,6 +144,7 @@
           persistent-hint
           outlined
           readonly
+          append-icon="mdi-lock"
         />
         <v-text-field
           :value="stop2.accommodationType"
@@ -145,6 +152,7 @@
           dense
           outlined
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
     </v-row>
@@ -185,6 +193,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -199,6 +208,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -212,6 +222,7 @@
           persistent-hint
           outlined
           readonly
+          append-icon="mdi-lock"
         />
         <v-text-field
           :value="stop3.accommodationType"
@@ -219,53 +230,32 @@
           dense
           outlined
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
     </v-row>
   </div>
 </template>
 
-<script>
-import { mapGetters, mapActions } from "vuex"
+<script setup>
+import { toRefs, computed } from "vue"
+
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
 
-export default {
-  name: "MultiDestinationStopsSection",
-  components: {
-    VReadonlyLocationTextField,
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      stop1: {},
-      stop2: {},
-      stop3: {},
-      stop4: {},
-    }
-  },
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-    }),
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+})
 
-    this.stop1 = this.travelAuthorization.stops[0]
-    this.stop2 = this.travelAuthorization.stops[1]
-    this.stop3 = this.travelAuthorization.stops[2]
-    this.stop4 = this.travelAuthorization.stops[3]
-  },
-  methods: {
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-    }),
-  },
-}
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const stop1 = computed(() => travelAuthorization.value.stops[0] || {})
+const stop2 = computed(() => travelAuthorization.value.stops[1] || {})
+const stop3 = computed(() => travelAuthorization.value.stops[2] || {})
+const stop4 = computed(() => travelAuthorization.value.stops[3] || {})
 </script>
