@@ -11,7 +11,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <DetailsFormCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <DetailsCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
       </v-col>
     </v-row>
     <v-row>
@@ -46,7 +46,7 @@ import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
-import DetailsFormCard from "@/components/travel-authorizations/DetailsEditFormCard.vue"
+import DetailsCard from "@/components/travel-authorizations/DetailsCard.vue"
 import ApprovalsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/ApprovalsFormCard.vue"
 
 import SaveDraftButton from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/SaveDraftButton.vue"

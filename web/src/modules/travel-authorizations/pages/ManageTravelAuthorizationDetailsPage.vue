@@ -42,7 +42,7 @@
 import { ref } from "vue"
 
 import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
-import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard.vue"
+import DetailsCard from "@/components/travel-authorizations/DetailsCard.vue"
 import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard.vue"
 
 import ManagementCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ManagementCard.vue"

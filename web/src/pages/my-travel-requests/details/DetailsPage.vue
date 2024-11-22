@@ -42,7 +42,7 @@ import useTravelAuthorization from "@/use/use-travel-authorization"
 import RevertToDraftButton from "@/components/travel-authorizations/RevertToDraftButton.vue"
 
 import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
-import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard.vue"
+import DetailsCard from "@/components/travel-authorizations/DetailsCard.vue"
 import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard.vue"
 
 const props = defineProps({

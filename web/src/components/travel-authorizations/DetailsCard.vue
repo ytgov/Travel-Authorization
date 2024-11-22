@@ -13,6 +13,7 @@
             dense
             outlined
             readonly
+            append-icon="mdi-lock"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -26,7 +27,7 @@
       <v-row>
         <v-col
           cols="12"
-          md="1"
+          md="2"
         >
           <v-text-field
             :value="travelAuthorization.travelDuration"
@@ -34,6 +35,7 @@
             dense
             outlined
             readonly
+            append-icon="mdi-lock"
           ></v-text-field>
         </v-col>
         <v-col
@@ -46,6 +48,7 @@
             dense
             outlined
             readonly
+            append-icon="mdi-lock"
           ></v-text-field>
         </v-col>
         <v-col
@@ -59,6 +62,7 @@
             dense
             outlined
             readonly
+            append-icon="mdi-lock"
           />
         </v-col>
       </v-row>
@@ -66,8 +70,10 @@
   </v-card>
 </template>
 
-<script>
-import { mapGetters, mapActions } from "vuex"
+<script setup>
+import { computed, onMounted, ref, toRefs } from "vue"
+
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const TRIP_TYPES = Object.freeze({
   ROUND_TRIP: "Round Trip",
@@ -75,59 +81,40 @@ const TRIP_TYPES = Object.freeze({
   MULTI_DESTINATION: "Multi-Destination",
 })
 
-export default {
-  name: "DetailsCard",
-  components: {},
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  data: () => ({
-    tripType: "",
-  }),
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-    }),
-    tripTypeComponent() {
-      switch (this.tripType) {
-        case TRIP_TYPES.ROUND_TRIP:
-          return () =>
-            import(
-              "@/modules/travel-authorizations/components/read-travel-authorization-details-page/details-card/RoundTripStopsSection"
-            )
-        case TRIP_TYPES.ONE_WAY:
-          return () =>
-            import(
-              "@/modules/travel-authorizations/components/read-travel-authorization-details-page/details-card/OneWayStopsSection"
-            )
-        case TRIP_TYPES.MULTI_DESTINATION:
-          return () =>
-            import(
-              "@/modules/travel-authorizations/components/read-travel-authorization-details-page/details-card/MultiDestinationStopsSection"
-            )
-        default:
-          return null
-      }
-    },
-  },
-  async mounted() {
-    await this.ensureTravelAuthorization(this.travelAuthorizationId)
+})
 
-    if (this.travelAuthorization.oneWayTrip) {
-      this.tripType = TRIP_TYPES.ONE_WAY
-    } else if (this.travelAuthorization.multiStop) {
-      this.tripType = TRIP_TYPES.MULTI_DESTINATION
-    } else {
-      this.tripType = TRIP_TYPES.ROUND_TRIP
-    }
-  },
-  methods: {
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-    }),
-  },
-}
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const tripType = ref(null)
+
+const tripTypeComponent = computed(() => {
+  switch (tripType.value) {
+    case TRIP_TYPES.ROUND_TRIP:
+      return () =>
+        import("@/components/travel-authorizations/details-card/RoundTripStopsSection.vue")
+    case TRIP_TYPES.ONE_WAY:
+      return () => import("@/components/travel-authorizations/details-card/OneWayStopsSection.vue")
+    case TRIP_TYPES.MULTI_DESTINATION:
+      return () =>
+        import("@/components/travel-authorizations/details-card/MultiDestinationStopsSection.vue")
+    default:
+      return null
+  }
+})
+
+onMounted(async () => {
+  if (travelAuthorization.value.oneWayTrip) {
+    tripType.value = TRIP_TYPES.ONE_WAY
+  } else if (travelAuthorization.value.multiStop) {
+    tripType.value = TRIP_TYPES.MULTI_DESTINATION
+  } else {
+    tripType.value = TRIP_TYPES.ROUND_TRIP
+  }
+})
 </script>

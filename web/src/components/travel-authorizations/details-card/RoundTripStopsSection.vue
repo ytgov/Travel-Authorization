@@ -37,6 +37,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -51,6 +52,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -64,6 +66,7 @@
           persistent-hint
           outlined
           readonly
+          append-icon="mdi-lock"
         />
         <v-text-field
           :value="originStop.accommodationType"
@@ -71,6 +74,7 @@
           dense
           outlined
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
     </v-row>
@@ -111,6 +115,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -125,6 +130,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
       <v-col
@@ -138,6 +144,7 @@
           persistent-hint
           outlined
           readonly
+          append-icon="mdi-lock"
         />
         <v-text-field
           :value="destinationStop.accommodationType"
@@ -148,6 +155,7 @@
           outlined
           persistent-hint
           readonly
+          append-icon="mdi-lock"
         />
       </v-col>
     </v-row>
