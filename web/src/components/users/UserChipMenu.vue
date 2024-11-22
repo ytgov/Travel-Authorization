@@ -74,84 +74,41 @@
   </v-menu>
 </template>
 
-<script>
+<script setup>
+import { computed, ref, toRefs } from "vue"
 import MD5 from "md5.js"
 import { isNil } from "lodash"
-import { mapActions, mapGetters } from "vuex"
 
-import usersApi from "@/api/users-api"
+import useCurrentUser from "@/use/use-current-user"
+import useUser from "@/use/use-user"
 
-const UNSET_USER_ID = -1
+const props = defineProps({
+  userId: {
+    type: Number,
+    default: () => null,
+  },
+})
 
-export default {
-  name: "UserChipMenu",
-  props: {
-    userId: {
-      type: Number,
-      default: UNSET_USER_ID,
-    },
-  },
-  data: () => ({
-    menu: false,
-    user: {},
-    isInitialized: false,
-    isLoading: false,
-    isErrored: false,
-    fields: ["manager", "mailcode", "department", "division", "branch", "unit"],
-  }),
-  computed: {
-    ...mapGetters("current/user", {
-      currentUserId: "id",
-    }),
-    gravatarUrl() {
-      if (isNil(this.user.email)) {
-        return ""
-      }
+const { userId } = toRefs(props)
+const { user, isLoading } = useUser(userId)
 
-      const normalizedEmail = this.user.email.trim().toLowerCase()
-      const hash = new MD5().update(normalizedEmail).digest("hex")
-      return `https://www.gravatar.com/avatar/${hash}`
-    },
-    isCurrentUser() {
-      return this.currentUserId === this.userId
-    },
-    userProfileLink() {
-      return this.isCurrentUser ? "/profile" : `/users/${this.userId}`
-    },
-  },
-  watch: {
-    userId: {
-      handler(newValue) {
-        if (newValue === UNSET_USER_ID || isNil(newValue)) {
-          return
-        }
+const menu = ref(false)
+const fields = ref(["manager", "mailcode", "department", "division", "branch", "unit"])
 
-        this.fetchUser(newValue)
-      },
-      immediate: true,
-    },
-  },
-  async mounted() {
-    await this.ensureCurrentUser()
-  },
-  methods: {
-    ...mapActions("current/user", {
-      ensureCurrentUser: "ensure",
-    }),
-    async fetchUser(userId) {
-      this.isLoading = true
-      try {
-        const { user } = await usersApi.get(userId)
-        this.isErrored = false
-        this.user = user
-        this.isInitialized = true
-      } catch (error) {
-        this.isErrored = true
-        console.error(`Failed to fetch user id=${userId} because: ${error}`)
-      } finally {
-        this.isLoading = false
-      }
-    },
-  },
-}
+const gravatarUrl = computed(() => {
+  if (isNil(user.value.email)) {
+    return ""
+  }
+
+  const normalizedEmail = user.value.email.trim().toLowerCase()
+  const hash = new MD5().update(normalizedEmail).digest("hex")
+  return `https://www.gravatar.com/avatar/${hash}`
+})
+
+const { currentUser } = useCurrentUser()
+const isCurrentUser = computed(() => !isNil(props.userId) && props.userId === currentUser.value?.id)
+
+const userProfileLink = computed(() => {
+  return isCurrentUser.value ? "/profile" : `/users/${props.userId}`
+})
 </script>
