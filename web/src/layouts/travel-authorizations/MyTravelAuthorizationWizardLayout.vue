@@ -1,56 +1,57 @@
 <template>
-  <div class="d-flex flex-column flex-md-row">
-    <TravelAuthorizationStateStepper
-      :steps="steps"
-      :current-step-number="currentStepNumber"
-      @update:currentStepNumber="goToStep"
-    />
-    <div class="ml-2">
-      <div class="d-flex justify-space-between align-baseline my-5">
-        <h2 class="mb-0">
-          Travel -
-          <VUserChipMenu :user-id="currentUser.id" />
-        </h2>
+  <div>
+    <div class="d-flex flex-column flex-md-row">
+      <TravelAuthorizationStateStepper
+        :steps="steps"
+        :current-step-number="currentStepNumber"
+        @update:currentStepNumber="goToStep"
+      />
+      <div class="ml-md-2">
+        <div class="d-flex justify-space-between align-baseline my-5 ml-md-4">
+          <h2 class="mb-0">
+            Travel -
+            <VUserChipMenu :user-id="currentUser.id" />
+          </h2>
+        </div>
+
+        <v-card class="default">
+          <v-card-text>
+            <SummaryHeaderPanel
+              :travel-authorization-id="travelAuthorizationIdAsNumber"
+              class="mt-5"
+            />
+
+            <router-view
+              ref="currentStepComponent"
+              @updated="refresh"
+            ></router-view>
+
+            <div class="d-flex justify-end">
+              <v-btn
+                color="secondary"
+                @click="goToPreviousStep"
+                >Back</v-btn
+              >
+              <v-btn
+                class="ml-3"
+                :loading="isLoading"
+                color="primary"
+                @click="continueAndGoToNextStep"
+              >
+                {{ currentStep.continueButtonText || "Continue" }}
+              </v-btn>
+            </div>
+          </v-card-text>
+        </v-card>
       </div>
-
-      <v-card class="default">
-        <v-card-text>
-          <SummaryHeaderPanel
-            :travel-authorization-id="travelAuthorizationIdAsNumber"
-            class="mt-5"
-          />
-
-          <router-view
-            ref="currentStepComponent"
-            @updated="refresh"
-          ></router-view>
-
-          <div class="d-flex justify-end">
-            <v-btn
-              color="secondary"
-              @click="goToPreviousStep"
-              >Back</v-btn
-            >
-            <v-btn
-              class="ml-3"
-              :loading="isLoading"
-              color="primary"
-              @click="continueAndGoToNextStep"
-            >
-              {{ currentStep.continueButtonText || "Continue" }}
-            </v-btn>
-          </div>
-
-          <v-row class="mt-10">
-            <v-col>
-              <TravelAuthorizationActionLogsTable
-                :travel-authorization-id="travelAuthorizationIdAsNumber"
-              />
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
     </div>
+    <v-row class="mt-md-10 mt-5">
+      <v-col>
+        <TravelAuthorizationActionLogsTable
+          :travel-authorization-id="travelAuthorizationIdAsNumber"
+        />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
