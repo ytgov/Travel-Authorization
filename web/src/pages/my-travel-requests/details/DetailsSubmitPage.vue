@@ -6,7 +6,7 @@
   >
     <v-row>
       <v-col>
-        <PurposeFormCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <PurposeCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
       </v-col>
     </v-row>
     <v-row>
@@ -45,7 +45,7 @@ import { computed, ref, toRefs } from "vue"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import PurposeFormCard from "@/components/travel-authorizations/PurposeEditFormCard.vue"
+import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
 import DetailsFormCard from "@/components/travel-authorizations/DetailsEditFormCard.vue"
 import ApprovalsFormCard from "@/modules/travel-authorizations/components/edit-my-travel-authorization-details-page/ApprovalsFormCard.vue"
 

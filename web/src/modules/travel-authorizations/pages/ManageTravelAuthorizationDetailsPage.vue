@@ -41,11 +41,11 @@
 <script setup>
 import { ref } from "vue"
 
-import PurposeCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/PurposeCard"
-import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard"
-import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard"
+import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
+import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard.vue"
+import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard.vue"
 
-import ManagementCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ManagementCard"
+import ManagementCard from "@/modules/travel-authorizations/components/manage-travel-authorization-details-page/ManagementCard.vue"
 
 defineProps({
   travelAuthorizationId: {

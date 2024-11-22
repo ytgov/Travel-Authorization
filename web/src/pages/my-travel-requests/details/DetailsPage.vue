@@ -41,9 +41,9 @@ import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import RevertToDraftButton from "@/components/travel-authorizations/RevertToDraftButton.vue"
 
-import PurposeCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/PurposeCard"
-import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard"
-import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard"
+import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
+import DetailsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/DetailsCard.vue"
+import ApprovalsCard from "@/modules/travel-authorizations/components/read-travel-authorization-details-page/ApprovalsCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {

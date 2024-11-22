@@ -19,6 +19,7 @@
                 dense
                 outlined
                 readonly
+                append-icon="mdi-lock"
               ></v-text-field>
             </v-col>
             <v-col cols="12">
@@ -28,6 +29,7 @@
                 dense
                 outlined
                 readonly
+                append-icon="mdi-lock"
               ></v-text-field>
             </v-col>
             <v-col
@@ -40,6 +42,7 @@
                 label="In Territory?"
                 dense
                 readonly
+                append-icon="mdi-lock"
               >
               </v-checkbox>
             </v-col>
@@ -83,6 +86,7 @@
                 dense
                 outlined
                 readonly
+                append-icon="mdi-lock"
               >
               </v-textarea>
             </v-col>
@@ -93,54 +97,44 @@
   </v-card>
 </template>
 
-<script>
+<script setup>
+import { computed, toRefs } from "vue"
 import { last } from "lodash"
-import { mapState, mapActions, mapGetters } from "vuex"
 
-import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
+import { MAX_PER_PAGE } from "@/api/base-api"
+import useTravelAuthorization from "@/use/use-travel-authorization"
+import useTravelPurposes from "@/use/use-travel-purposes"
 
-export default {
-  name: "PurposeCard",
-  components: {
-    VReadonlyLocationTextField,
+import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField.vue"
+
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-    }),
-    ...mapState("travelPurposes", {
-      travelPurposes: "items",
-      isLoadingTravelPurposes: "isLoading",
-    }),
-    finalDestination() {
-      return (
-        last(this.travelAuthorization.stops) || {
-          travelAuthorizationId: this.travelAuthorizationId,
-        }
-      )
-    },
-    purposeText() {
-      const purpose = this.travelPurposes.find((p) => p.id === this.travelAuthorization.purposeId)
-      return purpose?.purpose || ""
-    },
-  },
-  async mounted() {
-    await Promise.all([
-      this.ensureTravelPurposes(),
-      this.ensureTravelAuthorization(this.travelAuthorizationId),
-    ])
-  },
-  methods: {
-    ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
-    ...mapActions("travelAuthorization", {
-      ensureTravelAuthorization: "ensure",
-    }),
-  },
-}
+})
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const travelPurposesQuery = computed(() => {
+  return {
+    perPage: MAX_PER_PAGE,
+  }
+})
+const { travelPurposes, isLoading: isLoadingTravelPurposes } =
+  useTravelPurposes(travelPurposesQuery)
+
+const finalDestination = computed(() => {
+  return (
+    last(travelAuthorization.value.stops) || {
+      travelAuthorizationId: travelAuthorizationId.value,
+    }
+  )
+})
+
+const purposeText = computed(() => {
+  const purpose = travelPurposes.value.find((p) => p.id === travelAuthorization.value.purposeId)
+  return purpose?.purpose || ""
+})
 </script>
