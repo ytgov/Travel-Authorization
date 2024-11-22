@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex flex-column flex-md-row">
-      <TravelAuthorizationStateStepper
+      <StateStepper
         :steps="steps"
         :current-step-number="currentStepNumber"
         @update:currentStepNumber="goToStep"
@@ -63,7 +63,7 @@ import { isNil } from "lodash"
 import useCurrentUser from "@/use/use-current-user"
 
 import VUserChipMenu from "@/components/VUserChipMenu.vue"
-import TravelAuthorizationStateStepper from "@/components/travel-authorizations/TravelAuthorizationStateStepper.vue"
+import StateStepper from "@/components/common/wizards/StateStepper.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable.vue"
 import useMyTravelRequestWizard from "@/use/wizards/use-my-travel-authorization-wizard"
