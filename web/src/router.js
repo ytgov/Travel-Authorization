@@ -159,7 +159,7 @@ const routes = [
           {
             path: "my-travel-requests/:travelAuthorizationId",
             component: () =>
-              import("@/layouts/travel-authorizations/MyTravelAuthorizationLayout.vue"),
+              import("@/layouts/travel-authorizations/MyTravelAuthorizationWizardLayout.vue"),
             props: true,
             children: [
               {
