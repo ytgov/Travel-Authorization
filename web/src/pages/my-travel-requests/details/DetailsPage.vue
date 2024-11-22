@@ -79,6 +79,5 @@ useBreadcrumbs(breadcrumbs)
 
 defineExpose({
   back: revertToDraft,
-  continue: () => {},
 })
 </script>

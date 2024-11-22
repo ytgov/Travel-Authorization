@@ -134,6 +134,10 @@ async function backAndGoToPreviousStep() {
 }
 
 async function continueAndGoToNextStep() {
+  if (isNil(currentStepComponent.value?.continue)) {
+    return goToNextStep()
+  }
+
   isLoading.value = true
   try {
     const stepSuccess = await currentStepComponent.value?.continue()
