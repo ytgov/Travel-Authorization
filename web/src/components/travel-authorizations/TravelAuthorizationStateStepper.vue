@@ -22,9 +22,7 @@
 </template>
 
 <script setup>
-import { watch } from "vue"
-
-const props = defineProps({
+defineProps({
   currentStepNumber: {
     type: Number,
     required: true,
@@ -36,11 +34,4 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["update:currentStepNumber"])
-
-watch(
-  () => props.currentStepNumber,
-  (newCurrenStepValue) => {
-    console.log(`newCurrenStepValue:`, newCurrenStepValue)
-  }
-)
 </script>

@@ -28,16 +28,14 @@
           <div class="d-flex justify-end">
             <v-btn
               color="secondary"
-              :to="previousStep.to"
-              @click.prevent="goToPreviousStep"
+              @click="goToPreviousStep"
               >Back</v-btn
             >
             <v-btn
               class="ml-3"
               :loading="isLoading"
               color="primary"
-              :to="nextStep.to"
-              @click.prevent="goToNextStep"
+              @click="goToNextStep"
             >
               {{ currentStep.continueButtonText || "Continue" }}
             </v-btn>
@@ -86,7 +84,7 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 const { currentUser } = useCurrentUser()
 
 const { travelAuthorizationId } = toRefs(props)
-const { currentStepNumber, steps, currentStep, nextStep, previousStep, goToStep, refresh } =
+const { currentStepNumber, steps, currentStep, goToStep, refresh } =
   useMyTravelRequestWizard(travelAuthorizationId)
 
 const route = useRoute()
@@ -112,6 +110,7 @@ async function goToNextStep() {
       return
     }
     currentStepNumber.value += 1
+    goToStep(currentStepNumber.value)
   } finally {
     isLoading.value = false
   }
@@ -121,6 +120,7 @@ async function goToPreviousStep() {
   isLoading.value = true
   try {
     currentStepNumber.value -= 1
+    goToStep(currentStepNumber.value)
   } finally {
     isLoading.value = false
   }

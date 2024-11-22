@@ -1,4 +1,4 @@
-import { computed, reactive, toRefs, watch } from "vue"
+import { computed, reactive, toRefs } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
@@ -254,27 +254,23 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   const router = useRouter()
 
   async function goToStep(stepNumber) {
-    console.log(`goToStep: stepNumber:`, stepNumber)
     const step = steps.value.find((step) => step.number === stepNumber)
-    if (isNil(step.to) || step.disabled === true || step.number > state.currentStepNumber) {
+    if (
+      isNil(step) ||
+      isNil(step.to) ||
+      step.disabled === true ||
+      step.number > state.currentStepNumber
+    ) {
       return
     }
 
-    state.currentStepNumber = step.number
-
+    state.currentStepNumber = stepNumber
     await save({
-      stepNumber: step.number,
+      stepNumber,
     })
 
     return router.push(step.to)
   }
-
-  watch(
-    () => state.currentStepNumber,
-    (stepNumber) => {
-      console.log(`stepNumber:`, stepNumber)
-    }
-  )
 
   return {
     ...toRefs(state),
