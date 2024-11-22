@@ -48,8 +48,11 @@ const props = defineProps({
 })
 
 const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization, refresh: refreshTravelAuthorization } =
-  useTravelAuthorization(travelAuthorizationId)
+const {
+  travelAuthorization,
+  refresh: refreshTravelAuthorization,
+  save,
+} = useTravelAuthorization(travelAuthorizationId)
 
 const requestStep = computed(() => {
   // TODO: lock on denied states.
@@ -279,12 +282,16 @@ const nextStepTo = computed(() => {
   return nextStep.to
 })
 
-function goToStep(step) {
+async function goToStep(step) {
   if (isNil(step.to) || step.disabled === true || step.number > currentStepNumber.value) {
     return
   }
 
-  router.push(step.to)
+  await save({
+    stepNumber: step.number,
+  })
+
+  return router.push(step.to)
 }
 
 async function refresh() {
