@@ -10,7 +10,7 @@
         <div class="d-flex justify-space-between align-baseline my-5 ml-md-4">
           <h2 class="mb-0">
             Travel -
-            <VUserChipMenu :user-id="currentUser.id" />
+            <UserChipMenu :user-id="currentUser.id" />
           </h2>
         </div>
 
@@ -62,7 +62,7 @@ import { isNil } from "lodash"
 
 import useCurrentUser from "@/use/use-current-user"
 
-import VUserChipMenu from "@/components/VUserChipMenu.vue"
+import UserChipMenu from "@/components/users/UserChipMenu.vue"
 import StateStepper from "@/components/common/wizards/StateStepper.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable.vue"

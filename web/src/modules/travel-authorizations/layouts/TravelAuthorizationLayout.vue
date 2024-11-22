@@ -5,7 +5,7 @@
 
     <h1>
       Travel -
-      <VUserChipMenu :user-id="travelAuthorizationUser.id" />
+      <UserChipMenu :user-id="travelAuthorizationUser.id" />
     </h1>
 
     <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
@@ -26,14 +26,14 @@ import { computed } from "vue"
 
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import Breadcrumbs from "@/components/Breadcrumbs"
-import PageLoader from "@/components/PageLoader"
+import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import PageLoader from "@/components/PageLoader.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
-import VUserChipMenu from "@/components/VUserChipMenu"
+import UserChipMenu from "@/components/users/UserChipMenu.vue"
 
-import DetailsTab from "@/modules/travel-authorizations/components/travel-authorization-layout/DetailsTab"
-import EstimateTab from "@/modules/travel-authorizations/components/travel-authorization-layout/EstimateTab"
-import ExpenseTab from "@/modules/travel-authorizations/components/travel-authorization-layout/ExpenseTab"
+import DetailsTab from "@/modules/travel-authorizations/components/travel-authorization-layout/DetailsTab.vue"
+import EstimateTab from "@/modules/travel-authorizations/components/travel-authorization-layout/EstimateTab.vue"
+import ExpenseTab from "@/modules/travel-authorizations/components/travel-authorization-layout/ExpenseTab.vue"
 
 const props = defineProps({
   travelAuthorizationId: {

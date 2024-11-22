@@ -84,7 +84,7 @@ import usersApi from "@/api/users-api"
 const UNSET_USER_ID = -1
 
 export default {
-  name: "VUserChipMenu",
+  name: "UserChipMenu",
   props: {
     userId: {
       type: Number,

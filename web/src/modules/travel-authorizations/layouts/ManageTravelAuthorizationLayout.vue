@@ -6,7 +6,7 @@
     <h1 class="d-flex justify-space-between">
       <span>
         Travel -
-        <VUserChipMenu :user-id="travelAuthorizationUser.id" />
+        <UserChipMenu :user-id="travelAuthorizationUser.id" />
       </span>
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
@@ -50,14 +50,14 @@ import { useRouter } from "vue2-helpers/vue-router"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import Breadcrumbs from "@/components/Breadcrumbs"
-import PageLoader from "@/components/PageLoader"
+import Breadcrumbs from "@/components/Breadcrumbs.vue"
+import PageLoader from "@/components/PageLoader.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
-import VUserChipMenu from "@/components/VUserChipMenu"
+import UserChipMenu from "@/components/users/UserChipMenu.vue"
 
-import DetailsTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/DetailsTab"
-import EstimateTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/EstimateTab"
-import ExpenseTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/ExpenseTab"
+import DetailsTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/DetailsTab.vue"
+import EstimateTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/EstimateTab.vue"
+import ExpenseTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/ExpenseTab.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
