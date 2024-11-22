@@ -1,8 +1,9 @@
 <template>
   <div class="d-flex flex-column flex-md-row">
     <TravelAuthorizationStateStepper
-      ref="travelAuthorizationStateStepper"
-      :travel-authorization-id="travelAuthorizationIdAsNumber"
+      :steps="steps"
+      :current-step-number="currentStepNumber"
+      @update:currentStepNumber="goToStep"
     />
     <div class="ml-2">
       <div class="d-flex justify-space-between align-baseline my-5">
@@ -27,17 +28,18 @@
           <div class="d-flex justify-end">
             <v-btn
               color="secondary"
-              :to="previousStepTo"
+              :to="previousStep.to"
+              @click.prevent="goToPreviousStep"
               >Back</v-btn
             >
             <v-btn
               class="ml-3"
               :loading="isLoading"
               color="primary"
-              :to="nextStepTo"
-              @click.capture="goToNextStep($event)"
+              :to="nextStep.to"
+              @click.prevent="goToNextStep"
             >
-              {{ currentStepContinueButtonText }}
+              {{ currentStep.continueButtonText || "Continue" }}
             </v-btn>
           </div>
 
@@ -55,7 +57,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, onMounted, ref, toRefs } from "vue"
+import { useRoute } from "vue2-helpers/vue-router"
+import { isNil } from "lodash"
 
 import useCurrentUser from "@/use/use-current-user"
 
@@ -63,6 +67,7 @@ import VUserChipMenu from "@/components/VUserChipMenu.vue"
 import TravelAuthorizationStateStepper from "@/components/travel-authorizations/TravelAuthorizationStateStepper.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable.vue"
+import useMyTravelRequestWizard from "@/use/wizards/use-my-travel-authorization-wizard"
 
 /**
  * @template [T=any]
@@ -80,33 +85,42 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 
 const { currentUser } = useCurrentUser()
 
+const { travelAuthorizationId } = toRefs(props)
+const { currentStepNumber, steps, currentStep, nextStep, previousStep, goToStep, refresh } =
+  useMyTravelRequestWizard(travelAuthorizationId)
+
+const route = useRoute()
+
+onMounted(() => {
+  const step = steps.value.find((step) => step.to?.name === route.name)
+  if (isNil(step)) {
+    currentStepNumber.value = 1
+  } else {
+    currentStepNumber.value = step.number
+  }
+})
+
 const isLoading = ref(false)
-
-/** @type {Ref<InstanceType<typeof EditPerDiemDialog> | null>} */
-
-/** @type {import("vue").Ref<InstanceType<typeof TravelAuthorizationStateStepper> | null>} */
-const travelAuthorizationStateStepper = ref(null)
-
-const currentStepContinueButtonText = computed(
-  () => travelAuthorizationStateStepper.value?.currentStepContinueButtonText ?? "Continue"
-)
-const previousStepTo = computed(() => travelAuthorizationStateStepper.value?.previousStepTo)
-const nextStepTo = computed(() => travelAuthorizationStateStepper.value?.nextStepTo)
-
-async function refresh() {
-  await travelAuthorizationStateStepper.value?.refresh()
-}
 
 const currentStepComponent = ref(null)
 
-async function goToNextStep(event) {
+async function goToNextStep() {
   isLoading.value = true
   try {
     const stepSuccess = await currentStepComponent.value?.continue()
     if (stepSuccess !== true) {
-      event.preventDefault()
       return
     }
+    currentStepNumber.value += 1
+  } finally {
+    isLoading.value = false
+  }
+}
+
+async function goToPreviousStep() {
+  isLoading.value = true
+  try {
+    currentStepNumber.value -= 1
   } finally {
     isLoading.value = false
   }

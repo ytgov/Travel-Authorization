@@ -40,9 +40,7 @@ async function validateAndSave() {
       return false
     }
 
-    await purposeEditFormCard.value.save({
-      stepNumber: travelAuthorization.value.stepNumber + 1,
-    })
+    await purposeEditFormCard.value.save()
     snack.success("Travel request saved.")
     emit("updated", travelAuthorization.value.id)
     return true
