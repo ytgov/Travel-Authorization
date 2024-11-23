@@ -205,6 +205,12 @@ const routes = [
                 props: true,
               },
               {
+                path: "awaiting-approval",
+                name: "my-travel-requests/AwaitingApprovalPage",
+                component: () => import("@/pages/my-travel-requests/AwaitingApprovalPage.vue"),
+                props: true,
+              },
+              {
                 path: "request",
                 name: "my-travel-requests/request/RequestPage",
                 component: () => import("@/pages/my-travel-requests/request/RequestPage"),
