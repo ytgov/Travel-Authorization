@@ -205,7 +205,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   })
 
   const previousStep = computed(() => {
-    const previousStepIndex = travelAuthorization.value.stepNumber - 2
+    const previousStepIndex = currentStepNumber.value - 2
     if (previousStepIndex < 0) {
       return {
         to: {
@@ -227,7 +227,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   })
 
   const nextStep = computed(() => {
-    const nextStep = steps.value[travelAuthorization.value.stepNumber]
+    const nextStep = steps.value[currentStepNumber.value]
     if (isNil(nextStep)) {
       return {
         to: {
@@ -243,33 +243,29 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
 
   async function goToPreviousStep() {
     const previousStepTo = previousStep.value.to
-    travelAuthorization.value.stepNumber -= 1
+    await save({
+      stepNumber: currentStepNumber.value - 1,
+    })
     return router.push(previousStepTo)
   }
 
   async function goToNextStep() {
     const nextStepTo = nextStep.value.to
-    travelAuthorization.value.stepNumber += 1
+    await save({
+      stepNumber: currentStepNumber.value + 1,
+    })
     return router.push(nextStepTo)
   }
 
   async function goToStep(stepNumber) {
     const step = steps.value.find((step) => step.number === stepNumber)
-    if (
-      isNil(step) ||
-      isNil(step.to) ||
-      step.disabled === true ||
-      step.number === travelAuthorization.value.stepNumber ||
-      step.number > travelAuthorization.value.stepNumber
-    ) {
+    if (isNil(step) || isNil(step.to) || step.number === currentStepNumber.value) {
       return
     }
 
-    travelAuthorization.value.stepNumber = stepNumber
     await save({
       stepNumber,
     })
-
     return router.push(step.to)
   }
 

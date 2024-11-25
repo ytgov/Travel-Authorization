@@ -6,12 +6,12 @@
     :width="$vuetify.breakpoint.mdAndUp ? 300 : undefined"
   >
     <v-stepper-step
-      v-for="step in steps"
-      :key="`${step.title}-${step.number}`"
+      v-for="(step, index) in steps"
+      :key="index"
       :step="step.number"
       :complete="step.number < currentStepNumber"
       :editable="step.disabled !== true && step.number <= currentStepNumber"
-      @click="emit('update:currentStepNumber', step.number)"
+      @click="updateCurrentStepNumber(step.number, step.disabled)"
     >
       {{ step.title }}
       <small v-if="step.subtitle">
@@ -34,4 +34,10 @@ defineProps({
 })
 
 const emit = defineEmits(["update:currentStepNumber"])
+
+function updateCurrentStepNumber(stepNumber, disabled) {
+  if (disabled) return
+
+  emit("update:currentStepNumber", stepNumber)
+}
 </script>
