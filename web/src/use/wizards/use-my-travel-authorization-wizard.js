@@ -14,6 +14,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     useTravelAuthorization(travelAuthorizationId)
 
   const currentStepNumber = computed(() => travelAuthorization.value.stepNumber || 1)
+  const travelDeskTravelRequest = computed(() => travelAuthorization.value?.travelDeskTravelRequest)
 
   const isTravelingByAir = computed(() =>
     travelAuthorization.value.travelSegments.some((segment) => {
@@ -131,6 +132,8 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
         backButtonProps: {
           color: "warning",
         },
+        disabled:
+          travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED,
       },
       {
         title: "Estimate",
@@ -139,6 +142,8 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
           name: "my-travel-requests/estimate/EstimatePage",
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
+        disabled:
+          travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED,
       },
       ...(isWaitingForApproval.value
         ? [
@@ -164,6 +169,9 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
                 name: "my-travel-requests/request/RequestEditTravelDetailsPage",
                 params: { travelAuthorizationId: travelAuthorizationId.value },
               },
+              disabled:
+                travelDeskTravelRequest.value?.status ===
+                TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED,
             },
             {
               title: "Request: edit",
@@ -172,6 +180,10 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
                 name: "my-travel-requests/request/RequestEditPage",
                 params: { travelAuthorizationId: travelAuthorizationId.value },
               },
+              continueButtonText: "Submit",
+              disabled:
+                travelDeskTravelRequest.value?.status ===
+                TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED,
             },
             {
               title: "Request",
@@ -179,6 +191,9 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
               to: {
                 name: "my-travel-requests/request/RequestPage",
                 params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              backButtonProps: {
+                disabled: true,
               },
             },
             {
@@ -189,7 +204,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
                 params: { travelAuthorizationId: travelAuthorizationId.value },
               },
               disabled:
-                travelAuthorization.value?.travelDeskTravelRequest?.status !==
+                travelDeskTravelRequest.value?.status !==
                 TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED,
             },
           ]
