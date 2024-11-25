@@ -64,7 +64,7 @@
 
 <script setup>
 import { computed, onMounted, ref, toRefs } from "vue"
-import { useRoute } from "vue2-helpers/vue-router"
+import { useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
 import useCurrentUser from "@/use/use-current-user"
@@ -104,16 +104,13 @@ const {
   goToPreviousStep,
 } = useMyTravelRequestWizard(travelAuthorizationId)
 
-const route = useRoute()
+const router = useRouter()
 
 onMounted(async () => {
   await isReady()
 
-  const step = steps.value.find((step) => step.to?.name === route.name)
-  if (isNil(step)) {
-    currentStepNumber.value = 1
-  } else {
-    currentStepNumber.value = step.number
+  if (currentStep.value.to) {
+    await router.push(currentStep.value.to)
   }
 })
 

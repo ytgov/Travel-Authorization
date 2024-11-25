@@ -1,4 +1,4 @@
-import { computed, nextTick, reactive, toRefs, watch } from "vue"
+import { computed, nextTick, watch } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
@@ -10,12 +10,10 @@ import useTravelAuthorization, {
 } from "@/use/use-travel-authorization"
 
 export function useMyTravelRequestWizard(travelAuthorizationId) {
-  const state = reactive({
-    currentStepNumber: 1,
-  })
-
   const { travelAuthorization, isLoading, refresh, save } =
     useTravelAuthorization(travelAuthorizationId)
+
+  const currentStepNumber = computed(() => travelAuthorization.value.stepNumber || 1)
 
   const isTravelingByAir = computed(() =>
     travelAuthorization.value.travelSegments.some((segment) => {
@@ -196,7 +194,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   )
 
   const currentStep = computed(() => {
-    const currentStep = steps.value[state.currentStepNumber - 1]
+    const currentStep = steps.value[currentStepNumber.value - 1]
     if (isNil(currentStep)) {
       return {
         continueButtonText: "Continue",
@@ -207,7 +205,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   })
 
   const previousStep = computed(() => {
-    const previousStepIndex = state.currentStepNumber - 2
+    const previousStepIndex = travelAuthorization.value.stepNumber - 2
     if (previousStepIndex < 0) {
       return {
         to: {
@@ -229,7 +227,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   })
 
   const nextStep = computed(() => {
-    const nextStep = steps.value[state.currentStepNumber]
+    const nextStep = steps.value[travelAuthorization.value.stepNumber]
     if (isNil(nextStep)) {
       return {
         to: {
@@ -245,13 +243,13 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
 
   async function goToPreviousStep() {
     const previousStepTo = previousStep.value.to
-    state.currentStepNumber -= 1
+    travelAuthorization.value.stepNumber -= 1
     return router.push(previousStepTo)
   }
 
   async function goToNextStep() {
     const nextStepTo = nextStep.value.to
-    state.currentStepNumber += 1
+    travelAuthorization.value.stepNumber += 1
     return router.push(nextStepTo)
   }
 
@@ -261,13 +259,13 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
       isNil(step) ||
       isNil(step.to) ||
       step.disabled === true ||
-      step.number === state.currentStepNumber ||
-      step.number > state.currentStepNumber
+      step.number === travelAuthorization.value.stepNumber ||
+      step.number > travelAuthorization.value.stepNumber
     ) {
       return
     }
 
-    state.currentStepNumber = stepNumber
+    travelAuthorization.value.stepNumber = stepNumber
     await save({
       stepNumber,
     })
@@ -296,8 +294,8 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   }
 
   return {
-    ...toRefs(state),
     steps,
+    currentStepNumber,
     currentStep,
     previousStep,
     nextStep,
