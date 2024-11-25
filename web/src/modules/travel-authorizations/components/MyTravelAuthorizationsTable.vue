@@ -77,6 +77,8 @@ import { mapActions, mapGetters } from "vuex"
 import { isNil, isEmpty } from "lodash"
 import { DateTime } from "luxon"
 
+import { STATUSES as TRAVEL_AUTHORIZATION_STATUSES } from "@/api/travel-authorizations-api"
+
 import AddExpenseButton from "./my-travel-authorizations-table/AddExpenseButton"
 import DeleteTravelAuthorizationDialog from "./my-travel-authorizations-table/DeleteTravelAuthorizationDialog"
 import TravelDeskOptionsProvidedButton from "./my-travel-authorizations-table/TravelDeskOptionsProvidedButton"
@@ -164,9 +166,14 @@ export default {
     },
     goToFormDetails(travelAuthorization) {
       const travelAuthorizationId = travelAuthorization.id
-      if (travelAuthorization.status === "draft") {
+      if (travelAuthorization.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT) {
         this.$router.push({
           name: "my-travel-requests/details/DetailsEditPurposePage",
+          params: { travelAuthorizationId },
+        })
+      } else if (travelAuthorization.status === TRAVEL_AUTHORIZATION_STATUSES.SUBMITTED) {
+        this.$router.push({
+          name: "my-travel-requests/AwaitingApprovalPage",
           params: { travelAuthorizationId },
         })
       } else {
