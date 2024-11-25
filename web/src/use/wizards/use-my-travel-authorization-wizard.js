@@ -158,6 +158,14 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
       ...(isTravelingByAir.value
         ? [
             {
+              title: "Request: traveller details",
+              subtitle: "Enter traveller details",
+              to: {
+                name: "my-travel-requests/request/RequestEditTravelDetailsPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+            },
+            {
               title: "Request: edit",
               subtitle: "Edit travel desk request",
               to: {

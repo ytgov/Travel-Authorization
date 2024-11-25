@@ -217,6 +217,13 @@ const routes = [
                 props: true,
               },
               {
+                path: "request/edit-travel-details",
+                name: "my-travel-requests/request/RequestEditTravelDetailsPage",
+                component: () =>
+                  import("@/pages/my-travel-requests/request/RequestEditTravelDetailsPage"),
+                props: true,
+              },
+              {
                 path: "request/edit",
                 name: "my-travel-requests/request/RequestEditPage",
                 component: () => import("@/pages/my-travel-requests/request/RequestEditPage"),
