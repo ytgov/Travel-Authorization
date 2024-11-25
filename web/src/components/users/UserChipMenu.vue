@@ -76,7 +76,7 @@
 
 <script setup>
 import { computed, ref, toRefs } from "vue"
-import MD5 from "md5.js"
+import md5 from "md5"
 import { isNil } from "lodash"
 
 import useCurrentUser from "@/use/use-current-user"
@@ -101,7 +101,7 @@ const gravatarUrl = computed(() => {
   }
 
   const normalizedEmail = user.value.email.trim().toLowerCase()
-  const hash = new MD5().update(normalizedEmail).digest("hex")
+  const hash = md5(normalizedEmail)
   return `https://www.gravatar.com/avatar/${hash}`
 })
 
