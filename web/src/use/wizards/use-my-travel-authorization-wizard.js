@@ -1,4 +1,4 @@
-import { computed, reactive, toRefs } from "vue"
+import { computed, nextTick, reactive, toRefs, watch } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
@@ -296,6 +296,26 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     return router.push(step.to)
   }
 
+  async function isReady() {
+    return new Promise((resolve) => {
+      if (isLoading.value === false) {
+        return resolve(true)
+      }
+
+      const stopWatch = watch(
+        isLoading,
+        async (newIsLoading) => {
+          if (newIsLoading === false) {
+            await nextTick()
+            stopWatch()
+            resolve(true)
+          }
+        },
+        { immediate: true }
+      )
+    })
+  }
+
   return {
     ...toRefs(state),
     steps,
@@ -303,6 +323,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     previousStep,
     nextStep,
     isLoading,
+    isReady,
     save,
     refresh,
     goToStep,

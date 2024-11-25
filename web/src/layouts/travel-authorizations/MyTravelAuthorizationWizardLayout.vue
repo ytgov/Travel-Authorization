@@ -97,6 +97,7 @@ const {
   steps,
   currentStep,
   isLoading,
+  isReady,
   refresh,
   goToStep,
   goToNextStep,
@@ -105,7 +106,9 @@ const {
 
 const route = useRoute()
 
-onMounted(() => {
+onMounted(async () => {
+  await isReady()
+
   const step = steps.value.find((step) => step.to?.name === route.name)
   if (isNil(step)) {
     currentStepNumber.value = 1

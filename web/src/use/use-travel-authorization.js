@@ -24,6 +24,7 @@ export { STATUSES }
  *   firstStop: Ref<Stop>,
  *   lastStop: Ref<Stop>,
  *   fetch: () => Promise<TravelAuthorization>,
+ *   refresh: () => Promise<TravelAuthorization>,
  *   save: () => Promise<TravelAuthorization>, // save that triggers loading state
  *   saveSilently: () => Promise<TravelAuthorization>, // save that does not trigger loading state
  *   create: (attributes: Partial<TravelAuthorization>) => Promise<TravelAuthorization>,
