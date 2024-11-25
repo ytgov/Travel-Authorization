@@ -17,65 +17,18 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   const { travelAuthorization, isLoading, refresh, save } =
     useTravelAuthorization(travelAuthorizationId)
 
-  const requestSteps = computed(() => {
-    const hasNoAirTravel = travelAuthorization.value.travelSegments.every(
-      (segment) => segment.modeOfTransport !== TRAVEL_METHODS.AIRCRAFT
-    )
-
-    if (hasNoAirTravel) {
-      return []
-    }
-
-    return [
-      {
-        title: "Request: edit",
-        subtitle: "Edit travel desk request",
-        to: {
-          name: "my-travel-requests/request/RequestEditPage",
-          params: { travelAuthorizationId: travelAuthorizationId.value },
-        },
-      },
-      {
-        title: "Request",
-        subtitle: "Review request details",
-        to: {
-          name: "my-travel-requests/request/RequestPage",
-          params: { travelAuthorizationId: travelAuthorizationId.value },
-        },
-        disabled:
-          travelAuthorization.value?.travelDeskTravelRequest?.status !==
-          TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT,
-      },
-    ]
-  })
-
-  const optionsProvideStep = computed(() => {
-    if (
-      travelAuthorization.value?.travelDeskTravelRequest?.status ===
-      TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
-    ) {
-      return {
-        title: "Request: Rank Options",
-        subtitle: "Rank flight options",
-        to: {
-          name: "my-travel-requests/request/RequestOptionsProvidedPage",
-          params: { travelAuthorizationId: travelAuthorizationId.value },
-        },
-      }
-    }
-
-    return {
-      title: "Request: Rank Options",
-      subtitle: "Requires completing request section.",
-    }
-  })
-
+  const isTravelingByAir = computed(() =>
+    travelAuthorization.value.travelSegments.some((segment) => {
+      return segment.modeOfTransport === TRAVEL_METHODS.AIRCRAFT
+    })
+  )
   const isBeforeTravelStartDate = computed(() => {
     const firstTravelSegment = travelAuthorization.value.travelSegments[0]
     if (isNil(firstTravelSegment)) return false
 
     return new Date(firstTravelSegment.departureOn) > new Date()
   })
+
   const expenseStep = computed(() => {
     const isInPreExpensingStates =
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT ||
@@ -128,26 +81,6 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT ||
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.SUBMITTED
     )
-  })
-
-  const postApprovalSteps = computed(() => {
-    if (isWaitingForApproval.value) {
-      return [
-        {
-          title: "Waiting for approval",
-          subtitle: "Travel request is submitted to supervisor and waiting for approval.",
-          to: {
-            name: "my-travel-requests/AwaitingApprovalPage",
-            params: { travelAuthorizationId: travelAuthorizationId.value },
-          },
-          continueButtonProps: {
-            disabled: true,
-          },
-        },
-      ]
-    }
-
-    return [...requestSteps.value, optionsProvideStep.value, expenseStep.value]
   })
 
   const steps = computed(() =>
@@ -209,7 +142,53 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
       },
-      ...postApprovalSteps.value,
+      ...(isWaitingForApproval.value
+        ? [
+            {
+              title: "Waiting for approval",
+              subtitle: "Travel request is submitted to supervisor and waiting for approval.",
+              to: {
+                name: "my-travel-requests/AwaitingApprovalPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              continueButtonProps: {
+                disabled: true,
+              },
+            },
+          ]
+        : []),
+      ...(isTravelingByAir.value
+        ? [
+            {
+              title: "Request: edit",
+              subtitle: "Edit travel desk request",
+              to: {
+                name: "my-travel-requests/request/RequestEditPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+            },
+            {
+              title: "Request",
+              subtitle: "Review request details",
+              to: {
+                name: "my-travel-requests/request/RequestPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+            },
+            {
+              title: "Request: rank options",
+              subtitle: "Rank flight options",
+              to: {
+                name: "my-travel-requests/request/RequestOptionsProvidedPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              disabled:
+                travelAuthorization.value?.travelDeskTravelRequest?.status !==
+                TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED,
+            },
+          ]
+        : []),
+      expenseStep.value,
     ].map((step, index) => ({
       ...step,
       number: index + 1,
