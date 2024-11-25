@@ -1,5 +1,6 @@
 <template>
   <v-stepper
+    :key="stepsHash"
     :value="currentStepNumber"
     vertical
     outlined
@@ -22,7 +23,10 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from "vue"
+import md5 from "md5"
+
+const props = defineProps({
   currentStepNumber: {
     type: Number,
     required: true,
@@ -34,6 +38,8 @@ defineProps({
 })
 
 const emit = defineEmits(["update:currentStepNumber"])
+
+const stepsHash = computed(() => md5(JSON.stringify(props.steps)))
 
 function updateCurrentStepNumber(stepNumber, disabled) {
   if (disabled) return
