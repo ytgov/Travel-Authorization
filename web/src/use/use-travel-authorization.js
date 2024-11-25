@@ -71,22 +71,22 @@ export function useTravelAuthorization(travelAuthorizationId) {
     }
   }
 
-  async function save(attributeOverrides = {}) {
+  async function save(additionalAttributes = {}) {
     state.isLoading = true
     try {
-      return saveSilently(attributeOverrides)
+      return saveSilently(additionalAttributes)
     } finally {
       state.isLoading = false
     }
   }
 
-  async function saveSilently(attributeOverrides = {}) {
+  async function saveSilently(additionalAttributes = {}) {
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.update(
         unref(travelAuthorizationId),
         {
           ...state.travelAuthorization,
-          ...attributeOverrides,
+          ...additionalAttributes,
         }
       )
       state.isErrored = false
@@ -118,14 +118,14 @@ export function useTravelAuthorization(travelAuthorizationId) {
   }
 
   // Stateful actions
-  async function submit(attributeOverrides = {}) {
+  async function submit(additionalAttributes = {}) {
     state.isLoading = true
     try {
       const { travelAuthorization } = await travelAuthorizationsApi.submit(
         unref(travelAuthorizationId),
         {
           ...state.travelAuthorization,
-          ...attributeOverrides,
+          ...additionalAttributes,
         }
       )
       state.isErrored = false
