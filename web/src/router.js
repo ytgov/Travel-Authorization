@@ -230,6 +230,13 @@ const routes = [
                 props: true,
               },
               {
+                path: "awaiting-request-options",
+                name: "my-travel-requests/AwaitingRequestOptionsPage",
+                component: () =>
+                  import("@/pages/my-travel-requests/AwaitingRequestOptionsPage.vue"),
+                props: true,
+              },
+              {
                 path: "request/rank-options",
                 name: "my-travel-requests/request/RequestOptionsProvidedPage",
                 component: () =>

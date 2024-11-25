@@ -53,7 +53,14 @@ export class UpdateService extends BaseService {
       }
 
       return this.travelAuthorization.reload({
-        include: ["expenses", "stops", "purpose", "user", "travelSegments"],
+        include: [
+          "expenses",
+          "stops",
+          "purpose",
+          "user",
+          "travelSegments",
+          "travelDeskTravelRequest",
+        ],
       })
     })
   }

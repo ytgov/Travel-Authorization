@@ -75,10 +75,17 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     }
   })
 
-  const isWaitingForApproval = computed(() => {
+  const isAwaitingApproval = computed(() => {
     return (
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT ||
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.SUBMITTED
+    )
+  })
+
+  const isAwaitingFlightOptionsOptions = computed(() => {
+    return (
+      travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT ||
+      travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED
     )
   })
 
@@ -145,7 +152,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
         disabled:
           travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED,
       },
-      ...(isWaitingForApproval.value
+      ...(isAwaitingApproval.value
         ? [
             {
               title: "Waiting for approval",
@@ -196,16 +203,32 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
                 disabled: true,
               },
             },
+          ]
+        : []),
+      ...(isAwaitingFlightOptionsOptions.value
+        ? [
             {
-              title: "Request: rank options",
-              subtitle: "Rank flight options",
+              title: "Awaiting flight options",
+              subtitle: "Awaiting flight options from travel desk",
+              to: {
+                name: "my-travel-requests/AwaitingRequestOptionsPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              continueButtonProps: {
+                disabled: true,
+              },
+            },
+          ]
+        : []),
+      ...(isTravelingByAir.value && !isAwaitingFlightOptionsOptions.value
+        ? [
+            {
+              title: "Rank options",
+              subtitle: "Rank options provided",
               to: {
                 name: "my-travel-requests/request/RequestOptionsProvidedPage",
                 params: { travelAuthorizationId: travelAuthorizationId.value },
               },
-              disabled:
-                travelDeskTravelRequest.value?.status !==
-                TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED,
             },
           ]
         : []),
