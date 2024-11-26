@@ -13,14 +13,18 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
   async index() {
     try {
       const where = this.buildWhere()
-      const scopes = this.buildFilterScopes()
+      const scopes = this.buildFilterScopes([
+        "includeIsBookedAttribute",
+        "includeTravelStartDateAttribute",
+        { method: ["includeIsAssignedToCurrentUserAttribute", this.currentUser.displayName] },
+      ])
       const order = this.buildOrder()
       const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
         scopes,
         this.currentUser
       )
 
-      const patchedOrder = order?.map(([column, order]) => {
+      const orderWithSupportForDerivedAttributes = order?.map(([column, order]) => {
         if (["isBooked", "isAssignedToCurrentUser", "travelStartDate"].includes(column)) {
           return [literal(`"${column}"`), order]
         }
@@ -31,7 +35,7 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
       const totalCount = await scopedTravelDeskTravelRequests.count({ where })
       const travelDeskTravelRequests = await scopedTravelDeskTravelRequests.findAll({
         where,
-        order: patchedOrder,
+        order: orderWithSupportForDerivedAttributes,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         include: [
@@ -50,31 +54,6 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
             ],
           },
         ],
-        // for custom ordering
-        attributes: {
-          include: [
-            [
-              literal(
-                `CASE WHEN "TravelDeskTravelRequest".status = '${TravelDeskTravelRequest.Statuses.BOOKED}' THEN 1 ELSE 0 END`
-              ),
-              "isBooked",
-            ],
-            [
-              literal(
-                `CASE WHEN "travel_desk_officer" = '${this.currentUser.displayName}' THEN 1 ELSE 0 END`
-              ),
-              "isAssignedToCurrentUser",
-            ],
-            [
-              literal(/* sql */ `(
-                SELECT MIN("departure_on")
-                FROM "travel_segments"
-                WHERE "travel_segments"."travel_authorization_id" = "TravelDeskTravelRequest"."travel_authorization_id"
-              )`),
-              "travelStartDate",
-            ],
-          ],
-        },
       })
       const serializedTravelDeskTravelRequests = IndexSerializer.perform(
         travelDeskTravelRequests,
