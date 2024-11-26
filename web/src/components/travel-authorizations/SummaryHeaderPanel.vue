@@ -21,7 +21,7 @@
         md="2"
       >
         <VReadonlyLocationTextField
-          :value="finalDestination.locationId"
+          :location-id="finalDestination.locationId"
           label="Final Destination"
           dense
           outlined

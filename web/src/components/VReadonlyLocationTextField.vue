@@ -10,33 +10,26 @@
   />
 </template>
 
-<script>
+<script setup>
+import { computed, toRefs } from "vue"
 import { isNil } from "lodash"
-import { mapActions, mapGetters } from "vuex"
 
-export default {
-  name: "VReadonlyLocationTextField",
-  props: {
-    value: {
-      type: Number,
-      default: null,
-    },
-  },
-  computed: {
-    ...mapGetters("locations", ["items", "isLoading"]),
-    locationText() {
-      const location = this.items.find((location) => location.id === this.value)
-      if (isNil(location)) return ""
+import useLocation from "@/use/use-location"
 
-      const { city, province } = location
-      return `${city} (${province})`
-    },
+const props = defineProps({
+  locationId: {
+    type: Number,
+    default: null,
   },
-  async mounted() {
-    await this.ensure()
-  },
-  methods: {
-    ...mapActions("locations", ["ensure"]),
-  },
-}
+})
+
+const { locationId } = toRefs(props)
+const { location, isLoading } = useLocation(locationId)
+
+const locationText = computed(() => {
+  if (isNil(location.value)) return ""
+
+  const { city, province } = location.value
+  return `${city} (${province})`
+})
 </script>

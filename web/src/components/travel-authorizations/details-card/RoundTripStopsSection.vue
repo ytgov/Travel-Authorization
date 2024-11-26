@@ -6,7 +6,7 @@
         md="2"
       >
         <VReadonlyLocationTextField
-          :value="originStop.locationId"
+          :location-id="originStop.locationId"
           label="From"
           dense
           outlined
@@ -18,7 +18,7 @@
         md="2"
       >
         <VReadonlyLocationTextField
-          :value="destinationStop.locationId"
+          :location-id="destinationStop.locationId"
           label="To"
           dense
           outlined
@@ -84,7 +84,7 @@
         md="2"
       >
         <VReadonlyLocationTextField
-          :value="destinationStop.locationId"
+          :location-id="destinationStop.locationId"
           label="To"
           dense
           outlined
@@ -96,7 +96,7 @@
         md="2"
       >
         <VReadonlyLocationTextField
-          :value="originStop.locationId"
+          :location-id="originStop.locationId"
           label="From"
           dense
           outlined
