@@ -21,6 +21,9 @@
 </template>
 
 <script setup>
+import { computed } from "vue"
+
+import { MAX_PER_PAGE } from "@/api/base-api"
 import useTravelPurposes from "@/use/use-travel-purposes"
 
 defineProps({
@@ -44,5 +47,10 @@ defineProps({
 
 const emit = defineEmits(["input"])
 
-const { travelPurposes, isLoading } = useTravelPurposes()
+const travelPurposesQuery = computed(() => {
+  return {
+    perPage: MAX_PER_PAGE,
+  }
+})
+const { travelPurposes, isLoading } = useTravelPurposes(travelPurposesQuery)
 </script>
