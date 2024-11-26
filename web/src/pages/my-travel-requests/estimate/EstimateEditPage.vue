@@ -52,14 +52,14 @@ const expensesQuery = computed(() => ({
     type: EXPENSE_TYPES.ESTIMATE,
   },
 }))
-const { expenses: estimates, isLoading } = useExpenses(expensesQuery)
+const { expenses: estimates, isLoading, refresh } = useExpenses(expensesQuery)
 const hasEstimates = computed(() => isLoading.value === false && estimates.value.length > 0)
 
 /** @type {Ref<InstanceType<typeof EstimatesTable> | null>} */
 const estimatesTable = ref(null)
 
 async function refreshEstimates() {
-  await estimatesTable.value?.refresh()
+  await Promise.all([refresh(), estimatesTable.value?.refresh()])
 }
 
 const { travelAuthorizationId } = toRefs(props)
