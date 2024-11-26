@@ -27,67 +27,22 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
 
     return new Date(firstTravelSegment.departureOn) > new Date()
   })
-
-  const expenseStep = computed(() => {
-    const isInPreExpensingStates =
+  const isInPreExpensingStates = computed(() => {
+    return (
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT ||
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.SUBMITTED
-    const isAfterTravelStartDate = !isBeforeTravelStartDate.value
-    const isLocked = isInPreExpensingStates || isBeforeTravelStartDate.value
-    const isEditable =
-      travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.APPROVED &&
-      isAfterTravelStartDate
-
-    const lockReasons = []
-    if (isInPreExpensingStates) {
-      lockReasons.push("Travel authorization is in pre-expensing states (not approved).")
-    }
-
-    if (isBeforeTravelStartDate.value) {
-      lockReasons.push("Travel has not started yet.")
-    }
-
-    if (isLocked === true) {
-      return [
-        {
-          title: "Awaiting Travel Start",
-          subtitle: lockReasons.join(" "),
-          to: {
-            name: "my-travel-requests/AwaitingTravelStartPage",
-            params: { travelAuthorizationId: travelAuthorizationId.value },
-          },
-          continueButtonProps: {
-            disabled: true,
-          },
-        },
-      ]
-    }
-
-    return [
-      {
-        title: "Expense: edit",
-        subtitle: "Submit expenses",
-        to: {
-          name: "my-travel-requests/expense/ExpenseEditPage",
-          params: { travelAuthorizationId: travelAuthorizationId.value },
-        },
-        continueButtonText: "Submit to Supervisor",
-        disabled: !isEditable,
-      },
-      {
-        title: "Expense",
-        subtitle: "Review submitted expense",
-        to: {
-          name: "my-travel-requests/expense/ExpensePage",
-          params: { travelAuthorizationId: travelAuthorizationId.value },
-        },
-        backButtonProps: {
-          disabled: true,
-        },
-      },
-    ]
+    )
   })
-
+  const isAwaitingExpensingToBeActionable = computed(() => {
+    return isInPreExpensingStates.value && isBeforeTravelStartDate.value
+  })
+  const isAfterTravelStartDate = computed(() => !isBeforeTravelStartDate.value)
+  const isExpenseEditable = computed(() => {
+    return (
+      travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.APPROVED &&
+      isAfterTravelStartDate.value
+    )
+  })
   const isAwaitingApproval = computed(() => {
     return (
       travelAuthorization.value.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT ||
@@ -245,7 +200,46 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
             },
           ]
         : []),
-      ...expenseStep.value,
+      ...(isAwaitingExpensingToBeActionable.value
+        ? [
+            {
+              title: "Awaiting travel start",
+              subtitle: "Waiting for travel to start",
+              to: {
+                name: "my-travel-requests/AwaitingTravelStartPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              continueButtonProps: {
+                disabled: true,
+              },
+            },
+          ]
+        : []),
+      ...(!isAwaitingExpensingToBeActionable.value
+        ? [
+            {
+              title: "Expense: edit",
+              subtitle: "Submit expenses",
+              to: {
+                name: "my-travel-requests/expense/ExpenseEditPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              continueButtonText: "Submit to Supervisor",
+              disabled: !isExpenseEditable.value,
+            },
+            {
+              title: "Expense",
+              subtitle: "Review submitted expense",
+              to: {
+                name: "my-travel-requests/expense/ExpensePage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              backButtonProps: {
+                disabled: true,
+              },
+            },
+          ]
+        : []),
     ].map((step, index) => ({
       ...step,
       number: index + 1,
