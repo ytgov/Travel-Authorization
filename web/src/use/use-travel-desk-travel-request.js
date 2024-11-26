@@ -1,4 +1,5 @@
 import { reactive, toRefs, unref, watch } from "vue"
+import { isNil } from "lodash"
 
 import travelDeskTravelRequestsApi, {
   TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
@@ -16,8 +17,6 @@ export { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES }
  * Provides reactive state management for travelDeskTravelRequest with API integration.
  *
  * @param {import('vue').Ref<TravelDeskTravelRequest["id"]>} travelDeskTravelRequestId
- * @param {Object} [{ skipWatchIf = () => false }={}] - Configuration to conditionally skip API calls.
- * @param {Function} [skipWatchIf] - Function that returns a boolean to determine if fetching should be skipped.
  * @returns {{
  *   travelDeskTravelRequest: import('vue').Ref<TravelDeskTravelRequest>,
  *   isLoading: import('vue').Ref<boolean>,
@@ -26,10 +25,7 @@ export { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES }
  *   refresh: () => Promise<TravelDeskTravelRequest>
  * }}
  */
-export function useTravelDeskTravelRequests(
-  travelDeskTravelRequestId,
-  { skipWatchIf = () => false } = {}
-) {
+export function useTravelDeskTravelRequest(travelDeskTravelRequestId) {
   const state = reactive({
     travelDeskTravelRequest: null,
     isLoading: false,
@@ -94,8 +90,8 @@ export function useTravelDeskTravelRequests(
 
   watch(
     () => unref(travelDeskTravelRequestId),
-    async () => {
-      if (skipWatchIf()) return
+    async (newId) => {
+      if (isNil(newId)) return
 
       await fetch()
     },
@@ -111,4 +107,4 @@ export function useTravelDeskTravelRequests(
   }
 }
 
-export default useTravelDeskTravelRequests
+export default useTravelDeskTravelRequest

@@ -60,7 +60,7 @@ const routes = [
           {
             path: "details/edit",
             component: () => import("@/pages/my-travel-requests/details/DetailsEditPage.vue"),
-            name: "my-travel-requests/details/DetailsEditPage",
+            name: "my-travel-requests/details/DetailsSubmitPage",
           },
           {
             path: "estimate",

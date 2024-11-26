@@ -115,7 +115,7 @@ import useUser from "@/use/use-user"
 
 import SearchableUserEmailCombobox from "@/components/users/UserEmailSearchableCombobox.vue"
 import TravelAuthorizationPreApprovalProfileSelect from "@/components/travel-authorization-pre-approval-profiles/TravelAuthorizationPreApprovalProfileSelect"
-import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField"
+import EstimatedCostTextField from "@/modules/travel-authorizations/components/EstimatedCostTextField.vue"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/approvals-form-card/EstimateGenerateDialog"

@@ -54,7 +54,9 @@
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
             <v-list-item
-              :to="{ name: 'MyTravelAuthorizationsPage' }"
+              :to="{
+                name: 'my-travel-requests/MyTravelRequestsPage',
+              }"
               @click="menuItemSelected('My Travel Requests')"
             >
               <v-list-item-title>My Travel Requests</v-list-item-title>
@@ -307,7 +309,12 @@ export default {
       const path = this.$route.path
       const routes = [
         { name: "Dashboard", to: "/dashboard" },
-        { name: "My Travel Requests", to: { name: "MyTravelAuthorizationsPage" } },
+        {
+          name: "My Travel Requests",
+          to: {
+            name: "my-travel-requests/MyTravelRequestsPage",
+          },
+        },
         { name: "PreApproved", to: "/preapproved" },
         { name: "Travel Desk", to: { name: "TravelDeskPage" } },
         { name: "Travel Request", to: "/travel-request" },

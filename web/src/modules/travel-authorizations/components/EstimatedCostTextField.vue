@@ -22,7 +22,7 @@
         </v-icon>
       </div>
     </template>
-    <span>This is computed with data from the Estimate tab.</span>
+    <span>This is computed with data from the Estimate edit step.</span>
   </v-tooltip>
 </template>
 

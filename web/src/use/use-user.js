@@ -1,22 +1,23 @@
 import { reactive, toRefs, unref, watch } from "vue"
+import { isNil } from "lodash"
 
 import usersApi from "@/api/users-api"
 
 /**
- * TODO: add other user fields
- * @typedef {Object} User
- * @property {number} id
+ * @template [T=any]
+ * @typedef {import('vue').Ref<T>} Ref
  */
+/** @typedef {import('@/api/users-api.js').User} User */
 
 /**
  * This stores a global user state per id.
  *
  * @callback UseUser
- * @param {import('vue').Ref<number>} userId
+ * @param {Ref<number>} userId
  * @returns {{
- *   user: import('vue').Ref<User>,
- *   isLoading: import('vue').Ref<boolean>,
- *   isErrored: import('vue').Ref<boolean>,
+ *   user: Ref<User>,
+ *   isLoading: Ref<boolean>,
+ *   isErrored: Ref<boolean>,
  *   fetch: () => Promise<User>,
  *   refresh: () => Promise<User>,
  * }}
@@ -49,7 +50,7 @@ export function useUser(userId) {
   watch(
     () => unref(userId),
     async (newUserId) => {
-      if ([undefined, null].includes(newUserId)) return
+      if (isNil(newUserId)) return
 
       await fetch()
     },

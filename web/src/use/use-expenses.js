@@ -64,6 +64,7 @@ export function useExpenses(options = {}) {
     EXPENSE_TYPES,
     ...toRefs(state),
     fetch,
+    refresh: fetch,
   }
 }
 

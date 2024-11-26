@@ -65,8 +65,7 @@
                 <tr style="background: #f9f9f9">
                   <td style="width: 16%">Duration</td>
                   <td
-                    style="wi
-                                    dth:30%;"
+                    style="width:30%;"
                   >
                     {{ flightSegment.duration }}
                   </td>

@@ -2,6 +2,8 @@ import { isString } from "lodash"
 
 import http from "@/api/http-client"
 
+import debounceWithArgsCache from "@/utils/debounce-with-args-cache"
+
 /**
  * @typedef {Object} User
  * @property {string} id
@@ -44,21 +46,24 @@ export const usersApi = {
     const { data } = await http.get("/api/user/me")
     return data
   },
-  search({ email, ...otherParams } = {}) {
+  async search({ email, ...otherParams } = {}) {
     if (isString(email) && email.length >= 3) {
-      return http
-        .get("/api/lookup/emailList", { params: { email, otherParams } })
-        .then(({ data }) => ({ emails: data }))
+      const { data } = await http.get("/api/lookup/emailList", { params: { email, otherParams } })
+      return { emails: data }
     } else {
       return Promise.resolve([])
     }
   },
-  get(userId, params = {}) {
-    return http.get(`/api/users/${userId}`, { params }).then(({ data }) => data)
+  async get(userId, params = {}) {
+    const { data } = await http.get(`/api/users/${userId}`, { params })
+    return data
   },
-  ygGovernmentDirectorySync(userId) {
-    return http.post(`/api/users/${userId}/yg-government-directory-sync`).then(({ data }) => data)
+  async ygGovernmentDirectorySync(userId) {
+    const { data } = await http.post(`/api/users/${userId}/yg-government-directory-sync`)
+    return data
   },
 }
+
+usersApi.get = debounceWithArgsCache(usersApi.get)
 
 export default usersApi

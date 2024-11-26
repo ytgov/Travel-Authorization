@@ -15,22 +15,26 @@
 </template>
 
 <script setup>
+import { computed, toRefs } from "vue"
 import { isNil } from "lodash"
-import { computed } from "vue"
 
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: Number,
+    type: [String, Number],
     required: true,
   },
 })
 
+const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
+
 // TODO: Consider loading travelAuthorization and pulling travelDeskTravel request from there.
 const travelDeskTravelRequestQueryOptions = computed(() => ({
   where: {
-    travelAuthorizationId: props.travelAuthorizationId,
+    travelAuthorizationId: travelAuthorizationIdAsNumber.value,
   },
   perPage: 1,
 }))
@@ -41,4 +45,31 @@ const { travelDeskTravelRequests, isErrored } = useTravelDeskTravelRequests(
 const travelDeskTravelRequestId = computed(() => {
   return travelDeskTravelRequests.value[0]?.id
 })
+
+const { travelAuthorizationId } = toRefs(props)
+const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const breadcrumbs = computed(() => [
+  {
+    text: "My Travel Requests",
+    to: {
+      name: "my-travel-requests/MyTravelRequestsPage",
+    },
+  },
+  {
+    text: travelAuthorization.value?.eventName || "loading ...",
+    to: {
+      name: "my-travel-requests/request/RequestPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+  {
+    text: "Rank Options",
+    to: {
+      name: "my-travel-requests/request/RequestOptionsProvidedPage",
+      params: { travelAuthorizationId: travelAuthorizationId.value },
+    },
+  },
+])
+useBreadcrumbs(breadcrumbs)
 </script>

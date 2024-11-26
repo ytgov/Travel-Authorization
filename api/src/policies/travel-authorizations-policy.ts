@@ -24,12 +24,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
   update(): boolean {
     if (this.user.roles.includes(User.Roles.ADMIN)) return true
     if (this.record.supervisorEmail === this.user.email) return true
-    if (
-      this.record.userId === this.user.id &&
-      this.record.status === TravelAuthorization.Statuses.DRAFT
-    ) {
-      return true
-    }
+    if (this.record.userId === this.user.id) return true
 
     return false
   }
@@ -71,73 +66,82 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
 
   // NOTE: userId is always restricted after creation.
   permittedAttributes(): Path[] {
-    return [
-      "preApprovalProfileId",
-      "purposeId",
-      "firstName",
-      "lastName",
-      "department",
-      "division",
-      "branch",
-      "unit",
-      "email",
-      "mailcode",
-      "daysOffTravelStatus",
-      "dateBackToWork",
-      "travelDuration",
-      "travelAdvance",
-      "eventName",
-      "summary",
-      "benefits",
-      "supervisorEmail",
-      "approved",
-      "requestChange",
-      "denialReason",
-      "oneWayTrip",
-      "multiStop",
-      "travelAdvanceInCents",
-      "allTravelWithinTerritory",
+    if (
+      this.record.status === TravelAuthorization.Statuses.DRAFT ||
+      this.user.roles.includes(User.Roles.ADMIN) ||
+      this.record.supervisorEmail === this.user.email
+    ) {
+      return [
+        "preApprovalProfileId",
+        "purposeId",
+        "stepNumber",
+        "firstName",
+        "lastName",
+        "department",
+        "division",
+        "branch",
+        "unit",
+        "email",
+        "mailcode",
+        "daysOffTravelStatus",
+        "dateBackToWork",
+        "travelDuration",
+        "travelAdvance",
+        "eventName",
+        "summary",
+        "benefits",
+        "supervisorEmail",
+        "approved",
+        "requestChange",
+        "denialReason",
+        "oneWayTrip",
+        "multiStop",
+        "travelAdvanceInCents",
+        "allTravelWithinTerritory",
 
-      // TODO: use permitedAttributes from relevant policies once they exist
-      // Note that these nested attributes are "create" attributes, not "update" attributes
-      // as a full replace is occuring.
-      {
-        stops: [
-          "travelAuthorizationId",
-          "locationId",
-          "departureDate",
-          "departureTime",
-          "transport",
-          "accommodationType",
-        ],
-      },
-      {
-        expenses: [
-          "travelAuthorizationId",
-          "type",
-          "expenseType",
-          "description",
-          "date",
-          "cost",
-          "currency",
-          "receiptImage",
-          "fileName",
-        ],
-      },
-      {
-        estimates: [
-          "travelAuthorizationId",
-          "type",
-          "expenseType",
-          "description",
-          "date",
-          "cost",
-          "currency",
-          "receiptImage",
-          "fileName",
-        ],
-      },
-    ]
+        // TODO: use permitedAttributes from relevant policies once they exist
+        // Note that these nested attributes are "create" attributes, not "update" attributes
+        // as a full replace is occuring.
+        {
+          stops: [
+            "travelAuthorizationId",
+            "locationId",
+            "departureDate",
+            "departureTime",
+            "transport",
+            "accommodationType",
+          ],
+        },
+        {
+          expenses: [
+            "travelAuthorizationId",
+            "type",
+            "expenseType",
+            "description",
+            "date",
+            "cost",
+            "currency",
+            "receiptImage",
+            "fileName",
+          ],
+        },
+        {
+          estimates: [
+            "travelAuthorizationId",
+            "type",
+            "expenseType",
+            "description",
+            "date",
+            "cost",
+            "currency",
+            "receiptImage",
+            "fileName",
+          ],
+        },
+      ]
+    }
+
+    return ["stepNumber"]
   }
 
   permittedAttributesForCreate(): Path[] {
