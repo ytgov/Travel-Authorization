@@ -39,6 +39,7 @@
         <TotalsTable
           ref="totalsTable"
           :travel-authorization-id="travelAuthorizationIdAsNumber"
+          class="white"
         />
       </v-col>
     </v-row>

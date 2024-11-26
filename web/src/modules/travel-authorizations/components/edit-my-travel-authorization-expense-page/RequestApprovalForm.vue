@@ -15,6 +15,7 @@
           dense
           outlined
           required
+          background-color="white"
         />
       </v-col>
       <v-col
