@@ -1,3 +1,4 @@
+import { literal } from "sequelize"
 import { isNil } from "lodash"
 
 import logger from "@/utils/logger"
@@ -6,21 +7,31 @@ import { TravelDeskTravelRequestsPolicy } from "@/policies"
 import { UpdateService } from "@/services/travel-desk-travel-requests"
 import { IndexSerializer } from "@/serializers/travel-desk-travel-requests"
 
-import BaseController from "@/controllers/base-controller"
+import BaseController, { type ModelOrder } from "@/controllers/base-controller"
 
 export class TravelDeskTravelRequestsController extends BaseController<TravelDeskTravelRequest> {
   async index() {
-    const where = this.buildWhere()
-    const scopes = this.buildFilterScopes()
-    const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
-      scopes,
-      this.currentUser
-    )
-
     try {
+      const where = this.buildWhere()
+      const scopes = this.buildFilterScopes()
+      const order = this.buildOrder()
+      const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
+        scopes,
+        this.currentUser
+      )
+
+      const patchedOrder = order?.map(([column, order]) => {
+        if (["isBooked", "isAssignedToCurrentUser", "travelStartDate"].includes(column)) {
+          return [literal(`"${column}"`), order]
+        }
+
+        return [column, order]
+      }) as ModelOrder[]
+
       const totalCount = await scopedTravelDeskTravelRequests.count({ where })
       const travelDeskTravelRequests = await scopedTravelDeskTravelRequests.findAll({
         where,
+        order: patchedOrder,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         include: [
@@ -39,6 +50,31 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
             ],
           },
         ],
+        // for custom ordering
+        attributes: {
+          include: [
+            [
+              literal(
+                `CASE WHEN "TravelDeskTravelRequest".status = '${TravelDeskTravelRequest.Statuses.BOOKED}' THEN 1 ELSE 0 END`
+              ),
+              "isBooked",
+            ],
+            [
+              literal(
+                `CASE WHEN "travel_desk_officer" = '${this.currentUser.displayName}' THEN 1 ELSE 0 END`
+              ),
+              "isAssignedToCurrentUser",
+            ],
+            [
+              literal(/* sql */ `(
+                SELECT MIN("departure_on")
+                FROM "travel_segments"
+                WHERE "travel_segments"."travel_authorization_id" = "TravelDeskTravelRequest"."travel_authorization_id"
+              )`),
+              "travelStartDate",
+            ],
+          ],
+        },
       })
       const serializedTravelDeskTravelRequests = IndexSerializer.perform(
         travelDeskTravelRequests,

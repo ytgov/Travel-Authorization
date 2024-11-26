@@ -1,3 +1,6 @@
+// Keep in sync with api/src/controllers/base-controller.ts#ModelOrder
+/** @typedef {[string, string]} ModelOrder */
+
 /**
  * @typedef {{
  *   show: boolean;

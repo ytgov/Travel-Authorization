@@ -3,12 +3,12 @@
     v-model="selectedRequests"
     :page.sync="page"
     :items-per-page.sync="perPage"
+    :sort-by.sync="vuetify2SortBy"
+    :sort-desc.sync="vuetify2SortDesc"
     :headers="headers"
     :items="travelDeskTravelRequests"
     :server-items-length="totalCount"
     :loading="isLoading"
-    :sort-by="['isBooked', 'isAssignedToCurrentUser', 'travelStartDate']"
-    :sort-desc="[false, true, false]"
     :item-class="itemRowBackground"
     multi-sort
     show-select
@@ -119,7 +119,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { useStore } from "vue2-helpers/vuex"
 import { isNil, isEmpty } from "lodash"
 
@@ -130,6 +130,8 @@ import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
 import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useVuetifySortByToSequelizeSafeOrder from "@/use/utils/use-vuetify-sort-by-to-sequelize-safe-order"
+import useVuetifySortByToSafeRouteQuery from "@/use/utils/use-vuetify-sort-by-to-safe-route-query"
 import useTravelDeskTravelRequests, {
   TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
 } from "@/use/use-travel-desk-travel-requests"
@@ -140,12 +142,12 @@ import PrintTravelDeskReport from "@/modules/travelDesk/views/Common/PrintTravel
 const headers = ref([
   { text: "Submit Date", value: "createdAt" },
   { text: "Name", value: "userDisplayName", sortable: false },
-  { text: "Department", value: "department" },
-  { text: "Branch", value: "branch" },
+  { text: "Department", value: "department", sortable: false },
+  { text: "Branch", value: "branch", sortable: false },
   { text: "Travel Start Date", value: "travelStartDate" },
   { text: "Travel End Date", value: "travelEndDate", sortable: false },
-  { text: "Locations Traveled", value: "locationsTraveled" },
-  { text: "Requested", value: "requested" },
+  { text: "Locations Traveled", value: "locationsTraveled", sortable: false },
+  { text: "Requested", value: "requested", sortable: false },
   { text: "Status", value: "status" },
   { text: "Travel Desk Officer", value: "travelDeskOfficer" },
   { text: "", value: "edit", cellClass: "px-0 mx-0", sortable: false },
@@ -157,8 +159,27 @@ const store = useStore()
 const page = useRouteQuery("page", "1", { transform: integerTransformer })
 const perPage = useRouteQuery("perPage", "15", { transform: integerTransformer })
 
+const vuetify2SortBy = ref(["isBooked", "isAssignedToCurrentUser", "travelStartDate"])
+const vuetify2SortDesc = ref([false, true, false])
+const sortBy = useVuetifySortByToSafeRouteQuery("sortBy")
+
+watch(
+  () => [vuetify2SortBy.value, vuetify2SortDesc.value],
+  ([newVuetify2SortBy, newVuetify2SortDesc]) => {
+    sortBy.value = newVuetify2SortBy.map((value, index) => {
+      return {
+        key: value,
+        order: newVuetify2SortDesc[index] ? "desc" : "asc",
+      }
+    })
+  }
+)
+
+const order = useVuetifySortByToSequelizeSafeOrder(sortBy)
+
 const travelDeskTravelRequestsQuery = computed(() => {
   return {
+    order: order.value,
     page: page.value,
     perPage: perPage.value,
   }
