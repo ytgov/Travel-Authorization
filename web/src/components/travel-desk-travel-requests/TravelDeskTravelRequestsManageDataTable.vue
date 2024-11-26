@@ -126,11 +126,10 @@ import { isNil, isEmpty } from "lodash"
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import { USERS_URL } from "@/urls"
 import formatDate from "@/utils/format-date"
-import { integerTransformer } from "@/utils/use-route-query-transformers"
 import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
-import useRouteQuery from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useTravelDeskTravelRequests, {
   TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
 } from "@/use/use-travel-desk-travel-requests"
