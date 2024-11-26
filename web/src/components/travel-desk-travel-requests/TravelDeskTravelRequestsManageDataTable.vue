@@ -119,7 +119,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useStore } from "vue2-helpers/vuex"
 import { isNil, isEmpty } from "lodash"
 
@@ -132,6 +132,7 @@ import locationsApi from "@/api/locations-api"
 import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useVuetifySortByToSequelizeSafeOrder from "@/use/utils/use-vuetify-sort-by-to-sequelize-safe-order"
 import useVuetifySortByToSafeRouteQuery from "@/use/utils/use-vuetify-sort-by-to-safe-route-query"
+import useVuetify2SortByShim from "@/use/utils/use-vuetify2-sort-by-shim"
 import useTravelDeskTravelRequests, {
   TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
 } from "@/use/use-travel-desk-travel-requests"
@@ -159,22 +160,21 @@ const store = useStore()
 const page = useRouteQuery("page", "1", { transform: integerTransformer })
 const perPage = useRouteQuery("perPage", "15", { transform: integerTransformer })
 
-const vuetify2SortBy = ref(["isBooked", "isAssignedToCurrentUser", "travelStartDate"])
-const vuetify2SortDesc = ref([false, true, false])
-const sortBy = useVuetifySortByToSafeRouteQuery("sortBy")
-
-watch(
-  () => [vuetify2SortBy.value, vuetify2SortDesc.value],
-  ([newVuetify2SortBy, newVuetify2SortDesc]) => {
-    sortBy.value = newVuetify2SortBy.map((value, index) => {
-      return {
-        key: value,
-        order: newVuetify2SortDesc[index] ? "desc" : "asc",
-      }
-    })
-  }
-)
-
+const sortBy = useVuetifySortByToSafeRouteQuery("sortBy", [
+  {
+    key: "isBooked",
+    order: "asc",
+  },
+  {
+    key: "isAssignedToCurrentUser",
+    order: "desc",
+  },
+  {
+    key: "travelStartDate",
+    order: "asc",
+  },
+])
+const { vuetify2SortBy, vuetify2SortDesc } = useVuetify2SortByShim(sortBy)
 const order = useVuetifySortByToSequelizeSafeOrder(sortBy)
 
 const travelDeskTravelRequestsQuery = computed(() => {
