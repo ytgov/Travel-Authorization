@@ -4,13 +4,30 @@ import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 export { integerTransformer } from "@/utils/use-route-query-transformers"
 
+/** @typedef {import("vue-router").RouteParamValueRaw | string[]} RouteParamValueRaw */
+/** @typedef {import("@vueuse/shared").MaybeRefOrGetter} MaybeRefOrGetter */
+
 const _queue = new WeakMap()
 
 /**
  * See https://vueuse.org/router/useRouteQuery/
  *
  * code back-ported from https://github.com/vueuse/vueuse/blob/efd507956638328bb74b584712ebb78ed3590112/packages/router/useRouteQuery/index.ts
+ * @template [T=RouteParamValueRaw]
+ * @template [K=T]
+ * @callback UseRouteQuery
+ * @param {string} name
+ * @param {import("vue").MaybeRefOrGetter<T>} defaultValue
+ * @param {{
+ *   mode: import("vue-router").RouterMode,
+ *   route: import("vue-router").Route,
+ *   router: import("vue-router").Router
+ *   transform: (value: T) => K
+ * }} options
+ * @returns {import("vue").Ref<K>}
  */
+
+/** @type {UseRouteQuery} */
 export function useRouteQuery(name, defaultValue, options = {}) {
   const {
     mode = "replace",

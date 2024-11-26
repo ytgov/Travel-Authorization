@@ -11,7 +11,7 @@ import { useRouteQuery } from "@/use/utils/use-route-query"
  * @template [K=T]
  * @callback UseRouteQueryEnhanced
  * @param {string} name
- * @param {import("vue").MaybeRefOrGetter<T>} defaultValue
+ * @param {import("@vueuse/shared").MaybeRefOrGetter<T>} defaultValue
  * @param {{
  *   parse: (value: T) => K,
  *   stringify: (value: K) => T
