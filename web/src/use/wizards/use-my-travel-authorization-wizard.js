@@ -50,8 +50,15 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     if (isLocked === true) {
       return [
         {
-          title: "Expense",
+          title: "Awaiting Travel Start",
           subtitle: lockReasons.join(" "),
+          to: {
+            name: "my-travel-requests/AwaitingTravelStartPage",
+            params: { travelAuthorizationId: travelAuthorizationId.value },
+          },
+          continueButtonProps: {
+            disabled: true,
+          },
         },
       ]
     }

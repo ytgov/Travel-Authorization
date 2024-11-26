@@ -255,6 +255,12 @@ const routes = [
                 component: () => import("@/pages/my-travel-requests/expense/ExpenseEditPage.vue"),
                 props: true,
               },
+              {
+                path: "awaiting-travel-start",
+                name: "my-travel-requests/AwaitingTravelStartPage",
+                component: () => import("@/pages/my-travel-requests/AwaitingTravelStartPage.vue"),
+                props: true,
+              },
             ],
           },
         ],
