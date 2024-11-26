@@ -48,14 +48,16 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     }
 
     if (isLocked === true) {
-      return {
-        title: "Expense",
-        subtitle: lockReasons.join(" "),
-      }
+      return [
+        {
+          title: "Expense",
+          subtitle: lockReasons.join(" "),
+        },
+      ]
     }
 
-    if (isEditable) {
-      return {
+    return [
+      {
         title: "Expense: edit",
         subtitle: "Submit expenses",
         to: {
@@ -63,17 +65,20 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
         continueButtonText: "Submit to Supervisor",
-      }
-    }
-
-    return {
-      title: "Expense",
-      subtitle: "Review submitted expense",
-      to: {
-        name: "my-travel-requests/expense/ExpensePage",
-        params: { travelAuthorizationId: travelAuthorizationId.value },
+        disabled: !isEditable,
       },
-    }
+      {
+        title: "Expense",
+        subtitle: "Review submitted expense",
+        to: {
+          name: "my-travel-requests/expense/ExpensePage",
+          params: { travelAuthorizationId: travelAuthorizationId.value },
+        },
+        backButtonProps: {
+          disabled: true,
+        },
+      },
+    ]
   })
 
   const isAwaitingApproval = computed(() => {
@@ -233,7 +238,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
             },
           ]
         : []),
-      expenseStep.value,
+      ...expenseStep.value,
     ].map((step, index) => ({
       ...step,
       number: index + 1,

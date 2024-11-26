@@ -14,7 +14,10 @@
       </v-col>
       <v-col>
         <h3>Totals</h3>
-        <TotalsTable :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <TotalsTable
+          :travel-authorization-id="travelAuthorizationIdAsNumber"
+          class="white"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -24,13 +27,6 @@
       </v-col>
       <v-col cols="4"></v-col>
     </v-row>
-    <v-row>
-      <v-col>
-        <TravelAuthorizationActionLogsTable
-          :travel-authorization-id="travelAuthorizationIdAsNumber"
-        />
-      </v-col>
-    </v-row>
   </div>
 </template>
 
@@ -39,8 +35,6 @@ import { computed, toRefs } from "vue"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
-
-import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable"
 
 import ExpensesTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/ExpensesTable"
 import GeneralLedgerCodingsTable from "@/modules/travel-authorizations/components/read-travel-authorization-expense-page/GeneralLedgerCodingsTable"
