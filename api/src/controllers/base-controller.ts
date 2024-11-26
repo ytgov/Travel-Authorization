@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express"
-import { Attributes, Model, Order, WhereOptions } from "sequelize"
+import { Attributes, col, Model, Order, WhereOptions } from "sequelize"
+import { type Col } from "sequelize/lib/utils"
 import { isEmpty, isNil } from "lodash"
 
 import { AuthorizedRequest } from "@/middleware/authorization-middleware"
@@ -204,14 +205,18 @@ export class BaseController<TModel extends Model = never> {
   buildOrder(
     overridableOrder: ModelOrder[] = [],
     nonOverridableOrder: ModelOrder[] = []
-  ): ModelOrder[] | undefined {
+  ): [Col, string][] | undefined {
     const orderQuery = this.query.order as unknown as ModelOrder[] | undefined
 
     if (isNil(orderQuery)) {
-      return [...nonOverridableOrder, ...overridableOrder]
+      const rawOrder = [...nonOverridableOrder, ...overridableOrder]
+      const orderAsColumns = this.columnifyOrderings(rawOrder)
+      return orderAsColumns
     }
 
-    return [...nonOverridableOrder, ...orderQuery, ...overridableOrder]
+    const rawOrder = [...nonOverridableOrder, ...orderQuery, ...overridableOrder]
+    const orderAsColumns = this.columnifyOrderings(rawOrder)
+    return orderAsColumns
   }
 
   private determineLimit(perPage: number) {
@@ -220,6 +225,16 @@ export class BaseController<TModel extends Model = never> {
     }
 
     return Math.max(1, Math.min(perPage, MAX_PER_PAGE))
+  }
+
+  private columnifyOrderings(orderings: ModelOrder[]) {
+    return orderings.map<[Col, string]>(([column, order]) => {
+      if (typeof column === "string") {
+        return [col(column), order]
+      }
+
+      return [column, order]
+    })
   }
 }
 

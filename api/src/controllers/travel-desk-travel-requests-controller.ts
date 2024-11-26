@@ -1,4 +1,3 @@
-import { literal } from "sequelize"
 import { isNil } from "lodash"
 
 import logger from "@/utils/logger"
@@ -7,7 +6,7 @@ import { TravelDeskTravelRequestsPolicy } from "@/policies"
 import { UpdateService } from "@/services/travel-desk-travel-requests"
 import { IndexSerializer } from "@/serializers/travel-desk-travel-requests"
 
-import BaseController, { type ModelOrder } from "@/controllers/base-controller"
+import BaseController from "@/controllers/base-controller"
 
 export class TravelDeskTravelRequestsController extends BaseController<TravelDeskTravelRequest> {
   async index() {
@@ -24,18 +23,10 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
         this.currentUser
       )
 
-      const orderWithSupportForDerivedAttributes = order?.map(([column, order]) => {
-        if (["isBooked", "isAssignedToCurrentUser", "travelStartDate"].includes(column)) {
-          return [literal(`"${column}"`), order]
-        }
-
-        return [column, order]
-      }) as ModelOrder[]
-
       const totalCount = await scopedTravelDeskTravelRequests.count({ where })
       const travelDeskTravelRequests = await scopedTravelDeskTravelRequests.findAll({
         where,
-        order: orderWithSupportForDerivedAttributes,
+        order,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         include: [
