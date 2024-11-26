@@ -59,54 +59,53 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex"
+<script setup>
+import { computed, toRefs } from "vue"
 
-import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
+import { MAX_PER_PAGE } from "@/api/base-api"
+import useTravelPurposes from "@/use/use-travel-purposes"
+import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
-export default {
-  name: "SummaryHeaderPanel",
-  components: {
-    VReadonlyLocationTextField,
-  },
-  props: {
-    travelAuthorizationId: {
-      type: Number,
-      required: true,
-    },
-  },
-  computed: {
-    ...mapGetters("travelAuthorization", {
-      travelAuthorization: "attributes",
-      stops: "stops",
-      initialDestination: "firstStop",
-      finalDestination: "lastStop",
-    }),
-    ...mapGetters("travelPurposes", {
-      travelPurposes: "items",
-      isLoadingTravelPurposes: "isLoading",
-    }),
-    purposeText() {
-      const purpose = this.travelPurposes.find((p) => p.id === this.travelAuthorization.purposeId)
-      return purpose?.purpose || ""
-    },
-    finalDestinationDepartureDate() {
-      if (this.travelAuthorization.multiStop) {
-        return this.stops[this.stops.length - 2].departureDate
-      }
+import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField.vue"
 
-      return this.finalDestination.departureDate
-    },
+const props = defineProps({
+  travelAuthorizationId: {
+    type: Number,
+    required: true,
   },
-  async mounted() {
-    await Promise.all([
-      this.ensureTravelPurposes(),
-      this.ensureTravelAuthorization(this.travelAuthorizationId),
-    ])
-  },
-  methods: {
-    ...mapActions("travelAuthorization", { ensureTravelAuthorization: "ensure" }),
-    ...mapActions("travelPurposes", { ensureTravelPurposes: "ensure" }),
-  },
-}
+})
+
+const { travelAuthorizationId } = toRefs(props)
+const {
+  travelAuthorization,
+  stops,
+  firstStop: initialDestination,
+  lastStop: finalDestination,
+  refresh,
+} = useTravelAuthorization(travelAuthorizationId)
+
+const travelPurposesQuery = computed(() => {
+  return {
+    perPage: MAX_PER_PAGE,
+  }
+})
+const { travelPurposes, isLoading: isLoadingTravelPurposes } =
+  useTravelPurposes(travelPurposesQuery)
+
+const purposeText = computed(() => {
+  const purpose = travelPurposes.value.find((p) => p.id === travelAuthorization.value.purposeId)
+  return purpose?.purpose || ""
+})
+
+const finalDestinationDepartureDate = computed(() => {
+  if (travelAuthorization.value.multiStop) {
+    return stops.value[stops.value.length - 2].departureDate
+  }
+
+  return finalDestination.value.departureDate
+})
+
+defineExpose({
+  refresh,
+})
 </script>

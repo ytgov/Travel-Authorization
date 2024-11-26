@@ -17,13 +17,14 @@
         <v-card class="default">
           <v-card-text>
             <SummaryHeaderPanel
+              ref="summaryHeaderPanel"
               :travel-authorization-id="travelAuthorizationIdAsNumber"
               class="mt-5"
             />
 
             <router-view
               ref="currentStepComponent"
-              @updated="refresh"
+              @updated="refreshHeaderAndLocalState"
             ></router-view>
 
             <div class="d-flex justify-end">
@@ -152,5 +153,12 @@ async function continueAndGoToNextStep() {
   } finally {
     isLoading.value = false
   }
+}
+
+/** @type {Ref<InstanceType<typeof SummaryHeaderPanel> | null>} */
+const summaryHeaderPanel = ref(null)
+
+async function refreshHeaderAndLocalState() {
+  await Promise.all([summaryHeaderPanel.value?.refresh(), refresh()])
 }
 </script>
