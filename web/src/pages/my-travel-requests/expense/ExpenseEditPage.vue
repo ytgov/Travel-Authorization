@@ -162,4 +162,9 @@ const breadcrumbs = computed(() => [
   },
 ])
 useBreadcrumbs(breadcrumbs)
+
+// TODO: split submission step into its own page
+defineExpose({
+  continue: () => requestApprovalForm.value?.submit(),
+})
 </script>

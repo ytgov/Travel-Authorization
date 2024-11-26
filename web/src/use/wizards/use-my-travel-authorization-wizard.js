@@ -56,12 +56,13 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
 
     if (isEditable) {
       return {
-        title: "Expense",
+        title: "Expense: edit",
         subtitle: "Submit expenses",
         to: {
           name: "my-travel-requests/expense/ExpenseEditPage",
           params: { travelAuthorizationId: travelAuthorizationId.value },
         },
+        continueButtonText: "Submit to Supervisor",
       }
     }
 

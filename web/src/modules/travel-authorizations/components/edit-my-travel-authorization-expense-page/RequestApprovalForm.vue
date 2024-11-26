@@ -6,7 +6,7 @@
     <v-row>
       <v-col
         cols="12"
-        md="3"
+        md="6"
       >
         <SearchableUserEmailCombobox
           v-model="travelAuthorization.supervisorEmail"
@@ -18,55 +18,12 @@
           background-color="white"
         />
       </v-col>
-      <v-col
-        cols="12"
-        md="3"
-      >
-        <v-btn
-          v-if="isReadyToSubmit"
-          :loading="isLoading"
-          class="mt-0"
-          color="primary"
-          @click="requestApprovalForExpenseClaim"
-        >
-          Submit to Supervisor
-        </v-btn>
-        <v-tooltip
-          v-else
-          bottom
-        >
-          <template #activator="{ on, attrs }">
-            <span
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-btn
-                class="mt-0"
-                color="secondary"
-                disabled
-                >Submit to Supervisor
-                <v-icon
-                  class="ml-1"
-                  small
-                >
-                  mdi-help-circle-outline
-                </v-icon>
-              </v-btn>
-            </span>
-          </template>
-          <span
-            >Submit becomes enabled when there are more than zero "Coding" rows, and all expenses
-            have an associated upload/receipt.</span
-          >
-        </v-tooltip>
-      </v-col>
     </v-row>
   </v-form>
 </template>
 
 <script setup>
 import { onMounted, ref, computed } from "vue"
-import { useRouter } from "vue2-helpers/vue-router"
 
 import { required } from "@/utils/validators"
 
@@ -86,7 +43,6 @@ const props = defineProps({
 
 const form = ref(null)
 const snack = useSnack()
-const router = useRouter()
 
 const {
   travelAuthorization,
@@ -127,6 +83,7 @@ const allRelevantExpensesHaveReceipts = computed(() =>
     .filter((expense) => expense.expenseType !== EXPENSE_TYPES.MEALS_AND_INCIDENTALS)
     .every((expense) => expense.fileSize > 0)
 )
+// TODO: instead of multiple checks here, consider using 1 page per check
 const isReadyToSubmit = computed(
   () => hasGeneralLedgerCodings.value && allRelevantExpensesHaveReceipts.value
 )
@@ -144,21 +101,27 @@ async function refresh() {
 }
 
 async function requestApprovalForExpenseClaim() {
+  if (!isReadyToSubmit.value) {
+    snack.error(
+      `Cannot submit expense claim until there are more than zero "Coding" rows, and all expenses have an associated upload/receipt.`
+    )
+    return false
+  }
+
   try {
     await expenseClaim({
       supervisorEmail: travelAuthorization.value.supervisorEmail,
     })
-    snack("Expense claim submitted for approval.", { color: "success" })
-    router.push({
-      name: "my-travel-requests/expense/ExpensePage",
-      params: { travelAuthorizationId: props.travelAuthorizationId },
-    })
+    snack.success("Expense claim submitted for approval.")
+    return true
   } catch (error) {
-    snack(error.message, { color: "error" })
+    snack.error(`Failed to submit expense claim: ${error}`)
+    return false
   }
 }
 
 defineExpose({
   refresh,
+  submit: requestApprovalForExpenseClaim,
 })
 </script>
