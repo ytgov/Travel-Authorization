@@ -130,7 +130,7 @@ import { integerTransformer } from "@/utils/use-route-query-transformers"
 import http from "@/api/http-client"
 import locationsApi from "@/api/locations-api"
 
-import useRouteQuery from "@/use/use-route-query"
+import useRouteQuery from "@/use/utils/use-route-query"
 import useTravelDeskTravelRequests, {
   TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
 } from "@/use/use-travel-desk-travel-requests"
