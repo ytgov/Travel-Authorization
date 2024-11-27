@@ -85,7 +85,7 @@
 <script setup>
 import { computed, toRefs } from "vue"
 
-import { useTravelAuthorization } from "@/store/travel-authorization"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import LocationReadonlyTextField from "@/components/locations/LocationReadonlyTextField.vue"
 
