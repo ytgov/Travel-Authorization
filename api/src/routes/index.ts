@@ -143,6 +143,7 @@ router
   .post(TravelDeskFlightRequestsController.create)
 router
   .route("/api/travel-desk-flight-requests/:travelDeskFlightRequestId")
+  .get(TravelDeskFlightRequestsController.show)
   .patch(TravelDeskFlightRequestsController.update)
   .delete(TravelDeskFlightRequestsController.destroy)
 

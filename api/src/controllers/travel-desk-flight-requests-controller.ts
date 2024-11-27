@@ -35,6 +35,33 @@ export class TravelDeskFlightRequestsController extends BaseController {
     }
   }
 
+  async show() {
+    try {
+      const travelDeskFlightRequest = await this.loadTravelDeskFlightRequest()
+      if (isNil(travelDeskFlightRequest)) {
+        return this.response.status(404).json({
+          message: "Flight request not found.",
+        })
+      }
+
+      const policy = this.buildPolicy(travelDeskFlightRequest)
+      if (!policy.show()) {
+        return this.response.status(403).json({
+          message: "You are not authorized to view this flight request.",
+        })
+      }
+
+      return this.response.status(200).json({
+        travelDeskFlightRequest,
+        policy,
+      })
+    } catch (error) {
+      return this.response.status(400).json({
+        message: `Failed to retrieve travel desk flight request: ${error}`,
+      })
+    }
+  }
+
   async create() {
     try {
       const travelDeskFlightRequest = await this.buildTravelDeskFlightRequest()

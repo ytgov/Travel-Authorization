@@ -8,6 +8,10 @@ import TravelDeskTravelRequestsPolicy from "@/policies/travel-desk-travel-reques
 import BasePolicy from "@/policies/base-policy"
 
 export class TravelDeskFlightRequestsPolicy extends BasePolicy<TravelDeskFlightRequest> {
+  show(): boolean {
+    return this.travelDeskTravelRequestsPolicy.show()
+  }
+
   create(): boolean {
     return this.travelDeskTravelRequestsPolicy.update()
   }
