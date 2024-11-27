@@ -1,3 +1,4 @@
+export { CurrentUserController } from "./current-user-controller"
 export { ExpensesController } from "./expenses-controller"
 export { GeneralLedgerCodingsController } from "./general-ledger-codings-controller"
 export { LocationsController } from "./locations-controller"

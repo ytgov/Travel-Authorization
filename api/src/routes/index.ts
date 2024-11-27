@@ -6,6 +6,7 @@ import { GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
 import { databaseHealthCheckMiddleware, checkJwt, authorizationMiddleware } from "@/middleware"
 import { healthCheckRouter } from "@/routes/healthcheck-router"
 import {
+  CurrentUserController,
   Expenses,
   ExpensesController,
   GeneralLedgerCodingsController,
@@ -75,6 +76,8 @@ router.use("/api/traveldesk", travelDeskRouter)
 router.use("/api/travCom", travComRouter)
 router.use("/api/reconcile", reconcileRouter)
 //// END MORE LEGACY ROUTES
+
+router.route("/api/current-user").get(CurrentUserController.show)
 
 router.route("/api/expenses").get(ExpensesController.index).post(ExpensesController.create)
 router

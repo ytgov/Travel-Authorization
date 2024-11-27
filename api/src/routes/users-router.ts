@@ -12,6 +12,9 @@ import { UsersSerializer } from "@/serializers"
 export const userRouter = express.Router()
 
 userRouter.get("/me", async (req: Request, res: Response) => {
+  console.warn(
+    "Deprecated: prefer /api/current-user (api/src/controllers/current-user-controller.ts) instead"
+  )
   const user = (req as AuthorizedRequest).user
 
   // See api/src/controllers/users/yg-government-directory-sync-controller.ts for force sync endpoint
