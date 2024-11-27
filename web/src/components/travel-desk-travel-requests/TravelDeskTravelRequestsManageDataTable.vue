@@ -119,15 +119,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue"
-import { useStore } from "vue2-helpers/vuex"
+import { computed, ref } from "vue"
 import { isNil, isEmpty } from "lodash"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
-import { USERS_URL } from "@/urls"
 import formatDate from "@/utils/format-date"
-import http from "@/api/http-client"
-import locationsApi from "@/api/locations-api"
 
 import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useVuetifySortByToSequelizeSafeOrder from "@/use/utils/use-vuetify-sort-by-to-sequelize-safe-order"
@@ -155,7 +151,6 @@ const headers = ref([
 ])
 
 const { t } = useI18n()
-const store = useStore()
 
 const page = useRouteQuery("page", "1", { transform: integerTransformer })
 const perPage = useRouteQuery("perPage", "15", { transform: integerTransformer })
@@ -184,49 +179,11 @@ const travelDeskTravelRequestsQuery = computed(() => {
     perPage: perPage.value,
   }
 })
-const {
-  travelDeskTravelRequests,
-  totalCount,
-  isLoading: isLoadingTravelDeskTravelRequests,
-} = useTravelDeskTravelRequests(travelDeskTravelRequestsQuery)
-
-const selectedRequests = ref([])
-const isLoadingDestinationsAndTravelDeskUsers = ref(false)
-const alertMsg = ref("")
-
-const isLoading = computed(
-  () => isLoadingTravelDeskTravelRequests.value || isLoadingDestinationsAndTravelDeskUsers.value
+const { travelDeskTravelRequests, totalCount, isLoading } = useTravelDeskTravelRequests(
+  travelDeskTravelRequestsQuery
 )
 
-onMounted(async () => {
-  isLoadingDestinationsAndTravelDeskUsers.value = true
-  await getDestinations()
-  await getTravelDeskUsers()
-  isLoadingDestinationsAndTravelDeskUsers.value = false
-})
-
-async function getDestinations() {
-  const { locations } = await locationsApi.list()
-  const formattedLocations = locations.map(({ id, city, province }) => {
-    return {
-      value: id,
-      text: `${city} (${province})`,
-      city,
-      province,
-    }
-  })
-  store.commit("traveldesk/SET_DESTINATIONS", formattedLocations)
-  return formattedLocations
-}
-
-async function getTravelDeskUsers() {
-  try {
-    const { data } = await http.get(`${USERS_URL}/travel-desk-users`)
-    store.commit("traveldesk/SET_TRAVEL_DESK_USERS", data)
-  } catch (error) {
-    alertMsg.value = error.response.data
-  }
-}
+const selectedRequests = ref([])
 
 function determineRequestedOptions(travelDeskTravelRequest) {
   const requested = []
