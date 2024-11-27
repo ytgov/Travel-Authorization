@@ -68,7 +68,7 @@
                 title="Edit"
                 icon
                 color="blue"
-                @click="showEditDialog(item)"
+                @click="showEditDialog(item.id)"
               >
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
@@ -140,8 +140,8 @@ export default {
     /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestEditDialog> | null>} */
     const editDialog = ref(null)
 
-    function showEditDialog(flightRequest) {
-      editDialog.value?.show(flightRequest)
+    function showEditDialog(travelDeskFlightRequestId) {
+      editDialog.value?.show(travelDeskFlightRequestId)
     }
 
     return {

@@ -38,7 +38,7 @@
                 title="Edit"
                 icon
                 color="blue"
-                @click="showEditDialog(item)"
+                @click="showEditDialog(item.id)"
                 ><v-icon>mdi-pencil</v-icon></v-btn
               >
               <v-btn
@@ -58,12 +58,11 @@
 </template>
 
 <script setup>
-import { isNil, first, last } from "lodash"
-import { ref, computed, toRefs, watch } from "vue"
-import { useRoute } from "vue2-helpers/vue-router"
-import { DateTime } from "luxon"
+import { first, last } from "lodash"
+import { ref, computed, toRefs } from "vue"
 
 import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
+import formatDate from "@/utils/format-date"
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
@@ -113,8 +112,6 @@ const headers = [
   { text: "", value: "actions", class: "blue-grey lighten-4", width: "4rem", sortable: false },
 ]
 
-const route = useRoute()
-
 const travelDeskFlightRequestsQuery = computed(() => ({
   where: {
     travelRequestId: props.travelDeskTravelRequestId,
@@ -135,34 +132,9 @@ const maxDate = computed(() => lastTravelSegment.value?.departureOn)
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestEditDialog> | null>} */
 const editDialog = ref(null)
 
-function formatDate(date) {
-  return DateTime.fromISO(date).toFormat("MMM d yyyy")
+function showEditDialog(flightRequestId) {
+  editDialog.value?.show(flightRequestId)
 }
-
-function showEditDialog(flightRequest) {
-  editDialog.value?.show(flightRequest)
-}
-
-function showEditDialogForRouteQuery() {
-  const flightRequestId = parseInt(route.query.showFlightRequestEdit)
-  if (isNaN(flightRequestId)) return
-
-  const flightRequest = travelDeskFlightRequests.value.find(
-    (flightRequest) => flightRequest.id === flightRequestId
-  )
-  if (isNil(flightRequest)) return
-
-  showEditDialog(flightRequest)
-}
-
-watch(
-  () => travelDeskFlightRequests.value,
-  (flightRequests) => {
-    if (flightRequests.length === 0) return
-
-    showEditDialogForRouteQuery()
-  }
-)
 
 async function deleteFlightRequest(flightRequest) {
   if (!blockedToTrueConfirm("Are you sure you want to remove this flight request?")) return
