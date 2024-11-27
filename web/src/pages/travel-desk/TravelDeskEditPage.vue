@@ -9,13 +9,99 @@
       type="card"
     />
     <v-card-text v-else>
-      <v-row class="mb-3">
-        <v-col cols="8">
-          <TravelerDetails
-            :traveler-details="travelDeskTravelRequest"
+      <v-row>
+        <v-col
+          cols="12"
+          md="8"
+        >
+          <!-- TODO: move readonly view to a "read" page -->
+          <TravelerDetailsCard
+            v-if="readonly"
+            :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+          />
+          <TravelerDetailsFormCard
+            v-else
+            v-model="travelDeskTravelRequest"
             :readonly="readonly"
           />
-
+        </v-col>
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <v-row>
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <TravelDeskTravelAgencySelect
+                v-model="travelDeskTravelRequest.travelAgencyId"
+                label="Assign Agency"
+                placeholder="None"
+                clearable
+                outlined
+                persistent-placeholder
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-select
+                v-model="travelDeskTravelRequest.travelDeskOfficer"
+                :readonly="readonly"
+                :items="travelDeskAgentList"
+                label="Travel Desk Agent Assigned"
+                outlined
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            v-if="travelDeskTravelRequest.invoiceNumber"
+            class="mx-0 mb-5 mt-n6"
+          >
+            <v-col>
+              <TitleCard
+                class="mt-10 mx-4"
+                style="width: 100%"
+              >
+                <template #title>
+                  <div>Invoice</div>
+                </template>
+                <template #body>
+                  <v-row class="mx-0 mt-0 mb-2">
+                    <div
+                      style="font-size: 13pt"
+                      class="my-auto ml-4 primary--text"
+                    >
+                      Invoice Number: {{ travelDeskTravelRequest.invoiceNumber }}
+                    </div>
+                    <v-btn
+                      class="ml-auto mr-3 px-5"
+                      color="secondary"
+                      :loading="savingData"
+                      @click="downloadPdf"
+                    >
+                      <div style="font-size: 13pt">Download PNR</div>
+                    </v-btn>
+                  </v-row>
+                </template>
+              </TitleCard>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <QuestionsTable
+                :readonly="readonly"
+                :travel-desk-user="true"
+                :questions="travelDeskTravelRequest.questions"
+              />
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
           <TitleCard
             class="mt-10"
             large-title
@@ -35,16 +121,13 @@
                   @close="flightKey++"
                 />
               </v-row>
-              <title-card class="mt-9 mx-5">
+              <TitleCard class="mt-9 mx-5">
                 <template #title>
                   <div>Flight Request</div>
                 </template>
                 <template #body>
                   <v-row class="m-0 p-0">
-                    <v-col
-                      cols="9"
-                      class="my-0 mx-0 py-4"
-                    >
+                    <v-col class="my-0 mx-0 py-4">
                       <FlightRequestTable
                         :key="flightKey"
                         class="mr-n5 mt-n1"
@@ -55,27 +138,9 @@
                         :flight-requests="travelDeskTravelRequest.flightRequests"
                       />
                     </v-col>
-                    <v-col
-                      cols="3"
-                      class="px-0"
-                    >
-                      <v-textarea
-                        v-model="travelDeskTravelRequest.additionalInformation"
-                        class="mt-3 ml-0 mr-5"
-                        :readonly="readonly"
-                        label="Additional Information"
-                        outlined
-                        auto-grow
-                        counter
-                        :rules="[
-                          (v) => (v || '').length <= 255 || 'Must be 255 characters or less',
-                        ]"
-                        :clearable="!readonly"
-                      />
-                    </v-col>
                   </v-row>
                 </template>
-              </title-card>
+              </TitleCard>
               <RentalCarRequestTable
                 :readonly="readonly"
                 :flight-requests="travelDeskTravelRequest.flightRequests"
@@ -92,66 +157,6 @@
               />
             </template>
           </TitleCard>
-        </v-col>
-        <v-col cols="4">
-          <v-row class="mt-3 mb-0 mx-0">
-            <v-col cols="6">
-              <TravelDeskTravelAgencySelect
-                v-model="travelDeskTravelRequest.travelAgencyId"
-                label="Assign Agency"
-                placeholder="None"
-                clearable
-                outlined
-                persistent-placeholder
-              />
-            </v-col>
-            <v-col cols="6">
-              <v-select
-                v-model="travelDeskTravelRequest.travelDeskOfficer"
-                :readonly="readonly"
-                class="mr-2"
-                :items="travelDeskAgentList"
-                label="Travel Desk Agent Assigned"
-                outlined
-              />
-            </v-col>
-          </v-row>
-          <v-row
-            v-if="travelDeskTravelRequest.invoiceNumber"
-            class="mx-0 mb-5 mt-n6"
-          >
-            <TitleCard
-              class="mt-10 mx-4"
-              style="width: 100%"
-            >
-              <template #title>
-                <div>Invoice</div>
-              </template>
-              <template #body>
-                <v-row class="mx-0 mt-0 mb-2">
-                  <div
-                    style="font-size: 13pt"
-                    class="my-auto ml-4 primary--text"
-                  >
-                    Invoice Number: {{ travelDeskTravelRequest.invoiceNumber }}
-                  </div>
-                  <v-btn
-                    class="ml-auto mr-3 px-5"
-                    color="secondary"
-                    :loading="savingData"
-                    @click="downloadPdf"
-                  >
-                    <div style="font-size: 13pt">Download PNR</div>
-                  </v-btn>
-                </v-row>
-              </template>
-            </TitleCard>
-          </v-row>
-          <QuestionsTable
-            :readonly="readonly"
-            :travel-desk-user="true"
-            :questions="travelDeskTravelRequest.questions"
-          />
         </v-col>
       </v-row>
     </v-card-text>
@@ -216,8 +221,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue"
-import { useStore } from "vue2-helpers/vuex"
+import { ref, computed, watch, onMounted } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep, isNil } from "lodash"
 
@@ -230,7 +234,8 @@ import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import TravelerDetails from "@/modules/travelDesk/views/Requests/Components/TravelerDetails.vue"
+import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
+import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 import FlightRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightRequestTable.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
@@ -264,12 +269,16 @@ const savingData = ref(false)
 const flightKey = ref(0)
 const isLoading = ref(false)
 
-const store = useStore()
+const travelDeskUsers = ref([])
 const travelDeskAgentList = computed(() =>
-  store.state.traveldesk.travelDeskUsers.map(({ firstName, lastName }) =>
-    [firstName, lastName].join(" ")
-  )
+  travelDeskUsers.value.map(({ firstName, lastName }) => [firstName, lastName].join(" "))
 )
+
+onMounted(async () => {
+  // TODO: replace with useUsers({ filters: { isTravelDeskUser: true } }) once it exists
+  const { data: newTravelDeskUsers } = await http.get(`/api/user/travel-desk-users`)
+  travelDeskUsers.value = newTravelDeskUsers
+})
 
 watch(
   () => props.travelDeskTravelRequestId,
