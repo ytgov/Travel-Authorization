@@ -1,21 +1,17 @@
 <template>
   <v-card
     :loading="loadingData"
-    class="pt-1"
-    style="border: 0px solid red !important"
+    class="pt-1 borderless-card"
   >
-    <v-row class="mt-n1 mx-0">
-      <NewFlightRequest
+    <div class="d-flex justify-end mr-3">
+      <TravelDeskFlightRequestCreateDialog
         v-if="!readonly"
-        :disabled="loadingData"
+        :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :min-date="minDate"
         :max-date="maxDate"
-        class="ml-auto mr-3"
-        type="Add New"
-        :flight-request="flightRequest"
-        @updateTable="updateTable"
+        @created="updateTable"
       />
-    </v-row>
+    </div>
     <v-row
       v-if="!loadingData"
       class="mb-3 mx-0"
@@ -98,12 +94,14 @@ import http from "@/api/http-client"
 
 import NewFlightRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewFlightRequest.vue"
 import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
+import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
 
 export default {
   name: "TravelDeskFlightRequestsEditTable",
   components: {
     NewFlightRequest,
     FlightOptionCard,
+    TravelDeskFlightRequestCreateDialog,
   },
   props: {
     travelDeskTravelRequestId: {
@@ -270,5 +268,10 @@ export default {
 <style scoped>
 ::v-deep .v-data-table > .v-data-table__wrapper tbody tr.v-data-table__expanded__content {
   background: #f9f9f9 !important;
+}
+
+.v-card.borderless-card {
+  border: none !important;
+  box-shadow: none !important;
 }
 </style>
