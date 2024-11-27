@@ -1,13 +1,38 @@
 import { isNil } from "lodash"
 
-import BaseController from "./base-controller"
+import logger from "@/utils/logger"
 
 import { User } from "@/models"
 import { UsersPolicy } from "@/policies"
 import { UsersSerializer } from "@/serializers"
 import { CreateService } from "@/services/users"
+import BaseController from "@/controllers/base-controller"
 
-export class UsersController extends BaseController {
+export class UsersController extends BaseController<User> {
+  async index() {
+    try {
+      const where = this.buildWhere()
+      const scopes = this.buildFilterScopes()
+      const scopedUsers = UsersPolicy.applyScope(scopes, this.currentUser)
+
+      const totalCount = await scopedUsers.count({ where })
+      const users = await scopedUsers.findAll({
+        where,
+        limit: this.pagination.limit,
+        offset: this.pagination.offset,
+      })
+      return this.response.json({
+        users,
+        totalCount,
+      })
+    } catch (error) {
+      logger.error(`Error fetching users: ${error}`, { error })
+      return this.response.status(400).json({
+        message: `Failed to retrieve users: ${error}`,
+      })
+    }
+  }
+
   async create() {
     const user = await this.buildUser()
     const policy = this.buildPolicy(user)

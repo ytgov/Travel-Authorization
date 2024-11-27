@@ -210,7 +210,7 @@ router
   .route("/api/travel-authorization-pre-approvals")
   .get(TravelAuthorizationPreApprovalsController.index)
 
-router.route("/api/users").post(UsersController.create)
+router.route("/api/users").get(UsersController.index).post(UsersController.create)
 router.route("/api/users/:userId").get(UsersController.show)
 router
   .route("/api/users/:userId/yg-government-directory-sync")
