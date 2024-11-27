@@ -3,6 +3,7 @@
     v-model="showDialog"
     persistent
     max-width="80%"
+    @keydown.esc="close"
   >
     <v-form
       ref="form"
@@ -120,14 +121,15 @@
 
 <script setup>
 import { cloneDeep } from "lodash"
-import { ref, nextTick, watch, computed } from "vue"
-import { useRoute, useRouter } from "vue2-helpers/vue-router"
+import { ref, nextTick, watch } from "vue"
 
 import { required } from "@/utils/validators"
 
 import { useSnack } from "@/plugins/snack-plugin"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
+
+import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import SeatPreferenceSelect from "@/components/travel-desk-flight-requests/SeatPreferenceSelect.vue"
@@ -146,42 +148,38 @@ defineProps({
 const emit = defineEmits(["saved"])
 
 const flightRequest = ref({})
-const flightRequestId = computed(() => flightRequest.value.id)
+const flightRequestId = useRouteQuery("showFlightRequestEdit", undefined, {
+  transformer: integerTransformer,
+})
 
 const snack = useSnack()
-const router = useRouter()
-const route = useRoute()
 const showDialog = ref(false)
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
 const isLoading = ref(false)
 
-watch(
-  () => showDialog.value,
-  (value) => {
-    if (value) {
-      if (route.query.showFlightRequestEdit === flightRequestId.value?.toString()) {
-        return
-      }
-
-      router.push({ query: { showFlightRequestEdit: flightRequestId.value } })
-    } else {
-      router.push({ query: { showFlightRequestEdit: undefined } })
-    }
-  }
-)
-
 function show(newFlightRequest) {
+  flightRequestId.value = newFlightRequest.id
   flightRequest.value = cloneDeep(newFlightRequest)
   showDialog.value = true
 }
 
 function close() {
+  flightRequestId.value = undefined
   showDialog.value = false
   resetFlightRequest()
   form.value?.resetValidation()
 }
+
+watch(
+  () => showDialog.value,
+  (value) => {
+    if (value === false) {
+      close()
+    }
+  }
+)
 
 async function updateAndClose() {
   if (!form.value?.validate()) {
