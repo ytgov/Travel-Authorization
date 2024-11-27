@@ -3,7 +3,7 @@ import { DatabaseError } from "sequelize"
 
 import logger from "@/utils/logger"
 import { GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
-import { databaseHealthCheckMiddleware, checkJwt, authorizationMiddleware } from "@/middleware"
+import { databaseHealthCheckMiddleware, jwtMiddleware, authorizationMiddleware } from "@/middleware"
 import { healthCheckRouter } from "@/routes/healthcheck-router"
 import {
   CurrentUserController,
@@ -65,7 +65,7 @@ router.use("/api/lookup-tables", databaseHealthCheckMiddleware, lookupTableRoute
 //// END LEGACY ROUTES
 
 // api routes
-router.use("/api", databaseHealthCheckMiddleware, checkJwt, authorizationMiddleware)
+router.use("/api", databaseHealthCheckMiddleware, jwtMiddleware, authorizationMiddleware)
 
 //// START MORE LEGACY ROUTES
 router.use("/api/form", formRouter)
