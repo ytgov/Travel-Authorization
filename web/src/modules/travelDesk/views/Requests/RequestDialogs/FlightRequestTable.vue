@@ -28,6 +28,14 @@
           hide-default-footer
           class="elevation-1"
         >
+          <template #top>
+            <TravelDeskFlightRequestEditDialog
+              ref="editDialog"
+              :min-date="minDate"
+              :max-date="maxDate"
+              @saved="updateTable"
+            />
+          </template>
           <template #expanded-item="{ item }">
             <td
               v-if="showFlightOptions"
@@ -54,33 +62,30 @@
           </template>
 
           <template #[`item.edit`]="{ item }">
-            <v-row class="mx-0 py-0 mt-n6 mb-n6">
-              <v-col cols="6">
-                <NewFlightRequest
-                  v-if="!readonly"
-                  type="Edit"
-                  :min-date="minDate"
-                  :max-date="maxDate"
-                  :flight-request="item"
-                  @updateTable="updateTable"
-                />
-              </v-col>
-              <v-col cols="6">
-                <v-btn
-                  v-if="!readonly"
-                  style="min-width: 0"
-                  color="transparent"
-                  class="px-1 pt-2"
-                  small
-                  @click="removeFlight(item)"
-                  ><v-icon
-                    class=""
-                    color="red"
-                    >mdi-close</v-icon
-                  >
-                </v-btn>
-              </v-col>
-            </v-row>
+            <div class="d-flex justify-end">
+              <v-btn
+                v-if="!readonly"
+                title="Edit"
+                icon
+                color="blue"
+                @click="showEditDialog(item)"
+              >
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                v-if="!readonly"
+                style="min-width: 0"
+                color="transparent"
+                class="px-1 pt-2"
+                small
+                @click="removeFlight(item)"
+                ><v-icon
+                  class=""
+                  color="red"
+                  >mdi-close</v-icon
+                >
+              </v-btn>
+            </div>
           </template>
         </v-data-table>
       </v-col>
@@ -89,19 +94,21 @@
 </template>
 
 <script>
+import { ref } from "vue"
+
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
-import NewFlightRequest from "@/modules/travelDesk/views/Requests/RequestDialogs/NewFlightRequest.vue"
 import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
+import TravelDeskFlightRequestEditDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestEditDialog.vue"
 
 export default {
   name: "TravelDeskFlightRequestsEditTable",
   components: {
-    NewFlightRequest,
     FlightOptionCard,
     TravelDeskFlightRequestCreateDialog,
+    TravelDeskFlightRequestEditDialog,
   },
   props: {
     travelDeskTravelRequestId: {
@@ -128,6 +135,19 @@ export default {
       type: Object,
       default: () => ({}),
     },
+  },
+  setup() {
+    /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestEditDialog> | null>} */
+    const editDialog = ref(null)
+
+    function showEditDialog(flightRequest) {
+      editDialog.value?.show(flightRequest)
+    }
+
+    return {
+      showEditDialog,
+      editDialog,
+    }
   },
   data() {
     return {
