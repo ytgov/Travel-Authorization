@@ -22,7 +22,6 @@
           <TravelerDetailsFormCard
             v-else
             v-model="travelDeskTravelRequest"
-            :readonly="readonly"
           />
         </v-col>
         <v-col
