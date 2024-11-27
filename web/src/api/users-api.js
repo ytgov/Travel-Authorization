@@ -29,7 +29,7 @@ import debounceWithArgsCache from "@/utils/debounce-with-args-cache"
  */
 
 // Must match role names in api/src/models/role.ts
-export const ROLES = Object.freeze({
+export const USER_ROLES = Object.freeze({
   ADMIN: "admin",
   USER: "user",
   PRE_APPROVED_TRAVEL_ADMIN: "pre_approved_travel_admin",
@@ -38,7 +38,7 @@ export const ROLES = Object.freeze({
 })
 
 export const usersApi = {
-  ROLES,
+  ROLES: USER_ROLES,
   /**
    * @returns {Promise<{ user: User }>}
    */

@@ -1,6 +1,6 @@
 import { computed, reactive, toRefs } from "vue"
 
-import usersApi, { ROLES } from "@/api/users-api"
+import usersApi, { USER_ROLES } from "@/api/users-api"
 
 /**
  * @template [T=any]
@@ -24,7 +24,7 @@ const state = reactive({
  * fetch is run in App, so currentUser will effectively always be ready in all inner components.
  *
  * @returns {{
- *   ROLES: typeof ROLES,
+ *   ROLES: typeof USER_ROLES,
  *   currentUser: Ref<User>,
  *   isLoading: Ref<boolean>,
  *   isErrored: Ref<boolean>,
@@ -43,7 +43,7 @@ export function useCurrentUser() {
     const { firstName, lastName } = state.currentUser
     return [firstName, lastName].filter(Boolean).join(" ")
   })
-  const isAdmin = computed(() => state.currentUser.roles?.includes(ROLES.ADMIN))
+  const isAdmin = computed(() => state.currentUser.roles?.includes(USER_ROLES.ADMIN))
 
   async function fetch() {
     state.isLoading = true
@@ -72,7 +72,7 @@ export function useCurrentUser() {
   }
 
   return {
-    ROLES,
+    ROLES: USER_ROLES,
     // getters
     ...toRefs(state),
     isReady,
