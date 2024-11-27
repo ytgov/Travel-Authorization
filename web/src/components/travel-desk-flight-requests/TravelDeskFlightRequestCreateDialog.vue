@@ -3,6 +3,7 @@
     v-model="showDialog"
     persistent
     max-width="80%"
+    @keydown.esc="close"
   >
     <template #activator="{ on, attrs }">
       <v-btn
@@ -129,13 +130,14 @@
 
 <script setup>
 import { ref, nextTick, watch } from "vue"
-import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 import { required } from "@/utils/validators"
 
 import { useSnack } from "@/plugins/snack-plugin"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
+
+import useRouteQuery from "@/use/utils/use-route-query"
 
 import DatePicker from "@/components/common/DatePicker.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
@@ -163,9 +165,7 @@ const flightRequest = ref({
 })
 
 const snack = useSnack()
-const router = useRouter()
-const route = useRoute()
-const showDialog = ref(route.query.showFlightRequestCreate === "true")
+const showDialog = useRouteQuery("showFlightRequestCreate", false, { transform: Boolean })
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
@@ -177,17 +177,6 @@ watch(
     resetFlightRequest()
   },
   { immediate: true }
-)
-
-watch(
-  () => showDialog.value,
-  (value) => {
-    if (value) {
-      router.push({ query: { showFlightRequestCreate: "true" } })
-    } else {
-      router.push({ query: { showFlightRequestCreate: undefined } })
-    }
-  }
 )
 
 function close() {
