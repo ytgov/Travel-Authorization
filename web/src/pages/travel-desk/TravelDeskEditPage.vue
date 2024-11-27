@@ -219,7 +219,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue"
+import { computed, nextTick, ref, toRefs } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep, isNil } from "lodash"
 
@@ -230,6 +230,7 @@ import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-re
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
+import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
@@ -258,62 +259,25 @@ const props = defineProps({
 const snack = useSnack()
 const { currentUser } = useCurrentUser()
 
-const addNewTravelDialog = ref(false)
+const { travelDeskTravelRequestId } = toRefs(props)
+const { travelDeskTravelRequest, refresh: refreshTravelDeskTravelRequest } =
+  useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-const travelDeskTravelRequest = ref(null)
 const readonly = computed(
   () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
 )
 const savingData = ref(false)
 const flightKey = ref(0)
-const isLoading = ref(false)
-
-watch(
-  () => props.travelDeskTravelRequestId,
-  (newTravelDeskTravelRequestId) => {
-    if (isNil(newTravelDeskTravelRequestId)) {
-      addNewTravelDialog.value = false
-    } else {
-      addNewTravelDialog.value = true
-      refresh()
-    }
-  },
-  {
-    immediate: true,
-  }
-)
 
 async function refresh() {
-  travelDeskTravelRequest.value = await fetchTravelDeskTravelRequest(
-    props.travelDeskTravelRequestId
-  )
-
+  await refreshTravelDeskTravelRequest()
+  await nextTick()
   if (isNil(travelDeskTravelRequest.value.travelDeskOfficer)) {
     travelDeskTravelRequest.value.travelDeskOfficer = currentUser.value.displayName
   }
 
   travelDeskTravelRequest.value.internationalTravel =
     travelDeskTravelRequest.value.passportCountry || travelDeskTravelRequest.value.passportNum
-}
-
-async function fetchTravelDeskTravelRequest(travelDeskTravelRequestId) {
-  isLoading.value = true
-  try {
-    const { data } = await http.get(
-      `${TRAVEL_DESK_URL}/travel-request/${travelDeskTravelRequestId}`
-    )
-
-    if (isNil(data)) {
-      snack.error("Failed to load travel request.")
-      return
-    }
-    return data
-  } catch (error) {
-    console.log(error)
-    snack.error(`Failed to load travel request: ${error}`)
-  } finally {
-    isLoading.value = false
-  }
 }
 
 const router = useRouter()

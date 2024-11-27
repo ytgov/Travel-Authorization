@@ -111,7 +111,22 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
   private async loadTravelDeskTravelRequest(): Promise<TravelDeskTravelRequest | null> {
     const { travelDeskTravelRequestId } = this.params
     return TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId, {
-      include: ["travelAuthorization"],
+      include: [
+        "flightRequests",
+        "hotels",
+        "otherTransportations",
+        "rentalCars",
+        {
+          association: "travelAuthorization",
+          include: [
+            "user",
+            {
+              association: "travelSegments",
+              include: ["departureLocation", "arrivalLocation"],
+            },
+          ],
+        },
+      ],
     })
   }
 
