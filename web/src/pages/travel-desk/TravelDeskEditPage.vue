@@ -47,11 +47,10 @@
               cols="12"
               md="6"
             >
-              <v-select
+              <UserTravelDeskAgentSelect
                 v-model="travelDeskTravelRequest.travelDeskOfficer"
-                :readonly="readonly"
-                :items="travelDeskAgentList"
                 label="Travel Desk Agent Assigned"
+                :readonly="readonly"
                 outlined
               />
             </v-col>
@@ -221,7 +220,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue"
+import { ref, computed, watch } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep, isNil } from "lodash"
 
@@ -246,6 +245,7 @@ import UploadPnrModal from "@/modules/travelDesk/views/Desk/PnrDocument/UploadPn
 import QuestionsTable from "@/modules/travelDesk/views/Desk/Components/QuestionsTable.vue"
 import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
 
+import UserTravelDeskAgentSelect from "@/components/users/UserTravelDeskAgentSelect.vue"
 import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
 import TravelDeskTravelRequestConfirmBookingDialog from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestConfirmBookingDialog.vue"
 
@@ -268,17 +268,6 @@ const readonly = computed(
 const savingData = ref(false)
 const flightKey = ref(0)
 const isLoading = ref(false)
-
-const travelDeskUsers = ref([])
-const travelDeskAgentList = computed(() =>
-  travelDeskUsers.value.map(({ firstName, lastName }) => [firstName, lastName].join(" "))
-)
-
-onMounted(async () => {
-  // TODO: replace with useUsers({ filters: { isTravelDeskUser: true } }) once it exists
-  const { data: newTravelDeskUsers } = await http.get(`/api/user/travel-desk-users`)
-  travelDeskUsers.value = newTravelDeskUsers
-})
 
 watch(
   () => props.travelDeskTravelRequestId,

@@ -6,6 +6,7 @@ import {
   InferCreationAttributes,
   Model,
   NonAttribute,
+  Op,
 } from "sequelize"
 import { isNil } from "lodash"
 import moment from "moment"
@@ -188,6 +189,17 @@ User.init(
     modelName: "User",
     tableName: "users",
     paranoid: false,
+    scopes: {
+      isTravelDeskUser() {
+        return {
+          where: {
+            roles: {
+              [Op.contains]: [RoleNames.TRAVEL_DESK_USER],
+            },
+          },
+        }
+      },
+    },
   }
 )
 
