@@ -16,8 +16,8 @@ export const TRAVEL_DESK_FLIGHT_REQUEST_TIME_PREFERENCES = Object.freeze({
   PM: "PM",
 })
 
-/** @typedef {SEAT_PREFERENCE_TYPES[keyof SEAT_PREFERENCE_TYPES]} SeatPreference */
-/** @typedef {TRAVEL_DESK_FLIGHT_REQUEST_TIME_PREFERENCES[keyof TRAVEL_DESK_FLIGHT_REQUEST_TIME_PREFERENCES]} TimePreference */
+/** @typedef {SEAT_PREFERENCE_TYPES[keyof SEAT_PREFERENCE_TYPES]} SeatPreferenceTypes */
+/** @typedef {TRAVEL_DESK_FLIGHT_REQUEST_TIME_PREFERENCES[keyof TRAVEL_DESK_FLIGHT_REQUEST_TIME_PREFERENCES]} TravelDeskFlightRequestSeatPreferencesTypes */
 
 /**
  * Keep in sync with api/src/models/travel-desk-flight-request.ts
