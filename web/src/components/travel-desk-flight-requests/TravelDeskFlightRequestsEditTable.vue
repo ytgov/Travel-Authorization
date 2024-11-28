@@ -7,6 +7,8 @@
     :loading="isLoading"
     :server-items-length="totalCount"
     disable-sort
+    v-bind="$attrs"
+    v-on="$listeners"
   >
     <template #top>
       <TravelDeskFlightRequestEditDialog
@@ -36,6 +38,15 @@
         @click="deleteFlightRequest(item.id)"
         ><v-icon>mdi-close</v-icon></v-btn
       >
+    </template>
+    <template
+      v-for="(_, slotName) in $scopedSlots"
+      #[slotName]="slotData"
+    >
+      <slot
+        :name="slotName"
+        v-bind="slotData"
+      ></slot>
     </template>
   </v-data-table>
 </template>

@@ -71,37 +71,23 @@
                 <div>Travel Information</div>
               </template>
               <template #body>
-                <v-row
-                  v-if="!readonly"
-                  class="mt-n2 mb-n9 mr-5"
-                >
-                  <TravelPortModal
-                    :flight-requests="travelDeskTravelRequest.flightRequests"
-                    :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                    class="my-1 ml-auto"
-                    @close="flightKey++"
-                  />
+                <v-row v-if="!readonly">
+                  <v-col class="d-flex justify-end">
+                    <TravelPortModal
+                      class="mr-5"
+                      :flight-requests="travelDeskTravelRequest.flightRequests"
+                      :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+                      @close="refreshFlightRequests"
+                    />
+                  </v-col>
                 </v-row>
-                <TitleCard class="mt-9 mx-5">
-                  <template #title>
-                    <div>Flight Request</div>
-                  </template>
-                  <template #body>
-                    <v-row class="m-0 p-0">
-                      <v-col class="my-0 mx-0 py-4">
-                        <FlightRequestTable
-                          :key="flightKey"
-                          class="mr-n5 mt-n1"
-                          :readonly="readonly"
-                          :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                          show-flight-options
-                          travel-desk-user
-                          :flight-requests="travelDeskTravelRequest.flightRequests"
-                        />
-                      </v-col>
-                    </v-row>
-                  </template>
-                </TitleCard>
+                <TravelDeskFlightRequestsManageCard
+                  ref="travelDeskFlightRequestsManageCard"
+                  :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+                  :travel-authorization-id="travelDeskTravelRequest.travelAuthorizationId"
+                  show-flight-options
+                  class="mx-5"
+                />
                 <RentalCarRequestTable
                   :readonly="readonly"
                   :flight-requests="travelDeskTravelRequest.flightRequests"
@@ -199,7 +185,6 @@ import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
-import FlightRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightRequestTable.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
 import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
@@ -213,6 +198,7 @@ import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agenci
 import TravelDeskTravelRequestConfirmBookingDialog from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestConfirmBookingDialog.vue"
 import TravelDeskQuestionsManageCard from "@/components/travel-desk-questions/TravelDeskQuestionsManageCard.vue"
 import TravelDeskInvoiceCard from "@/components/travel-desk-travel-requests/TravelDeskInvoiceCard.vue"
+import TravelDeskFlightRequestsManageCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsManageCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -232,7 +218,11 @@ const readonly = computed(
   () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
 )
 const savingData = ref(false)
-const flightKey = ref(0)
+const travelDeskFlightRequestsManageCard = ref(null)
+
+async function refreshFlightRequests() {
+  await travelDeskFlightRequestsManageCard.value?.refresh()
+}
 
 async function refresh() {
   await refreshTravelDeskTravelRequest()
