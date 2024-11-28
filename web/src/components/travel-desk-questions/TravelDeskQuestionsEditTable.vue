@@ -81,7 +81,7 @@ const headers = [
 ]
 
 const page = useRouteQuery("page", "1", { transform: integerTransformer })
-const perPage = useRouteQuery("perPage", "15", { transform: integerTransformer })
+const perPage = useRouteQuery("perPage", "3", { transform: integerTransformer })
 
 const travelDeskQuestionsQuery = computed(() => ({
   where: props.where,

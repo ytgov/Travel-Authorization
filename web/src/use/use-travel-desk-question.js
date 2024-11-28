@@ -35,10 +35,10 @@ export function useTravelDeskQuestion(id) {
   async function fetch() {
     state.isLoading = true
     try {
-      const { data: travelDeskQuestion, policy } = await travelDeskQuestionsApi.show(unref(id))
-      state.isErrored = false
+      const { travelDeskQuestion, policy } = await travelDeskQuestionsApi.get(unref(id))
       state.travelDeskQuestion = travelDeskQuestion
       state.policy = policy
+      state.isErrored = false
       return travelDeskQuestion
     } catch (error) {
       console.error("Failed to fetch travel desk question:", error)
