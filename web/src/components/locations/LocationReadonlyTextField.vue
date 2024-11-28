@@ -1,7 +1,6 @@
 <template>
   <v-text-field
     :value="locationText"
-    :items="items"
     :loading="isLoading"
     readonly
     v-bind="$attrs"
