@@ -25,6 +25,14 @@ export class TravelDeskQuestionsPolicy extends PolicyFactory(TravelDeskQuestion)
     return this.travelDeskTravelRequestsPolicy.update()
   }
 
+  permittedAttributesForUpdate(): Path[] {
+    return ["requestType", "question", "response"]
+  }
+
+  permittedAttributesForCreate(): Path[] {
+    return ["travelRequestId", ...this.permittedAttributesForUpdate()]
+  }
+
   static policyScope(user: User): FindOptions<Attributes<TravelDeskQuestion>> {
     if (user.isAdmin || user.isTravelDeskUser) {
       return allRecordsScope
@@ -50,14 +58,6 @@ export class TravelDeskQuestionsPolicy extends PolicyFactory(TravelDeskQuestion)
         },
       ],
     }
-  }
-
-  permittedAttributesForUpdate(): Path[] {
-    return ["requestType", "question", "response"]
-  }
-
-  permittedAttributesForCreate(): Path[] {
-    return ["travelRequestId", ...this.permittedAttributesForUpdate()]
   }
 
   private get travelDeskTravelRequest(): TravelDeskTravelRequest {
