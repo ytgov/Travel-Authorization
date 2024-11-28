@@ -18,6 +18,10 @@
       />
     </template>
 
+    <template #item.requestType="{ value }">
+      {{ t(`travel_desk_question.request_type.${value}`, { $default: value }) }}
+    </template>
+
     <template #item.actions="{ item }">
       <v-btn
         title="Edit"
@@ -44,6 +48,8 @@
 import { computed, ref } from "vue"
 
 import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
+
+import { useI18n } from "@/plugins/vue-i18n-plugin"
 
 import travelDeskQuestionsApi from "@/api/travel-desk-questions-api"
 
@@ -90,6 +96,8 @@ const headers = [
     align: "end",
   },
 ]
+
+const { t } = useI18n()
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
   transform: integerTransformer,
