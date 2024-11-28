@@ -62,6 +62,7 @@
                 v-model="travelDeskFlightRequest.datePreference"
                 :min="minDate"
                 :max="maxDate"
+                :picker-date="minDate"
                 :rules="[required]"
                 label="Date *"
                 type="date"
