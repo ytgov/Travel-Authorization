@@ -11,7 +11,7 @@
           }"
           :min-date="minDate"
           :max-date="maxDate"
-          @created="refresh"
+          @created="emitUpdatedAndRefresh"
         />
       </div>
       <TravelDeskFlightRequestsEditTable
@@ -22,6 +22,7 @@
         route-query-suffix="TravelDeskFlightRequest"
         :min-date="minDate"
         :max-date="maxDate"
+        v-bind="$attrs"
         @updated="emit('updated')"
       />
     </v-card-text>
@@ -63,7 +64,15 @@ const maxDate = computed(() => lastTravelSegment.value?.departureOn)
 const travelDeskFlightRequestsEditTable = ref(null)
 
 async function refresh() {
-  emit("updated")
   await travelDeskFlightRequestsEditTable.value?.refresh()
 }
+
+async function emitUpdatedAndRefresh() {
+  emit("updated")
+  await refresh()
+}
+
+defineExpose({
+  refresh,
+})
 </script>
