@@ -2,8 +2,8 @@
   <v-dialog
     v-model="showDialog"
     persistent
-    max-width="80%"
-    @keydown.esc="close"
+    max-width="1200px"
+    @keydown.esc="hide"
   >
     <template #activator="{ on, attrs }">
       <v-btn
@@ -17,21 +17,21 @@
 
     <v-form
       ref="form"
-      @submit.prevent="createAndClose"
+      @submit.prevent="createAndHide"
     >
       <v-card :loading="isLoading">
-        <v-card-title class="blue">
-          <div class="text-h5">Add Flight</div>
+        <v-card-title>
+          <h2>Add Flight</h2>
         </v-card-title>
 
         <v-card-text>
-          <v-row class="mt-5 mx-0">
+          <v-row>
             <v-col
               cols="12"
               md="4"
             >
               <LocationsAutocomplete
-                v-model="flightRequest.departLocation"
+                v-model="travelDeskFlightRequest.departLocation"
                 :rules="[required]"
                 label="Depart Location *"
                 item-value="city"
@@ -44,7 +44,7 @@
               md="4"
             >
               <LocationsAutocomplete
-                v-model="flightRequest.arriveLocation"
+                v-model="travelDeskFlightRequest.arriveLocation"
                 :rules="[required]"
                 label="Arrive Location *"
                 item-value="city"
@@ -53,13 +53,13 @@
               />
             </v-col>
           </v-row>
-          <v-row class="mt-0 mx-0">
+          <v-row>
             <v-col
               cols="12"
               md="4"
             >
               <DatePicker
-                v-model="flightRequest.datePreference"
+                v-model="travelDeskFlightRequest.datePreference"
                 :min="minDate"
                 :max="maxDate"
                 :rules="[required]"
@@ -75,7 +75,7 @@
             >
               <div class="label">Time Preference *</div>
               <v-radio-group
-                v-model="flightRequest.timePreference"
+                v-model="travelDeskFlightRequest.timePreference"
                 :rules="[required]"
                 class="mt-1"
                 row
@@ -96,7 +96,7 @@
               md="4"
             >
               <SeatPreferenceSelect
-                v-model="flightRequest.seatPreference"
+                v-model="travelDeskFlightRequest.seatPreference"
                 :rules="[required]"
                 label="Seat Preference *"
                 outlined
@@ -110,17 +110,18 @@
           <v-spacer />
           <v-btn
             :loading="isLoading"
-            color="grey darken-5"
-            @click="close"
+            color="warning"
+            outlined
+            @click="hide"
           >
             Cancel
           </v-btn>
           <v-btn
             :loading="isLoading"
-            color="green darken-1"
+            color="primary"
             type="submit"
           >
-            Add
+            Create Flight Request
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -129,24 +130,23 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from "vue"
+import { ref, nextTick } from "vue"
 
 import { required } from "@/utils/validators"
-
-import { useSnack } from "@/plugins/snack-plugin"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 
 import useRouteQuery from "@/use/utils/use-route-query"
+import useSnack from "@/use/use-snack"
 
 import DatePicker from "@/components/common/DatePicker.vue"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 import SeatPreferenceSelect from "@/components/travel-desk-flight-requests/SeatPreferenceSelect.vue"
 
 const props = defineProps({
-  travelDeskTravelRequestId: {
-    type: Number,
-    required: true,
+  attributes: {
+    type: Object,
+    default: () => ({}),
   },
   minDate: {
     type: String,
@@ -160,56 +160,47 @@ const props = defineProps({
 
 const emit = defineEmits(["created"])
 
-const flightRequest = ref({
-  travelRequestId: props.travelDeskTravelRequestId,
+const travelDeskFlightRequest = ref({
+  ...props.attributes,
 })
 
 const snack = useSnack()
-const showDialog = useRouteQuery("showFlightRequestCreate", false, { transform: Boolean })
+const showDialog = useRouteQuery("showTravelDeskFlightRequestCreate", false, { transform: Boolean })
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
 const isLoading = ref(false)
 
-watch(
-  () => props.travelDeskTravelRequestId,
-  () => {
-    resetFlightRequest()
-  },
-  { immediate: true }
-)
-
-function close() {
+function hide() {
   showDialog.value = false
   resetFlightRequest()
   form.value?.resetValidation()
 }
 
-async function createAndClose() {
+async function createAndHide() {
   if (!form.value?.validate()) {
-    snack("Please fill in all required fields", { color: "error" })
+    snack.error("Please fill in all required fields")
     return
   }
 
   isLoading.value = true
   try {
-    const { travelDeskFlightRequest: newFlightRequest } = await travelDeskFlightRequestsApi.create(
-      flightRequest.value
-    )
-    close()
+    const { travelDeskFlightRequest: newTravelDeskFlightRequest } =
+      await travelDeskFlightRequestsApi.create(travelDeskFlightRequest.value)
+    hide()
 
     await nextTick()
-    emit("created", newFlightRequest.id)
-    snack("Flight request created successfully", { color: "success" })
+    emit("created", newTravelDeskFlightRequest.id)
+    snack.success("Flight request created successfully")
   } catch (error) {
-    snack("Failed to create flight request", { color: "error" })
+    snack.error("Failed to create flight request")
   } finally {
     isLoading.value = false
   }
 }
 
 function resetFlightRequest() {
-  flightRequest.value = {
+  travelDeskFlightRequest.value = {
     travelRequestId: props.travelDeskTravelRequestId,
   }
 }
