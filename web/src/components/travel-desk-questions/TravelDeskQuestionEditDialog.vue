@@ -25,9 +25,8 @@
         <v-card-text>
           <v-row>
             <v-col>
-              <v-select
+              <RequestTypeSelect
                 v-model="travelDeskQuestion.requestType"
-                :items="requestTypes"
                 :rules="[required]"
                 label="Request Type *"
                 outlined
@@ -89,15 +88,9 @@ import useSnack from "@/use/use-snack"
 import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useTravelDeskQuestion from "@/use/use-travel-desk-question"
 
-const emit = defineEmits(["saved"])
+import RequestTypeSelect from "@/components/travel-desk-questions/RequestTypeSelect.vue"
 
-// TODO: move to specialized component
-const requestTypes = [
-  { text: "Flight", value: "flight" },
-  { text: "Hotel", value: "hotel" },
-  { text: "Transportation", value: "transportation" },
-  { text: "Rental Car", value: "rental_car" },
-]
+const emit = defineEmits(["saved"])
 
 const travelDeskQuestionId = useRouteQuery("showQuestionEdit", undefined, {
   transformer: integerTransformer,

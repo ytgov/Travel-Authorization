@@ -28,9 +28,8 @@
           <v-row>
             <v-col>
               <!-- TODO: make this a component -->
-              <v-select
+              <RequestTypeSelect
                 v-model="travelDeskQuestion.requestType"
-                :items="requestTypes"
                 :rules="[required]"
                 label="Request Type *"
                 outlined
@@ -93,6 +92,8 @@ import travelDeskQuestionsApi from "@/api/travel-desk-questions-api"
 import useRouteQuery from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 
+import RequestTypeSelect from "@/components/travel-desk-questions/RequestTypeSelect.vue"
+
 const props = defineProps({
   attributes: {
     type: Object,
@@ -101,13 +102,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["created"])
-
-const requestTypes = [
-  { text: "Flight", value: "flight" },
-  { text: "Hotel", value: "hotel" },
-  { text: "Transportation", value: "transportation" },
-  { text: "Rental Car", value: "rental_car" },
-]
 
 const travelDeskQuestion = ref({
   requestType: "",
