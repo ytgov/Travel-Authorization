@@ -6,6 +6,9 @@
     :items="travelDeskQuestions"
     :loading="isLoading"
     :server-items-length="totalCount"
+    :footer-props="{
+      'items-per-page-options': [defaultPerPage, 10, 15, -1],
+    }"
     disable-sort
   >
     <template #top>
@@ -58,6 +61,14 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  defaultPerPage: {
+    type: Number,
+    default: 3,
+  },
+  routeQuerySuffix: {
+    type: String,
+    default: "",
+  },
 })
 
 const headers = [
@@ -80,8 +91,12 @@ const headers = [
   },
 ]
 
-const page = useRouteQuery("page", "1", { transform: integerTransformer })
-const perPage = useRouteQuery("perPage", "3", { transform: integerTransformer })
+const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
+  transform: integerTransformer,
+})
+const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, props.defaultPerPage, {
+  transform: integerTransformer,
+})
 
 const travelDeskQuestionsQuery = computed(() => ({
   where: props.where,

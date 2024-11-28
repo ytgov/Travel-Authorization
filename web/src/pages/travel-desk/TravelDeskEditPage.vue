@@ -1,221 +1,202 @@
 <template>
-  <v-card>
-    <v-card-title>
-      <h2>Travel Desk Request</h2>
-    </v-card-title>
+  <v-container>
+    <v-card>
+      <v-card-title>
+        <h2>Travel Desk Request</h2>
+      </v-card-title>
 
-    <v-skeleton-loader
-      v-if="isNil(travelDeskTravelRequest)"
-      type="card"
-    />
-    <v-card-text v-else>
-      <v-row>
-        <v-col
-          cols="12"
-          md="8"
-        >
-          <!-- TODO: move readonly view to a "read" page -->
-          <TravelerDetailsCard
-            v-if="readonly"
-            :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-          />
-          <TravelerDetailsFormCard
-            v-else
-            v-model="travelDeskTravelRequest"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <v-row>
-            <v-col
-              cols="12"
-              md="6"
-            >
-              <TravelDeskTravelAgencySelect
-                v-model="travelDeskTravelRequest.travelAgencyId"
-                label="Assign Agency"
-                placeholder="None"
-                clearable
-                outlined
-                persistent-placeholder
-              />
-            </v-col>
-            <v-col
-              cols="12"
-              md="6"
-            >
-              <UserTravelDeskAgentSelect
-                v-model="travelDeskTravelRequest.travelDeskOfficer"
-                label="Travel Desk Agent Assigned"
-                :readonly="readonly"
-                outlined
-              />
-            </v-col>
-          </v-row>
-          <v-row
-            v-if="travelDeskTravelRequest.invoiceNumber"
-            class="mx-0 mb-5 mt-n6"
+      <v-skeleton-loader
+        v-if="isNil(travelDeskTravelRequest)"
+        type="card"
+      />
+      <v-card-text v-else>
+        <v-row>
+          <v-col>
+            <!-- TODO: move readonly view to a "read" page -->
+            <TravelerDetailsCard
+              v-if="readonly"
+              :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+            />
+            <TravelerDetailsFormCard
+              v-else
+              v-model="travelDeskTravelRequest"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            md="6"
           >
-            <v-col>
-              <TitleCard
-                class="mt-10 mx-4"
-                style="width: 100%"
-              >
-                <template #title>
-                  <div>Invoice</div>
-                </template>
-                <template #body>
-                  <v-row class="mx-0 mt-0 mb-2">
-                    <div
-                      style="font-size: 13pt"
-                      class="my-auto ml-4 primary--text"
-                    >
-                      Invoice Number: {{ travelDeskTravelRequest.invoiceNumber }}
-                    </div>
-                    <v-btn
-                      class="ml-auto mr-3 px-5"
-                      color="secondary"
-                      :loading="savingData"
-                      @click="downloadPdf"
-                    >
-                      <div style="font-size: 13pt">Download PNR</div>
-                    </v-btn>
-                  </v-row>
-                </template>
-              </TitleCard>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <QuestionsTable
-                :readonly="readonly"
-                :travel-desk-user="true"
-                :questions="travelDeskTravelRequest.questions"
-              />
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <TitleCard
-            class="mt-10"
-            large-title
+            <TravelDeskTravelAgencySelect
+              v-model="travelDeskTravelRequest.travelAgencyId"
+              label="Assign Agency"
+              placeholder="None"
+              clearable
+              outlined
+              persistent-placeholder
+            />
+          </v-col>
+          <v-col
+            cols="12"
+            md="6"
           >
-            <template #title>
-              <div>Travel Information</div>
-            </template>
-            <template #body>
-              <v-row
-                v-if="!readonly"
-                class="mt-n2 mb-n9 mr-5"
-              >
-                <TravelPortModal
+            <UserTravelDeskAgentSelect
+              v-model="travelDeskTravelRequest.travelDeskOfficer"
+              label="Travel Desk Agent Assigned"
+              :readonly="readonly"
+              outlined
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <!-- TODO: make this a component -->
+            <v-card v-if="travelDeskTravelRequest.invoiceNumber">
+              <v-card-title>
+                <h3>Invoice</h3>
+              </v-card-title>
+              <v-card-text class="d-flex justify-space-between align-center">
+                <span class="primary--text body-1">
+                  Invoice Number: {{ travelDeskTravelRequest.invoiceNumber }}
+                </span>
+                <v-btn
+                  color="secondary"
+                  :loading="savingData"
+                  @click="downloadPdf"
+                >
+                  <div style="font-size: 13pt">Download PNR</div>
+                </v-btn>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <TravelDeskQuestionsManageCard
+              :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <TitleCard
+              class="mt-10"
+              large-title
+            >
+              <template #title>
+                <div>Travel Information</div>
+              </template>
+              <template #body>
+                <v-row
+                  v-if="!readonly"
+                  class="mt-n2 mb-n9 mr-5"
+                >
+                  <TravelPortModal
+                    :flight-requests="travelDeskTravelRequest.flightRequests"
+                    :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+                    class="my-1 ml-auto"
+                    @close="flightKey++"
+                  />
+                </v-row>
+                <TitleCard class="mt-9 mx-5">
+                  <template #title>
+                    <div>Flight Request</div>
+                  </template>
+                  <template #body>
+                    <v-row class="m-0 p-0">
+                      <v-col class="my-0 mx-0 py-4">
+                        <FlightRequestTable
+                          :key="flightKey"
+                          class="mr-n5 mt-n1"
+                          :readonly="readonly"
+                          :travel-desk-travel-request-id="travelDeskTravelRequest.id"
+                          show-flight-options
+                          travel-desk-user
+                          :flight-requests="travelDeskTravelRequest.flightRequests"
+                        />
+                      </v-col>
+                    </v-row>
+                  </template>
+                </TitleCard>
+                <RentalCarRequestTable
+                  :readonly="readonly"
                   :flight-requests="travelDeskTravelRequest.flightRequests"
-                  :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                  class="my-1 ml-auto"
-                  @close="flightKey++"
+                  :rental-cars="travelDeskTravelRequest.rentalCars"
                 />
-              </v-row>
-              <TitleCard class="mt-9 mx-5">
-                <template #title>
-                  <div>Flight Request</div>
-                </template>
-                <template #body>
-                  <v-row class="m-0 p-0">
-                    <v-col class="my-0 mx-0 py-4">
-                      <FlightRequestTable
-                        :key="flightKey"
-                        class="mr-n5 mt-n1"
-                        :readonly="readonly"
-                        :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                        show-flight-options
-                        travel-desk-user
-                        :flight-requests="travelDeskTravelRequest.flightRequests"
-                      />
-                    </v-col>
-                  </v-row>
-                </template>
-              </TitleCard>
-              <RentalCarRequestTable
-                :readonly="readonly"
-                :flight-requests="travelDeskTravelRequest.flightRequests"
-                :rental-cars="travelDeskTravelRequest.rentalCars"
-              />
-              <HotelRequestTable
-                :readonly="readonly"
-                :flight-requests="travelDeskTravelRequest.flightRequests"
-                :hotels="travelDeskTravelRequest.hotels"
-              />
-              <TransportationRequestTable
-                :readonly="readonly"
-                :other-transportations="travelDeskTravelRequest.otherTransportations"
-              />
-            </template>
-          </TitleCard>
-        </v-col>
-      </v-row>
-    </v-card-text>
+                <HotelRequestTable
+                  :readonly="readonly"
+                  :flight-requests="travelDeskTravelRequest.flightRequests"
+                  :hotels="travelDeskTravelRequest.hotels"
+                />
+                <TransportationRequestTable
+                  :readonly="readonly"
+                  :other-transportations="travelDeskTravelRequest.otherTransportations"
+                />
+              </template>
+            </TitleCard>
+          </v-col>
+        </v-row>
+      </v-card-text>
 
-    <v-skeleton-loader
-      v-if="isNil(travelDeskTravelRequest)"
-      type="actions"
-    />
-    <v-card-actions v-else>
-      <v-btn
-        color="grey darken-5"
-        class="px-5"
-        :to="{
-          name: 'TravelDeskPage',
-        }"
-      >
-        <div>Back</div>
-      </v-btn>
-      <ItineraryModal
-        v-if="travelDeskTravelRequest.invoiceNumber"
-        class="ml-auto mr-3"
-        :invoice-number="travelDeskTravelRequest.invoiceNumber"
+      <v-skeleton-loader
+        v-if="isNil(travelDeskTravelRequest)"
+        type="actions"
       />
-      <UploadPnrModal
-        :travel-request="travelDeskTravelRequest"
-        :class="travelDeskTravelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
-        @saveData="saveNewTravelRequest('save')"
-        @close="refresh"
+      <v-card-actions v-else>
+        <v-btn
+          color="grey darken-5"
+          class="px-5"
+          :to="{
+            name: 'TravelDeskPage',
+          }"
+        >
+          <div>Back</div>
+        </v-btn>
+        <ItineraryModal
+          v-if="travelDeskTravelRequest.invoiceNumber"
+          class="ml-auto mr-3"
+          :invoice-number="travelDeskTravelRequest.invoiceNumber"
+        />
+        <UploadPnrModal
+          :travel-request="travelDeskTravelRequest"
+          :class="travelDeskTravelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
+          @saveData="saveNewTravelRequest('save')"
+          @close="refresh"
+        />
+        <v-btn
+          v-if="!readonly"
+          class="ml-2 mr-2 px-5"
+          color="#005A65"
+          :loading="savingData"
+          @click="saveNewTravelRequest('save')"
+          >Save Draft
+        </v-btn>
+        <v-btn
+          v-if="!readonly"
+          class="mr-2 px-5"
+          color="secondary"
+          :loading="savingData"
+          @click="saveNewTravelRequest('sendback', { returnToTravelDeskPageAfter: true })"
+          >Send to Traveler
+        </v-btn>
+
+        <v-btn
+          v-if="!readonly && travelDeskTravelRequest.invoiceNumber"
+          class="mr-5 px-5"
+          color="#005A65"
+          :loading="savingData"
+          @click="openConfirmBookingDialog"
+          >Booking Complete
+        </v-btn>
+      </v-card-actions>
+
+      <TravelDeskTravelRequestConfirmBookingDialog
+        ref="confirmBookingDialog"
+        @booked="refresh"
       />
-      <v-btn
-        v-if="!readonly"
-        class="ml-2 mr-2 px-5"
-        color="#005A65"
-        :loading="savingData"
-        @click="saveNewTravelRequest('save')"
-        >Save Draft
-      </v-btn>
-      <v-btn
-        v-if="!readonly"
-        class="mr-2 px-5"
-        color="secondary"
-        :loading="savingData"
-        @click="saveNewTravelRequest('sendback', { returnToTravelDeskPageAfter: true })"
-        >Send to Traveler
-      </v-btn>
-
-      <v-btn
-        v-if="!readonly && travelDeskTravelRequest.invoiceNumber"
-        class="mr-5 px-5"
-        color="#005A65"
-        :loading="savingData"
-        @click="openConfirmBookingDialog"
-        >Booking Complete
-      </v-btn>
-    </v-card-actions>
-
-    <TravelDeskTravelRequestConfirmBookingDialog
-      ref="confirmBookingDialog"
-      @booked="refresh"
-    />
-  </v-card>
+    </v-card>
+  </v-container>
 </template>
 
 <script setup>
@@ -242,12 +223,12 @@ import TransportationRequestTable from "@/modules/travelDesk/views/Requests/Requ
 import TravelPortModal from "@/modules/travelDesk/views/Desk/Components/TravelPortModal.vue"
 
 import UploadPnrModal from "@/modules/travelDesk/views/Desk/PnrDocument/UploadPnrModal.vue"
-import QuestionsTable from "@/modules/travelDesk/views/Desk/Components/QuestionsTable.vue"
 import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
 
 import UserTravelDeskAgentSelect from "@/components/users/UserTravelDeskAgentSelect.vue"
 import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
 import TravelDeskTravelRequestConfirmBookingDialog from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestConfirmBookingDialog.vue"
+import TravelDeskQuestionsManageCard from "@/components/travel-desk-questions/TravelDeskQuestionsManageCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
