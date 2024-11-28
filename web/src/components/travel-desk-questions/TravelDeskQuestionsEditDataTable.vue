@@ -129,7 +129,7 @@ async function deleteQuestion(questionId) {
 
   isDeleting.value = true
   try {
-    await travelDeskQuestionsApi.destroy(questionId)
+    await travelDeskQuestionsApi.delete(questionId)
     snack.success("Question deleted successfully")
     await refresh()
   } catch (error) {
