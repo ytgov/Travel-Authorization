@@ -25,7 +25,7 @@ export class TravelDeskQuestionsPolicy extends PolicyFactory(TravelDeskQuestion)
     return this.travelDeskTravelRequestsPolicy.update()
   }
 
-  policyScope(user: User): FindOptions<Attributes<TravelDeskQuestion>> {
+  static policyScope(user: User): FindOptions<Attributes<TravelDeskQuestion>> {
     if (user.isAdmin || user.isTravelDeskUser) {
       return allRecordsScope
     }
