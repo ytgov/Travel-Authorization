@@ -8,7 +8,7 @@
       <h4 class="text-h6">Travel Information</h4>
     </v-card-title>
     <v-card-text>
-      <TravelDeskFlightRequestsManageCard
+      <TravelDeskFlightRequestsEditCard
         :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :travel-authorization-id="travelAuthorizationId"
         @updated="refreshTablesUsingFlightInfo"
@@ -37,7 +37,7 @@ import { isNil } from "lodash"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
-import TravelDeskFlightRequestsManageCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsManageCard.vue"
+import TravelDeskFlightRequestsEditCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditCard.vue"
 import TravelDeskHotelsEditTable from "@/components/travel-desk-hotels/TravelDeskHotelsEditTable.vue"
 import TravelDeskOtherTransportationsEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsEditTable.vue"
 import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
