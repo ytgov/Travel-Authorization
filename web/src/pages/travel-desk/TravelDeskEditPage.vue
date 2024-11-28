@@ -49,26 +49,9 @@
             />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="travelDeskTravelRequest.invoiceNumber">
           <v-col>
-            <!-- TODO: make this a component -->
-            <v-card v-if="travelDeskTravelRequest.invoiceNumber">
-              <v-card-title>
-                <h3>Invoice</h3>
-              </v-card-title>
-              <v-card-text class="d-flex justify-space-between align-center">
-                <span class="primary--text body-1">
-                  Invoice Number: {{ travelDeskTravelRequest.invoiceNumber }}
-                </span>
-                <v-btn
-                  color="secondary"
-                  :loading="savingData"
-                  @click="downloadPdf"
-                >
-                  <div style="font-size: 13pt">Download PNR</div>
-                </v-btn>
-              </v-card-text>
-            </v-card>
+            <TravelDeskInvoiceCard :travel-desk-travel-request-id="travelDeskTravelRequest.id" />
           </v-col>
         </v-row>
         <v-row>
@@ -229,6 +212,7 @@ import UserTravelDeskAgentSelect from "@/components/users/UserTravelDeskAgentSel
 import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
 import TravelDeskTravelRequestConfirmBookingDialog from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestConfirmBookingDialog.vue"
 import TravelDeskQuestionsManageCard from "@/components/travel-desk-questions/TravelDeskQuestionsManageCard.vue"
+import TravelDeskInvoiceCard from "@/components/travel-desk-travel-requests/TravelDeskInvoiceCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -299,33 +283,6 @@ async function saveNewTravelRequest(saveType, { returnToTravelDeskPageAfter = fa
   } catch (error) {
     console.error(error)
     snack.error(`Failed to save travel request: ${error}`)
-  } finally {
-    savingData.value = false
-  }
-}
-
-async function downloadPdf() {
-  savingData.value = true
-  try {
-    const { data } = await http.get(
-      `${TRAVEL_DESK_URL}/pnr-document/${props.travelDeskTravelRequestId}`,
-      {
-        responseType: "application/pdf",
-        headers: {
-          "Content-Type": "application/text",
-        },
-      }
-    )
-
-    const link = document.createElement("a")
-    link.href = data
-    document.body.appendChild(link)
-    link.download = "pnr_doc.pdf"
-    link.click()
-    setTimeout(() => URL.revokeObjectURL(link.href), 1000)
-  } catch (error) {
-    console.log(error)
-    snack.error(`Failed to download PNR: ${error}`)
   } finally {
     savingData.value = false
   }
