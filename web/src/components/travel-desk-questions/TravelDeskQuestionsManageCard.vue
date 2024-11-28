@@ -9,9 +9,11 @@
           :attributes="{
             travelRequestId: travelDeskTravelRequestId,
           }"
+          @created="refresh"
         />
       </div>
       <TravelDeskQuestionsEditDataTable
+        ref="travelDeskQuestionsEditDataTable"
         :where="{
           travelRequestId: travelDeskTravelRequestId,
         }"
@@ -22,6 +24,8 @@
 </template>
 
 <script setup>
+import { ref } from "vue"
+
 import TravelDeskQuestionCreateDialog from "@/components/travel-desk-questions/TravelDeskQuestionCreateDialog.vue"
 import TravelDeskQuestionsEditDataTable from "@/components/travel-desk-questions/TravelDeskQuestionsEditDataTable.vue"
 
@@ -31,4 +35,11 @@ defineProps({
     required: true,
   },
 })
+
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskQuestionsEditDataTable> | null>} */
+const travelDeskQuestionsEditDataTable = ref(null)
+
+function refresh() {
+  travelDeskQuestionsEditDataTable.value?.refresh()
+}
 </script>

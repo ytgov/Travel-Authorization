@@ -138,4 +138,8 @@ async function deleteQuestion(questionId) {
     isDeleting.value = false
   }
 }
+
+defineExpose({
+  refresh,
+})
 </script>

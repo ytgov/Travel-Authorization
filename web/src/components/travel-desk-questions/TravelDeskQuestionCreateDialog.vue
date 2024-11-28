@@ -134,7 +134,7 @@ async function createAndHide() {
     const { travelDeskQuestion: newTravelDeskQuestion } = await travelDeskQuestionsApi.create(
       travelDeskQuestion.value
     )
-    emit("created", newTravelDeskQuestion)
+    emit("created", newTravelDeskQuestion.id)
     snack.success("Question created successfully")
     hide()
   } catch (error) {
