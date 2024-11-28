@@ -104,9 +104,6 @@ const props = defineProps({
 const emit = defineEmits(["created"])
 
 const travelDeskQuestion = ref({
-  requestType: "",
-  question: "",
-  response: "",
   ...props.attributes,
 })
 
@@ -147,9 +144,6 @@ async function createAndHide() {
 
 function resetQuestion() {
   travelDeskQuestion.value = {
-    requestType: "",
-    question: "",
-    response: "",
     ...props.attributes,
   }
 }

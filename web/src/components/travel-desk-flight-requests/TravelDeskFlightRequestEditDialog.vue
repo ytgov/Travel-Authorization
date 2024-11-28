@@ -18,12 +18,12 @@
         v-else
         :loading="isLoading"
       >
-        <v-card-title class="blue">
-          <div class="text-h5">Edit Flight</div>
+        <v-card-title>
+          <h2>Edit Flight</h2>
         </v-card-title>
 
         <v-card-text>
-          <v-row class="mt-5 mx-0">
+          <v-row>
             <v-col
               cols="12"
               md="4"
@@ -51,7 +51,7 @@
               />
             </v-col>
           </v-row>
-          <v-row class="mt-0 mx-0">
+          <v-row>
             <v-col
               cols="12"
               md="4"
@@ -108,17 +108,18 @@
           <v-spacer />
           <v-btn
             :loading="isLoading"
-            color="grey darken-5"
+            color="warning"
+            outlined
             @click="hide"
           >
             Cancel
           </v-btn>
           <v-btn
             :loading="isLoading"
-            color="green darken-1"
             type="submit"
+            color="primary"
           >
-            Save
+            Save Flight
           </v-btn>
         </v-card-actions>
       </v-card>

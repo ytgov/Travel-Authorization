@@ -121,7 +121,7 @@
             color="primary"
             type="submit"
           >
-            Create Flight Request
+            Create Flight
           </v-btn>
         </v-card-actions>
       </v-card>

@@ -110,7 +110,7 @@ const headers = [
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
   transform: integerTransformer,
 })
-const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, props.defaultPerPage, {
+const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, "5", {
   transform: integerTransformer,
 })
 

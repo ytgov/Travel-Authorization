@@ -59,17 +59,19 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            text
+            :loading="isLoading"
+            color="warning"
+            outlined
             @click="hide"
           >
             Cancel
           </v-btn>
           <v-btn
+            :loading="isLoading"
             type="submit"
             color="primary"
-            text
           >
-            Save
+            Save Question
           </v-btn>
         </v-card-actions>
       </v-card>
