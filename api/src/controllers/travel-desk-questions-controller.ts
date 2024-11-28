@@ -1,8 +1,10 @@
+import { literal } from "sequelize"
+import { Literal } from "sequelize/lib/utils"
 import { isNil } from "lodash"
 
 import { TravelDeskQuestion, TravelDeskTravelRequest } from "@/models"
 import { TravelDeskQuestionsPolicy } from "@/policies"
-import { CreateService, } from "@/services/travel-desk-questions"
+import { CreateService } from "@/services/travel-desk-questions"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -16,20 +18,23 @@ export class TravelDeskQuestionsController extends BaseController<TravelDeskQues
         this.currentUser
       )
 
+      const nullResponsesFirstOrder: [Literal, string] = [literal("response IS NULL"), "DESC"]
+
       const totalCount = await scopedTravelDeskQuestions.count({ where })
       const travelDeskQuestions = await scopedTravelDeskQuestions.findAll({
         where,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
+        order: [nullResponsesFirstOrder, ["updatedAt", "DESC"]],
       })
       return this.response.status(200).json({
         travelDeskQuestions,
         totalCount,
       })
     } catch (error) {
-      return this.response
-        .status(500)
-        .json({ message: `Failed to retrieve travel desk questions: ${error}` })
+      return this.response.status(500).json({
+        message: `Failed to retrieve travel desk questions: ${error}`,
+      })
     }
   }
 
