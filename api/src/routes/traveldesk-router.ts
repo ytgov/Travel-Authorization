@@ -196,6 +196,23 @@ travelDeskRouter.post(
       if (newFlightOptions.length < 1 || !travelDeskTravelRequestId)
         return res.status(422).json("Empty Payload for Flight Options")
 
+      const travelDeskTravelRequest = await TravelDeskTravelRequest.findByPk(
+        travelDeskTravelRequestId,
+        {
+          include: [
+            {
+              association: "travelAuthorization",
+              include: ["user"],
+            },
+          ],
+          rejectOnEmpty: true,
+        }
+      )
+      const traveler = travelDeskTravelRequest.travelAuthorization?.user
+      if (isNil(traveler)) {
+        throw new Error("Traveler not found")
+      }
+
       const flightRequestsIds = await TravelDeskFlightRequest.findAll({
         attributes: ["id"],
         where: { id: travelDeskTravelRequestId },
@@ -212,6 +229,8 @@ travelDeskRouter.post(
 
           const flightSegments = newFlightOption.flightSegments
           delete newFlightOption.flightSegments
+
+          newFlightOption.travelerId = traveler.id
 
           const travelDeskFlighOption = await TravelDeskFlightOption.create(newFlightOption)
 
@@ -365,56 +384,74 @@ travelDeskRouter.post(
       .transaction(async () => {
         const travelDeskTravelRequestId = Number(req.params.travelDeskTravelRequestId)
         const flightRequests = req.body
-        // logger.info(flightRequests)
+        if (isNil(travelDeskTravelRequestId)) {
+          return res.status(422).json({
+            message: "Missing travelDeskTravelRequestId parameter.",
+          })
+        }
 
-        if (travelDeskTravelRequestId) {
-          await TravelDeskFlightRequest.destroy({
-            where: { travelRequestId: travelDeskTravelRequestId },
+        const travelDeskTravelRequest = await TravelDeskTravelRequest.findByPk(
+          travelDeskTravelRequestId,
+          {
+            include: [
+              {
+                association: "travelAuthorization",
+                include: ["user"],
+              },
+            ],
+            rejectOnEmpty: true,
+          }
+        )
+        const traveler = travelDeskTravelRequest.travelAuthorization?.user
+        if (isNil(traveler)) {
+          throw new Error("Traveler not found")
+        }
+
+        await TravelDeskFlightRequest.destroy({
+          where: { travelRequestId: travelDeskTravelRequestId },
+        })
+
+        for (const flightRequest of flightRequests) {
+          const newFlightOptions = flightRequest.flightOptions
+          delete flightRequest.flightOptions
+          delete flightRequest.tmpId
+          if (flightRequest.flightRequestId == null) {
+            delete flightRequest.flightRequestId
+          }
+
+          flightRequest.travelRequestId = travelDeskTravelRequestId
+
+          const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
+
+          await TravelDeskFlightOption.destroy({
+            where: { flightRequestId: newFlightRequest.id },
           })
 
-          for (const flightRequest of flightRequests) {
-            const newFlightOptions = flightRequest.flightOptions
-            delete flightRequest.flightOptions
-            delete flightRequest.tmpId
-            if (flightRequest.flightRequestId == null) {
-              delete flightRequest.flightRequestId
-            }
+          for (const newFlightOption of newFlightOptions) {
+            delete newFlightOption.state
 
-            flightRequest.travelRequestId = travelDeskTravelRequestId
+            const flightSegments = newFlightOption.flightSegments
+            delete newFlightOption.flightSegments
 
-            const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
+            newFlightOption.flightRequestId = newFlightRequest.id
+            newFlightOption.travelerId = traveler.id
 
-            await TravelDeskFlightOption.destroy({
-              where: { flightRequestId: newFlightRequest.id },
-            })
+            const travelDeskFlighOption = await TravelDeskFlightOption.create(newFlightOption)
 
-            for (const newFlightOption of newFlightOptions) {
-              delete newFlightOption.state
-
-              const flightSegments = newFlightOption.flightSegments
-              delete newFlightOption.flightSegments
-
-              newFlightOption.flightRequestId = newFlightRequest.id
-
-              const travelDeskFlighOption = await TravelDeskFlightOption.create(newFlightOption)
-
-              for (const flightSegment of flightSegments) {
-                // logger.info(flightSegment)
-                delete flightSegment.tmpId
-                delete flightSegment.state
-                delete flightSegment.departDay
-                delete flightSegment.departTime
-                delete flightSegment.arriveDay
-                delete flightSegment.arriveTime
-                flightSegment.flightOptionId = travelDeskFlighOption.id
-                await TravelDeskFlightSegment.create(flightSegment)
-              }
+            for (const flightSegment of flightSegments) {
+              // logger.info(flightSegment)
+              delete flightSegment.tmpId
+              delete flightSegment.state
+              delete flightSegment.departDay
+              delete flightSegment.departTime
+              delete flightSegment.arriveDay
+              delete flightSegment.arriveTime
+              flightSegment.flightOptionId = travelDeskFlighOption.id
+              await TravelDeskFlightSegment.create(flightSegment)
             }
           }
-          return res.status(200).json("Successful")
-        } else {
-          return res.status(500).json("Required fields in submission are blank")
         }
+        return res.status(200).json("Successful")
       })
       .catch((error) => {
         logger.info(error)
@@ -550,6 +587,23 @@ travelDeskRouter.post(
           await travelRequest.update(newTravelRequest)
         }
 
+        const travelDeskTravelRequest = await TravelDeskTravelRequest.findByPk(
+          travelDeskTravelRequestId,
+          {
+            include: [
+              {
+                association: "travelAuthorization",
+                include: ["user"],
+              },
+            ],
+            rejectOnEmpty: true,
+          }
+        )
+        const traveler = travelDeskTravelRequest.travelAuthorization?.user
+        if (isNil(traveler)) {
+          throw new Error("Traveler not found")
+        }
+
         //FlightRequests
         await TravelDeskFlightRequest.destroy({
           where: { travelRequestId: travelRequest.id },
@@ -577,6 +631,7 @@ travelDeskRouter.post(
             delete newFlightOption.flightSegments
 
             newFlightOption.flightRequestId = newFlightRequest.id
+            newFlightOption.travelerId = traveler.id
 
             const travelDeskFlighOption = await TravelDeskFlightOption.create(newFlightOption)
 
