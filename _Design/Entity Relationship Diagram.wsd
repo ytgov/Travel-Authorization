@@ -340,6 +340,7 @@ entity "travel_desk_flight_options" {
   * id : serial4 <<PK>>
   --
   * flight_request_id : int4 <<FK>>
+  * traveler_id : int4 <<FK>>
   --
   *cost : varchar(255)
   * leg : varchar(255)
@@ -588,4 +589,6 @@ travel_segments::arrival_location_id |o--o{ locations::id
 travel_segments::departure_location_id |o--o{ locations::id
 travel_segments::travel_authorization_id ||--o{ travel_authorizations::id
 users::roles }o..o{ roles::name
+users::id }o--|| travel_desk_flight_options::traveler_id
+users::id }o--|| travel_authorizations::user_id
 @enduml
