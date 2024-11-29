@@ -98,6 +98,7 @@
 
     <template #item.edit="{ item }">
       <v-btn
+        class="mr-4"
         color="primary"
         :to="{
           name: 'TravelDeskEditPage',
