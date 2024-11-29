@@ -134,10 +134,10 @@ travelDeskRouter.get(
   async function (req: Request, res: Response) {
     const flightSegmentState = {
       flightErr: false,
-      departDateErr: false,
+      departAtErr: false,
       departTimeErr: false,
       departLocationErr: false,
-      arriveDateErr: false,
+      arriveAtErr: false,
       arriveTimeErr: false,
       arriveLocationErr: false,
       durationErr: false,
@@ -268,10 +268,10 @@ travelDeskRouter.get(
     try {
       const flightSegmentState = {
         flightErr: false,
-        departDateErr: false,
+        departAtErr: false,
         departTimeErr: false,
         departLocationErr: false,
-        arriveDateErr: false,
+        arriveAtErr: false,
         arriveTimeErr: false,
         arriveLocationErr: false,
         durationErr: false,
@@ -326,7 +326,7 @@ travelDeskRouter.get(
                 includeOffset: false,
               })
             } else {
-              console.warn("Warning: departDate is undefined for flightSegment.")
+              console.warn("Warning: departAt is undefined for flightSegment.")
             }
 
             // Parsing arrival date and time
@@ -338,7 +338,7 @@ travelDeskRouter.get(
                 includeOffset: false,
               })
             } else {
-              console.warn("Warning: arriveDate is undefined for flightSegment.")
+              console.warn("Warning: arriveAt is undefined for flightSegment.")
             }
           }
           flightOption.state = { costErr: false, legErr: false }
@@ -376,7 +376,9 @@ travelDeskRouter.post(
             const newFlightOptions = flightRequest.flightOptions
             delete flightRequest.flightOptions
             delete flightRequest.tmpId
-            if (flightRequest.flightRequestID == null) delete flightRequest.flightRequestID
+            if (flightRequest.flightRequestId == null) {
+              delete flightRequest.flightRequestId
+            }
 
             flightRequest.travelRequestId = travelDeskTravelRequestId
 
@@ -427,10 +429,10 @@ travelDeskRouter.get(
   async function (req: Request, res: Response) {
     const flightSegmentState = {
       flightErr: false,
-      departDateErr: false,
+      departAtErr: false,
       departTimeErr: false,
       departLocationErr: false,
-      arriveDateErr: false,
+      arriveAtErr: false,
       arriveTimeErr: false,
       arriveLocationErr: false,
       durationErr: false,
@@ -473,27 +475,27 @@ travelDeskRouter.get(
         for (const flightSegment of flightOption.flightSegments || []) {
           flightSegment.state = flightSegmentState
 
-          if (flightSegment.departDate) {
-            const departDateTime = DateTime.fromISO(flightSegment.departDate, { zone: "utc" })
+          if (flightSegment.departAt) {
+            const departDateTime = DateTime.fromISO(flightSegment.departAt, { zone: "utc" })
             flightSegment.departDay = departDateTime.toISODate()
             flightSegment.departTime = departDateTime.toISOTime({
               suppressSeconds: true,
               includeOffset: false,
             })
           } else {
-            console.warn("Warning: departDate is undefined for flightSegment.")
+            console.warn("Warning: departAt is undefined for flightSegment.")
           }
 
           // Parsing arrival date and time
-          if (flightSegment.arriveDate) {
-            const arriveDateTime = DateTime.fromISO(flightSegment.arriveDate, { zone: "utc" })
+          if (flightSegment.arriveAt) {
+            const arriveDateTime = DateTime.fromISO(flightSegment.arriveAt, { zone: "utc" })
             flightSegment.arriveDay = arriveDateTime.toISODate()
             flightSegment.arriveTime = arriveDateTime.toISOTime({
               suppressSeconds: true,
               includeOffset: false,
             })
           } else {
-            console.warn("Warning: arriveDate is undefined for flightSegment.")
+            console.warn("Warning: arriveAt is undefined for flightSegment.")
           }
         }
         flightOption.state = { costErr: false, legErr: false }

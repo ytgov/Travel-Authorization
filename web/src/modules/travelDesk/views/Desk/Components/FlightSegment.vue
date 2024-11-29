@@ -23,10 +23,10 @@
           <div style="width: 0.5%" />
           <div style="width: 15%">
             <v-text-field
-              :error="flightSegment.state.departDateErr"
+              :error="flightSegment.state.departAtErr"
               @input="
                 changeDate()
-                flightSegment.state.departDateErr = false
+                flightSegment.state.departAtErr = false
               "
               label="Departure Date"
               v-model="flightSegment.departDay"
@@ -76,10 +76,10 @@
           <div style="width: 0.5%" />
           <div style="width: 15%">
             <v-text-field
-              :error="flightSegment.state.arriveDateErr"
+              :error="flightSegment.state.arriveAtErr"
               @input="
                 changeDate()
-                flightSegment.state.arriveDateErr = false
+                flightSegment.state.arriveAtErr = false
               "
               label="Arrival Date"
               v-model="flightSegment.arriveDay"
@@ -164,11 +164,11 @@ export default {
     },
     changeDate() {
       if (this.flightSegment.departDay && this.flightSegment.departTime) {
-        this.flightSegment.departDate =
+        this.flightSegment.departAt =
           this.flightSegment.departDay + "T" + this.flightSegment.departTime + ":00.000Z"
       }
       if (this.flightSegment.arriveDay && this.flightSegment.arriveTime) {
-        this.flightSegment.arriveDate =
+        this.flightSegment.arriveAt =
           this.flightSegment.arriveDay + "T" + this.flightSegment.arriveTime + ":00.000Z"
       }
     },

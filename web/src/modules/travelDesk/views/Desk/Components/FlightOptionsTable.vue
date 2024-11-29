@@ -47,10 +47,10 @@
                   </v-col>
                   <v-col cols="5">
                     <v-select
-                      v-model="item.flightRequestID"
+                      v-model="item.flightRequestId"
                       :items="legs"
                       :error="item.state?.legErr"
-                      item-value="flightRequestID"
+                      item-value="flightRequestId"
                       label="Leg"
                       outlined
                     />

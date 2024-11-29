@@ -402,7 +402,7 @@ export default {
 
         for (const flightRequest of this.travelerDetails.flightRequests) {
           for (const flightOption of flightRequest.flightOptions) {
-            if (!flightOption.flightPreference) {
+            if (!flightOption.flightPreferenceOrder) {
               error = true
             }
           }

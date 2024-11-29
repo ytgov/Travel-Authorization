@@ -133,10 +133,10 @@ export default {
     getState() {
       return {
         flightErr: false,
-        departDateErr: false,
+        departAtErr: false,
         departTimeErr: false,
         departLocationErr: false,
-        arriveDateErr: false,
+        arriveAtErr: false,
         arriveTimeErr: false,
         arriveLocationErr: false,
         durationErr: false,
@@ -149,11 +149,11 @@ export default {
       const flightSegment = {
         tmpId: this.tmpId,
         flightNumber: "",
-        departDate: "",
+        departAt: "",
         departDay: "",
         departTime: "",
         departLocation: "",
-        arriveDate: "",
+        arriveAt: "",
         arriveDay: "",
         arriveTime: "",
         arriveLocation: "",
@@ -178,7 +178,7 @@ export default {
           state: this.getState(),
 
           flightNumber: this.cleanText(flight.airline + " " + flight.flightNumber),
-          departDate: departureDate,
+          departAt: departureDate,
           departDay: departureDate.toISOString().slice(0, 10),
           departTime: this.cleanText(flight.departureTime),
           departLocation: this.cleanText(
@@ -188,7 +188,7 @@ export default {
               " Terminal: " +
               flight.departureTerminal
           ),
-          arriveDate: arrivalDate,
+          arriveAt: arrivalDate,
           arriveDay: arrivalDate.toISOString().slice(0, 10),
           arriveTime: this.cleanText(flight.arrivalTime),
           arriveLocation: this.cleanText(
@@ -241,10 +241,10 @@ export default {
     checkStates(item) {
       const state = {
         flightErr: item.flightNumber ? false : true,
-        departDateErr: item.departDay ? false : true,
+        departAtErr: item.departDay ? false : true,
         departTimeErr: item.departTime ? false : true,
         departLocationErr: item.departLocation ? false : true,
-        arriveDateErr: item.arriveDay ? false : true,
+        arriveAtErr: item.arriveDay ? false : true,
         arriveTimeErr: item.arriveTime ? false : true,
         arriveLocationErr: item.arriveLocation ? false : true,
         durationErr: item.duration ? false : true,
@@ -286,7 +286,7 @@ export default {
         cost: "",
         leg: "",
         state: { costErr: false },
-        flightPreference: "",
+        flightPreferenceOrder: null,
         duration: durationHours + " Hour(s) " + durationMinutes + " Minute(s)",
         flightSegments: JSON.parse(JSON.stringify(this.selectedSegments)),
       }

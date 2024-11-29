@@ -44,7 +44,7 @@
               <!-- {{ item.flightOptions }} -->
               <v-row
                 v-for="(flightOption, inx) in item.flightOptions"
-                :key="'flight-' + flightOption.flightOptionID + '-' + inx"
+                :key="'flight-' + flightOption.id + '-' + inx"
               >
                 <v-col>
                   <FlightOptionCard

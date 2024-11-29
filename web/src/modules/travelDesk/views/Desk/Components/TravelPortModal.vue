@@ -185,7 +185,7 @@ export default {
         this.flightOptions.push(...(flightRequest.flightOptions || []))
         // console.log(flightRequest)
         this.legs.push({
-          flightRequestID: flightRequest.id,
+          flightRequestId: flightRequest.id,
           text: this.getFlightRequestTxt(flightRequest),
         })
       }
@@ -206,7 +206,7 @@ export default {
       for (const flightOption of this.flightOptions) {
         flightOption.state = flightOption.state || {}
         flightOption.state.costErr = flightOption.cost ? false : true
-        flightOption.state.legErr = flightOption.flightRequestID ? false : true
+        flightOption.state.legErr = flightOption.flightRequestId ? false : true
         if (flightOption.state.costErr || flightOption.state.legErr) complete = false
       }
       return complete

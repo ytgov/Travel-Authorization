@@ -12,7 +12,7 @@
       <td :colspan="expandedItemHeaders.length">
         <TravelDeskFlightOptionsDataIterator
           :where="{
-            flightRequestID: item.id,
+            flightRequestId: item.id,
           }"
         />
       </td>
