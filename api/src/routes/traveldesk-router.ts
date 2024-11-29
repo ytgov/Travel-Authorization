@@ -8,7 +8,9 @@ import { RequiresAuth, RequiresRoleTdUser } from "@/middleware"
 import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import {
   TravelAuthorization,
+  TravelDeskFlightOption,
   TravelDeskFlightRequest,
+  TravelDeskFlightSegment,
   TravelDeskHotel,
   TravelDeskOtherTransportation,
   TravelDeskPassengerNameRecordDocument,
@@ -19,7 +21,6 @@ import {
 } from "@/models"
 
 import db from "@/db/db-client"
-import { knexQueryToSequelizeSelect } from "@/db/utils/knex-query-to-sequelize-select"
 import dbLegacy from "@/db/db-client-legacy"
 
 /** @deprecated - prefer using controller pattern with per-model CRUD actions */
@@ -144,26 +145,39 @@ travelDeskRouter.get(
       statusErr: false,
     }
 
-    const flightRequestID = Number(req.params.flightRequestId)
+    const flightRequestId = Number(req.params.flightRequestId)
     let tmpId = 2000
 
-    const flightOptions = await dbLegacy("travelDeskFlightOption")
-      .select("*")
-      .where("flightRequestID", flightRequestID)
-    for (const flightOption of flightOptions) {
-      const flightSegments = await dbLegacy("travelDeskFlightSegment")
-        .select("*")
-        .where("flightOptionID", flightOption.flightOptionID)
-      for (const flightSegment of flightSegments) {
+    const flightOptions = await TravelDeskFlightOption.findAll({
+      where: {
+        flightRequestId,
+      },
+      include: ["flightSegments"],
+    })
+
+    const serializedFlightOptions: (TravelDeskFlightOption & {
+      flightSegments: (TravelDeskFlightSegment & {
+        state: typeof flightSegmentState
+        tmpId: number
+        departDay: string
+        departTime: string
+        arriveDay: string
+        arriveTime: string
+        departAt: string
+        arriveAt: string
+      })[]
+      state: Record<string, boolean>
+    })[] = flightOptions.map((flightOption) => flightOption.toJSON())
+    for (const flightOption of serializedFlightOptions) {
+      for (const flightSegment of flightOption.flightSegments || []) {
         flightSegment.state = flightSegmentState
         flightSegment.tmpId = tmpId
-        flightSegment.departDay = flightSegment.departDate.substring(0, 10)
-        flightSegment.departTime = flightSegment.departDate.substring(11, 16)
-        flightSegment.arriveDay = flightSegment.arriveDate.substring(0, 10)
-        flightSegment.arriveTime = flightSegment.arriveDate.substring(11, 16)
+        flightSegment.departDay = flightSegment.departAt.substring(0, 10)
+        flightSegment.departTime = flightSegment.departAt.substring(11, 16)
+        flightSegment.arriveDay = flightSegment.arriveAt.substring(0, 10)
+        flightSegment.arriveTime = flightSegment.arriveAt.substring(11, 16)
         tmpId++
       }
-      flightOption.flightSegments = flightSegments
       flightOption.state = { costErr: false, legErr: false }
     }
 
@@ -186,12 +200,12 @@ travelDeskRouter.post(
         attributes: ["id"],
         where: { id: travelDeskTravelRequestId },
       })
-      const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
+      const flightRequestIds = flightRequestsIds.map((flightRequest) => flightRequest.id)
 
       await dbLegacy.transaction(async () => {
-        await dbLegacy("travelDeskFlightOption")
-          .delete()
-          .whereIn("flightRequestID", flightRequestIDs)
+        await TravelDeskFlightOption.destroy({
+          where: { flightRequestId: flightRequestIds },
+        })
 
         for (const newFlightOption of newFlightOptions) {
           delete newFlightOption.state
@@ -199,10 +213,7 @@ travelDeskRouter.post(
           const flightSegments = newFlightOption.flightSegments
           delete newFlightOption.flightSegments
 
-          const id = await dbLegacy("travelDeskFlightOption").insert(
-            newFlightOption,
-            "flightOptionID"
-          )
+          const travelDeskFlighOption = await TravelDeskFlightOption.create(newFlightOption)
 
           for (const flightSegment of flightSegments) {
             // logger.info(flightSegment)
@@ -212,8 +223,8 @@ travelDeskRouter.post(
             delete flightSegment.departTime
             delete flightSegment.arriveDay
             delete flightSegment.arriveTime
-            flightSegment.flightOptionID = id[0].flightOptionID
-            await dbLegacy("travelDeskFlightSegment").insert(flightSegment)
+            flightSegment.flightOptionId = travelDeskFlighOption.id
+            await TravelDeskFlightSegment.create(flightSegment)
           }
         }
         res.status(200).json("Successful")
@@ -236,15 +247,13 @@ travelDeskRouter.delete(
         attributes: ["id"],
         where: { travelRequestId: travelDeskTravelRequestId },
       })
-      const flightRequestIDs = flightRequestsIds.map((flightRequest) => flightRequest.id)
+      const flightRequestIds = flightRequestsIds.map((flightRequest) => flightRequest.id)
 
-      await dbLegacy.transaction(async (trx) => {
-        await dbLegacy("travelDeskFlightOption")
-          .delete()
-          .whereIn("flightRequestID", flightRequestIDs)
-          .transacting(trx)
-        res.status(200).json("Delete Successful")
+      await TravelDeskFlightOption.destroy({
+        where: { flightRequestId: flightRequestIds },
       })
+
+      res.status(200).json("Delete Successful")
     } catch (error: unknown) {
       logger.info(error)
       res.status(500).json("Delete failed")
@@ -279,23 +288,38 @@ travelDeskRouter.get(
       }
 
       const flightRequests = await TravelDeskFlightRequest.findAll({
-        where: { travelRequestId: travelDeskTravelRequestId },
+        where: {
+          travelRequestId: travelDeskTravelRequestId,
+        },
+        include: [
+          {
+            association: "flightOptions",
+            include: ["flightSegments"],
+          },
+        ],
       })
-      const flightRequestsJson = flightRequests.map((flightRequest) => flightRequest.toJSON())
+      const flightRequestsJson: (TravelDeskFlightRequest & {
+        flightOptions: (TravelDeskFlightOption & {
+          flightSegments: (TravelDeskFlightSegment & {
+            departAt: string
+            arriveAt: string
+            state: typeof flightSegmentState
+            departDay: string | null
+            departTime: string | null
+            arriveDay: string | null
+            arriveTime: string | null
+          })[]
+          state: Record<string, boolean>
+        })[]
+      })[] = flightRequests.map((flightRequest) => flightRequest.toJSON())
 
       for (const flightRequest of flightRequestsJson) {
-        const flightOptions = await dbLegacy("travelDeskFlightOption")
-          .select("*")
-          .where("flightRequestID", flightRequest.id)
-        for (const flightOption of flightOptions) {
-          const flightSegments = await dbLegacy("travelDeskFlightSegment")
-            .select("*")
-            .where("flightOptionID", flightOption.flightOptionID)
-          for (const flightSegment of flightSegments) {
+        for (const flightOption of flightRequest.flightOptions) {
+          for (const flightSegment of flightOption.flightSegments) {
             flightSegment.state = flightSegmentState
 
-            if (flightSegment.departDate) {
-              const departDateTime = DateTime.fromISO(flightSegment.departDate, { zone: "utc" })
+            if (flightSegment.departAt) {
+              const departDateTime = DateTime.fromISO(flightSegment.departAt, { zone: "utc" })
               flightSegment.departDay = departDateTime.toISODate()
               flightSegment.departTime = departDateTime.toISOTime({
                 suppressSeconds: true,
@@ -306,8 +330,8 @@ travelDeskRouter.get(
             }
 
             // Parsing arrival date and time
-            if (flightSegment.arriveDate) {
-              const arriveDateTime = DateTime.fromISO(flightSegment.arriveDate, { zone: "utc" })
+            if (flightSegment.arriveAt) {
+              const arriveDateTime = DateTime.fromISO(flightSegment.arriveAt, { zone: "utc" })
               flightSegment.arriveDay = arriveDateTime.toISODate()
               flightSegment.arriveTime = arriveDateTime.toISOTime({
                 suppressSeconds: true,
@@ -317,7 +341,6 @@ travelDeskRouter.get(
               console.warn("Warning: arriveDate is undefined for flightSegment.")
             }
           }
-          flightOption.flightSegments = flightSegments
           flightOption.state = { costErr: false, legErr: false }
         }
         // @ts-expect-error - not worth fixing at this time
@@ -359,11 +382,9 @@ travelDeskRouter.post(
 
             const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
 
-            await knexQueryToSequelizeSelect(
-              dbLegacy("travelDeskFlightOption")
-                .delete()
-                .where("flightRequestID", newFlightRequest.id)
-            )
+            await TravelDeskFlightOption.destroy({
+              where: { flightRequestId: newFlightRequest.id },
+            })
 
             for (const newFlightOption of newFlightOptions) {
               delete newFlightOption.state
@@ -371,11 +392,9 @@ travelDeskRouter.post(
               const flightSegments = newFlightOption.flightSegments
               delete newFlightOption.flightSegments
 
-              newFlightOption.flightRequestID = newFlightRequest.id
+              newFlightOption.flightRequestId = newFlightRequest.id
 
-              const id = await knexQueryToSequelizeSelect<{
-                flightOptionID: number
-              }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
+              const travelDeskFlighOption = await TravelDeskFlightOption.create(newFlightOption)
 
               for (const flightSegment of flightSegments) {
                 // logger.info(flightSegment)
@@ -385,10 +404,8 @@ travelDeskRouter.post(
                 delete flightSegment.departTime
                 delete flightSegment.arriveDay
                 delete flightSegment.arriveTime
-                flightSegment.flightOptionID = id[0].flightOptionID
-                await knexQueryToSequelizeSelect(
-                  dbLegacy("travelDeskFlightSegment").insert(flightSegment)
-                )
+                flightSegment.flightOptionId = travelDeskFlighOption.id
+                await TravelDeskFlightSegment.create(flightSegment)
               }
             }
           }
@@ -424,11 +441,19 @@ travelDeskRouter.get(
     const travelDeskTravelRequestId = req.params.travelDeskTravelRequestId
     const travelRequest = await TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId, {
       include: [
-        "flightRequests",
         "hotels",
         "otherTransportations",
         "questions",
         "rentalCars",
+        {
+          association: "flightRequests",
+          include: [
+            {
+              association: "flightOptions",
+              include: ["flightSegments"],
+            },
+          ],
+        },
         {
           association: "travelDeskPassengerNameRecordDocument",
           attributes: ["invoiceNumber"],
@@ -444,14 +469,8 @@ travelDeskRouter.get(
     // TODO: move this code to a serializer
     // @ts-expect-error - not worth fixing at this time
     for (const flightRequest of travelRequestJson.flightRequests || []) {
-      const flightOptions = await dbLegacy("travelDeskFlightOption")
-        .select("*")
-        .where("flightRequestID", flightRequest.id)
-      for (const flightOption of flightOptions) {
-        const flightSegments = await dbLegacy("travelDeskFlightSegment")
-          .select("*")
-          .where("flightOptionID", flightOption.flightOptionID)
-        for (const flightSegment of flightSegments) {
+      for (const flightOption of flightRequest.flightOptions || []) {
+        for (const flightSegment of flightOption.flightSegments || []) {
           flightSegment.state = flightSegmentState
 
           if (flightSegment.departDate) {
@@ -477,10 +496,8 @@ travelDeskRouter.get(
             console.warn("Warning: arriveDate is undefined for flightSegment.")
           }
         }
-        flightOption.flightSegments = flightSegments
         flightOption.state = { costErr: false, legErr: false }
       }
-      flightRequest.flightOptions = flightOptions
     }
 
     // @ts-expect-error - not worth fixing at this time
@@ -545,11 +562,11 @@ travelDeskRouter.post(
           flightRequest.travelRequestId = travelRequest.id
           const newFlightRequest = await TravelDeskFlightRequest.create(flightRequest)
 
-          await knexQueryToSequelizeSelect(
-            dbLegacy("travelDeskFlightOption")
-              .delete()
-              .where("flightRequestID", newFlightRequest.id)
-          )
+          await TravelDeskFlightOption.destroy({
+            where: {
+              flightRequestId: newFlightRequest.id,
+            },
+          })
 
           for (const newFlightOption of newFlightOptions) {
             delete newFlightOption.state
@@ -557,11 +574,9 @@ travelDeskRouter.post(
             const flightSegments = newFlightOption.flightSegments
             delete newFlightOption.flightSegments
 
-            newFlightOption.flightRequestID = newFlightRequest.id
+            newFlightOption.flightRequestId = newFlightRequest.id
 
-            const travelDeskFlighOption = await knexQueryToSequelizeSelect<{
-              flightOptionID: number
-            }>(dbLegacy("travelDeskFlightOption").insert(newFlightOption, "flightOptionID"))
+            const travelDeskFlighOption = await TravelDeskFlightOption.create(newFlightOption)
 
             for (const flightSegment of flightSegments) {
               // logger.info(flightSegment)
@@ -571,10 +586,8 @@ travelDeskRouter.post(
               delete flightSegment.departTime
               delete flightSegment.arriveDay
               delete flightSegment.arriveTime
-              flightSegment.flightOptionID = travelDeskFlighOption[0].flightOptionID
-              await knexQueryToSequelizeSelect(
-                dbLegacy("travelDeskFlightSegment").insert(flightSegment)
-              )
+              flightSegment.flightOptionId = travelDeskFlighOption.id
+              await TravelDeskFlightSegment.create(flightSegment)
             }
           }
         }
