@@ -14,6 +14,7 @@ import moment from "moment"
 import sequelize from "@/db/db-client"
 import { isRole, RoleNames } from "@/models/role"
 import TravelAuthorization from "@/models/travel-authorization"
+import TravelDeskFlightOption from "@/models/travel-desk-flight-option"
 
 export enum Statuses {
   ACTIVE = "active",
@@ -53,16 +54,21 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 
   // Associations
   declare travelAuthorizations?: NonAttribute<TravelAuthorization[]>
+  declare travelDeskFlightOptions?: NonAttribute<TravelDeskFlightOption[]>
 
   declare static associations: {
     travelAuthorizations: Association<User, TravelAuthorization>
+    travelDeskFlightOptions: Association<User, TravelDeskFlightOption>
   }
 
   static establishAssociations() {
     this.hasMany(TravelAuthorization, {
       as: "travelAuthorizations",
-      sourceKey: "id",
       foreignKey: "userId",
+    })
+    this.hasMany(TravelDeskFlightOption, {
+      as: "travelDeskFlightOptions",
+      foreignKey: "travelerId",
     })
   }
 

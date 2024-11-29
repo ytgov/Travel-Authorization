@@ -14,11 +14,22 @@ export class CreateService extends BaseService {
   }
 
   async perform(): Promise<TravelDeskFlightOption> {
-    const { flightRequestId, cost, leg, duration, flightPreferenceOrder, ...optionalAttributes } =
-      this.attributes
+    const {
+      flightRequestId,
+      travelerId,
+      cost,
+      leg,
+      duration,
+      flightPreferenceOrder,
+      ...optionalAttributes
+    } = this.attributes
 
     if (isNil(flightRequestId)) {
       throw new Error("Flight request ID is required.")
+    }
+
+    if (isNil(travelerId)) {
+      throw new Error("Traveler ID is required.")
     }
 
     if (isNil(cost)) {
@@ -36,6 +47,7 @@ export class CreateService extends BaseService {
     return TravelDeskFlightOption.create({
       ...optionalAttributes,
       flightRequestId,
+      travelerId,
       cost,
       leg,
       duration,

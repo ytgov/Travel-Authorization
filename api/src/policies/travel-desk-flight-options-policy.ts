@@ -29,7 +29,7 @@ export class TravelDeskFlightOptionsPolicy extends PolicyFactory(TravelDeskFligh
   }
 
   permittedAttributesForCreate(): Path[] {
-    return ["flightRequestId", ...this.permittedAttributes()]
+    return ["flightRequestId", "travelerId", ...this.permittedAttributes()]
   }
 
   static policyScope(user: User): FindOptions<Attributes<TravelDeskFlightOption>> {
