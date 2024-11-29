@@ -14,7 +14,9 @@ import TravelAuthorizationPreApproval from "./travel-authorization-pre-approval"
 import TravelAuthorizationPreApprovalDocument from "./travel-authorization-pre-approval-document"
 import TravelAuthorizationPreApprovalProfile from "./travel-authorization-pre-approval-profile"
 import TravelAuthorizationPreApprovalSubmission from "./travel-authorization-pre-approval-submission"
+import TravelDeskFlightOption from "./travel-desk-flight-option"
 import TravelDeskFlightRequest from "./travel-desk-flight-request"
+import TravelDeskFlightSegment from "./travel-desk-flight-segment"
 import TravelDeskHotel from "./travel-desk-hotel"
 import TravelDeskOtherTransportation from "./travel-desk-other-transportation"
 import TravelDeskPassengerNameRecordDocument from "./travel-desk-passenger-name-record-document"
@@ -35,7 +37,9 @@ TravelAuthorizationPreApproval.establishAssociations()
 TravelAuthorizationPreApprovalDocument.establishAssociations()
 TravelAuthorizationPreApprovalProfile.establishAssociations()
 TravelAuthorizationPreApprovalSubmission.establishAssociations()
+TravelDeskFlightOption.establishAssociations()
 TravelDeskFlightRequest.establishAssociations()
+TravelDeskFlightSegment.establishAssociations()
 TravelDeskHotel.establishAssociations()
 TravelDeskOtherTransportation.establishAssociations()
 TravelDeskPassengerNameRecordDocument.establishAssociations()
@@ -61,7 +65,9 @@ export {
   TravelAuthorizationPreApprovalDocument,
   TravelAuthorizationPreApprovalProfile,
   TravelAuthorizationPreApprovalSubmission,
+  TravelDeskFlightOption,
   TravelDeskFlightRequest,
+  TravelDeskFlightSegment,
   TravelDeskHotel,
   TravelDeskOtherTransportation,
   TravelDeskPassengerNameRecordDocument,
