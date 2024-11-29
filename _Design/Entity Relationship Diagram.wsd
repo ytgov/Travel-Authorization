@@ -336,15 +336,18 @@ entity "travel_purposes" {
   deleted_at : timestamptz
 }
 
-entity "travelDeskFlightOption" {
-  * flightOptionID : serial4 <<PK>>
+entity "travel_desk_flight_options" {
+  * id : serial4 <<PK>>
   --
-  * flightRequestID : int4 <<FK>>
+  * flight_request_id : int4 <<FK>>
   --
-  cost : varchar(255)
-  flightPreference : varchar(255)
-  leg : varchar(255)
-  duration : varchar(255)
+  *cost : varchar(255)
+  * leg : varchar(255)
+  * duration : varchar(255)
+  flight_preference_order : int4
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_flight_requests" {
@@ -361,20 +364,23 @@ entity "travel_desk_flight_requests" {
   deleted_at : timestamptz
 }
 
-entity "travelDeskFlightSegment" {
-  * flightSegmentID : serial4 <<PK>>
+entity "travel_desk_flight_segments" {
+  * id : serial4 <<PK>>
   --
-  * flightOptionID : int4 <<FK>>
-  * sortOrder : int4
+  * flight_option_id : int4 <<FK>>
   --
-  flightNumber : varchar(255)
-  departDate : timestamptz
-  departLocation : varchar(255)
-  arriveDate : timestamptz
-  arriveLocation : varchar(255)
-  duration : varchar(255)
-  status : varchar(255)
-  class : varchar(255)
+  * flight_number : varchar(255)
+  * depart_at : timestamptz
+  * depart_location : varchar(255)
+  * arrive_at : timestamptz
+  * arrive_location : varchar(255)
+  * duration : varchar(255)
+  * status : varchar(255)
+  * class : varchar(255)
+  sort_order : int4 - default 1
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_hotels" {
@@ -564,10 +570,12 @@ stops::travel_authorization_id }o--|| travel_authorizations::id
 travel_authorization_action_logs::actor_id ||--o{ users::id
 travel_authorization_action_logs::assignee_id ||--o{ users::id
 travel_authorization_action_logs::travel_authorization_id ||--o{ travel_authorizations::id
-travel_authorization_pre_approvals::submission_id |o--o{ preapprovedSubmissions::preTSubID
 travel_authorization_pre_approval_profiles::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
+travel_authorization_pre_approvals::submission_id |o--o{ preapprovedSubmissions::preTSubID
 travel_authorizations::pre_approval_profile_id |o--o{ travel_authorization_pre_approval_profiles::id
 travel_authorizations::purpose_id ||--o{ travel_purposes::id
+travel_desk_flight_options::id }o--|| travel_desk_flight_segments::flight_option_id
+travel_desk_flight_requests::id }o--|| travel_desk_flight_options::flight_request_id
 travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_other_transportations::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_passenger_name_record_documents::travel_desk_travel_request_id ||--o{ travel_desk_travel_requests::id
@@ -576,10 +584,8 @@ travel_desk_travel_requests::id }o--|| travel_desk_flight_requests::travel_reque
 travel_desk_travel_requests::id }o--|| travel_desk_questions::travel_request_id
 travel_desk_travel_requests::travel_agency_id |o--o{ travel_desk_travel_agencies::id
 travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
-travelDeskFlightOption::flightRequestID ||--o{ travel_desk_flight_requests::id
-travelDeskFlightSegment::flightOptionID ||--o{ travelDeskFlightOption::flightOptionID
-travel_segments::travel_authorization_id ||--o{ travel_authorizations::id
-travel_segments::departure_location_id |o--o{ locations::id
 travel_segments::arrival_location_id |o--o{ locations::id
+travel_segments::departure_location_id |o--o{ locations::id
+travel_segments::travel_authorization_id ||--o{ travel_authorizations::id
 users::roles }o..o{ roles::name
 @enduml
