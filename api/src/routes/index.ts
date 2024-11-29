@@ -20,6 +20,7 @@ import {
   TravelAuthorizationPreApprovalsController,
   TravelAuthorizations,
   TravelAuthorizationsController,
+  TravelDeskFlightOptionsController,
   TravelDeskFlightRequestsController,
   TravelDeskFlightSegmentsController,
   TravelDeskHotelsController,
@@ -141,6 +142,16 @@ router
 router
   .route("/api/travel-authorizations/:travelAuthorizationId/expenses/prefill")
   .post(TravelAuthorizations.Expenses.PrefillController.create)
+
+router
+  .route("/api/travel-desk-flight-options")
+  .get(TravelDeskFlightOptionsController.index)
+  .post(TravelDeskFlightOptionsController.create)
+router
+  .route("/api/travel-desk-flight-options/:travelDeskFlightOptionId")
+  .get(TravelDeskFlightOptionsController.show)
+  .patch(TravelDeskFlightOptionsController.update)
+  .delete(TravelDeskFlightOptionsController.destroy)
 
 router
   .route("/api/travel-desk-flight-requests")
