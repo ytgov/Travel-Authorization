@@ -2,6 +2,7 @@
   <v-data-iterator
     :items="travelDeskFlightOptions"
     :server-items-length="totalCount"
+    hide-default-footer
   >
     <template #default="{ items }">
       <v-row
