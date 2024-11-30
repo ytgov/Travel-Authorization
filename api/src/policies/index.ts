@@ -7,6 +7,7 @@ export { TravelAuthorizationPreApprovalProfilesPolicy } from "./travel-authoriza
 export { TravelAuthorizationPreApprovalsPolicy } from "./travel-authorization-pre-approvals-policy"
 export { TravelAuthorizationsPolicy } from "./travel-authorizations-policy"
 export { TravelDeskFlightRequestsPolicy } from "./travel-desk-flight-requests-policy"
+export { TravelDeskFlightSegmentsPolicy } from "./travel-desk-flight-segments-policy"
 export { TravelDeskHotelsPolicy } from "./travel-desk-hotels-policy"
 export { TravelDeskOtherTransportationsPolicy } from "./travel-desk-other-transportations-policy"
 export { TravelDeskQuestionsPolicy } from "./travel-desk-questions-policy"

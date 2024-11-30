@@ -10,6 +10,7 @@ export { TravelAuthorizationPreApprovalProfilesController } from "./travel-autho
 export { TravelAuthorizationPreApprovalsController } from "./travel-authorization-pre-approvals-controller"
 export { TravelAuthorizationsController } from "./travel-authorizations-controller"
 export { TravelDeskFlightRequestsController } from "./travel-desk-flight-requests-controller"
+export { TravelDeskFlightSegmentsController } from "./travel-desk-flight-segments-controller"
 export { TravelDeskHotelsController } from "./travel-desk-hotels-controller"
 export { TravelDeskOtherTransportationsController } from "./travel-desk-other-transportations-controller"
 export { TravelDeskQuestionsController } from "./travel-desk-questions-controller"

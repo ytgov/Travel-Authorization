@@ -21,6 +21,7 @@ import {
   TravelAuthorizations,
   TravelAuthorizationsController,
   TravelDeskFlightRequestsController,
+  TravelDeskFlightSegmentsController,
   TravelDeskHotelsController,
   TravelDeskOtherTransportationsController,
   TravelDeskQuestionsController,
@@ -150,6 +151,16 @@ router
   .get(TravelDeskFlightRequestsController.show)
   .patch(TravelDeskFlightRequestsController.update)
   .delete(TravelDeskFlightRequestsController.destroy)
+
+router
+  .route("/api/travel-desk-flight-segments")
+  .get(TravelDeskFlightSegmentsController.index)
+  .post(TravelDeskFlightSegmentsController.create)
+router
+  .route("/api/travel-desk-flight-segments/:travelDeskFlightSegmentId")
+  .get(TravelDeskFlightSegmentsController.show)
+  .patch(TravelDeskFlightSegmentsController.update)
+  .delete(TravelDeskFlightSegmentsController.destroy)
 
 router
   .route("/api/travel-desk-hotels")
