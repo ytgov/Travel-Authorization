@@ -1,12 +1,19 @@
 <template>
-  <v-data-iterator :items="travelDeskFlightOptions">
+  <v-data-iterator
+    :items="travelDeskFlightOptions"
+    :server-items-length="totalCount"
+  >
     <template #default="{ items }">
       <v-row
         v-for="item in items"
         :key="item.id"
       >
         <v-col>
-          <FlightOptionCard :flight-option="item" />
+          <TravelDeskFlightOptionCard
+            :flight-option="item"
+            :opt-len="totalCount"
+            travel-desk-user
+          />
         </v-col>
       </v-row>
     </template>
@@ -14,9 +21,13 @@
 </template>
 
 <script setup>
-import FlightOptionCard from "@/modules/travelDesk/views/Requests/RequestDialogs/FlightComponents/FlightOptionCard.vue"
+import { computed } from "vue"
 
-defineProps({
+import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
+
+import TravelDeskFlightOptionCard from "@/components/travel-desk-flight-options/TravelDeskFlightOptionCard.vue"
+
+const props = defineProps({
   where: {
     type: Object,
     default: () => ({}),
@@ -27,7 +38,11 @@ defineProps({
   },
 })
 
-console.warn("TODO: implement TravelDeskFlightOptionsDataIterator")
-// TODO: load from back-end
-const travelDeskFlightOptions = []
+const travelDeskFlightOptionsQuery = computed(() => ({
+  where: props.where,
+  filters: props.filters,
+}))
+const { travelDeskFlightOptions, totalCount } = useTravelDeskFlightOptions(
+  travelDeskFlightOptionsQuery
+)
 </script>

@@ -1,76 +1,77 @@
 <template>
-  <v-skeleton-loader
-    v-if="isLoading"
-    type="card"
-  />
-  <v-card v-else>
-    <v-card-text>
-      <v-row>
-        <v-col
-          cols="12"
-          md="6"
-        >
-          <v-select
-            label="Preference"
-            :value="flightOption.flightPreferenceOrder"
-            :items="flightPreferences"
-            :hint="
-              flightOption.flightPreferenceOrder === DOES_NOT_WORK
-                ? 'Please see the Additional Information.'
-                : ''
-            "
-            persistent-hint
-            readonly
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="6"
-        >
-          <v-select
-            label="Cost ($)"
-            :value="flightOption.cost"
-            readonly
-          />
-        </v-col>
-      </v-row>
-      <pre>{{ travelDeskFlightSegments }}</pre>
-      <v-row
-        v-for="(flightSegment, inx) in travelDeskFlightSegments"
-        :key="'segment-' + flightSegment.id + '-' + inx"
+  <div v-if="dataReady">
+    <v-row class="mt-0 mb-0 mx-0">
+      <v-col
+        cols="2"
+        class="px-0"
       >
-        <table style="width: 100%; margin-top: 1rem">
-          <tbody>
-            <tr style="line-height: 1rem">
-              <td colspan="3">{{ flightSegment.flightNumber }}</td>
-            </tr>
-            <tr style="background: #f9f9f9">
-              <td style="width: 16%">Departure:</td>
-              <td style="width: 30%">{{ flightSegment.departAt | beautifyDateTime }}</td>
-              <td style="width: 50%">{{ flightSegment.departLocation }}</td>
-            </tr>
-            <tr style="line-height: 1rem">
-              <td style="width: 16%">Arrival:</td>
-              <td style="width: 30%">{{ flightSegment.arriveAt | beautifyDateTime }}</td>
-              <td style="width: 50%">{{ flightSegment.arriveLocation }}</td>
-            </tr>
-            <tr style="background: #f9f9f9">
-              <td style="width: 16%">Duration</td>
-              <td style="width: 30%">
-                {{ flightSegment.duration }}
-              </td>
-              <td style="width: 50%"></td>
-            </tr>
-          </tbody>
-        </table>
-      </v-row>
-    </v-card-text>
-  </v-card>
+        <div style="font-size: 9pt">Preference</div>
+        <v-select
+          label="Preference"
+          :value="flightOption.flightPreferenceOrder"
+          :items="preferenceList"
+          :hint="
+            flightOption.flightPreferenceOrder === DOES_NOT_WORK
+              ? travelDeskUser
+                ? 'Please see the Additional Information.'
+                : 'Please add your comment to the Additional Information field.'
+              : ''
+          "
+          class="mr-2"
+          persistent-hint
+          solo
+        />
+      </v-col>
+
+      <v-col
+        cols="10"
+        class="px-0"
+      >
+        <v-card
+          color="#FAFAFA"
+          style="border: 2px solid #aaccff !important"
+        >
+          <v-row class="mt-1 mx-2">
+            <b>COST:</b> <b class="ml-2">$ {{ flightOption.cost }}</b>
+          </v-row>
+          <div
+            v-for="(flightSegment, inx) in travelDeskFlightSegments"
+            :key="'segment-' + flightSegment.id + '-' + inx"
+            class="px-1"
+          >
+            <table style="width: 100%; margin-top: 1rem">
+              <tbody>
+                <tr style="line-height: 1rem">
+                  <td colspan="3">{{ flightSegment.flightNumber }}</td>
+                </tr>
+                <tr style="background: #f9f9f9">
+                  <td style="width: 16%">Departure:</td>
+                  <td style="width: 30%">{{ flightSegment.departAt | beautifyDateTime }}</td>
+                  <td style="width: 50%">{{ flightSegment.departLocation }}</td>
+                </tr>
+                <tr style="line-height: 1rem">
+                  <td style="width: 16%">Arrival:</td>
+                  <td style="width: 30%">{{ flightSegment.arriveAt | beautifyDateTime }}</td>
+                  <td style="width: 50%">{{ flightSegment.arriveLocation }}</td>
+                </tr>
+                <tr style="background: #f9f9f9">
+                  <td style="width: 16%">Duration</td>
+                  <td style="width: 30%">
+                    {{ flightSegment.duration }}
+                  </td>
+                  <td style="width: 50%"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script setup>
-import { computed } from "vue"
-import { times } from "lodash"
+import { computed, nextTick, onMounted, ref } from "vue"
 
 import useTravelDeskFlightSegments from "@/use/use-travel-desk-flight-segments"
 
@@ -83,6 +84,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  travelDeskUser: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const travelDeskFlightSegmentsQuery = computed(() => ({
@@ -90,25 +95,30 @@ const travelDeskFlightSegmentsQuery = computed(() => ({
     flightOptionId: props.flightOption.id,
   },
 }))
-const { travelDeskFlightSegments, isLoading } = useTravelDeskFlightSegments(
-  travelDeskFlightSegmentsQuery
-)
+const { travelDeskFlightSegments } = useTravelDeskFlightSegments(travelDeskFlightSegmentsQuery)
 
-console.log(`travelDeskFlightSegments:`, travelDeskFlightSegments)
+const preferenceList = ref([])
+const dataReady = ref(false)
 
 const DOES_NOT_WORK = -1
 
-const flightPreferences = computed(() => {
-  return [
+onMounted(async () => {
+  dataReady.value = false
+  preferenceList.value = [
     {
       value: DOES_NOT_WORK,
       text: "Does Not Work",
     },
-    ...times(props.optLen, (index) => ({
-      value: index + 1,
-      text: index + 1,
-    })),
   ]
+  for (let i = 1; i <= props.optLen; i++) {
+    preferenceList.value.push({
+      value: i,
+      text: i,
+    })
+  }
+
+  await nextTick()
+  dataReady.value = true
 })
 </script>
 
