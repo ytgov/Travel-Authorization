@@ -137,8 +137,8 @@
           v-if="!readonly"
           class="ml-2 mr-2 px-5"
           color="#005A65"
-          :loading="savingData"
-          @click="saveNewTravelRequest('save')"
+          :loading="isLoading"
+          @click="saveTravelDeskTravelRequest"
           >Save Draft
         </v-btn>
         <v-btn
@@ -211,8 +211,12 @@ const snack = useSnack()
 const { currentUser } = useCurrentUser()
 
 const { travelDeskTravelRequestId } = toRefs(props)
-const { travelDeskTravelRequest, refresh: refreshTravelDeskTravelRequest } =
-  useTravelDeskTravelRequest(travelDeskTravelRequestId)
+const {
+  travelDeskTravelRequest,
+  isLoading,
+  refresh: refreshTravelDeskTravelRequest,
+  save: saveTravelDeskTravelRequest,
+} = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
 const readonly = computed(
   () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
