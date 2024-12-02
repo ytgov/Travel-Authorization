@@ -6,7 +6,7 @@
     single-expand
     v-bind="$attrs"
     v-on="$listeners"
-    @click:row="(_, { item }) => expandItem(item)"
+    @click:row="(_, { item }) => expandItem(item.id)"
   >
     <template #expanded-item="{ headers: expandedItemHeaders, item }">
       <td :colspan="expandedItemHeaders.length">
@@ -21,7 +21,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
+
+import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 
 import TravelDeskFlightOptionsDataIterator from "@/components/travel-desk-flight-options/TravelDeskFlightOptionsDataIterator.vue"
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
@@ -33,15 +35,34 @@ defineProps({
   },
 })
 
-const expanded = ref([])
+const expandTravelDeskFlightRequest = useRouteQuery("expandTravelDeskFlightRequest", undefined, {
+  transform: integerTransformer,
+})
 
-function expandItem(item) {
-  if (expanded.value.includes(item)) {
-    expanded.value = []
+function expandItem(travelDeskFlightRequestId) {
+  if (travelDeskFlightRequestId === expandTravelDeskFlightRequest.value) {
+    expandTravelDeskFlightRequest.value = undefined
   } else {
-    expanded.value = [item]
+    expandTravelDeskFlightRequest.value = travelDeskFlightRequestId
   }
 }
+
+const expanded = computed({
+  get() {
+    if (expandTravelDeskFlightRequest.value) {
+      return [{ id: expandTravelDeskFlightRequest.value }]
+    } else {
+      return []
+    }
+  },
+  set(newExpanded) {
+    if (newExpanded.length > 0) {
+      expandTravelDeskFlightRequest.value = newExpanded[0].id
+    } else {
+      expandTravelDeskFlightRequest.value = undefined
+    }
+  },
+})
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestsEditTable> | null>} */
 const travelDeskFlightRequestsEditTable = ref(null)
