@@ -1,15 +1,28 @@
 <template>
   <v-container>
-    <v-card>
-      <v-card-title>
+    <v-skeleton-loader
+      v-if="isNil(travelDeskTravelRequest)"
+      type="card"
+    />
+    <v-card v-else>
+      <v-card-title class="d-flex justify-space-between align-baseline">
         <h2>Travel Desk Request</h2>
+        <v-btn
+          v-if="travelDeskTravelRequest.status !== TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED"
+          :to="{
+            name: 'TravelDeskEditPage',
+            params: {
+              travelDeskTravelRequestId,
+            },
+          }"
+          color="primary"
+          class="my-0"
+        >
+          <v-icon left> mdi-pencil </v-icon>
+          Edit
+        </v-btn>
       </v-card-title>
-
-      <v-skeleton-loader
-        v-if="isNil(travelDeskTravelRequest)"
-        type="card"
-      />
-      <v-card-text v-else>
+      <v-card-text>
         <v-row>
           <v-col>
             <TravelerDetailsCard :travel-desk-travel-request-id="travelDeskTravelRequest.id" />
@@ -78,9 +91,8 @@
                   :flight-requests="travelDeskTravelRequest.flightRequests"
                   :hotels="travelDeskTravelRequest.hotels"
                 />
-                <TransportationRequestTable
-                  readonly
-                  :other-transportations="travelDeskTravelRequest.otherTransportations"
+                <TravelDeskOtherTransportationsTable
+                  :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                 />
               </template>
             </TitleCard>
@@ -88,18 +100,15 @@
         </v-row>
       </v-card-text>
 
-      <v-skeleton-loader
-        v-if="isNil(travelDeskTravelRequest)"
-        type="actions"
-      />
-      <v-card-actions v-else>
+      <v-card-actions>
         <v-spacer />
         <v-btn
-          color="primary"
-          class="mr-2"
           :to="{
             name: 'TravelDeskPage',
           }"
+          color="primary"
+          class="mr-2"
+          outlined
         >
           <div>Back</div>
         </v-btn>
@@ -118,21 +127,23 @@ import { toRefs } from "vue"
 import { isNil } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
+import useTravelDeskTravelRequest, {
+  TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
+} from "@/use/use-travel-desk-travel-request"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
-import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
 
 import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
 
 import UserTravelDeskAgentSelect from "@/components/users/UserTravelDeskAgentSelect.vue"
-import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
-import TravelDeskQuestionsCard from "@/components/travel-desk-questions/TravelDeskQuestionsCard.vue"
-import TravelDeskInvoiceCard from "@/components/travel-desk-travel-requests/TravelDeskInvoiceCard.vue"
 import TravelDeskFlightRequestsTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsTable.vue"
+import TravelDeskInvoiceCard from "@/components/travel-desk-travel-requests/TravelDeskInvoiceCard.vue"
+import TravelDeskOtherTransportationsTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsTable.vue"
+import TravelDeskQuestionsCard from "@/components/travel-desk-questions/TravelDeskQuestionsCard.vue"
+import TravelDeskTravelAgencySelect from "@/components/travel-desk-travel-agencies/TravelDeskTravelAgencySelect.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
