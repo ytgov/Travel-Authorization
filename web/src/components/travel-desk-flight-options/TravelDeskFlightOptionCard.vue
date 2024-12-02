@@ -35,36 +35,17 @@
           />
         </v-col>
       </v-row>
-      <v-row
-        v-for="(flightSegment, inx) in travelDeskFlightSegments"
-        :key="'segment-' + flightSegment.id + '-' + inx"
-      >
-        <v-col cols="12">
-          <v-list density="compact">
-            <v-subheader>{{ flightSegment.flightNumber }}</v-subheader>
-            <v-list-item>
-              <v-list-item-content> Departure: </v-list-item-content>
-              <v-list-item-content align="end">
-                {{ flightSegment.departLocation }}
-                <br />
-                {{ formatDate(flightSegment.departAt, "ccc, dd LLL yyyy 'at' HH:mm z") }}
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content> Arrival: </v-list-item-content>
-              <v-list-item-content align="end">
-                {{ flightSegment.arriveLocation }}
-                <br />
-                {{ formatDate(flightSegment.arriveAt, "ccc, dd LLL yyyy 'at' HH:mm z") }}
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content> Duration: </v-list-item-content>
-              <v-list-item-content align="end">
-                {{ flightSegment.duration }}
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+      <v-row class="mb-4">
+        <v-col
+          cols="12"
+          class="d-flex flex-wrap justify-center gap-4"
+        >
+          <TravelDeskFlightSegmentCard
+            v-for="(flightSegment, index) in travelDeskFlightSegments"
+            :key="`segment-${flightSegment.id}-${index}`"
+            :travel-desk-flight-segment-id="flightSegment.id"
+            max-width="600px"
+          />
         </v-col>
       </v-row>
     </v-card-text>
@@ -75,8 +56,9 @@
 import { computed } from "vue"
 
 import formatCurrency from "@/utils/format-currency"
-import formatDate from "@/utils/format-date"
 import useTravelDeskFlightSegments from "@/use/use-travel-desk-flight-segments"
+
+import TravelDeskFlightSegmentCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentCard.vue"
 
 const props = defineProps({
   flightOption: {
@@ -107,4 +89,8 @@ const flightPreferenceOrderText = computed(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+.gap-4 {
+  gap: 1rem; /* 16px */
+}
+</style>
