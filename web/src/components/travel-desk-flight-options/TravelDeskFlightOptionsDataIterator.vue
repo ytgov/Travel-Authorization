@@ -2,6 +2,7 @@
   <v-data-iterator
     :items="travelDeskFlightOptions"
     :server-items-length="totalCount"
+    :loading="isLoading"
     hide-default-footer
   >
     <template #default="{ items }">
@@ -38,7 +39,7 @@ const travelDeskFlightOptionsQuery = computed(() => ({
   where: props.where,
   filters: props.filters,
 }))
-const { travelDeskFlightOptions, totalCount } = useTravelDeskFlightOptions(
+const { travelDeskFlightOptions, totalCount, isLoading } = useTravelDeskFlightOptions(
   travelDeskFlightOptionsQuery
 )
 </script>
