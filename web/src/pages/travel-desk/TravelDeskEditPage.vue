@@ -12,15 +12,7 @@
       <v-card-text v-else>
         <v-row>
           <v-col>
-            <!-- TODO: move readonly view to a "read" page -->
-            <TravelerDetailsCard
-              v-if="readonly"
-              :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-            />
-            <TravelerDetailsFormCard
-              v-else
-              v-model="travelDeskTravelRequest"
-            />
+            <TravelerDetailsFormCard v-model="travelDeskTravelRequest" />
           </v-col>
         </v-row>
         <v-row>
@@ -44,7 +36,6 @@
             <UserTravelDeskAgentSelect
               v-model="travelDeskTravelRequest.travelDeskOfficer"
               label="Travel Desk Agent Assigned"
-              :readonly="readonly"
               outlined
             />
           </v-col>
@@ -71,7 +62,7 @@
                 <div>Travel Information</div>
               </template>
               <template #body>
-                <v-row v-if="!readonly">
+                <v-row>
                   <v-col class="d-flex justify-end">
                     <TravelPortModal
                       class="mr-5"
@@ -89,17 +80,14 @@
                   class="mx-5"
                 />
                 <RentalCarRequestTable
-                  :readonly="readonly"
                   :flight-requests="travelDeskTravelRequest.flightRequests"
                   :rental-cars="travelDeskTravelRequest.rentalCars"
                 />
                 <HotelRequestTable
-                  :readonly="readonly"
                   :flight-requests="travelDeskTravelRequest.flightRequests"
                   :hotels="travelDeskTravelRequest.hotels"
                 />
                 <TransportationRequestTable
-                  :readonly="readonly"
                   :other-transportations="travelDeskTravelRequest.otherTransportations"
                 />
               </template>
@@ -134,7 +122,6 @@
           @close="refresh"
         />
         <v-btn
-          v-if="!readonly"
           class="ml-2 mr-2 px-5"
           color="#005A65"
           :loading="isLoading"
@@ -142,7 +129,6 @@
           >Save Draft
         </v-btn>
         <v-btn
-          v-if="!readonly"
           class="mr-2 px-5"
           color="secondary"
           :loading="savingData"
@@ -151,7 +137,7 @@
         </v-btn>
 
         <v-btn
-          v-if="!readonly && travelDeskTravelRequest.invoiceNumber"
+          v-if="travelDeskTravelRequest.invoiceNumber"
           class="mr-5 px-5"
           color="#005A65"
           :loading="savingData"
@@ -169,7 +155,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, ref, toRefs } from "vue"
+import { nextTick, ref, toRefs } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep, isNil } from "lodash"
 
@@ -183,7 +169,6 @@ import useCurrentUser from "@/use/use-current-user"
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
@@ -218,9 +203,6 @@ const {
   save: saveTravelDeskTravelRequest,
 } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-const readonly = computed(
-  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
-)
 const savingData = ref(false)
 const travelDeskFlightRequestsManageCard = ref(null)
 
@@ -299,7 +281,7 @@ useBreadcrumbs([
   {
     text: "Request",
     to: {
-      name: "TravelDeskEditPage",
+      name: "TravelDeskReadPage",
       params: { travelDeskTravelRequestId: props.travelDeskTravelRequestId },
     },
   },

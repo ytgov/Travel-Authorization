@@ -44,6 +44,12 @@ const routes = [
             component: () => import("@/pages/TravelDeskPage.vue"),
           },
           {
+            name: "TravelDeskReadPage",
+            path: "travel-desk/:travelDeskTravelRequestId",
+            component: () => import("@/pages/travel-desk/TravelDeskReadPage.vue"),
+            props: true,
+          },
+          {
             name: "TravelDeskEditPage",
             path: "travel-desk/:travelDeskTravelRequestId/edit",
             component: () => import("@/pages/travel-desk/TravelDeskEditPage.vue"),
