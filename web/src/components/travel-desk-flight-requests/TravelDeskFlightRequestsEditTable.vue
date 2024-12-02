@@ -27,7 +27,7 @@
         title="Edit"
         icon
         color="blue"
-        @click="showEditDialog(item.id)"
+        @click.stop="showEditDialog(item.id)"
         ><v-icon>mdi-pencil</v-icon></v-btn
       >
       <v-btn
@@ -35,7 +35,7 @@
         title="Delete"
         icon
         color="red"
-        @click="deleteFlightRequest(item.id)"
+        @click.stop="deleteFlightRequest(item.id)"
         ><v-icon>mdi-close</v-icon></v-btn
       >
     </template>
