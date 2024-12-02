@@ -72,14 +72,12 @@
               large-title
             >
               <template #title>
-                <div>Travel Information</div>
+                <h3>Travel Information</h3>
               </template>
               <template #body>
-                <TravelDeskFlightRequestsTable
+                <TravelDeskFlightRequestsCard
                   :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                  :travel-authorization-id="travelDeskTravelRequest.travelAuthorizationId"
-                  show-flight-options
-                  class="mx-5"
+                  class="borderless-card"
                 />
                 <RentalCarRequestTable
                   readonly
@@ -139,7 +137,7 @@ import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialog
 import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
 
 import UserTravelDeskAgentSelect from "@/components/users/UserTravelDeskAgentSelect.vue"
-import TravelDeskFlightRequestsTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsTable.vue"
+import TravelDeskFlightRequestsCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsCard.vue"
 import TravelDeskInvoiceCard from "@/components/travel-desk-travel-requests/TravelDeskInvoiceCard.vue"
 import TravelDeskOtherTransportationsTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsTable.vue"
 import TravelDeskQuestionsCard from "@/components/travel-desk-questions/TravelDeskQuestionsCard.vue"
@@ -173,4 +171,9 @@ useBreadcrumbs([
 ])
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-card.borderless-card {
+  border: none !important;
+  box-shadow: none !important;
+}
+</style>

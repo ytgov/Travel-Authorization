@@ -23,25 +23,10 @@
               <div>Travel Information</div>
             </template>
             <template #body>
-              <TitleCard class="mt-5 mx-5">
-                <template #title>
-                  <div>Flight Request</div>
-                </template>
-                <template #body>
-                  <v-row
-                    class="mt-0"
-                    no-gutters
-                  >
-                    <v-col cols="12">
-                      <TravelDeskFlightRequestsTable
-                        :travel-desk-travel-request-id="travelDeskTravelRequestId"
-                        class="borderless-card"
-                      />
-                    </v-col>
-                  </v-row>
-                </template>
-              </TitleCard>
-
+              <TravelDeskFlightRequestsCard
+                class="borderless-card"
+                :travel-desk-travel-request-id="travelDeskTravelRequestId"
+              />
               <TravelDeskRentalCarsTable
                 :travel-desk-travel-request-id="travelDeskTravelRequestId"
               />
@@ -58,27 +43,20 @@
 </template>
 
 <script setup>
-import { toRefs } from "vue"
-
-import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
-
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
-import TravelDeskFlightRequestsTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsTable.vue"
+import TravelDeskFlightRequestsCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsCard.vue"
 import TravelDeskHotelsTable from "@/components/travel-desk-hotels/TravelDeskHotelsTable.vue"
 import TravelDeskOtherTransportationsTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsTable.vue"
 import TravelDeskRentalCarsTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsTable.vue"
 import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
 
-const props = defineProps({
+defineProps({
   travelDeskTravelRequestId: {
     type: Number,
     required: true,
   },
 })
-
-const { travelDeskTravelRequestId } = toRefs(props)
-const { travelDeskTravelRequest, isLoading } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 </script>
 
 <style scoped></style>
