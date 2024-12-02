@@ -10,16 +10,16 @@
           cols="12"
           md="6"
         >
-          <v-select
+          <v-text-field
             label="Preference"
-            :value="flightOption.flightPreferenceOrder"
-            :items="flightPreferences"
+            :value="flightPreferenceOrderText"
             :hint="
               flightOption.flightPreferenceOrder === DOES_NOT_WORK
                 ? 'Please see the Additional Information.'
                 : ''
             "
             persistent-hint
+            outlined
             readonly
           />
         </v-col>
@@ -29,7 +29,8 @@
         >
           <v-text-field
             label="Cost"
-            :value="`$ ${flightOption.cost}`"
+            :value="formatCurrency(flightOption.cost)"
+            outlined
             readonly
           />
         </v-col>
@@ -72,8 +73,8 @@
 
 <script setup>
 import { computed } from "vue"
-import { times } from "lodash"
 
+import formatCurrency from "@/utils/format-currency"
 import formatDate from "@/utils/format-date"
 import useTravelDeskFlightSegments from "@/use/use-travel-desk-flight-segments"
 
@@ -82,7 +83,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  optLen: {
+  numberOfFlightOptions: {
     type: Number,
     required: true,
   },
@@ -99,17 +100,10 @@ const { travelDeskFlightSegments, isLoading } = useTravelDeskFlightSegments(
 
 const DOES_NOT_WORK = 0
 
-const flightPreferences = computed(() => {
-  return [
-    {
-      value: DOES_NOT_WORK,
-      text: "Does Not Work",
-    },
-    ...times(props.optLen, (index) => ({
-      value: index + 1,
-      text: index + 1,
-    })),
-  ]
+const flightPreferenceOrderText = computed(() => {
+  return props.flightOption.flightPreferenceOrder === DOES_NOT_WORK
+    ? "Does Not Work"
+    : props.flightOption.flightPreferenceOrder
 })
 </script>
 

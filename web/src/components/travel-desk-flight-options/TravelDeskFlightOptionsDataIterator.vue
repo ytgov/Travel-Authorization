@@ -9,7 +9,7 @@
         v-for="item in items"
         :key="item.id"
         :flight-option="item"
-        :opt-len="totalCount"
+        :number-of-flight-options="totalCount"
         travel-desk-user
       />
     </template>
