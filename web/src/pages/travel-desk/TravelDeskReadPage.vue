@@ -160,7 +160,6 @@ useBreadcrumbs([
       name: "TravelDeskPage",
     },
   },
-  // TODO: Replace with read-only route once that exists.
   {
     text: "Request",
     to: {
