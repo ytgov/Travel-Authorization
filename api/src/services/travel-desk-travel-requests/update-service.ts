@@ -18,7 +18,22 @@ export class UpdateService extends BaseService {
       await this.travelDeskTravelRequest.update(this.attributes)
 
       return this.travelDeskTravelRequest.reload({
-        include: ["travelAuthorization"],
+        include: [
+          "flightRequests",
+          "hotels",
+          "otherTransportations",
+          "rentalCars",
+          {
+            association: "travelAuthorization",
+            include: [
+              "user",
+              {
+                association: "travelSegments",
+                include: ["departureLocation", "arrivalLocation"],
+              },
+            ],
+          },
+        ],
       })
     })
   }
