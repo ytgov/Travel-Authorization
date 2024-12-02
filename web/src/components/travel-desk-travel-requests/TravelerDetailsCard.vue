@@ -1,21 +1,16 @@
 <template>
-  <TitleCard
-    class="mt-10"
-    large-title
+  <v-skeleton-loader
+    v-if="isNil(travelDeskTravelRequest)"
+    type="card"
+  />
+  <v-card
+    v-else
+    :loading="isLoading"
   >
-    <template #title>
-      <div>Traveler Details</div>
-    </template>
-    <template
-      v-if="isLoading"
-      #body
-    >
-      <v-skeleton-loader type="card" />
-    </template>
-    <template
-      v-else
-      #body
-    >
+    <v-card-title>
+      <h3>Traveler Details</h3>
+    </v-card-title>
+    <v-card-text>
       <!--
         TODO: make this less ugly and hard to read.
         Vuetify 3 has a "text" variant that looks better than the "outlined" variant + lock icon.
@@ -255,16 +250,15 @@
           />
         </v-col>
       </v-row>
-    </template>
-  </TitleCard>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
 import { computed, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
-
-import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
