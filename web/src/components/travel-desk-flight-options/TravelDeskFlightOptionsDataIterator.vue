@@ -5,18 +5,13 @@
     hide-default-footer
   >
     <template #default="{ items }">
-      <v-row
+      <TravelDeskFlightOptionCard
         v-for="item in items"
         :key="item.id"
-      >
-        <v-col>
-          <TravelDeskFlightOptionCard
-            :flight-option="item"
-            :opt-len="totalCount"
-            travel-desk-user
-          />
-        </v-col>
-      </v-row>
+        :flight-option="item"
+        :opt-len="totalCount"
+        travel-desk-user
+      />
     </template>
   </v-data-iterator>
 </template>

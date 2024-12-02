@@ -9,7 +9,10 @@
     @click:row="(_, { item }) => expandItem(item.id)"
   >
     <template #expanded-item="{ headers: expandedItemHeaders, item }">
-      <td :colspan="expandedItemHeaders.length">
+      <td
+        :colspan="expandedItemHeaders.length"
+        class="pa-0"
+      >
         <TravelDeskFlightOptionsDataIterator
           :where="{
             flightRequestId: item.id,
