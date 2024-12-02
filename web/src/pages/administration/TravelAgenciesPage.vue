@@ -62,7 +62,7 @@ import { useSnack } from "@/plugins/snack-plugin"
 import travelDeskTravelAgenciesApi from "@/api/travel-desk-travel-agencies-api"
 import useTravelDeskTravelAgencies from "@/use/use-travel-desk-travel-agencies"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useRouteQuery from "@/use/use-route-query"
+import useRouteQuery from "@/use/utils/use-route-query"
 
 const headers = ref([
   { text: "Agency Name", value: "agencyName", class: "blue-grey lighten-4" },

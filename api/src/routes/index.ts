@@ -3,9 +3,10 @@ import { DatabaseError } from "sequelize"
 
 import logger from "@/utils/logger"
 import { GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
-import { databaseHealthCheckMiddleware, checkJwt, authorizationMiddleware } from "@/middleware"
+import { databaseHealthCheckMiddleware, jwtMiddleware, authorizationMiddleware } from "@/middleware"
 import { healthCheckRouter } from "@/routes/healthcheck-router"
 import {
+  CurrentUserController,
   Expenses,
   ExpensesController,
   GeneralLedgerCodingsController,
@@ -19,9 +20,12 @@ import {
   TravelAuthorizationPreApprovalsController,
   TravelAuthorizations,
   TravelAuthorizationsController,
+  TravelDeskFlightOptionsController,
   TravelDeskFlightRequestsController,
+  TravelDeskFlightSegmentsController,
   TravelDeskHotelsController,
   TravelDeskOtherTransportationsController,
+  TravelDeskQuestionsController,
   TravelDeskRentalCarsController,
   TravelDeskTravelAgenciesController,
   TravelDeskTravelRequests,
@@ -64,7 +68,7 @@ router.use("/api/lookup-tables", databaseHealthCheckMiddleware, lookupTableRoute
 //// END LEGACY ROUTES
 
 // api routes
-router.use("/api", databaseHealthCheckMiddleware, checkJwt, authorizationMiddleware)
+router.use("/api", databaseHealthCheckMiddleware, jwtMiddleware, authorizationMiddleware)
 
 //// START MORE LEGACY ROUTES
 router.use("/api/form", formRouter)
@@ -75,6 +79,8 @@ router.use("/api/traveldesk", travelDeskRouter)
 router.use("/api/travCom", travComRouter)
 router.use("/api/reconcile", reconcileRouter)
 //// END MORE LEGACY ROUTES
+
+router.route("/api/current-user").get(CurrentUserController.show)
 
 router.route("/api/expenses").get(ExpensesController.index).post(ExpensesController.create)
 router
@@ -138,13 +144,34 @@ router
   .post(TravelAuthorizations.Expenses.PrefillController.create)
 
 router
+  .route("/api/travel-desk-flight-options")
+  .get(TravelDeskFlightOptionsController.index)
+  .post(TravelDeskFlightOptionsController.create)
+router
+  .route("/api/travel-desk-flight-options/:travelDeskFlightOptionId")
+  .get(TravelDeskFlightOptionsController.show)
+  .patch(TravelDeskFlightOptionsController.update)
+  .delete(TravelDeskFlightOptionsController.destroy)
+
+router
   .route("/api/travel-desk-flight-requests")
   .get(TravelDeskFlightRequestsController.index)
   .post(TravelDeskFlightRequestsController.create)
 router
   .route("/api/travel-desk-flight-requests/:travelDeskFlightRequestId")
+  .get(TravelDeskFlightRequestsController.show)
   .patch(TravelDeskFlightRequestsController.update)
   .delete(TravelDeskFlightRequestsController.destroy)
+
+router
+  .route("/api/travel-desk-flight-segments")
+  .get(TravelDeskFlightSegmentsController.index)
+  .post(TravelDeskFlightSegmentsController.create)
+router
+  .route("/api/travel-desk-flight-segments/:travelDeskFlightSegmentId")
+  .get(TravelDeskFlightSegmentsController.show)
+  .patch(TravelDeskFlightSegmentsController.update)
+  .delete(TravelDeskFlightSegmentsController.destroy)
 
 router
   .route("/api/travel-desk-hotels")
@@ -163,6 +190,16 @@ router
   .route("/api/travel-desk-other-transportations/:travelDeskOtherTransportationId")
   .patch(TravelDeskOtherTransportationsController.update)
   .delete(TravelDeskOtherTransportationsController.destroy)
+
+router
+  .route("/api/travel-desk-questions")
+  .get(TravelDeskQuestionsController.index)
+  .post(TravelDeskQuestionsController.create)
+router
+  .route("/api/travel-desk-questions/:travelDeskQuestionId")
+  .get(TravelDeskQuestionsController.show)
+  .patch(TravelDeskQuestionsController.update)
+  .delete(TravelDeskQuestionsController.destroy)
 
 router
   .route("/api/travel-desk-rental-cars")
@@ -209,7 +246,7 @@ router
   .route("/api/travel-authorization-pre-approvals")
   .get(TravelAuthorizationPreApprovalsController.index)
 
-router.route("/api/users").post(UsersController.create)
+router.route("/api/users").get(UsersController.index).post(UsersController.create)
 router.route("/api/users/:userId").get(UsersController.show)
 router
   .route("/api/users/:userId/yg-government-directory-sync")

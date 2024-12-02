@@ -33,13 +33,15 @@ export type TravelDeskTravelRequestIndexView = Pick<
   | "updatedAt"
 > & {
   // extra fields
-  userDisplayName: string
-  department: string
   branch: string
-  travelStartDate: string
-  travelEndDate: string
+  department: string
+  isAssignedToCurrentUser: boolean
+  isBooked: boolean
   locationsTraveled: string
   requestedOptions: string
+  travelEndDate: string
+  travelStartDate: string
+  userDisplayName: string
 }
 
 export class IndexSerializer extends BaseSerializer<TravelDeskTravelRequest> {
@@ -56,6 +58,11 @@ export class IndexSerializer extends BaseSerializer<TravelDeskTravelRequest> {
 
     const department = this.travelAuthorizationUser.department ?? ""
     const branch = this.travelAuthorizationUser.branch ?? ""
+
+    // TODO: rework this using ids, once data model permits
+    const isAssignedToCurrentUser = this.record.travelDeskOfficer === this.currentUser.displayName
+    const isBooked = this.record.status === TravelDeskTravelRequest.Statuses.BOOKED
+
     const travelStartDate = this.determineStartDate(this.travelSegments)
     const travelEndDate = this.determineEndDate(
       this.travelSegments,
@@ -93,13 +100,15 @@ export class IndexSerializer extends BaseSerializer<TravelDeskTravelRequest> {
         "createdAt",
         "updatedAt",
       ]),
-      userDisplayName,
-      department,
       branch,
-      travelStartDate,
-      travelEndDate,
+      department,
+      isAssignedToCurrentUser,
+      isBooked,
       locationsTraveled,
       requestedOptions,
+      travelEndDate,
+      travelStartDate,
+      userDisplayName,
     }
   }
 

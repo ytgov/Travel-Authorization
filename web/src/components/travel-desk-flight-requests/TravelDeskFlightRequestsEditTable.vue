@@ -1,84 +1,90 @@
 <template>
-  <v-card
+  <v-data-table
+    :page.sync="page"
+    :items-per-page.sync="perPage"
+    :headers="headers"
+    :items="travelDeskFlightRequests"
     :loading="isLoading"
-    class="pt-1"
+    :server-items-length="totalCount"
+    disable-sort
+    v-bind="$attrs"
+    v-on="$listeners"
   >
-    <div class="d-flex justify-end pr-4">
-      <TravelDeskFlightRequestCreateDialog
-        :travel-desk-travel-request-id="travelDeskTravelRequestId"
+    <template #top>
+      <TravelDeskFlightRequestEditDialog
+        ref="travelDeskFlightRequestEditDialog"
         :min-date="minDate"
         :max-date="maxDate"
-        @created="refreshAndEmitUpdated"
+        @saved="emitUpdatedAndRefresh"
       />
-    </div>
-    <v-row class="mb-3 mx-0">
-      <v-col cols="12">
-        <v-data-table
-          :headers="headers"
-          :items="travelDeskFlightRequests"
-          :loading="isLoading"
-          hide-default-footer
-          class="elevation-1"
-        >
-          <template #top>
-            <TravelDeskFlightRequestEditDialog
-              ref="editDialog"
-              :min-date="minDate"
-              :max-date="maxDate"
-              @saved="refreshAndEmitUpdated"
-            />
-          </template>
-          <template #item.datePreference="{ value }">
-            {{ formatDate(value) }}
-          </template>
+    </template>
+    <template #item.datePreference="{ value }">
+      {{ formatDate(value) }}
+    </template>
 
-          <template #item.actions="{ item }">
-            <div class="d-flex justify-end">
-              <v-btn
-                title="Edit"
-                icon
-                color="blue"
-                @click="showEditDialog(item)"
-                ><v-icon>mdi-pencil</v-icon></v-btn
-              >
-              <v-btn
-                :loading="isLoading"
-                title="Delete"
-                icon
-                color="red"
-                @click="deleteFlightRequest(item)"
-                ><v-icon>mdi-close</v-icon></v-btn
-              >
-            </div>
-          </template>
-        </v-data-table>
-      </v-col>
-    </v-row>
-  </v-card>
+    <template #item.actions="{ item }">
+      <v-btn
+        title="Edit"
+        icon
+        color="blue"
+        @click.stop="showEditDialog(item.id)"
+        ><v-icon>mdi-pencil</v-icon></v-btn
+      >
+      <v-btn
+        :loading="isLoading"
+        title="Delete"
+        icon
+        color="red"
+        @click.stop="deleteFlightRequest(item.id)"
+        ><v-icon>mdi-close</v-icon></v-btn
+      >
+    </template>
+    <template
+      v-for="(_, slotName) in $scopedSlots"
+      #[slotName]="slotData"
+    >
+      <slot
+        :name="slotName"
+        v-bind="slotData"
+      ></slot>
+    </template>
+  </v-data-table>
 </template>
 
 <script setup>
-import { isNil, first, last } from "lodash"
-import { ref, computed, toRefs, watch } from "vue"
-import { useRoute } from "vue2-helpers/vue-router"
-import { DateTime } from "luxon"
+import { ref, computed } from "vue"
 
 import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
+import formatDate from "@/utils/format-date"
+
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
+
+import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useSnack from "@/use/use-snack"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
-import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
 import TravelDeskFlightRequestEditDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestEditDialog.vue"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
-  travelDeskTravelRequestId: {
-    type: Number,
-    required: true,
+  where: {
+    type: Object,
+    default: () => ({}),
   },
-  travelAuthorizationId: {
-    type: Number,
-    required: true,
+  filters: {
+    type: Object,
+    default: () => ({}),
+  },
+  routeQuerySuffix: {
+    type: String,
+    default: "",
+  },
+  minDate: {
+    type: String,
+    default: "",
+  },
+  maxDate: {
+    type: String,
+    default: "",
   },
 })
 
@@ -88,101 +94,79 @@ const headers = [
   {
     text: "Depart Location",
     value: "departLocation",
-    class: "blue-grey lighten-4",
-    sortable: false,
   },
   {
     text: "Arrive Location",
     value: "arriveLocation",
-    class: "blue-grey lighten-4",
-    sortable: false,
   },
-  { text: "Date", value: "datePreference", class: "blue-grey lighten-4" },
+  {
+    text: "Date",
+    value: "datePreference",
+  },
   {
     text: "Time Preference",
     value: "timePreference",
-    class: "blue-grey lighten-4",
-    sortable: false,
   },
   {
     text: "Seat Preference",
     value: "seatPreference",
-    class: "blue-grey lighten-4",
-    sortable: false,
   },
-  { text: "", value: "actions", class: "blue-grey lighten-4", width: "4rem", sortable: false },
+  {
+    text: "Actions",
+    value: "actions",
+    align: "end",
+  },
 ]
 
-const route = useRoute()
+const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
+  transform: integerTransformer,
+})
+const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, "5", {
+  transform: integerTransformer,
+})
 
 const travelDeskFlightRequestsQuery = computed(() => ({
-  where: {
-    travelRequestId: props.travelDeskTravelRequestId,
-  },
+  where: props.where,
+  filters: props.filters,
+  page: page.value,
+  perPage: perPage.value,
 }))
-const { travelDeskFlightRequests, isLoading, refresh } = useTravelDeskFlightRequests(
+const { travelDeskFlightRequests, totalCount, isLoading, refresh } = useTravelDeskFlightRequests(
   travelDeskFlightRequestsQuery
 )
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
-
-const firstTravelSegment = computed(() => first(travelAuthorization.value?.travelSegments))
-const lastTravelSegment = computed(() => last(travelAuthorization.value?.travelSegments))
-
-const minDate = computed(() => firstTravelSegment.value?.departureOn)
-const maxDate = computed(() => lastTravelSegment.value?.departureOn)
-
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestEditDialog> | null>} */
-const editDialog = ref(null)
+const travelDeskFlightRequestEditDialog = ref(null)
 
-function formatDate(date) {
-  return DateTime.fromISO(date).toFormat("MMM d yyyy")
+function showEditDialog(flightRequestId) {
+  travelDeskFlightRequestEditDialog.value?.show(flightRequestId)
 }
 
-function showEditDialog(flightRequest) {
-  editDialog.value?.show(flightRequest)
-}
+const isDeleting = ref(false)
+const snack = useSnack()
 
-function showEditDialogForRouteQuery() {
-  const flightRequestId = parseInt(route.query.showFlightRequestEdit)
-  if (isNaN(flightRequestId)) return
-
-  const flightRequest = travelDeskFlightRequests.value.find(
-    (flightRequest) => flightRequest.id === flightRequestId
-  )
-  if (isNil(flightRequest)) return
-
-  showEditDialog(flightRequest)
-}
-
-watch(
-  () => travelDeskFlightRequests.value,
-  (flightRequests) => {
-    if (flightRequests.length === 0) return
-
-    showEditDialogForRouteQuery()
-  }
-)
-
-async function deleteFlightRequest(flightRequest) {
+async function deleteFlightRequest(flightRequestId) {
   if (!blockedToTrueConfirm("Are you sure you want to remove this flight request?")) return
 
+  isDeleting.value = true
   try {
-    await travelDeskFlightRequestsApi.delete(flightRequest.id)
-    await refresh()
+    await travelDeskFlightRequestsApi.delete(flightRequestId)
+    snack.success("Flight request deleted successfully")
+    await emitUpdatedAndRefresh()
   } catch (error) {
     console.error(error)
+  } finally {
+    isDeleting.value = false
   }
 }
 
-function refreshAndEmitUpdated() {
-  refresh()
+async function emitUpdatedAndRefresh() {
   emit("updated")
+  await refresh()
 }
+
+defineExpose({
+  refresh,
+})
 </script>
 
-<style scoped>
-::v-deep .v-data-table > .v-data-table__wrapper tbody tr.v-data-table__expanded__content {
-  background: #f9f9f9 !important;
-}
-</style>
+<style scoped></style>

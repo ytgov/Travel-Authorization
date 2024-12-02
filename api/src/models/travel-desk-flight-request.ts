@@ -1,8 +1,5 @@
 import {
   Association,
-  BelongsToCreateAssociationMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
   ForeignKey,
@@ -14,6 +11,7 @@ import {
 
 import sequelize from "@/db/db-client"
 
+import TravelDeskFlightOption from "@/models/travel-desk-flight-option"
 import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 
 /**
@@ -57,13 +55,6 @@ export class TravelDeskFlightRequest extends Model<
   declare deletedAt: CreationOptional<Date | null>
 
   // Associations
-  declare getTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
-  declare setTravelRequest: BelongsToSetAssociationMixin<
-    TravelDeskTravelRequest,
-    TravelDeskTravelRequest["id"]
-  >
-  declare createTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
-
   declare travelRequest: NonAttribute<TravelDeskTravelRequest>
 
   declare static associations: {
@@ -74,6 +65,10 @@ export class TravelDeskFlightRequest extends Model<
     this.belongsTo(TravelDeskTravelRequest, {
       as: "travelRequest",
       foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskFlightOption, {
+      as: "flightOptions",
+      foreignKey: "flightRequestId",
     })
   }
 }

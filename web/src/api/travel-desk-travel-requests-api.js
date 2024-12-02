@@ -74,14 +74,19 @@ export const TRAVEL_DESK_TRAVEL_REQUEST_STATUSES = Object.freeze({
  * }} TravelDeskTravelRequestFiltersOptions
  */
 
+/**
+ * @typedef {{
+ *   where?: TravelDeskTravelRequestWhereOptions;
+ *   filters?: TravelDeskTravelRequestFiltersOptions;
+ *   order?: ModelOrder[];
+ *   page?: number;
+ *   perPage?: number
+ * }} TravelDeskTravelRequestQueryOptions
+ */
+
 export const travelDeskTravelRequestsApi = {
   /**
-   * @param {{
-   *   where?: TravelDeskTravelRequestWhereOptions;
-   *   filters?: TravelDeskTravelRequestFiltersOptions;
-   *   page?: number;
-   *   perPage?: number
-   * }} [params={}]
+   * @param {TravelDeskTravelRequestQueryOptions} [params={}]
    * @returns {Promise<{
    *   travelDeskTravelRequests: TravelDeskTravelRequestIndexView[];
    *   totalCount: number;

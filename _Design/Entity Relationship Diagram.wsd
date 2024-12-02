@@ -2,10 +2,10 @@
 top to bottom direction
 
 note as Disclaimer
-Diagram generated with the assistance from ChatGPT - may contain errors
+Diagram generated with the assistance of Cascade AI coding assistant - may contain errors
 PlantUML URL: https://plantuml.com/ie-diagram
-Last Updated: 2023-11-22
-This diagram may be out of date and should be verified against the current database schema.
+Last Updated: 2024-11-29
+This diagram should be verified against the current database schema for accuracy.
 end note
 
 entity "auditHistory" {
@@ -21,9 +21,9 @@ entity "auditHistory" {
 entity "departments" {
   * id : serial4
   --
-  name : varchar(255)
-  type : varchar(255)
-  ownedBy : int4
+  * name : varchar(255)
+  * type : varchar(255)
+  * ownedBy : int4
 }
 
 entity "distanceMatrix" {
@@ -60,10 +60,21 @@ entity "expenses" {
 entity "flightReconciliation" {
   * reconcileID : serial4
   --
-  invoiceID : int4
-  invoiceDetailID : int4
+  * invoiceID : int4
+  * invoiceDetailID : int4 <<UNIQUE>>
   reconciled : bool
   reconcilePeriod : int4
+}
+
+entity "general_ledger_codings" {
+  * id : serial4
+  --
+  * travel_authorization_id : int4
+  --
+  * code : varchar(26)
+  * amount : float4
+  * created_at : timestamptz
+  * updated_at : timestamptz
 }
 
 entity "knex_migrations" {
@@ -92,10 +103,15 @@ entity "locations" {
 entity "per_diems" {
   * id : serial4
   --
-  claim_type : varchar(255)
-  travel_region : varchar(255)
-  amount : float4
-  currency : varchar(255)
+  * claim_type : varchar(255)
+  * travel_region : varchar(255)
+  * amount : float4
+  * currency : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
+  --
+  UNIQUE(claim_type, travel_region, currency) WHERE deleted_at IS NULL
 }
 
 entity "preapprovedDocuments" {
@@ -116,27 +132,16 @@ entity "preapprovedSubmissions" {
   department : varchar(255)
 }
 
-entity "travel_authorization_pre_approval_profiles" {
-  * id : serial4 <<PK>>
-  --
-  * pre_approval_id : int4 <<FK>>
-  * profile_name : varchar(255)
-  * department : varchar(255)
-  branch : varchar(255)
-  created_at: timestamptz
-  updated_at: timestamptz
-  deleted_at: timestamptz
-}
-
 entity "roles" {
   * id : serial4
   --
-  name : varchar(255)
+  * name : varchar(255)
   * created_at : timestamptz
   * updated_at : timestamptz
   deleted_at : timestamptz
+  --
+  UNIQUE(name) WHERE deleted_at IS NULL
 }
-
 
 entity "StatisticsProgress" {
   * id : serial4
@@ -191,6 +196,8 @@ entity "travel_allowances" {
   * created_at : timestamptz
   * updated_at : timestamptz
   deleted_at : timestamptz
+  --
+  UNIQUE(allowance_type, currency) WHERE deleted_at IS NULL
 }
 
 entity "travel_authorization_action_logs" {
@@ -205,11 +212,22 @@ entity "travel_authorization_action_logs" {
   updated_at : timestamptz
 }
 
+entity "travel_authorization_pre_approval_profiles" {
+  * id : serial4 <<PK>>
+  --
+  * pre_approval_id : int4 <<FK>>
+  * profile_name : varchar(255)
+  * department : varchar(255)
+  branch : varchar(255)
+  created_at: timestamptz
+  updated_at: timestamptz
+  deleted_at: timestamptz
+}
 
 entity "travel_authorization_pre_approvals" {
   * id : int <<PK>>
   --
-  * submission_id : int <<FK>>
+  submission_id : int <<FK>>
   * estimated_cost : int
   * is_open_for_any_date : bool
   * is_open_for_any_traveler : bool
@@ -231,8 +249,12 @@ entity "travel_authorization_pre_approvals" {
 entity "travel_authorizations" {
   * id : int4
   --
-  pre_approval_id : int4 <<FK>>
-  user_id : int4
+  * user_id : int4 <<FK>>
+  pre_approval_profile_id : int4 <<FK>>
+  purpose_id : int4 <<FK>>
+  --
+  * slug : varchar(255) <<UNIQUE>>
+  * step_number : int4
   first_name : varchar(255)
   last_name : varchar(255)
   department : varchar(255)
@@ -249,35 +271,36 @@ entity "travel_authorizations" {
   summary : varchar(255)
   benefits : varchar(255)
   status : varchar(255)
-  slug : varchar(255)
   supervisor_email : varchar(255)
   request_change : varchar(255)
-  denial_reason : varchar(255)
+  denial_reason : varchar(2000)
   one_way_trip : bool
   multi_stop : bool
   created_by : int4
-  purpose_id : int4
   travel_advance_in_cents : int4
   all_travel_within_territory : bool
-  created_at : timestamptz
-  updated_at : timestamptz
+  * created_at : timestamptz
+  * updated_at : timestamptz
 }
 
 entity "travel_desk_passenger_name_record_documents" {
   * id : serial4
   --
-  travel_desk_travel_request_id : int4
+  * travel_desk_travel_request_id : int4 <<FK>>
+  --
   pnr_document : bytea
   invoice_number : varchar(255)
-  created_at : timestamptz
-  updated_at : timestamptz
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_travel_requests" {
-  * id : <<PK>> serial4
+  * id : serial4 <<PK>>
   --
-  * travel_authorization_id : <<FK>> int4
-  travel_agency_id :  <<FK>> int4
+  * travel_authorization_id : int4 <<FK>> <<UNIQUE>>
+  travel_agency_id : int4 <<FK>>
+  --
   * bus_email : varchar(255)
   * bus_phone : varchar(255)
   * city : varchar(255)
@@ -288,37 +311,44 @@ entity "travel_desk_travel_requests" {
   * status : varchar(255)
   * str_address : varchar(255)
   * travel_purpose : varchar(255)
-  legal_middle_name : varchar(255)
+  * is_international_travel : bool
+  additional_information : varchar(255)
   birth_date : varchar(255)
+  legal_middle_name : varchar(255)
   passport_country : varchar(255)
   passport_num : varchar(255)
+  travel_contact : bool
+  travel_desk_officer : varchar(255)
+  travel_email : varchar(255)
   travel_location : varchar(255)
   travel_notes : varchar(255)
-  travel_contact : bool
   travel_phone : varchar(255)
-  travel_email : varchar(255)
-  additional_information : varchar(255)
-  travel_desk_officer : varchar(255)
   * created_at : timestamptz
   * updated_at : timestamptz
 }
 
 entity "travel_purposes" {
-  * id : serial4
+  * id : serial4 <<PK>>
   --
-  purpose : varchar(255)
-  created_at : timestamptz
-  updated_at : timestamptz
+  * purpose : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
-entity "travelDeskFlightOption" {
-  * flightOptionID : serial4
+entity "travel_desk_flight_options" {
+  * id : serial4 <<PK>>
   --
-  flightRequestID : int4
-  cost : varchar(255)
-  flightPreference : varchar(255)
-  leg : varchar(255)
-  duration : varchar(255)
+  * flight_request_id : int4 <<FK>>
+  * traveler_id : int4 <<FK>>
+  --
+  *cost : varchar(255)
+  * leg : varchar(255)
+  * duration : varchar(255)
+  flight_preference_order : int4
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_flight_requests" {
@@ -335,25 +365,30 @@ entity "travel_desk_flight_requests" {
   deleted_at : timestamptz
 }
 
-entity "travelDeskFlightSegment" {
-  * id : serial4
+entity "travel_desk_flight_segments" {
+  * id : serial4 <<PK>>
   --
-  flightNumber : varchar(255)
-  departDate : timestamptz
-  departLocation : varchar(255)
-  arriveDate : timestamptz
-  arriveLocation : varchar(255)
-  duration : varchar(255)
-  status : varchar(255)
-  class : varchar(255)
-  sortOrder : int4
-  flightOptionID : int4
+  * flight_option_id : int4 <<FK>>
+  --
+  * flight_number : varchar(255)
+  * depart_at : timestamptz
+  * depart_location : varchar(255)
+  * arrive_at : timestamptz
+  * arrive_location : varchar(255)
+  * duration : varchar(255)
+  * status : varchar(255)
+  * class : varchar(255)
+  sort_order : int4 - default 1
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_hotels" {
   * id : serial4 <<PK>>
   --
   * travel_request_id : int4 <<FK>>
+  --
   * city : varchar(255)
   * is_dedicated_conference_hotel_available : bool
   * conference_name : varchar(255)
@@ -364,12 +399,16 @@ entity "travel_desk_hotels" {
   additional_information : varchar(255)
   reserved_hotel_info : varchar(255)
   booking : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_other_transportations" {
   * id : serial4 <<PK>>
   --
   * travel_request_id : int4 <<FK>>
+  --
   * depart : varchar(255)
   * arrive : varchar(255)
   * transportation_type : varchar(255)
@@ -378,16 +417,20 @@ entity "travel_desk_other_transportations" {
   additional_notes : varchar(255)
   reserved_transportation_info : varchar(255)
   booking : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
+  deleted_at : timestamptz
 }
 
 entity "travel_desk_questions" {
   * id : serial4 <<PK>>
   --
   * travel_request_id : int4 <<FK>>
+  --
   * request_type : varchar(255)
   * question : varchar(255)
   response : varchar(255)
-  * creating_at : timestamptz
+  * created_at : timestamptz
   * updated_at : timestamptz
   deleted_at : timestamptz
 }
@@ -396,10 +439,10 @@ entity "travel_desk_rental_cars" {
   * id : serial4 <<PK>>
   --
   * travel_request_id : int4 <<FK>>
+  --
   * pick_up_city : varchar(255)
   * pick_up_location : varchar(255)
   * vehicle_type : varchar(255)
-  * vehicle_change_rationale : varchar(255)
   * pick_up_date : timestamptz
   * drop_off_date : timestamptz
   * status : varchar(255)
@@ -410,11 +453,12 @@ entity "travel_desk_rental_cars" {
   same_drop_off_location : bool
   match_flight_times : bool
   vehicle_type_change_indicator : varchar(255)
+  vehicle_change_rationale : varchar(255)
   additional_notes : varchar(255)
   reserved_vehicle_info : varchar(255)
   booking : varchar(255)
-  created_at : timestamptz
-  updated_at : timestamptz
+  * created_at : timestamptz
+  * updated_at : timestamptz
   deleted_at : timestamptz
 }
 
@@ -423,6 +467,24 @@ entity "travel_desk_travel_agencies" {
   --
   * agency_name : varchar(255)
   agency_info : text
+}
+
+entity "travel_segments" {
+  * id : serial4
+  --
+  * travel_authorization_id : int4
+  departure_location_id : int4
+  arrival_location_id : int4
+  --
+  * segment_number : int4
+  departure_on : date
+  departure_time : varchar(255)
+  mode_of_transport : varchar(255)
+  mode_of_transport_other : varchar(255)
+  accommodation_type : varchar(255)
+  accommodation_type_other : varchar(255)
+  * created_at : timestamptz
+  * updated_at : timestamptz
 }
 
 entity "tripReports" {
@@ -503,24 +565,30 @@ entity "YgEmployees" {
 expenses .. per_diems : estimates generation
 expenses .. travel_allowances : estimates generation
 expenses::travel_authorization_id ||--o{ travel_authorizations::id
+general_ledger_codings::travel_authorization_id ||--o{ travel_authorizations::id
 preapprovedSubmissions::preTSubID }o--o| preapprovedDocuments::preTSubID
 stops::travel_authorization_id }o--|| travel_authorizations::id
 travel_authorization_action_logs::actor_id ||--o{ users::id
 travel_authorization_action_logs::assignee_id ||--o{ users::id
 travel_authorization_action_logs::travel_authorization_id ||--o{ travel_authorizations::id
 travel_authorization_pre_approval_profiles::pre_approval_id ||--o{ travel_authorization_pre_approvals::id
-travel_authorization_pre_approvals::submission_id ||--o{ preapprovedSubmissions::preTSubID
-travel_authorizations::pre_approval_id |o--o{ travel_authorization_pre_approvals::id
+travel_authorization_pre_approvals::submission_id |o--o{ preapprovedSubmissions::preTSubID
+travel_authorizations::pre_approval_profile_id |o--o{ travel_authorization_pre_approval_profiles::id
 travel_authorizations::purpose_id ||--o{ travel_purposes::id
+travel_desk_flight_options::id }o--|| travel_desk_flight_segments::flight_option_id
+travel_desk_flight_requests::id }o--|| travel_desk_flight_options::flight_request_id
 travel_desk_hotels::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_other_transportations::travel_request_id ||--o{ travel_desk_travel_requests::id
-travel_desk_passenger_name_record_documents }o--|| travel_desk_travel_requests
-travel_desk_rental_cars::travel_request_id }o--|| travel_desk_travel_requests::id
+travel_desk_passenger_name_record_documents::travel_desk_travel_request_id ||--o{ travel_desk_travel_requests::id
+travel_desk_rental_cars::travel_request_id ||--o{ travel_desk_travel_requests::id
 travel_desk_travel_requests::id }o--|| travel_desk_flight_requests::travel_request_id
 travel_desk_travel_requests::id }o--|| travel_desk_questions::travel_request_id
 travel_desk_travel_requests::travel_agency_id |o--o{ travel_desk_travel_agencies::id
 travel_desk_travel_requests::travel_authorization_id ||--o{ travel_authorizations::id
-travelDeskFlightOption::flightRequestID ||--o{ travel_desk_flight_requests::id
-travelDeskFlightSegment }o--|| travelDeskFlightOption
+travel_segments::arrival_location_id |o--o{ locations::id
+travel_segments::departure_location_id |o--o{ locations::id
+travel_segments::travel_authorization_id ||--o{ travel_authorizations::id
 users::roles }o..o{ roles::name
+users::id }o--|| travel_desk_flight_options::traveler_id
+users::id }o--|| travel_authorizations::user_id
 @enduml

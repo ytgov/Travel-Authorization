@@ -11,19 +11,13 @@ export { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES }
  * @typedef {import('vue').Ref<T>} Ref
  */
 /** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestIndexView} TravelDeskTravelRequestIndexView */
-/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestWhereOptions} TravelDeskTravelRequestWhereOptions */
-/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestFiltersOptions} TravelDeskTravelRequestFiltersOptions */
+/** @typedef {import('@/api/travel-desk-travel-requests-api.js').TravelDeskTravelRequestQueryOptions} TravelDeskTravelRequestQueryOptions */
 
 /**
  * Provides reactive state management for travel allowances with API integration.
  *
  * @callback UseTravelDeskTravelRequests
- * @param {Ref<{
- *   where?: TravelDeskTravelRequestWhereOptions;
- *   filters?: TravelDeskTravelRequestFiltersOptions;
- *   page?: number;
- *   perPage?: number
- * }>} [options=ref({})] - Configuration options containing filters and pagination settings for fetching travel allowances.
+ * @param {Ref<TravelDeskTravelRequestQueryOptions>} [options=ref({})] - Configuration options containing filters and pagination settings for fetching travel allowances.
  * @param {{
  *  skipWatchIf?: () => boolean;
  * }} [config={ skipWatchIf = () => false } = {}] - Configuration to conditionally skip API calls.

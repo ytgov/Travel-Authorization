@@ -5,8 +5,8 @@
         cols="12"
         md="2"
       >
-        <VReadonlyLocationTextField
-          :value="stop1.locationId"
+        <LocationReadonlyTextField
+          :location-id="stop1.locationId"
           label="From"
           dense
           outlined
@@ -17,8 +17,8 @@
         cols="12"
         md="2"
       >
-        <VReadonlyLocationTextField
-          :value="stop2.locationId"
+        <LocationReadonlyTextField
+          :location-id="stop2.locationId"
           label="To"
           dense
           outlined
@@ -83,8 +83,8 @@
         cols="12"
         md="2"
       >
-        <VReadonlyLocationTextField
-          :value="stop2.locationId"
+        <LocationReadonlyTextField
+          :location-id="stop2.locationId"
           label="To"
           dense
           outlined
@@ -95,8 +95,8 @@
         cols="12"
         md="2"
       >
-        <VReadonlyLocationTextField
-          :value="stop3.locationId"
+        <LocationReadonlyTextField
+          :location-id="stop3.locationId"
           label="From"
           dense
           outlined
@@ -161,8 +161,8 @@
         cols="12"
         md="2"
       >
-        <VReadonlyLocationTextField
-          :value="stop3.locationId"
+        <LocationReadonlyTextField
+          :location-id="stop3.locationId"
           label="From"
           dense
           outlined
@@ -173,8 +173,8 @@
         cols="12"
         md="2"
       >
-        <VReadonlyLocationTextField
-          :value="stop4.locationId"
+        <LocationReadonlyTextField
+          :location-id="stop4.locationId"
           label="To"
           dense
           outlined
@@ -242,7 +242,7 @@ import { toRefs, computed } from "vue"
 
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField"
+import LocationReadonlyTextField from "@/components/locations/LocationReadonlyTextField.vue"
 
 const props = defineProps({
   travelAuthorizationId: {

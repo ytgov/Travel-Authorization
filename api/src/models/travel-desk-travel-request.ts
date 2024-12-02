@@ -5,10 +5,12 @@ import {
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
+  literal,
   Model,
   NonAttribute,
 } from "sequelize"
 import { isNil } from "lodash"
+import minify from "pg-minify"
 
 import sequelize from "@/db/db-client"
 
@@ -296,6 +298,47 @@ TravelDeskTravelRequest.init(
           (!isNil(this.travelPhone) || !isNil(this.travelEmail))
         ) {
           throw new Error("Travel phone and email are only permitted if travel contact is true")
+        }
+      },
+    },
+    scopes: {
+      includeIsBookedAttribute() {
+        const isBookedQuery = minify(/* sql */ `
+          CASE
+            WHEN "status" = '${TravelDeskTravelRequest.Statuses.BOOKED}' THEN 1
+            ELSE 0
+          END
+        `)
+        return {
+          attributes: {
+            include: [[literal(isBookedQuery), "isBooked"]],
+          },
+        }
+      },
+      // TODO: rewrite with ids once data model supports it
+      includeIsAssignedToCurrentUserAttribute(currentUserDisplayName: string) {
+        const isAssignedToCurrentUserQuery = minify(/* sql */ `
+          CASE
+            WHEN "travel_desk_officer" = '${currentUserDisplayName}' THEN 1
+            ELSE 0
+          END
+        `)
+        return {
+          attributes: {
+            include: [[literal(isAssignedToCurrentUserQuery), "isAssignedToCurrentUser"]],
+          },
+        }
+      },
+      includeTravelStartDateAttribute() {
+        const travelStartDateQuery = minify(/* sql */ `(
+          SELECT MIN("departure_on")
+          FROM "travel_segments"
+          WHERE "travel_segments"."travel_authorization_id" = "TravelDeskTravelRequest"."travel_authorization_id"
+        )`)
+        return {
+          attributes: {
+            include: [[literal(travelStartDateQuery), "travelStartDate"]],
+          },
         }
       },
     },

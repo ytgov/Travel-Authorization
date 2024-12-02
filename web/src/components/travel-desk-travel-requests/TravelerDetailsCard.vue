@@ -242,9 +242,7 @@
           />
         </v-col>
       </v-row>
-      <v-row
-        class="mt-0 mx-3"
-      >
+      <v-row class="mt-0 mx-3">
         <v-col cols="12">
           <v-textarea
             :value="travelDeskTravelRequest?.additionalInformation"

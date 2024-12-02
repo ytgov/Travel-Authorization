@@ -23,7 +23,10 @@ import useTravelDeskTravelRequests, {
 } from "@/use/use-travel-desk-travel-requests"
 
 const props = defineProps({
-  travelDeskTravelRequestIds: Array,
+  travelDeskTravelRequestIds: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const { t } = useI18n()

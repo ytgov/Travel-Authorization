@@ -1,12 +1,16 @@
 import { NextFunction, Request, Response } from "express"
-import { Attributes, Model, WhereOptions } from "sequelize"
-import { isEmpty } from "lodash"
+import { Attributes, col, Model, Order, WhereOptions } from "sequelize"
+import { type Col } from "sequelize/lib/utils"
+import { isEmpty, isNil } from "lodash"
 
 import { AuthorizedRequest } from "@/middleware/authorization-middleware"
 import User from "@/models/user"
 import { type BaseScopeOptions } from "@/policies"
 
 export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | "destroy"
+
+/** Keep in sync with web/src/api/base-api.ts */
+export type ModelOrder = Order & [string, string]
 
 // Keep in sync with web/src/api/base-api.ts
 const MAX_PER_PAGE = 1000
@@ -198,12 +202,39 @@ export class BaseController<TModel extends Model = never> {
     return scopes
   }
 
+  buildOrder(
+    overridableOrder: ModelOrder[] = [],
+    nonOverridableOrder: ModelOrder[] = []
+  ): [Col, string][] | undefined {
+    const orderQuery = this.query.order as unknown as ModelOrder[] | undefined
+
+    if (isNil(orderQuery)) {
+      const rawOrder = [...nonOverridableOrder, ...overridableOrder]
+      const orderAsColumns = this.columnifyOrderings(rawOrder)
+      return orderAsColumns
+    }
+
+    const rawOrder = [...nonOverridableOrder, ...orderQuery, ...overridableOrder]
+    const orderAsColumns = this.columnifyOrderings(rawOrder)
+    return orderAsColumns
+  }
+
   private determineLimit(perPage: number) {
     if (perPage === MAX_PER_PAGE_EQUIVALENT) {
       return MAX_PER_PAGE
     }
 
     return Math.max(1, Math.min(perPage, MAX_PER_PAGE))
+  }
+
+  private columnifyOrderings(orderings: ModelOrder[]) {
+    return orderings.map<[Col, string]>(([column, order]) => {
+      if (typeof column === "string") {
+        return [col(column), order]
+      }
+
+      return [column, order]
+    })
   }
 }
 

@@ -20,8 +20,8 @@
         cols="12"
         md="2"
       >
-        <VReadonlyLocationTextField
-          :value="finalDestination.locationId"
+        <LocationReadonlyTextField
+          :location-id="finalDestination.locationId"
           label="Final Destination"
           dense
           outlined
@@ -66,7 +66,7 @@ import { MAX_PER_PAGE } from "@/api/base-api"
 import useTravelPurposes from "@/use/use-travel-purposes"
 import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
-import VReadonlyLocationTextField from "@/components/VReadonlyLocationTextField.vue"
+import LocationReadonlyTextField from "@/components/locations/LocationReadonlyTextField.vue"
 
 const props = defineProps({
   travelAuthorizationId: {

@@ -99,7 +99,7 @@
                           <b>Departure:</b>
                         </td>
                         <td style="width: 21%">
-                          {{ flightSegment.departDate | beautifyDateTime }}
+                          {{ flightSegment.departAt | beautifyDateTime }}
                         </td>
                         <td style="width: 66%">{{ flightSegment.departLocation }}</td>
                       </tr>
@@ -111,7 +111,7 @@
                           <b>Arrival:</b>
                         </td>
                         <td style="width: 21%">
-                          {{ flightSegment.arriveDate | beautifyDateTime }}
+                          {{ flightSegment.arriveAt | beautifyDateTime }}
                         </td>
                         <td style="width: 66%">{{ flightSegment.arriveLocation }}</td>
                       </tr>

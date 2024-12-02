@@ -81,7 +81,7 @@ import { required } from "@/utils/validators"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import travelAuthorizationApi from "@/api/travel-authorizations-api"
-import useRouteQuery from "@/use/use-route-query"
+import useRouteQuery from "@/use/utils/use-route-query"
 
 import SearchableUserEmailCombobox from "@/components/users/UserEmailSearchableCombobox.vue"
 

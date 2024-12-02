@@ -8,27 +8,11 @@
       <h4 class="text-h6">Travel Information</h4>
     </v-card-title>
     <v-card-text>
-      <TitleCard class="mt-5">
-        <template #title>
-          <div>Flight Request</div>
-        </template>
-        <template #body>
-          <v-row
-            class="mt-0"
-            no-gutters
-          >
-            <v-col cols="12">
-              <TravelDeskFlightRequestsEditTable
-                :travel-desk-travel-request-id="travelDeskTravelRequestId"
-                :travel-authorization-id="travelAuthorizationId"
-                class="borderless-card"
-                @updated="refreshTablesUsingFlightInfo"
-              />
-            </v-col>
-          </v-row>
-        </template>
-      </TitleCard>
-
+      <TravelDeskFlightRequestsEditCard
+        :travel-desk-travel-request-id="travelDeskTravelRequestId"
+        :travel-authorization-id="travelAuthorizationId"
+        @updated="refreshTablesUsingFlightInfo"
+      />
       <TravelDeskRentalCarsEditTable
         ref="travelDeskRentalCarsEditTable"
         :travel-desk-travel-request-id="travelDeskTravelRequestId"
@@ -53,9 +37,7 @@ import { isNil } from "lodash"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
-import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-
-import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
+import TravelDeskFlightRequestsEditCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditCard.vue"
 import TravelDeskHotelsEditTable from "@/components/travel-desk-hotels/TravelDeskHotelsEditTable.vue"
 import TravelDeskOtherTransportationsEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsEditTable.vue"
 import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
