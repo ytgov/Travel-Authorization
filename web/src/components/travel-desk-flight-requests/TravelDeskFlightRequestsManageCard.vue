@@ -22,7 +22,7 @@
         route-query-suffix="TravelDeskFlightRequest"
         :min-date="minDate"
         :max-date="maxDate"
-        v-bind="$attrs"
+        :show-flight-options="showFlightOptions"
         @updated="emit('updated')"
       />
     </v-card-text>
@@ -46,6 +46,10 @@ const props = defineProps({
   travelAuthorizationId: {
     type: Number,
     required: true,
+  },
+  showFlightOptions: {
+    type: Boolean,
+    default: false,
   },
 })
 

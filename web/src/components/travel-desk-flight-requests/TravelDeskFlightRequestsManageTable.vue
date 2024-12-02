@@ -32,7 +32,7 @@ import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import TravelDeskFlightOptionsDataIterator from "@/components/travel-desk-flight-options/TravelDeskFlightOptionsDataIterator.vue"
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
 
-defineProps({
+const props = defineProps({
   showFlightOptions: {
     type: Boolean,
     default: false,
@@ -44,6 +44,8 @@ const expandTravelDeskFlightRequest = useRouteQuery("expandTravelDeskFlightReque
 })
 
 function expandItem(travelDeskFlightRequestId) {
+  if (props.showFlightOptions !== true) return
+
   if (travelDeskFlightRequestId === expandTravelDeskFlightRequest.value) {
     expandTravelDeskFlightRequest.value = undefined
   } else {
