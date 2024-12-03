@@ -27,7 +27,7 @@
           block
         >
           <v-icon left>mdi-pencil</v-icon>
-          Manage Flight Options (Travel Portal)
+          Manage Flight Options - Travelport&trade;
         </v-btn>
         <TravelDeskFlightOptionsDataIterator
           :where="{

@@ -30,7 +30,7 @@
               },
             }"
           >
-            Manage Flight Options (Travel Portal)
+            Manage Flight Options - Travelport&trade;
           </v-btn>
         </v-card-title>
 
