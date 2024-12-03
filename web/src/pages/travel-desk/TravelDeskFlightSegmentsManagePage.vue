@@ -28,6 +28,11 @@
             <v-card class="mt-5">
               <v-card-title><h3>Cost and Group Segments</h3></v-card-title>
               <v-card-text>
+                <TravelDeskFlightSegmentsWorkspaceCard
+                  v-model="travelDeskFlightSegmentsAttributes"
+                  :travel-desk-flight-options.sync="travelDeskFlightOptionsAttributes"
+                  :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"
+                />
                 <FlightSegmentsTable
                   :flight-segments="travelDeskFlightSegmentsAttributes"
                   :flight-options="travelDeskFlightOptions"
@@ -108,6 +113,7 @@ import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 import FlightSegmentsTable from "@/modules/travelDesk/views/Desk/Components/FlightSegmentsTable.vue"
 import FlightOptionsTable from "@/modules/travelDesk/views/Desk/Components/FlightOptionsTable.vue"
 import TravelDeskFlightSegmentsImporterCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsImporterCard.vue"
+import TravelDeskFlightSegmentsWorkspaceCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsWorkspaceCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -115,6 +121,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const travelDeskTravelRequestIdAsNumber = computed(() => parseInt(props.travelDeskTravelRequestId))
 
 const travelDeskFlightRequestsQuery = computed(() => ({
   where: {
@@ -138,6 +146,7 @@ const legs = computed(() =>
 const rawPortalText = ref("")
 const flightText = ref({})
 const travelDeskFlightSegmentsAttributes = ref([])
+const travelDeskFlightOptionsAttributes = ref([])
 
 function buildFlightRequestDescription(travelDeskFlightRequest) {
   if (isNil(travelDeskFlightRequest)) {
