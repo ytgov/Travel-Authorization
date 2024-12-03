@@ -14,6 +14,21 @@
         :colspan="expandedItemHeaders.length"
         class="pa-0"
       >
+        <v-btn
+          :to="{
+            name: 'TravelDeskFlightOptionsEditPage',
+            params: {
+              travelDeskTravelRequestId: item.travelRequestId,
+              travelDeskFlightRequestId: item.id,
+            },
+          }"
+          class="ma-0"
+          color="blue"
+          block
+        >
+          <v-icon left>mdi-pencil</v-icon>
+          Manage Flight Options (Travel Portal)
+        </v-btn>
         <TravelDeskFlightOptionsDataIterator
           :where="{
             flightRequestId: item.id,
