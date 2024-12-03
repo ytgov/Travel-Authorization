@@ -4,13 +4,21 @@
       <v-card-title class="d-flex justify-space-between align-center">
         <h2>Manage Groups/Flight Options</h2>
         <v-btn
-          color="secondary"
+          :to="{
+            name: 'TravelDeskEditPage',
+            params: {
+              travelDeskTravelRequestId,
+            },
+          }"
           :loading="isLoading"
-          @click="closeModal"
+          color="secondary"
         >
           Back
         </v-btn>
       </v-card-title>
+      <v-card-subtitle class="subtitle-1">
+        For Flight Request: {{ buildFlightRequestDescription(travelDeskFlightRequest) }}
+      </v-card-subtitle>
       <v-card-text>
         <v-row class="mt-5">
           <v-col>
@@ -38,13 +46,18 @@
                 />
                 <v-card-actions>
                   <v-btn
+                    :to="{
+                      name: 'TravelDeskEditPage',
+                      params: {
+                        travelDeskTravelRequestId,
+                      },
+                    }"
                     class="ml-3 mr-2 my-5 px-3 py-4"
                     style="min-width: 0"
                     color="grey darken-1"
                     :loading="isLoading"
                     small
-                    @click="closeModal"
-                    >Close
+                    >Back
                   </v-btn>
                   <v-btn
                     style="min-width: 0"
@@ -86,11 +99,15 @@
 </template>
 
 <script setup>
-import Vue, { computed, ref } from "vue"
+import { computed, ref, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
+import formatDate from "@/utils/format-date"
+import useTravelDeskFlightRequest from "@/use/use-travel-desk-flight-request"
+import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
 import FlightSegmentsTable from "@/modules/travelDesk/views/Desk/Components/FlightSegmentsTable.vue"
@@ -102,50 +119,36 @@ const props = defineProps({
     type: [String, Number],
     required: true,
   },
-  travelDeskFlightRequestId: {
-    type: [String, Number],
-    required: true,
-  },
 })
 
-const travelDeskFlightOptionsQuery = computed(() => ({
+const travelDeskFlightRequestsQuery = computed(() => ({
   where: {
-    flightRequestId: props.travelDeskFlightRequestId,
+    travelRequestId: props.travelDeskTravelRequestId,
   },
 }))
-const { travelDeskFlightOptions, totalCount, isLoading, refresh } = useTravelDeskFlightOptions(
-  travelDeskFlightOptionsQuery
+const { travelDeskFlightRequests } = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
+
+const legs = computed(() =>
+  travelDeskFlightRequests.value.map((travelDeskFlightRequest) => ({
+    flightRequestId: travelDeskFlightRequest.id,
+    text: buildFlightRequestDescription(travelDeskFlightRequest),
+  }))
 )
 
 const rawPortalText = ref("")
 const flightText = ref({})
 const flightSegments = ref([])
-const legs = ref([])
 
-function initForm() {
-  flightSegments.value = []
-  travelDeskFlightOptions.value = []
-  legs.value = []
-
-  for (const flightRequest of flightRequests.value) {
-    travelDeskFlightOptions.value.push(...(flightRequest.flightOptions || []))
-    // console.log(flightRequest)
-    legs.value.push({
-      flightRequestId: flightRequest.id,
-      text: getFlightRequestTxt(flightRequest),
-    })
+function buildFlightRequestDescription(travelDeskFlightRequest) {
+  if (isNil(travelDeskFlightRequest)) {
+    return "..."
   }
+
+  const { departLocation, arriveLocation, datePreference } = travelDeskFlightRequest
+  const formattedDate = formatDate(datePreference)
+  return `${departLocation} -> ${arriveLocation} @ ${formattedDate}`
 }
 
-function getFlightRequestTxt(flightRequest) {
-  return (
-    flightRequest.departLocation +
-    " -> " +
-    flightRequest.arriveLocation +
-    " @ " +
-    Vue.filter("beautifyDate")(flightRequest.datePreference)
-  )
-}
 function checkStates() {
   let complete = true
 

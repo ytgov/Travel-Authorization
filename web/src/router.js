@@ -56,9 +56,9 @@ const routes = [
             props: true,
           },
           {
-            name: "TravelDeskFlightOptionsEditPage",
-            path: "travel-desk/:travelDeskTravelRequestId/flight-requests/:travelDeskFlightRequestId/edit-flight-options",
-            component: () => import("@/pages/travel-desk/TravelDeskFlightOptionsEditPage.vue"),
+            name: "TravelDeskFlightSegmentsManagePage",
+            path: "travel-desk/:travelDeskTravelRequestId/manage-flight-segments",
+            component: () => import("@/pages/travel-desk/TravelDeskFlightSegmentsManagePage.vue"),
             props: true,
           },
         ],

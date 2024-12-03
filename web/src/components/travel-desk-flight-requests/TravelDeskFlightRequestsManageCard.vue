@@ -26,6 +26,20 @@
         @updated="emit('updated')"
       />
     </v-card-text>
+    <v-card-actions>
+      <v-spacer />
+      <v-btn
+        :to="{
+          name: 'TravelDeskFlightSegmentsManagePage',
+          params: {
+            travelDeskTravelRequestId,
+          },
+        }"
+        color="blue"
+      >
+        Manage Flight Options - Travelport&trade;
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 

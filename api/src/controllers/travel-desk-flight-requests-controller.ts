@@ -23,6 +23,12 @@ export class TravelDeskFlightRequestsController extends BaseController {
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         order: [["datePreference", "ASC"]],
+        include: [
+          {
+            association: "flightOptions",
+            include: ["flightSegments"],
+          },
+        ],
       })
       return this.response.status(200).json({
         travelDeskFlightRequests,
