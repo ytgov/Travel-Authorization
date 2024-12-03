@@ -18,8 +18,20 @@
         v-else
         :loading="isLoading"
       >
-        <v-card-title>
+        <v-card-title class="d-flex justify-space-between align-center">
           <h2>Edit Flight</h2>
+          <v-btn
+            color="blue"
+            :to="{
+              name: 'TravelDeskFlightOptionsEditPage',
+              params: {
+                travelDeskTravelRequestId: travelDeskFlightRequest.travelRequestId,
+                travelDeskFlightRequestId,
+              },
+            }"
+          >
+            Manage Flight Options (Travel Portal)
+          </v-btn>
         </v-card-title>
 
         <v-card-text>

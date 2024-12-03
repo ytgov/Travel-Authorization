@@ -62,18 +62,7 @@
                 <div>Travel Information</div>
               </template>
               <template #body>
-                <v-row>
-                  <v-col class="d-flex justify-end">
-                    <TravelPortModal
-                      class="mr-5"
-                      :flight-requests="travelDeskTravelRequest.flightRequests"
-                      :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                      @close="refreshFlightRequests"
-                    />
-                  </v-col>
-                </v-row>
                 <TravelDeskFlightRequestsManageCard
-                  ref="travelDeskFlightRequestsManageCard"
                   :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                   :travel-authorization-id="travelDeskTravelRequest.travelAuthorizationId"
                   show-flight-options
@@ -173,7 +162,6 @@ import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/Tr
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
 import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
-import TravelPortModal from "@/modules/travelDesk/views/Desk/Components/TravelPortModal.vue"
 
 import UploadPnrModal from "@/modules/travelDesk/views/Desk/PnrDocument/UploadPnrModal.vue"
 import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
@@ -204,11 +192,6 @@ const {
 } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
 const savingData = ref(false)
-const travelDeskFlightRequestsManageCard = ref(null)
-
-async function refreshFlightRequests() {
-  await travelDeskFlightRequestsManageCard.value?.refresh()
-}
 
 async function refresh() {
   await refreshTravelDeskTravelRequest()
