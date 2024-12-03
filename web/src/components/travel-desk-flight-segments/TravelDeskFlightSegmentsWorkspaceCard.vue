@@ -31,17 +31,21 @@
           v-model="selectedSegments"
           :items="temporaryAndPersistedTravelDeskFlightSegments"
           :items-per-page="-1"
-          class="elevation-1 mt-3"
           show-select
         >
-          <template #default="{ items }">
-            <TravelDeskFlightSegmentEditCard
-              v-for="(item, index) in items"
-              :key="index"
-              class="mx-4 my-8"
-              :flight-segment="item"
-              @update:flightSegment="updateFlightSegment"
-            />
+          <template #item="{ item, isSelected, select }">
+            <div class="d-flex align-center">
+              <v-checkbox
+                :value="isSelected"
+                color="primary"
+                @change="select"
+              />
+              <TravelDeskFlightSegmentEditCard
+                class="mx-4 my-8"
+                :flight-segment="item"
+                @update:flightSegment="updateFlightSegment"
+              />
+            </div>
           </template>
         </v-data-iterator>
       </v-card-text>
