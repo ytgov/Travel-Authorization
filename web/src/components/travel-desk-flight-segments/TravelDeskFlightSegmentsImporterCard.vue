@@ -36,9 +36,15 @@ import { isEmpty, isNil } from "lodash"
 import parseTravel from "@/utils/parse-travel"
 
 import useSnack from "@/use/use-snack"
-import travelDeskFlightSegmentsApi from "@/api/travel-desk-flight-segments-api"
 
-const emit = defineEmits(["imported"])
+defineProps({
+  value: {
+    type: Array,
+    default: () => [],
+  },
+})
+
+const emit = defineEmits(["input"])
 
 const rawTravelPortalText = ref("")
 
@@ -48,6 +54,7 @@ const snack = useSnack()
 async function parseRawTravelPortalText() {
   isLoading.value = true
   if (!rawTravelPortalText.value) return
+  // TODO: build a simplified travel parser that only returns flight segment information.
   const parsedTravel = parseTravel(rawTravelPortalText.value)
 
   if (isNil(parsedTravel)) {
@@ -62,10 +69,7 @@ async function parseRawTravelPortalText() {
   }
 
   try {
-    for (const travelDeskFlightSegmentAttributes of travelDeskFlightSegmentsAttributes) {
-      await travelDeskFlightSegmentsApi.create(travelDeskFlightSegmentAttributes)
-    }
-    emit("imported")
+    emit("input", travelDeskFlightSegmentsAttributes)
   } catch (error) {
     snack.error("Failed to import flight segments")
   } finally {

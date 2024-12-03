@@ -1,8 +1,8 @@
 <template>
   <div>
-    <title-card
+    <TitleCard
       class="mt-5"
-      titleWidth="3.5rem"
+      title-width="3.5rem"
     >
       <template #title>
         <div>Flight</div>
@@ -12,51 +12,46 @@
           <div style="width: 1.5%" />
           <div style="width: 29%">
             <v-text-field
-              size="sm"
-              :error="flightSegment.state.flightErr"
-              @input="flightSegment.state.flightErr = false"
-              label="Flight"
               v-model="flightSegment.flightNumber"
+              label="Flight *"
+              :rules="[required]"
               outlined
+              required
+              size="sm"
             />
           </div>
           <div style="width: 0.5%" />
           <div style="width: 15%">
             <v-text-field
-              :error="flightSegment.state.departAtErr"
-              @input="
-                changeDate()
-                flightSegment.state.departAtErr = false
-              "
-              label="Departure Date"
               v-model="flightSegment.departDay"
-              outlined
-              density="compact"
+              label="Departure Date *"
               type="date"
+              :rules="[required]"
+              outlined
+              required
+              @input="changeDate"
             />
           </div>
           <div style="width: 0.2%" />
           <div style="width: 10%">
             <v-text-field
-              :error="flightSegment.state.departTimeErr"
-              @input="
-                changeDate()
-                flightSegment.state.departTimeErr = false
-              "
-              label="Departure Time"
               v-model="flightSegment.departTime"
-              outlined
+              label="Departure Time *"
               type="time"
+              :rules="[required]"
+              outlined
+              required
+              @input="changeDate"
             />
           </div>
           <div style="width: 0.5%" />
           <div style="width: 42%">
             <v-text-field
-              :error="flightSegment.state.departLocationErr"
-              @input="flightSegment.state.departLocationErr = false"
-              label="Depart From"
               v-model="flightSegment.departLocation"
+              label="Depart From *"
+              :rules="[required]"
               outlined
+              required
             />
           </div>
           <div style="width: 0.5%" />
@@ -66,113 +61,96 @@
           <div style="width: 1.5%" />
           <div style="width: 15%">
             <v-text-field
-              :error="flightSegment.state.durationErr"
-              @input="flightSegment.state.durationErr = false"
-              label="Duration"
               v-model="flightSegment.duration"
+              label="Duration *"
+              :rules="[required]"
               outlined
+              required
             />
           </div>
           <div style="width: 0.5%" />
           <div style="width: 15%">
             <v-text-field
-              :error="flightSegment.state.arriveAtErr"
-              @input="
-                changeDate()
-                flightSegment.state.arriveAtErr = false
-              "
-              label="Arrival Date"
               v-model="flightSegment.arriveDay"
-              outlined
+              label="Arrival Date *"
               type="date"
+              :rules="[required]"
+              outlined
+              required
+              @input="changeDate"
             />
           </div>
           <div style="width: 0.2%" />
           <div style="width: 10%">
             <v-text-field
-              :error="flightSegment.state.arriveTimeErr"
-              @input="
-                changeDate()
-                flightSegment.state.arriveTimeErr = false
-              "
-              label="Arrival Time"
               v-model="flightSegment.arriveTime"
-              outlined
+              label="Arrival Time *"
+              :rules="[required]"
               type="time"
+              outlined
+              required
+              @input="changeDate"
             />
           </div>
           <div style="width: 0.5%" />
           <div style="width: 42%">
             <v-text-field
-              :error="flightSegment.state.arriveLocationErr"
-              @input="flightSegment.state.arriveLocationErr = false"
-              label="Arrive To"
               v-model="flightSegment.arriveLocation"
+              label="Arrive To *"
+              :rules="[required]"
               outlined
+              required
             />
           </div>
           <div style="width: 0.5%" />
           <div style="width: 7%">
             <v-text-field
-              :error="flightSegment.state.statusErr"
-              @input="flightSegment.state.statusErr = false"
-              label="Status"
               v-model="flightSegment.status"
+              label="Status *"
+              :rules="[required]"
               outlined
+              required
             />
           </div>
           <div style="width: 0.5%" />
           <div style="width: 6%">
             <v-text-field
-              :error="flightSegment.state.classErr"
-              @input="flightSegment.state.classErr = false"
-              label="Class"
               v-model="flightSegment.class"
+              label="Class *"
+              :rules="[required]"
               outlined
+              required
             />
           </div>
           <div style="width: 0.5%" />
         </v-row>
       </template>
-    </title-card>
+    </TitleCard>
   </div>
 </template>
 
-<script>
-// import Vue from "vue";
-import TitleCard from "../../Common/TitleCard.vue"
+<script setup>
+import { required } from "@/utils/validators"
 
-export default {
-  name: "FlightSegment",
-  components: {
-    TitleCard,
+import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+
+const props = defineProps({
+  flightSegment: {
+    type: Object,
+    required: true,
   },
-  props: {
-    flightSegment: {},
-  },
-  data() {
-    return {
-      // travelPortDialog: false,
-      // readonly: false,
-      // portText:"",
-    }
-  },
-  mounted() {},
-  methods: {
-    initForm() {
-      //
-    },
-    changeDate() {
-      if (this.flightSegment.departDay && this.flightSegment.departTime) {
-        this.flightSegment.departAt =
-          this.flightSegment.departDay + "T" + this.flightSegment.departTime + ":00.000Z"
-      }
-      if (this.flightSegment.arriveDay && this.flightSegment.arriveTime) {
-        this.flightSegment.arriveAt =
-          this.flightSegment.arriveDay + "T" + this.flightSegment.arriveTime + ":00.000Z"
-      }
-    },
-  },
+})
+
+function changeDate() {
+  if (props.flightSegment.departDay && props.flightSegment.departTime) {
+    props.flightSegment.departAt =
+      props.flightSegment.departDay + "T" + props.flightSegment.departTime + ":00.000Z"
+  }
+
+  if (props.flightSegment.arriveDay && props.flightSegment.arriveTime) {
+    props.flightSegment.arriveAt =
+      props.flightSegment.arriveDay + "T" + props.flightSegment.arriveTime + ":00.000Z"
+  }
 }
 </script>
 

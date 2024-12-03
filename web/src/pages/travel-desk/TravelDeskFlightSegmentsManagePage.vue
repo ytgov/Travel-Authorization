@@ -16,13 +16,10 @@
           Back
         </v-btn>
       </v-card-title>
-      <v-card-subtitle class="subtitle-1">
-        For Flight Request: {{ buildFlightRequestDescription(travelDeskFlightRequest) }}
-      </v-card-subtitle>
       <v-card-text>
         <v-row class="mt-5">
           <v-col>
-            <TravelDeskFlightSegmentsImporterCard @imported="refresh" />
+            <TravelDeskFlightSegmentsImporterCard v-model="travelDeskFlightSegmentsAttributes" />
           </v-col>
         </v-row>
 
@@ -32,7 +29,7 @@
               <v-card-title><h3>Cost and Group Segments</h3></v-card-title>
               <v-card-text>
                 <FlightSegmentsTable
-                  :flight-segments="flightSegments"
+                  :flight-segments="travelDeskFlightSegmentsAttributes"
                   :flight-options="travelDeskFlightOptions"
                   :flight-text="flightText"
                   class="mx-2 mt-10"
@@ -40,7 +37,7 @@
                 />
                 <FlightOptionsTable
                   :legs="legs"
-                  :ungrouped-flight-segments="flightSegments"
+                  :ungrouped-flight-segments="travelDeskFlightSegmentsAttributes"
                   :flight-options="travelDeskFlightOptions"
                   style="margin: 7rem 0.5rem 2rem 0.5rem"
                 />
@@ -99,16 +96,14 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
-import { isNil } from "lodash"
+import { computed, ref } from "vue"
+import { isNil, flatMap } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
 import formatDate from "@/utils/format-date"
-import useTravelDeskFlightRequest from "@/use/use-travel-desk-flight-request"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
-import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
 import FlightSegmentsTable from "@/modules/travelDesk/views/Desk/Components/FlightSegmentsTable.vue"
 import FlightOptionsTable from "@/modules/travelDesk/views/Desk/Components/FlightOptionsTable.vue"
@@ -126,7 +121,12 @@ const travelDeskFlightRequestsQuery = computed(() => ({
     travelRequestId: props.travelDeskTravelRequestId,
   },
 }))
-const { travelDeskFlightRequests } = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
+const { travelDeskFlightRequests, isLoading } = useTravelDeskFlightRequests(
+  travelDeskFlightRequestsQuery
+)
+const travelDeskFlightOptions = computed(() =>
+  flatMap(travelDeskFlightRequests.value, "flightOptions")
+)
 
 const legs = computed(() =>
   travelDeskFlightRequests.value.map((travelDeskFlightRequest) => ({
@@ -137,7 +137,7 @@ const legs = computed(() =>
 
 const rawPortalText = ref("")
 const flightText = ref({})
-const flightSegments = ref([])
+const travelDeskFlightSegmentsAttributes = ref([])
 
 function buildFlightRequestDescription(travelDeskFlightRequest) {
   if (isNil(travelDeskFlightRequest)) {
@@ -168,7 +168,7 @@ function deleteFlightOptions(removeSegments) {
     .then((resp) => {
       console.log(resp)
       travelDeskFlightOptions.value.splice(0)
-      if (removeSegments) flightSegments.value = []
+      if (removeSegments) travelDeskFlightSegmentsAttributes.value = []
       isLoading.value = false
     })
     .catch((e) => {
@@ -180,7 +180,7 @@ function deleteFlightOptions(removeSegments) {
 function removeAllFlightOptions() {
   for (const flightOption of travelDeskFlightOptions.value) {
     for (const flightSegment of flightOption.flightSegments) {
-      flightSegments.value.push(flightSegment)
+      travelDeskFlightSegmentsAttributes.value.push(flightSegment)
     }
   }
   travelDeskFlightOptions.value.splice(0)
