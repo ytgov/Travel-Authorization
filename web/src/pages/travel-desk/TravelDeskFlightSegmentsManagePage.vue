@@ -19,7 +19,7 @@
       <v-card-text>
         <v-row class="mt-5">
           <v-col>
-            <TravelDeskFlightSegmentsImporterCard v-model="travelDeskFlightSegmentsAttributes" />
+            <TravelDeskFlightSegmentsImporterCard @imported="updateFlightSegmentsAttributes" />
           </v-col>
         </v-row>
 
@@ -147,6 +147,10 @@ const rawPortalText = ref("")
 const flightText = ref({})
 const travelDeskFlightSegmentsAttributes = ref([])
 const travelDeskFlightOptionsAttributes = ref([])
+
+function updateFlightSegmentsAttributes(flightSegmentsAttributes) {
+  travelDeskFlightSegmentsAttributes.value = flightSegmentsAttributes
+}
 
 function buildFlightRequestDescription(travelDeskFlightRequest) {
   if (isNil(travelDeskFlightRequest)) {

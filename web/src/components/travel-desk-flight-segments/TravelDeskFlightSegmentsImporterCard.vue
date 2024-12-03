@@ -37,14 +37,7 @@ import parseTravel from "@/utils/parse-travel"
 
 import useSnack from "@/use/use-snack"
 
-defineProps({
-  value: {
-    type: Array,
-    default: () => [],
-  },
-})
-
-const emit = defineEmits(["input"])
+const emit = defineEmits(["imported"])
 
 const rawTravelPortalText = ref("")
 
@@ -78,7 +71,7 @@ async function parseRawTravelPortalText() {
   }
 
   try {
-    emit("input", travelDeskFlightSegmentsAttributes)
+    emit("imported", travelDeskFlightSegmentsAttributes)
   } catch (error) {
     snack.error("Failed to import flight segments")
   } finally {

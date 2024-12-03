@@ -8,28 +8,16 @@
         <h4>Segments</h4>
       </v-card-title>
       <v-card-text>
-        <v-row class="mx-0">
+        <div class="d-flex justify-end">
           <v-btn
-            style="min-width: 0"
             color="primary"
-            class="ml-3 my-5 px-3 py-4"
-            small
-            @click="addTemporaryFlightSegment"
+            @click="addFlightSegmentAttributes"
             >Add New Flight Segment
           </v-btn>
-          <v-btn
-            :disabled="selectedSegments.length == 0"
-            style="min-width: 0"
-            color="red"
-            class="ml-auto mr-3 my-5 px-3 py-4"
-            small
-            @click="removeFlightSegments"
-            >Delete Selected
-          </v-btn>
-        </v-row>
+        </div>
         <v-data-iterator
           v-model="selectedSegments"
-          :items="temporaryAndPersistedTravelDeskFlightSegments"
+          :items="travelDeskFlightSegmentsAttributes"
           :items-per-page="-1"
           show-select
         >
@@ -50,11 +38,16 @@
         </v-data-iterator>
       </v-card-text>
       <v-card-actions>
+        <v-btn
+          :disabled="selectedSegments.length == 0"
+          color="red"
+          @click="removeFlightSegments"
+          >Delete Selected
+        </v-btn>
         <v-spacer />
         <v-btn
           :disabled="selectedSegments.length == 0"
           color="primary"
-          small
           @click="groupFlightSegments"
         >
           Group Selected
@@ -64,16 +57,23 @@
   </div>
 </template>
 
-<script setup>
-import { computed, ref } from "vue"
-import { cloneDeep, sortBy } from "lodash"
+<script>
+export default {
+  mode: {
+    prop: "travelDeskFlightSegmentsAttributes",
+    event: "update",
+  },
+}
+</script>
 
-import useTravelDeskFlightSegments from "@/use/use-travel-desk-flight-segments"
+<script setup>
+import { ref } from "vue"
+import { cloneDeep } from "lodash"
 
 import TravelDeskFlightSegmentEditCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentEditCard.vue"
 
 const props = defineProps({
-  value: {
+  travelDeskFlightSegmentsAttributes: {
     type: Array,
     default: () => [],
   },
@@ -85,26 +85,13 @@ const props = defineProps({
 
 const emit = defineEmits(["update", "update:flightOption"])
 
-const travelDeskFlightSegmentsQuery = computed(() => ({
-  filters: {
-    forTravelRequest: props.travelDeskTravelRequestId,
-  },
-}))
-const { travelDeskFlightSegments, isLoading } = useTravelDeskFlightSegments(
-  travelDeskFlightSegmentsQuery
-)
-
-const temporaryAndPersistedTravelDeskFlightSegments = computed(() => {
-  return sortBy([...props.value, ...travelDeskFlightSegments.value], ["departAt", "arriveAt"])
-})
-
 const selectedSegments = ref([])
 
 function updateFlightSegment(flightSegment) {
   alert("TODO: build flight segment update")
 }
 
-function addTemporaryFlightSegment() {
+function addFlightSegmentAttributes() {
   const flightSegmentAttributes = {
     flightNumber: "",
     departAt: "",
