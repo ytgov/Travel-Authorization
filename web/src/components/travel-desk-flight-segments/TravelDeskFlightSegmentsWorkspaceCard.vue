@@ -4,17 +4,16 @@
       class="mt-5"
       large-title
     >
-      <v-card-title>
+      <v-card-title class="d-flex justify-space-between align-center">
         <h4>Segments</h4>
+        <v-btn
+          class="my-0"
+          color="primary"
+          @click="addFlightSegmentAttributes"
+          >Add New Flight Segment
+        </v-btn>
       </v-card-title>
       <v-card-text>
-        <div class="d-flex justify-end">
-          <v-btn
-            color="primary"
-            @click="addFlightSegmentAttributes"
-            >Add New Flight Segment
-          </v-btn>
-        </div>
         <v-data-iterator
           v-model="selectedSegments"
           :items="travelDeskFlightSegmentsAttributes"
@@ -26,13 +25,21 @@
               <v-checkbox
                 :value="isSelected"
                 color="primary"
-                @change="select"
+                @change="select(item)"
               />
               <TravelDeskFlightSegmentEditCard
-                class="mx-4 my-8"
                 :flight-segment="item"
                 @update:flightSegment="updateFlightSegment"
               />
+              <v-btn
+                class="ml-2"
+                color="error"
+                title="Delete"
+                icon
+                @click="deleteFlightSegment(item)"
+              >
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
             </div>
           </template>
         </v-data-iterator>
@@ -68,7 +75,7 @@ export default {
 
 <script setup>
 import { ref } from "vue"
-import { cloneDeep } from "lodash"
+import { cloneDeep, isEqual } from "lodash"
 
 import TravelDeskFlightSegmentEditCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentEditCard.vue"
 
@@ -87,10 +94,6 @@ const emit = defineEmits(["update", "update:flightOption"])
 
 const selectedSegments = ref([])
 
-function updateFlightSegment(flightSegment) {
-  alert("TODO: build flight segment update")
-}
-
 function addFlightSegmentAttributes() {
   const flightSegmentAttributes = {
     flightNumber: "",
@@ -107,7 +110,18 @@ function addFlightSegmentAttributes() {
     class: "",
     sortOrder: 1,
   }
-  emit("update", [flightSegmentAttributes, ...props.value])
+  emit("update", [flightSegmentAttributes, ...props.travelDeskFlightSegmentsAttributes])
+}
+
+function updateFlightSegment(flightSegment) {
+  alert("TODO: update flight segment")
+}
+
+function deleteFlightSegment(flightSegmentToBeRemoved) {
+  const newFlightSegments = props.value.filter((flightSegment) =>
+    isEqual(flightSegment, flightSegmentToBeRemoved)
+  )
+  emit("update", newFlightSegments)
 }
 
 function groupFlightSegments() {
