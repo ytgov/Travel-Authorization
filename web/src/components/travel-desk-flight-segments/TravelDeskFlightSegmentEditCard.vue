@@ -4,20 +4,48 @@
       <h4>Flight</h4>
     </v-card-title>
     <v-card-text>
-      <v-row class="mt-2 mx-0">
-        <div style="width: 1.5%" />
-        <div style="width: 29%">
+      <v-row>
+        <v-col
+          cols="12"
+          md="6"
+        >
           <v-text-field
             v-model="flightSegmentAttributes.flightNumber"
             label="Flight *"
             :rules="[required]"
             outlined
             required
-            size="sm"
           />
-        </div>
-        <div style="width: 0.5%" />
-        <div style="width: 15%">
+        </v-col>
+        <v-spacer />
+        <v-col
+          cols="12"
+          md="3"
+        >
+          <v-text-field
+            v-model="flightSegmentAttributes.duration"
+            label="Duration *"
+            :rules="[required]"
+            outlined
+            required
+          />
+        </v-col>
+        <v-col
+          cols="12"
+          md="6"
+        >
+          <v-text-field
+            v-model="flightSegmentAttributes.departLocation"
+            label="Depart From *"
+            :rules="[required]"
+            outlined
+            required
+          />
+        </v-col>
+        <v-col
+          cols="12"
+          md="3"
+        >
           <v-text-field
             v-model="flightSegmentAttributes.departDay"
             label="Departure Date *"
@@ -26,9 +54,11 @@
             outlined
             required
           />
-        </div>
-        <div style="width: 0.2%" />
-        <div style="width: 10%">
+        </v-col>
+        <v-col
+          cols="12"
+          md="3"
+        >
           <v-text-field
             v-model="flightSegmentAttributes.departTime"
             label="Departure Time *"
@@ -37,33 +67,26 @@
             outlined
             required
           />
-        </div>
-        <div style="width: 0.5%" />
-        <div style="width: 42%">
-          <v-text-field
-            v-model="flightSegmentAttributes.departLocation"
-            label="Depart From *"
-            :rules="[required]"
-            outlined
-            required
-          />
-        </div>
-        <div style="width: 0.5%" />
+        </v-col>
       </v-row>
 
-      <v-row class="mt-n5 mx-0">
-        <div style="width: 1.5%" />
-        <div style="width: 15%">
+      <v-row>
+        <v-col
+          cols="12"
+          md="6"
+        >
           <v-text-field
-            v-model="flightSegmentAttributes.duration"
-            label="Duration *"
+            v-model="flightSegmentAttributes.arriveLocation"
+            label="Arrive To *"
             :rules="[required]"
             outlined
             required
           />
-        </div>
-        <div style="width: 0.5%" />
-        <div style="width: 15%">
+        </v-col>
+        <v-col
+          cols="12"
+          md="3"
+        >
           <v-text-field
             v-model="flightSegmentAttributes.arriveDay"
             label="Arrival Date *"
@@ -72,30 +95,28 @@
             outlined
             required
           />
-        </div>
-        <div style="width: 0.2%" />
-        <div style="width: 10%">
+        </v-col>
+        <v-col
+          cols="12"
+          md="3"
+        >
           <v-text-field
             v-model="flightSegmentAttributes.arriveTime"
             label="Arrival Time *"
-            :rules="[required]"
             type="time"
-            outlined
-            required
-          />
-        </div>
-        <div style="width: 0.5%" />
-        <div style="width: 42%">
-          <v-text-field
-            v-model="flightSegmentAttributes.arriveLocation"
-            label="Arrive To *"
             :rules="[required]"
             outlined
             required
           />
-        </div>
-        <div style="width: 0.5%" />
-        <div style="width: 7%">
+        </v-col>
+      </v-row>
+
+      <v-row>
+        <v-spacer />
+        <v-col
+          cols="12"
+          md="3"
+        >
           <v-text-field
             v-model="flightSegmentAttributes.status"
             label="Status *"
@@ -103,9 +124,11 @@
             outlined
             required
           />
-        </div>
-        <div style="width: 0.5%" />
-        <div style="width: 6%">
+        </v-col>
+        <v-col
+          cols="12"
+          md="2"
+        >
           <v-text-field
             v-model="flightSegmentAttributes.class"
             label="Class *"
@@ -113,8 +136,7 @@
             outlined
             required
           />
-        </div>
-        <div style="width: 0.5%" />
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>
