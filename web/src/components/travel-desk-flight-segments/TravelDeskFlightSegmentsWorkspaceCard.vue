@@ -113,9 +113,12 @@ function addFlightSegmentAttributes() {
   emit("update", [flightSegmentAttributes, ...props.travelDeskFlightSegmentsAttributes])
 }
 
-function updateFlightSegment(flightSegment, index) {
+function updateFlightSegment(newFlightSegment, index) {
+  console.log(`newFlightSegment:`, JSON.stringify(newFlightSegment, null, 2))
   const newFlightSegments = cloneDeep(props.travelDeskFlightSegmentsAttributes)
-  newFlightSegments[index] = flightSegment
+  console.log(`newFlightSegments:`, JSON.stringify(newFlightSegments, null, 2))
+  newFlightSegments[index] = newFlightSegment
+  console.log(`newFlightSegments:`, JSON.stringify(newFlightSegments, null, 2))
   emit("update", newFlightSegments)
 }
 

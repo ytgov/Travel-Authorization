@@ -121,8 +121,9 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
-import { cloneDeep } from "lodash"
+import { ref, watch } from "vue"
+import { watchDebounced } from "@vueuse/shared"
+import { cloneDeep, isEqual } from "lodash"
 
 import { required } from "@/utils/validators"
 
@@ -135,30 +136,42 @@ const props = defineProps({
 
 const emit = defineEmits(["update:flightSegment"])
 
-const flightSegmentAttributes = computed({
-  get() {
-    return cloneDeep(props.flightSegment)
+const flightSegmentAttributes = ref({})
+
+watch(
+  () => cloneDeep(props.flightSegment),
+  (newFlightSegment) => {
+    if (isEqual(newFlightSegment, flightSegmentAttributes.value)) return
+
+    flightSegmentAttributes.value = newFlightSegment
   },
-  set(newFlightSegmentAttributes) {
-    const { departDay, departTime, arriveDay, arriveTime, ...trueFlightSegmentAttributes } =
+  {
+    immediate: true,
+    deep: true,
+  }
+)
+
+watchDebounced(
+  () => flightSegmentAttributes.value,
+  (newFlightSegmentAttributes) => {
+    const { departDay, departTime, arriveDay, arriveTime, ...cleanFlightSegmentAttributes } =
       newFlightSegmentAttributes
 
     if (departDay && departTime) {
-      trueFlightSegmentAttributes.departAt = `${departDay}T${departTime}:00.000Z`
+      cleanFlightSegmentAttributes.departAt = `${departDay}T${departTime}:00.000Z`
     }
 
     if (arriveDay && arriveTime) {
-      trueFlightSegmentAttributes.arriveAt = `${arriveDay}T${arriveTime}:00.000Z`
+      cleanFlightSegmentAttributes.arriveAt = `${arriveDay}T${arriveTime}:00.000Z`
     }
 
-    delete newFlightSegmentAttributes.departDay
-    delete newFlightSegmentAttributes.departTime
-    delete newFlightSegmentAttributes.arriveDay
-    delete newFlightSegmentAttributes.arriveTime
-
-    emit("update:flightSegment", trueFlightSegmentAttributes)
+    emit("update:flightSegment", cleanFlightSegmentAttributes)
   },
-})
+  {
+    deep: true,
+    debounce: 300,
+  }
+)
 </script>
 
 <style scoped>
