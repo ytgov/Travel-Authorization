@@ -54,28 +54,6 @@
               </v-btn>
             </div>
           </template>
-          <template #item="{ index, item, select, isSelected }">
-            <div class="d-flex align-center">
-              <v-checkbox
-                :value="isSelected"
-                color="primary"
-                @change="select"
-              />
-              <TravelDeskFlightSegmentEditCard
-                :flight-segment="item"
-                @update:flightSegment="updateFlightSegment($event, index)"
-              />
-              <v-btn
-                class="ml-2"
-                color="error"
-                title="Delete"
-                icon
-                @click="deleteFlightSegment(index)"
-              >
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </div>
-          </template>
         </v-data-iterator>
       </v-card-text>
       <v-card-actions>
