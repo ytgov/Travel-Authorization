@@ -30,15 +30,8 @@
               <v-card-text>
                 <TravelDeskFlightSegmentsWorkspaceCard
                   v-model="travelDeskFlightSegmentsAttributes"
-                  :travel-desk-flight-options.sync="travelDeskFlightOptionsAttributes"
                   :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"
-                />
-                <FlightSegmentsTable
-                  :flight-segments="travelDeskFlightSegmentsAttributes"
-                  :flight-options="travelDeskFlightOptions"
-                  :flight-text="flightText"
-                  class="mx-2 mt-10"
-                  @cleanPortText="rawPortalText = ''"
+                  @buildFlightOption="appendFlightOptionAttributes"
                 />
                 <FlightOptionsTable
                   :legs="legs"
@@ -108,9 +101,9 @@ import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
 import formatDate from "@/utils/format-date"
+import useSnack from "@/use/use-snack"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
-import FlightSegmentsTable from "@/modules/travelDesk/views/Desk/Components/FlightSegmentsTable.vue"
 import FlightOptionsTable from "@/modules/travelDesk/views/Desk/Components/FlightOptionsTable.vue"
 import TravelDeskFlightSegmentsImporterCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsImporterCard.vue"
 import TravelDeskFlightSegmentsWorkspaceCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsWorkspaceCard.vue"
@@ -143,8 +136,6 @@ const legs = computed(() =>
   }))
 )
 
-const rawPortalText = ref("")
-const flightText = ref({})
 const travelDeskFlightSegmentsAttributes = ref([])
 const travelDeskFlightOptionsAttributes = ref([])
 
@@ -152,6 +143,13 @@ function appendFlightSegmentsAttributes(newFlightSegmentsAttributes) {
   travelDeskFlightSegmentsAttributes.value = [
     ...travelDeskFlightSegmentsAttributes.value,
     ...newFlightSegmentsAttributes,
+  ]
+}
+
+function appendFlightOptionAttributes(newFlightOptionAttributes) {
+  travelDeskFlightOptionsAttributes.value = [
+    ...travelDeskFlightOptionsAttributes.value,
+    ...newFlightOptionAttributes,
   ]
 }
 
@@ -165,33 +163,7 @@ function buildFlightRequestDescription(travelDeskFlightRequest) {
   return `${departLocation} -> ${arriveLocation} @ ${formattedDate}`
 }
 
-function checkStates() {
-  let complete = true
-
-  for (const flightOption of travelDeskFlightOptions.value) {
-    flightOption.state = flightOption.state || {}
-    flightOption.state.costErr = flightOption.cost ? false : true
-    flightOption.state.legErr = flightOption.flightRequestId ? false : true
-    if (flightOption.state.costErr || flightOption.state.legErr) complete = false
-  }
-  return complete
-}
-
-function deleteFlightOptions(removeSegments) {
-  isLoading.value = true
-  return http
-    .delete(`${TRAVEL_DESK_URL}/flight-options/${travelDeskTravelRequestId.value}`)
-    .then((resp) => {
-      console.log(resp)
-      travelDeskFlightOptions.value.splice(0)
-      if (removeSegments) travelDeskFlightSegmentsAttributes.value = []
-      isLoading.value = false
-    })
-    .catch((e) => {
-      console.log(e)
-      isLoading.value = false
-    })
-}
+const snack = useSnack()
 
 function removeAllFlightOptions() {
   for (const flightOption of travelDeskFlightOptions.value) {
@@ -203,30 +175,37 @@ function removeAllFlightOptions() {
   deleteFlightOptions(false)
 }
 
-function saveAllFlightOptions() {
-  console.log("HERE", checkStates())
+async function deleteFlightOptions(removeSegments) {
+  isLoading.value = true
+  try {
+    await http.delete(`${TRAVEL_DESK_URL}/flight-options/${props.travelDeskTravelRequestId}`)
 
-  if (checkStates()) {
-    isLoading.value = true
-    const body = travelDeskFlightOptions.value
+    travelDeskFlightOptions.value.splice(0)
 
-    return http
-      .post(`${TRAVEL_DESK_URL}/flight-options/${travelDeskTravelRequestId.value}`, body)
-      .then((resp) => {
-        console.log(resp)
-        isLoading.value = false
-        closeModal()
-      })
-      .catch((e) => {
-        console.log(e)
-        isLoading.value = false
-      })
+    if (removeSegments) {
+      travelDeskFlightSegmentsAttributes.value = []
+    }
+  } catch (error) {
+    console.error(error)
+    snack.error(`Failed to delete flight options: ${error}`)
+  } finally {
+    isLoading.value = false
   }
 }
 
-function closeModal() {
-  emit("close")
-  travelPortDialog.value = false
+async function saveAllFlightOptions() {
+  // TODO: validate using form ref
+
+  isLoading.value = true
+  try {
+    const body = travelDeskFlightOptions.value
+    await http.post(`${TRAVEL_DESK_URL}/flight-options/${props.travelDeskTravelRequestId}`, body)
+  } catch (error) {
+    console.error(error)
+    snack.error(`Failed to save flight options: ${error}`)
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 

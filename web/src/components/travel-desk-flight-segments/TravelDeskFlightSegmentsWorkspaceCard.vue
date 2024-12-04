@@ -10,7 +10,7 @@
           class="my-0"
           color="primary"
           @click="addFlightSegmentAttributes"
-          >Add New Flight Segment
+          >Add Flight Segment
         </v-btn>
       </v-card-title>
       <v-card-text>
@@ -55,7 +55,7 @@
         <v-btn
           :disabled="selectedSegments.length == 0"
           color="primary"
-          @click="groupFlightSegments"
+          @click="groupFlightSegmentsAsFlightOption"
         >
           Group Selected
         </v-btn>
@@ -90,7 +90,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["update", "update:flightOption"])
+const emit = defineEmits(["update", "buildFlightOption"])
 
 const travelDeskFlightSegmentsAttributesWithId = computed(() =>
   props.travelDeskFlightSegmentsAttributes.map((segment, index) => ({
@@ -133,33 +133,32 @@ function deleteFlightSegment(index) {
   emit("update", newFlightSegments)
 }
 
-function groupFlightSegments() {
+function groupFlightSegmentsAsFlightOption() {
+  const { id, ...flightSegmentAttributesWithoutId } = selectedSegments.value
   let durationHours = 0
   let durationMinutes = 0
   let sortOrder = 1
-  for (const segment of selectedSegments.value) {
-    segment.sortOrder = sortOrder
-    sortOrder++
-    const duration = extractDuration(segment.duration)
+  for (const flightSegmentAttributes of flightSegmentAttributesWithoutId) {
+    flightSegmentAttributes.sortOrder = sortOrder
+    sortOrder += 1
+    const duration = extractDuration(flightSegmentAttributes.duration)
     durationHours += Number(duration.hours)
     durationMinutes += Number(duration.minutes)
   }
 
-  const flightOption = {
+  const flightOptionAttributes = {
     cost: "",
     leg: "",
-    state: { costErr: false },
     flightPreferenceOrder: null,
+    // TODO: consider making duration a value in seconds?
     duration: durationHours + " Hour(s) " + durationMinutes + " Minute(s)",
-    flightSegments: cloneDeep(selectedSegments.value),
+    flightSegmentAttributes: flightSegmentAttributesWithoutId,
   }
-  emit("update:flightOption", flightOption)
-
+  emit("buildFlightOption", flightOptionAttributes)
   selectedSegments.value = []
 }
 
 function extractDuration(duration) {
-  // console.log(duration.match(/\d+/g))
   let hours = 0
   let minutes = 0
   const time = duration.match(/\d+/g)
