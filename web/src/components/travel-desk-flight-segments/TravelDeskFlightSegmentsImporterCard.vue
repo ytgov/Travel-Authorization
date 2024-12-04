@@ -32,7 +32,7 @@
 
 <script setup>
 import { ref } from "vue"
-import { isEmpty, isNil } from "lodash"
+import { isEmpty, isNil, sortBy } from "lodash"
 
 import parseTravel from "@/utils/parse-travel"
 
@@ -72,7 +72,16 @@ async function parseRawTravelPortalText() {
       travelDeskFlightSegmentsAttributes.push(travelDeskFlightSegmentAttributes)
     }
 
-    emit("imported", travelDeskFlightSegmentsAttributes)
+    const sortedTravelDeskFlightSegmentsAttributes = sortBy(travelDeskFlightSegmentsAttributes, [
+      "departAt",
+      "arriveAt",
+    ])
+    sortedTravelDeskFlightSegmentsAttributes.forEach((flightSegmentAttributes, index) => {
+      flightSegmentAttributes.sortOrder = index + 1
+    })
+
+    emit("imported", sortedTravelDeskFlightSegmentsAttributes)
+    rawTravelPortalText.value = ""
   } catch (error) {
     console.error("Failed to import flight segments:", error)
     snack.error(`Failed to import flight segments: ${error}`)
@@ -87,7 +96,7 @@ function cleanRawFlightSegmentAttributes(rawFlightSegmentAttributes) {
   const departureDate = getFlightDate(rawFlightSegmentAttributes.departureDate)
 
   const flightSegmentAttributes = {
-    sortOrder: 1,
+    sortOrder: 0,
     flightNumber: cleanText(
       rawFlightSegmentAttributes.airline + " " + rawFlightSegmentAttributes.flightNumber
     ),

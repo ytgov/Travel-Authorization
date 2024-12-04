@@ -121,7 +121,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
+import { computed } from "vue"
+import { cloneDeep } from "lodash"
+
 import { required } from "@/utils/validators"
 
 const props = defineProps({
@@ -133,19 +135,11 @@ const props = defineProps({
 
 const emit = defineEmits(["update:flightSegment"])
 
-const flightSegmentAttributes = ref({})
-
-watch(
-  () => props.flightSegment,
-  (newFlightSegment) => {
-    flightSegmentAttributes.value = { ...newFlightSegment }
+const flightSegmentAttributes = computed({
+  get() {
+    return cloneDeep(props.flightSegment)
   },
-  { immediate: true }
-)
-
-watch(
-  () => flightSegmentAttributes.value,
-  (newFlightSegmentAttributes) => {
+  set(newFlightSegmentAttributes) {
     const { departDay, departTime, arriveDay, arriveTime, ...trueFlightSegmentAttributes } =
       newFlightSegmentAttributes
 
@@ -163,8 +157,8 @@ watch(
     delete newFlightSegmentAttributes.arriveTime
 
     emit("update:flightSegment", trueFlightSegmentAttributes)
-  }
-)
+  },
+})
 </script>
 
 <style scoped>

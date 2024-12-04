@@ -20,7 +20,7 @@
           :items-per-page="-1"
           show-select
         >
-          <template #item="{ item, isSelected, select }">
+          <template #item="{ index, item, isSelected, select }">
             <div class="d-flex align-center">
               <v-checkbox
                 :value="isSelected"
@@ -29,14 +29,14 @@
               />
               <TravelDeskFlightSegmentEditCard
                 :flight-segment="item"
-                @update:flightSegment="updateFlightSegment"
+                @update:flightSegment="($event) => updateFlightSegment(item, index)"
               />
               <v-btn
                 class="ml-2"
                 color="error"
                 title="Delete"
                 icon
-                @click="deleteFlightSegment(item)"
+                @click="deleteFlightSegment(index)"
               >
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
@@ -75,7 +75,7 @@ export default {
 
 <script setup>
 import { ref } from "vue"
-import { cloneDeep, isEqual } from "lodash"
+import { cloneDeep } from "lodash"
 
 import TravelDeskFlightSegmentEditCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentEditCard.vue"
 
@@ -113,14 +113,15 @@ function addFlightSegmentAttributes() {
   emit("update", [flightSegmentAttributes, ...props.travelDeskFlightSegmentsAttributes])
 }
 
-function updateFlightSegment(flightSegment) {
-  alert("TODO: update flight segment")
+function updateFlightSegment(flightSegment, index) {
+  const newFlightSegments = cloneDeep(props.travelDeskFlightSegmentsAttributes)
+  newFlightSegments[index] = flightSegment
+  emit("update", newFlightSegments)
 }
 
-function deleteFlightSegment(flightSegmentToBeRemoved) {
-  const newFlightSegments = props.value.filter((flightSegment) =>
-    isEqual(flightSegment, flightSegmentToBeRemoved)
-  )
+function deleteFlightSegment(index) {
+  const newFlightSegments = cloneDeep(props.travelDeskFlightSegmentsAttributes)
+  newFlightSegments.splice(index, 1)
   emit("update", newFlightSegments)
 }
 

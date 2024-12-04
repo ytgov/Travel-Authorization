@@ -19,7 +19,7 @@
       <v-card-text>
         <v-row class="mt-5">
           <v-col>
-            <TravelDeskFlightSegmentsImporterCard @imported="updateFlightSegmentsAttributes" />
+            <TravelDeskFlightSegmentsImporterCard @imported="appendFlightSegmentsAttributes" />
           </v-col>
         </v-row>
 
@@ -102,7 +102,7 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { isNil, flatMap } from "lodash"
+import { flatMap, isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
@@ -148,8 +148,11 @@ const flightText = ref({})
 const travelDeskFlightSegmentsAttributes = ref([])
 const travelDeskFlightOptionsAttributes = ref([])
 
-function updateFlightSegmentsAttributes(flightSegmentsAttributes) {
-  travelDeskFlightSegmentsAttributes.value = flightSegmentsAttributes
+function appendFlightSegmentsAttributes(newFlightSegmentsAttributes) {
+  travelDeskFlightSegmentsAttributes.value = [
+    ...travelDeskFlightSegmentsAttributes.value,
+    ...newFlightSegmentsAttributes,
+  ]
 }
 
 function buildFlightRequestDescription(travelDeskFlightRequest) {
