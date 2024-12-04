@@ -13,6 +13,7 @@
             clearable
             outlined
             hide-details
+            @keydown.ctrl.enter="parseRawTravelPortalText"
           />
         </v-col>
       </v-row>
