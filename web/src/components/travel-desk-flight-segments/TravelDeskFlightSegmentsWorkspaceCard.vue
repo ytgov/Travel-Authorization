@@ -32,7 +32,7 @@
             <div
               v-for="(item, index) in items"
               :key="item.id"
-              class="d-flex align-center"
+              class="d-flex flex-column flex-md-row align-center"
             >
               <v-checkbox
                 :input-value="isSelected(item)"
@@ -56,14 +56,13 @@
           </template>
         </v-data-iterator>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="d-flex flex-column flex-md-row justify-space-between">
         <v-btn
           :disabled="selectedSegments.length == 0"
           color="red"
           @click="deleteSelectedFlightSegments"
           >Delete Selected
         </v-btn>
-        <v-spacer />
         <v-btn
           :disabled="selectedSegments.length == 0"
           color="primary"
