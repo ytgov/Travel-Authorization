@@ -20,6 +20,40 @@
           :items-per-page="-1"
           show-select
         >
+          <template #default="{ items, isSelected, select }">
+            <div class="d-flex justify-start">
+              <v-checkbox
+                label="Select All"
+                :input-value="selectAllValue"
+                :indeterminate="selectAllValue === null"
+                @change="selectAll"
+              />
+            </div>
+            <div
+              v-for="(item, index) in items"
+              :key="item.id"
+              class="d-flex align-center"
+            >
+              <v-checkbox
+                :input-value="isSelected(item)"
+                color="primary"
+                @change="($event) => select(item, $event)"
+              />
+              <TravelDeskFlightSegmentEditCard
+                :flight-segment="item"
+                @update:flightSegment="updateFlightSegment($event, index)"
+              />
+              <v-btn
+                class="ml-2"
+                color="error"
+                title="Delete"
+                icon
+                @click="deleteFlightSegment(index)"
+              >
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </div>
+          </template>
           <template #item="{ index, item, select, isSelected }">
             <div class="d-flex align-center">
               <v-checkbox
@@ -75,7 +109,7 @@ export default {
 
 <script setup>
 import { computed, ref } from "vue"
-import { cloneDeep, isEqual } from "lodash"
+import { cloneDeep, isEmpty, isEqual } from "lodash"
 
 import TravelDeskFlightSegmentEditCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentEditCard.vue"
 
@@ -100,6 +134,29 @@ const travelDeskFlightSegmentsAttributesWithId = computed(() =>
 )
 
 const selectedSegments = ref([])
+
+const selectAllValue = computed(() => {
+  if (
+    !isEmpty(selectedSegments.value) &&
+    selectedSegments.value.length === travelDeskFlightSegmentsAttributesWithId.value.length
+  ) {
+    return true
+  } else if (isEmpty(selectedSegments.value)) {
+    return false
+  } else {
+    return null
+  }
+})
+
+function selectAll(value) {
+  if (value === true && !isEmpty(selectedSegments.value)) {
+    selectedSegments.value = []
+  } else if (value === false) {
+    selectedSegments.value = []
+  } else {
+    selectedSegments.value = cloneDeep(travelDeskFlightSegmentsAttributesWithId.value)
+  }
+}
 
 function addFlightSegmentAttributes() {
   const flightSegmentAttributes = {
