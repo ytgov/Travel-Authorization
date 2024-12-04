@@ -12,6 +12,7 @@
             rows="8"
             clearable
             outlined
+            hide-details
           />
         </v-col>
       </v-row>
@@ -48,32 +49,33 @@ const snack = useSnack()
 // This parser should also clean the data, so it returns it as TravelDeskFlightSegment creation attributes
 async function parseRawTravelPortalText() {
   isLoading.value = true
-  if (!rawTravelPortalText.value) return
-  const parsedTravel = parseTravel(rawTravelPortalText.value)
-
-  if (isNil(parsedTravel)) {
-    snack.error("Failed to parse travel text")
-    return
-  }
-
-  const { flights: rawFlightSegmentsAttributes } = parsedTravel
-  if (isEmpty(rawFlightSegmentsAttributes)) {
-    snack.error("Failed to parse travel text")
-    return
-  }
-
-  const travelDeskFlightSegmentsAttributes = []
-  for (const rawFlightSegmentAttributes of rawFlightSegmentsAttributes) {
-    const travelDeskFlightSegmentAttributes = cleanRawFlightSegmentAttributes(
-      rawFlightSegmentAttributes
-    )
-    travelDeskFlightSegmentsAttributes.push(travelDeskFlightSegmentAttributes)
-  }
-
   try {
+    if (!rawTravelPortalText.value) return
+    const parsedTravel = parseTravel(rawTravelPortalText.value)
+
+    if (isNil(parsedTravel)) {
+      snack.error("Failed to parse travel text")
+      return
+    }
+
+    const { flights: rawFlightSegmentsAttributes } = parsedTravel
+    if (isEmpty(rawFlightSegmentsAttributes)) {
+      snack.error("Failed to parse travel text")
+      return
+    }
+
+    const travelDeskFlightSegmentsAttributes = []
+    for (const rawFlightSegmentAttributes of rawFlightSegmentsAttributes) {
+      const travelDeskFlightSegmentAttributes = cleanRawFlightSegmentAttributes(
+        rawFlightSegmentAttributes
+      )
+      travelDeskFlightSegmentsAttributes.push(travelDeskFlightSegmentAttributes)
+    }
+
     emit("imported", travelDeskFlightSegmentsAttributes)
   } catch (error) {
-    snack.error("Failed to import flight segments")
+    console.error("Failed to import flight segments:", error)
+    snack.error(`Failed to import flight segments: ${error}`)
   } finally {
     isLoading.value = false
   }
@@ -126,7 +128,7 @@ function cleanText(txt) {
 
 function getFlightDate(date) {
   const today = new Date()
-  const flightDate = this.cleanText(date)
+  const flightDate = cleanText(date)
   let fullDate = new Date()
 
   const datePattern = /^(\d{1,2})(\/|\s|-)([A-Za-z]{2,3})(,?)(\/|\s|-)(\d{2}|\d{4})$/

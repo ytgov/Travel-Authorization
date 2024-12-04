@@ -59,7 +59,7 @@
 
 <script>
 export default {
-  mode: {
+  model: {
     prop: "travelDeskFlightSegmentsAttributes",
     event: "update",
   },
