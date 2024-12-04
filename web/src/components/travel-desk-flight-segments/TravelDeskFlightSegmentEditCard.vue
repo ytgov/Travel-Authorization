@@ -152,20 +152,19 @@ watch(
 )
 
 watchDebounced(
-  () => flightSegmentAttributes.value,
+  () => cloneDeep(flightSegmentAttributes.value),
   (newFlightSegmentAttributes) => {
-    const { departDay, departTime, arriveDay, arriveTime, ...cleanFlightSegmentAttributes } =
-      newFlightSegmentAttributes
+    const { departDay, departTime, arriveDay, arriveTime } = newFlightSegmentAttributes
 
     if (departDay && departTime) {
-      cleanFlightSegmentAttributes.departAt = `${departDay}T${departTime}:00.000Z`
+      newFlightSegmentAttributes.departAt = `${departDay}T${departTime}:00.000Z`
     }
 
     if (arriveDay && arriveTime) {
-      cleanFlightSegmentAttributes.arriveAt = `${arriveDay}T${arriveTime}:00.000Z`
+      newFlightSegmentAttributes.arriveAt = `${arriveDay}T${arriveTime}:00.000Z`
     }
 
-    emit("update:flightSegment", cleanFlightSegmentAttributes)
+    emit("update:flightSegment", newFlightSegmentAttributes)
   },
   {
     deep: true,
