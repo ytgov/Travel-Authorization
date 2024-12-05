@@ -24,52 +24,56 @@
             <v-row>
               <v-col
                 cols="12"
-                md="3"
+                md="6"
+              >
+                <TravelDeskFlightRequestSelect
+                  v-model="item.flightRequestId"
+                  label="Leg *"
+                  :where="{
+                    travelRequestId: travelDeskTravelRequestId,
+                  }"
+                  :rules="[required]"
+                  outlined
+                  required
+                />
+              </v-col>
+              <v-col
+                cols="12"
+                md="2"
               >
                 <v-text-field
                   v-model="item.cost"
-                  :error="item.state?.costErr"
-                  label="Cost"
-                  prefix="$"
+                  label="Cost *"
                   type="number"
+                  :rules="[required]"
+                  prefix="$"
                   outlined
+                  required
                 />
               </v-col>
               <v-col
                 cols="12"
-                md="3"
+                md="4"
               >
                 <v-text-field
                   v-model="item.duration"
-                  readonly
                   label="Travel Duration"
+                  readonly
                   outlined
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                md="5"
-              >
-                <v-select
-                  v-model="item.flightRequestId"
-                  :items="legs"
-                  :error="item.state?.legErr"
-                  item-value="flightRequestId"
-                  label="Leg"
-                  outlined
+                  append-icon="mdi-lock"
                 />
               </v-col>
             </v-row>
             <div
-              v-for="(segment, inx) in item.flightSegments"
-              :key="'group-' + segment.FlightSegmentID + '-' + inx + flightKey"
+              v-for="(segment, flightSegmentIndex) in item.flightSegments"
+              :key="'group-' + segment.id + '-' + flightSegmentIndex"
             >
               <v-row
                 style="cursor: move"
                 :draggable="true"
                 @dragover.prevent
-                @drop.prevent="drop(item, segment, index)"
-                @dragstart="drag(segment, index)"
+                @drop.prevent="drop(item, segment, flightSegmentIndex)"
+                @dragstart="drag(segment, flightSegmentIndex)"
               >
                 <v-col
                   cols="12"
@@ -100,11 +104,14 @@
 <script setup>
 import { nextTick, ref } from "vue"
 
+import { required } from "@/utils/validators"
+
 import TravelDeskFlightSegmentCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentCard.vue"
+import TravelDeskFlightRequestSelect from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestSelect.vue"
 
 defineProps({
-  legs: {
-    type: Array,
+  travelDeskTravelRequestId: {
+    type: Number,
     required: true,
   },
   flightOptions: {
@@ -117,18 +124,17 @@ defineProps({
   },
 })
 
-const headers = ref([{ text: "", value: "name", class: "red" }])
+const headers = ref([{ text: "", value: "name" }])
 const source = ref({})
-const sourceInx = ref(-1)
-const flightKey = ref(0)
+const sourceIndex = ref(-1)
 
 function drag(source, index) {
   source.value = source
-  sourceInx.value = index
+  sourceIndex.value = index
 }
 
 async function drop(flightOption, target, index) {
-  if (sourceInx.value != index) return
+  if (sourceIndex.value != index) return
 
   const sortOrderTarget = target.sortOrder
   target.sortOrder = source.value.sortOrder

@@ -35,7 +35,7 @@
                 />
                 <TravelDeskFlightOptionsWorkspaceCard
                   class="mt-5"
-                  :legs="legs"
+                  :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"
                   :ungrouped-flight-segments="travelDeskFlightSegmentsAttributes"
                   :flight-options="travelDeskFlightOptions"
                 />
