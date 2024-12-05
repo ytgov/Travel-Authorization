@@ -100,6 +100,7 @@ import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
 import useSessionStorage from "@/use/utils/use-session-storage"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
@@ -191,6 +192,36 @@ async function saveAllFlightOptions() {
     isLoading.value = false
   }
 }
+
+useBreadcrumbs([
+  {
+    text: "Travel Desk",
+    to: {
+      name: "TravelDeskPage",
+    },
+  },
+  {
+    text: "Request",
+    to: {
+      name: "TravelDeskReadPage",
+      params: { travelDeskTravelRequestId: props.travelDeskTravelRequestId },
+    },
+  },
+  {
+    text: "Edit",
+    to: {
+      name: "TravelDeskEditPage",
+      params: { travelDeskTravelRequestId: props.travelDeskTravelRequestId },
+    },
+  },
+  {
+    text: "Manage Flight Segments",
+    to: {
+      name: "TravelDeskFlightSegmentsManagePage",
+      params: { travelDeskTravelRequestId: props.travelDeskTravelRequestId },
+    },
+  },
+])
 </script>
 
 <style scoped>
