@@ -97,82 +97,53 @@
   </v-card>
 </template>
 
-<script>
-import Vue from "vue"
+<script setup>
+import { nextTick, ref } from "vue"
 
 import TravelDeskFlightSegmentCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentCard.vue"
 
-export default {
-  name: "FlightOptionsTable",
-  components: {
-    TravelDeskFlightSegmentCard,
+defineProps({
+  legs: {
+    type: Array,
+    required: true,
   },
-  props: {
-    readonly: Boolean,
-    legs: {
-      type: Array,
-      required: true,
-    },
-    flightOptions: {
-      type: Array,
-      required: true,
-    },
-    ungroupedFlightSegments: {
-      type: Array,
-      required: true,
-    },
+  flightOptions: {
+    type: Array,
+    required: true,
   },
-  data() {
-    return {
-      tmpId: 1,
-      admin: false,
-      savingData: false,
-      selectedSegments: [],
-      headers: [{ text: "", value: "name", class: "red" }],
-      source: {},
-      sourceInx: -1,
-      flightKey: 0,
-    }
+  ungroupedFlightSegments: {
+    type: Array,
+    required: true,
   },
-  computed: {},
-  mounted() {
-    this.initForm()
-  },
-  methods: {
-    initForm() {
-      // const carRequest = {}
-    },
-    drag(source, index) {
-      this.source = source
-      this.sourceInx = index
-    },
-    drop(flightOption, target, index) {
-      if (this.sourceInx != index) return
+})
 
-      const sortOrderTarget = target.sortOrder
-      target.sortOrder = JSON.parse(JSON.stringify(this.source.sortOrder))
-      this.source.sortOrder = JSON.parse(JSON.stringify(sortOrderTarget))
-      Vue.nextTick(() => {
-        this.sortByOrder(flightOption.flightSegments)
-      })
-    },
-    sortByOrder(flight) {
-      flight.sort((a, b) => {
-        return a.sortOrder > b.sortOrder ? 1 : -1
-      })
-      return flight
-    },
-  },
+const headers = ref([{ text: "", value: "name", class: "red" }])
+const source = ref({})
+const sourceInx = ref(-1)
+const flightKey = ref(0)
+
+function drag(source, index) {
+  source.value = source
+  sourceInx.value = index
+}
+
+async function drop(flightOption, target, index) {
+  if (sourceInx.value != index) return
+
+  const sortOrderTarget = target.sortOrder
+  target.sortOrder = source.value.sortOrder
+  source.value.sortOrder = sortOrderTarget
+
+  await nextTick()
+  sortByOrder(flightOption.flightSegments)
+}
+
+function sortByOrder(flight) {
+  flight.sort((a, b) => {
+    return a.sortOrder > b.sortOrder ? 1 : -1
+  })
+  return flight
 }
 </script>
 
-<style scoped>
-/* ::v-deep tbody tr:nth-of-type(even) {
-   background-color: #FFFFFF !important;
- } */
-
-::v-deep table tbody td {
-  border: 0px solid white !important;
-  background-color: #ffffff !important;
-}
-</style>
+<style scoped></style>
