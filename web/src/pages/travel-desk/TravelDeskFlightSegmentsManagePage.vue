@@ -31,19 +31,12 @@
                 <TravelDeskFlightSegmentsWorkspaceCard
                   v-model="travelDeskFlightSegmentsAttributes"
                   :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"
-                  @buildFlightOption="appendFlightOptionAttributes"
+                  @createdFlightOption="refreshFlightOptionsWorkspaceCard"
                 />
                 <TravelDeskFlightOptionsWorkspaceCard
+                  ref="travelDeskFlightOptionsWorkspaceCard"
                   class="mt-5"
                   :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"
-                  :ungrouped-flight-segments="travelDeskFlightSegmentsAttributes"
-                  :flight-options="travelDeskFlightOptions"
-                />
-                <FlightOptionsTable
-                  :legs="legs"
-                  :ungrouped-flight-segments="travelDeskFlightSegmentsAttributes"
-                  :flight-options="travelDeskFlightOptions"
-                  style="margin: 7rem 0.5rem 2rem 0.5rem"
                 />
                 <v-card-actions>
                   <v-btn
@@ -101,16 +94,14 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { flatMap, isNil } from "lodash"
+import { flatMap } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
-import formatDate from "@/utils/format-date"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
-import FlightOptionsTable from "@/modules/travelDesk/views/Desk/Components/FlightOptionsTable.vue"
 import TravelDeskFlightSegmentsImporterCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsImporterCard.vue"
 import TravelDeskFlightSegmentsWorkspaceCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsWorkspaceCard.vue"
 import TravelDeskFlightOptionsWorkspaceCard from "@/components/travel-desk-flight-options/TravelDeskFlightOptionsWorkspaceCard.vue"
@@ -136,15 +127,7 @@ const travelDeskFlightOptions = computed(() =>
   flatMap(travelDeskFlightRequests.value, "flightOptions")
 )
 
-const legs = computed(() =>
-  travelDeskFlightRequests.value.map((travelDeskFlightRequest) => ({
-    flightRequestId: travelDeskFlightRequest.id,
-    text: buildFlightRequestDescription(travelDeskFlightRequest),
-  }))
-)
-
 const travelDeskFlightSegmentsAttributes = ref([])
-const travelDeskFlightOptionsAttributes = ref([])
 
 function appendFlightSegmentsAttributes(newFlightSegmentsAttributes) {
   travelDeskFlightSegmentsAttributes.value = [
@@ -153,21 +136,11 @@ function appendFlightSegmentsAttributes(newFlightSegmentsAttributes) {
   ]
 }
 
-function appendFlightOptionAttributes(newFlightOptionAttributes) {
-  travelDeskFlightOptionsAttributes.value = [
-    ...travelDeskFlightOptionsAttributes.value,
-    ...newFlightOptionAttributes,
-  ]
-}
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightOptionsWorkspaceCard> | null>} */
+const travelDeskFlightOptionsWorkspaceCard = ref(null)
 
-function buildFlightRequestDescription(travelDeskFlightRequest) {
-  if (isNil(travelDeskFlightRequest)) {
-    return "..."
-  }
-
-  const { departLocation, arriveLocation, datePreference } = travelDeskFlightRequest
-  const formattedDate = formatDate(datePreference)
-  return `${departLocation} -> ${arriveLocation} @ ${formattedDate}`
+function refreshFlightOptionsWorkspaceCard() {
+  travelDeskFlightOptionsWorkspaceCard.value.refresh()
 }
 
 const snack = useSnack()

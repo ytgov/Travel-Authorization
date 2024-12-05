@@ -63,13 +63,22 @@
           @click="deleteSelectedFlightSegments"
           >Delete Selected
         </v-btn>
-        <v-btn
-          :disabled="selectedSegments.length == 0"
-          color="primary"
-          @click="groupFlightSegmentsAsFlightOption"
+        <TravelDeskFlightOptionCreateDialog
+          :travel-desk-travel-request-id="travelDeskTravelRequestId"
+          :attributes="groupFlightSegmentsAsFlightOption"
+          @created="emitCreatedFlightOptionAndRemoveSelected"
         >
-          Group Selected
-        </v-btn>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              :disabled="selectedSegments.length == 0"
+              color="primary"
+              v-bind="attrs"
+              v-on="on"
+            >
+              Group Selected
+            </v-btn>
+          </template>
+        </TravelDeskFlightOptionCreateDialog>
       </v-card-actions>
     </v-card>
   </div>
@@ -89,6 +98,7 @@ import { computed, ref } from "vue"
 import { cloneDeep, isEmpty, isEqual } from "lodash"
 
 import TravelDeskFlightSegmentEditCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentEditCard.vue"
+import TravelDeskFlightOptionCreateDialog from "@/components/travel-desk-flight-options/TravelDeskFlightOptionCreateDialog.vue"
 
 const props = defineProps({
   travelDeskFlightSegmentsAttributes: {
@@ -101,7 +111,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["update", "buildFlightOption"])
+const emit = defineEmits(["update", "createdFlightOption"])
 
 const travelDeskFlightSegmentsAttributesWithId = computed(() =>
   props.travelDeskFlightSegmentsAttributes.map((segment, index) => ({
@@ -167,7 +177,7 @@ function deleteFlightSegment(index) {
   emit("update", newFlightSegments)
 }
 
-function groupFlightSegmentsAsFlightOption() {
+const groupFlightSegmentsAsFlightOption = computed(() => {
   let durationHours = 0
   let durationMinutes = 0
   let sortOrder = 1
@@ -183,16 +193,15 @@ function groupFlightSegmentsAsFlightOption() {
   }
 
   const flightOptionAttributes = {
-    cost: "",
-    leg: "",
+    cost: 0,
+    flightRequestId: null,
     flightPreferenceOrder: null,
     // TODO: consider making duration a value in seconds?
     duration: durationHours + " Hour(s) " + durationMinutes + " Minute(s)",
-    flightSegmentAttributes: cleanFlightSegmentAttributes,
+    flightSegmentsAttributes: cleanFlightSegmentAttributes,
   }
-  emit("buildFlightOption", flightOptionAttributes)
-  selectedSegments.value = []
-}
+  return flightOptionAttributes
+})
 
 function extractDuration(duration) {
   let hours = 0
@@ -223,11 +232,11 @@ function deleteSelectedFlightSegments() {
   emit("update", newFlightSegments)
   selectedSegments.value = []
 }
+
+function emitCreatedFlightOptionAndRemoveSelected(flightOptionId) {
+  deleteSelectedFlightSegments()
+  emit("createdFlightOption", flightOptionId)
+}
 </script>
 
-<style scoped>
-::v-deep table tbody td {
-  border: 0px solid white !important;
-  background-color: #ffffff !important;
-}
-</style>
+<style scoped></style>
