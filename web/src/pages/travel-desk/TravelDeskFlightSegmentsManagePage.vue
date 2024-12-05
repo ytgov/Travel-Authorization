@@ -33,6 +33,12 @@
                   :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"
                   @buildFlightOption="appendFlightOptionAttributes"
                 />
+                <TravelDeskFlightOptionsWorkspaceCard
+                  class="mt-5"
+                  :legs="legs"
+                  :ungrouped-flight-segments="travelDeskFlightSegmentsAttributes"
+                  :flight-options="travelDeskFlightOptions"
+                />
                 <FlightOptionsTable
                   :legs="legs"
                   :ungrouped-flight-segments="travelDeskFlightSegmentsAttributes"
@@ -107,6 +113,7 @@ import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 import FlightOptionsTable from "@/modules/travelDesk/views/Desk/Components/FlightOptionsTable.vue"
 import TravelDeskFlightSegmentsImporterCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsImporterCard.vue"
 import TravelDeskFlightSegmentsWorkspaceCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsWorkspaceCard.vue"
+import TravelDeskFlightOptionsWorkspaceCard from "@/components/travel-desk-flight-options/TravelDeskFlightOptionsWorkspaceCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
