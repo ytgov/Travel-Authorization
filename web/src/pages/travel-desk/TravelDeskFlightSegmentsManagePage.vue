@@ -99,6 +99,7 @@ import { flatMap } from "lodash"
 import { TRAVEL_DESK_URL } from "@/urls"
 import http from "@/api/http-client"
 
+import useSessionStorage from "@/use/utils/use-session-storage"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
@@ -127,7 +128,10 @@ const travelDeskFlightOptions = computed(() =>
   flatMap(travelDeskFlightRequests.value, "flightOptions")
 )
 
-const travelDeskFlightSegmentsAttributes = ref([])
+const travelDeskFlightSegmentsAttributes = useSessionStorage(
+  `travel-desk-travel-request-${props.travelDeskTravelRequestId}-travel-desk-flight-segments-attributes`,
+  []
+)
 
 function appendFlightSegmentsAttributes(newFlightSegmentsAttributes) {
   travelDeskFlightSegmentsAttributes.value = [
