@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="mx-0 mx-md-auto px-0 px-md-4">
     <v-card>
       <v-card-title class="d-flex justify-space-between align-center">
         <h2>Manage Groups/Flight Options</h2>
@@ -16,7 +16,7 @@
           Back
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="px-0 px-md-4">
         <v-row class="mt-5">
           <v-col>
             <TravelDeskFlightSegmentsImporterCard @imported="appendFlightSegmentsAttributes" />
@@ -27,7 +27,7 @@
           <v-col>
             <v-card class="mt-5">
               <v-card-title><h3>Cost and Group Segments</h3></v-card-title>
-              <v-card-text>
+              <v-card-text class="px-0 px-md-4">
                 <TravelDeskFlightSegmentsWorkspaceCard
                   v-model="travelDeskFlightSegmentsAttributes"
                   :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"

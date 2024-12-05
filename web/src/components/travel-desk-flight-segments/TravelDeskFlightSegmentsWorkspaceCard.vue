@@ -4,7 +4,7 @@
       class="mt-5"
       large-title
     >
-      <v-card-title class="d-flex justify-space-between align-center">
+      <v-card-title class="d-flex flex-column flex-md-row justify-space-between align-center">
         <h4>Segments</h4>
         <v-btn
           class="my-0"
@@ -13,7 +13,7 @@
           >Add Flight Segment
         </v-btn>
       </v-card-title>
-      <v-card-text>
+      <v-card-text class="px-0 px-md-4">
         <v-data-iterator
           v-model="selectedSegments"
           :items="travelDeskFlightSegmentsAttributesWithId"
@@ -21,7 +21,7 @@
           show-select
         >
           <template #default="{ items, isSelected, select }">
-            <div class="d-flex justify-start">
+            <div class="d-flex justify-center justify-md-start">
               <v-checkbox
                 label="Select All"
                 :input-value="selectAllValue"
