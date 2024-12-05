@@ -1,12 +1,5 @@
 <template>
-  <v-skeleton-loader
-    v-if="isLoading"
-    type="card"
-  />
-  <v-card
-    v-else
-    outlined
-  >
+  <v-card outlined>
     <v-card-title class="blue--text font-weight-bold">
       Flight: {{ travelDeskFlightSegmentAttributes.flightNumber }}
     </v-card-title>
