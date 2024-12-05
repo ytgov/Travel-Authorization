@@ -104,11 +104,10 @@
 
 <script setup>
 import { computed, nextTick, ref } from "vue"
-import { flatMap } from "lodash"
 
 import { required } from "@/utils/validators"
 
-import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
+import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
 import TravelDeskFlightSegmentCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentCard.vue"
 import TravelDeskFlightRequestSelect from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestSelect.vue"
@@ -122,17 +121,13 @@ const props = defineProps({
 
 const headers = ref([{ text: "", value: "name" }])
 
-const travelDeskFlightRequestsQuery = computed(() => ({
-  where: {
-    travelRequestId: props.travelDeskTravelRequestId,
+const travelDeskFlightOptionsQuery = computed(() => ({
+  filters: {
+    forTravelRequest: props.travelDeskTravelRequestId,
   },
 }))
-const { travelDeskFlightRequests, isLoading } = useTravelDeskFlightRequests(
-  travelDeskFlightRequestsQuery
-)
-// TODO: build a scope that lets me load flight options for a given travel desk travel request
-const travelDeskFlightOptions = computed(() =>
-  flatMap(travelDeskFlightRequests.value, "flightOptions")
+const { travelDeskFlightOptions, isLoading } = useTravelDeskFlightOptions(
+  travelDeskFlightOptionsQuery
 )
 
 const source = ref({})

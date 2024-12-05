@@ -116,6 +116,20 @@ TravelDeskFlightOption.init(
   },
   {
     sequelize,
+    scopes: {
+      forTravelRequest(travelDeskTravelRequestId) {
+        return {
+          include: [
+            {
+              association: "flightRequest",
+              where: {
+                travelRequestId: travelDeskTravelRequestId,
+              },
+            },
+          ],
+        }
+      }
+    }
   }
 )
 

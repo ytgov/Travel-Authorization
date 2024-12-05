@@ -22,6 +22,7 @@ export class TravelDeskFlightOptionsController extends BaseController<TravelDesk
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         order,
+        include: ["flightSegments"],
       })
       return this.response.status(200).json({
         travelDeskFlightOptions,
