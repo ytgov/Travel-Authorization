@@ -168,16 +168,18 @@ function deleteFlightSegment(index) {
 }
 
 function groupFlightSegmentsAsFlightOption() {
-  const { id, ...flightSegmentAttributesWithoutId } = selectedSegments.value
   let durationHours = 0
   let durationMinutes = 0
   let sortOrder = 1
-  for (const flightSegmentAttributes of flightSegmentAttributesWithoutId) {
-    flightSegmentAttributes.sortOrder = sortOrder
+  const cleanFlightSegmentAttributes = []
+  for (const { id, ...flightSegmentAttributesWithoutId } of selectedSegments.value) {
+    flightSegmentAttributesWithoutId.sortOrder = sortOrder
     sortOrder += 1
-    const duration = extractDuration(flightSegmentAttributes.duration)
+    const duration = extractDuration(flightSegmentAttributesWithoutId.duration)
     durationHours += Number(duration.hours)
     durationMinutes += Number(duration.minutes)
+
+    cleanFlightSegmentAttributes.push(flightSegmentAttributesWithoutId)
   }
 
   const flightOptionAttributes = {
@@ -186,7 +188,7 @@ function groupFlightSegmentsAsFlightOption() {
     flightPreferenceOrder: null,
     // TODO: consider making duration a value in seconds?
     duration: durationHours + " Hour(s) " + durationMinutes + " Minute(s)",
-    flightSegmentAttributes: flightSegmentAttributesWithoutId,
+    flightSegmentAttributes: cleanFlightSegmentAttributes,
   }
   emit("buildFlightOption", flightOptionAttributes)
   selectedSegments.value = []
