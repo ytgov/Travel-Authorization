@@ -73,24 +73,19 @@
               />
             </v-col>
           </v-row>
-          <!-- Need readonly component that operates on non-persisted data -->
-          <!-- <v-row class="mb-4">
+          <v-row>
             <v-col
               cols="12"
               class="d-flex flex-wrap justify-center gap-4"
             >
-              <TravelDeskFlightSegmentCard
-                v-for="(
-                  flightSegment, index
-                ) in travelDeskFlightOptionAttributes.fligthSegmentAttributes"
+              <TravelDeskFlightSegmentAttributesCard
+                v-for="(flightSegmentAttributes, index) in flightSegmentsAttributes"
                 :key="`segment-${index}`"
-                :travel-desk-flight-segment-id="flightSegment.id"
-                max-width="600px"
+                :travel-desk-flight-segment-attributes="flightSegmentAttributes"
               />
             </v-col>
-          </v-row> -->
+          </v-row>
         </v-card-text>
-
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -115,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue"
+import { ref, nextTick, computed } from "vue"
 import { cloneDeep } from "lodash"
 
 import { required } from "@/utils/validators"
@@ -126,6 +121,7 @@ import useRouteQuery from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 
 import TravelDeskFlightRequestSelect from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestSelect.vue"
+import TravelDeskFlightSegmentAttributesCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentAttributesCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -141,6 +137,9 @@ const props = defineProps({
 const emit = defineEmits(["created"])
 
 const travelDeskFlightOptionAttributes = ref(cloneDeep(props.attributes))
+const flightSegmentsAttributes = computed(
+  () => travelDeskFlightOptionAttributes.value.flightSegmentsAttributes
+)
 
 const snack = useSnack()
 const showDialog = useRouteQuery("showTravelDeskFlightOptionCreate", false, { transform: Boolean })
@@ -184,8 +183,7 @@ function resetAttributes() {
 </script>
 
 <style scoped>
-.label {
-  font-weight: 600;
-  font-size: 10pt !important;
+.gap-4 {
+  gap: 1rem; /* 16px */
 }
 </style>
