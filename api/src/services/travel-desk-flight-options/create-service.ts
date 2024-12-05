@@ -1,9 +1,12 @@
+import { CreationAttributes } from "sequelize"
 import { isNil } from "lodash"
 
-import { TravelDeskFlightOption, User } from "@/models"
+import db, { TravelDeskFlightOption, User, TravelDeskFlightSegment } from "@/models"
 import BaseService from "@/services/base-service"
 
-type Attributes = Partial<TravelDeskFlightOption>
+type Attributes = Partial<TravelDeskFlightOption> & {
+  flightSegmentsAttributes?: Partial<TravelDeskFlightSegment>[]
+}
 
 export class CreateService extends BaseService {
   constructor(
@@ -21,6 +24,7 @@ export class CreateService extends BaseService {
       leg,
       duration,
       flightPreferenceOrder,
+      flightSegmentsAttributes,
       ...optionalAttributes
     } = this.attributes
 
@@ -44,14 +48,88 @@ export class CreateService extends BaseService {
       throw new Error("Duration is required.")
     }
 
-    return TravelDeskFlightOption.create({
-      ...optionalAttributes,
-      flightRequestId,
-      travelerId,
-      cost,
-      leg,
-      duration,
+    return db.transaction(async () => {
+      const travelDeskFlightOption = await TravelDeskFlightOption.create({
+        ...optionalAttributes,
+        flightRequestId,
+        travelerId,
+        cost,
+        leg,
+        duration,
+      })
+
+      await this.bulkCreateTravelDeskFlightSegments(
+        travelDeskFlightOption.id,
+        flightSegmentsAttributes
+      )
+
+      return travelDeskFlightOption
     })
+  }
+
+  private async bulkCreateTravelDeskFlightSegments(
+    travelDeskFlightOptionId: number,
+    flightSegmentsAttributes: Partial<TravelDeskFlightSegment>[] = []
+  ): Promise<void> {
+    const safeFlightSegmentsAttributes: CreationAttributes<TravelDeskFlightSegment>[] = []
+    for (const {
+      duration,
+      departLocation,
+      arriveLocation,
+      status,
+      flightNumber,
+      departAt,
+      arriveAt,
+      class: klass,
+      ...optionalAttributes
+    } of flightSegmentsAttributes) {
+      if (isNil(duration)) {
+        throw new Error("Duration is required.")
+      }
+
+      if (isNil(departLocation)) {
+        throw new Error("Depart location is required.")
+      }
+
+      if (isNil(arriveLocation)) {
+        throw new Error("Arrive location is required.")
+      }
+
+      if (isNil(status)) {
+        throw new Error("Status is required.")
+      }
+
+      if (isNil(flightNumber)) {
+        throw new Error("Flight number is required.")
+      }
+
+      if (isNil(departAt)) {
+        throw new Error("Depart at is required.")
+      }
+
+      if (isNil(arriveAt)) {
+        throw new Error("Arrive at is required.")
+      }
+
+      if (isNil(klass)) {
+        throw new Error("Class is required.")
+      }
+
+      safeFlightSegmentsAttributes.push({
+        ...optionalAttributes,
+        duration,
+        departLocation,
+        arriveLocation,
+        status,
+        flightNumber,
+        departAt,
+        arriveAt,
+        class: klass,
+        flightOptionId: travelDeskFlightOptionId,
+      })
+    }
+
+    await TravelDeskFlightSegment.bulkCreate(safeFlightSegmentsAttributes)
   }
 }
 
