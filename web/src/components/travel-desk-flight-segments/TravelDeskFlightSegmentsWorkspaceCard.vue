@@ -63,9 +63,10 @@
           @click="deleteSelectedFlightSegments"
           >Delete Selected
         </v-btn>
+        <!-- Consider making a wrapper component that generates the flight option? -->
         <TravelDeskFlightOptionCreateDialog
           :travel-desk-travel-request-id="travelDeskTravelRequestId"
-          :attributes="groupFlightSegmentsAsFlightOption"
+          :attributes="travelDeskFlightOptionAttributes"
           @created="emitCreatedFlightOptionAndRemoveSelected"
         >
           <template #activator="{ on, attrs }">
@@ -94,8 +95,10 @@ export default {
 </script>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { cloneDeep, isEmpty, isEqual } from "lodash"
+
+import useSessionStorage from "@/use/utils/use-session-storage"
 
 import TravelDeskFlightSegmentEditCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentEditCard.vue"
 import TravelDeskFlightOptionCreateDialog from "@/components/travel-desk-flight-options/TravelDeskFlightOptionCreateDialog.vue"
@@ -120,7 +123,11 @@ const travelDeskFlightSegmentsAttributesWithId = computed(() =>
   }))
 )
 
-const selectedSegments = ref([])
+const selectedSegments = useSessionStorage(
+  `travel-desk-travel-request-${props.travelDeskTravelRequestId}-travel-desk-flight-segments-selected`,
+  []
+)
+const travelDeskFlightOptionAttributes = ref({})
 
 const selectAllValue = computed(() => {
   if (
@@ -177,31 +184,40 @@ function deleteFlightSegment(index) {
   emit("update", newFlightSegments)
 }
 
-const groupFlightSegmentsAsFlightOption = computed(() => {
-  let durationHours = 0
-  let durationMinutes = 0
-  let sortOrder = 1
-  const cleanFlightSegmentAttributes = []
-  for (const { id, ...flightSegmentAttributesWithoutId } of selectedSegments.value) {
-    flightSegmentAttributesWithoutId.sortOrder = sortOrder
-    sortOrder += 1
-    const duration = extractDuration(flightSegmentAttributesWithoutId.duration)
-    durationHours += Number(duration.hours)
-    durationMinutes += Number(duration.minutes)
+// Using a watcher rather than a computed property because reactivity breaks
+// when the computed property is this large
+watch(
+  () => selectedSegments.value,
+  (newSelectedSegments) => {
+    let durationHours = 0
+    let durationMinutes = 0
+    let sortOrder = 1
+    const cleanFlightSegmentAttributes = []
+    for (const { id, ...flightSegmentAttributesWithoutId } of newSelectedSegments) {
+      flightSegmentAttributesWithoutId.sortOrder = sortOrder
+      sortOrder += 1
+      const duration = extractDuration(flightSegmentAttributesWithoutId.duration)
+      durationHours += Number(duration.hours)
+      durationMinutes += Number(duration.minutes)
 
-    cleanFlightSegmentAttributes.push(flightSegmentAttributesWithoutId)
-  }
+      cleanFlightSegmentAttributes.push(flightSegmentAttributesWithoutId)
+    }
 
-  const flightOptionAttributes = {
-    cost: 0,
-    flightRequestId: null,
-    flightPreferenceOrder: null,
-    // TODO: consider making duration a value in seconds?
-    duration: durationHours + " Hour(s) " + durationMinutes + " Minute(s)",
-    flightSegmentsAttributes: cleanFlightSegmentAttributes,
+    const flightOptionAttributes = {
+      cost: 0,
+      flightRequestId: null,
+      flightPreferenceOrder: null,
+      // TODO: consider making duration a value in seconds?
+      duration: durationHours + " Hour(s) " + durationMinutes + " Minute(s)",
+      flightSegmentsAttributes: cleanFlightSegmentAttributes,
+    }
+    travelDeskFlightOptionAttributes.value = flightOptionAttributes
+  },
+  {
+    immediate: true,
+    deep: true,
   }
-  return flightOptionAttributes
-})
+)
 
 function extractDuration(duration) {
   let hours = 0
