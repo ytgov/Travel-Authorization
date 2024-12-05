@@ -115,7 +115,7 @@ import { cloneDeep } from "lodash"
 
 import { required } from "@/utils/validators"
 
-import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-requests-api"
+import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
 
 import useRouteQuery from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
