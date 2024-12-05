@@ -110,7 +110,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, computed } from "vue"
+import { ref, nextTick, computed, watch } from "vue"
 import { cloneDeep } from "lodash"
 
 import { required } from "@/utils/validators"
@@ -137,8 +137,20 @@ const props = defineProps({
 const emit = defineEmits(["created"])
 
 const travelDeskFlightOptionAttributes = ref(cloneDeep(props.attributes))
+
+watch(
+  () => cloneDeep(props.attributes),
+  (newAttributes) => {
+    travelDeskFlightOptionAttributes.value = newAttributes
+  },
+  {
+    immediate: true,
+    deep: true,
+  }
+)
+
 const flightSegmentsAttributes = computed(
-  () => travelDeskFlightOptionAttributes.value.flightSegmentsAttributes
+  () => travelDeskFlightOptionAttributes.value.flightSegmentsAttributes || []
 )
 
 const snack = useSnack()
