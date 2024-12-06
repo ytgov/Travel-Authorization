@@ -18,7 +18,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         path: "",
@@ -156,7 +156,7 @@ const routes = [
   ...reportsRouter,
   {
     path: "",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         // TODO: push readcrumbs into higher layout

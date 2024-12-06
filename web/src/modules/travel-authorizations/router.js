@@ -3,7 +3,7 @@ import { cast } from "@/utils/vue-router-utils"
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         name: "ManageTravelAuthorizationsPage",
@@ -15,7 +15,7 @@ const routes = [
   },
   {
     path: "/travel-requests",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         path: ":travelAuthorizationId",

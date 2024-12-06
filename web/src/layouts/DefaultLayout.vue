@@ -20,7 +20,7 @@
         height="44"
       />
       <v-toolbar-title>
-        <h1 class="text-h6 font-weight-bold mb-0">{{ applicationName }}</h1>
+        <h1 class="text-h6 font-weight-bold mb-0">{{ APPLICATION_NAME }}</h1>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -36,7 +36,7 @@
           <v-icon>mdi-history</v-icon>
         </v-btn>
 
-        <span>{{ username }}</span>
+        <span>{{ fullName }}</span>
         <v-menu
           bottom
           left
@@ -76,7 +76,7 @@
               <v-list-item-icon>
                 <v-icon>mdi-clock</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>{{ releaseTag || "2023.11.01" }}</v-list-item-title>
+              <v-list-item-title>{{ RELEASE_TAG || "2023.11.01" }}</v-list-item-title>
             </v-list-item>
             <v-list-item @click="signOut">
               <v-list-item-icon>
@@ -87,11 +87,9 @@
           </v-list>
         </v-menu>
       </div>
-
-      <!-- <v-app-bar-nav-icon @click.stop="drawerRight = !drawerRight"></v-app-bar-nav-icon> -->
     </v-app-bar>
 
-    <v-main :style="{ 'padding-left: 33px !important': !hasSidebar }">
+    <v-main>
       <!-- Provides the application the proper gutter -->
       <v-container
         fluid
@@ -104,80 +102,41 @@
   </v-app>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue"
-import { mapState } from "vuex"
 
-import { RELEASE_TAG, APPLICATION_NAME, HAS_SIDEBAR, HAS_SIDEBAR_CLOSABLE } from "@/config"
+import { RELEASE_TAG, APPLICATION_NAME } from "@/config"
 import { auth0 } from "@/plugins/auth0-plugin"
-import store from "@/store"
 
 import useVuetify2 from "@/use/utils/use-vuetify2"
 import useCurrentUser from "@/use/use-current-user"
 
 import RequestAlert from "@/components/RequestAlert.vue"
-import LeftSidebarNavigationDrawer from "@/components/layout/LeftSidebarNavigationDrawer.vue"
+import LeftSidebarNavigationDrawer from "@/components/default-layout/LeftSidebarNavigationDrawer.vue"
 
-const { unset: unsetCurrentUser } = useCurrentUser()
+const { unset: unsetCurrentUser, fullName } = useCurrentUser()
 
-export default {
-  name: "App",
-  components: {
-    RequestAlert,
-    LeftSidebarNavigationDrawer,
-  },
-  setup() {
-    const { lgAndUp } = useVuetify2()
+const { lgAndUp } = useVuetify2()
 
-    const showDrawer = ref(lgAndUp.value)
+const showDrawer = ref(lgAndUp.value)
 
-    function toggleDrawer() {
-      showDrawer.value = !showDrawer.value
-    }
+function toggleDrawer() {
+  showDrawer.value = !showDrawer.value
+}
 
-    return {
-      showDrawer,
-      toggleDrawer,
-    }
-  },
-  data: () => ({
-    releaseTag: RELEASE_TAG,
-    dialog: false,
-    drawer: null,
-    drawerRight: null,
-    headerShow: false,
-    menuShow: false,
-    loadingClass: "d-none",
-    applicationName: APPLICATION_NAME,
-    hasSidebar: HAS_SIDEBAR,
-    hasSidebarClosable: HAS_SIDEBAR_CLOSABLE,
-    currentId: 0,
-    menuTitle: "Dashboard",
-  }),
-  computed: {
-    ...mapState(["user"]),
-    username() {
-      return store.getters.fullName
+function signOut() {
+  unsetCurrentUser()
+
+  const returnTo = encodeURI(window.location.origin + "/sign-in")
+  return auth0.logout({
+    logoutParams: {
+      returnTo,
     },
-    user() {
-      return store.getters.user
-    },
-  },
-  methods: {
-    signOut() {
-      unsetCurrentUser()
+  })
+}
 
-      const returnTo = encodeURI(window.location.origin + "/sign-in")
-      return auth0.logout({
-        logoutParams: {
-          returnTo,
-        },
-      })
-    },
-    showHistory() {
-      this.$refs.historySidebar.show()
-    },
-  },
+function showHistory() {
+  alert("TODO: implement history")
 }
 </script>
 
