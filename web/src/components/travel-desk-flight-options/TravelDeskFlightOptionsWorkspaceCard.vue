@@ -97,8 +97,10 @@
 import { computed, ref } from "vue"
 
 import { required } from "@/utils/validators"
+import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
 
 import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
+
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
@@ -129,6 +131,7 @@ async function saveTravelDeskFlightOption(id, attributes) {
   try {
     await travelDeskFlightOptionsApi.update(id, attributes)
     await refresh()
+    snack.success("Flight option saved.")
   } catch (error) {
     console.error("Failed to save travel desk flight option:", error)
     snack.error(`Failed to save travel desk flight option: ${error}`)
@@ -137,16 +140,21 @@ async function saveTravelDeskFlightOption(id, attributes) {
   }
 }
 
+const isDeleting = ref(false)
+
 async function deleteTravelDeskFlightOption(id) {
-  isSaving.value = true
+  if (!blockedToTrueConfirm("Are you sure you want to remove this flight option?")) return
+
+  isDeleting.value = true
   try {
     await travelDeskFlightOptionsApi.delete(id)
     await refresh()
+    snack.success("Flight option deleted.")
   } catch (error) {
     console.error("Failed to delete travel desk flight option:", error)
     snack.error(`Failed to delete travel desk flight option: ${error}`)
   } finally {
-    isSaving.value = false
+    isDeleting.value = false
   }
 }
 </script>
