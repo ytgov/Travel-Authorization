@@ -1,18 +1,14 @@
 <template>
   <v-container class="mx-0 mx-md-auto px-0 px-md-4">
-    <v-card>
+    <v-skeleton-loader
+      v-if="isNil(travelDeskTravelRequest)"
+      type="card"
+    />
+    <v-card v-else>
       <v-card-title>
         <h2>Travel Desk Request</h2>
       </v-card-title>
-
-      <v-skeleton-loader
-        v-if="isNil(travelDeskTravelRequest)"
-        type="card"
-      />
-      <v-card-text
-        v-else
-        class="px-0 px-md-4"
-      >
+      <v-card-text class="px-0 px-md-4">
         <v-row>
           <v-col>
             <TravelerDetailsFormCard v-model="travelDeskTravelRequest" />
@@ -97,18 +93,14 @@
           </v-col>
         </v-row>
       </v-card-text>
-
-      <v-skeleton-loader
-        v-if="isNil(travelDeskTravelRequest)"
-        type="actions"
-      />
-      <v-card-actions v-else>
+      <v-card-actions class="d-flex flex-column flex-md-row">
         <v-btn
-          color="grey darken-5"
-          class="px-5"
           :to="{
             name: 'TravelDeskPage',
           }"
+          color="grey darken-5"
+          class="px-5"
+          :block="$vuetify.breakpoint.smAndDown"
         >
           <div>Back</div>
         </v-btn>
@@ -126,7 +118,8 @@
         <v-btn
           class="mr-2 px-5"
           color="secondary"
-          :loading="savingData"
+          :loading="isLoading"
+          :block="$vuetify.breakpoint.smAndDown"
           @click="markTravelRequestAsOptionsProvidedAndReturnToTravelDesk"
         >
           Send to Traveler
@@ -136,7 +129,8 @@
           v-if="travelDeskTravelRequest.invoiceNumber"
           class="mr-5 px-5"
           color="#005A65"
-          :loading="savingData"
+          :loading="isLoading"
+          :block="$vuetify.breakpoint.smAndDown"
           @click="openConfirmBookingDialog"
           >Booking Complete
         </v-btn>
