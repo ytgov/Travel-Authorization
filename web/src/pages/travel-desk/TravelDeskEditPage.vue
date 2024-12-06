@@ -40,6 +40,16 @@
             />
           </v-col>
         </v-row>
+        <div class="d-flex justify-center justify-md-end">
+          <v-btn
+            color="primary"
+            outlined
+            :loading="isLoading"
+            @click="saveTravelDeskTravelRequest"
+            >Save Draft
+          </v-btn>
+        </div>
+        <v-divider class="mb-7" />
         <v-row v-if="travelDeskTravelRequest.invoiceNumber">
           <v-col>
             <TravelDeskInvoiceCard :travel-desk-travel-request-id="travelDeskTravelRequest.id" />
@@ -109,13 +119,6 @@
           @saveData="saveNewTravelRequest('save')"
           @close="refresh"
         />
-        <v-btn
-          class="ml-2 mr-2 px-5"
-          color="#005A65"
-          :loading="isLoading"
-          @click="saveTravelDeskTravelRequest"
-          >Save Draft
-        </v-btn>
         <v-btn
           class="mr-2 px-5"
           color="secondary"
