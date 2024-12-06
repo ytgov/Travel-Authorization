@@ -195,9 +195,4 @@ watchDebounced(
 )
 </script>
 
-<style scoped>
-.label {
-  font-weight: 600;
-  font-size: 10pt !important;
-}
-</style>
+<style scoped></style>
