@@ -20,6 +20,7 @@ import {
   TravelAuthorizationPreApprovalsController,
   TravelAuthorizations,
   TravelAuthorizationsController,
+  TravelDeskFlightOptions,
   TravelDeskFlightOptionsController,
   TravelDeskFlightRequestsController,
   TravelDeskFlightSegmentsController,
@@ -152,6 +153,10 @@ router
   .get(TravelDeskFlightOptionsController.show)
   .patch(TravelDeskFlightOptionsController.update)
   .delete(TravelDeskFlightOptionsController.destroy)
+
+router
+  .route("/api/travel-desk-flight-options/:travelDeskFlightOptionId/re-order-flight-segments")
+  .post(TravelDeskFlightOptions.ReOrderFlightSegmentsController.create)
 
 router
   .route("/api/travel-desk-flight-requests")

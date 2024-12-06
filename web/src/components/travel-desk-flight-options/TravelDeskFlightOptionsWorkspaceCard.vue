@@ -63,11 +63,7 @@
                 />
               </v-col>
             </v-row>
-            <TravelDeskFlightSegmentsDraggable
-              :where="{
-                flightOptionId: item.id,
-              }"
-            />
+            <TravelDeskFlightSegmentsDraggable :travel-desk-flight-option-id="item.id" />
           </v-card-text>
         </v-card>
       </template>
