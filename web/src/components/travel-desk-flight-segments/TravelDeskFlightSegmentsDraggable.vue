@@ -1,8 +1,13 @@
 <template>
+  <!--
+   NOTE: use the same group for all flight options if you want to be able to
+   drag and drop flight segments between flight options.
+   Currently, you cannot drag and drop between flight options.
+  -->
   <Draggable
     v-model="travelDeskFlightSegments"
     handle=".handle"
-    group="flight-segments"
+    :group="`travel-desk-flight-option-${travelDeskFlightOptionId}-flight-segments`"
     :disabled="isLoading || isReOrdering"
     @input="reOrderFlightSegments"
   >
