@@ -120,7 +120,7 @@
         />
         <v-btn
           class="mr-2 px-5"
-          color="secondary"
+          color="primary"
           :loading="isLoading"
           :block="$vuetify.breakpoint.smAndDown"
           @click="markTravelRequestAsOptionsProvidedAndReturnToTravelDesk"
