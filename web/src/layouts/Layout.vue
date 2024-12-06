@@ -1,5 +1,11 @@
 <template>
   <v-app>
+    <LeftSidebarNavigationDrawer
+      v-model="showDrawer"
+      style="margin-top: 70px"
+      app
+    />
+
     <v-app-bar
       app
       color="#fff"
@@ -7,6 +13,7 @@
       height="70"
       style="left: 0; border-bottom: 3px #f3b228 solid"
     >
+      <v-app-bar-nav-icon @click="toggleDrawer"></v-app-bar-nav-icon>
       <img
         src="/yukon.svg"
         style="margin: -8px 85px 0 0"
@@ -14,99 +21,11 @@
       />
       <v-toolbar-title>
         <h1 class="text-h6 font-weight-bold mb-0">{{ applicationName }}</h1>
-
-        <v-progress-circular
-          :class="loadingClass"
-          indeterminate
-          color="#f3b228"
-          size="20"
-          width="2"
-          class="ml-4"
-        ></v-progress-circular>
       </v-toolbar-title>
+
       <v-spacer></v-spacer>
 
       <div>
-        <v-menu
-          offset-y
-          class="ml-0"
-        >
-          <template #activator="{ on, attrs }">
-            <v-btn
-              text
-              color="primary"
-              :loading="isLoading"
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ menuTitle }}<v-icon>mdi-menu-down</v-icon>
-            </v-btn>
-          </template>
-
-          <v-list
-            dense
-            style="min-width: 200px"
-          >
-            <v-list-item
-              to="/dashboard"
-              @click="menuItemSelected('Dashboard')"
-            >
-              <v-list-item-title>Dashboard</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              :to="{
-                name: 'my-travel-requests/MyTravelRequestsPage',
-              }"
-              @click="menuItemSelected('My Travel Requests')"
-            >
-              <v-list-item-title>My Travel Requests</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              to="/preapproved"
-              @click="menuItemSelected('PreApproved')"
-            >
-              <v-list-item-title>PreApproved</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              to="/travel-desk"
-              @click="menuItemSelected('Travel Desk')"
-            >
-              <v-list-item-title>Travel Desk </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              to="/travel-request"
-              @click="menuItemSelected('Travel Request')"
-            >
-              <v-list-item-title>Travel Request </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              to="/flight-expense"
-              @click="menuItemSelected('Flight Expense')"
-            >
-              <v-list-item-title>Flight Expense </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              to="/reporting-summary"
-              @click="menuItemSelected('Reports')"
-            >
-              <v-list-item-title>Reports </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              :to="{ name: 'ManageTravelAuthorizationsPage' }"
-              @click="menuItemSelected('Manager View')"
-            >
-              <v-list-item-title>Manager View</v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              v-if="isInDevelopmentOrUserAcceptanceTesting"
-              :to="{ name: 'Qa-Scenarios' }"
-              @click="menuItemSelected('QA Scenarios')"
-            >
-              <v-list-item-title>QA Scenarios</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
         <v-btn
           icon
           color="primary"
@@ -173,10 +92,8 @@
     </v-app-bar>
 
     <v-main :style="{ 'padding-left: 33px !important': !hasSidebar }">
-      <PageLoader v-if="isLoading" />
       <!-- Provides the application the proper gutter -->
       <v-container
-        v-else
         fluid
         class="h-full"
       >
@@ -188,23 +105,18 @@
 </template>
 
 <script>
+import { ref } from "vue"
 import { mapState } from "vuex"
 
-import {
-  ENVIRONMENT,
-  RELEASE_TAG,
-  APPLICATION_NAME,
-  HAS_SIDEBAR,
-  HAS_SIDEBAR_CLOSABLE,
-} from "@/config"
+import { RELEASE_TAG, APPLICATION_NAME, HAS_SIDEBAR, HAS_SIDEBAR_CLOSABLE } from "@/config"
 import { auth0 } from "@/plugins/auth0-plugin"
-import router from "@/router"
 import store from "@/store"
 
+import useVuetify2 from "@/use/utils/use-vuetify2"
 import useCurrentUser from "@/use/use-current-user"
 
 import RequestAlert from "@/components/RequestAlert.vue"
-import PageLoader from "@/components/PageLoader.vue"
+import LeftSidebarNavigationDrawer from "@/components/layout/LeftSidebarNavigationDrawer.vue"
 
 const { unset: unsetCurrentUser } = useCurrentUser()
 
@@ -212,7 +124,21 @@ export default {
   name: "App",
   components: {
     RequestAlert,
-    PageLoader,
+    LeftSidebarNavigationDrawer,
+  },
+  setup() {
+    const { lgAndUp } = useVuetify2()
+
+    const showDrawer = ref(lgAndUp.value)
+
+    function toggleDrawer() {
+      showDrawer.value = !showDrawer.value
+    }
+
+    return {
+      showDrawer,
+      toggleDrawer,
+    }
   },
   data: () => ({
     releaseTag: RELEASE_TAG,
@@ -227,54 +153,17 @@ export default {
     hasSidebarClosable: HAS_SIDEBAR_CLOSABLE,
     currentId: 0,
     menuTitle: "Dashboard",
-
-    isLoading: true,
   }),
   computed: {
-    ...mapState(["isAuthenticated", "user", "showAppSidebar"]),
+    ...mapState(["user"]),
     username() {
       return store.getters.fullName
-    },
-    isAuthenticated() {
-      //return true; // until we get auth process to show sidebar
-      return store.getters.isAuthenticated
     },
     user() {
       return store.getters.user
     },
-    showAppSidebar() {
-      return store.getters.showAppSidebar
-    },
-    isInDevelopmentOrUserAcceptanceTesting() {
-      return (
-        ENVIRONMENT === "development" ||
-        window.location.hostname === "travel-auth-dev.ynet.gov.yk.ca"
-      )
-    },
-  },
-  watch: {
-    isAuthenticated: function (val) {
-      if (!val) this.hasSidebar = false
-      else this.hasSidebar = store.getters.showAppSidebar
-    },
-    showAppSidebar: function (val) {
-      if (val) {
-        this.currentId = this.$route.params.id
-      }
-
-      this.hasSidebar = val && this.isAuthenticated
-    },
-    $route: function () {
-      this.getDropdownTitle()
-    },
-  },
-  async mounted() {
-    this.doInitialize()
   },
   methods: {
-    nav: function (location) {
-      router.push(location)
-    },
     signOut() {
       unsetCurrentUser()
 
@@ -287,52 +176,6 @@ export default {
     },
     showHistory() {
       this.$refs.historySidebar.show()
-    },
-    showError: function (msg) {
-      this.$refs.notifier.showError(msg)
-    },
-    showSuccess: function (msg) {
-      this.$refs.notifier.showSuccess(msg)
-    },
-    showAPIMessages: function (msg) {
-      this.$refs.notifier.showAPIMessages(msg)
-    },
-    menuItemSelected(title) {
-      this.menuTitle = title
-    },
-    async doInitialize() {
-      //await this.initialize();
-      this.isLoading = false
-      this.getDropdownTitle()
-    },
-    getDropdownTitle() {
-      const path = this.$route.path
-      const routes = [
-        { name: "Dashboard", to: "/dashboard" },
-        {
-          name: "My Travel Requests",
-          to: {
-            name: "my-travel-requests/MyTravelRequestsPage",
-          },
-        },
-        { name: "PreApproved", to: "/preapproved" },
-        { name: "Travel Desk", to: { name: "TravelDeskPage" } },
-        { name: "Travel Request", to: "/travel-request" },
-        { name: "Flight Expense", to: "/flight-expense" },
-        { name: "Reports", to: "/reporting-summary" },
-        { name: "Manager View", to: { name: "ManageTravelAuthorizationsPage" } },
-      ]
-
-      if (this.isInDevelopmentOrUserAcceptanceTesting) {
-        routes.push({ name: "QA Scenarios", to: { name: "Qa-Scenarios" } })
-      }
-
-      for (const route of routes) {
-        if (this.$route.name === route.to.name || path.includes(route.to)) {
-          this.menuTitle = route.name
-          break
-        }
-      }
     },
   },
 }
