@@ -1,7 +1,12 @@
 import { CreationAttributes } from "sequelize"
 import { isNil } from "lodash"
 
-import db, { TravelDeskFlightOption, User, TravelDeskFlightSegment } from "@/models"
+import db, {
+  TravelDeskFlightOption,
+  User,
+  TravelDeskFlightSegment,
+  TravelDeskFlightRequest,
+} from "@/models"
 import BaseService from "@/services/base-service"
 
 type Attributes = Partial<TravelDeskFlightOption> & {
@@ -19,7 +24,6 @@ export class CreateService extends BaseService {
   async perform(): Promise<TravelDeskFlightOption> {
     const {
       flightRequestId,
-      travelerId,
       cost,
       leg,
       duration,
@@ -30,10 +34,6 @@ export class CreateService extends BaseService {
 
     if (isNil(flightRequestId)) {
       throw new Error("Flight request ID is required.")
-    }
-
-    if (isNil(travelerId)) {
-      throw new Error("Traveler ID is required.")
     }
 
     if (isNil(cost)) {
@@ -47,6 +47,8 @@ export class CreateService extends BaseService {
     if (isNil(duration)) {
       throw new Error("Duration is required.")
     }
+
+    const travelerId = await this.ensureTravelerId(flightRequestId, optionalAttributes.travelerId)
 
     return db.transaction(async () => {
       const travelDeskFlightOption = await TravelDeskFlightOption.create({
@@ -65,6 +67,40 @@ export class CreateService extends BaseService {
 
       return travelDeskFlightOption
     })
+  }
+
+  private async ensureTravelerId(
+    travelDeskFlightRequestId: number,
+    travelerId?: number
+  ): Promise<number> {
+    if (!isNil(travelerId)) return travelerId
+
+    const flightRequest = await TravelDeskFlightRequest.findOne({
+      where: { id: travelDeskFlightRequestId },
+      include: [
+        {
+          association: "travelRequest",
+          include: ["travelAuthorization"],
+        },
+      ],
+    })
+    if (isNil(flightRequest)) {
+      throw new Error("Could not find flight request, which is required to ensure traveler ID")
+    }
+
+    const { travelRequest } = flightRequest
+    if (isNil(travelRequest)) {
+      throw new Error("Could not find travel request, which is required to ensure traveler ID")
+    }
+
+    const { travelAuthorization } = travelRequest
+    if (isNil(travelAuthorization)) {
+      throw new Error(
+        "Could not find travel authorization, which is required to ensure traveler ID"
+      )
+    }
+
+    return travelAuthorization.userId
   }
 
   private async bulkCreateTravelDeskFlightSegments(
