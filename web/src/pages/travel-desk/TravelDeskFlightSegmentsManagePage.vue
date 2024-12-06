@@ -48,7 +48,7 @@
                     }"
                     color="primary"
                   >
-                    Return to Flight Request
+                    Return to Travel Request
                   </v-btn>
                 </v-card-actions>
               </v-card-text>
