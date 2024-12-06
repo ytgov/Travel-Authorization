@@ -4,6 +4,11 @@
       <h4>Flight Options Groupings</h4>
     </v-card-title>
 
+    <TravelDeskFlightOptionEditDialog
+      ref="travelDeskFlightOptionEditDialog"
+      @saved="refresh"
+    />
+
     <v-data-iterator
       :items="travelDeskFlightOptions"
       :server-items-length="totalCount"
@@ -73,10 +78,6 @@
         </v-card>
       </template>
     </v-data-iterator>
-    <TravelDeskFlightOptionEditDialog
-      ref="travelDeskFlightOptionEditDialog"
-      @saved="refresh"
-    />
   </v-card>
 </template>
 
