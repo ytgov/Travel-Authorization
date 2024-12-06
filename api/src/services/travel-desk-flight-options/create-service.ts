@@ -1,6 +1,7 @@
 import { CreationAttributes } from "sequelize"
 import { isNil } from "lodash"
 
+import formatDate from "@/utils/format-date"
 import db, {
   TravelDeskFlightOption,
   User,
@@ -25,7 +26,6 @@ export class CreateService extends BaseService {
     const {
       flightRequestId,
       cost,
-      leg,
       duration,
       flightPreferenceOrder,
       flightSegmentsAttributes,
@@ -40,9 +40,7 @@ export class CreateService extends BaseService {
       throw new Error("Cost is required.")
     }
 
-    if (isNil(leg)) {
-      throw new Error("Leg is required.")
-    }
+    const leg = await this.generateLeg(flightRequestId, optionalAttributes.leg)
 
     if (isNil(duration)) {
       throw new Error("Duration is required.")
@@ -67,6 +65,21 @@ export class CreateService extends BaseService {
 
       return travelDeskFlightOption
     })
+  }
+
+  private async generateLeg(flightRequestId: number, leg?: string): Promise<string> {
+    if (!isNil(leg)) return leg
+
+    const flightRequest = await TravelDeskFlightRequest.findOne({
+      where: { id: flightRequestId },
+    })
+    if (isNil(flightRequest)) {
+      throw new Error("Could not find flight request, which is required to generate leg")
+    }
+
+    const { departLocation, arriveLocation, datePreference } = flightRequest
+    const formattedDate = formatDate(datePreference)
+    return `${departLocation} -> ${arriveLocation} @ ${formattedDate}`
   }
 
   private async ensureTravelerId(
