@@ -127,8 +127,9 @@
           class="mr-2 px-5"
           color="secondary"
           :loading="savingData"
-          @click="saveNewTravelRequest('sendback', { returnToTravelDeskPageAfter: true })"
-          >Send to Traveler
+          @click="markTravelRequestAsOptionsProvidedAndReturnToTravelDesk"
+        >
+          Send to Traveler
         </v-btn>
 
         <v-btn
@@ -157,7 +158,9 @@ import { cloneDeep, isNil } from "lodash"
 import { TRAVEL_DESK_URL } from "@/urls"
 import { useSnack } from "@/plugins/snack-plugin"
 import http from "@/api/http-client"
-import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
+import travelDeskTravelRequestsApi, {
+  TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
+} from "@/api/travel-desk-travel-requests-api"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
@@ -210,6 +213,23 @@ async function refresh() {
 }
 
 const router = useRouter()
+
+async function markTravelRequestAsOptionsProvidedAndReturnToTravelDesk() {
+  isLoading.value = true
+  try {
+    await travelDeskTravelRequestsApi.optionsProvided(
+      travelDeskTravelRequestId.value,
+      travelDeskTravelRequest.value
+    )
+    return router.push({
+      name: "TravelDeskPage",
+    })
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 async function saveNewTravelRequest(saveType, { returnToTravelDeskPageAfter = false } = {}) {
   const body = cloneDeep(travelDeskTravelRequest.value)

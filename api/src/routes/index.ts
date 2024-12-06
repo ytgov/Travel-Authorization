@@ -236,6 +236,9 @@ router
 router
   .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId/book")
   .post(TravelDeskTravelRequests.BookController.create)
+router
+  .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId/options-provided")
+  .post(TravelDeskTravelRequests.OptionsProvidedController.create)
 
 router.route("/api/locations").get(LocationsController.index)
 router.route("/api/locations/:locationId").get(LocationsController.show)
