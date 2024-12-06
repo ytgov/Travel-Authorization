@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="card--outlined">
     <v-card-title class="d-flex justify-space-between align-center">
       <h4 class="text-h6">Traveler Details</h4>
       <SaveStateProgress

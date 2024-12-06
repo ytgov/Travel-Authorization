@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="card--outlined">
     <v-card-title>
       <h3>Flight Requests</h3>
     </v-card-title>

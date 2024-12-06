@@ -4,7 +4,10 @@
       v-if="isNil(travelDeskTravelRequest)"
       type="card"
     />
-    <v-card v-else>
+    <v-card
+      v-else
+      class="card--outlined"
+    >
       <v-card-title>
         <h2>Travel Desk Request</h2>
       </v-card-title>
@@ -65,7 +68,7 @@
         <v-row>
           <v-col>
             <v-card
-              class="mt-10"
+              class="mt-10 card--outlined"
               large-title
             >
               <v-card-title>
