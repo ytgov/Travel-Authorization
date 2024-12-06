@@ -2,7 +2,7 @@ import { isNil } from "lodash"
 
 import { TravelDeskTravelRequest } from "@/models"
 import { TravelDeskTravelRequests } from "@/policies"
-import { BookService } from "@/services/travel-desk-travel-requests"
+import { OptionsProvidedService } from "@/services/travel-desk-travel-requests"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -16,15 +16,13 @@ export class OptionsProvidedController extends BaseController<TravelDeskTravelRe
 
       const policy = this.buildPolicy(travelDeskTravelRequest)
       if (!policy.create()) {
-        return this.response
-          .status(403)
-          .json({
-            message: "You are not authorized to provide options for this travel desk request.",
-          })
+        return this.response.status(403).json({
+          message: "You are not authorized to provide options for this travel desk request.",
+        })
       }
 
       const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
-      const updatedTravelDeskTravelRequest = await BookService.perform(
+      const updatedTravelDeskTravelRequest = await OptionsProvidedService.perform(
         travelDeskTravelRequest,
         permittedAttributes,
         this.currentUser
