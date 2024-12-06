@@ -137,6 +137,10 @@ async function deleteTravelDeskFlightOption(id) {
     isDeleting.value = false
   }
 }
+
+defineExpose({
+  refresh,
+})
 </script>
 
 <style scoped></style>
