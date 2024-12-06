@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="mx-0 mx-md-auto px-0 px-md-4">
     <v-card>
       <v-card-title>
         <h2>Travel Desk Request</h2>
@@ -9,7 +9,10 @@
         v-if="isNil(travelDeskTravelRequest)"
         type="card"
       />
-      <v-card-text v-else>
+      <v-card-text
+        v-else
+        class="px-0 px-md-4"
+      >
         <v-row>
           <v-col>
             <TravelerDetailsFormCard v-model="travelDeskTravelRequest" />
@@ -45,6 +48,7 @@
             color="primary"
             outlined
             :loading="isLoading"
+            :block="$vuetify.breakpoint.smAndDown"
             @click="saveTravelDeskTravelRequest"
             >Save Draft
           </v-btn>
@@ -71,7 +75,7 @@
               <v-card-title>
                 <h3>Travel Information</h3>
               </v-card-title>
-              <v-card-text>
+              <v-card-text class="px-0 px-md-4">
                 <TravelDeskFlightRequestsManageCard
                   :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                   :travel-authorization-id="travelDeskTravelRequest.travelAuthorizationId"
