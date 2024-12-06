@@ -26,12 +26,11 @@ export class TravelDeskFlightOptionsPolicy extends PolicyFactory(TravelDeskFligh
   }
 
   permittedAttributes(): Path[] {
-    return ["cost", "flightPreferenceOrder", "leg", "duration"]
+    return ["flightRequestId", "cost", "flightPreferenceOrder", "leg", "duration"]
   }
 
   permittedAttributesForCreate(): Path[] {
     return [
-      "flightRequestId",
       "travelerId",
       ...this.permittedAttributes(),
       {
