@@ -54,19 +54,18 @@
         </v-row>
         <v-row>
           <v-col>
-            <TitleCard
+            <v-card
               class="mt-10"
               large-title
             >
-              <template #title>
-                <div>Travel Information</div>
-              </template>
-              <template #body>
+              <v-card-title>
+                <h3>Travel Information</h3>
+              </v-card-title>
+              <v-card-text>
                 <TravelDeskFlightRequestsManageCard
                   :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                   :travel-authorization-id="travelDeskTravelRequest.travelAuthorizationId"
                   show-flight-options
-                  class="mx-5"
                 />
                 <RentalCarRequestTable
                   :flight-requests="travelDeskTravelRequest.flightRequests"
@@ -79,8 +78,8 @@
                 <TransportationRequestTable
                   :other-transportations="travelDeskTravelRequest.otherTransportations"
                 />
-              </template>
-            </TitleCard>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
       </v-card-text>
@@ -157,7 +156,6 @@ import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
-import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
