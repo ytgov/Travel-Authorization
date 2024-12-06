@@ -10,7 +10,6 @@
               travelDeskTravelRequestId,
             },
           }"
-          :loading="isLoading"
           color="secondary"
         >
           Back
@@ -39,6 +38,7 @@
                   :travel-desk-travel-request-id="travelDeskTravelRequestIdAsNumber"
                 />
                 <v-card-actions>
+                  <v-spacer />
                   <v-btn
                     :to="{
                       name: 'TravelDeskEditPage',
@@ -46,41 +46,9 @@
                         travelDeskTravelRequestId,
                       },
                     }"
-                    class="ml-3 mr-2 my-5 px-3 py-4"
-                    style="min-width: 0"
-                    color="grey darken-1"
-                    :loading="isLoading"
-                    small
-                    >Back
-                  </v-btn>
-                  <v-btn
-                    style="min-width: 0"
-                    color="red"
-                    class="ml-3 my-5 px-3 py-4"
-                    :loading="isLoading"
-                    small
-                    @click="deleteFlightOptions(true)"
-                    >Delete Travel Port Record
-                  </v-btn>
-                  <v-btn
-                    :disabled="travelDeskFlightOptions.length == 0"
-                    style="min-width: 0"
-                    color="secondary"
-                    class="ml-auto mr-3 my-5 px-3 py-4"
-                    :loading="isLoading"
-                    small
-                    @click="removeAllFlightOptions"
-                    >Remove All Groups
-                  </v-btn>
-                  <v-btn
-                    :disabled="travelDeskFlightOptions.length == 0"
-                    style="min-width: 0"
-                    color="#005A65"
-                    class="ml-3 mr-3 my-5 px-3 py-4"
-                    :loading="isLoading"
-                    small
-                    @click="saveAllFlightOptions"
-                    >Save Groupings
+                    color="primary"
+                  >
+                    Return to Flight Request
                   </v-btn>
                 </v-card-actions>
               </v-card-text>
@@ -94,15 +62,9 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { flatMap } from "lodash"
-
-import { TRAVEL_DESK_URL } from "@/urls"
-import http from "@/api/http-client"
 
 import useSessionStorage from "@/use/utils/use-session-storage"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useSnack from "@/use/use-snack"
-import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 import TravelDeskFlightSegmentsImporterCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsImporterCard.vue"
 import TravelDeskFlightSegmentsWorkspaceCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsWorkspaceCard.vue"
@@ -116,18 +78,6 @@ const props = defineProps({
 })
 
 const travelDeskTravelRequestIdAsNumber = computed(() => parseInt(props.travelDeskTravelRequestId))
-
-const travelDeskFlightRequestsQuery = computed(() => ({
-  where: {
-    travelRequestId: props.travelDeskTravelRequestId,
-  },
-}))
-const { travelDeskFlightRequests, isLoading } = useTravelDeskFlightRequests(
-  travelDeskFlightRequestsQuery
-)
-const travelDeskFlightOptions = computed(() =>
-  flatMap(travelDeskFlightRequests.value, "flightOptions")
-)
 
 const travelDeskFlightSegmentsAttributes = useSessionStorage(
   `travel-desk-travel-request-${props.travelDeskTravelRequestId}-travel-desk-flight-segments-attributes`,
@@ -146,51 +96,6 @@ const travelDeskFlightOptionsWorkspaceCard = ref(null)
 
 function refreshFlightOptionsWorkspaceCard() {
   travelDeskFlightOptionsWorkspaceCard.value.refresh()
-}
-
-const snack = useSnack()
-
-function removeAllFlightOptions() {
-  for (const flightOption of travelDeskFlightOptions.value) {
-    for (const flightSegment of flightOption.flightSegments) {
-      travelDeskFlightSegmentsAttributes.value.push(flightSegment)
-    }
-  }
-  travelDeskFlightOptions.value.splice(0)
-  deleteFlightOptions(false)
-}
-
-async function deleteFlightOptions(removeSegments) {
-  isLoading.value = true
-  try {
-    await http.delete(`${TRAVEL_DESK_URL}/flight-options/${props.travelDeskTravelRequestId}`)
-
-    travelDeskFlightOptions.value.splice(0)
-
-    if (removeSegments) {
-      travelDeskFlightSegmentsAttributes.value = []
-    }
-  } catch (error) {
-    console.error(error)
-    snack.error(`Failed to delete flight options: ${error}`)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-async function saveAllFlightOptions() {
-  // TODO: validate using form ref
-
-  isLoading.value = true
-  try {
-    const body = travelDeskFlightOptions.value
-    await http.post(`${TRAVEL_DESK_URL}/flight-options/${props.travelDeskTravelRequestId}`, body)
-  } catch (error) {
-    console.error(error)
-    snack.error(`Failed to save flight options: ${error}`)
-  } finally {
-    isLoading.value = false
-  }
 }
 
 useBreadcrumbs([

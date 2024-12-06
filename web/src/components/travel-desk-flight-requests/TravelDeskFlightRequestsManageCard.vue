@@ -28,10 +28,6 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <TravelPortModal
-        :travel-desk-travel-request-id="travelDeskTravelRequestId"
-        :flight-requests="travelDeskFlightRequests"
-      />
       <v-btn
         :to="{
           name: 'TravelDeskFlightSegmentsManagePage',
@@ -52,11 +48,9 @@ import { computed, ref, toRefs } from "vue"
 import { first, last } from "lodash"
 
 import useTravelAuthorization from "@/use/use-travel-authorization"
-import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 import TravelDeskFlightRequestCreateDialog from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestCreateDialog.vue"
 import TravelDeskFlightRequestsManageTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsManageTable.vue"
-import TravelPortModal from "@/modules/travelDesk/views/Desk/Components/TravelPortModal.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -83,15 +77,6 @@ const lastTravelSegment = computed(() => last(travelAuthorization.value?.travelS
 
 const minDate = computed(() => firstTravelSegment.value?.departureOn)
 const maxDate = computed(() => lastTravelSegment.value?.departureOn)
-
-const travelDeskFlightRequestsQuery = computed(() => {
-  return {
-    where: {
-      travelRequestId: props.travelDeskTravelRequestId,
-    },
-  }
-})
-const { travelDeskFlightRequests } = useTravelDeskFlightRequests(travelDeskFlightRequestsQuery)
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestsManageTable> | null>} */
 const travelDeskFlightRequestsManageTable = ref(null)
