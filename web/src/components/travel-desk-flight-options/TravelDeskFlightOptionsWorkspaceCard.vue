@@ -52,7 +52,7 @@
               </v-col>
               <v-col
                 cols="12"
-                md="4"
+                md="3"
               >
                 <v-text-field
                   v-model="item.duration"
@@ -62,9 +62,31 @@
                   append-icon="mdi-lock"
                 />
               </v-col>
+              <v-col
+                cols="12"
+                md="1"
+                class="d-flex justify-center align-baseline"
+              >
+                <v-btn
+                  color="primary"
+                  :loading="isSaving"
+                  @click="saveTravelDeskFlightOption(item.id, item)"
+                  >Save</v-btn
+                >
+              </v-col>
             </v-row>
             <TravelDeskFlightSegmentsDraggable :travel-desk-flight-option-id="item.id" />
           </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              color="error"
+              :loading="isSaving"
+              @click="deleteTravelDeskFlightOption(item.id)"
+            >
+              Delete
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </template>
     </v-data-iterator>
@@ -72,10 +94,12 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 
 import { required } from "@/utils/validators"
 
+import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
+import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
 import TravelDeskFlightRequestSelect from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestSelect.vue"
@@ -93,9 +117,38 @@ const travelDeskFlightOptionsQuery = computed(() => ({
     forTravelRequest: props.travelDeskTravelRequestId,
   },
 }))
-const { travelDeskFlightOptions, totalCount, isLoading } = useTravelDeskFlightOptions(
+const { travelDeskFlightOptions, totalCount, isLoading, refresh } = useTravelDeskFlightOptions(
   travelDeskFlightOptionsQuery
 )
+
+const isSaving = ref(false)
+const snack = useSnack()
+
+async function saveTravelDeskFlightOption(id, attributes) {
+  isSaving.value = true
+  try {
+    await travelDeskFlightOptionsApi.update(id, attributes)
+    await refresh()
+  } catch (error) {
+    console.error("Failed to save travel desk flight option:", error)
+    snack.error(`Failed to save travel desk flight option: ${error}`)
+  } finally {
+    isSaving.value = false
+  }
+}
+
+async function deleteTravelDeskFlightOption(id) {
+  isSaving.value = true
+  try {
+    await travelDeskFlightOptionsApi.delete(id)
+    await refresh()
+  } catch (error) {
+    console.error("Failed to delete travel desk flight option:", error)
+    snack.error(`Failed to delete travel desk flight option: ${error}`)
+  } finally {
+    isSaving.value = false
+  }
+}
 </script>
 
 <style scoped></style>

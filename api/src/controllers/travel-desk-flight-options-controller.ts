@@ -102,14 +102,10 @@ export class TravelDeskFlightOptionsController extends BaseController<TravelDesk
       }
 
       const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
-      const updatedTravelDeskFlightOption = UpdateService.perform(
-        travelDeskFlightOption,
-        permittedAttributes,
-        this.currentUser
-      )
+      await UpdateService.perform(travelDeskFlightOption, permittedAttributes, this.currentUser)
 
       return this.response.status(200).json({
-        travelDeskFlightOption: updatedTravelDeskFlightOption,
+        travelDeskFlightOption,
       })
     } catch (error) {
       logger.error(`Error updating travel desk flight option: ${error}`, { error })

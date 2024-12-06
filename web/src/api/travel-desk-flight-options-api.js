@@ -88,7 +88,7 @@ export const travelDeskFlightOptionsApi = {
    * }>}
    */
   async update(travelDeskFlightOptionId, attributes) {
-    const { data } = await http.put(
+    const { data } = await http.patch(
       `/api/travel-desk-flight-options/${travelDeskFlightOptionId}`,
       attributes
     )

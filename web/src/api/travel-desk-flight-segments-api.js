@@ -93,7 +93,7 @@ export const travelDeskFlightSegmentsApi = {
    * }>}
    */
   async update(travelDeskFlightSegmentId, attributes) {
-    const { data } = await http.put(
+    const { data } = await http.patch(
       `/api/travel-desk-flight-segments/${travelDeskFlightSegmentId}`,
       attributes
     )
