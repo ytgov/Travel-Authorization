@@ -12,7 +12,7 @@ export class TravelDeskFlightOptionsController extends BaseController<TravelDesk
     try {
       const where = this.buildWhere()
       const scopes = this.buildFilterScopes()
-      const order = this.buildOrder([["leg", "ASC"]])
+      const order = this.buildOrder([["createdAt", "ASC"]])
 
       const scopedFlightOptions = TravelDeskFlightOptionsPolicy.applyScope(scopes, this.currentUser)
 
