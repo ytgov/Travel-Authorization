@@ -66,18 +66,24 @@
               />
             </v-col>
           </v-row>
-          <!-- <v-row>
+          <v-row>
             <v-col
               cols="12"
               class="d-flex flex-wrap justify-center gap-4"
             >
-              <TravelDeskFlightSegmentAttributesCard
-                v-for="(flightSegmentAttributes, index) in flightSegmentsAttributes"
-                :key="`segment-${index}`"
-                :travel-desk-flight-segment-attributes="flightSegmentAttributes"
+              <v-skeleton-loader
+                v-if="isLoadingFlightSegments"
+                type="card"
               />
+              <template v-else>
+                <TravelDeskFlightSegmentAttributesCard
+                  v-for="(travelDeskFlightSegment, index) in travelDeskFlightSegments"
+                  :key="`segment-${index}`"
+                  :travel-desk-flight-segment-attributes="travelDeskFlightSegment"
+                />
+              </template>
             </v-col>
-          </v-row> -->
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -103,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from "vue"
+import { ref, nextTick, watch, computed } from "vue"
 import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
@@ -113,6 +119,7 @@ import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
 import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOption from "@/use/use-travel-desk-flight-option"
+import useTravelDeskFlightSegments from "@/use/use-travel-desk-flight-segments"
 
 import TravelDeskFlightRequestSelect from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestSelect.vue"
 import TravelDeskFlightSegmentAttributesCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentAttributesCard.vue"
@@ -124,6 +131,16 @@ const travelDeskFlightOptionId = useRouteQuery("showFlightOptionEdit", undefined
 })
 
 const { travelDeskFlightOption, isLoading } = useTravelDeskFlightOption(travelDeskFlightOptionId)
+
+const travelDeskFlightSegmentsQuery = computed(() => ({
+  where: {
+    flightOptionId: travelDeskFlightOptionId.value,
+  },
+}))
+const { travelDeskFlightSegments, isLoading: isLoadingFlightSegments } =
+  useTravelDeskFlightSegments(travelDeskFlightSegmentsQuery, {
+    skipWatchIf: () => isNil(travelDeskFlightOptionId.value),
+  })
 
 const showDialog = ref(false)
 
@@ -164,16 +181,18 @@ async function updateAndHide() {
 
   isLoading.value = true
   try {
-    const { travelDeskFlightOption } = await travelDeskFlightOptionsApi.update(
-      travelDeskFlightOptionId.value,
-      travelDeskFlightOption.value
-    )
+    const { travelDeskFlightOption: newTravelDeskFlightOption } =
+      await travelDeskFlightOptionsApi.update(
+        travelDeskFlightOptionId.value,
+        travelDeskFlightOption.value
+      )
     hide()
 
     await nextTick()
-    emit("saved", travelDeskFlightOption.id)
+    emit("saved", newTravelDeskFlightOption.id)
     snack.success("Flight option saved successfully")
   } catch (error) {
+    console.error(error)
     snack.error("Failed to save flight option")
   } finally {
     isLoading.value = false
