@@ -4,19 +4,17 @@
       <h4>Flight Options Groupings</h4>
     </v-card-title>
 
-    <v-data-table
-      :headers="headers"
+    <v-data-iterator
       :items="travelDeskFlightOptions"
+      :server-items-length="totalCount"
       :items-per-page="-1"
       :loading="isLoading"
-      :hide-default-footer="true"
-      :hide-default-header="true"
+      hide-default-footer
     >
-      <template #item.name="{ item, index }">
+      <template #default="{ items }">
         <v-card
-          :class="{
-            'mt-5': index !== 0,
-          }"
+          v-for="(item, index) in items"
+          :key="`travel-desk-flight-option-${item.id}`"
         >
           <v-card-title>
             <h5>Group {{ index + 1 }}</h5>
@@ -65,52 +63,27 @@
                 />
               </v-col>
             </v-row>
-            <div
-              v-for="(segment, flightSegmentIndex) in item.flightSegments"
-              :key="'group-' + segment.id + '-' + flightSegmentIndex"
-            >
-              <v-row
-                style="cursor: move"
-                :draggable="true"
-                @dragover.prevent
-                @drop.prevent="drop(item, segment, flightSegmentIndex)"
-                @dragstart="drag(segment, flightSegmentIndex)"
-              >
-                <v-col
-                  cols="12"
-                  md="1"
-                  align-self="center"
-                  class="d-flex justify-center"
-                >
-                  <v-icon color="primary">mdi-arrow-all</v-icon>
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="11"
-                >
-                  <TravelDeskFlightSegmentCard
-                    class="mr-4 mb-2"
-                    :travel-desk-flight-segment-id="segment.id"
-                  />
-                </v-col>
-              </v-row>
-            </div>
+            <TravelDeskFlightSegmentsDraggable
+              :where="{
+                flightOptionId: item.id,
+              }"
+            />
           </v-card-text>
         </v-card>
       </template>
-    </v-data-table>
+    </v-data-iterator>
   </v-card>
 </template>
 
 <script setup>
-import { computed, nextTick, ref } from "vue"
+import { computed } from "vue"
 
 import { required } from "@/utils/validators"
 
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
-import TravelDeskFlightSegmentCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentCard.vue"
 import TravelDeskFlightRequestSelect from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestSelect.vue"
+import TravelDeskFlightSegmentsDraggable from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsDraggable.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -119,42 +92,14 @@ const props = defineProps({
   },
 })
 
-const headers = ref([{ text: "", value: "name" }])
-
 const travelDeskFlightOptionsQuery = computed(() => ({
   filters: {
     forTravelRequest: props.travelDeskTravelRequestId,
   },
 }))
-const { travelDeskFlightOptions, isLoading } = useTravelDeskFlightOptions(
+const { travelDeskFlightOptions, totalCount, isLoading } = useTravelDeskFlightOptions(
   travelDeskFlightOptionsQuery
 )
-
-const source = ref({})
-const sourceIndex = ref(-1)
-
-function drag(source, index) {
-  source.value = source
-  sourceIndex.value = index
-}
-
-async function drop(flightOption, target, index) {
-  if (sourceIndex.value != index) return
-
-  const sortOrderTarget = target.sortOrder
-  target.sortOrder = source.value.sortOrder
-  source.value.sortOrder = sortOrderTarget
-
-  await nextTick()
-  sortByOrder(flightOption.flightSegments)
-}
-
-function sortByOrder(flight) {
-  flight.sort((a, b) => {
-    return a.sortOrder > b.sortOrder ? 1 : -1
-  })
-  return flight
-}
 </script>
 
 <style scoped></style>
