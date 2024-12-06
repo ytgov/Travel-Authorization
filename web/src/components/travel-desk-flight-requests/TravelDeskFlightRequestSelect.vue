@@ -39,9 +39,13 @@ const props = defineProps({
   },
   label: {
     type: String,
-    default: "Travel Desk Agent",
+    default: "Flight Request",
   },
   where: {
+    type: Object,
+    default: () => ({}),
+  },
+  filters: {
     type: Object,
     default: () => ({}),
   },

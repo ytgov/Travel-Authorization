@@ -5,9 +5,12 @@ import {
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
+  literal,
   Model,
   NonAttribute,
+  Op,
 } from "sequelize"
+import minify from "pg-minify"
 
 import sequelize from "@/db/db-client"
 
@@ -143,6 +146,25 @@ TravelDeskFlightRequest.init(
   },
   {
     sequelize,
+    scopes: {
+      familyOf(flightRequestId: number) {
+        const travelRequestIdQuery = minify(/* sql */ `(
+          SELECT "travel_request_id"
+          FROM "travel_desk_flight_requests"
+          WHERE "id" = :flightRequestId
+        )`)
+        return {
+          where: {
+            travelRequestId: {
+              [Op.eq]: literal(travelRequestIdQuery),
+            },
+          },
+          replacements: {
+            flightRequestId,
+          },
+        }
+      },
+    },
   }
 )
 

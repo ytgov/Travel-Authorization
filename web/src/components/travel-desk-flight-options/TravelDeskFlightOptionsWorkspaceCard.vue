@@ -16,8 +16,14 @@
           v-for="(item, index) in items"
           :key="`travel-desk-flight-option-${item.id}`"
         >
-          <v-card-title>
+          <v-card-title class="d-flex justify-space-between align-center">
             <h5>Group {{ index + 1 }}</h5>
+            <v-btn
+              class="my-0"
+              color="primary"
+              @click.stop="showEditDialog(item.id)"
+              >Edit</v-btn
+            >
           </v-card-title>
           <v-card-text>
             <v-row>
@@ -25,63 +31,40 @@
                 cols="12"
                 md="6"
               >
-                <TravelDeskFlightRequestSelect
-                  v-model="item.flightRequestId"
-                  label="Leg *"
-                  :where="{
-                    travelRequestId: travelDeskTravelRequestId,
-                  }"
-                  :rules="[required]"
-                  outlined
-                  required
+                <TravelDeskFlightRequestDescriptionElement
+                  :travel-desk-flight-request-id="item.flightRequestId"
+                  label="Leg"
                 />
               </v-col>
               <v-col
                 cols="12"
                 md="2"
               >
-                <v-text-field
-                  v-model="item.cost"
-                  label="Cost *"
-                  type="number"
-                  :rules="[required]"
-                  prefix="$"
-                  outlined
-                  required
+                <DescriptionElement
+                  :value="'$' + item.cost"
+                  label="Cost"
                 />
               </v-col>
               <v-col
                 cols="12"
-                md="3"
+                md="4"
               >
-                <v-text-field
-                  v-model="item.duration"
+                <DescriptionElement
+                  :value="item.duration"
                   label="Travel Duration"
-                  readonly
-                  outlined
-                  append-icon="mdi-lock"
                 />
-              </v-col>
-              <v-col
-                cols="12"
-                md="1"
-                class="d-flex justify-center align-baseline"
-              >
-                <v-btn
-                  color="primary"
-                  :loading="isSaving"
-                  @click="saveTravelDeskFlightOption(item.id, item)"
-                  >Save</v-btn
-                >
               </v-col>
             </v-row>
-            <TravelDeskFlightSegmentsDraggable :travel-desk-flight-option-id="item.id" />
+            <TravelDeskFlightSegmentsDraggable
+              class="mt-4"
+              :travel-desk-flight-option-id="item.id"
+            />
           </v-card-text>
           <v-card-actions>
             <v-spacer />
             <v-btn
               color="error"
-              :loading="isSaving"
+              :loading="isDeleting"
               @click="deleteTravelDeskFlightOption(item.id)"
             >
               Delete
@@ -90,13 +73,16 @@
         </v-card>
       </template>
     </v-data-iterator>
+    <TravelDeskFlightOptionEditDialog
+      ref="travelDeskFlightOptionEditDialog"
+      @saved="refresh"
+    />
   </v-card>
 </template>
 
 <script setup>
 import { computed, ref } from "vue"
 
-import { required } from "@/utils/validators"
 import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
 
 import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
@@ -104,7 +90,9 @@ import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
-import TravelDeskFlightRequestSelect from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestSelect.vue"
+import DescriptionElement from "@/components/common/DescriptionElement.vue"
+import TravelDeskFlightOptionEditDialog from "@/components/travel-desk-flight-options/TravelDeskFlightOptionEditDialog.vue"
+import TravelDeskFlightRequestDescriptionElement from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestDescriptionElement.vue"
 import TravelDeskFlightSegmentsDraggable from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsDraggable.vue"
 
 const props = defineProps({
@@ -123,24 +111,15 @@ const { travelDeskFlightOptions, totalCount, isLoading, refresh } = useTravelDes
   travelDeskFlightOptionsQuery
 )
 
-const isSaving = ref(false)
-const snack = useSnack()
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightOptionEditDialog> | null>} */
+const travelDeskFlightOptionEditDialog = ref(null)
 
-async function saveTravelDeskFlightOption(id, attributes) {
-  isSaving.value = true
-  try {
-    await travelDeskFlightOptionsApi.update(id, attributes)
-    await refresh()
-    snack.success("Flight option saved.")
-  } catch (error) {
-    console.error("Failed to save travel desk flight option:", error)
-    snack.error(`Failed to save travel desk flight option: ${error}`)
-  } finally {
-    isSaving.value = false
-  }
+function showEditDialog(flightOptionId) {
+  travelDeskFlightOptionEditDialog.value?.show(flightOptionId)
 }
 
 const isDeleting = ref(false)
+const snack = useSnack()
 
 async function deleteTravelDeskFlightOption(id) {
   if (!blockedToTrueConfirm("Are you sure you want to remove this flight option?")) return
