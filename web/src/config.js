@@ -3,9 +3,6 @@ export const ENVIRONMENT = process.env.NODE_ENV
 export const RELEASE_TAG = process.env.VUE_APP_RELEASE_TAG
 export const GIT_COMMIT_HASH = process.env.VUE_APP_GIT_COMMIT_HASH
 
-export const HAS_SIDEBAR = true // TODO: consider removing this
-export const HAS_SIDEBAR_CLOSABLE = false // TODO: consider removing this
-
 const dynamicConfigs = {
   development: {
     API_BASE_URL: "http://localhost:3000",

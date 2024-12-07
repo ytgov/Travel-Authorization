@@ -26,7 +26,7 @@ class TravelDeskFlightOption extends Model<
   declare travelerId: ForeignKey<User["id"]>
   declare cost: string
   declare flightPreferenceOrder: string | null
-  declare leg: string
+  declare leg: string // TODO: validate if "leg" is being used?
   declare duration: string
   declare createdAt: CreationOptional<Date>
   declare updatedAt: CreationOptional<Date>
@@ -91,6 +91,7 @@ TravelDeskFlightOption.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
+    // TODO: validate if "leg" is being used?
     leg: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -116,6 +117,20 @@ TravelDeskFlightOption.init(
   },
   {
     sequelize,
+    scopes: {
+      forTravelRequest(travelDeskTravelRequestId) {
+        return {
+          include: [
+            {
+              association: "flightRequest",
+              where: {
+                travelRequestId: travelDeskTravelRequestId,
+              },
+            },
+          ],
+        }
+      }
+    }
   }
 )
 

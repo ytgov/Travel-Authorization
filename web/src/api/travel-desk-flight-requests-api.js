@@ -48,6 +48,7 @@ export const TRAVEL_DESK_FLIGHT_REQUEST_TIME_PREFERENCES = Object.freeze({
 /**
  * // match with model scopes signatures
  * @typedef {{
+ *   familyOf?: number;
  * }} TravelDeskFlightRequestFiltersOptions
  */
 

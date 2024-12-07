@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="card--outlined">
     <v-card-title class="d-flex justify-space-between align-center">
       <h4 class="text-h6">Traveler Details</h4>
       <SaveStateProgress
@@ -25,7 +25,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="3"
           >
             <v-text-field
               v-model="travelerDetails.legalMiddleName"
@@ -35,7 +35,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="3"
           >
             <v-text-field
               v-model="travelerDetails.legalLastName"
@@ -72,7 +72,7 @@
         <v-row class="mt-0 mx-3">
           <v-col
             cols="12"
-            md="2"
+            md="3"
           >
             <v-text-field
               v-model="travelerDetails.strAddress"
@@ -83,7 +83,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="3"
           >
             <LocationsAutocomplete
               v-model="travelerDetails.city"
@@ -168,7 +168,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="4"
           >
             <v-text-field
               v-model="travelerDetails.busEmail"
@@ -205,7 +205,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="3"
+            md="4"
           >
             <v-text-field
               v-model="travelerDetails.travelEmail"

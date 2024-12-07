@@ -12,7 +12,7 @@ export class TravelDeskFlightOptionsController extends BaseController<TravelDesk
     try {
       const where = this.buildWhere()
       const scopes = this.buildFilterScopes()
-      const order = this.buildOrder([["leg", "ASC"]])
+      const order = this.buildOrder([["createdAt", "ASC"]])
 
       const scopedFlightOptions = TravelDeskFlightOptionsPolicy.applyScope(scopes, this.currentUser)
 
@@ -22,6 +22,7 @@ export class TravelDeskFlightOptionsController extends BaseController<TravelDesk
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         order,
+        include: ["flightSegments"],
       })
       return this.response.status(200).json({
         travelDeskFlightOptions,
@@ -101,14 +102,10 @@ export class TravelDeskFlightOptionsController extends BaseController<TravelDesk
       }
 
       const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
-      const updatedTravelDeskFlightOption = UpdateService.perform(
-        travelDeskFlightOption,
-        permittedAttributes,
-        this.currentUser
-      )
+      await UpdateService.perform(travelDeskFlightOption, permittedAttributes, this.currentUser)
 
       return this.response.status(200).json({
-        travelDeskFlightOption: updatedTravelDeskFlightOption,
+        travelDeskFlightOption,
       })
     } catch (error) {
       logger.error(`Error updating travel desk flight option: ${error}`, { error })

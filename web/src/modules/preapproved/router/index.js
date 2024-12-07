@@ -1,7 +1,7 @@
 const routes = [
   {
     path: "/preapproved",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         name: "PreApprovedTravelHome",

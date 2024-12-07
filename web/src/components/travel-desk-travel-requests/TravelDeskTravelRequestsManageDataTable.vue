@@ -98,6 +98,20 @@
 
     <template #item.edit="{ item }">
       <v-btn
+        v-if="item.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED"
+        class="mr-4"
+        color="primary"
+        :to="{
+          name: 'TravelDeskReadPage',
+          params: {
+            travelDeskTravelRequestId: item.id,
+          },
+        }"
+      >
+        View
+      </v-btn>
+      <v-btn
+        v-else
         class="mr-4"
         color="primary"
         :to="{

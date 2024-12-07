@@ -1,26 +1,20 @@
 <template>
-  <v-container>
-    <v-card>
+  <v-container class="mx-0 mx-md-auto px-0 px-md-4">
+    <v-skeleton-loader
+      v-if="isNil(travelDeskTravelRequest)"
+      type="card"
+    />
+    <v-card
+      v-else
+      class="card--outlined"
+    >
       <v-card-title>
         <h2>Travel Desk Request</h2>
       </v-card-title>
-
-      <v-skeleton-loader
-        v-if="isNil(travelDeskTravelRequest)"
-        type="card"
-      />
-      <v-card-text v-else>
+      <v-card-text class="px-0 px-md-4">
         <v-row>
           <v-col>
-            <!-- TODO: move readonly view to a "read" page -->
-            <TravelerDetailsCard
-              v-if="readonly"
-              :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-            />
-            <TravelerDetailsFormCard
-              v-else
-              v-model="travelDeskTravelRequest"
-            />
+            <TravelerDetailsFormCard v-model="travelDeskTravelRequest" />
           </v-col>
         </v-row>
         <v-row>
@@ -44,11 +38,21 @@
             <UserTravelDeskAgentSelect
               v-model="travelDeskTravelRequest.travelDeskOfficer"
               label="Travel Desk Agent Assigned"
-              :readonly="readonly"
               outlined
             />
           </v-col>
         </v-row>
+        <div class="d-flex justify-center justify-md-end">
+          <v-btn
+            color="primary"
+            outlined
+            :loading="isLoading"
+            :block="$vuetify.breakpoint.smAndDown"
+            @click="saveTravelDeskTravelRequest"
+            >Save Draft
+          </v-btn>
+        </div>
+        <v-divider class="mb-7" />
         <v-row v-if="travelDeskTravelRequest.invoiceNumber">
           <v-col>
             <TravelDeskInvoiceCard :travel-desk-travel-request-id="travelDeskTravelRequest.id" />
@@ -63,62 +67,43 @@
         </v-row>
         <v-row>
           <v-col>
-            <TitleCard
-              class="mt-10"
+            <v-card
+              class="mt-10 card--outlined"
               large-title
             >
-              <template #title>
-                <div>Travel Information</div>
-              </template>
-              <template #body>
-                <v-row v-if="!readonly">
-                  <v-col class="d-flex justify-end">
-                    <TravelPortModal
-                      class="mr-5"
-                      :flight-requests="travelDeskTravelRequest.flightRequests"
-                      :travel-desk-travel-request-id="travelDeskTravelRequest.id"
-                      @close="refreshFlightRequests"
-                    />
-                  </v-col>
-                </v-row>
+              <v-card-title>
+                <h3>Travel Information</h3>
+              </v-card-title>
+              <v-card-text class="px-0 px-md-4">
                 <TravelDeskFlightRequestsManageCard
-                  ref="travelDeskFlightRequestsManageCard"
                   :travel-desk-travel-request-id="travelDeskTravelRequest.id"
                   :travel-authorization-id="travelDeskTravelRequest.travelAuthorizationId"
                   show-flight-options
-                  class="mx-5"
                 />
                 <RentalCarRequestTable
-                  :readonly="readonly"
                   :flight-requests="travelDeskTravelRequest.flightRequests"
                   :rental-cars="travelDeskTravelRequest.rentalCars"
                 />
                 <HotelRequestTable
-                  :readonly="readonly"
                   :flight-requests="travelDeskTravelRequest.flightRequests"
                   :hotels="travelDeskTravelRequest.hotels"
                 />
                 <TransportationRequestTable
-                  :readonly="readonly"
                   :other-transportations="travelDeskTravelRequest.otherTransportations"
                 />
-              </template>
-            </TitleCard>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
       </v-card-text>
-
-      <v-skeleton-loader
-        v-if="isNil(travelDeskTravelRequest)"
-        type="actions"
-      />
-      <v-card-actions v-else>
+      <v-card-actions class="d-flex flex-column flex-md-row">
         <v-btn
-          color="grey darken-5"
-          class="px-5"
           :to="{
             name: 'TravelDeskPage',
           }"
+          color="grey darken-5"
+          class="px-5"
+          :block="$vuetify.breakpoint.smAndDown"
         >
           <div>Back</div>
         </v-btn>
@@ -134,27 +119,21 @@
           @close="refresh"
         />
         <v-btn
-          v-if="!readonly"
-          class="ml-2 mr-2 px-5"
-          color="#005A65"
-          :loading="isLoading"
-          @click="saveTravelDeskTravelRequest"
-          >Save Draft
-        </v-btn>
-        <v-btn
-          v-if="!readonly"
           class="mr-2 px-5"
-          color="secondary"
-          :loading="savingData"
-          @click="saveNewTravelRequest('sendback', { returnToTravelDeskPageAfter: true })"
-          >Send to Traveler
+          color="primary"
+          :loading="isLoading"
+          :block="$vuetify.breakpoint.smAndDown"
+          @click="markTravelRequestAsOptionsProvidedAndReturnToTravelDesk"
+        >
+          Send to Traveler
         </v-btn>
 
         <v-btn
-          v-if="!readonly && travelDeskTravelRequest.invoiceNumber"
+          v-if="travelDeskTravelRequest.invoiceNumber"
           class="mr-5 px-5"
           color="#005A65"
-          :loading="savingData"
+          :loading="isLoading"
+          :block="$vuetify.breakpoint.smAndDown"
           @click="openConfirmBookingDialog"
           >Booking Complete
         </v-btn>
@@ -169,26 +148,25 @@
 </template>
 
 <script setup>
-import { computed, nextTick, ref, toRefs } from "vue"
+import { nextTick, ref, toRefs } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep, isNil } from "lodash"
 
 import { TRAVEL_DESK_URL } from "@/urls"
 import { useSnack } from "@/plugins/snack-plugin"
 import http from "@/api/http-client"
-import { TRAVEL_DESK_TRAVEL_REQUEST_STATUSES } from "@/api/travel-desk-travel-requests-api"
+import travelDeskTravelRequestsApi, {
+  TRAVEL_DESK_TRAVEL_REQUEST_STATUSES,
+} from "@/api/travel-desk-travel-requests-api"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
-import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
-import TravelerDetailsCard from "@/components/travel-desk-travel-requests/TravelerDetailsCard.vue"
 import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/TravelerDetailsFormCard.vue"
 import RentalCarRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/RentalCarRequestTable.vue"
 import HotelRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/HotelRequestTable.vue"
 import TransportationRequestTable from "@/modules/travelDesk/views/Requests/RequestDialogs/TransportationRequestTable.vue"
-import TravelPortModal from "@/modules/travelDesk/views/Desk/Components/TravelPortModal.vue"
 
 import UploadPnrModal from "@/modules/travelDesk/views/Desk/PnrDocument/UploadPnrModal.vue"
 import ItineraryModal from "@/modules/travelDesk/views/Requests/Components/ItineraryModal.vue"
@@ -218,15 +196,7 @@ const {
   save: saveTravelDeskTravelRequest,
 } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-const readonly = computed(
-  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
-)
 const savingData = ref(false)
-const travelDeskFlightRequestsManageCard = ref(null)
-
-async function refreshFlightRequests() {
-  await travelDeskFlightRequestsManageCard.value?.refresh()
-}
 
 async function refresh() {
   await refreshTravelDeskTravelRequest()
@@ -240,6 +210,23 @@ async function refresh() {
 }
 
 const router = useRouter()
+
+async function markTravelRequestAsOptionsProvidedAndReturnToTravelDesk() {
+  isLoading.value = true
+  try {
+    await travelDeskTravelRequestsApi.optionsProvided(
+      travelDeskTravelRequestId.value,
+      travelDeskTravelRequest.value
+    )
+    return router.push({
+      name: "TravelDeskPage",
+    })
+  } catch (error) {
+    console.error(error)
+  } finally {
+    isLoading.value = false
+  }
+}
 
 async function saveNewTravelRequest(saveType, { returnToTravelDeskPageAfter = false } = {}) {
   const body = cloneDeep(travelDeskTravelRequest.value)
@@ -295,11 +282,10 @@ useBreadcrumbs([
       name: "TravelDeskPage",
     },
   },
-  // TODO: Replace with read-only route once that exists.
   {
     text: "Request",
     to: {
-      name: "TravelDeskEditPage",
+      name: "TravelDeskReadPage",
       params: { travelDeskTravelRequestId: props.travelDeskTravelRequestId },
     },
   },

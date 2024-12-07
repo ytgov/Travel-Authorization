@@ -20,6 +20,7 @@ import {
   TravelAuthorizationPreApprovalsController,
   TravelAuthorizations,
   TravelAuthorizationsController,
+  TravelDeskFlightOptions,
   TravelDeskFlightOptionsController,
   TravelDeskFlightRequestsController,
   TravelDeskFlightSegmentsController,
@@ -154,6 +155,10 @@ router
   .delete(TravelDeskFlightOptionsController.destroy)
 
 router
+  .route("/api/travel-desk-flight-options/:travelDeskFlightOptionId/re-order-flight-segments")
+  .post(TravelDeskFlightOptions.ReOrderFlightSegmentsController.create)
+
+router
   .route("/api/travel-desk-flight-requests")
   .get(TravelDeskFlightRequestsController.index)
   .post(TravelDeskFlightRequestsController.create)
@@ -231,6 +236,9 @@ router
 router
   .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId/book")
   .post(TravelDeskTravelRequests.BookController.create)
+router
+  .route("/api/travel-desk-travel-requests/:travelDeskTravelRequestId/options-provided")
+  .post(TravelDeskTravelRequests.OptionsProvidedController.create)
 
 router.route("/api/locations").get(LocationsController.index)
 router.route("/api/locations/:locationId").get(LocationsController.show)

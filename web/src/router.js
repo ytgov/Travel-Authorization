@@ -18,7 +18,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         path: "",
@@ -44,9 +44,21 @@ const routes = [
             component: () => import("@/pages/TravelDeskPage.vue"),
           },
           {
+            name: "TravelDeskReadPage",
+            path: "travel-desk/:travelDeskTravelRequestId",
+            component: () => import("@/pages/travel-desk/TravelDeskReadPage.vue"),
+            props: true,
+          },
+          {
             name: "TravelDeskEditPage",
             path: "travel-desk/:travelDeskTravelRequestId/edit",
             component: () => import("@/pages/travel-desk/TravelDeskEditPage.vue"),
+            props: true,
+          },
+          {
+            name: "TravelDeskFlightSegmentsManagePage",
+            path: "travel-desk/:travelDeskTravelRequestId/manage-flight-segments",
+            component: () => import("@/pages/travel-desk/TravelDeskFlightSegmentsManagePage.vue"),
             props: true,
           },
         ],
@@ -144,7 +156,7 @@ const routes = [
   ...reportsRouter,
   {
     path: "",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         // TODO: push readcrumbs into higher layout

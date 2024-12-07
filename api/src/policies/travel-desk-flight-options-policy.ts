@@ -1,9 +1,10 @@
 import { Attributes, FindOptions } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
-import { User, TravelDeskFlightOption } from "@/models"
+import { User, TravelDeskFlightOption, TravelDeskFlightSegment } from "@/models"
 import { allRecordsScope, noRecordsScope } from "@/policies/base-policy"
 import PolicyFactory from "@/policies/policy-factory"
+import TravelDeskFlightSegmentsPolicy from "@/policies/travel-desk-flight-segments-policy"
 
 export class TravelDeskFlightOptionsPolicy extends PolicyFactory(TravelDeskFlightOption) {
   // TODO: add ability for traveller to create/read/update/delete their own data
@@ -25,11 +26,18 @@ export class TravelDeskFlightOptionsPolicy extends PolicyFactory(TravelDeskFligh
   }
 
   permittedAttributes(): Path[] {
-    return ["cost", "flightPreferenceOrder", "leg", "duration"]
+    return ["flightRequestId", "cost", "flightPreferenceOrder", "leg", "duration"]
   }
 
   permittedAttributesForCreate(): Path[] {
-    return ["flightRequestId", "travelerId", ...this.permittedAttributes()]
+    return [
+      "travelerId",
+      ...this.permittedAttributes(),
+      {
+        flightSegmentsAttributes:
+          this.travelDeskFlightSegmentsPolicy.permittedAttributesForCreate(),
+      },
+    ]
   }
 
   static policyScope(user: User): FindOptions<Attributes<TravelDeskFlightOption>> {
@@ -38,6 +46,11 @@ export class TravelDeskFlightOptionsPolicy extends PolicyFactory(TravelDeskFligh
     }
 
     return noRecordsScope
+  }
+
+  private get travelDeskFlightSegmentsPolicy() {
+    const travelDeskFlightSegment = TravelDeskFlightSegment.build()
+    return new TravelDeskFlightSegmentsPolicy(this.user, travelDeskFlightSegment)
   }
 }
 
