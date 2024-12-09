@@ -10,23 +10,35 @@ export class TravelDeskFlightOptionsPolicy extends PolicyFactory(TravelDeskFligh
   // TODO: add ability for traveller to create/read/update/delete their own data
   // Might need to add travelerId to a bunch of models?
   show(): boolean {
-    return this.user.isTravelDeskUser || this.user.isAdmin
+    if (this.user.isTravelDeskUser || this.user.isAdmin) return true
+
+    return this.record.travelerId === this.user.id
   }
 
   create(): boolean {
-    return this.user.isTravelDeskUser || this.user.isAdmin
+    if (this.user.isTravelDeskUser || this.user.isAdmin) return true
+
+    return false
   }
 
   update(): boolean {
-    return this.user.isTravelDeskUser || this.user.isAdmin
+    if (this.user.isTravelDeskUser || this.user.isAdmin) return true
+
+    return this.record.travelerId === this.user.id
   }
 
   destroy(): boolean {
-    return this.user.isTravelDeskUser || this.user.isAdmin
+    if (this.user.isTravelDeskUser || this.user.isAdmin) return true
+
+    return false
   }
 
   permittedAttributes(): Path[] {
-    return ["flightRequestId", "cost", "flightPreferenceOrder", "leg", "duration"]
+    if (this.user.isTravelDeskUser || this.user.isAdmin) {
+      return ["flightRequestId", "cost", "flightPreferenceOrder", "leg", "duration"]
+    }
+
+    return ["flightPreferenceOrder"]
   }
 
   permittedAttributesForCreate(): Path[] {
