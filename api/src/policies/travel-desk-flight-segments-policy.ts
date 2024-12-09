@@ -2,7 +2,7 @@ import { Attributes, FindOptions } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
 import { User, TravelDeskFlightSegment } from "@/models"
-import { allRecordsScope, noRecordsScope } from "@/policies/base-policy"
+import { allRecordsScope } from "@/policies/base-policy"
 import PolicyFactory from "@/policies/policy-factory"
 
 export class TravelDeskFlightSegmentsPolicy extends PolicyFactory(TravelDeskFlightSegment) {
@@ -47,7 +47,16 @@ export class TravelDeskFlightSegmentsPolicy extends PolicyFactory(TravelDeskFlig
       return allRecordsScope
     }
 
-    return noRecordsScope
+    return {
+      include: [
+        {
+          association: "flightOption",
+          where: {
+            travelerId: user.id,
+          },
+        },
+      ],
+    }
   }
 }
 
