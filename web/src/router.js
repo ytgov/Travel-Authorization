@@ -25,7 +25,7 @@ const routes = [
         redirect: "dashboard",
       },
       {
-        name: "Dashboard",
+        name: "DashboardPage",
         path: "dashboard",
         component: () => import("@/pages/DashboardPage"),
       },
