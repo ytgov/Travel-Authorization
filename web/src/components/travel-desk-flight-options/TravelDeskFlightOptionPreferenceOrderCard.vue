@@ -12,20 +12,24 @@
 
     <v-divider />
 
-    <v-card-text class="mt-4">
+    <v-card-text class="mt-4 px-0 px-md-4">
       <v-row
-        v-for="flightOption in travelDeskFlightOptions"
+        v-for="(flightOption, index) in travelDeskFlightOptions"
         :key="flightOption.id"
       >
         <v-col
           cols="12"
           md="3"
+          :class="{
+            'mt-4 mt-md-0': index !== 0,
+          }"
         >
           <FlightPreferenceOrderSelect
             :value="flightOption.preferenceOrder"
             label="Preference"
             outlined
             :number-of-options="travelDeskFlightOptions.length"
+            :hide-details="$vuetify.breakpoint.smAndDown"
           />
         </v-col>
 

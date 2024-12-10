@@ -6,7 +6,7 @@
     <v-card-title>
       <h4>Options</h4>
     </v-card-title>
-    <v-card-text class="d-flex flex-column gap-6">
+    <v-card-text class="d-flex flex-column gap-6 px-0 px-md-4">
       <TravelDeskFlightOptionPreferenceOrderCard
         v-for="(travelDeskFlightRequest, index) in travelDeskFlightRequests"
         :key="travelDeskFlightRequest.id"
