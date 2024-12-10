@@ -35,7 +35,9 @@
 import { computed, ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
+import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useSnack from "@/use/use-snack"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
 
@@ -72,8 +74,21 @@ const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestFlightOptionsOrderCard> | null>} */
 const travelDeskFlightRequestFlightOptionsOrderCard = ref(null)
 
+const snack = useSnack()
+
 async function save() {
-  return travelDeskFlightRequestFlightOptionsOrderCard.value?.save()
+  try {
+    const flightOptionSavingResult =
+      await travelDeskFlightRequestFlightOptionsOrderCard.value?.save()
+    if (!flightOptionSavingResult) return false
+
+    await travelDeskTravelRequestsApi.optionsRanked(travelDeskTravelRequestId.value)
+    return true
+  } catch (error) {
+    console.error(error)
+    snack.error(`Failed to submit options rankings: ${error}`)
+    return false
+  }
 }
 
 const breadcrumbs = computed(() => [

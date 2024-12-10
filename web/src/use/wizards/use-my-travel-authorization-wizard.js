@@ -197,9 +197,11 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
                 name: "my-travel-requests/request/RequestOptionsProvidedPage",
                 params: { travelAuthorizationId: travelAuthorizationId.value },
               },
+              continueButtonText: "Submit Option Rankings",
             },
           ]
         : []),
+      // Figure out what comes after ranking flight options? Booking maybe?
       ...(isAwaitingExpensingToBeActionable.value
         ? [
             {

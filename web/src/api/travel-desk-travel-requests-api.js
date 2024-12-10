@@ -156,6 +156,13 @@ export const travelDeskTravelRequestsApi = {
     )
     return data
   },
+  async optionsRanked(travelDeskTravelRequestId, attributes) {
+    const { data } = await http.post(
+      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/options-ranked`,
+      attributes
+    )
+    return data
+  },
   /**
    * @param {number} travelDeskTravelRequestId
    * @param {Partial<TravelDeskTravelRequest>} attributes
