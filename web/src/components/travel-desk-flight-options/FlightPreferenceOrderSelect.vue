@@ -1,32 +1,23 @@
 <template>
   <v-select
     :value="value"
-    :items="seatPreferences"
+    :items="flightPreferenceOrders"
     :label="label"
+    :hint="hint"
+    persistent-hint
     v-bind="$attrs"
     @input="emit('input', $event)"
     v-on="$listeners"
   />
-  <!-- <v-text-field
-    label="Preference"
-    :value="flightPreferenceOrderText"
-    :hint="
-      flightOption.flightPreferenceOrder === DOES_NOT_WORK
-        ? 'Please see the Additional Information.'
-        : ''
-    "
-    persistent-hint
-    outlined
-    readonly
-  /> -->
 </template>
 
 <script setup>
-import { SEAT_PREFERENCE_TYPES } from "@/api/travel-desk-flight-requests-api"
+import { computed } from "vue"
+import { times } from "lodash"
 
-defineProps({
+const props = defineProps({
   value: {
-    type: String,
+    type: Number,
     default: () => null,
   },
   label: {
@@ -37,13 +28,29 @@ defineProps({
 
 const emit = defineEmits(["input"])
 
-// const DOES_NOT_WORK = 0
+const DOES_NOT_WORK = 0
 
-// const flightPreferenceOrderText = computed(() => {
-//   return props.flightOption.flightPreferenceOrder === DOES_NOT_WORK
-//     ? "Does Not Work"
-//     : props.flightOption.flightPreferenceOrder
-// })
+const flightPreferenceOrders = computed(() => {
+  return times(5, (i) => {
+    if (i === DOES_NOT_WORK) {
+      return {
+        value: DOES_NOT_WORK,
+        text: "Does Not Work",
+      }
+    }
 
-const seatPreferences = Object.values(SEAT_PREFERENCE_TYPES)
+    return {
+      value: i,
+      text: i,
+    }
+  })
+})
+
+const hint = computed(() => {
+  if (props.value === DOES_NOT_WORK) {
+    return "Please see the Additional Information."
+  }
+
+  return ""
+})
 </script>

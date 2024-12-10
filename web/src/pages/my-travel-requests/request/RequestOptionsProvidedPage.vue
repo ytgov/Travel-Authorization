@@ -20,14 +20,9 @@
             class="card--outlined"
             :travel-desk-travel-request-id="travelDeskTravelRequestId"
           />
-          <TravelDeskFlightRequestFlightOptionOrderCard
+          <TravelDeskFlightRequestFlightOptionsOrderCard
             class="mt-8"
             :travel-desk-travel-request-id="travelDeskTravelRequestId"
-          />
-          <TravelDeskFlightOptionsDataIterator
-            :filters="{
-              forTravelRequest: travelDeskTravelRequestId,
-            }"
           />
         </v-card-text>
       </v-card>
@@ -43,8 +38,7 @@ import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
 
-import TravelDeskFlightOptionsDataIterator from "@/components/travel-desk-flight-options/TravelDeskFlightOptionsDataIterator.vue"
-import TravelDeskFlightRequestFlightOptionOrderCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestFlightOptionOrderCard.vue"
+import TravelDeskFlightRequestFlightOptionsOrderCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestFlightOptionsOrderCard.vue"
 import TravelDeskFlightRequestsCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsCard.vue"
 
 const props = defineProps({
