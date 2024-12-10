@@ -7,7 +7,7 @@
       <h4>Options</h4>
     </v-card-title>
     <v-card-text class="d-flex flex-column gap-6 px-0 px-md-4">
-      <TravelDeskFlightOptionPreferenceOrderCard
+      <TravelDeskFlightOptionPreferenceOrderFormCard
         v-for="(travelDeskFlightRequest, index) in travelDeskFlightRequests"
         :key="travelDeskFlightRequest.id"
         :title="`Leg ${index + 1}`"
@@ -25,7 +25,7 @@ import { isNil } from "lodash"
 import formatDate from "@/utils/format-date"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
-import TravelDeskFlightOptionPreferenceOrderCard from "@/components/travel-desk-flight-options/TravelDeskFlightOptionPreferenceOrderCard.vue"
+import TravelDeskFlightOptionPreferenceOrderFormCard from "@/components/travel-desk-flight-options/TravelDeskFlightOptionPreferenceOrderFormCard.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {

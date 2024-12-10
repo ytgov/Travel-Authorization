@@ -1,0 +1,133 @@
+<template>
+  <v-card
+    class="card--outlined"
+    :loading="isLoading"
+  >
+    <v-card-title>
+      <h5>{{ title }}</h5>
+    </v-card-title>
+    <v-card-subtitle>
+      {{ subtitle }}
+    </v-card-subtitle>
+
+    <v-divider />
+
+    <v-card-text class="mt-4 px-0 px-md-4">
+      <v-form
+        :id="formId"
+        ref="form"
+        @submit.prevent="save"
+      >
+        <v-row
+          v-for="(flightOption, index) in travelDeskFlightOptions"
+          :key="flightOption.id"
+        >
+          <v-col
+            cols="12"
+            md="3"
+            :class="{
+              'mt-4 mt-md-0': index !== 0,
+            }"
+          >
+            <FlightPreferenceOrderSelect
+              v-model="flightOption.flightPreferenceOrder"
+              label="Preference"
+              outlined
+              :number-of-options="travelDeskFlightOptions.length"
+              :hide-details="$vuetify.breakpoint.smAndDown"
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="9"
+          >
+            <TravelDeskFlightSegmentsCard
+              :travel-desk-flight-option-id="flightOption.id"
+              :cost="flightOption.cost"
+            />
+          </v-col>
+        </v-row>
+      </v-form>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
+      <v-btn
+        :loading="isLoading"
+        color="primary"
+        type="submit"
+        :form="formId"
+      >
+        Save
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script setup>
+import { computed, ref } from "vue"
+import { uniqueId } from "lodash"
+
+import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
+import useSnack from "@/use/use-snack"
+import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
+
+import FlightPreferenceOrderSelect from "@/components/travel-desk-flight-options/FlightPreferenceOrderSelect.vue"
+import TravelDeskFlightSegmentsCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsCard.vue"
+
+const props = defineProps({
+  travelDeskFlightRequestId: {
+    type: Number,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  subtitle: {
+    type: String,
+    required: true,
+  },
+})
+
+const travelDeskFlightOptionsQuery = computed(() => ({
+  where: {
+    flightRequestId: props.travelDeskFlightRequestId,
+  },
+}))
+const { travelDeskFlightOptions, isLoading, refresh } = useTravelDeskFlightOptions(
+  travelDeskFlightOptionsQuery
+)
+
+const formId = uniqueId("travel-desk-flight-option-preference-order-form-")
+
+/** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm>> */
+const form = ref(null)
+
+const snack = useSnack()
+
+async function save() {
+  if (!form.value.validate()) return false
+
+  isLoading.value = true
+  try {
+    for (const flightOptions of travelDeskFlightOptions.value) {
+      await travelDeskFlightOptionsApi.update(flightOptions.id, {
+        flightPreferenceOrder: flightOptions.flightPreferenceOrder,
+      })
+    }
+    await refresh()
+    return true
+  } catch (error) {
+    console.error(error)
+    snack.error(`Failed to save preference order: ${error}`)
+    return false
+  } finally {
+    isLoading.value = false
+  }
+}
+
+defineExpose({
+  save,
+})
+</script>

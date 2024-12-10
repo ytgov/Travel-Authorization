@@ -52,7 +52,7 @@ const flightPreferenceOrders = computed(() => {
 
 const hint = computed(() => {
   if (props.value === DOES_NOT_WORK) {
-    return "Please see the Additional Information."
+    return "Please add explanation to Additional Information."
   }
 
   return ""
