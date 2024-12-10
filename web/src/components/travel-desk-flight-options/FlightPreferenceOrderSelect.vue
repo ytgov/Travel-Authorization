@@ -24,6 +24,10 @@ const props = defineProps({
     type: String,
     default: "Flight Preference Order",
   },
+  numberOfOptions: {
+    type: Number,
+    required: true,
+  },
 })
 
 const emit = defineEmits(["input"])
@@ -31,19 +35,19 @@ const emit = defineEmits(["input"])
 const DOES_NOT_WORK = 0
 
 const flightPreferenceOrders = computed(() => {
-  return times(5, (i) => {
-    if (i === DOES_NOT_WORK) {
-      return {
-        value: DOES_NOT_WORK,
-        text: "Does Not Work",
-      }
-    }
-
+  const numbericOptions = times(props.numberOfOptions, (i) => {
     return {
-      value: i,
-      text: i,
+      value: i + 1,
+      text: i + 1,
     }
   })
+
+  numbericOptions.push({
+    value: DOES_NOT_WORK,
+    text: "Does Not Work",
+  })
+
+  return numbericOptions
 })
 
 const hint = computed(() => {

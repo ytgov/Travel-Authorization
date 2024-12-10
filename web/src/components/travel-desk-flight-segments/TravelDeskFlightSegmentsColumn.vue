@@ -7,16 +7,17 @@
     v-else
     class="d-flex flex-column gap-4"
   >
-    <dl
-      v-for="travelDeskFlightSegment in travelDeskFlightSegments"
-      :key="travelDeskFlightSegment.id"
-    >
+    <dl>
       <DescriptionElement
-        class="d-flex"
         label="Cost"
         :value="formatCurrency(cost)"
         horizontal
       />
+    </dl>
+    <dl
+      v-for="travelDeskFlightSegment in travelDeskFlightSegments"
+      :key="travelDeskFlightSegment.id"
+    >
       <DescriptionElement
         label="Airline"
         :value="travelDeskFlightSegment.flightNumber"

@@ -19,18 +19,20 @@
       >
         <v-col
           cols="12"
-          md="2"
+          md="3"
+          align-self="center"
         >
           <FlightPreferenceOrderSelect
             :value="flightOption.preferenceOrder"
             label="Preference"
             outlined
+            :number-of-options="travelDeskFlightOptions.length"
           />
         </v-col>
 
         <TravelDeskFlightSegmentsColumn
           cols="12"
-          md="10"
+          md="9"
           :travel-desk-flight-option-id="flightOption.id"
           :cost="flightOption.cost"
         />
