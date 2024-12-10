@@ -82,8 +82,4 @@ defineExpose({
 })
 </script>
 
-<style scoped>
-::v-deep .v-data-table > .v-data-table__wrapper tbody tr.v-data-table__expanded__content {
-  background: #f9f9f9 !important;
-}
-</style>
+<style scoped></style>
