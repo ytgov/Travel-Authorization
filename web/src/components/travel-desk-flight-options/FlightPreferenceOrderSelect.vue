@@ -15,6 +15,8 @@
 import { computed } from "vue"
 import { times } from "lodash"
 
+import { DOES_NOT_WORK } from "@/api/travel-desk-flight-options-api"
+
 const props = defineProps({
   value: {
     type: Number,
@@ -31,8 +33,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["input"])
-
-const DOES_NOT_WORK = 0
 
 const flightPreferenceOrders = computed(() => {
   const numbericOptions = times(props.numberOfOptions, (i) => {
