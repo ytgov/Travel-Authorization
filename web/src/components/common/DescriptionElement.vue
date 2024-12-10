@@ -2,7 +2,7 @@
   <!-- Vertical layout -->
   <div
     v-if="vertical"
-    class="body-1 text--primary"
+    class="text-body-1 text--primary"
   >
     <dt class="d-flex align-center font-weight-bold">
       <v-icon
@@ -23,7 +23,7 @@
   <!-- Horizontal layout -->
   <div
     v-else
-    class="body-1 text--primary d-flex align-center gap-2"
+    class="text-body-1 text--primary d-flex align-center gap-2"
   >
     <dt class="d-flex align-center font-weight-bold">
       <v-icon
