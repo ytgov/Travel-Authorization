@@ -29,8 +29,8 @@
               'mt-4 mt-md-0': index !== 0,
             }"
           >
-            <!-- TODO: convert to autocomplete? and exclude chosen options? -->
-            <FlightPreferenceOrderSelect
+            <!-- TODO: exclude chosen options? -->
+            <FlightPreferenceOrderAutocomplete
               v-model="flightOption.flightPreferenceOrder"
               label="Preference"
               :number-of-options="travelDeskFlightOptions.length"
@@ -91,7 +91,7 @@ import travelDeskFlightOptionsApi, { DOES_NOT_WORK } from "@/api/travel-desk-fli
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
-import FlightPreferenceOrderSelect from "@/components/travel-desk-flight-options/FlightPreferenceOrderSelect.vue"
+import FlightPreferenceOrderAutocomplete from "@/components/travel-desk-flight-options/FlightPreferenceOrderAutocomplete.vue"
 import TravelDeskFlightSegmentsCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsCard.vue"
 
 const props = defineProps({

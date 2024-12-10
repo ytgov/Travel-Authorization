@@ -1,9 +1,10 @@
 <template>
-  <v-select
+  <v-autocomplete
     :value="value"
     :items="flightPreferenceOrders"
     :label="label"
     :hint="hint"
+    auto-select-first
     persistent-hint
     v-bind="$attrs"
     @input="emit('input', $event)"
