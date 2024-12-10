@@ -26,7 +26,7 @@
           height="44"
         />
       </v-btn>
-      <v-toolbar-title class="ml-16">
+      <v-toolbar-title class="ml-16 d-none d-md-block">
         <h1 class="text-h6 font-weight-bold mb-0">{{ APPLICATION_NAME }}</h1>
       </v-toolbar-title>
 
