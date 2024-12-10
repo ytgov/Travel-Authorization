@@ -20,7 +20,6 @@
         <v-col
           cols="12"
           md="3"
-          align-self="center"
         >
           <FlightPreferenceOrderSelect
             :value="flightOption.preferenceOrder"
@@ -30,12 +29,15 @@
           />
         </v-col>
 
-        <TravelDeskFlightSegmentsColumn
+        <v-col
           cols="12"
           md="9"
-          :travel-desk-flight-option-id="flightOption.id"
-          :cost="flightOption.cost"
-        />
+        >
+          <TravelDeskFlightSegmentsCard
+            :travel-desk-flight-option-id="flightOption.id"
+            :cost="flightOption.cost"
+          />
+        </v-col>
       </v-row>
     </v-card-text>
   </v-card>
@@ -47,7 +49,7 @@ import { computed } from "vue"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
 import FlightPreferenceOrderSelect from "@/components/travel-desk-flight-options/FlightPreferenceOrderSelect.vue"
-import TravelDeskFlightSegmentsColumn from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsColumn.vue"
+import TravelDeskFlightSegmentsCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentsCard.vue"
 
 const props = defineProps({
   travelDeskFlightRequestId: {
