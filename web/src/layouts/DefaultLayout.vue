@@ -63,7 +63,7 @@
 <script setup>
 import { APPLICATION_NAME } from "@/config"
 
-import useRouteQuery from "@/use/utils/use-route-query"
+import useSessionStorage from "@/use/utils/use-session-storage"
 import useVuetify2 from "@/use/utils/use-vuetify2"
 import useCurrentUser from "@/use/use-current-user"
 
@@ -75,14 +75,7 @@ const { fullName } = useCurrentUser()
 
 const { lgAndUp } = useVuetify2()
 
-const showLeftSidebarNav = useRouteQuery("showLeftSidebarNav", lgAndUp.value, {
-  transform: (value) => {
-    if (value === "true") return true
-    if (value === "false") return false
-
-    return value
-  },
-})
+const showLeftSidebarNav = useSessionStorage("showLeftSidebarNav", lgAndUp.value)
 
 function toggleDrawer() {
   showLeftSidebarNav.value = !showLeftSidebarNav.value
