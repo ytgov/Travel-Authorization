@@ -14,6 +14,7 @@ export const DOES_NOT_WORK = 0
  *   leg: string;
  *   duration: string;
  *   flightPreferenceOrder: string | null;
+ *   additionalInformation: string | null;
  *   createdAt: string;
  *   updatedAt: string;
  * }} TravelDeskFlightOption

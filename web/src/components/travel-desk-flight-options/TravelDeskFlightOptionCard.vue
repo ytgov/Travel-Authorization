@@ -56,7 +56,7 @@
 import { computed } from "vue"
 
 import formatCurrency from "@/utils/format-currency"
-import { DOES_NOT_WORK } from "@/api/travel-desk-flight-options"
+import { DOES_NOT_WORK } from "@/api/travel-desk-flight-options-api"
 import useTravelDeskFlightSegments from "@/use/use-travel-desk-flight-segments"
 
 import TravelDeskFlightSegmentCard from "@/components/travel-desk-flight-segments/TravelDeskFlightSegmentCard.vue"

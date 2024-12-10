@@ -38,7 +38,7 @@ export class TravelDeskFlightOptionsPolicy extends PolicyFactory(TravelDeskFligh
       return ["flightRequestId", "cost", "flightPreferenceOrder", "leg", "duration"]
     }
 
-    return ["flightPreferenceOrder"]
+    return ["flightPreferenceOrder", "additionalInformation"]
   }
 
   permittedAttributesForCreate(): Path[] {

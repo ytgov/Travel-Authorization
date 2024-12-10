@@ -29,12 +29,13 @@
               'mt-4 mt-md-0': index !== 0,
             }"
           >
+            <!-- TODO: convert to autocomplete? and exclude chosen options? -->
             <FlightPreferenceOrderSelect
               v-model="flightOption.flightPreferenceOrder"
               label="Preference"
-              outlined
               :number-of-options="travelDeskFlightOptions.length"
               :hide-details="$vuetify.breakpoint.smAndDown"
+              outlined
             />
           </v-col>
 
@@ -45,6 +46,16 @@
             <TravelDeskFlightSegmentsCard
               :travel-desk-flight-option-id="flightOption.id"
               :cost="flightOption.cost"
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              v-if="flightOption.flightPreferenceOrder === DOES_NOT_WORK"
+              v-model="flightOption.additionalInformation"
+              label="Additional Information"
+              rows="4"
+              :hide-details="$vuetify.breakpoint.smAndDown"
+              outlined
             />
           </v-col>
         </v-row>
@@ -68,7 +79,7 @@
 import { computed, ref } from "vue"
 import { uniqueId } from "lodash"
 
-import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
+import travelDeskFlightOptionsApi, { DOES_NOT_WORK } from "@/api/travel-desk-flight-options-api"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
 
@@ -114,6 +125,7 @@ async function save() {
     for (const flightOptions of travelDeskFlightOptions.value) {
       await travelDeskFlightOptionsApi.update(flightOptions.id, {
         flightPreferenceOrder: flightOptions.flightPreferenceOrder,
+        additionalInformation: flightOptions.additionalInformation,
       })
     }
     await refresh()
