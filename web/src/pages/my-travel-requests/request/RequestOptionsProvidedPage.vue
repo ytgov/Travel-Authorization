@@ -21,6 +21,7 @@
             :travel-desk-travel-request-id="travelDeskTravelRequestId"
           />
           <TravelDeskFlightRequestFlightOptionsOrderCard
+            ref="travelDeskFlightRequestFlightOptionsOrderCard"
             class="mt-8"
             :travel-desk-travel-request-id="travelDeskTravelRequestId"
           />
@@ -31,7 +32,7 @@
 </template>
 
 <script setup>
-import { computed, toRefs } from "vue"
+import { computed, ref, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
@@ -68,6 +69,13 @@ const travelDeskTravelRequestId = computed(() => {
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
 
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestFlightOptionsOrderCard> | null>} */
+const travelDeskFlightRequestFlightOptionsOrderCard = ref(null)
+
+async function save() {
+  return travelDeskFlightRequestFlightOptionsOrderCard.value?.save()
+}
+
 const breadcrumbs = computed(() => [
   {
     text: "My Travel Requests",
@@ -91,4 +99,8 @@ const breadcrumbs = computed(() => [
   },
 ])
 useBreadcrumbs(breadcrumbs)
+
+defineExpose({
+  continue: save,
+})
 </script>

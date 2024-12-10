@@ -9,6 +9,7 @@
     <v-card-text class="d-flex flex-column gap-6 px-0 px-md-4">
       <TravelDeskFlightOptionPreferenceOrderFormCard
         v-for="(travelDeskFlightRequest, index) in travelDeskFlightRequests"
+        ref="travelDeskFlightOptionPreferenceOrderFormCards"
         :key="travelDeskFlightRequest.id"
         :title="`Leg ${index + 1}`"
         :subtitle="buildFlightRequestDescription(travelDeskFlightRequest)"
@@ -19,7 +20,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { isNil } from "lodash"
 
 import formatDate from "@/utils/format-date"
@@ -55,6 +56,21 @@ function buildFlightRequestDescription(travelDeskFlightRequest) {
   const formattedDate = formatDate(datePreference)
   return `${departLocation} -> ${arriveLocation} @ ${formattedDate}`
 }
+
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightOptionPreferenceOrderFormCard>[]>} */
+const travelDeskFlightOptionPreferenceOrderFormCards = ref([])
+
+async function save() {
+  let result = true
+  for (const travelDeskFlightOptionPreferenceOrderFormCard of travelDeskFlightOptionPreferenceOrderFormCards.value) {
+    result &&= await travelDeskFlightOptionPreferenceOrderFormCard.save()
+  }
+  return result
+}
+
+defineExpose({
+  save,
+})
 </script>
 
 <style scoped>

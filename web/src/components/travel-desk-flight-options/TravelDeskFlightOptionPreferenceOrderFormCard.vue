@@ -34,8 +34,10 @@
               v-model="flightOption.flightPreferenceOrder"
               label="Preference"
               :number-of-options="travelDeskFlightOptions.length"
+              :rules="[required]"
               :hide-details="$vuetify.breakpoint.smAndDown"
               outlined
+              required
             />
           </v-col>
 
@@ -48,14 +50,18 @@
               :cost="flightOption.cost"
             />
           </v-col>
-          <v-col cols="12">
+          <v-col
+            v-if="flightOption.flightPreferenceOrder === DOES_NOT_WORK"
+            cols="12"
+          >
             <v-textarea
-              v-if="flightOption.flightPreferenceOrder === DOES_NOT_WORK"
               v-model="flightOption.additionalInformation"
               label="Additional Information"
               rows="4"
+              :rules="[required]"
               :hide-details="$vuetify.breakpoint.smAndDown"
               outlined
+              required
             />
           </v-col>
         </v-row>
@@ -64,10 +70,11 @@
     <v-card-actions>
       <v-spacer />
       <v-btn
+        :form="formId"
+        type="submit"
         :loading="isLoading"
         color="primary"
-        type="submit"
-        :form="formId"
+        outlined
       >
         Save
       </v-btn>
@@ -79,6 +86,7 @@
 import { computed, ref } from "vue"
 import { uniqueId } from "lodash"
 
+import { required } from "@/utils/validators"
 import travelDeskFlightOptionsApi, { DOES_NOT_WORK } from "@/api/travel-desk-flight-options-api"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOptions from "@/use/use-travel-desk-flight-options"
@@ -118,7 +126,10 @@ const form = ref(null)
 const snack = useSnack()
 
 async function save() {
-  if (!form.value.validate()) return false
+  if (!form.value.validate()) {
+    snack.error("Please fill in all required fields")
+    return false
+  }
 
   isLoading.value = true
   try {
