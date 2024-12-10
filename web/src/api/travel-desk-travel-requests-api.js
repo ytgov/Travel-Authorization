@@ -156,10 +156,9 @@ export const travelDeskTravelRequestsApi = {
     )
     return data
   },
-  async optionsRanked(travelDeskTravelRequestId, attributes) {
+  async optionsRanked(travelDeskTravelRequestId) {
     const { data } = await http.post(
-      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/options-ranked`,
-      attributes
+      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/options-ranked`
     )
     return data
   },
