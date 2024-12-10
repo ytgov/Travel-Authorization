@@ -14,11 +14,18 @@
       style="left: 0; border-bottom: 3px #f3b228 solid"
     >
       <v-app-bar-nav-icon @click="toggleDrawer"></v-app-bar-nav-icon>
-      <img
-        src="/yukon.svg"
-        style="margin: -8px 85px 0 0"
+      <v-btn
+        :to="{ name: 'DashboardPage' }"
+        class="pa-0"
         height="44"
-      />
+        style="margin: -8px 85px 0 0"
+        plain
+      >
+        <img
+          src="/yukon.svg"
+          height="44"
+        />
+      </v-btn>
       <v-toolbar-title>
         <h1 class="text-h6 font-weight-bold mb-0">{{ APPLICATION_NAME }}</h1>
       </v-toolbar-title>
