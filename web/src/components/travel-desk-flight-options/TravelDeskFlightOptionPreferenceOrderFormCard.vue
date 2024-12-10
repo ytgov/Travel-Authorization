@@ -16,6 +16,7 @@
       <v-form
         :id="formId"
         ref="form"
+        lazy-validation
         @submit.prevent="save"
       >
         <v-row
@@ -31,13 +32,14 @@
           >
             <!-- TODO: exclude chosen options? -->
             <FlightPreferenceOrderAutocomplete
-              v-model="flightOption.flightPreferenceOrder"
+              :value="flightOption.flightPreferenceOrder"
               label="Preference"
               :number-of-options="travelDeskFlightOptions.length"
               :rules="[required]"
               :hide-details="$vuetify.breakpoint.smAndDown"
               outlined
               required
+              @input="updateAndswapIfAlreadyInUse(flightOption, $event)"
             />
           </v-col>
 
@@ -84,7 +86,7 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { uniqueId } from "lodash"
+import { times, uniqueId } from "lodash"
 
 import { required } from "@/utils/validators"
 import travelDeskFlightOptionsApi, { DOES_NOT_WORK } from "@/api/travel-desk-flight-options-api"
@@ -120,7 +122,32 @@ const { travelDeskFlightOptions, isLoading, refresh } = useTravelDeskFlightOptio
 
 const formId = uniqueId("travel-desk-flight-option-preference-order-form-")
 
-/** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm>> */
+function updateAndswapIfAlreadyInUse(flightOption, newPreference) {
+  if (newPreference === DOES_NOT_WORK) {
+    flightOption.flightPreferenceOrder = newPreference
+    return
+  }
+
+  const flightOptionWithSamePreference = travelDeskFlightOptions.value.find(
+    (option) => option.flightPreferenceOrder === newPreference
+  )
+  const oldPreference = flightOption.flightPreferenceOrder
+  if (flightOptionWithSamePreference && oldPreference !== DOES_NOT_WORK) {
+    flightOptionWithSamePreference.flightPreferenceOrder = oldPreference
+  } else if (flightOptionWithSamePreference && oldPreference === DOES_NOT_WORK) {
+    const allPreferences = new Set(times(travelDeskFlightOptions.value.length, (i) => i + 1))
+    const usedPreferences = new Set(
+      travelDeskFlightOptions.value.map((option) => option.flightPreferenceOrder)
+    )
+    const unusedPreferences = allPreferences.difference(usedPreferences)
+    const firstAvailableUnusedPreference = unusedPreferences.values().next().value
+    flightOptionWithSamePreference.flightPreferenceOrder = firstAvailableUnusedPreference
+  }
+
+  flightOption.flightPreferenceOrder = newPreference
+}
+
+/** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm>>> */
 const form = ref(null)
 
 const snack = useSnack()
