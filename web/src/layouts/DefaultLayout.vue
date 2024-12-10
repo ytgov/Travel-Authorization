@@ -12,6 +12,7 @@
       flat
       height="70"
       style="left: 0; border-bottom: 3px #f3b228 solid"
+      title="Show Navigation"
     >
       <v-app-bar-nav-icon @click="toggleDrawer"></v-app-bar-nav-icon>
       <v-btn
