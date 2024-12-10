@@ -58,10 +58,6 @@ const headers = [
     text: "Seat Preference",
     value: "seatPreference",
   },
-  {
-    text: "Actions",
-    value: "actions",
-  },
 ]
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
