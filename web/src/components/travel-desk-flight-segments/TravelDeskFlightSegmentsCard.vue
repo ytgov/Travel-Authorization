@@ -39,7 +39,7 @@
             cols="12"
             md="7"
           >
-            {{ travelDeskFlightSegment.departLocation }}
+            <span class="ml-2"></span>{{ travelDeskFlightSegment.departLocation }}
           </v-col>
         </v-row>
         <v-row no-gutters>
@@ -59,7 +59,7 @@
             cols="12"
             md="7"
           >
-            {{ travelDeskFlightSegment.arriveLocation }}
+            <span class="ml-2"></span>{{ travelDeskFlightSegment.arriveLocation }}
           </v-col>
         </v-row>
         <v-row no-gutters>
