@@ -1,11 +1,12 @@
-import { ModelStatic, Op, WhereOptions } from "sequelize"
+import { Attributes, FindOptions, Op } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
 import { User, TravelAuthorization } from "@/models"
+import { allRecordsScope } from "@/policies/base-policy"
+import PolicyFactory from "@/policies/policy-factory"
 import UsersPolicy from "@/policies/users-policy"
-import BasePolicy from "@/policies/base-policy"
 
-export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> {
+export class TravelAuthorizationsPolicy extends PolicyFactory(TravelAuthorization) {
   create(): boolean {
     if (this.user.roles.includes(User.Roles.ADMIN)) return true
     if (this.record.userId === this.user.id) return true
@@ -42,26 +43,6 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     }
 
     return false
-  }
-
-  static applyScope(
-    modelClass: ModelStatic<TravelAuthorization>,
-    currentUser: User
-  ): ModelStatic<TravelAuthorization> {
-    if (currentUser.roles.includes(User.Roles.ADMIN)) {
-      return modelClass
-    }
-
-    const where: WhereOptions<TravelAuthorization> = {
-      [Op.or]: [
-        {
-          supervisorEmail: currentUser.email,
-        },
-        { userId: currentUser.id },
-      ],
-    }
-
-    return modelClass.scope({ where })
   }
 
   // NOTE: userId is always restricted after creation.
@@ -179,6 +160,23 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     }
 
     return permittedAttributes
+  }
+
+  static policyScope(user: User): FindOptions<Attributes<TravelAuthorization>> {
+    if (user.roles.includes(User.Roles.ADMIN)) {
+      return allRecordsScope
+    }
+
+    return {
+      where: {
+        [Op.or]: [
+          {
+            supervisorEmail: user.email,
+          },
+          { userId: user.id },
+        ],
+      },
+    }
   }
 
   private get userPolicy(): UsersPolicy {
