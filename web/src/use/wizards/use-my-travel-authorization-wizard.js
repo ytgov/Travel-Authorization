@@ -59,7 +59,9 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   const isInTravelDeskTravelRequestSubmittedStates = computed(() => {
     return (
       travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED ||
-      travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
+      travelDeskTravelRequest.value?.status ===
+        TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED ||
+      travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_RANKED
     )
   })
 
@@ -170,10 +172,16 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
               backButtonProps: {
                 disabled: true,
               },
+              // TODO: make this more resilient.
+              // I'm starting to think that I should return a fully unique list for every state?
+              // It would be hard to maintain, but easy to understand.
+              disabled:
+                travelDeskTravelRequest.value?.status ===
+                TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_RANKED,
             },
           ]
         : []),
-      ...(isAwaitingFlightOptionsOptions.value
+      ...(isTravelingByAir.value && isAwaitingFlightOptionsOptions.value
         ? [
             {
               title: "Awaiting flight options",
@@ -198,10 +206,32 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
                 params: { travelAuthorizationId: travelAuthorizationId.value },
               },
               continueButtonText: "Submit Option Rankings",
+              disabled:
+                travelDeskTravelRequest.value?.status !==
+                TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED,
             },
           ]
         : []),
-      // Figure out what comes after ranking flight options? Booking maybe?
+      // TODO: consider how to show some read-only views when in this state?
+      ...(isTravelingByAir.value && !isAwaitingFlightOptionsOptions.value
+        ? [
+            {
+              title: "Waiting for booking",
+              subtitle:
+                "Travel request flight options are ranked, waiting for booking confirmation.",
+              to: {
+                name: "my-travel-requests/AwaitingRequestBookingPage",
+                params: { travelAuthorizationId: travelAuthorizationId.value },
+              },
+              backButtonProps: {
+                disabled: true,
+              },
+              continueButtonProps: {
+                disabled: true,
+              },
+            },
+          ]
+        : []),
       ...(isAwaitingExpensingToBeActionable.value
         ? [
             {

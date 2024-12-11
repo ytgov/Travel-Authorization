@@ -256,6 +256,13 @@ const routes = [
                 props: true,
               },
               {
+                path: "awaiting-request-booking",
+                name: "my-travel-requests/AwaitingRequestBookingPage",
+                component: () =>
+                  import("@/pages/my-travel-requests/AwaitingRequestBookingPage.vue"),
+                props: true,
+              },
+              {
                 path: "expense",
                 name: "my-travel-requests/expense/ExpensePage",
                 component: () => import("@/pages/my-travel-requests/expense/ExpensePage.vue"),
