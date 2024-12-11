@@ -12,15 +12,17 @@
       flat
       height="70"
       style="left: 0; border-bottom: 3px #f3b228 solid"
-      title="Show Navigation"
     >
-      <v-app-bar-nav-icon @click="toggleDrawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon
+        title="Show Navigation"
+        @click="toggleDrawer"
+      ></v-app-bar-nav-icon>
       <v-btn
         :to="{ name: 'DashboardPage' }"
-        class="pa-0"
+        class="pa-0 no-change-on-hover"
         height="44"
         style="margin-top: -8px"
-        plain
+        text
       >
         <img
           src="/yukon.svg"
@@ -90,5 +92,15 @@ function showHistory() {
 <style scoped>
 .h-full {
   height: 100%;
+}
+
+.no-change-on-hover {
+  background-color: transparent !important;
+  color: white !important;
+}
+
+.no-change-on-hover:hover {
+  background-color: transparent !important;
+  color: white !important;
 }
 </style>
