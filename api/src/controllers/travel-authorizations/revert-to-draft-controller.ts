@@ -4,7 +4,7 @@ import { BaseController } from "@/controllers/base-controller"
 import { TravelAuthorization } from "@/models"
 import { RevertToDraftService } from "@/services/travel-authorizations"
 import { RevertToDraftPolicy } from "@/policies/travel-authorizations"
-import { TravelAuthorizationsSerializer } from "@/serializers"
+import { ShowSerializer } from "@/serializers/travel-authorizations"
 
 // Submission is basically an enhanced TravelAuthorizationsController#update
 // that also changes the status to "submitted".
@@ -24,8 +24,10 @@ export class RevertToDraftController extends BaseController {
       }
 
       await RevertToDraftService.perform(travelAuthorization, this.currentUser)
-      const serializedTravelAuthorization =
-        TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+      const serializedTravelAuthorization = ShowSerializer.perform(
+        travelAuthorization,
+        this.currentUser
+      )
       return this.response.status(200).json({
         travelAuthorization: serializedTravelAuthorization,
       })

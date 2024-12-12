@@ -4,7 +4,7 @@ import { BaseController } from "@/controllers/base-controller"
 import { TravelAuthorization } from "@/models"
 import { ExpenseClaimService } from "@/services/travel-authorizations"
 import { ExpenseClaimPolicy } from "@/policies/travel-authorizations"
-import { TravelAuthorizationsSerializer } from "@/serializers"
+import { ShowSerializer } from "@/serializers/travel-authorizations"
 
 export class ExpenseClaimController extends BaseController {
   async create() {
@@ -19,19 +19,18 @@ export class ExpenseClaimController extends BaseController {
 
     const policy = this.buildPolicy(travelAuthorization)
     if (!policy.create()) {
-      return this.response
-        .status(403)
-        .json({
-          message:
-            "You are not authorized to submit an expense claim for this travel authorization.",
-        })
+      return this.response.status(403).json({
+        message: "You are not authorized to submit an expense claim for this travel authorization.",
+      })
     }
 
     const { supervisorEmail } = this.request.body
     return ExpenseClaimService.perform(travelAuthorization, supervisorEmail, this.currentUser)
       .then((travelAuthorization) => {
-        const serializedTravelAuthorization =
-          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+        const serializedTravelAuthorization = ShowSerializer.perform(
+          travelAuthorization,
+          this.currentUser
+        )
 
         return this.response
           .status(200)

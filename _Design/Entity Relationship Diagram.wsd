@@ -346,6 +346,7 @@ entity "travel_desk_flight_options" {
   * leg : varchar(255)
   * duration : varchar(255)
   flight_preference_order : int4
+  additional_information : text
   * created_at : timestamptz
   * updated_at : timestamptz
   deleted_at : timestamptz

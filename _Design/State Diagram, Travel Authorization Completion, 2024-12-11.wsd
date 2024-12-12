@@ -1,0 +1,42 @@
+@startuml "State Diagram, Travel Authorization Completion, 2024-12-11"
+
+title "Travel Authorization State Flow with Travel Desk Request Integration"
+
+[*] --> TravelAuthorization.DRAFT1 : Create TravelAuthorization (Traveller)
+
+state TravelAuthorization {
+  DRAFT1 --> DELETED1 : Delete (Traveller)
+  DELETED1 --> [*]
+
+  DRAFT1 --> SUBMITTED1 : Submit (Traveller)
+  SUBMITTED1 --> DRAFT1 : Revert to Draft (Traveller)
+  SUBMITTED1 --> APPROVED1 : Approve (Supervisor/Admin)
+
+  APPROVED1 --> TravelDeskTravelRequest.DRAFT2 : If Air Travel Required
+
+  state TravelDeskTravelRequest {
+    DRAFT2 --> SUBMITTED2 : Submit Request (Travel Desk User)
+    SUBMITTED2 --> OPTIONS_PROVIDED2 : Provide Options (Travel Desk User)
+    OPTIONS_PROVIDED2 --> OPTIONS_RANKED2 : Rank Options (Traveller)
+    OPTIONS_RANKED2 --> OPTIONS_PROVIDED2 : Options did not work (Traveller)
+    OPTIONS_RANKED2 --> BOOKED2 : Book Trip (Travel Desk User)
+    BOOKED2 --> COMPLETE2 : TravelAuthorization Updated to Booked & Ready for Travel
+    COMPLETE2 --> [*]
+  }
+
+  COMPLETE2 --> BOOKED1 : Air travel booked (Travel Desk User)
+
+  SUBMITTED1 --> DENIED1 : Deny (Supervisor/Admin)
+  DENIED1 --> [*]
+  SUBMITTED1 --> CHANGE_REQUESTED1 : Request Changes (Supervisor/Admin)
+  CHANGE_REQUESTED1 --> SUBMITTED1 : Re-submit (Traveller)
+
+  APPROVED1 --> BOOKED1 : If no Air Travel, proceed with Booking
+  BOOKED1 --> EXPENSE_CLAIM_SUBMITTED1 : Submit Expense Claim (Traveller)
+  EXPENSE_CLAIM_SUBMITTED1 --> EXPENSE_CLAIM_APPROVED1 : Approve Expense (Supervisor/Admin)
+  EXPENSE_CLAIM_SUBMITTED1 --> EXPENSE_CLAIM_DENIED1 : Deny Expense (Supervisor/Admin)
+  EXPENSE_CLAIM_DENIED1 --> [*]
+  EXPENSE_CLAIM_APPROVED1 --> EXPENSED1 : Expense Process Complete
+  EXPENSED1 --> [*]
+}
+@enduml

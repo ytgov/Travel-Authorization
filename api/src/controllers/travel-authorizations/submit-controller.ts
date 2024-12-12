@@ -4,7 +4,7 @@ import { BaseController } from "@/controllers/base-controller"
 import { TravelAuthorization } from "@/models"
 import { SubmitService } from "@/services/travel-authorizations"
 import { SubmitPolicy } from "@/policies/travel-authorizations"
-import { TravelAuthorizationsSerializer } from "@/serializers"
+import { ShowSerializer } from "@/serializers/travel-authorizations"
 
 // Submission is basically an enhanced TravelAuthorizationsController#update
 // that also changes the status to "submitted".
@@ -29,8 +29,10 @@ export class SubmitController extends BaseController {
     const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
     return SubmitService.perform(travelAuthorization, permittedAttributes, this.currentUser)
       .then((travelAuthorization) => {
-        const serializedTravelAuthorization =
-          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+        const serializedTravelAuthorization = ShowSerializer.perform(
+          travelAuthorization,
+          this.currentUser
+        )
 
         return this.response
           .status(200)
