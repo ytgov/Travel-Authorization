@@ -26,8 +26,8 @@
     <template #item.returningAt="{ value }">
       <span>{{ formatDateWrapper(value) }}</span>
     </template>
-    <template #item.status="{ value }">
-      <span>{{ formatStatus(value) }}</span>
+    <template #item.status="{ value, item }">
+      <span>{{ formatStatus(value, item) }}</span>
     </template>
     <template #item.action="{ value: actions, item }">
       <template v-if="isEmpty(actions)">
@@ -77,10 +77,10 @@ import { isNil, isEmpty } from "lodash"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import formatDate from "@/utils/format-date"
-import { STATUSES as TRAVEL_AUTHORIZATION_STATUSES } from "@/api/travel-authorizations-api"
 import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
+import useTravelAuthorizationStates from "@/use/travel-authorizations/use-travel-authorization-states"
 
 import AddExpenseButton from "@/modules/travel-authorizations/components/my-travel-authorizations-table/AddExpenseButton.vue"
 import DeleteTravelAuthorizationDialog from "@/modules/travel-authorizations/components/my-travel-authorizations-table/DeleteTravelAuthorizationDialog.vue"
@@ -140,50 +140,34 @@ const travelAuthorizationsQuery = computed(() => ({
 const { travelAuthorizations, totalCount, isLoading, refresh } =
   useTravelAuthorizations(travelAuthorizationsQuery)
 
-onMounted(() => {
-  showDeleteDialogForRouteQuery()
-})
-
 const router = useRouter()
 
-function goToFormDetails(travelAuthorization) {
+async function goToFormDetails(travelAuthorization) {
+  const { isDraft, isSubmitted, isTravelDeskOptionsRanked } =
+    useTravelAuthorizationStates(travelAuthorization)
+
   const travelAuthorizationId = travelAuthorization.id
-  if (travelAuthorization.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT) {
+  if (isDraft.value) {
     router.push({
       name: "my-travel-requests/details/DetailsEditPurposePage",
       params: { travelAuthorizationId },
     })
-  } else if (travelAuthorization.status === TRAVEL_AUTHORIZATION_STATUSES.SUBMITTED) {
+  } else if (isSubmitted.value) {
     router.push({
       name: "my-travel-requests/AwaitingApprovalPage",
       params: { travelAuthorizationId },
     })
-    // TODO: handle redirect to this page web/src/pages/my-travel-requests/AwaitingRequestBookingPage.vue
+  } else if (isTravelDeskOptionsRanked.value) {
+    router.push({
+      name: "my-travel-requests/AwaitingRequestBookingPage",
+      params: { travelAuthorizationId },
+    })
   } else {
     router.push({
       name: "my-travel-requests/details/DetailsPage",
       params: { travelAuthorizationId },
     })
   }
-}
-
-/** @type {import("vue").Ref<InstanceType<typeof DeleteTravelAuthorizationDialog> | null>} */
-const deleteDialog = ref(null)
-
-function showDeleteDialog(item) {
-  deleteDialog.value?.show(item)
-}
-
-const route = useRoute()
-
-function showDeleteDialogForRouteQuery() {
-  const itemId = parseInt(route.query.showDelete)
-  if (isNaN(itemId)) return
-
-  const item = travelAuthorizations.value.find((item) => item.id === itemId)
-  if (!item) return
-
-  showDeleteDialog(item)
 }
 
 function formatDateWrapper(value) {
@@ -200,12 +184,39 @@ function formatLocation(value) {
 
 const { t } = useI18n()
 
-function formatStatus(value) {
+function formatStatus(value, travelAuthorization) {
+  if (travelAuthorization.isTravelling) {
+    return t(`global.status.travelling`, { $default: "Unknown" })
+  }
+
   return t(`global.status.${value}`, { $default: "Unknown" })
 }
 
 function formatPhase(value) {
   return t(`global.phase.${value}`, { $default: "Unknown" })
+}
+
+// TODO: replace this with newer show dialog patterns
+onMounted(() => {
+  showDeleteDialogForRouteQuery()
+})
+
+const route = useRoute()
+/** @type {import("vue").Ref<InstanceType<typeof DeleteTravelAuthorizationDialog> | null>} */
+const deleteDialog = ref(null)
+
+function showDeleteDialog(item) {
+  deleteDialog.value?.show(item)
+}
+
+function showDeleteDialogForRouteQuery() {
+  const itemId = parseInt(route.query.showDelete)
+  if (isNaN(itemId)) return
+
+  const item = travelAuthorizations.value.find((item) => item.id === itemId)
+  if (!item) return
+
+  showDeleteDialog(item)
 }
 
 defineExpose({

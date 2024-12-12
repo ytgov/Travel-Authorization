@@ -141,7 +141,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
             },
           ]
         : []),
-      ...(isTravelingByAir.value
+      ...(isTravelingByAir.value && isAwaitingFlightOptionsOptions.value
         ? [
             {
               title: "Request: traveller details",

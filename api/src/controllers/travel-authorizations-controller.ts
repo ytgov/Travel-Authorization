@@ -4,8 +4,9 @@ import logger from "@/utils/logger"
 
 import { UpdateService, CreateService, DestroyService } from "@/services/travel-authorizations"
 import { TravelAuthorization } from "@/models"
-import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
+import { IndexSerializer } from "@/serializers/travel-authorizations"
+import { TravelAuthorizationsSerializer } from "@/serializers"
 import BaseController from "@/controllers/base-controller"
 
 export class TravelAuthorizationsController extends BaseController<TravelAuthorization> {
@@ -44,8 +45,10 @@ export class TravelAuthorizationsController extends BaseController<TravelAuthori
         limit: this.pagination.limit,
         offset: this.pagination.offset,
       })
-      const serializedTravelAuthorizations =
-        TravelAuthorizationsSerializer.asTable(travelAuthorizations)
+      const serializedTravelAuthorizations = IndexSerializer.perform(
+        travelAuthorizations,
+        this.currentUser
+      )
       return this.response.json({
         travelAuthorizations: serializedTravelAuthorizations,
         totalCount,
