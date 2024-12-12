@@ -80,21 +80,19 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
   private determineAction() {
     if (this.isDraft()) {
       return ["delete"]
-    } else if (
-      this.isApproved() &&
-      this.anyTransportTypeIsAircraft() &&
-      !this.travelDeskIsSubmitted() &&
-      !this.travelDeskIsOptionsProvided() &&
-      !this.travelDeskIsOptionsRanked()
-    ) {
+    } else if (this.isApproved() && this.isTravellingByAir() && this.travelDeskIsDraft()) {
       return ["submit_travel_desk_request"]
     } else if (
       this.isApproved() &&
-      this.anyTransportTypeIsAircraft() &&
+      this.isTravellingByAir() &&
       this.travelDeskIsOptionsProvided()
     ) {
-      return ["travel_desk_options_provided"]
-    } else if (this.isApproved() && this.travellingComplete()) {
+      return ["travel_desk_rank_options"]
+    } else if (
+      this.isApproved() &&
+      this.travellingComplete() &&
+      ((this.isTravellingByAir() && this.travelDeskIsComplete()) || !this.isTravellingByAir())
+    ) {
       return ["submit_expense_claim"]
     } else if (this.travelDeskIsComplete()) {
       return ["view_itinerary"]
@@ -171,7 +169,7 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
     return !isEmpty(expenses)
   }
 
-  private anyTransportTypeIsAircraft() {
+  private isTravellingByAir() {
     return this.record.stops?.some((stop) => stop.transport === Stop.TravelMethods.AIRCRAFT)
   }
 
@@ -199,10 +197,8 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
     return this.record.status === TravelAuthorization.Statuses.SUBMITTED
   }
 
-  private travelDeskIsSubmitted() {
-    return (
-      this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.SUBMITTED
-    )
+  private travelDeskIsDraft() {
+    return this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.DRAFT
   }
 
   private travelDeskIsOptionsProvided() {

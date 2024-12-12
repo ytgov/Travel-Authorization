@@ -46,7 +46,7 @@
         :travel-authorization-id="item.id"
       />
       <TravelDeskOptionsProvidedButton
-        v-else-if="actions.includes('travel_desk_options_provided')"
+        v-else-if="actions.includes('travel_desk_rank_options')"
         :travel-authorization-id="item.id"
       />
       <SubmitExpenseClaimButton
