@@ -1,4 +1,3 @@
-import { WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { TravelDeskFlightRequest, TravelDeskTravelRequest } from "@/models"
@@ -7,12 +6,13 @@ import { CreateService, UpdateService } from "@/services/travel-desk-flight-requ
 
 import BaseController from "@/controllers/base-controller"
 
-export class TravelDeskFlightRequestsController extends BaseController {
+export class TravelDeskFlightRequestsController extends BaseController<TravelDeskFlightRequest> {
   async index() {
-    const where = this.query.where as WhereOptions<TravelDeskFlightRequest>
+    const where = this.buildWhere()
+    const scopes = this.buildFilterScopes()
 
     const scopedTravelDeskFlightRequests = TravelDeskFlightRequestsPolicy.applyScope(
-      TravelDeskFlightRequest,
+      scopes,
       this.currentUser
     )
 
@@ -23,6 +23,12 @@ export class TravelDeskFlightRequestsController extends BaseController {
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         order: [["datePreference", "ASC"]],
+        include: [
+          {
+            association: "flightOptions",
+            include: ["flightSegments"],
+          },
+        ],
       })
       return this.response.status(200).json({
         travelDeskFlightRequests,
@@ -32,6 +38,33 @@ export class TravelDeskFlightRequestsController extends BaseController {
       return this.response
         .status(500)
         .json({ message: `Failed to retrieve travel desk flight requests: ${error}` })
+    }
+  }
+
+  async show() {
+    try {
+      const travelDeskFlightRequest = await this.loadTravelDeskFlightRequest()
+      if (isNil(travelDeskFlightRequest)) {
+        return this.response.status(404).json({
+          message: "Flight request not found.",
+        })
+      }
+
+      const policy = this.buildPolicy(travelDeskFlightRequest)
+      if (!policy.show()) {
+        return this.response.status(403).json({
+          message: "You are not authorized to view this flight request.",
+        })
+      }
+
+      return this.response.status(200).json({
+        travelDeskFlightRequest,
+        policy,
+      })
+    } catch (error) {
+      return this.response.status(400).json({
+        message: `Failed to retrieve travel desk flight request: ${error}`,
+      })
     }
   }
 

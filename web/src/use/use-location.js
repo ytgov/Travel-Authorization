@@ -1,4 +1,5 @@
 import { reactive, toRefs, unref, watch } from "vue"
+import { isNil } from "lodash"
 
 import locationsApi from "@/api/locations-api"
 
@@ -14,7 +15,7 @@ import locationsApi from "@/api/locations-api"
  * @callback UseLocation
  * @param {import('vue').Ref<number>} locationId
  * @returns {{
- *   location: import('vue').Ref<Location>,
+ *   location: import('vue').Ref<Location> | null,
  *   isLoading: import('vue').Ref<boolean>,
  *   isErrored: import('vue').Ref<boolean>,
  *   fetch: () => Promise<Location>,
@@ -25,7 +26,7 @@ import locationsApi from "@/api/locations-api"
 /** @type {UseLocation} */
 export function useLocation(locationId) {
   const state = reactive({
-    location: {},
+    location: null,
     isLoading: false,
     isErrored: false,
   })
@@ -49,7 +50,7 @@ export function useLocation(locationId) {
   watch(
     () => unref(locationId),
     async (newLocationId) => {
-      if ([undefined, null].includes(newLocationId)) return
+      if (isNil(newLocationId)) return
 
       await fetch()
     },

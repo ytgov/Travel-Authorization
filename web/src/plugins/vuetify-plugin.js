@@ -3,16 +3,18 @@ import Vuetify from "vuetify"
 
 import "vuetify/dist/vuetify.min.css"
 
-import "../assets/yk-style.css"
-import "../assets/yhsi.css"
+import "@/assets/yk-style.css"
+import "@/assets/yhsi.css"
+import "@/assets/vuetify2-extensions.css"
 
 Vue.use(Vuetify)
+
 export default new Vuetify({
   theme: {
     themes: {
       light: {
         primary: "#0097a9",
-        secondary: "#fff",
+        secondary: "#ffffff",
         anchor: "#00818f",
       },
     },

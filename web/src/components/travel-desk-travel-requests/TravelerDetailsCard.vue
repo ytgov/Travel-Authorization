@@ -1,257 +1,272 @@
 <template>
-  <TitleCard
-    class="mt-10"
-    large-title
+  <v-skeleton-loader
+    v-if="isNil(travelDeskTravelRequest)"
+    type="card"
+  />
+  <v-card
+    v-else
+    :loading="isLoading"
   >
-    <template #title>
-      <div>Traveler Details</div>
-    </template>
-    <template
-      v-if="isLoading"
-      #body
-    >
-      <v-skeleton-loader type="card" />
-    </template>
-    <template
-      v-else
-      #body
-    >
-      <!--
-        TODO: make this less ugly and hard to read.
-        Vuetify 3 has a "text" variant that looks better than the "outlined" variant + lock icon.
-        An alternative is the DescriptionElement from the WRAP project.
-        See https://github.com/icefoganalytics/wrap/blob/8bcf794a3fdfd5272a578058bcf98663b181d7ab/web/src/components/DescriptionElement.vue
-      -->
-      <v-row class="mt-5 mx-3">
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.legalFirstName"
-            label="Legal First Name *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.legalMiddleName"
-            label="Legal Middle Name"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.legalLastName"
-            label="Legal Last Name *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.birthDate"
-            label="Birth Date"
-            outlined
-            type="date"
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="prettyTravelAuthorizationId"
-            label="Travel Auth"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-      </v-row>
-      <v-row class="mt-0 mx-3">
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.strAddress"
-            label="Address *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.city"
-            label="City *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.province"
-            label="Province *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.postalCode"
-            label="Postal Code *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-checkbox
-            :value="travelDeskTravelRequest.isInternationalTravel"
-            label="International travel"
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-      </v-row>
-      <v-row
-        v-if="travelDeskTravelRequest.isInternationalTravel"
-        class="mt-0 mx-3"
-      >
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.passportNum"
-            label="Passport Number *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.passportCountry"
-            label="Passport Country *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-      </v-row>
+    <v-card-title>
+      <h3>Traveler Details</h3>
+    </v-card-title>
 
-      <v-row class="mt-0 mx-3">
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.busPhone"
-            label="Business Phone *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.busEmail"
-            label="Business Email *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-checkbox
-            :value="travelDeskTravelRequest.travelContact"
-            label="Contact information different for travel"
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-      </v-row>
-      <v-row
-        v-if="travelDeskTravelRequest.travelContact"
-        class="mt-0 mx-3"
-      >
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.travelPhone"
-            label="Travel Phone *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-text-field
-            :value="travelDeskTravelRequest.travelEmail"
-            label="Travel Email *"
-            outlined
-            readonly
-            append-icon="mdi-lock"
-          />
-        </v-col>
-      </v-row>
-    </template>
-  </TitleCard>
+    <v-divider></v-divider>
+
+    <v-card-text>
+      <dl>
+        <v-row>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Legal First Name"
+              icon="mdi-account-details"
+              :value="travelDeskTravelRequest.legalFirstName"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Legal Middle Name"
+              icon="mdi-account-details"
+              :value="travelDeskTravelRequest.legalMiddleName || 'N/A'"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Legal Last Name"
+              icon="mdi-account-details"
+              :value="travelDeskTravelRequest.legalLastName"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Birth Date"
+              icon="mdi-calendar"
+              :value="travelDeskTravelRequest.birthDate"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Travel Auth"
+              icon="mdi-key"
+              :value="prettyTravelAuthorizationId"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-divider class="my-4"></v-divider>
+
+        <v-row>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Business Phone"
+              icon="mdi-phone"
+              :value="travelDeskTravelRequest.busPhone"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Business Email"
+              icon="mdi-email"
+              :value="travelDeskTravelRequest.busEmail"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="International Travel"
+              icon="mdi-airplane"
+              :value="travelDeskTravelRequest.isInternationalTravel ? 'Yes' : 'No'"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-row v-if="travelDeskTravelRequest.isInternationalTravel">
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Passport Number"
+              icon="mdi-passport"
+              :value="travelDeskTravelRequest.passportNum"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Passport Country"
+              icon="mdi-flag"
+              :value="travelDeskTravelRequest.passportCountry"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-divider class="my-4"></v-divider>
+
+        <v-row>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Address"
+              icon="mdi-home"
+              :value="travelDeskTravelRequest.strAddress"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="City"
+              icon="mdi-city"
+              :value="travelDeskTravelRequest.city"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Province"
+              icon="mdi-map"
+              :value="travelDeskTravelRequest.province"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Postal Code"
+              icon="mdi-mailbox"
+              :value="travelDeskTravelRequest.postalCode"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-divider class="my-4"></v-divider>
+
+        <v-row>
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Different Travel Contact"
+              icon="mdi-account-switch"
+              :value="travelDeskTravelRequest.travelContact ? 'Yes' : 'No'"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-row v-if="travelDeskTravelRequest.travelContact">
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Travel Phone"
+              icon="mdi-phone"
+              :value="travelDeskTravelRequest.travelPhone"
+              vertical
+            />
+          </v-col>
+
+          <v-col
+            cols="12"
+            md="4"
+          >
+            <DescriptionElement
+              label="Travel Email"
+              icon="mdi-email"
+              :value="travelDeskTravelRequest.travelEmail"
+              vertical
+            />
+          </v-col>
+        </v-row>
+
+        <v-divider class="my-4"></v-divider>
+
+        <v-row>
+          <v-col cols="12">
+            <DescriptionElement
+              label="Additional Information"
+              icon="mdi-text"
+              :value="travelDeskTravelRequest?.additionalInformation || 'N/A'"
+              vertical
+            />
+          </v-col>
+        </v-row>
+      </dl>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
 import { computed, toRefs } from "vue"
+import { isNil } from "lodash"
 
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
-import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
+import DescriptionElement from "@/components/common/DescriptionElement.vue"
 
 const props = defineProps({
   travelDeskTravelRequestId: {
@@ -267,5 +282,3 @@ const prettyTravelAuthorizationId = computed(() => {
   return travelDeskTravelRequest.value.travelAuthorizationId.toString().padStart(5, "0")
 })
 </script>
-
-<style scoped></style>

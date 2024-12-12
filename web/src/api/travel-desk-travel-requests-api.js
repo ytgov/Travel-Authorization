@@ -74,14 +74,19 @@ export const TRAVEL_DESK_TRAVEL_REQUEST_STATUSES = Object.freeze({
  * }} TravelDeskTravelRequestFiltersOptions
  */
 
+/**
+ * @typedef {{
+ *   where?: TravelDeskTravelRequestWhereOptions;
+ *   filters?: TravelDeskTravelRequestFiltersOptions;
+ *   order?: ModelOrder[];
+ *   page?: number;
+ *   perPage?: number
+ * }} TravelDeskTravelRequestQueryOptions
+ */
+
 export const travelDeskTravelRequestsApi = {
   /**
-   * @param {{
-   *   where?: TravelDeskTravelRequestWhereOptions;
-   *   filters?: TravelDeskTravelRequestFiltersOptions;
-   *   page?: number;
-   *   perPage?: number
-   * }} [params={}]
+   * @param {TravelDeskTravelRequestQueryOptions} [params={}]
    * @returns {Promise<{
    *   travelDeskTravelRequests: TravelDeskTravelRequestIndexView[];
    *   totalCount: number;
@@ -141,16 +146,36 @@ export const travelDeskTravelRequestsApi = {
    * @param {number} travelDeskTravelRequestId
    * @param {Partial<TravelDeskTravelRequest>} attributes
    * @returns {Promise<{
-  *   travelDeskTravelRequest: TravelDeskTravelRequest;
-  * }>}
-  */
+   *   travelDeskTravelRequest: TravelDeskTravelRequest;
+   * }>}
+   */
+  async optionsProvided(travelDeskTravelRequestId, attributes) {
+    const { data } = await http.post(
+      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/options-provided`,
+      attributes
+    )
+    return data
+  },
+  async optionsRanked(travelDeskTravelRequestId) {
+    const { data } = await http.post(
+      `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/options-ranked`
+    )
+    return data
+  },
+  /**
+   * @param {number} travelDeskTravelRequestId
+   * @param {Partial<TravelDeskTravelRequest>} attributes
+   * @returns {Promise<{
+   *   travelDeskTravelRequest: TravelDeskTravelRequest;
+   * }>}
+   */
   async book(travelDeskTravelRequestId, attributes) {
     const { data } = await http.post(
       `/api/travel-desk-travel-requests/${travelDeskTravelRequestId}/book`,
       attributes
     )
     return data
-  }
+  },
 }
 
 export default travelDeskTravelRequestsApi

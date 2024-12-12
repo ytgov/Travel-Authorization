@@ -41,7 +41,7 @@ import { isNil } from "lodash"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
-import useRouteQuery, { integerTransformer } from "@/use/use-route-query"
+import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 
 const emit = defineEmits({
   booked: null,

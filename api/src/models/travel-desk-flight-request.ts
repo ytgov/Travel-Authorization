@@ -1,19 +1,20 @@
 import {
   Association,
-  BelongsToCreateAssociationMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
+  literal,
   Model,
   NonAttribute,
+  Op,
 } from "sequelize"
+import minify from "pg-minify"
 
 import sequelize from "@/db/db-client"
 
+import TravelDeskFlightOption from "@/models/travel-desk-flight-option"
 import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 
 /**
@@ -57,13 +58,6 @@ export class TravelDeskFlightRequest extends Model<
   declare deletedAt: CreationOptional<Date | null>
 
   // Associations
-  declare getTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
-  declare setTravelRequest: BelongsToSetAssociationMixin<
-    TravelDeskTravelRequest,
-    TravelDeskTravelRequest["id"]
-  >
-  declare createTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
-
   declare travelRequest: NonAttribute<TravelDeskTravelRequest>
 
   declare static associations: {
@@ -74,6 +68,10 @@ export class TravelDeskFlightRequest extends Model<
     this.belongsTo(TravelDeskTravelRequest, {
       as: "travelRequest",
       foreignKey: "travelRequestId",
+    })
+    this.hasMany(TravelDeskFlightOption, {
+      as: "flightOptions",
+      foreignKey: "flightRequestId",
     })
   }
 }
@@ -148,6 +146,25 @@ TravelDeskFlightRequest.init(
   },
   {
     sequelize,
+    scopes: {
+      familyOf(flightRequestId: number) {
+        const travelRequestIdQuery = minify(/* sql */ `(
+          SELECT "travel_request_id"
+          FROM "travel_desk_flight_requests"
+          WHERE "id" = :flightRequestId
+        )`)
+        return {
+          where: {
+            travelRequestId: {
+              [Op.eq]: literal(travelRequestIdQuery),
+            },
+          },
+          replacements: {
+            flightRequestId,
+          },
+        }
+      },
+    },
   }
 )
 

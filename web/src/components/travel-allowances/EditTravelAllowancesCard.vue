@@ -45,7 +45,7 @@ import { computed, ref } from "vue"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import formatCurrency from "@/utils/format-currency"
-import useRouteQuery from "@/use/use-route-query"
+import useRouteQuery from "@/use/utils/use-route-query"
 import useTravelAllowances from "@/use/use-travel-allowances"
 
 import EditTravelAllowanceDialog from "@/components/travel-allowances/EditTravelAllowanceDialog.vue"

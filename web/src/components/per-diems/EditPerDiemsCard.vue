@@ -71,7 +71,7 @@ import { computed, ref } from "vue"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import formatCurrency from "@/utils/format-currency"
-import useRouteQuery from "@/use/use-route-query"
+import useRouteQuery from "@/use/utils/use-route-query"
 import usePerDiems from "@/use/use-per-diems"
 
 import ClaimTypeSelect from "@/components/per-diems/ClaimTypeSelect.vue"

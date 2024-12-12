@@ -1,19 +1,26 @@
-import { reactive, toRefs } from "vue"
-import { isEmpty } from "lodash"
+import { reactive, toRefs, unref, watch } from "vue"
+import { isUndefined } from "lodash"
+
+/**
+ * @template [T=any]
+ * @typedef {import('vue').Ref<T>} Ref
+ */
 
 /**
  * TODO: add other fields
- * @typedef {Object} BreadcrumbItem
- * @property {string} title
- * @property {Object} to
- * @property {string} to.name
- * @property {Object} [to.params]
+ * @typedef {{
+ *   title: string;
+ *   to: {
+ *     name: string;
+ *     params?: Object;
+ *   };
+ * }} BreadcrumbItem
  */
 
 const BASE_CRUMB = {
   text: "Dashboard",
   to: {
-    name: "Dashboard",
+    name: "DashboardPage",
   },
 }
 
@@ -25,17 +32,26 @@ const state = reactive({
  * This stores a global breadcrumb state.
  *
  * @callback UseBreadcrumbs
- * @param {BreadcrumbItem[]} [breadcrumbs=[]]
+ * @param {Ref<BreadcrumbItem[]>} [breadcrumbs]
  * @returns {{
- *   breadcrumbs: import('vue').Ref<BreadcrumbItem[]>,
+ *   breadcrumbs: Ref<BreadcrumbItem[]>,
  * }}
  */
 
 /** @type {UseBreadcrumbs} */
-export function useBreadcrumbs(breadcrumbs = []) {
-  if (!isEmpty(breadcrumbs)) {
-    state.breadcrumbs = [BASE_CRUMB, ...breadcrumbs]
-  }
+export function useBreadcrumbs(breadcrumbs) {
+  watch(
+    () => unref(breadcrumbs),
+    (newBreadcrumbs) => {
+      if (isUndefined(newBreadcrumbs)) return
+
+      state.breadcrumbs = [BASE_CRUMB, ...newBreadcrumbs]
+    },
+    {
+      immediate: true,
+      deep: true,
+    }
+  )
 
   return {
     ...toRefs(state),

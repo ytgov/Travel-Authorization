@@ -10,17 +10,23 @@ import BaseController from "@/controllers/base-controller"
 
 export class TravelDeskTravelRequestsController extends BaseController<TravelDeskTravelRequest> {
   async index() {
-    const where = this.buildWhere()
-    const scopes = this.buildFilterScopes()
-    const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
-      scopes,
-      this.currentUser
-    )
-
     try {
+      const where = this.buildWhere()
+      const scopes = this.buildFilterScopes([
+        "includeIsBookedAttribute",
+        "includeTravelStartDateAttribute",
+        { method: ["includeIsAssignedToCurrentUserAttribute", this.currentUser.displayName] },
+      ])
+      const order = this.buildOrder()
+      const scopedTravelDeskTravelRequests = TravelDeskTravelRequestsPolicy.applyScope(
+        scopes,
+        this.currentUser
+      )
+
       const totalCount = await scopedTravelDeskTravelRequests.count({ where })
       const travelDeskTravelRequests = await scopedTravelDeskTravelRequests.findAll({
         where,
+        order,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
         include: [
@@ -105,7 +111,22 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
   private async loadTravelDeskTravelRequest(): Promise<TravelDeskTravelRequest | null> {
     const { travelDeskTravelRequestId } = this.params
     return TravelDeskTravelRequest.findByPk(travelDeskTravelRequestId, {
-      include: ["travelAuthorization"],
+      include: [
+        "flightRequests",
+        "hotels",
+        "otherTransportations",
+        "rentalCars",
+        {
+          association: "travelAuthorization",
+          include: [
+            "user",
+            {
+              association: "travelSegments",
+              include: ["departureLocation", "arrivalLocation"],
+            },
+          ],
+        },
+      ],
     })
   }
 

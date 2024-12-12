@@ -20,7 +20,7 @@ import { User } from "@/models"
 export function mockCurrentUser(newCurrentUser: User) {
   vi.mock("@/middleware/jwt-middleware", () => ({
     default: async (_req: Request, _res: Response, next: NextFunction) => next(),
-    checkJwt: async (_req: Request, _res: Response, next: NextFunction) => next(),
+    jwtMiddleware: async (_req: Request, _res: Response, next: NextFunction) => next(),
   }))
 
   vi.mock("@/middleware/authorization-middleware")

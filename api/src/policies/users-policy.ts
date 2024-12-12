@@ -1,8 +1,10 @@
+import { Attributes, FindOptions } from "sequelize"
+
 import { Path } from "@/utils/deep-pick"
 import { User } from "@/models"
-import BasePolicy from "@/policies/base-policy"
+import PolicyFactory from "@/policies/policy-factory"
 
-export class UsersPolicy extends BasePolicy<User> {
+export class UsersPolicy extends PolicyFactory(User) {
   show(): boolean {
     return true
   }
@@ -47,6 +49,10 @@ export class UsersPolicy extends BasePolicy<User> {
 
   permittedAttributesForCreate(): Path[] {
     return ["email", ...this.permittedAttributes()]
+  }
+
+  static policyScope(_user: User): FindOptions<Attributes<User>> {
+    return {}
   }
 }
 

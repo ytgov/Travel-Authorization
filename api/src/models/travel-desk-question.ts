@@ -71,8 +71,10 @@ TravelDeskQuestion.init(
       type: DataTypes.STRING(255),
       allowNull: false,
       validate: {
-        isIn: [Object.values(TravelDeskQuestionRequestTypes)],
-        msg: `Request type must be one of ${Object.values(TravelDeskQuestionRequestTypes).join(", ")}`,
+        isIn: {
+          args: [Object.values(TravelDeskQuestionRequestTypes)],
+          msg: `Request type must be one of ${Object.values(TravelDeskQuestionRequestTypes).join(", ")}`,
+        },
       },
     },
     question: {

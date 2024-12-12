@@ -2,32 +2,12 @@ import { isString } from "lodash"
 
 import http from "@/api/http-client"
 
-/**
- * @typedef {Object} User
- * @property {string} id
- * @property {string} sub - Auth0 subject attribute
- * @property {string} email
- * @property {string} status
- * @property {(string|null)} firstName
- * @property {(string|null)} lastName
- * @property {string[]} roles
- * @property {(string|null)} department
- * @property {(string|null)} division
- * @property {(string|null)} branch
- * @property {(string|null)} unit
- * @property {(string|null)} mailcode
- * @property {(string|null)} manager
- * @property {(string|null)} lastSyncSuccessAt
- * @property {(string|null)} lastSyncFailureAt
- * @property {string} createdAt
- * @property {string} updatedAt
- *
- * extra attributes added by serializer
- * @property {string} displayName
- */
+import debounceWithArgsCache from "@/utils/debounce-with-args-cache"
+
+/** @typedef {import('@/api/base-api.js').Policy} Policy */
 
 // Must match role names in api/src/models/role.ts
-export const ROLES = Object.freeze({
+export const USER_ROLES = Object.freeze({
   ADMIN: "admin",
   USER: "user",
   PRE_APPROVED_TRAVEL_ADMIN: "pre_approved_travel_admin",
@@ -35,30 +15,115 @@ export const ROLES = Object.freeze({
   TRAVEL_DESK_USER: "travel_desk_user",
 })
 
+/** @typedef {USER_ROLES[keyof USER_ROLES]} UserRoles */
+
+/**
+ * sub - Auth0 subject attribute
+ * @typedef {{
+ *   id: number;
+ *   sub: string;
+ *   email: string;
+ *   status: string;
+ *   firstName: string | null;
+ *   lastName: string | null;
+ *   roles: UserRoles[];
+ *   department: string | null;
+ *   division: string | null;
+ *   branch: string | null;
+ *   unit: string | null;
+ *   mailcode: string | null;
+ *   manager: string | null;
+ *   lastSyncSuccessAt: string | null;
+ *   lastSyncFailureAt: string | null;
+ *   createdAt: string;
+ *   updatedAt: string;
+ * }} User
+ */
+
+/**
+ * @typedef {User & {
+ *  displayName: string
+ * }} UserDetailedView
+ */
+
+/**
+ * Keep in sync with api/src/models/user.ts
+ * @typedef {{
+ *   id?: number;
+ *   sub?: string;
+ *   email?: string;
+ *   status?: string;
+ *   firstName?: string;
+ *   lastName?: string;
+ *   roles?: UserRoles[];
+ *   department?: string;
+ *   division?: string;
+ *   branch?: string;
+ *   unit?: string;
+ *   mailcode?: string;
+ *   manager?: string;
+ * }} UserWhereOptions
+ */
+
+/**
+ * // match with model scopes signatures
+ * @typedef {{
+ * }} UserFiltersOptions
+ */
+
+/**
+ * @typedef {{
+ *   where?: UserWhereOptions;
+ *   filters?: UserFiltersOptions;
+ *   page?: number;
+ *   perPage?: number
+ * }} UserQueryOptions
+ */
+
 export const usersApi = {
-  ROLES,
+  ROLES: USER_ROLES,
   /**
-   * @returns {Promise<{ user: User }>}
+   * @param {UserQueryOptions} params
+   * @returns {Promise<{
+   *   users: User[];
+   *   totalCount: number;
+   * }>}
+   */
+  async list(params = {}) {
+    const { data } = await http.get("/api/users", { params })
+    return data
+  },
+  /**
+   * @returns {Promise<{ user: UserDetailedView }>}
    */
   async me() {
     const { data } = await http.get("/api/user/me")
     return data
   },
-  search({ email, ...otherParams } = {}) {
+  async search({ email, ...otherParams } = {}) {
     if (isString(email) && email.length >= 3) {
-      return http
-        .get("/api/lookup/emailList", { params: { email, otherParams } })
-        .then(({ data }) => ({ emails: data }))
+      const { data } = await http.get("/api/lookup/emailList", { params: { email, otherParams } })
+      return { emails: data }
     } else {
       return Promise.resolve([])
     }
   },
-  get(userId, params = {}) {
-    return http.get(`/api/users/${userId}`, { params }).then(({ data }) => data)
+  /**
+   * @returns {Promise<{ user: UserDetailedView }>}
+   */
+  async get(userId, params = {}) {
+    const { data } = await http.get(`/api/users/${userId}`, { params })
+    return data
   },
-  ygGovernmentDirectorySync(userId) {
-    return http.post(`/api/users/${userId}/yg-government-directory-sync`).then(({ data }) => data)
+  /**
+   * @returns {Promise<{ user: UserDetailedView }>}
+   */
+  async ygGovernmentDirectorySync(userId) {
+    const { data } = await http.post(`/api/users/${userId}/yg-government-directory-sync`)
+    return data
   },
 }
+
+usersApi.get = debounceWithArgsCache(usersApi.get)
 
 export default usersApi

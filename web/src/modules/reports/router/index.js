@@ -1,7 +1,7 @@
 const routes = [
   {
     path: "/reporting-summary",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         name: "ReportsHome",

@@ -50,6 +50,7 @@ import { TRAVEL_DESK_QUESTION_REQUEST_TYPES } from "@/api/travel-desk-questions-
 import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import NewQuestion from "@/modules/travelDesk/views/Desk/Components/NewQuestion.vue"
 
+/** @deprecated - prefer web/src/components/travel-desk-questions/TravelDeskQuestionsManageCard.vue */
 export default {
   name: "QuestionsTable",
   components: {

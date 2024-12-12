@@ -50,7 +50,7 @@ async function createAndGoToEditPage() {
     })
     snack.success("Travel request created!")
     return router.push({
-      name: "EditMyTravelAuthorizationDetailsPage",
+      name: "my-travel-requests/details/DetailsEditPurposePage",
       params: { travelAuthorizationId: travelAuthorization.id },
     })
   } catch (error) {

@@ -21,7 +21,7 @@ class PullRequestEditor
       file.write(pull_request_body)
       file.flush
 
-      system("code --wait #{file.path}")
+      system("windsurf --wait #{file.path}")
 
       updated_pull_request_body = File.read(file.path)
 

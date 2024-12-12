@@ -1,11 +1,12 @@
-import { ModelStatic, Op, WhereOptions } from "sequelize"
+import { Attributes, FindOptions, Op } from "sequelize"
 
 import { Path } from "@/utils/deep-pick"
 import { User, TravelAuthorization } from "@/models"
+import { allRecordsScope } from "@/policies/base-policy"
+import PolicyFactory from "@/policies/policy-factory"
 import UsersPolicy from "@/policies/users-policy"
-import BasePolicy from "@/policies/base-policy"
 
-export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> {
+export class TravelAuthorizationsPolicy extends PolicyFactory(TravelAuthorization) {
   create(): boolean {
     if (this.user.roles.includes(User.Roles.ADMIN)) return true
     if (this.record.userId === this.user.id) return true
@@ -24,12 +25,7 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
   update(): boolean {
     if (this.user.roles.includes(User.Roles.ADMIN)) return true
     if (this.record.supervisorEmail === this.user.email) return true
-    if (
-      this.record.userId === this.user.id &&
-      this.record.status === TravelAuthorization.Statuses.DRAFT
-    ) {
-      return true
-    }
+    if (this.record.userId === this.user.id) return true
 
     return false
   }
@@ -49,95 +45,84 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     return false
   }
 
-  static applyScope(
-    modelClass: ModelStatic<TravelAuthorization>,
-    currentUser: User
-  ): ModelStatic<TravelAuthorization> {
-    if (currentUser.roles.includes(User.Roles.ADMIN)) {
-      return modelClass
-    }
-
-    const where: WhereOptions<TravelAuthorization> = {
-      [Op.or]: [
-        {
-          supervisorEmail: currentUser.email,
-        },
-        { userId: currentUser.id },
-      ],
-    }
-
-    return modelClass.scope({ where })
-  }
-
   // NOTE: userId is always restricted after creation.
   permittedAttributes(): Path[] {
-    return [
-      "preApprovalProfileId",
-      "purposeId",
-      "firstName",
-      "lastName",
-      "department",
-      "division",
-      "branch",
-      "unit",
-      "email",
-      "mailcode",
-      "daysOffTravelStatus",
-      "dateBackToWork",
-      "travelDuration",
-      "travelAdvance",
-      "eventName",
-      "summary",
-      "benefits",
-      "supervisorEmail",
-      "approved",
-      "requestChange",
-      "denialReason",
-      "oneWayTrip",
-      "multiStop",
-      "travelAdvanceInCents",
-      "allTravelWithinTerritory",
+    if (
+      this.record.status === TravelAuthorization.Statuses.DRAFT ||
+      this.user.roles.includes(User.Roles.ADMIN) ||
+      this.record.supervisorEmail === this.user.email
+    ) {
+      return [
+        "preApprovalProfileId",
+        "purposeId",
+        "stepNumber",
+        "firstName",
+        "lastName",
+        "department",
+        "division",
+        "branch",
+        "unit",
+        "email",
+        "mailcode",
+        "daysOffTravelStatus",
+        "dateBackToWork",
+        "travelDuration",
+        "travelAdvance",
+        "eventName",
+        "summary",
+        "benefits",
+        "supervisorEmail",
+        "approved",
+        "requestChange",
+        "denialReason",
+        "oneWayTrip",
+        "multiStop",
+        "travelAdvanceInCents",
+        "allTravelWithinTerritory",
 
-      // TODO: use permitedAttributes from relevant policies once they exist
-      // Note that these nested attributes are "create" attributes, not "update" attributes
-      // as a full replace is occuring.
-      {
-        stops: [
-          "travelAuthorizationId",
-          "locationId",
-          "departureDate",
-          "departureTime",
-          "transport",
-          "accommodationType",
-        ],
-      },
-      {
-        expenses: [
-          "travelAuthorizationId",
-          "type",
-          "expenseType",
-          "description",
-          "date",
-          "cost",
-          "currency",
-          "receiptImage",
-          "fileName",
-        ],
-      },
-      {
-        estimates: [
-          "travelAuthorizationId",
-          "type",
-          "expenseType",
-          "description",
-          "date",
-          "cost",
-          "currency",
-          "receiptImage",
-          "fileName",
-        ],
-      },
-    ]
+        // TODO: use permitedAttributes from relevant policies once they exist
+        // Note that these nested attributes are "create" attributes, not "update" attributes
+        // as a full replace is occuring.
+        {
+          stops: [
+            "travelAuthorizationId",
+            "locationId",
+            "departureDate",
+            "departureTime",
+            "transport",
+            "accommodationType",
+          ],
+        },
+        {
+          expenses: [
+            "travelAuthorizationId",
+            "type",
+            "expenseType",
+            "description",
+            "date",
+            "cost",
+            "currency",
+            "receiptImage",
+            "fileName",
+          ],
+        },
+        {
+          estimates: [
+            "travelAuthorizationId",
+            "type",
+            "expenseType",
+            "description",
+            "date",
+            "cost",
+            "currency",
+            "receiptImage",
+            "fileName",
+          ],
+        },
+      ]
+    }
+
+    return ["stepNumber"]
   }
 
   permittedAttributesForCreate(): Path[] {
@@ -175,6 +160,23 @@ export class TravelAuthorizationsPolicy extends BasePolicy<TravelAuthorization> 
     }
 
     return permittedAttributes
+  }
+
+  static policyScope(user: User): FindOptions<Attributes<TravelAuthorization>> {
+    if (user.roles.includes(User.Roles.ADMIN)) {
+      return allRecordsScope
+    }
+
+    return {
+      where: {
+        [Op.or]: [
+          {
+            supervisorEmail: user.email,
+          },
+          { userId: user.id },
+        ],
+      },
+    }
   }
 
   private get userPolicy(): UsersPolicy {

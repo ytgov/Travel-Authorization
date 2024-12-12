@@ -1,25 +1,26 @@
 import { isNil } from "lodash"
-import { WhereOptions } from "sequelize"
 
-import BaseController from "./base-controller"
+import logger from "@/utils/logger"
 
 import { UpdateService, CreateService, DestroyService } from "@/services/travel-authorizations"
 import { TravelAuthorization } from "@/models"
-import { TravelAuthorizationsSerializer } from "@/serializers"
 import { TravelAuthorizationsPolicy } from "@/policies"
+import { IndexSerializer, ShowSerializer } from "@/serializers/travel-authorizations"
+import BaseController from "@/controllers/base-controller"
 
-export class TravelAuthorizationsController extends BaseController {
+export class TravelAuthorizationsController extends BaseController<TravelAuthorization> {
   async index() {
-    const where = this.query.where as WhereOptions<TravelAuthorization>
+    try {
+      const where = this.buildWhere()
+      const scopes = this.buildFilterScopes()
 
-    const scopedTravelAuthorizations = TravelAuthorizationsPolicy.applyScope(
-      TravelAuthorization,
-      this.currentUser
-    )
+      const scopedTravelAuthorizations = TravelAuthorizationsPolicy.applyScope(
+        scopes,
+        this.currentUser
+      )
 
-    const totalCount = await scopedTravelAuthorizations.count({ where })
-    return scopedTravelAuthorizations
-      .findAll({
+      const totalCount = await scopedTravelAuthorizations.count({ where })
+      const travelAuthorizations = await scopedTravelAuthorizations.findAll({
         where,
         include: [
           {
@@ -43,39 +44,50 @@ export class TravelAuthorizationsController extends BaseController {
         limit: this.pagination.limit,
         offset: this.pagination.offset,
       })
-      .then((travelAuthorizations) => {
-        const serializedTravelAuthorizations =
-          TravelAuthorizationsSerializer.asTable(travelAuthorizations)
-        return this.response.json({
-          travelAuthorizations: serializedTravelAuthorizations,
-          totalCount,
-        })
+      const serializedTravelAuthorizations = IndexSerializer.perform(
+        travelAuthorizations,
+        this.currentUser
+      )
+      return this.response.json({
+        travelAuthorizations: serializedTravelAuthorizations,
+        totalCount,
       })
+    } catch (error) {
+      logger.error(`Error fetching travel authorizations: ${error}`, { error })
+      return this.response.status(400).json({
+        message: `Failed to retrieve travel authorizations: ${error}`,
+      })
+    }
   }
 
   async create() {
-    const travelAuthorization = this.buildTravelAuthorization()
-    const policy = this.buildPolicy(travelAuthorization)
-    if (!policy.create()) {
-      return this.response
-        .status(403)
-        .json({ message: "You are not authorized to create this travel authorization." })
-    }
+    try {
+      const travelAuthorization = this.buildTravelAuthorization()
+      const policy = this.buildPolicy(travelAuthorization)
+      if (!policy.create()) {
+        return this.response.status(403).json({
+          message: "You are not authorized to create this travel authorization.",
+        })
+      }
 
-    const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
-    return CreateService.perform(permittedAttributes, this.currentUser)
-      .then((travelAuthorization) => {
-        const serializedTravelAuthorization =
-          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
-        return this.response
-          .status(201)
-          .json({ travelAuthorization: serializedTravelAuthorization })
+      const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
+      const newTravelAuthorization = await CreateService.perform(
+        permittedAttributes,
+        this.currentUser
+      )
+      const serializedTravelAuthorization = ShowSerializer.perform(
+        newTravelAuthorization,
+        this.currentUser
+      )
+      return this.response.status(201).json({
+        travelAuthorization: serializedTravelAuthorization,
       })
-      .catch((error) => {
-        return this.response
-          .status(422)
-          .json({ message: `Travel authorization submission failed: ${error}` })
+    } catch (error) {
+      logger.error(`Error submitting travel authorization: ${error}`, { error })
+      return this.response.status(422).json({
+        message: `Travel authorization submission failed: ${error}`,
       })
+    }
   }
 
   async show() {
@@ -92,72 +104,82 @@ export class TravelAuthorizationsController extends BaseController {
           .json({ message: "You are not authorized to view this travel authorization." })
       }
 
-      const serializedTravelAuthorization =
-        TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+      const serializedTravelAuthorization = ShowSerializer.perform(
+        travelAuthorization,
+        this.currentUser
+      )
 
-      return this.response
-        .status(200)
-        .json({ travelAuthorization: serializedTravelAuthorization, policy })
+      return this.response.status(200).json({
+        travelAuthorization: serializedTravelAuthorization,
+        policy,
+      })
     } catch (error) {
-      return this.response
-        .status(500)
-        .json({ message: `Failed to retrieve travel authorization: ${error}` })
+      return this.response.status(400).json({
+        message: `Failed to retrieve travel authorization: ${error}`,
+      })
     }
   }
 
   async update() {
-    // TODO: make missing route params auto-404?
-    if (isNil(this.params.travelAuthorizationId)) {
-      return this.response.status(404).json({ message: "Travel authorization not found." })
-    }
+    try {
+      const travelAuthorization = await this.loadTravelAuthorization()
+      if (isNil(travelAuthorization)) {
+        return this.response.status(404).json({
+          message: "Travel authorization not found.",
+        })
+      }
 
-    const travelAuthorization = await this.loadTravelAuthorization()
-    if (isNil(travelAuthorization))
-      return this.response.status(404).json({ message: "Travel authorization not found." })
+      const policy = this.buildPolicy(travelAuthorization)
+      if (!policy.update()) {
+        return this.response.status(403).json({
+          message: "You are not authorized to update this travel authorization.",
+        })
+      }
 
-    const policy = this.buildPolicy(travelAuthorization)
-    if (!policy.update()) {
-      return this.response
-        .status(403)
-        .json({ message: "You are not authorized to update this travel authorization." })
-    }
-
-    const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
-    return UpdateService.perform(travelAuthorization, permittedAttributes, this.currentUser)
-      .then((travelAuthorization) => {
-        const serializedTravelAuthorization =
-          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
-
-        return this.response.json({ travelAuthorization: serializedTravelAuthorization })
+      const permittedAttributes = policy.permitAttributesForUpdate(this.request.body)
+      const updatedTravelAuthorization = await UpdateService.perform(
+        travelAuthorization,
+        permittedAttributes,
+        this.currentUser
+      )
+      const serializedTravelAuthorization = ShowSerializer.perform(
+        updatedTravelAuthorization,
+        this.currentUser
+      )
+      return this.response.json({
+        travelAuthorization: serializedTravelAuthorization,
       })
-      .catch((error) => {
-        return this.response
-          .status(422)
-          .json({ message: `Travel authorization update failed: ${error}` })
+    } catch (error) {
+      logger.error(`Error updating travel authorization: ${error}`, { error })
+      return this.response.status(422).json({
+        message: `Travel authorization update failed: ${error}`,
       })
+    }
   }
 
   async destroy() {
-    const travelAuthorization = await this.loadTravelAuthorization()
-    if (isNil(travelAuthorization))
-      return this.response.status(404).json({ message: "TravelAuthorization not found." })
+    try {
+      const travelAuthorization = await this.loadTravelAuthorization()
+      if (isNil(travelAuthorization))
+        return this.response.status(404).json({
+          message: "TravelAuthorization not found.",
+        })
 
-    const policy = this.buildPolicy(travelAuthorization)
-    if (!policy.destroy()) {
-      return this.response
-        .status(403)
-        .json({ message: "You are not authorized to delete this travel authorization." })
+      const policy = this.buildPolicy(travelAuthorization)
+      if (!policy.destroy()) {
+        return this.response.status(403).json({
+          message: "You are not authorized to delete this travel authorization.",
+        })
+      }
+
+      await DestroyService.perform(travelAuthorization, this.currentUser)
+      return this.response.status(204).end()
+    } catch (error) {
+      logger.error(`Error deleting travel authorization: ${error}`, { error })
+      return this.response.status(422).json({
+        message: `Travel authorization deletion failed: ${error}`,
+      })
     }
-
-    return DestroyService.perform(travelAuthorization, this.currentUser)
-      .then(() => {
-        return this.response.status(204).end()
-      })
-      .catch((error) => {
-        return this.response
-          .status(422)
-          .json({ message: `Travel authorization deletion failed: ${error}` })
-      })
   }
 
   private loadTravelAuthorization(): Promise<TravelAuthorization | null> {

@@ -3,7 +3,7 @@ import { isNil } from "lodash"
 import { TravelAuthorization } from "@/models"
 import { ApproveExpenseClaimService } from "@/services/travel-authorizations"
 import { ApprovePolicy } from "@/policies/travel-authorizations"
-import { TravelAuthorizationsSerializer } from "@/serializers"
+import { ShowSerializer } from "@/serializers/travel-authorizations"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -27,8 +27,10 @@ export class ApproveExpenseClaimController extends BaseController {
 
     return ApproveExpenseClaimService.perform(travelAuthorization, this.currentUser)
       .then((travelAuthorization) => {
-        const serializedTravelAuthorization =
-          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+        const serializedTravelAuthorization = ShowSerializer.perform(
+          travelAuthorization,
+          this.currentUser
+        )
 
         return this.response
           .status(200)

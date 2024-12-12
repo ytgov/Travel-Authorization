@@ -1,7 +1,7 @@
 const routes = [
   {
     path: "/travel-request",
-    component: () => import("@/layouts/Layout"),
+    component: () => import("@/layouts/DefaultLayout.vue"),
     children: [
       {
         name: "TravelRequest",
