@@ -1,13 +1,14 @@
 import { faker } from "@faker-js/faker"
 
-import { travelAuthorizationFactory, travelSegmentFactory } from "@/factories"
+import { travelAuthorizationFactory, travelSegmentFactory, userFactory } from "@/factories"
 import { TravelAuthorization } from "@/models"
-import { TravelAuthorizationsSerializer } from "@/serializers"
+import { IndexSerializer } from "@/serializers/travel-authorizations"
 
-describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
-  describe("TravelAuthorizationsSerializer", () => {
-    describe("#asTableRow", () => {
+describe("api/src/serializers/travel-authorizations/index-serializer.ts", () => {
+  describe("IndexSerializer", () => {
+    describe("#perform", () => {
       test("when travel authorization is pending approval, and travelling is complete the travel action is blank", async () => {
+        const currentUser = await userFactory.create()
         const travelSegment = travelSegmentFactory.build({
           departureOn: faker.date.past(),
         })
@@ -22,9 +23,9 @@ describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
             status: TravelAuthorization.Statuses.SUBMITTED,
           })
 
-        const serializer = new TravelAuthorizationsSerializer(travelAuthorization)
+        const result = IndexSerializer.perform(travelAuthorization, currentUser)
 
-        expect(serializer.asTableRow()).toEqual(
+        expect(result).toEqual(
           expect.objectContaining({
             phase: "travel_approval",
             action: [],
@@ -33,6 +34,7 @@ describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
       })
 
       test("when travel authorization is approved, and travelling is complete, the travel action includes submit_expense_claim", async () => {
+        const currentUser = await userFactory.create()
         const travelSegment = travelSegmentFactory.build({
           departureOn: faker.date.past(),
         })
@@ -47,9 +49,9 @@ describe("api/src/serializers/travel-authorizations-serializer.ts", () => {
             status: TravelAuthorization.Statuses.APPROVED,
           })
 
-        const serializer = new TravelAuthorizationsSerializer(travelAuthorization)
+        const result = IndexSerializer.perform(travelAuthorization, currentUser)
 
-        expect(serializer.asTableRow()).toEqual(
+        expect(result).toEqual(
           expect.objectContaining({
             phase: "travel_complete",
             action: ["submit_expense_claim"],

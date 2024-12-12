@@ -4,7 +4,7 @@ import { BaseController } from "@/controllers/base-controller"
 import { TravelAuthorization } from "@/models"
 import { TravelAuthorizations } from "@/services"
 import { DenyPolicy } from "@/policies/travel-authorizations"
-import { TravelAuthorizationsSerializer } from "@/serializers"
+import { ShowSerializer } from "@/serializers/travel-authorizations"
 
 export class DenyController extends BaseController {
   async create() {
@@ -31,8 +31,10 @@ export class DenyController extends BaseController {
       this.currentUser
     )
       .then((travelAuthorization) => {
-        const serializedTravelAuthorization =
-          TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+        const serializedTravelAuthorization = ShowSerializer.perform(
+          travelAuthorization,
+          this.currentUser
+        )
 
         return this.response
           .status(200)

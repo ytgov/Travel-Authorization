@@ -5,8 +5,7 @@ import logger from "@/utils/logger"
 import { UpdateService, CreateService, DestroyService } from "@/services/travel-authorizations"
 import { TravelAuthorization } from "@/models"
 import { TravelAuthorizationsPolicy } from "@/policies"
-import { IndexSerializer } from "@/serializers/travel-authorizations"
-import { TravelAuthorizationsSerializer } from "@/serializers"
+import { IndexSerializer, ShowSerializer } from "@/serializers/travel-authorizations"
 import BaseController from "@/controllers/base-controller"
 
 export class TravelAuthorizationsController extends BaseController<TravelAuthorization> {
@@ -76,8 +75,10 @@ export class TravelAuthorizationsController extends BaseController<TravelAuthori
         permittedAttributes,
         this.currentUser
       )
-      const serializedTravelAuthorization =
-        TravelAuthorizationsSerializer.asDetailed(newTravelAuthorization)
+      const serializedTravelAuthorization = ShowSerializer.perform(
+        newTravelAuthorization,
+        this.currentUser
+      )
       return this.response.status(201).json({
         travelAuthorization: serializedTravelAuthorization,
       })
@@ -103,8 +104,10 @@ export class TravelAuthorizationsController extends BaseController<TravelAuthori
           .json({ message: "You are not authorized to view this travel authorization." })
       }
 
-      const serializedTravelAuthorization =
-        TravelAuthorizationsSerializer.asDetailed(travelAuthorization)
+      const serializedTravelAuthorization = ShowSerializer.perform(
+        travelAuthorization,
+        this.currentUser
+      )
 
       return this.response.status(200).json({
         travelAuthorization: serializedTravelAuthorization,
@@ -139,8 +142,9 @@ export class TravelAuthorizationsController extends BaseController<TravelAuthori
         permittedAttributes,
         this.currentUser
       )
-      const serializedTravelAuthorization = TravelAuthorizationsSerializer.asDetailed(
-        updatedTravelAuthorization
+      const serializedTravelAuthorization = ShowSerializer.perform(
+        updatedTravelAuthorization,
+        this.currentUser
       )
       return this.response.json({
         travelAuthorization: serializedTravelAuthorization,
