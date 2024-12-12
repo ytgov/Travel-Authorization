@@ -96,7 +96,11 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
       return ["submit_expense_claim"]
     } else if (this.travelDeskIsComplete()) {
       return ["view_itinerary"]
-    } else if (this.isApproved() && this.isTravelling()) {
+    } else if (
+      this.isApproved() &&
+      this.isTravelling() &&
+      ((this.isTravellingByAir() && this.travelDeskIsComplete()) || !this.isTravellingByAir())
+    ) {
       return ["add_expense"]
     } else if (this.isApproved() && this.anyTransportTypeIsPoolVehicle()) {
       return ["submit_pool_vehicle_request"]
