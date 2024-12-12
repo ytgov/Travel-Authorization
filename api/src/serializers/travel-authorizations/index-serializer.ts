@@ -23,6 +23,26 @@ export type TravelAuthorizationIndexView = Pick<TravelAuthorization, "id" | "eve
   lastName: string
   department: string
   branch: string
+  // state flags
+  isDraft: boolean
+  isDeleted: boolean
+  isSubmitted: boolean
+  isApproved: boolean
+  isDenied: boolean
+  isChangeRequested: boolean
+  isBooked: boolean
+  isExpenseClaimSubmitted: boolean
+  isExpenseClaimApproved: boolean
+  isExpenseClaimDenied: boolean
+  isExpensed: boolean
+  isTravelDeskDraft: boolean
+  isTravelDeskSubmitted: boolean
+  isTravelDeskOptionsProvided: boolean
+  isTravelDeskOptionsRanked: boolean
+  isTravelDeskBooked: boolean
+  isTravelDeskComplete: boolean
+  isInFinalState: boolean
+  isInTravelDeskFlow: boolean
 } & {
   // associations
   travelDeskTravelRequest: TravelDeskTravelRequest
@@ -50,6 +70,26 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
       department: this.user.department,
       branch: this.user.branch,
       isTraveling: this.isTravelling(),
+      // state flags
+      isDraft: this.isDraft(),
+      isDeleted: this.isDeleted(),
+      isSubmitted: this.isSubmitted(),
+      isApproved: this.isApproved(),
+      isDenied: this.isDenied(),
+      isChangeRequested: this.isChangeRequested(),
+      isBooked: this.isBooked(),
+      isExpenseClaimSubmitted: this.isExpenseClaimSubmitted(),
+      isExpenseClaimApproved: this.isExpenseClaimApproved(),
+      isExpenseClaimDenied: this.isExpenseClaimDenied(),
+      isExpensed: this.isExpensed(),
+      isTravelDeskDraft: this.isTravelDeskDraft(),
+      isTravelDeskSubmitted: this.isTravelDeskSubmitted(),
+      isTravelDeskOptionsProvided: this.isTravelDeskOptionsProvided(),
+      isTravelDeskOptionsRanked: this.isTravelDeskOptionsRanked(),
+      isTravelDeskBooked: this.isTravelDeskBooked(),
+      isTravelDeskComplete: this.isTravelDeskComplete(),
+      isInFinalState: this.isInFinalState(),
+      isInTravelDeskFlow: this.isInTravelDeskFlow(),
       // associations
       travelDeskTravelRequest: this.record.travelDeskTravelRequest,
     }
@@ -219,6 +259,81 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
 
   travelDeskRequestIsComplete() {
     return this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.BOOKED
+  }
+
+  isDeleted() {
+    return this.record.status === TravelAuthorization.Statuses.DELETED
+  }
+
+  isSubmitted() {
+    return this.record.status === TravelAuthorization.Statuses.SUBMITTED
+  }
+
+  isDenied() {
+    return this.record.status === TravelAuthorization.Statuses.DENIED
+  }
+
+  isChangeRequested() {
+    return this.record.status === TravelAuthorization.Statuses.CHANGE_REQUESTED
+  }
+
+  isExpenseClaimSubmitted() {
+    return this.record.status === TravelAuthorization.Statuses.EXPENSE_CLAIM_SUBMITTED
+  }
+
+  isExpenseClaimApproved() {
+    return this.record.status === TravelAuthorization.Statuses.EXPENSE_CLAIM_APPROVED
+  }
+
+  isExpenseClaimDenied() {
+    return this.record.status === TravelAuthorization.Statuses.EXPENSE_CLAIM_DENIED
+  }
+
+  isTravelDeskDraft() {
+    return this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.DRAFT
+  }
+
+  isTravelDeskSubmitted() {
+    return (
+      this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.SUBMITTED
+    )
+  }
+
+  isTravelDeskOptionsProvided() {
+    return (
+      this.record.travelDeskTravelRequest?.status ===
+      TravelDeskTravelRequest.Statuses.OPTIONS_PROVIDED
+    )
+  }
+
+  isTravelDeskOptionsRanked() {
+    return (
+      this.record.travelDeskTravelRequest?.status ===
+      TravelDeskTravelRequest.Statuses.OPTIONS_RANKED
+    )
+  }
+
+  isTravelDeskBooked() {
+    return this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.BOOKED
+  }
+
+  isTravelDeskComplete() {
+    return this.record.travelDeskTravelRequest?.status === TravelDeskTravelRequest.Statuses.COMPLETE
+  }
+
+  isInFinalState() {
+    return this.isDeleted() || this.isDenied() || this.isExpenseClaimDenied() || this.isExpensed()
+  }
+
+  isInTravelDeskFlow() {
+    return (
+      this.isTravelDeskDraft() ||
+      this.isTravelDeskSubmitted() ||
+      this.isTravelDeskOptionsProvided() ||
+      this.isTravelDeskOptionsRanked() ||
+      this.isTravelDeskBooked() ||
+      this.isTravelDeskComplete()
+    )
   }
 
   get firstStop(): Stop | undefined {

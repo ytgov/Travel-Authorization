@@ -80,7 +80,6 @@ import formatDate from "@/utils/format-date"
 import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
-import useTravelAuthorizationStates from "@/use/travel-authorizations/use-travel-authorization-states"
 
 import AddExpenseButton from "@/modules/travel-authorizations/components/my-travel-authorizations-table/AddExpenseButton.vue"
 import DeleteTravelAuthorizationDialog from "@/modules/travel-authorizations/components/my-travel-authorizations-table/DeleteTravelAuthorizationDialog.vue"
@@ -143,21 +142,20 @@ const { travelAuthorizations, totalCount, isLoading, refresh } =
 const router = useRouter()
 
 async function goToFormDetails(travelAuthorization) {
-  const { isDraft, isSubmitted, isTravelDeskOptionsRanked } =
-    useTravelAuthorizationStates(travelAuthorization)
+  const { isDraft, isSubmitted, isTravelDeskOptionsRanked } = travelAuthorization
 
   const travelAuthorizationId = travelAuthorization.id
-  if (isDraft.value) {
+  if (isDraft) {
     router.push({
       name: "my-travel-requests/details/DetailsEditPurposePage",
       params: { travelAuthorizationId },
     })
-  } else if (isSubmitted.value) {
+  } else if (isSubmitted) {
     router.push({
       name: "my-travel-requests/AwaitingApprovalPage",
       params: { travelAuthorizationId },
     })
-  } else if (isTravelDeskOptionsRanked.value) {
+  } else if (isTravelDeskOptionsRanked) {
     router.push({
       name: "my-travel-requests/AwaitingRequestBookingPage",
       params: { travelAuthorizationId },
