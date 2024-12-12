@@ -5,6 +5,9 @@ import { TravelAuthorization, User } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 import StopsSerializer, { StopDetailedView } from "@/serializers/stops-serializer"
 import UsersSerializer, { UserDetailedView } from "@/serializers/users-serializer"
+import StateFlagsSerializer, {
+  type TravelAuthorizationStateFlagsView,
+} from "@/serializers/travel-authorizations/state-flags-serializer"
 
 export type TravelAuthorizationShowView = Pick<
   TravelAuthorization,
@@ -43,7 +46,7 @@ export type TravelAuthorizationShowView = Pick<
 > & {
   stops: StopDetailedView[]
   user: UserDetailedView
-}
+} & TravelAuthorizationStateFlagsView
 
 // TODO: re-write this to use newer serializer pattern
 export class ShowSerializer extends BaseSerializer<TravelAuthorization> {
@@ -55,6 +58,8 @@ export class ShowSerializer extends BaseSerializer<TravelAuthorization> {
   }
 
   perform(): TravelAuthorizationShowView {
+    const stateFlagsAttributes = StateFlagsSerializer.perform(this.record, this.currentUser)
+
     return {
       ...pick(this.record.dataValues, [
         "id",
@@ -90,6 +95,9 @@ export class ShowSerializer extends BaseSerializer<TravelAuthorization> {
         "createdAt",
         "updatedAt",
       ]),
+      // computed fields
+      ...stateFlagsAttributes,
+      // associations
       user: UsersSerializer.asDetailed(this.traveller),
       stops: this.record.stops?.map(StopsSerializer.asDetailed) || [],
     }
