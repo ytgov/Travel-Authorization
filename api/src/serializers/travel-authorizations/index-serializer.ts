@@ -65,10 +65,10 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
       returningAt: this.lastStop?.departureAt,
       phase: this.determinePhase(),
       action: this.determineAction(),
-      firstName: this.user.firstName,
-      lastName: this.user.lastName,
-      department: this.user.department,
-      branch: this.user.branch,
+      firstName: this.traveller.firstName,
+      lastName: this.traveller.lastName,
+      department: this.traveller.department,
+      branch: this.traveller.branch,
       isTraveling: this.isTravelling(),
       // state flags
       isDraft: this.isDraft(),
@@ -352,7 +352,7 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
     return new Date()
   }
 
-  get user(): User {
+  get traveller(): User {
     if (isNil(this.record.user)) {
       throw new Error("TravelAuthorization must include an associated User")
     }
