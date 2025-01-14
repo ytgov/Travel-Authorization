@@ -33,9 +33,9 @@
 
 <script setup>
 import { ref } from "vue"
-import { isEmpty, isNil, sortBy } from "lodash"
+import { isNil, sortBy } from "lodash"
 
-import parseTravel from "@/utils/parse-travel"
+import { parseTravelportFlights, parseHumanizedDate } from "@/utils/travelport-parsers"
 
 import useSnack from "@/use/use-snack"
 
@@ -52,24 +52,17 @@ async function parseRawTravelPortalText() {
   isLoading.value = true
   try {
     if (!rawTravelPortalText.value) return
-    const parsedTravel = parseTravel(rawTravelPortalText.value)
+    const parsedFlightsData = parseTravelportFlights(rawTravelPortalText.value)
 
-    if (isNil(parsedTravel)) {
-      snack.error("Failed to parse travel text")
-      return
-    }
-
-    const { flights: rawFlightSegmentsAttributes } = parsedTravel
-    if (isEmpty(rawFlightSegmentsAttributes)) {
+    if (isNil(parsedFlightsData)) {
       snack.error("Failed to parse travel text")
       return
     }
 
     const travelDeskFlightSegmentsAttributes = []
-    for (const rawFlightSegmentAttributes of rawFlightSegmentsAttributes) {
-      const travelDeskFlightSegmentAttributes = cleanRawFlightSegmentAttributes(
-        rawFlightSegmentAttributes
-      )
+    for (const parsedFlightData of parsedFlightsData) {
+      const travelDeskFlightSegmentAttributes =
+        convertParsedFlightDataToFlightSegmentAttributes(parsedFlightData)
       travelDeskFlightSegmentsAttributes.push(travelDeskFlightSegmentAttributes)
     }
 
@@ -92,67 +85,44 @@ async function parseRawTravelPortalText() {
 }
 
 // TODO: validate this legacy code
-function cleanRawFlightSegmentAttributes(rawFlightSegmentAttributes) {
-  const arrivalDate = getFlightDate(rawFlightSegmentAttributes.arrivalDate)
-  const departureDate = getFlightDate(rawFlightSegmentAttributes.departureDate)
+function convertParsedFlightDataToFlightSegmentAttributes(rawFlightSegmentAttributes) {
+  const {
+    arrivalDate,
+    arrivalTime,
+    arrivalAirport,
+    arrivalAirportCode,
+    arrivalTerminal,
+    departureDate,
+    departureTime,
+    departureAirport,
+    departureAirportCode,
+    departureTerminal,
+    duration,
+    status,
+    class: klass,
+    flightNumber,
+    airline,
+  } = rawFlightSegmentAttributes
+  const arriveAt = parseHumanizedDate(arrivalDate)
+  const departAt = parseHumanizedDate(departureDate)
 
   const flightSegmentAttributes = {
     sortOrder: 0,
-    flightNumber: cleanText(
-      rawFlightSegmentAttributes.airline + " " + rawFlightSegmentAttributes.flightNumber
-    ),
-    departAt: departureDate,
-    departDay: departureDate.toISOString().slice(0, 10),
-    departTime: cleanText(rawFlightSegmentAttributes.departureTime),
-    departLocation: cleanText(
-      rawFlightSegmentAttributes.departureAirport +
-        " " +
-        rawFlightSegmentAttributes.departureAirportCode +
-        " Terminal: " +
-        rawFlightSegmentAttributes.departureTerminal
-    ),
-    arriveAt: arrivalDate,
-    arriveDay: arrivalDate.toISOString().slice(0, 10),
-    arriveTime: cleanText(rawFlightSegmentAttributes.arrivalTime),
-    arriveLocation: cleanText(
-      rawFlightSegmentAttributes.arrivalAirport +
-        " " +
-        rawFlightSegmentAttributes.arrivalAirportCode +
-        " Terminal: " +
-        rawFlightSegmentAttributes.arrivalTerminal
-    ),
-    duration: cleanText(rawFlightSegmentAttributes.duration),
-    status: cleanText(rawFlightSegmentAttributes.status),
-    class: cleanText(rawFlightSegmentAttributes.class),
+    flightNumber: `${airline} ${flightNumber}`,
+    departAt,
+    departDay: departAt.toISOString().slice(0, 10),
+    departTime: departureTime,
+    // TODO: make TravelDeskFlightSegment -> terminal its own field
+    departLocation: `${departureAirport} ${departureAirportCode} Terminal: ${departureTerminal}`,
+    arriveAt,
+    arriveDay: arriveAt.toISOString().slice(0, 10),
+    arriveTime: arrivalTime,
+    arriveLocation: `${arrivalAirport} ${arrivalAirportCode} Terminal: ${arrivalTerminal}`,
+    duration,
+    status,
+    class: klass,
   }
 
   return flightSegmentAttributes
-}
-
-function cleanText(txt) {
-  txt = txt.replace("undefined", "")
-  txt = txt.replace(/\s\s+/g, " ")
-  txt = txt.trim()
-  return txt
-}
-
-function getFlightDate(date) {
-  const today = new Date()
-  const flightDate = cleanText(date)
-  let fullDate = new Date()
-
-  const datePattern = /^(\d{1,2})(\/|\s|-)([A-Za-z]{2,3})(,?)(\/|\s|-)(\d{2}|\d{4})$/
-  const datePatternI = /^(\d{1,2})(\/|\s|-)([A-Za-z]{3})$/
-  const datePatternII = /^([A-Za-z]{3})(\/|\s|-)(\d{1,2})$/
-
-  if (flightDate.match(datePattern)) {
-    fullDate = new Date(flightDate)
-  } else if (flightDate.match(datePatternI) || flightDate.match(datePatternII)) {
-    fullDate = new Date(flightDate + " " + today.getFullYear())
-    if (fullDate < today) {
-      fullDate = new Date(flightDate + " " + (today.getFullYear() + 1))
-    }
-  }
-  return fullDate
 }
 </script>

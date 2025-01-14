@@ -1,4 +1,4 @@
-import parseTravelportFlights from "@/utils/travel-port-parsers/parser-travelport-flights"
+import parseTravelportFlights from "@/utils/travelport-parsers/parse-travelport-flights"
 import simpleDedent from "@/support/simple-dedent"
 
 describe("web/src/utils/travel-port-parsers/parser-travel-port-flights.js", () => {
