@@ -84,7 +84,6 @@ async function parseRawTravelPortalText() {
   }
 }
 
-// TODO: validate this legacy code
 function convertParsedFlightDataToFlightSegmentAttributes(rawFlightSegmentAttributes) {
   const {
     arrivalDate,
@@ -113,11 +112,13 @@ function convertParsedFlightDataToFlightSegmentAttributes(rawFlightSegmentAttrib
     departDay: departAt.toISOString().slice(0, 10),
     departTime: departureTime,
     // TODO: make TravelDeskFlightSegment -> terminal its own field
-    departLocation: `${departureAirport} ${departureAirportCode} Terminal: ${departureTerminal}`,
+    departLocation: `${departureAirport} ${departureAirportCode} Terminal: ${
+      departureTerminal || "N/A"
+    }`,
     arriveAt,
     arriveDay: arriveAt.toISOString().slice(0, 10),
     arriveTime: arrivalTime,
-    arriveLocation: `${arrivalAirport} ${arrivalAirportCode} Terminal: ${arrivalTerminal}`,
+    arriveLocation: `${arrivalAirport} ${arrivalAirportCode} Terminal: ${arrivalTerminal || "N/A"}`,
     duration,
     status,
     class: klass,
