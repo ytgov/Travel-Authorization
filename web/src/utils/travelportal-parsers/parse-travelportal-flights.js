@@ -6,9 +6,9 @@ import { omitBy } from "lodash"
  * @param {string} lines - The lines from the flights section
  * @returns {Array<Object>} An array of flight objects.
  *
- * Handles both Unix and Windows line endings
+ * Handles both Unix and Windows line endings.
  */
-export function parseTravelportFlights(lines) {
+export function parseTravelportalFlights(lines) {
   const flights = []
   let currentFlight = {}
 
@@ -96,4 +96,4 @@ export function parseTravelportFlights(lines) {
   return cleanedFlights
 }
 
-export default parseTravelportFlights
+export default parseTravelportalFlights

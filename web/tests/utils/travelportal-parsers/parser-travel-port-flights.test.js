@@ -1,4 +1,4 @@
-import parseTravelportFlights from "@/utils/travelport-parsers/parse-travelport-flights"
+import parseTravelportalFlights from "@/utils/travelportal-parsers/parse-travelportal-flights"
 import simpleDedent from "@/support/simple-dedent"
 
 describe("web/src/utils/travel-port-parsers/parser-travel-port-flights.js", () => {
@@ -324,7 +324,7 @@ describe("web/src/utils/travel-port-parsers/parser-travel-port-flights.js", () =
       },
     ])("when given raw example %#, parses it correctly", ({ text, expected }) => {
       const dedentedText = simpleDedent(text)
-      const result = parseTravelportFlights(dedentedText)
+      const result = parseTravelportalFlights(dedentedText)
 
       expect(result).toEqual(expected)
     })

@@ -35,7 +35,7 @@
 import { ref } from "vue"
 import { isNil, sortBy } from "lodash"
 
-import { parseTravelportFlights, parseHumanizedDate } from "@/utils/travelport-parsers"
+import { parseTravelportalFlights, parseHumanizedDate } from "@/utils/travelportal-parsers"
 
 import useSnack from "@/use/use-snack"
 
@@ -52,7 +52,7 @@ async function parseRawTravelPortalText() {
   isLoading.value = true
   try {
     if (!rawTravelPortalText.value) return
-    const parsedFlightsData = parseTravelportFlights(rawTravelPortalText.value)
+    const parsedFlightsData = parseTravelportalFlights(rawTravelPortalText.value)
 
     if (isNil(parsedFlightsData)) {
       snack.error("Failed to parse travel text")
