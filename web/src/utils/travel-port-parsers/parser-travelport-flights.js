@@ -17,16 +17,19 @@ export function parseTravelportFlights(lines) {
     if (isEmptyLine) return
 
     // Check if the line starts a new flight entry
-    const flightHeaderMatch = line.match(/^([A-Za-z\s]+)\s+([A-Za-z0-9]+)$/)
+    const flightHeaderMatch = line.match(
+      /^([A-Za-z\s]+)\s+([A-Za-z0-9]+)(?:\s*-\s*Operated By:\s*(.+))?$/
+    )
     if (flightHeaderMatch) {
       // If there's an existing flight being built, push it to the flights array
       if (Object.keys(currentFlight).length > 0) {
         flights.push(currentFlight)
         currentFlight = {}
       }
-      const [, airline, flightNumber] = flightHeaderMatch
+      const [, airline, flightNumber, operatedBy] = flightHeaderMatch
       currentFlight.airline = airline.trim()
       currentFlight.flightNumber = flightNumber.trim()
+      currentFlight.operatedBy = operatedBy
       return
     }
 
