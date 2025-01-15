@@ -391,7 +391,7 @@ TravelAuthorization.init(
       allowNull: true,
     },
     benefits: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(2000),
       allowNull: true,
     },
     status: {
