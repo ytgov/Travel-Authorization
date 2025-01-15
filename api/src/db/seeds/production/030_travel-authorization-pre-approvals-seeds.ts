@@ -22,7 +22,7 @@ export async function seed(_knex: Knex): Promise<void> {
       isOpenForAnyTraveler: false,
       numberTravelers: 3,
       travelerNotes: "All travelers are senior finance officers",
-      status: TravelAuthorizationPreApproval.Statuses.DRAFT,
+      status: TravelAuthorizationPreApproval.Statuses.APPROVED,
     },
     {
       submissionId: null,
@@ -39,7 +39,7 @@ export async function seed(_knex: Knex): Promise<void> {
       isOpenForAnyTraveler: true,
       numberTravelers: 2,
       travelerNotes: "Include both a creative director and campaign manager",
-      status: TravelAuthorizationPreApproval.Statuses.DRAFT,
+      status: TravelAuthorizationPreApproval.Statuses.APPROVED,
     },
     {
       submissionId: null,
@@ -56,7 +56,7 @@ export async function seed(_knex: Knex): Promise<void> {
       isOpenForAnyTraveler: true,
       numberTravelers: 4,
       travelerNotes: "Includes IT managers and system administrators",
-      status: TravelAuthorizationPreApproval.Statuses.DRAFT,
+      status: TravelAuthorizationPreApproval.Statuses.APPROVED,
     },
   ]
   const travelAuthorizationPreApprovals = []
