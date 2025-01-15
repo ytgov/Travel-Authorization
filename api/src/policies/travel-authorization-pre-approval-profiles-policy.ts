@@ -1,28 +1,28 @@
-import { ModelStatic, WhereOptions } from "sequelize"
+import { Attributes, FindOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { TravelAuthorizationPreApprovalProfile, User } from "@/models"
 
-import BasePolicy, { noRecordsScope } from "@/policies/base-policy"
+import PolicyFactory from "@/policies/policy-factory"
+import { allRecordsScope, noRecordsScope } from "@/policies/base-policy"
 
-export class TravelAuthorizationPreApprovalProfilesPolicy extends BasePolicy<TravelAuthorizationPreApprovalProfile> {
-  static applyScope(
-    modelClass: ModelStatic<TravelAuthorizationPreApprovalProfile>,
-    currentUser: User
-  ): ModelStatic<TravelAuthorizationPreApprovalProfile> {
-    if (currentUser.roles.includes(User.Roles.ADMIN)) {
-      return modelClass
+export class TravelAuthorizationPreApprovalProfilesPolicy extends PolicyFactory(
+  TravelAuthorizationPreApprovalProfile
+) {
+  static policyScope(user: User): FindOptions<Attributes<TravelAuthorizationPreApprovalProfile>> {
+    if (user.roles.includes(User.Roles.ADMIN)) {
+      return allRecordsScope
     }
 
-    if (isNil(currentUser.department)) {
-      return modelClass.scope(noRecordsScope)
+    if (isNil(user.department)) {
+      return noRecordsScope
     }
 
-    const where: WhereOptions<TravelAuthorizationPreApprovalProfile> = {
-      department: currentUser.department,
+    return {
+      where: {
+        department: user.department,
+      },
     }
-
-    return modelClass.scope({ where })
   }
 }
 

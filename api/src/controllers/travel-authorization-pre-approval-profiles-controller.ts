@@ -1,37 +1,36 @@
-import { WhereOptions } from "sequelize"
-import { isEmpty, isNil } from "lodash"
+import { isNil } from "lodash"
 
+import logger from "@/utils/logger"
 import { TravelAuthorizationPreApprovalProfile } from "@/models"
 import { TravelAuthorizationPreApprovalProfilesPolicy } from "@/policies"
-
 import BaseController from "@/controllers/base-controller"
 
-export class TravelAuthorizationPreApprovalProfilesController extends BaseController {
+export class TravelAuthorizationPreApprovalProfilesController extends BaseController<TravelAuthorizationPreApprovalProfile> {
   async index() {
-    const where = this.query.where as WhereOptions<TravelAuthorizationPreApprovalProfile>
-    const filters = this.query.filters as Record<string, unknown>
+    try {
+      const where = this.buildWhere()
+      const scopes = this.buildFilterScopes()
 
-    const scopedPreApprovalProfiles = TravelAuthorizationPreApprovalProfilesPolicy.applyScope(
-      TravelAuthorizationPreApprovalProfile,
-      this.currentUser
-    )
+      const scopedPreApprovalProfiles = TravelAuthorizationPreApprovalProfilesPolicy.applyScope(
+        scopes,
+        this.currentUser
+      )
 
-    let filteredPreApprovalProfiles = scopedPreApprovalProfiles
-    if (!isEmpty(filters)) {
-      Object.entries(filters).forEach(([key, value]) => {
-        filteredPreApprovalProfiles = filteredPreApprovalProfiles.scope({ method: [key, value] })
+      const totalCount = await scopedPreApprovalProfiles.count({ where })
+      const travelAuthorizationPreApprovalProfiles = await scopedPreApprovalProfiles.findAll({
+        where,
+        include: ["preApproval"],
+      })
+      return this.response.status(200).json({
+        travelAuthorizationPreApprovalProfiles,
+        totalCount,
+      })
+    } catch (error) {
+      logger.error(`Error fetching travel authorization pre-approval profiles: ${error}`, { error })
+      return this.response.status(400).json({
+        message: `Error fetching travel authorization pre-approval profiles: ${error}`,
       })
     }
-
-    const totalCount = await filteredPreApprovalProfiles.count({ where })
-    const travelAuthorizationPreApprovalProfiles = await filteredPreApprovalProfiles.findAll({
-      where,
-      include: ["preApproval"],
-    })
-    return this.response.status(200).json({
-      travelAuthorizationPreApprovalProfiles,
-      totalCount,
-    })
   }
 
   async show() {
