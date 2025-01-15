@@ -269,7 +269,7 @@ entity "travel_authorizations" {
   travel_advance : int4
   event_name : varchar(255)
   summary : varchar(255)
-  benefits : varchar(255)
+  benefits : varchar(2000)
   status : varchar(255)
   supervisor_email : varchar(255)
   request_change : varchar(255)
