@@ -13,7 +13,7 @@ export function determineFinalDestination(travelSegments: TravelSegment[]): Loca
     if (firstTravelSegment.departureLocationId === lastTravelSegment.arrivalLocationId) {
       tripType = TravelAuthorization.TripTypes.ROUND_TRIP
     } else {
-      tripType = TravelAuthorization.TripTypes.MULTI_DESTINATION
+      tripType = TravelAuthorization.TripTypes.MULTI_CITY
     }
   } else {
     throw new Error(`Unknown trip type for travel segments of length ${travelSegments.length}`)
@@ -24,7 +24,7 @@ export function determineFinalDestination(travelSegments: TravelSegment[]): Loca
     finalDestination = lastTravelSegment.departureLocation
   } else if (tripType === TravelAuthorization.TripTypes.ONE_WAY) {
     finalDestination = lastTravelSegment.arrivalLocation
-  } else if (tripType === TravelAuthorization.TripTypes.MULTI_DESTINATION) {
+  } else if (tripType === TravelAuthorization.TripTypes.MULTI_CITY) {
     finalDestination = lastTravelSegment.arrivalLocation
   }
 
