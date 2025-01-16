@@ -395,11 +395,11 @@ TravelAuthorization.init(
     },
     status: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: true, // TODO: make this non-nullable in the database then update here.
       validate: {
         isIn: {
           args: [Object.values(Statuses)],
-          msg: "Invalid status value",
+          msg: `Status must be one of: ${Object.values(Statuses).join(", ")}`,
         },
       },
     },
