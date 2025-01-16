@@ -7,19 +7,12 @@
         @update:currentStepNumber="goToStep"
       />
       <div class="ml-md-2">
-        <div class="d-flex justify-space-between align-baseline my-5 ml-md-4">
-          <h2 class="mb-0">
-            Travel -
-            <UserChipMenu :user-id="currentUser.id" />
-          </h2>
-        </div>
-
         <v-card class="default">
           <v-card-text>
             <SummaryHeaderPanel
               ref="summaryHeaderPanel"
               :travel-authorization-id="travelAuthorizationIdAsNumber"
-              class="mt-5"
+              class="mb-5"
             />
 
             <router-view
@@ -68,9 +61,6 @@ import { computed, onMounted, ref, toRefs } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
 
-import useCurrentUser from "@/use/use-current-user"
-
-import UserChipMenu from "@/components/users/UserChipMenu.vue"
 import StateStepper from "@/components/common/wizards/StateStepper.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable.vue"
@@ -89,8 +79,6 @@ const props = defineProps({
 })
 
 const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
-const { currentUser } = useCurrentUser()
 
 const { travelAuthorizationId } = toRefs(props)
 const {
