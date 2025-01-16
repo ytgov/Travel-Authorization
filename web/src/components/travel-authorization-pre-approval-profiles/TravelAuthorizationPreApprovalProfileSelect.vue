@@ -63,9 +63,13 @@ async function fetch(queryOptions) {
   try {
     const { travelAuthorizationPreApprovalProfiles: newProfiles } =
       await travelAuthorizationPreApprovalProfilesApi.list(queryOptions)
-    profiles.value = newProfiles.map(({ id, profileName }) => {
+
+    profiles.value = newProfiles.map(({ id, preApproval }) => {
+      // TODO: consider if "profileName" should be included here?
+      const { branch, location, purpose } = preApproval
+      const text = `${branch} - ${location} - ${purpose}`
       return {
-        text: profileName,
+        text,
         value: id,
       }
     })

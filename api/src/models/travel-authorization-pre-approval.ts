@@ -28,6 +28,10 @@ import TravelAuthorizationPreApprovalSubmission from "@/models/travel-authorizat
 import TravelAuthorizationPreApprovalProfile from "@/models/travel-authorization-pre-approval-profile"
 
 /** Keep in sync with web/src/api/travel-authorization-pre-approvals-api.js */
+// TODO: check if these status are on the correct model?
+// I would expect these status to make more sense on the TravelAuthorizationPreApprovalSubmission.
+// Or mabye the status would be something like "avaialable" and "used_up" based on the
+// pre-approval profile usage.
 export enum Statuses {
   DRAFT = "draft",
   SUBMITTED = "submitted",
