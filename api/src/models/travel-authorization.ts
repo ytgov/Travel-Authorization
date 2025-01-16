@@ -247,12 +247,11 @@ export class TravelAuthorization extends Model<
       throw new Error("Must have at least 2 stops to build a travel segments")
     }
 
-    if (this.multiStop === true && this.stops.length < 4) {
+    if (this.tripType === TripTypes.MULTI_CITY && this.stops.length < 4) {
       throw new Error("Must have at least 4 stops to build a multi-stop travel segments")
     }
 
-    const isRoundTrip = this.oneWayTrip !== true && this.multiStop !== true
-    if (isRoundTrip) {
+    if (this.tripType === TripTypes.ROUND_TRIP) {
       return this.stops.reduce((travelSegments: TravelSegment[], stop, index, stops) => {
         const isLastStop = index === stops.length - 1
         const arrivalStop = isLastStop ? stops[0] : stops[index + 1]

@@ -4,15 +4,14 @@ import { faker } from "@faker-js/faker"
 
 import { TravelAuthorization } from "@/models"
 import { travelPurposeFactory, userFactory } from "@/factories"
-import { presence, nestedSaveAndAssociateIfNew } from "@/factories/helpers"
+import { nestedSaveAndAssociateIfNew } from "@/factories/helpers"
 
 type TransientParam = {
   include?: Includeable | Includeable[]
-  roundTrip?: boolean
 }
 
 export const travelAuthorizationFactory = Factory.define<TravelAuthorization, TransientParam>(
-  ({ associations, params, transientParams, onCreate }) => {
+  ({ associations, transientParams, onCreate }) => {
     onCreate(async (travelAuthorization) => {
       try {
         await nestedSaveAndAssociateIfNew(travelAuthorization)
@@ -36,23 +35,8 @@ export const travelAuthorizationFactory = Factory.define<TravelAuthorization, Tr
       }
     })
 
-    let oneWayTrip = presence(params.oneWayTrip, !params.multiStop && faker.datatype.boolean())
-    let multiStop = presence(params.multiStop, !oneWayTrip && faker.datatype.boolean())
-    if (transientParams.roundTrip === true) {
-      if (params.oneWayTrip === true) {
-        throw new Error("roundTrip transient param conflicts with oneWayTrip param")
-      } else if (params.multiStop === true) {
-        throw new Error("roundTrip transient param conflicts with multiStop param")
-      }
-
-      oneWayTrip = false
-      multiStop = false
-    }
-
     const travelAuthorization = TravelAuthorization.build({
       slug: faker.string.uuid(),
-      oneWayTrip,
-      multiStop,
     })
 
     travelAuthorization.purpose = associations.purpose ?? travelPurposeFactory.build()

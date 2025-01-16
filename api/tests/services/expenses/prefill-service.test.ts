@@ -1,6 +1,6 @@
 import PrefillService from "@/services/expenses/prefill-service"
 
-import { Expense } from "@/models"
+import { Expense, TravelAuthorization } from "@/models"
 
 import { expenseFactory, travelAuthorizationFactory } from "@/factories"
 
@@ -9,9 +9,9 @@ describe("api/src/services/expenses/prefill-service.ts", () => {
     describe(".perform", () => {
       test("when given some estimates, it prefills expenses from them", async () => {
         // Arrange
-        const travelAuthorization = await travelAuthorizationFactory
-          .transient({ roundTrip: true })
-          .create()
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         await expenseFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           description: "Aircraft from Whitehorse to Vancouver",

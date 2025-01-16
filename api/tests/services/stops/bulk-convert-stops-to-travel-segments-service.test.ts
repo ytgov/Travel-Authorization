@@ -1,4 +1,4 @@
-import { TravelSegment } from "@/models"
+import { TravelAuthorization, TravelSegment } from "@/models"
 import { stopFactory, travelAuthorizationFactory } from "@/factories"
 import { BulkConvertStopsToTravelSegmentsService } from "@/services/stops"
 
@@ -6,9 +6,9 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
   describe("BulkConvertStopsToTravelSegmentsService", () => {
     describe(".perform", () => {
       test("when has 2 stops, and is a round trip, builds the correct travel segment", async () => {
-        const travelAuthorization = await travelAuthorizationFactory
-          .transient({ roundTrip: true })
-          .create()
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           departureDate: new Date("2023-11-29"),
@@ -48,8 +48,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
 
       test("when has 2 stops, and is a one-way trip, builds the correct travel segment", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          oneWayTrip: true,
-          multiStop: false,
+          tripType: TravelAuthorization.TripTypes.ONE_WAY,
         })
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -81,8 +80,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
 
       test("when has 4 stops, and is a multi-stop trip, builds the correct travel segment", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          multiStop: true,
-          oneWayTrip: false,
+          tripType: TravelAuthorization.TripTypes.MULTI_CITY,
         })
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -143,14 +141,9 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
       })
 
       test("when stops length is less than 2 for round trip type, errors informatively", async () => {
-        const travelAuthorization = await travelAuthorizationFactory.create(
-          {},
-          {
-            transient: {
-              roundTrip: true,
-            },
-          }
-        )
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: TravelSegment.TravelMethods.AIRCRAFT,
@@ -165,8 +158,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
 
       test("when stops length is less than 2 for one-way trip type, errors informatively", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          oneWayTrip: true,
-          multiStop: false,
+          tripType: TravelAuthorization.TripTypes.ONE_WAY,
         })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -182,8 +174,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
 
       test("when stops length is less than 4, for multi-stop trip type, errors informatively", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          multiStop: true,
-          oneWayTrip: false,
+          tripType: TravelAuthorization.TripTypes.MULTI_CITY,
         })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,

@@ -41,8 +41,7 @@ export type TravelAuthorizationShowView = Pick<
   | "supervisorEmail"
   | "requestChange"
   | "denialReason"
-  | "oneWayTrip"
-  | "multiStop"
+  | "tripType"
   | "createdBy"
   | "travelAdvanceInCents"
   | "allTravelWithinTerritory"
@@ -95,8 +94,7 @@ export class ShowSerializer extends BaseSerializer<TravelAuthorization> {
         "supervisorEmail",
         "requestChange",
         "denialReason",
-        "oneWayTrip",
-        "multiStop",
+        "tripType",
         "createdBy",
         "travelAdvanceInCents",
         "allTravelWithinTerritory",

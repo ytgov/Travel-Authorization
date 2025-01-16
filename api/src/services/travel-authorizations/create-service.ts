@@ -145,12 +145,12 @@ export class CreateService extends BaseService {
     travelAuthorization: TravelAuthorization,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
-    if (travelAuthorization.multiStop) {
+    if (travelAuthorization.tripType === TravelAuthorization.TripTypes.MULTI_CITY) {
       return this.ensureMinimalDefaultMultiDestinationStopsAttributes(
         travelAuthorization.id,
         stopsAttributes
       )
-    } else if (travelAuthorization.oneWayTrip) {
+    } else if (travelAuthorization.tripType === TravelAuthorization.TripTypes.ONE_WAY) {
       return this.ensureMinimalDefaultOneWayStopsAttributes(travelAuthorization.id, stopsAttributes)
     } else {
       return this.ensureMinimalDefaultRoundTripStopsAttributes(
