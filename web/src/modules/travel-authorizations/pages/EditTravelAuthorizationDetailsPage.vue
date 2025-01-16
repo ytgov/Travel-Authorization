@@ -11,7 +11,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <DetailsFormCard :travel-authorization-id="travelAuthorizationId" />
+        <DetailsEditFormCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
@@ -42,7 +42,7 @@
 import { ref } from "vue"
 
 import PurposeFormCard from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/PurposeFormCard"
-import DetailsFormCard from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/DetailsFormCard"
+import DetailsEditFormCard from "@/components/travel-authorizations/DetailsEditFormCard.vue"
 import ApprovalsFormCard from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/ApprovalsFormCard"
 
 import SaveDraftButton from "@/modules/travel-authorizations/components/edit-travel-authorization-details-page/SaveDraftButton"
