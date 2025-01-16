@@ -62,6 +62,13 @@ export default {
       hotel_allowance_per_night: "Hotel Allowance Per Night",
     },
   },
+  travel_authorization: {
+    trip_type: {
+      one_way: "One way",
+      round_trip: "Round trip",
+      multi_city: "Multi-city",
+    },
+  },
   travel_desk_travel_request: {
     status: {
       booked: "Booked",
