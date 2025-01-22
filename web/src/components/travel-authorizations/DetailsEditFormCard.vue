@@ -32,6 +32,7 @@
         <component
           :is="tripTypeComponent"
           v-if="tripTypeComponent && hasEnoughStops"
+          :travel-authorization-id="travelAuthorizationId"
           :value="stops"
           :all-travel-within-territory="travelAuthorization.allTravelWithinTerritory"
           class="mt-3"
@@ -82,7 +83,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, toRefs } from "vue"
-import { isNil, pick } from "lodash"
+import { isNil } from "lodash"
 
 import { required, isInteger } from "@/utils/validators"
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
@@ -133,7 +134,7 @@ const hasEnoughStops = computed(() => {
     case TRIP_TYPES.ONE_WAY:
       return stops.value.length === 2
     case TRIP_TYPES.MULTI_CITY:
-      return stops.value.length === 4
+      return stops.value.length >= 3
     default:
       return true
   }
@@ -207,23 +208,16 @@ async function ensureMinimalDefaultMultiDestinationStops() {
     ...firstStop.value,
     accommodationType: firstStop.value.accommodationType || ACCOMMODATION_TYPES.HOTEL,
   })
-  const secondStop = stops.value[1] !== lastStop.value ? stops.value[1] : {}
   const newSecondStop = await newBlankStop({
     accommodationType: ACCOMMODATION_TYPES.HOTEL,
     transport: TRAVEL_METHODS.AIRCRAFT,
-    ...secondStop,
+    ...lastStop.value,
   })
   const newThirdStop = await newBlankStop({
-    ...pick(lastStop.value, "departureDate", "departureTime"),
-    accommodationType: null,
-    transport: TRAVEL_METHODS.AIRCRAFT,
-  })
-  const newLastStop = await newBlankStop({
-    ...pick(lastStop.value, "locationId"),
     transport: null,
     accommodationType: null,
   })
-  return replaceStops([newFirstStop, newSecondStop, newThirdStop, newLastStop])
+  return replaceStops([newFirstStop, newSecondStop, newThirdStop])
 }
 
 defineExpose({
