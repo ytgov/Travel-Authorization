@@ -2,11 +2,12 @@
   <div>
     <div class="d-flex flex-column flex-md-row">
       <StateStepper
+        class="flex-shrink-0"
         :steps="steps"
         :current-step-number="currentStepNumber"
         @update:currentStepNumber="goToStep"
       />
-      <div class="ml-md-2">
+      <div class="ml-md-2 flex-grow-1">
         <v-card class="default">
           <v-card-text>
             <SummaryHeaderPanel
