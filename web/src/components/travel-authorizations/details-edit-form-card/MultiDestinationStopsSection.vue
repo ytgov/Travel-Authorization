@@ -170,10 +170,8 @@
         />
         <AccommodationTypeSelect
           :value="secondStop.accommodationType"
-          :rules="[required]"
           dense
           outlined
-          required
           v-bind="finalAccommodationTypeSelectDefaults(0)"
           @input="updateStop(1, 'accommodationType', $event)"
         />
@@ -279,10 +277,8 @@
           />
           <AccommodationTypeSelect
             :value="stops[index + 2].accommodationType"
-            :rules="[required]"
             dense
             outlined
-            required
             v-bind="finalAccommodationTypeSelectDefaults(index + 1)"
             @input="updateStop(index + 2, 'accommodationType', $event)"
           />
@@ -350,7 +346,10 @@ function finalAccommodationTypeSelectDefaults(index) {
     }
   }
 
-  return {}
+  return {
+    rules: [required],
+    required: true,
+  }
 }
 
 function removeStop(index) {
