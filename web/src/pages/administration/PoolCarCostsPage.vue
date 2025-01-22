@@ -1,6 +1,7 @@
 <template>
   <div>
-    <Breadcrumbs />
+    <v-alert color="warning"> Page is not yet implemented </v-alert>
+
     <h1>Pool Car Costs</h1>
 
     <v-card class="default">
@@ -138,121 +139,127 @@
     </v-card>
   </div>
 </template>
-<script>
-import Breadcrumbs from "../../Breadcrumbs.vue"
-export default {
-  components: {
-    Breadcrumbs,
+<script setup>
+import { computed, nextTick, ref, watch, onMounted } from "vue"
+
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+
+const headers = ref([
+  {
+    text: "Vehicle Type",
+    align: "start",
+    sortable: false,
+    value: "type",
   },
-  data: () => ({
-    dialog: false,
-    dialogDelete: false,
-    headers: [
-      {
-        text: "Vehicle Type",
-        align: "start",
-        sortable: false,
-        value: "type",
-      },
-      {
-        text: "Cost",
-        value: "cost",
-      },
-    ],
-    vehicles: [],
-    editedIndex: -1,
-    editedItem: {
-      type: "",
-      cost: 0,
-    },
-    defaultItem: {
-      type: "",
-      cost: 0,
-    },
-  }),
-
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "Edit Item"
-    },
+  {
+    text: "Cost",
+    value: "cost",
   },
+])
 
-  watch: {
-    dialog(val) {
-      val || this.close()
-    },
-    dialogDelete(val) {
-      val || this.closeDelete()
-    },
-  },
+const vehicles = ref([])
+const editedIndex = ref(-1)
+const editedItem = ref({
+  type: "",
+  cost: 0,
+})
+const defaultItem = ref({
+  type: "",
+  cost: 0,
+})
 
-  created() {
-    this.initialize()
-  },
+const dialog = ref(false)
+const dialogDelete = ref(false)
 
-  methods: {
-    initialize() {
-      this.vehicles = [
-        {
-          type: "Compact Car",
-          cost: 150,
-        },
-        {
-          type: "SUV",
-          cost: 237,
-        },
-        {
-          type: "Van",
-          cost: 262,
-        },
-        {
-          type: "Truck",
-          cost: 262,
-        },
-      ]
-    },
+const formTitle = computed(() => {
+  return editedIndex.value === -1 ? "New Item" : "Edit Item"
+})
 
-    editItem(item) {
-      this.editedIndex = this.vehicles.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-    },
+watch(dialog, async (value) => {
+  if (value === true) return
 
-    deleteItem(item) {
-      this.editedIndex = this.vehicles.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
-    },
+  await close()
+})
 
-    deleteItemConfirm() {
-      this.vehicles.splice(this.editedIndex, 1)
-      this.closeDelete()
-    },
+watch(dialogDelete, async (value) => {
+  if (value === true) return
 
-    close() {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
+  await closeDelete()
+})
 
-    closeDelete() {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
+onMounted(() => {
+  initialize()
+})
 
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.vehicles[this.editedIndex], this.editedItem)
-      } else {
-        this.vehicles.push(this.editedItem)
-      }
-      this.close()
+async function initialize() {
+  vehicles.value = [
+    {
+      type: "Compact Car",
+      cost: 150,
     },
-  },
+    {
+      type: "SUV",
+      cost: 237,
+    },
+    {
+      type: "Van",
+      cost: 262,
+    },
+    {
+      type: "Truck",
+      cost: 262,
+    },
+  ]
 }
+
+function editItem(item) {
+  editedIndex.value = vehicles.value.indexOf(item)
+  editedItem.value = Object.assign({}, item)
+  dialog.value = true
+}
+
+function deleteItem(item) {
+  editedIndex.value = vehicles.value.indexOf(item)
+  editedItem.value = Object.assign({}, item)
+  dialogDelete.value = true
+}
+
+async function deleteItemConfirm() {
+  vehicles.value.splice(editedIndex.value, 1)
+  await closeDelete()
+}
+
+async function close() {
+  dialog.value = false
+  await nextTick()
+  editedItem.value = Object.assign({}, defaultItem.value)
+  editedIndex.value = -1
+}
+
+async function closeDelete() {
+  dialogDelete.value = false
+  await nextTick()
+  editedItem.value = Object.assign({}, defaultItem.value)
+  editedIndex.value = -1
+}
+
+async function save() {
+  if (editedIndex.value > -1) {
+    Object.assign(vehicles.value[editedIndex.value], editedItem.value)
+  } else {
+    vehicles.value.push(editedItem.value)
+  }
+  await close()
+}
+
+useBreadcrumbs([
+  {
+    text: "Administration",
+    to: { name: "AdministrationPage" },
+  },
+  {
+    text: "Pool Car Costs",
+    to: { name: "administration/PoolCarCostsPage" },
+  },
+])
 </script>

@@ -3,7 +3,6 @@ import VueRouter from "vue-router"
 
 import { authGuard } from "@/utils/auth-guard"
 
-import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
 import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
 
 import preapprovedRouter from "@/modules/preapproved/router"
@@ -89,6 +88,11 @@ const routes = [
             component: () => import("@/pages/administration/FlightEstimatesPage.vue"),
           },
           {
+            path: "administration/pool-car-costs",
+            name: "administration/PoolCarCostsPage",
+            component: () => import("@/pages/administration/PoolCarCostsPage.vue"),
+          },
+          {
             path: "administration/purpose",
             name: "Administration/LookupTableManagement/Purpose",
             component: () =>
@@ -123,11 +127,6 @@ const routes = [
             props: true,
           },
         ],
-      },
-      {
-        path: "administration/poolCarCost",
-        name: "PoolCarCost",
-        component: PoolCarCost,
       },
       {
         path: "administration/rentalCarEstimates",

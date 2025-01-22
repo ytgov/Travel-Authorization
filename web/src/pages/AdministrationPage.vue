@@ -53,7 +53,7 @@ const menuCardLists = [
       {
         icon: "mdi-database",
         title: "Pool Car Costs",
-        to: { name: "PoolCarCost" },
+        to: { name: "administration/PoolCarCostsPage" },
       },
       {
         icon: "mdi-shape",
