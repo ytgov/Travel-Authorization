@@ -172,14 +172,9 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
         ).rejects.toThrow("Must have at least 2 stops to build a travel segments")
       })
 
-      test("when stops length is less than 4, for multi-stop trip type, errors informatively", async () => {
+      test("when stops length is less than 3, for multi-stop trip type, errors informatively", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
           tripType: TravelAuthorization.TripTypes.MULTI_CITY,
-        })
-        await stopFactory.create({
-          travelAuthorizationId: travelAuthorization.id,
-          transport: TravelSegment.TravelMethods.AIRCRAFT,
-          accommodationType: TravelSegment.AccommodationTypes.HOTEL,
         })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -195,7 +190,7 @@ describe("api/src/services/stops/bulk-convert-stops-to-travel-segments-service.t
         expect.assertions(1)
         await expect(
           BulkConvertStopsToTravelSegmentsService.perform(travelAuthorization)
-        ).rejects.toThrow("Must have at least 4 stops to build a multi-stop travel segments")
+        ).rejects.toThrow("Must have at least 3 stops to build a multi-stop travel segments")
       })
     })
   })
