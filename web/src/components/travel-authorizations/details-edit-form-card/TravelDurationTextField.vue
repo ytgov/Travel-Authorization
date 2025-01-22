@@ -9,7 +9,7 @@
         <v-text-field
           :value="value"
           :style="{ minWidth: '80px' }"
-          label="# Days"
+          label="Travel Days"
           dense
           outlined
           disabled

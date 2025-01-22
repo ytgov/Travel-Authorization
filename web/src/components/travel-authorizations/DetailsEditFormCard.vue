@@ -51,7 +51,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="3"
           >
             <v-text-field
               v-model="travelAuthorization.daysOffTravelStatus"
@@ -68,7 +68,7 @@
           >
             <DatePicker
               v-model="travelAuthorization.dateBackToWork"
-              :min="lastStop.departureDate"
+              :min="lastDepartureDate"
               :rules="[required]"
               label="Expected Date return to work"
               dense
@@ -83,7 +83,7 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, toRefs } from "vue"
-import { isNil } from "lodash"
+import { findLast, isNil } from "lodash"
 
 import { required, isInteger } from "@/utils/validators"
 import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
@@ -106,6 +106,10 @@ const { mdAndUp } = useVuetify2()
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, stops, firstStop, lastStop, save, newBlankStop, replaceStops } =
   useTravelAuthorization(travelAuthorizationId)
+
+const lastDepartureDate = computed(
+  () => (findLast(stops.value, (stop) => !isNil(stop.departureDate)) || {}).departureDate
+)
 
 const tripTypeComponent = computed(() => {
   switch (travelAuthorization.value.tripType) {
