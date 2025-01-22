@@ -73,7 +73,7 @@ describe("api/src/models/travel-authorization.ts", () => {
         ])
       })
 
-      test("when has 4 stops, and is a multi-stop trip, builds the correct travel segment", async () => {
+      test("when has 3 stops, and is a multi-stop trip, builds the correct travel segment", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
           tripType: TravelAuthorization.TripTypes.MULTI_CITY,
         })
@@ -85,14 +85,9 @@ describe("api/src/models/travel-authorization.ts", () => {
         const stop2 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: TravelSegment.TravelMethods.AIRCRAFT,
-          accommodationType: TravelSegment.AccommodationTypes.HOTEL,
-        })
-        const stop3 = await stopFactory.create({
-          travelAuthorizationId: travelAuthorization.id,
-          transport: TravelSegment.TravelMethods.AIRCRAFT,
           accommodationType: null,
         })
-        const stop4 = await stopFactory.create({
+        const stop3 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: null,
           accommodationType: null,
@@ -115,18 +110,9 @@ describe("api/src/models/travel-authorization.ts", () => {
             arrivalLocationId: stop3.locationId,
             segmentNumber: 1,
             modeOfTransport: TravelSegment.TravelMethods.AIRCRAFT,
-            accommodationType: TravelSegment.AccommodationTypes.HOTEL,
+            accommodationType: null,
             departureOn: stop2.departureDate,
             departureTime: stop2.departureTime,
-          }),
-          expect.objectContaining({
-            departureLocationId: stop3.locationId,
-            arrivalLocationId: stop4.locationId,
-            segmentNumber: 2,
-            modeOfTransport: TravelSegment.TravelMethods.AIRCRAFT,
-            accommodationType: null,
-            departureOn: stop3.departureDate,
-            departureTime: stop3.departureTime,
           }),
         ])
       })
@@ -165,14 +151,9 @@ describe("api/src/models/travel-authorization.ts", () => {
         )
       })
 
-      test("when stops length is less than 4, for multi-stop trip type, errors informatively", async () => {
+      test("when stops length is less than 3, for multi-stop trip type, errors informatively", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
           tripType: TravelAuthorization.TripTypes.MULTI_CITY,
-        })
-        await stopFactory.create({
-          travelAuthorizationId: travelAuthorization.id,
-          transport: TravelSegment.TravelMethods.AIRCRAFT,
-          accommodationType: TravelSegment.AccommodationTypes.HOTEL,
         })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -188,7 +169,7 @@ describe("api/src/models/travel-authorization.ts", () => {
         await travelAuthorization.reload({ include: ["stops"] })
 
         expect(() => travelAuthorization.buildTravelSegmentsFromStops()).toThrow(
-          "Must have at least 4 stops to build a multi-stop travel segments"
+          "Must have at least 3 stops to build a multi-stop travel segments"
         )
       })
     })
