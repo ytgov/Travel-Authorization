@@ -174,21 +174,15 @@ export class CreateService extends BaseService {
       },
       {
         travelAuthorizationId,
-        accommodationType: Stop.AccommodationTypes.HOTEL,
+        accommodationType: null,
         transport: Stop.TravelMethods.AIRCRAFT,
         ...stopsAttributes[1],
       },
       {
         travelAuthorizationId,
         accommodationType: null,
-        transport: Stop.TravelMethods.AIRCRAFT,
-        ...stopsAttributes[2],
-      },
-      {
-        travelAuthorizationId,
         transport: null,
-        accommodationType: null,
-        ...stopsAttributes[3],
+        ...stopsAttributes[2],
       },
     ]
   }

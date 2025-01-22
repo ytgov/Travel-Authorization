@@ -247,8 +247,8 @@ export class TravelAuthorization extends Model<
       throw new Error("Must have at least 2 stops to build a travel segments")
     }
 
-    if (this.tripType === TripTypes.MULTI_CITY && this.stops.length < 4) {
-      throw new Error("Must have at least 4 stops to build a multi-stop travel segments")
+    if (this.tripType === TripTypes.MULTI_CITY && this.stops.length < 3) {
+      throw new Error("Must have at least 3 stops to build a multi-stop travel segments")
     }
 
     if (this.tripType === TripTypes.ROUND_TRIP) {

@@ -73,7 +73,7 @@ export class UpdateService extends BaseService {
     if (attributes.tripType === TravelAuthorization.TripTypes.ONE_WAY) {
       return stops.length === 2
     } else if (attributes.tripType === TravelAuthorization.TripTypes.MULTI_CITY) {
-      return stops.length === 4
+      return stops.length >= 3
     } else {
       return stops.length === 2
     }
