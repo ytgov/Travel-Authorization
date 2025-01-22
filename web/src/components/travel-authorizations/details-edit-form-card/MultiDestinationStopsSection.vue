@@ -188,6 +188,7 @@
             Flight {{ index + 3 }}
 
             <v-btn
+              title="Remove flight"
               icon
               color="error"
               class="my-0"
