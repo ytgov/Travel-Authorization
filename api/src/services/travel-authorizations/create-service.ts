@@ -54,6 +54,7 @@ export class CreateService extends BaseService {
       .transaction(async () => {
         const secureAttributes = {
           ...this.attributes,
+          tripType: this.attributes.tripType || TravelAuthorization.TripTypes.ROUND_TRIP,
           status: TravelAuthorization.Statuses.DRAFT,
           slug: this.attributes.slug || uuid(),
           createdBy: this.currentUser.id,
