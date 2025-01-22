@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h4>Flight 1</h4>
+    <h4>Leg 1</h4>
     <v-row class="mt-4">
       <v-col
         cols="12"
@@ -88,7 +88,7 @@
     <v-row>
       <v-col cols="12">
         <v-divider class="my-4" />
-        <h4>Flight 2</h4>
+        <h4>Leg 2</h4>
       </v-col>
       <v-col
         cols="12"
@@ -185,10 +185,10 @@
         <v-col cols="12">
           <v-divider class="my-4" />
           <h4 class="d-flex justify-space-between align-center">
-            Flight {{ index + 3 }}
+            Leg {{ index + 3 }}
 
             <v-btn
-              title="Remove flight"
+              title="Remove leg"
               icon
               color="error"
               class="my-0"
@@ -294,7 +294,7 @@
           class="my-0"
           @click="addStop"
         >
-          <v-icon left>mdi-plus</v-icon> Add Flight
+          <v-icon left>mdi-plus</v-icon> Add Leg
         </v-btn>
       </v-col>
     </v-row>
