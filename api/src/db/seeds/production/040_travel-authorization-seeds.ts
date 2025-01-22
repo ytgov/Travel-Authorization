@@ -117,8 +117,7 @@ export async function seed(_knex: Knex): Promise<void> {
       preApprovalProfileId: travelAuthorizationPreApprovalProfiles[0].id,
       requestChange: "",
       denialReason: "",
-      oneWayTrip: true,
-      multiStop: false,
+      tripType: TravelAuthorization.TripTypes.ONE_WAY,
       createdBy: users[0].id,
     },
     {
@@ -145,8 +144,7 @@ export async function seed(_knex: Knex): Promise<void> {
       preApprovalProfileId: travelAuthorizationPreApprovalProfiles[1].id,
       requestChange: "",
       denialReason: "",
-      oneWayTrip: true,
-      multiStop: false,
+      tripType: TravelAuthorization.TripTypes.ONE_WAY,
       createdBy: users[1].id,
     },
     {
@@ -173,8 +171,7 @@ export async function seed(_knex: Knex): Promise<void> {
       preApprovalProfileId: travelAuthorizationPreApprovalProfiles[2].id,
       requestChange: "",
       denialReason: "",
-      oneWayTrip: true,
-      multiStop: false,
+      tripType: TravelAuthorization.TripTypes.ONE_WAY,
       createdBy: users[2].id,
     },
   ]

@@ -28,7 +28,7 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, isLoading } = useTravelAuthorization(travelAuthorizationId)
 
-/** @type {import('vue').Ref<InstanceType<typeof DetailsFormCard> | null>} */
+/** @type {import('vue').Ref<InstanceType<typeof DetailsEditFormCard> | null>} */
 const detailsEditFormCard = ref(null)
 const snack = useSnack()
 

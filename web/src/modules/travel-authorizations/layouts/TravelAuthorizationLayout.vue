@@ -28,7 +28,7 @@ import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 import PageLoader from "@/components/PageLoader.vue"
-import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
+import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanelLegacy.vue"
 import UserChipMenu from "@/components/users/UserChipMenu.vue"
 
 import DetailsTab from "@/modules/travel-authorizations/components/travel-authorization-layout/DetailsTab.vue"

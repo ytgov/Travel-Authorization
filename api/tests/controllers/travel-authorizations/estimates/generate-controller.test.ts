@@ -2,7 +2,7 @@ import { BulkGenerateService } from "@/services/estimates"
 import { TravelAuthorization, User } from "@/models"
 import { travelAuthorizationFactory, userFactory } from "@/factories"
 
-import { mockCurrentUser, request } from "@/support"
+import { mockCurrentUser, request, testWithCustomLogLevel } from "@/support"
 
 vi.mock("@/services/estimates", () => ({ BulkGenerateService: { perform: vi.fn() } }))
 
@@ -38,33 +38,55 @@ describe("api/src/controllers/travel-authorizations/estimates/generate-controlle
         })
     })
 
-    test("when authorized and bulk generation not is successful", async () => {
-      const travelAuthorization = await travelAuthorizationFactory.associations({ user }).create({
-        status: TravelAuthorization.Statuses.DRAFT,
-      })
+    testWithCustomLogLevel(
+      "when authorized and bulk generation not is successful",
+      async ({ setLogLevel }) => {
+        // Arrange
+        setLogLevel("silent")
 
-      const mockBulkGenerateServicePerformResponse = "mock bulk generate response"
-      mockedBulkGenerateServicePerform.mockImplementation(() => {
-        return Promise.reject(mockBulkGenerateServicePerformResponse)
-      })
+        const travelAuthorization = await travelAuthorizationFactory.associations({ user }).create({
+          status: TravelAuthorization.Statuses.DRAFT,
+        })
 
-      return request()
-        .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
-        .expect("Content-Type", /json/)
-        .expect(422, {
+        const mockBulkGenerateServicePerformResponse = "mock bulk generate response"
+        mockedBulkGenerateServicePerform.mockImplementation(() => {
+          return Promise.reject(mockBulkGenerateServicePerformResponse)
+        })
+
+        // Act
+        const response = await request().post(
+          `/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`
+        )
+        // Assert
+        expect(response.status).toEqual(422)
+        expect(response.body).toMatchObject({
           message: `Failed to generate estimate: ${mockBulkGenerateServicePerformResponse}`,
         })
-    })
+      }
+    )
 
     test("when not authorized", async () => {
-      const travelAuthorization = await travelAuthorizationFactory.associations({ user }).create({
-        status: TravelAuthorization.Statuses.SUBMITTED,
+      const otherUser = await userFactory.create({
+        roles: [User.Roles.USER],
+      })
+      const travelAuthorization = await travelAuthorizationFactory
+        .associations({
+          user: otherUser,
+        })
+        .create({
+          status: TravelAuthorization.Statuses.SUBMITTED,
+        })
+
+      mockedBulkGenerateServicePerform.mockImplementation(() => {
+        return Promise.resolve("should never get here")
       })
 
       return request()
         .post(`/api/travel-authorizations/${travelAuthorization.id}/estimates/generate`)
         .expect("Content-Type", /json/)
-        .expect(403, { message: "You are not authorized to create this expense." })
+        .expect(403, {
+          message: "You are not authorized to create this expense.",
+        })
     })
 
     test("when travel authorization does not exist", async () => {

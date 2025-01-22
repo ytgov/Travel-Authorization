@@ -1,39 +1,33 @@
-import { isNil } from "lodash"
+import { first, isNil, last } from "lodash"
 
-import { TravelSegment, Location, TravelAuthorization } from "@/models"
-import { type TripTypes } from "@/models/travel-authorization"
+import { TravelSegment, Location } from "@/models"
 
 export function determineFinalDestination(travelSegments: TravelSegment[]): Location {
-  const firstTravelSegment = travelSegments[0]
-  const lastTravelSegment = travelSegments[travelSegments.length - 1]
-  let tripType: TripTypes
-  if (travelSegments.length === 1) {
-    tripType = TravelAuthorization.TripTypes.ONE_WAY
-  } else if (travelSegments.length === 2) {
-    if (firstTravelSegment.departureLocationId === lastTravelSegment.arrivalLocationId) {
-      tripType = TravelAuthorization.TripTypes.ROUND_TRIP
-    } else {
-      tripType = TravelAuthorization.TripTypes.MULTI_DESTINATION
-    }
-  } else {
-    throw new Error(`Unknown trip type for travel segments of length ${travelSegments.length}`)
-  }
+  const firstTravelSegment = first(travelSegments)
+  const lastTravelSegment = last(travelSegments)
 
-  let finalDestination
-  if (tripType === TravelAuthorization.TripTypes.ROUND_TRIP) {
-    finalDestination = lastTravelSegment.departureLocation
-  } else if (tripType === TravelAuthorization.TripTypes.ONE_WAY) {
-    finalDestination = lastTravelSegment.arrivalLocation
-  } else if (tripType === TravelAuthorization.TripTypes.MULTI_DESTINATION) {
-    finalDestination = lastTravelSegment.arrivalLocation
+  if (isNil(firstTravelSegment)) {
+    throw new Error(`Missing first travel segment`)
   }
-
   if (isNil(lastTravelSegment)) {
-    throw new Error("Could not determine final travel segment.")
+    throw new Error(`Missing last travel segment`)
+  }
+
+  let finalDestination: Location | undefined
+
+  const isRoundTrip = firstTravelSegment.departureLocationId === lastTravelSegment.arrivalLocationId
+  if (isRoundTrip) {
+    finalDestination = lastTravelSegment.departureLocation
+  } else {
+    finalDestination = lastTravelSegment.arrivalLocation
   }
 
   if (isNil(finalDestination)) {
-    throw new Error(`Missing arrival location on TravelSegment#${lastTravelSegment.id}`)
+    throw new Error(
+      `Could not determine final destination from travel segments: ${JSON.stringify(
+        travelSegments
+      )}`
+    )
   }
 
   return finalDestination

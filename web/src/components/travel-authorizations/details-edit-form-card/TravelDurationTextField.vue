@@ -9,7 +9,7 @@
         <v-text-field
           :value="value"
           :style="{ minWidth: '80px' }"
-          label="# Days"
+          label="Travel Days"
           dense
           outlined
           disabled
@@ -38,9 +38,8 @@
 
 <script setup>
 import { watch } from "vue"
-import { computed } from "vue"
 import { DateTime } from "luxon"
-import { first, isNil, last, max } from "lodash"
+import { cloneDeep, findLast, isNil, max } from "lodash"
 
 const props = defineProps({
   value: {
@@ -55,27 +54,26 @@ const props = defineProps({
 
 const emit = defineEmits(["input"])
 
-const originDestination = computed(() => first(props.stops) || {})
-const finalDestination = computed(() => last(props.stops) || {})
-const travelDuration = computed(() =>
-  computeTravelDuration(originDestination.value, finalDestination.value)
-)
-
 watch(
-  () => travelDuration.value,
-  () => {
-    emit("input", travelDuration.value)
+  () => cloneDeep(props.stops),
+  (newStops) => {
+    const initialDepartureDate = (newStops.find((stop) => !isNil(stop.departureDate)) || {})
+      .departureDate
+    const finalDepartureDate = (findLast(newStops, (stop) => !isNil(stop.departureDate)) || {})
+      .departureDate
+    const travelDuration = computeTravelDuration(initialDepartureDate, finalDepartureDate)
+    emit("input", travelDuration)
   },
   { immediate: true }
 )
 
-function computeTravelDuration(originDestination, finalDestination) {
-  if (isNil(originDestination.departureDate) || isNil(finalDestination.departureDate)) {
+function computeTravelDuration(initialDepartureDate, finalDepartureDate) {
+  if (isNil(initialDepartureDate) || isNil(finalDepartureDate)) {
     return null
   }
 
-  const departureDateOrigin = DateTime.fromISO(originDestination.departureDate)
-  const departureDateFinal = DateTime.fromISO(finalDestination.departureDate)
+  const departureDateOrigin = DateTime.fromISO(initialDepartureDate)
+  const departureDateFinal = DateTime.fromISO(finalDepartureDate)
   const timeDifference = departureDateFinal.diff(departureDateOrigin, "days")
   return max([0, timeDifference.days])
 }

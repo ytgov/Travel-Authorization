@@ -30,7 +30,7 @@
       </v-tooltip>
     </h1>
 
-    <SummaryHeaderPanel :travel-authorization-id="travelAuthorizationId" />
+    <SummaryHeaderPanelLegacy :travel-authorization-id="travelAuthorizationId" />
 
     <v-tabs>
       <DetailsTab :travel-authorization-id="travelAuthorizationId" />
@@ -52,7 +52,7 @@ import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import Breadcrumbs from "@/components/Breadcrumbs.vue"
 import PageLoader from "@/components/PageLoader.vue"
-import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
+import SummaryHeaderPanelLegacy from "@/components/travel-authorizations/SummaryHeaderPanelLegacy.vue"
 import UserChipMenu from "@/components/users/UserChipMenu.vue"
 
 import DetailsTab from "@/modules/travel-authorizations/components/manage-travel-authorization-layout/DetailsTab.vue"

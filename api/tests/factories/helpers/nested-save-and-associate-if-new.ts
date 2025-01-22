@@ -38,8 +38,9 @@ import { Model } from "sequelize"
  * // Given a persisted TravelAuthorization passed to a TravelSegment model instance via a BelongsTo association.
  * // The TravelSegment is updated with the travelAuthorizationId before it is saved.
  *  const travelAuthorization = await travelAuthorizationFactory
- *    .transient({ roundTrip: true })
- *    .create()
+ *    .create({
+ *      tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+ *    })
  *  const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
  *  const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
  *  const travelSegment1 = await travelSegmentFactory

@@ -54,6 +54,7 @@ export class CreateService extends BaseService {
       .transaction(async () => {
         const secureAttributes = {
           ...this.attributes,
+          tripType: this.attributes.tripType || TravelAuthorization.TripTypes.ROUND_TRIP,
           status: TravelAuthorization.Statuses.DRAFT,
           slug: this.attributes.slug || uuid(),
           createdBy: this.currentUser.id,
@@ -145,12 +146,12 @@ export class CreateService extends BaseService {
     travelAuthorization: TravelAuthorization,
     stopsAttributes: StopsCreationAttributes
   ): StopsCreationAttributes {
-    if (travelAuthorization.multiStop) {
+    if (travelAuthorization.tripType === TravelAuthorization.TripTypes.MULTI_CITY) {
       return this.ensureMinimalDefaultMultiDestinationStopsAttributes(
         travelAuthorization.id,
         stopsAttributes
       )
-    } else if (travelAuthorization.oneWayTrip) {
+    } else if (travelAuthorization.tripType === TravelAuthorization.TripTypes.ONE_WAY) {
       return this.ensureMinimalDefaultOneWayStopsAttributes(travelAuthorization.id, stopsAttributes)
     } else {
       return this.ensureMinimalDefaultRoundTripStopsAttributes(
@@ -173,21 +174,15 @@ export class CreateService extends BaseService {
       },
       {
         travelAuthorizationId,
-        accommodationType: Stop.AccommodationTypes.HOTEL,
+        accommodationType: null,
         transport: Stop.TravelMethods.AIRCRAFT,
         ...stopsAttributes[1],
       },
       {
         travelAuthorizationId,
         accommodationType: null,
-        transport: Stop.TravelMethods.AIRCRAFT,
-        ...stopsAttributes[2],
-      },
-      {
-        travelAuthorizationId,
         transport: null,
-        accommodationType: null,
-        ...stopsAttributes[3],
+        ...stopsAttributes[2],
       },
     ]
   }

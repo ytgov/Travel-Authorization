@@ -7,7 +7,7 @@ import {
   travelAuthorizationFactory,
   travelSegmentFactory,
 } from "@/factories"
-import { PerDiem, Stop, TravelAllowance } from "@/models"
+import { PerDiem, Stop, TravelAllowance, TravelAuthorization } from "@/models"
 
 describe("api/src/services/estimates/bulk-generate-service.ts", () => {
   describe("BulkGenerateService", () => {
@@ -66,9 +66,9 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
 
     describe(".perform", () => {
       test("creates some new estimates against the travel authorization", async () => {
-        const travelAuthorization = await travelAuthorizationFactory
-          .transient({ roundTrip: true })
-          .create()
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
         const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
         const travelSegment1 = await travelSegmentFactory
@@ -172,9 +172,9 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
       })
 
       test("when times are not specified, defaults to full day times", async () => {
-        const travelAuthorization = await travelAuthorizationFactory
-          .transient({ roundTrip: true })
-          .create()
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
         const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
         const travelSegment1 = await travelSegmentFactory

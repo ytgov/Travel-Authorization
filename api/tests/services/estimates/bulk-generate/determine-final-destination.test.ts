@@ -1,4 +1,4 @@
-import { TravelSegment } from "@/models"
+import { TravelAuthorization, TravelSegment } from "@/models"
 import { locationFactory, travelAuthorizationFactory, travelSegmentFactory } from "@/factories"
 
 import { determineFinalDestination } from "@/services/estimates/bulk-generate/determine-final-destination"
@@ -7,9 +7,9 @@ describe("api/src/services/estimates/bulk-generate/determine-location-from-date.
   describe(".determineFinalDestination", () => {
     test("when trip is a round trip, final destination is departure location of last segment", async () => {
       // arrange
-      const travelAuthorization = await travelAuthorizationFactory
-        .transient({ roundTrip: true })
-        .create()
+      const travelAuthorization = await travelAuthorizationFactory.create({
+        tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+      })
       const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
       const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
       const travelSegment1 = await travelSegmentFactory
@@ -47,8 +47,9 @@ describe("api/src/services/estimates/bulk-generate/determine-location-from-date.
 
     test("when trip is a one way trip, final destination is arrival location of last segment", async () => {
       // arrange
-      const travelAuthorization = await travelAuthorizationFactory
-        .create({ oneWayTrip: true })
+      const travelAuthorization = await travelAuthorizationFactory.create({
+        tripType: TravelAuthorization.TripTypes.ONE_WAY,
+      })
       const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
       const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
       const travelSegment1 = await travelSegmentFactory
@@ -74,8 +75,9 @@ describe("api/src/services/estimates/bulk-generate/determine-location-from-date.
 
     test("when trip is a multi-destination trip, final destination is arrival location of last segment", async () => {
       // arrange
-      const travelAuthorization = await travelAuthorizationFactory
-        .create({ multiStop: true })
+      const travelAuthorization = await travelAuthorizationFactory.create({
+        tripType: TravelAuthorization.TripTypes.MULTI_CITY,
+      })
       const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
       const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
       const grandePrairie = await locationFactory.create({

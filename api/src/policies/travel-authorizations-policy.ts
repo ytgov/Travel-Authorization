@@ -75,8 +75,7 @@ export class TravelAuthorizationsPolicy extends PolicyFactory(TravelAuthorizatio
         "approved",
         "requestChange",
         "denialReason",
-        "oneWayTrip",
-        "multiStop",
+        "tripType",
         "travelAdvanceInCents",
         "allTravelWithinTerritory",
 
