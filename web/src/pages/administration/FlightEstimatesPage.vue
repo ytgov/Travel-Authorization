@@ -1,6 +1,7 @@
 <template>
   <div>
-    <Breadcrumbs />
+    <v-alert color="warning"> Page is not yet implemented </v-alert>
+
     <h1>Flight Estimates</h1>
     <v-card class="default">
       <v-card-text>
@@ -47,20 +48,27 @@
     </v-card>
   </div>
 </template>
-<script>
-import Breadcrumbs from "../../Breadcrumbs.vue"
-export default {
-  name: "FlightEstimates",
-  components: {
-    Breadcrumbs,
+
+<script setup>
+import { ref } from "vue"
+
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+
+const flightEstimates = ref([
+  {
+    flight: "Whitehorse to Vancouver",
+    estimate: "780",
   },
-  data: () => ({
-    flightEstimates: [
-      {
-        flight: "Whitehorse to Vancouver",
-        estimate: "780",
-      },
-    ],
-  }),
-}
+])
+
+useBreadcrumbs([
+  {
+    text: "Administration",
+    to: { name: "AdministrationPage" },
+  },
+  {
+    text: "Flight Estimates",
+    to: { name: "administration/FlightEstimatesPage" },
+  },
+])
 </script>

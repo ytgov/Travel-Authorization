@@ -3,7 +3,6 @@ import VueRouter from "vue-router"
 
 import { authGuard } from "@/utils/auth-guard"
 
-import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
 import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
 import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
 
@@ -69,7 +68,7 @@ const routes = [
         component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
         children: [
           {
-            path: "/administration",
+            path: "administration",
             name: "AdministrationPage",
             component: () => import("@/pages/AdministrationPage.vue"),
           },
@@ -80,23 +79,28 @@ const routes = [
             props: true,
           },
           {
-            path: "/administration/users",
+            path: "administration/users",
             name: "administration/UsersPage",
             component: () => import("@/pages/administration/UsersPage.vue"),
           },
           {
-            path: "/administration/purpose",
+            path: "administration/flight-estimates",
+            name: "administration/FlightEstimatesPage",
+            component: () => import("@/pages/administration/FlightEstimatesPage.vue"),
+          },
+          {
+            path: "administration/purpose",
             name: "Administration/LookupTableManagement/Purpose",
             component: () =>
               import("@/components/Administration/LookupTableManagement/Purpose.vue"),
           },
           {
-            path: "/administration/travel-rates",
+            path: "administration/travel-rates",
             name: "administration/TravelRatesPage",
             component: () => import("@/pages/administration/TravelRatesPage.vue"),
           },
           {
-            path: "TravelRatesPage/administration/travel-rates/edit",
+            path: "administration/travel-rates/edit",
             name: "administration/TravelRatesEditPage",
             component: () => import("@/pages/administration/TravelRatesEditPage.vue"),
           },
@@ -119,11 +123,6 @@ const routes = [
             props: true,
           },
         ],
-      },
-      {
-        path: "administration/flightEstimate",
-        name: "FlightEstimate",
-        component: FlightEstimate,
       },
       {
         path: "administration/poolCarCost",

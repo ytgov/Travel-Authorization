@@ -48,7 +48,7 @@ const menuCardLists = [
       {
         icon: "mdi-wallet-membership",
         title: "Flight Estimate",
-        to: { name: "FlightEstimate" },
+        to: { name: "administration/FlightEstimatesPage" },
       },
       {
         icon: "mdi-database",
