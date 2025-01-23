@@ -181,16 +181,20 @@ function formatStatus(value) {
   return t(`global.status.${value}`, { $default: value })
 }
 
-useBreadcrumbs([
+const userDisplayName = computed(() =>
+  [user.value.firstName, user.value.lastName].filter(Boolean).join(" ")
+)
+
+const breadcrumbs = computed(() => [
   // TODO: consider if there should be "Users" page that is accessible to everyone?
   {
-    text: "User",
-    to: {
-      name: "users/UserPage",
-      params: {
-        userId,
-      },
-    },
+    text: "Users",
+    disabled: true,
+  },
+  {
+    text: isLoading.value === true ? "..." : userDisplayName.value,
+    disabled: true,
   },
 ])
+useBreadcrumbs(breadcrumbs)
 </script>
