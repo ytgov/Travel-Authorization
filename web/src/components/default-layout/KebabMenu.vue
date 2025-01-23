@@ -20,13 +20,16 @@
       dense
       style="min-width: 200px"
     >
-      <v-list-item to="/profile">
+      <v-list-item :to="{ name: 'ProfilePage' }">
         <v-list-item-icon>
           <v-icon>mdi-account</v-icon>
         </v-list-item-icon>
         <v-list-item-title>My profile</v-list-item-title>
       </v-list-item>
-      <v-list-item :to="{ name: 'AdministrationPage' }">
+      <v-list-item
+        v-if="isAdmin"
+        :to="{ name: 'AdministrationPage' }"
+      >
         <v-list-item-icon>
           <v-icon>mdi-cogs</v-icon>
         </v-list-item-icon>
@@ -55,7 +58,7 @@ import { RELEASE_TAG } from "@/config"
 import { auth0 } from "@/plugins/auth0-plugin"
 import useCurrentUser from "@/use/use-current-user"
 
-const { unset: unsetCurrentUser } = useCurrentUser()
+const { isAdmin, unset: unsetCurrentUser } = useCurrentUser()
 
 function signOut() {
   unsetCurrentUser()

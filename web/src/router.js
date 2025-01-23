@@ -3,10 +3,6 @@ import VueRouter from "vue-router"
 
 import { authGuard } from "@/utils/auth-guard"
 
-import FlightEstimate from "@/components/Administration/RatesEstimateManagement/AirEstimate"
-import PoolCarCost from "@/components/Administration/RatesEstimateManagement/PoolCarCost"
-import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
-
 import preapprovedRouter from "@/modules/preapproved/router"
 import travelDeskRouter from "@/modules/travelDesk/router"
 import travelAuthorizationsRouter from "@/modules/travel-authorizations/router"
@@ -30,14 +26,21 @@ const routes = [
         component: () => import("@/pages/DashboardPage"),
       },
       {
-        name: "Profile",
-        path: "profile",
-        component: () => import("@/pages/UserProfilePage"),
-      },
-      {
+        // TODO: push readcrumbs into higher layout
         component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
         path: "",
         children: [
+          {
+            path: "profile",
+            name: "ProfilePage",
+            component: () => import("@/pages/ProfilePage.vue"),
+          },
+          {
+            path: "users/:userId",
+            name: "users/UserPage",
+            component: () => import("@/pages/users/UserPage.vue"),
+            props: true,
+          },
           {
             name: "TravelDeskPage",
             path: "travel-desk",
@@ -61,15 +64,9 @@ const routes = [
             component: () => import("@/pages/travel-desk/TravelDeskFlightSegmentsManagePage.vue"),
             props: true,
           },
-        ],
-      },
-      {
-        // TODO: push readcrumbs into higher layout
-        path: "",
-        component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
-        children: [
+          // Start of Administration pages
           {
-            path: "/administration",
+            path: "administration",
             name: "AdministrationPage",
             component: () => import("@/pages/AdministrationPage.vue"),
           },
@@ -80,23 +77,37 @@ const routes = [
             props: true,
           },
           {
-            path: "/administration/users",
+            path: "administration/users",
             name: "administration/UsersPage",
             component: () => import("@/pages/administration/UsersPage.vue"),
           },
           {
-            path: "/administration/purpose",
-            name: "Administration/LookupTableManagement/Purpose",
-            component: () =>
-              import("@/components/Administration/LookupTableManagement/Purpose.vue"),
+            path: "administration/flight-estimates",
+            name: "administration/FlightEstimatesPage",
+            component: () => import("@/pages/administration/FlightEstimatesPage.vue"),
           },
           {
-            path: "/administration/travel-rates",
+            path: "administration/pool-car-costs",
+            name: "administration/PoolCarCostsPage",
+            component: () => import("@/pages/administration/PoolCarCostsPage.vue"),
+          },
+          {
+            path: "administration/travel-purposes",
+            name: "administration/TravelPurposesPage",
+            component: () => import("@/pages/administration/TravelPurposesPage.vue"),
+          },
+          {
+            path: "administration/rental-car-estimates",
+            name: "administration/RentalCarEstimatesPage",
+            component: () => import("@/pages/administration/RentalCarEstimatesPage.vue"),
+          },
+          {
+            path: "administration/travel-rates",
             name: "administration/TravelRatesPage",
             component: () => import("@/pages/administration/TravelRatesPage.vue"),
           },
           {
-            path: "TravelRatesPage/administration/travel-rates/edit",
+            path: "administration/travel-rates/edit",
             name: "administration/TravelRatesEditPage",
             component: () => import("@/pages/administration/TravelRatesEditPage.vue"),
           },
@@ -118,22 +129,8 @@ const routes = [
               import("@/pages/administration/travel-agencies/TravelAgencyEditPage.vue"),
             props: true,
           },
+          // End of Administration pages
         ],
-      },
-      {
-        path: "administration/flightEstimate",
-        name: "FlightEstimate",
-        component: FlightEstimate,
-      },
-      {
-        path: "administration/poolCarCost",
-        name: "PoolCarCost",
-        component: PoolCarCost,
-      },
-      {
-        path: "administration/rentalCarEstimates",
-        name: "RentalCarEstimates",
-        component: RentalCarEstimates,
       },
       {
         path: "qa/scenarios",

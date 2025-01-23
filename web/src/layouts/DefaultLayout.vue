@@ -45,7 +45,14 @@
         <v-icon>mdi-history</v-icon>
       </v-btn>
 
-      <span>{{ fullName }}</span>
+      <v-btn
+        text
+        :to="{
+          name: 'ProfilePage',
+        }"
+      >
+        {{ fullName }}
+      </v-btn>
 
       <KebabMenu />
     </v-app-bar>

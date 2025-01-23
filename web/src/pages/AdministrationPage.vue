@@ -48,17 +48,17 @@ const menuCardLists = [
       {
         icon: "mdi-wallet-membership",
         title: "Flight Estimate",
-        to: { name: "FlightEstimate" },
+        to: { name: "administration/FlightEstimatesPage" },
       },
       {
         icon: "mdi-database",
         title: "Pool Car Costs",
-        to: { name: "PoolCarCost" },
+        to: { name: "administration/PoolCarCostsPage" },
       },
       {
         icon: "mdi-shape",
         title: "Rental Car Estimates",
-        to: { name: "RentalCarEstimates" },
+        to: { name: "administration/RentalCarEstimatesPage" },
       },
       {
         icon: "mdi-bug",
@@ -72,8 +72,8 @@ const menuCardLists = [
     items: [
       {
         icon: "mdi-wallet-membership",
-        title: "Purpose",
-        to: { name: "Administration/LookupTableManagement/Purpose" },
+        title: "Travel Purposes",
+        to: { name: "administration/TravelPurposesPage" },
       },
       {
         icon: "mdi-airplane",
