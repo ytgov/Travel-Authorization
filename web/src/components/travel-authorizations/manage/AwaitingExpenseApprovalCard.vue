@@ -4,13 +4,13 @@
     color="#fff2d5"
   >
     <v-card-title>
-      Awaiting Changes
+      Awaiting Expense Approval
       <RefreshTableButton @click="refreshTable" />
     </v-card-title>
     <v-card-text>
       <SupervisorTravelAuthorizationsByStatusTable
         ref="table"
-        :status="STATUSES.CHANGE_REQUESTED"
+        :status="STATUSES.EXPENSE_CLAIM_SUBMITTED"
       />
     </v-card-text>
   </v-card>
@@ -19,11 +19,11 @@
 <script>
 import { STATUSES } from "@/api/travel-authorizations-api"
 
-import SupervisorTravelAuthorizationsByStatusTable from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/SupervisorTravelAuthorizationsByStatusTable"
-import RefreshTableButton from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/RefreshTableButton"
+import SupervisorTravelAuthorizationsByStatusTable from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/SupervisorTravelAuthorizationsByStatusTable.vue"
+import RefreshTableButton from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/RefreshTableButton.vue"
 
 export default {
-  name: "AwaitingChangesCard",
+  name: "AwaitingExpenseApprovalCard",
   components: {
     RefreshTableButton,
     SupervisorTravelAuthorizationsByStatusTable,

@@ -26,11 +26,11 @@
 <script setup>
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 
-import ApprovedTripsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/ApprovedTripsCard"
-import AwaitingChangesCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingChangesCard"
-import AwaitingExpenseApprovalCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingExpenseApprovalCard"
-import CreateTravelAuthorizationDialogButton from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/CreateTravelAuthorizationDialogButton"
-import PendingApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/PendingApprovalsCard"
+import ApprovedTripsCard from "@/components/travel-authorizations/manage/ApprovedTripsCard.vue"
+import AwaitingChangesCard from "@/components/travel-authorizations/manage/AwaitingChangesCard.vue"
+import AwaitingExpenseApprovalCard from "@/components/travel-authorizations/manage/AwaitingExpenseApprovalCard.vue"
+import CreateTravelAuthorizationDialogButton from "@/components/travel-authorizations/manage/CreateTravelAuthorizationDialogButton.vue"
+import PendingApprovalsCard from "@/components/travel-authorizations/manage/PendingApprovalsCard.vue"
 
 useBreadcrumbs([
   {
