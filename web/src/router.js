@@ -26,15 +26,15 @@ const routes = [
         component: () => import("@/pages/DashboardPage"),
       },
       {
-        name: "Profile",
-        path: "profile",
-        component: () => import("@/pages/UserProfilePage"),
-      },
-      {
         // TODO: push readcrumbs into higher layout
         component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
         path: "",
         children: [
+          {
+            path: "profile",
+            name: "ProfilePage",
+            component: () => import("@/pages/ProfilePage.vue"),
+          },
           {
             name: "TravelDeskPage",
             path: "travel-desk",

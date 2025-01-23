@@ -1,7 +1,5 @@
 <template>
   <div>
-    <FullScreenLoadingOverlay :value="isLoading" />
-
     <h1 class="d-flex justify-space-between">
       My Profile
 
@@ -22,7 +20,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.firstName"
+          :value="currentUser.firstName"
           label="First name"
           dense
           hide-details
@@ -35,7 +33,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.lastName"
+          :value="currentUser.lastName"
           label="Last name"
           dense
           hide-details
@@ -51,7 +49,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.email"
+          :value="currentUser.email"
           label="Email"
           dense
           hide-details
@@ -64,7 +62,7 @@
         md="6"
       >
         <v-text-field
-          :value="formatStatus(attributes.status)"
+          :value="formatStatus(currentUser.status)"
           label="Status"
           dense
           hide-details
@@ -82,7 +80,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.manager"
+          :value="currentUser.manager"
           label="Manager"
           dense
           hide-details
@@ -95,7 +93,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.mailcode"
+          :value="currentUser.mailcode"
           label="Mail code"
           dense
           hide-details
@@ -111,7 +109,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.department"
+          :value="currentUser.department"
           label="Department"
           dense
           hide-details
@@ -124,7 +122,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.division"
+          :value="currentUser.division"
           label="Division"
           dense
           hide-details
@@ -140,7 +138,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.branch"
+          :value="currentUser.branch"
           label="Branch"
           dense
           hide-details
@@ -153,7 +151,7 @@
         md="6"
       >
         <v-text-field
-          :value="attributes.unit"
+          :value="currentUser.unit"
           label="Unit"
           dense
           hide-details
@@ -171,7 +169,7 @@
         <h2>Roles</h2>
 
         <v-chip
-          v-for="(role, index) in attributes.roles"
+          v-for="(role, index) in currentUser.roles"
           :key="index"
           class="ma-2"
           color="info"
@@ -183,31 +181,46 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapActions } from "vuex"
+<script setup>
+import { useI18n } from "@/plugins/vue-i18n-plugin"
 
-import FullScreenLoadingOverlay from "@/components/FullScreenLoadingOverlay"
+import usersApi from "@/api/users-api"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useCurrentUser from "@/use/use-current-user"
+import useSnack from "@/use/use-snack"
 
-export default {
-  name: "UserProfilePage",
-  components: {
-    FullScreenLoadingOverlay,
-  },
-  data: () => ({}),
-  computed: {
-    ...mapGetters("current/user", ["attributes", "isLoading"]),
-  },
-  async mounted() {
-    await this.ensure()
-  },
-  methods: {
-    ...mapActions("current/user", ["ensure", "ygGovernmentDirectorySync"]),
-    formatRole(value) {
-      return this.$t(`role.name.${value}`, { $default: value })
-    },
-    formatStatus(value) {
-      return this.$t(`global.status.${value}`, { $default: value })
-    },
-  },
+const { currentUser, isLoading } = useCurrentUser()
+
+const { t } = useI18n()
+const snack = useSnack()
+
+async function ygGovernmentDirectorySync() {
+  isLoading.value = true
+  try {
+    await usersApi.ygGovernmentDirectorySync(currentUser.value.id)
+    snack.success("Current user synced with the YG government directory.")
+  } catch (error) {
+    console.error(`Failed to sync current user with the YG government directory: ${error}`)
+    snack.error("Failed to sync current user with the YG government directory.")
+  } finally {
+    isLoading.value = false
+  }
 }
+
+function formatRole(value) {
+  return t(`role.name.${value}`, { $default: value })
+}
+
+function formatStatus(value) {
+  return t(`global.status.${value}`, { $default: value })
+}
+
+useBreadcrumbs([
+  {
+    text: "Profile",
+    to: {
+      name: "ProfilePage",
+    },
+  },
+])
 </script>

@@ -20,7 +20,7 @@
       dense
       style="min-width: 200px"
     >
-      <v-list-item to="/profile">
+      <v-list-item :to="{ name: 'ProfilePage' }">
         <v-list-item-icon>
           <v-icon>mdi-account</v-icon>
         </v-list-item-icon>
