@@ -31,7 +31,7 @@
       <v-btn
         class="ml-3"
         color="secondary"
-        :to="{ name: 'ManageTravelAuthorizationsPage' }"
+        :to="{ name: 'ManageTravelRequests' }"
         >Back</v-btn
       >
     </div>

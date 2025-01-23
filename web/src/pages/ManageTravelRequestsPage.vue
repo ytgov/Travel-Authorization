@@ -1,9 +1,7 @@
 <template>
   <div>
-    <Breadcrumbs class="mb-2" />
-
     <div class="d-flex justify-space-between align-baseline">
-      <h1>Manage Submissions</h1>
+      <h1>Manage Travel Requests</h1>
       <CreateTravelAuthorizationDialogButton />
     </div>
     <v-row>
@@ -26,11 +24,20 @@
 </template>
 
 <script setup>
-import Breadcrumbs from "@/components/Breadcrumbs"
+import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 import ApprovedTripsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/ApprovedTripsCard"
 import AwaitingChangesCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingChangesCard"
 import AwaitingExpenseApprovalCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/AwaitingExpenseApprovalCard"
 import CreateTravelAuthorizationDialogButton from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/CreateTravelAuthorizationDialogButton"
 import PendingApprovalsCard from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/PendingApprovalsCard"
+
+useBreadcrumbs([
+  {
+    text: "Manage Travel Requests",
+    to: {
+      name: "ManageTravelRequests",
+    },
+  },
+])
 </script>
