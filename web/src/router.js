@@ -91,10 +91,9 @@ const routes = [
             component: () => import("@/pages/administration/PoolCarCostsPage.vue"),
           },
           {
-            path: "administration/purpose",
-            name: "Administration/LookupTableManagement/Purpose",
-            component: () =>
-              import("@/components/Administration/LookupTableManagement/Purpose.vue"),
+            path: "administration/travel-purposes",
+            name: "administration/TravelPurposesPage",
+            component: () => import("@/pages/administration/TravelPurposesPage.vue"),
           },
           {
             path: "administration/rental-car-estimates",

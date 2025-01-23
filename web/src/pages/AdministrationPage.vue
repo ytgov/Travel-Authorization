@@ -72,8 +72,8 @@ const menuCardLists = [
     items: [
       {
         icon: "mdi-wallet-membership",
-        title: "Purpose",
-        to: { name: "Administration/LookupTableManagement/Purpose" },
+        title: "Travel Purposes",
+        to: { name: "administration/TravelPurposesPage" },
       },
       {
         icon: "mdi-airplane",
