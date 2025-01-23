@@ -40,7 +40,7 @@ import { isEmpty } from "lodash"
 
 import ApproveTravelRequestDialogButton from "./ApproveTravelRequestDialogButton.vue"
 import DenyTravelRequestDialogButton from "./DenyTravelRequestDialogButton.vue"
-import ReAssignButtonDialog from "@/components/travel-authorizations/manange/ReAssignButtonDialog.vue"
+import ReAssignButtonDialog from "@/components/travel-authorizations/manage/ReAssignButtonDialog.vue"
 
 import { useTravelAuthorization } from "@/use/use-travel-authorization"
 
