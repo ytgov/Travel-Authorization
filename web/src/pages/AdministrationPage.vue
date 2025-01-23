@@ -58,7 +58,7 @@ const menuCardLists = [
       {
         icon: "mdi-shape",
         title: "Rental Car Estimates",
-        to: { name: "RentalCarEstimates" },
+        to: { name: "administration/RentalCarEstimatesPage" },
       },
       {
         icon: "mdi-bug",

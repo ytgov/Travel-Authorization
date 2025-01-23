@@ -3,8 +3,6 @@ import VueRouter from "vue-router"
 
 import { authGuard } from "@/utils/auth-guard"
 
-import RentalCarEstimates from "@/components/Administration/RatesEstimateManagement/RentalCarEstimate"
-
 import preapprovedRouter from "@/modules/preapproved/router"
 import travelDeskRouter from "@/modules/travelDesk/router"
 import travelAuthorizationsRouter from "@/modules/travel-authorizations/router"
@@ -99,6 +97,11 @@ const routes = [
               import("@/components/Administration/LookupTableManagement/Purpose.vue"),
           },
           {
+            path: "administration/rental-car-estimates",
+            name: "administration/RentalCarEstimatesPage",
+            component: () => import("@/pages/administration/RentalCarEstimatesPage.vue"),
+          },
+          {
             path: "administration/travel-rates",
             name: "administration/TravelRatesPage",
             component: () => import("@/pages/administration/TravelRatesPage.vue"),
@@ -127,11 +130,6 @@ const routes = [
             props: true,
           },
         ],
-      },
-      {
-        path: "administration/rentalCarEstimates",
-        name: "RentalCarEstimates",
-        component: RentalCarEstimates,
       },
       {
         path: "qa/scenarios",
