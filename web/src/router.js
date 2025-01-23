@@ -31,6 +31,7 @@ const routes = [
         component: () => import("@/pages/UserProfilePage"),
       },
       {
+        // TODO: push readcrumbs into higher layout
         component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
         path: "",
         children: [
@@ -57,13 +58,7 @@ const routes = [
             component: () => import("@/pages/travel-desk/TravelDeskFlightSegmentsManagePage.vue"),
             props: true,
           },
-        ],
-      },
-      {
-        // TODO: push readcrumbs into higher layout
-        path: "",
-        component: () => import("@/layouts/LayoutWithBreadcrumbs.vue"),
-        children: [
+          // Start of Administration pages
           {
             path: "administration",
             name: "AdministrationPage",
@@ -128,6 +123,7 @@ const routes = [
               import("@/pages/administration/travel-agencies/TravelAgencyEditPage.vue"),
             props: true,
           },
+          // End of Administration pages
         ],
       },
       {
