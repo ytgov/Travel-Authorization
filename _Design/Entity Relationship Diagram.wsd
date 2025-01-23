@@ -269,13 +269,12 @@ entity "travel_authorizations" {
   travel_advance : int4
   event_name : varchar(255)
   summary : varchar(255)
-  benefits : varchar(255)
+  benefits : varchar(2000)
   status : varchar(255)
   supervisor_email : varchar(255)
   request_change : varchar(255)
   denial_reason : varchar(2000)
-  one_way_trip : bool
-  multi_stop : bool
+  trip_type : varchar(255) - round_trip, one_way, multi_destination
   created_by : int4
   travel_advance_in_cents : int4
   all_travel_within_territory : bool

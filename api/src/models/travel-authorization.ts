@@ -56,7 +56,7 @@ export enum Statuses {
 export enum TripTypes {
   ROUND_TRIP = "round_trip",
   ONE_WAY = "one_way",
-  MULTI_DESTINATION = "multi_destination",
+  MULTI_CITY = "multi_city",
 }
 
 export class TravelAuthorization extends Model<
@@ -92,8 +92,7 @@ export class TravelAuthorization extends Model<
   declare supervisorEmail: string | null
   declare requestChange: string | null
   declare denialReason: string | null
-  declare oneWayTrip: boolean | null
-  declare multiStop: boolean | null
+  declare tripType: TripTypes | null
   declare createdBy: number | null
   declare travelAdvanceInCents: number | null
   declare allTravelWithinTerritory: boolean | null
@@ -248,12 +247,11 @@ export class TravelAuthorization extends Model<
       throw new Error("Must have at least 2 stops to build a travel segments")
     }
 
-    if (this.multiStop === true && this.stops.length < 4) {
-      throw new Error("Must have at least 4 stops to build a multi-stop travel segments")
+    if (this.tripType === TripTypes.MULTI_CITY && this.stops.length < 3) {
+      throw new Error("Must have at least 3 stops to build a multi-stop travel segments")
     }
 
-    const isRoundTrip = this.oneWayTrip !== true && this.multiStop !== true
-    if (isRoundTrip) {
+    if (this.tripType === TripTypes.ROUND_TRIP) {
       return this.stops.reduce((travelSegments: TravelSegment[], stop, index, stops) => {
         const isLastStop = index === stops.length - 1
         const arrivalStop = isLastStop ? stops[0] : stops[index + 1]
@@ -391,16 +389,16 @@ TravelAuthorization.init(
       allowNull: true,
     },
     benefits: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.STRING(2000),
       allowNull: true,
     },
     status: {
       type: DataTypes.STRING(255),
-      allowNull: true,
+      allowNull: true, // TODO: make this non-nullable in the database then update here.
       validate: {
         isIn: {
           args: [Object.values(Statuses)],
-          msg: "Invalid status value",
+          msg: `Status must be one of: ${Object.values(Statuses).join(", ")}`,
         },
       },
     },
@@ -430,15 +428,15 @@ TravelAuthorization.init(
     },
     // TODO: replace with string enum field using TripTypes
     // TODO: set default to false in the database
-    oneWayTrip: {
-      type: DataTypes.BOOLEAN,
+    tripType: {
+      type: DataTypes.STRING(255),
       allowNull: true,
-    },
-    // TODO: replace with string enum field using TripTypes
-    // TODO: set default to false in the database
-    multiStop: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true,
+      validate: {
+        isIn: {
+          args: [Object.values(TripTypes)],
+          msg: `Trip Type must be one of: ${Object.values(TripTypes).join(", ")}`,
+        },
+      },
     },
     // TODO: make this a foreign key to the users table
     // also non-nullable,
@@ -469,13 +467,6 @@ TravelAuthorization.init(
   {
     sequelize,
     paranoid: false,
-    validate: {
-      tripTypeConsistency() {
-        if (this.oneWayTrip === true && this.multiStop === true) {
-          throw new Error("oneWayTrip and multiStop cannot both be true")
-        }
-      },
-    },
   }
 )
 

@@ -1,9 +1,9 @@
 import { computed, reactive, toRefs, unref, watch } from "vue"
 
 import { TYPES as EXPENSE_TYPES } from "@/api/expenses-api"
-import travelAuthorizationsApi, { STATUSES } from "@/api/travel-authorizations-api"
+import travelAuthorizationsApi, { STATUSES, TRIP_TYPES } from "@/api/travel-authorizations-api"
 
-export { STATUSES }
+export { STATUSES, TRIP_TYPES }
 
 /**
  * @template [T=any]

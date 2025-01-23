@@ -5,8 +5,8 @@ import path from "path"
 export default {
   resolve: {
     alias: {
-      "@/": `${path.resolve(__dirname, "src")}/`,
-      "@/support": `${path.resolve(__dirname, "tests/support")}/`,
+      "@/support": path.resolve(__dirname, "tests/support"),
+      "@": path.resolve(__dirname, "src"),
     },
     extensions: [".js", ".json", ".mjs", ".vue"],
   },

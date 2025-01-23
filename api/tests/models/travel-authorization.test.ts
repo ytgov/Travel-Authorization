@@ -1,13 +1,13 @@
 import { stopFactory, travelAuthorizationFactory } from "@/factories"
-import { TravelSegment } from "@/models"
+import { TravelAuthorization, TravelSegment } from "@/models"
 
 describe("api/src/models/travel-authorization.ts", () => {
   describe("TravelAuthorization", () => {
     describe("#buildTravelSegmentsFromStops", () => {
       test("when has 2 stops, and is a round trip, builds the correct travel segment", async () => {
-        const travelAuthorization = await travelAuthorizationFactory
-          .transient({ roundTrip: true })
-          .create()
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: TravelSegment.TravelMethods.AIRCRAFT,
@@ -45,8 +45,7 @@ describe("api/src/models/travel-authorization.ts", () => {
 
       test("when has 2 stops, and is a one-way trip, builds the correct travel segment", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          oneWayTrip: true,
-          multiStop: false,
+          tripType: TravelAuthorization.TripTypes.ONE_WAY,
         })
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -74,10 +73,9 @@ describe("api/src/models/travel-authorization.ts", () => {
         ])
       })
 
-      test("when has 4 stops, and is a multi-stop trip, builds the correct travel segment", async () => {
+      test("when has 3 stops, and is a multi-stop trip, builds the correct travel segment", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          multiStop: true,
-          oneWayTrip: false,
+          tripType: TravelAuthorization.TripTypes.MULTI_CITY,
         })
         const stop1 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -87,14 +85,9 @@ describe("api/src/models/travel-authorization.ts", () => {
         const stop2 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: TravelSegment.TravelMethods.AIRCRAFT,
-          accommodationType: TravelSegment.AccommodationTypes.HOTEL,
-        })
-        const stop3 = await stopFactory.create({
-          travelAuthorizationId: travelAuthorization.id,
-          transport: TravelSegment.TravelMethods.AIRCRAFT,
           accommodationType: null,
         })
-        const stop4 = await stopFactory.create({
+        const stop3 = await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: null,
           accommodationType: null,
@@ -117,26 +110,17 @@ describe("api/src/models/travel-authorization.ts", () => {
             arrivalLocationId: stop3.locationId,
             segmentNumber: 1,
             modeOfTransport: TravelSegment.TravelMethods.AIRCRAFT,
-            accommodationType: TravelSegment.AccommodationTypes.HOTEL,
+            accommodationType: null,
             departureOn: stop2.departureDate,
             departureTime: stop2.departureTime,
-          }),
-          expect.objectContaining({
-            departureLocationId: stop3.locationId,
-            arrivalLocationId: stop4.locationId,
-            segmentNumber: 2,
-            modeOfTransport: TravelSegment.TravelMethods.AIRCRAFT,
-            accommodationType: null,
-            departureOn: stop3.departureDate,
-            departureTime: stop3.departureTime,
           }),
         ])
       })
 
       test("when stops length is less than 2 for round trip type, errors informatively", async () => {
-        const travelAuthorization = await travelAuthorizationFactory
-          .transient({ roundTrip: true })
-          .create()
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           transport: TravelSegment.TravelMethods.AIRCRAFT,
@@ -152,8 +136,7 @@ describe("api/src/models/travel-authorization.ts", () => {
 
       test("when stops length is less than 2 for one-way trip type, errors informatively", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          oneWayTrip: true,
-          multiStop: false,
+          tripType: TravelAuthorization.TripTypes.ONE_WAY,
         })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -168,15 +151,9 @@ describe("api/src/models/travel-authorization.ts", () => {
         )
       })
 
-      test("when stops length is less than 4, for multi-stop trip type, errors informatively", async () => {
+      test("when stops length is less than 3, for multi-stop trip type, errors informatively", async () => {
         const travelAuthorization = await travelAuthorizationFactory.create({
-          multiStop: true,
-          oneWayTrip: false,
-        })
-        await stopFactory.create({
-          travelAuthorizationId: travelAuthorization.id,
-          transport: TravelSegment.TravelMethods.AIRCRAFT,
-          accommodationType: TravelSegment.AccommodationTypes.HOTEL,
+          tripType: TravelAuthorization.TripTypes.MULTI_CITY,
         })
         await stopFactory.create({
           travelAuthorizationId: travelAuthorization.id,
@@ -192,7 +169,7 @@ describe("api/src/models/travel-authorization.ts", () => {
         await travelAuthorization.reload({ include: ["stops"] })
 
         expect(() => travelAuthorization.buildTravelSegmentsFromStops()).toThrow(
-          "Must have at least 4 stops to build a multi-stop travel segments"
+          "Must have at least 3 stops to build a multi-stop travel segments"
         )
       })
     })

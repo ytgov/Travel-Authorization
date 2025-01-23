@@ -6,9 +6,9 @@ describe("api/src/services/travel-authorizations/update-service.ts", () => {
   describe("UpdateService", () => {
     describe(".perform", () => {
       test("when has 2 stops, and is a round trip, builds the correct travel segment", async () => {
-        const travelAuthorization = await travelAuthorizationFactory
-          .transient({ roundTrip: true })
-          .create()
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
         const location1 = await locationFactory.create()
         const stop1 = stopFactory.build({
           travelAuthorizationId: travelAuthorization.id,

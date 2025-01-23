@@ -1,37 +1,44 @@
 <template>
   <v-card>
-    <v-card-title> Details </v-card-title>
+    <v-card-title><h3>Details</h3></v-card-title>
     <v-card-text>
       <v-form
         ref="form"
         lazy-validation
       >
         <v-row>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <v-select
-              :value="tripType"
-              :items="tripTypes"
-              :rules="[required]"
-              label="Trip Type"
-              dense
-              outlined
-              required
+          <v-col cols="12">
+            <v-radio-group
+              :value="travelAuthorization.tripType"
+              :row="mdAndUp"
               @change="updateTripType"
-            ></v-select>
+            >
+              <v-radio
+                label="Round trip"
+                :value="TRIP_TYPES.ROUND_TRIP"
+              ></v-radio>
+              <v-radio
+                label="One way"
+                :value="TRIP_TYPES.ONE_WAY"
+              ></v-radio>
+              <v-radio
+                label="Multi-city"
+                :value="TRIP_TYPES.MULTI_CITY"
+              ></v-radio>
+            </v-radio-group>
           </v-col>
         </v-row>
 
         <component
           :is="tripTypeComponent"
           v-if="tripTypeComponent && hasEnoughStops"
+          :travel-authorization-id="travelAuthorizationId"
           :value="stops"
           :all-travel-within-territory="travelAuthorization.allTravelWithinTerritory"
+          class="mt-3"
           @input="replaceStops"
         />
-        <div v-else>Trip type {{ tripType }} not implemented!</div>
+        <div v-else>Trip type {{ travelAuthorization.tripType }} not implemented!</div>
         <v-row>
           <v-col
             cols="12"
@@ -44,7 +51,7 @@
           </v-col>
           <v-col
             cols="12"
-            md="2"
+            md="3"
           >
             <v-text-field
               v-model="travelAuthorization.daysOffTravelStatus"
@@ -61,7 +68,7 @@
           >
             <DatePicker
               v-model="travelAuthorization.dateBackToWork"
-              :min="lastStop.departureDate"
+              :min="lastDepartureDate"
               :rules="[required]"
               label="Expected Date return to work"
               dense
@@ -76,21 +83,16 @@
 
 <script setup>
 import { computed, nextTick, onMounted, ref, toRefs } from "vue"
-import { pick } from "lodash"
+import { findLast, isNil } from "lodash"
 
-import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import { required, isInteger } from "@/utils/validators"
+import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 
-import useTravelAuthorization from "@/use/use-travel-authorization"
+import useVuetify2 from "@/use/utils/use-vuetify2"
+import useTravelAuthorization, { TRIP_TYPES } from "@/use/use-travel-authorization"
 
 import DatePicker from "@/components/common/DatePicker.vue"
 import TravelDurationTextField from "@/components/travel-authorizations/details-edit-form-card/TravelDurationTextField.vue"
-
-const TRIP_TYPES = Object.freeze({
-  ROUND_TRIP: "Round Trip",
-  ONE_WAY: "One Way",
-  MULTI_DESTINATION: "Multi-Destination",
-})
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -99,15 +101,18 @@ const props = defineProps({
   },
 })
 
+const { mdAndUp } = useVuetify2()
+
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, stops, firstStop, lastStop, save, newBlankStop, replaceStops } =
   useTravelAuthorization(travelAuthorizationId)
 
-const tripTypes = computed(() => Object.values(TRIP_TYPES))
-const tripType = ref(null)
+const lastDepartureDate = computed(
+  () => (findLast(stops.value, (stop) => !isNil(stop.departureDate)) || {}).departureDate
+)
 
 const tripTypeComponent = computed(() => {
-  switch (tripType.value) {
+  switch (travelAuthorization.value.tripType) {
     case TRIP_TYPES.ROUND_TRIP:
       return () =>
         import(
@@ -116,7 +121,7 @@ const tripTypeComponent = computed(() => {
     case TRIP_TYPES.ONE_WAY:
       return () =>
         import("@/components/travel-authorizations/details-edit-form-card/OneWayStopsSection.vue")
-    case TRIP_TYPES.MULTI_DESTINATION:
+    case TRIP_TYPES.MULTI_CITY:
       return () =>
         import(
           "@/components/travel-authorizations/details-edit-form-card/MultiDestinationStopsSection.vue"
@@ -127,13 +132,13 @@ const tripTypeComponent = computed(() => {
 })
 
 const hasEnoughStops = computed(() => {
-  switch (tripType.value) {
+  switch (travelAuthorization.value.tripType) {
     case TRIP_TYPES.ROUND_TRIP:
       return stops.value.length === 2
     case TRIP_TYPES.ONE_WAY:
       return stops.value.length === 2
-    case TRIP_TYPES.MULTI_DESTINATION:
-      return stops.value.length === 4
+    case TRIP_TYPES.MULTI_CITY:
+      return stops.value.length >= 3
     default:
       return true
   }
@@ -144,12 +149,8 @@ const hasEnoughStops = computed(() => {
 const form = ref(null)
 
 onMounted(async () => {
-  if (travelAuthorization.value.oneWayTrip) {
-    tripType.value = TRIP_TYPES.ONE_WAY
-  } else if (travelAuthorization.value.multiStop) {
-    tripType.value = TRIP_TYPES.MULTI_DESTINATION
-  } else {
-    tripType.value = TRIP_TYPES.ROUND_TRIP
+  if (isNil(travelAuthorization.value.tripType)) {
+    travelAuthorization.value.tripType = TRIP_TYPES.ROUND_TRIP
   }
 
   await nextTick()
@@ -157,21 +158,9 @@ onMounted(async () => {
 })
 
 async function updateTripType(value) {
-  tripType.value = value
-  if (value === TRIP_TYPES.ROUND_TRIP) {
-    travelAuthorization.value.oneWayTrip = false
-    travelAuthorization.value.multiStop = false
-  } else if (value === TRIP_TYPES.ONE_WAY) {
-    travelAuthorization.value.oneWayTrip = true
-    travelAuthorization.value.multiStop = false
-  } else if (value === TRIP_TYPES.MULTI_DESTINATION) {
-    travelAuthorization.value.multiStop = true
-    travelAuthorization.value.oneWayTrip = false
-  } else {
-    throw new Error("Invalid trip type")
-  }
+  travelAuthorization.value.tripType = value
 
-  await ensureMinimalDefaultStops(tripType.value)
+  await ensureMinimalDefaultStops(value)
 
   await nextTick()
   form.value?.resetValidation()
@@ -182,7 +171,7 @@ async function ensureMinimalDefaultStops(tripType) {
     return ensureMinimalDefaultRoundTripStops()
   } else if (tripType === TRIP_TYPES.ONE_WAY) {
     return ensureMinimalDefaultOneWayStops()
-  } else if (tripType === TRIP_TYPES.MULTI_DESTINATION) {
+  } else if (tripType === TRIP_TYPES.MULTI_CITY) {
     return ensureMinimalDefaultMultiDestinationStops()
   } else {
     throw new Error("Invalid trip type")
@@ -223,23 +212,16 @@ async function ensureMinimalDefaultMultiDestinationStops() {
     ...firstStop.value,
     accommodationType: firstStop.value.accommodationType || ACCOMMODATION_TYPES.HOTEL,
   })
-  const secondStop = stops.value[1] !== lastStop.value ? stops.value[1] : {}
   const newSecondStop = await newBlankStop({
     accommodationType: ACCOMMODATION_TYPES.HOTEL,
     transport: TRAVEL_METHODS.AIRCRAFT,
-    ...secondStop,
+    ...lastStop.value,
   })
   const newThirdStop = await newBlankStop({
-    ...pick(lastStop.value, "departureDate", "departureTime"),
-    accommodationType: null,
-    transport: TRAVEL_METHODS.AIRCRAFT,
-  })
-  const newLastStop = await newBlankStop({
-    ...pick(lastStop.value, "locationId"),
     transport: null,
     accommodationType: null,
   })
-  return replaceStops([newFirstStop, newSecondStop, newThirdStop, newLastStop])
+  return replaceStops([newFirstStop, newSecondStop, newThirdStop])
 }
 
 defineExpose({

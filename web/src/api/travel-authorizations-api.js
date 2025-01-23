@@ -17,7 +17,14 @@ export const STATUSES = Object.freeze({
   SUBMITTED: "submitted",
 })
 
+export const TRIP_TYPES = Object.freeze({
+  ROUND_TRIP: "round_trip",
+  ONE_WAY: "one_way",
+  MULTI_CITY: "multi_city",
+})
+
 /** @typedef {STATUSES[keyof STATUSES]} Statuses */
+/** @typedef {TRIP_TYPES[keyof TRIP_TYPES]} TripTypes */
 
 /**
  * @typedef {{
@@ -47,8 +54,7 @@ export const STATUSES = Object.freeze({
  *   supervisorEmail: string | null;
  *   requestChange: string | null;
  *   denialReason: string | null;
- *   oneWayTrip: boolean | null;
- *   multiStop: boolean | null;
+ *   tripType: TripTypes | null;
  *   travelAdvanceInCents: string | null;
  *   allTravelWithinTerritory: boolean | null;
  *   createdAt: string;
@@ -75,8 +81,7 @@ export const STATUSES = Object.freeze({
  *   status?: Statuses;
  *   stepNumber?: number;
  *   supervisorEmail?: string;
- *   oneWayTrip?: boolean;
- *   multiStop?: boolean;
+ *   tripType?: TripTypes;
  *   allTravelWithinTerritory?: boolean;
  * }} TravelAuthorizationWhereOptions
  */
@@ -98,6 +103,7 @@ export const STATUSES = Object.freeze({
 
 export const travelAuthorizationsApi = {
   STATUSES,
+  TRIP_TYPES,
   /**
    * @param {TravelAuthorizationsQueryOptions} [params={}]
    * @returns {Promise<{
