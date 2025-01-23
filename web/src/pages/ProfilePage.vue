@@ -6,11 +6,9 @@
       <v-btn
         title="Sync profile with external directory"
         color="primary"
-        small
-        icon
         @click="ygGovernmentDirectorySync"
       >
-        <v-icon>mdi-cached</v-icon>
+        <v-icon left>mdi-cached</v-icon> Sync
       </v-btn>
     </h1>
 
@@ -19,27 +17,19 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.firstName"
+        <DescriptionElement
           label="First name"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.firstName"
+        />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.lastName"
+        <DescriptionElement
           label="Last name"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.lastName"
+        />
       </v-col>
     </v-row>
 
@@ -48,27 +38,19 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.email"
+        <DescriptionElement
           label="Email"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.email"
+        />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="formatStatus(currentUser.status)"
+        <DescriptionElement
           label="Status"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="formatStatus(currentUser.status)"
+        />
       </v-col>
     </v-row>
 
@@ -79,27 +61,19 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.manager"
+        <DescriptionElement
           label="Manager"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.manager"
+        />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.mailcode"
+        <DescriptionElement
           label="Mail code"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.mailcode"
+        />
       </v-col>
     </v-row>
 
@@ -108,27 +82,19 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.department"
+        <DescriptionElement
           label="Department"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.department"
+        />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.division"
+        <DescriptionElement
           label="Division"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.division"
+        />
       </v-col>
     </v-row>
 
@@ -137,27 +103,19 @@
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.branch"
+        <DescriptionElement
           label="Branch"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.branch"
+        />
       </v-col>
       <v-col
         cols="12"
         md="6"
       >
-        <v-text-field
-          :value="currentUser.unit"
+        <DescriptionElement
           label="Unit"
-          dense
-          hide-details
-          outlined
-          readonly
-        ></v-text-field>
+          :value="currentUser.unit"
+        />
       </v-col>
     </v-row>
 
@@ -188,6 +146,8 @@ import usersApi from "@/api/users-api"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
 import useSnack from "@/use/use-snack"
+
+import DescriptionElement from "@/components/common/DescriptionElement.vue"
 
 const { currentUser, isLoading } = useCurrentUser()
 
