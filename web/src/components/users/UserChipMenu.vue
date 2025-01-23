@@ -113,6 +113,11 @@ const userProfileLink = computed(() => {
     }
   }
 
-  return `/users/${props.userId}`
+  return {
+    name: "users/UserPage",
+    params: {
+      userId: props.userId,
+    },
+  }
 })
 </script>

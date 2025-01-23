@@ -36,6 +36,12 @@ const routes = [
             component: () => import("@/pages/ProfilePage.vue"),
           },
           {
+            path: "users/:userId",
+            name: "users/UserPage",
+            component: () => import("@/pages/users/UserPage.vue"),
+            props: true,
+          },
+          {
             name: "TravelDeskPage",
             path: "travel-desk",
             component: () => import("@/pages/TravelDeskPage.vue"),
