@@ -17,7 +17,7 @@
           :items="travelDeskTravelAgencies"
           :loading="isLoading"
           :server-items-length="totalCount"
-          class="elevation-1 mt-4"
+          class="mt-4"
           @dblclick:row="(_, { item }) => goToEditPage(item.id)"
         >
           <template #item.agencyInfo="{ value }">
@@ -65,17 +65,15 @@ import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useRouteQuery from "@/use/utils/use-route-query"
 
 const headers = ref([
-  { text: "Agency Name", value: "agencyName", class: "blue-grey lighten-4" },
-  { text: "Contact Name", value: "contactName", class: "blue-grey lighten-4" },
-  { text: "Contact Phone Number", value: "contactPhoneNumber", class: "blue-grey lighten-4" },
-  { text: "Contact Email", value: "contactEmail", class: "blue-grey lighten-4" },
-  { text: "Agency Info", value: "agencyInfo", class: "blue-grey lighten-4", sortable: false },
+  { text: "Agency Name", value: "agencyName" },
+  { text: "Contact Name", value: "contactName" },
+  { text: "Contact Phone Number", value: "contactPhoneNumber" },
+  { text: "Contact Email", value: "contactEmail" },
+  { text: "Agency Info", value: "agencyInfo", sortable: false },
   {
     text: "",
     value: "edit",
-    class: "blue-grey lighten-4",
     width: "8rem",
-    cellClass: "px-0 mx-0",
     sortable: false,
   },
 ])
