@@ -33,7 +33,13 @@ describe("api/src/services/travel-authorizations/update-service.ts", () => {
         await UpdateService.perform(travelAuthorization, attributes, user)
 
         expect.assertions(1)
-        expect(await travelAuthorization.getTravelSegments()).toEqual([
+        expect(
+          await TravelSegment.findAll({
+            where: {
+              travelAuthorizationId: travelAuthorization.id,
+            },
+          })
+        ).toEqual([
           expect.objectContaining({
             departureLocationId: location1.id,
             arrivalLocationId: location2.id,

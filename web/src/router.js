@@ -31,6 +31,11 @@ const routes = [
         path: "",
         children: [
           {
+            name: "ManageTravelRequests",
+            path: "manage-travel-requests",
+            component: () => import("@/pages/ManageTravelRequestsPage.vue"),
+          },
+          {
             path: "profile",
             name: "ProfilePage",
             component: () => import("@/pages/ProfilePage.vue"),

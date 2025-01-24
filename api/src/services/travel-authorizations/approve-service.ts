@@ -43,7 +43,7 @@ export class ApproveService extends BaseService {
         status: TravelAuthorization.Statuses.APPROVED,
       })
 
-      if (this.isTravelingByAir(travelSegments)) {
+      if (this.isTravellingByAir(travelSegments)) {
         await TravelDeskTravelRequests.CreateService.perform(
           {
             travelAuthorizationId: this.travelAuthorization.id,
@@ -72,7 +72,7 @@ export class ApproveService extends BaseService {
     return this.travelAuthorization.reload({ include: ["expenses", "stops", "purpose", "user"] })
   }
 
-  private isTravelingByAir(travelSegments: TravelSegment[]): boolean {
+  private isTravellingByAir(travelSegments: TravelSegment[]): boolean {
     return travelSegments.some(
       (segment) => segment.modeOfTransport === TravelSegment.TravelMethods.AIRCRAFT
     )

@@ -2,18 +2,6 @@ import { cast } from "@/utils/vue-router-utils"
 
 const routes = [
   {
-    path: "/",
-    component: () => import("@/layouts/DefaultLayout.vue"),
-    children: [
-      {
-        name: "ManageTravelAuthorizationsPage",
-        path: "manage-travel-requests",
-        component: () =>
-          import("@/modules/travel-authorizations/pages/ManageTravelAuthorizationsPage"),
-      },
-    ],
-  },
-  {
     path: "/travel-requests",
     component: () => import("@/layouts/DefaultLayout.vue"),
     children: [

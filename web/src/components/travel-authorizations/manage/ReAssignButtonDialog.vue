@@ -128,7 +128,7 @@ async function reAssignAndClose() {
     })
     snack.success("Travel authorization re-assigned.")
     await router.replace({
-      name: "ManageTravelAuthorizationsPage",
+      name: "ManageTravelRequests",
     })
   } catch (error) {
     console.error(error)

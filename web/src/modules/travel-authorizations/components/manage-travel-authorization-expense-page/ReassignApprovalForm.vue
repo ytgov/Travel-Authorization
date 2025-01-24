@@ -67,7 +67,7 @@ async function reassign() {
     // must redirect away from the current page, as re-assigment might revoke the user's permissions to
     // access the said page.
     router.push({
-      name: "ManageTravelAuthorizationsPage",
+      name: "ManageTravelRequests",
     })
   } catch (error) {
     snack(error.message, { color: "error" })

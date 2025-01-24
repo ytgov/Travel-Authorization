@@ -1,8 +1,8 @@
 <template>
   <v-btn
-    class="ma-0 ml-1"
+    class="ma-0"
     icon
-    color="green"
+    color="info"
     title="Refresh Table"
     v-on="$listeners"
   >
@@ -10,8 +10,4 @@
   </v-btn>
 </template>
 
-<script>
-export default {
-  name: "RefreshTableButton",
-}
-</script>
+<script setup></script>

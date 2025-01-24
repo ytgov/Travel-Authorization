@@ -37,11 +37,21 @@
       <v-col
         cols="12"
         md="6"
+        class="d-flex align-center"
       >
         <DescriptionElement
           label="Email"
           :value="currentUser.email"
         />
+        <v-btn
+          class="ml-2 my-0"
+          title="Copy email to clipboard"
+          icon
+          small
+          @click="copyToClipboard(currentUser.email, 'Email copied to clipboard')"
+        >
+          <v-icon>mdi-content-copy</v-icon>
+        </v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -173,6 +183,16 @@ function formatRole(value) {
 
 function formatStatus(value) {
   return t(`global.status.${value}`, { $default: value })
+}
+
+async function copyToClipboard(text, message = "Copied to clipboard") {
+  try {
+    await navigator.clipboard.writeText(text)
+    snack.success(message)
+  } catch (error) {
+    console.error(`Failed to copy to clipboard: ${error}`)
+    snack.error(`Failed to copy to clipboard: ${error}`)
+  }
 }
 
 useBreadcrumbs([

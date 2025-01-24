@@ -16,7 +16,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   const currentStepNumber = computed(() => travelAuthorization.value.stepNumber || 1)
   const travelDeskTravelRequest = computed(() => travelAuthorization.value?.travelDeskTravelRequest)
 
-  const isTravelingByAir = computed(() =>
+  const isTravellingByAir = computed(() =>
     travelAuthorization.value.travelSegments.some((segment) => {
       return segment.modeOfTransport === TRAVEL_METHODS.AIRCRAFT
     })
@@ -141,7 +141,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
             },
           ]
         : []),
-      ...(isTravelingByAir.value && isAwaitingFlightOptionsOptions.value
+      ...(isTravellingByAir.value && isAwaitingFlightOptionsOptions.value
         ? [
             {
               title: "Request: traveller details",
@@ -181,7 +181,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
             },
           ]
         : []),
-      ...(isTravelingByAir.value && isAwaitingFlightOptionsOptions.value
+      ...(isTravellingByAir.value && isAwaitingFlightOptionsOptions.value
         ? [
             {
               title: "Awaiting flight options",
@@ -196,7 +196,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
             },
           ]
         : []),
-      ...(isTravelingByAir.value && !isAwaitingFlightOptionsOptions.value
+      ...(isTravellingByAir.value && !isAwaitingFlightOptionsOptions.value
         ? [
             {
               title: "Rank options",
@@ -213,7 +213,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
           ]
         : []),
       // TODO: consider how to show some read-only views when in this state?
-      ...(isTravelingByAir.value && !isAwaitingFlightOptionsOptions.value
+      ...(isTravellingByAir.value && !isAwaitingFlightOptionsOptions.value
         ? [
             {
               title: "Waiting for booking",

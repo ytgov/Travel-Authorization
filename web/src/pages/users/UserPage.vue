@@ -46,11 +46,21 @@
       <v-col
         cols="12"
         md="6"
+        class="d-flex align-center"
       >
         <DescriptionElement
           label="Email"
           :value="user.email"
         />
+        <v-btn
+          class="ml-2 my-0"
+          title="Copy email to clipboard"
+          icon
+          small
+          @click="copyToClipboard(user.email, 'Email copied to clipboard')"
+        >
+          <v-icon>mdi-content-copy</v-icon>
+        </v-btn>
       </v-col>
       <v-col
         cols="12"
@@ -155,6 +165,7 @@ import { useI18n } from "@/plugins/vue-i18n-plugin"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useCurrentUser from "@/use/use-current-user"
+import useSnack from "@/use/use-snack"
 import useUser from "@/use/use-user"
 
 import DescriptionElement from "@/components/common/DescriptionElement.vue"
@@ -179,6 +190,18 @@ function formatRole(value) {
 
 function formatStatus(value) {
   return t(`global.status.${value}`, { $default: value })
+}
+
+const snack = useSnack()
+
+async function copyToClipboard(text, message = "Copied to clipboard") {
+  try {
+    await navigator.clipboard.writeText(text)
+    snack.success(message)
+  } catch (error) {
+    console.error(`Failed to copy to clipboard: ${error}`)
+    snack.error(`Failed to copy to clipboard: ${error}`)
+  }
 }
 
 const userDisplayName = computed(() =>
