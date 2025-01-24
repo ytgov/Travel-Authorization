@@ -28,6 +28,7 @@
 import { computed, ref } from "vue"
 import { isNil } from "lodash"
 import { DateTime } from "luxon"
+import { useRouter } from "vue2-helpers/vue-router"
 
 import useRouteQuery from "@/use/utils/use-route-query"
 import useCurrentUser from "@/use/use-current-user"
@@ -107,9 +108,11 @@ function formatDate(value) {
   return date.toFormat("dd-LLL-yyyy")
 }
 
+const router = useRouter()
+
 function goToManageTravelAuthorization(travelAuthorization) {
   const travelAuthorizationId = travelAuthorization.id
-  this.$router.push({
+  router.push({
     name: "ManageTravelAuthorizationDetailsPage",
     params: {
       travelAuthorizationId,
