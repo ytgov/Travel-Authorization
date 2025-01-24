@@ -9,11 +9,14 @@
     class="elevation-2"
     @click:row="goToManageTravelAuthorization"
   >
-    <template #item.departmentAndBranch="{ item }">
-      <span>{{ formatDepartmentAndBranch(item) }}</span>
-    </template>
     <template #item.name="{ item }">
       <span>{{ item.firstName }} {{ item.lastName }}</span>
+    </template>
+    <template #item.tripType="{ value }">
+      <span>{{ formatTripType(value) }}</span>
+    </template>
+    <template #item.finalDestination="{ value }">
+      <span>{{ formatFinalDestination(value) }}</span>
     </template>
     <template #item.departingAt="{ value }">
       <span>{{ formatDate(value) }}</span>
@@ -27,9 +30,11 @@
 <script setup>
 import { computed, ref } from "vue"
 import { isNil } from "lodash"
-import { DateTime } from "luxon"
 import { useRouter } from "vue2-helpers/vue-router"
 
+import { useI18n } from "@/plugins/vue-i18n-plugin"
+
+import formatDate from "@/utils/format-date"
 import useRouteQuery from "@/use/utils/use-route-query"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
@@ -51,24 +56,34 @@ const props = defineProps({
 
 const headers = ref([
   {
-    text: "TA Form Number",
+    text: "TA #",
     value: "id",
-  },
-  {
-    text: "Department/Branch",
-    value: "departmentAndBranch",
+    sortable: false,
   },
   {
     text: "Requestee",
     value: "name",
+    sortable: false,
+  },
+  {
+    text: "Final Destination",
+    value: "finalDestination",
+    sortable: false,
+  },
+  {
+    text: "Type",
+    value: "tripType",
+    sortable: false,
   },
   {
     text: "Departure Date",
     value: "departingAt",
+    sortable: false,
   },
   {
     text: "Return Date",
     value: "returningAt",
+    sortable: false,
   },
 ])
 
@@ -97,15 +112,19 @@ const travelAuthorizationsQuery = computed(() => {
 const { travelAuthorizations, totalCount, isLoading, refresh } =
   useTravelAuthorizations(travelAuthorizationsQuery)
 
-function formatDepartmentAndBranch(item) {
-  return [item.department, item.branch].filter(Boolean).join("/")
+const { t } = useI18n()
+
+function formatFinalDestination(value) {
+  if (isNil(value)) return ""
+
+  const { city, province } = value
+  return `${city} (${province})`
 }
 
-function formatDate(value) {
-  if (isNil(value)) return "Unknown"
+function formatTripType(value) {
+  if (isNil(value)) return ""
 
-  const date = DateTime.fromISO(value, { zone: "utc" })
-  return date.toFormat("dd-LLL-yyyy")
+  return t(`travel_authorization.trip_type.${value}`, { $default: value })
 }
 
 const router = useRouter()
