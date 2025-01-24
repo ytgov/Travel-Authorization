@@ -223,18 +223,18 @@ describe("api/src/models/travel-authorization.ts", () => {
             segmentNumber: 1,
           })
 
-          const pastTravelAuthorization = await travelAuthorizationFactory.create({
+          const futureTravelAuthorization = await travelAuthorizationFactory.create({
             tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
             status: TravelAuthorization.Statuses.APPROVED,
           })
           await travelSegmentFactory.create({
-            travelAuthorizationId: pastTravelAuthorization.id,
+            travelAuthorizationId: futureTravelAuthorization.id,
             departureOn: "2025-01-24",
             departureTime: "18:31",
             segmentNumber: 0,
           })
           await travelSegmentFactory.create({
-            travelAuthorizationId: pastTravelAuthorization.id,
+            travelAuthorizationId: futureTravelAuthorization.id,
             departureOn: "2025-01-28",
             departureTime: "11:30",
             segmentNumber: 1,
@@ -422,6 +422,84 @@ describe("api/src/models/travel-authorization.ts", () => {
           const result = await TravelAuthorization.scope("isUpcomingTravel").findAll()
 
           expect(result).toEqual([])
+        })
+      })
+
+      describe("#isBeforeTripEnd", () => {
+        beforeEach(() => {
+          vi.useFakeTimers()
+
+          const date = new Date("2025-01-24T18:30:00.000Z")
+          vi.setSystemTime(date)
+        })
+
+        afterEach(() => {
+          vi.useRealTimers()
+        })
+
+        test("when current date is before trip end date, returns travel authorization", async () => {
+          const travellingTravelAuthorization = await travelAuthorizationFactory.create({
+            tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+            status: TravelAuthorization.Statuses.APPROVED,
+          })
+          await travelSegmentFactory.create({
+            travelAuthorizationId: travellingTravelAuthorization.id,
+            departureOn: "2025-01-20",
+            departureTime: "08:30",
+            segmentNumber: 0,
+          })
+          await travelSegmentFactory.create({
+            travelAuthorizationId: travellingTravelAuthorization.id,
+            departureOn: "2025-01-28",
+            departureTime: "11:30",
+            segmentNumber: 1,
+          })
+
+          const upcomingTravelAuthorization = await travelAuthorizationFactory.create({
+            tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+            status: TravelAuthorization.Statuses.APPROVED,
+          })
+          await travelSegmentFactory.create({
+            travelAuthorizationId: upcomingTravelAuthorization.id,
+            departureOn: "2025-01-24",
+            departureTime: "18:31",
+            segmentNumber: 0,
+          })
+          await travelSegmentFactory.create({
+            travelAuthorizationId: upcomingTravelAuthorization.id,
+            departureOn: "2025-01-28",
+            departureTime: "10:00",
+            segmentNumber: 1,
+          })
+
+          // negative cases
+          const completedTravelAuthorization = await travelAuthorizationFactory.create({
+            tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+            status: TravelAuthorization.Statuses.APPROVED,
+          })
+          await travelSegmentFactory.create({
+            travelAuthorizationId: completedTravelAuthorization.id,
+            departureOn: "2025-01-20",
+            departureTime: "08:00",
+            segmentNumber: 0,
+          })
+          await travelSegmentFactory.create({
+            travelAuthorizationId: completedTravelAuthorization.id,
+            departureOn: "2025-01-24",
+            departureTime: "18:29",
+            segmentNumber: 1,
+          })
+
+          const result = await TravelAuthorization.scope("isBeforeTripEnd").findAll()
+
+          expect(result).toEqual([
+            expect.objectContaining({
+              id: travellingTravelAuthorization.id,
+            }),
+            expect.objectContaining({
+              id: upcomingTravelAuthorization.id,
+            }),
+          ])
         })
       })
     })

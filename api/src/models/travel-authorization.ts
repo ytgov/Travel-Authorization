@@ -21,7 +21,11 @@ import TravelPurpose from "@/models/travel-purpose"
 import TravelSegment from "@/models/travel-segment"
 import User from "@/models/user"
 
-import { buildIsTravellingQuery, buildIsUpcomingTravelQuery } from "@/queries/travel-authorizations"
+import {
+  buildIsTravellingQuery,
+  buildIsUpcomingTravelQuery,
+  buildIsBeforeTripEndQuery,
+} from "@/queries/travel-authorizations"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
@@ -398,6 +402,20 @@ TravelAuthorization.init(
           where: {
             id: {
               [Op.in]: buildIsUpcomingTravelQuery(),
+            },
+          },
+          replacements: {
+            currentDate,
+          },
+        }
+      },
+      // TODO: consider if I should send the current date from the front-end?
+      isBeforeTripEnd() {
+        const currentDate = new Date().toISOString()
+        return {
+          where: {
+            id: {
+              [Op.in]: buildIsBeforeTripEndQuery(),
             },
           },
           replacements: {
