@@ -5,13 +5,11 @@ import {
   ForeignKey,
   InferAttributes,
   InferCreationAttributes,
-  literal,
   Model,
   NonAttribute,
   Op,
 } from "sequelize"
 import { DateTime } from "luxon"
-import minify from "pg-minify"
 
 import sequelize from "@/db/db-client"
 
@@ -22,6 +20,8 @@ import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 import TravelPurpose from "@/models/travel-purpose"
 import TravelSegment from "@/models/travel-segment"
 import User from "@/models/user"
+
+import { buildIsTravellingQuery, buildIsUpcomingTravelQuery } from "@/queries/travel-authorizations"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
@@ -380,31 +380,11 @@ TravelAuthorization.init(
     paranoid: false,
     scopes: {
       isTravelling() {
-        const currentDate = new Date().toISOString() // NOTE: using JS side date to make testing easier
-        const isTravellingQuery = minify(/* sql */ `(
-          SELECT
-            travel_authorization_id
-          FROM (
-            SELECT
-              travel_authorizations.id AS travel_authorization_id
-              , MIN(travel_segments.departure_on + COALESCE(travel_segments.departure_time, '00:00:00'::time)) AS departing_at
-              , COALESCE(
-                  travel_authorizations.date_back_to_work::timestamp
-                  , MAX(travel_segments.departure_on + COALESCE(travel_segments.departure_time, '00:00:00'::time))
-                ) AS returning_at
-            FROM
-              travel_authorizations
-            INNER JOIN travel_segments ON travel_authorizations.id = travel_segments.travel_authorization_id
-            GROUP BY
-              travel_authorizations.id
-          ) AS travel_periods
-          WHERE
-            :currentDate BETWEEN travel_periods.departing_at AND travel_periods.returning_at
-        )`)
+        const currentDate = new Date().toISOString()
         return {
           where: {
             id: {
-              [Op.in]: literal(isTravellingQuery),
+              [Op.in]: buildIsTravellingQuery(),
             },
           },
           replacements: {
@@ -412,6 +392,20 @@ TravelAuthorization.init(
           },
         }
       },
+      isUpcomingTravel() {
+        const currentDate = new Date().toISOString()
+        return {
+          where: {
+            id: {
+              [Op.in]: buildIsUpcomingTravelQuery(),
+            },
+          },
+          replacements: {
+            currentDate,
+          },
+        }
+      },
+    },
   }
 )
 
