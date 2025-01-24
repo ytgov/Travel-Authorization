@@ -8,34 +8,30 @@
       <RefreshTableButton @click="refreshTable" />
     </v-card-title>
     <v-card-text>
-      <SupervisorTravelAuthorizationsByStatusTable
-        ref="table"
-        :status="STATUSES.EXPENSE_CLAIM_SUBMITTED"
+      <TravelAuthorizationsSupervisorDataTable
+        ref="travelAuthorizationsSupervisorDataTable"
+        :where="whereClause"
         route-query-suffix="AwaitingExpenseApproval"
       />
     </v-card-text>
   </v-card>
 </template>
 
-<script>
+<script setup>
+import { ref } from "vue"
+
 import { STATUSES } from "@/api/travel-authorizations-api"
 
-import SupervisorTravelAuthorizationsByStatusTable from "@/components/travel-authorizations/manage/SupervisorTravelAuthorizationsByStatusDataTable.vue"
-import RefreshTableButton from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/RefreshTableButton.vue"
+import TravelAuthorizationsSupervisorDataTable from "@/components/travel-authorizations/manage/TravelAuthorizationsSupervisorDataTable.vue"
+import RefreshTableButton from "@/components/travel-authorizations/RefreshTableButton.vue"
 
-export default {
-  name: "AwaitingExpenseApprovalCard",
-  components: {
-    RefreshTableButton,
-    SupervisorTravelAuthorizationsByStatusTable,
-  },
-  data: () => ({
-    STATUSES,
-  }),
-  methods: {
-    refreshTable() {
-      this.$refs.table.refresh()
-    },
-  },
+const whereClause = {
+  status: STATUSES.EXPENSE_CLAIM_SUBMITTED,
+}
+
+const travelAuthorizationsSupervisorDataTable = ref(null)
+
+function refreshTable() {
+  travelAuthorizationsSupervisorDataTable.value?.refresh()
 }
 </script>

@@ -10,8 +10,4 @@
   </v-btn>
 </template>
 
-<script>
-export default {
-  name: "RefreshTableButton",
-}
-</script>
+<script setup></script>

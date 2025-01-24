@@ -34,10 +34,6 @@ import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
 
 const props = defineProps({
-  status: {
-    type: String,
-    required: true,
-  },
   where: {
     type: Object,
     default: () => ({}),
@@ -84,7 +80,6 @@ const travelAuthorizationsQuery = computed(() => {
   return {
     where: {
       ...props.where,
-      status: props.status,
       supervisorEmail: currentUser.value.email,
     },
     filters: props.filters,
