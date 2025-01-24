@@ -1,4 +1,4 @@
-import { stopFactory, travelAuthorizationFactory } from "@/factories"
+import { stopFactory, travelAuthorizationFactory, travelSegmentFactory } from "@/factories"
 import { TravelAuthorization, TravelSegment } from "@/models"
 
 describe("api/src/models/travel-authorization.ts", () => {
@@ -171,6 +171,47 @@ describe("api/src/models/travel-authorization.ts", () => {
         expect(() => travelAuthorization.buildTravelSegmentsFromStops()).toThrow(
           "Must have at least 3 stops to build a multi-stop travel segments"
         )
+      })
+    })
+
+    describe(".scopes", () => {
+      describe("#isTravelling", () => {
+        beforeEach(() => {
+          vi.useFakeTimers()
+
+          const date = new Date("2025-01-24T18:30:55.974Z")
+          vi.setSystemTime(date)
+        })
+
+        afterEach(() => {
+          vi.useRealTimers()
+        })
+
+        test("when travel is between trip start and end dates, returns travel authorization", async () => {
+          const travelAuthorization = await travelAuthorizationFactory.create({
+            tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+            status: TravelAuthorization.Statuses.APPROVED,
+          })
+
+          await travelSegmentFactory.create({
+            travelAuthorizationId: travelAuthorization.id,
+            departureOn: "2025-01-20",
+            segmentNumber: 0,
+          })
+          await travelSegmentFactory.create({
+            travelAuthorizationId: travelAuthorization.id,
+            departureOn: "2025-01-28",
+            segmentNumber: 1,
+          })
+
+          const result = await TravelAuthorization.scope("isTravelling").findAll()
+
+          expect(result).toEqual([
+            expect.objectContaining({
+              id: travelAuthorization.id,
+            }),
+          ])
+        })
       })
     })
   })
