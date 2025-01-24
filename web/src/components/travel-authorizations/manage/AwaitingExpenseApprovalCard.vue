@@ -3,8 +3,10 @@
     class="mt-5"
     color="#fff2d5"
   >
-    <v-card-title>
-      Awaiting Expense Approval
+    <v-card-title class="d-flex align-baseline">
+      <h3>Awaiting Expense Approval</h3>
+
+      <v-spacer />
       <RefreshTableButton @click="refreshTable" />
     </v-card-title>
     <v-card-text>

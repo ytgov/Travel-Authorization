@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-space-between align-baseline">
-      <h1>Manage Travel Requests</h1>
+      <h2>Manage Travel Requests</h2>
       <CreateTravelAuthorizationDialogButton />
     </div>
     <v-row>

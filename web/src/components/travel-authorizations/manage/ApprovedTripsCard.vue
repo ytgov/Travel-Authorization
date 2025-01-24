@@ -3,15 +3,13 @@
     class="mt-5"
     color="#fff2d5"
   >
-    <v-card-title>
-      Approved Trips
-      <RefreshTableButton @click="refreshTable" />
-
-      <v-spacer />
+    <v-card-title class="d-flex align-baseline">
+      <h3>Approved Upcoming Travel</h3>
 
       <v-tooltip top>
         <template #activator="{ on, attrs }">
           <v-icon
+            class="ml-2"
             color="black"
             v-bind="attrs"
             v-on="on"
@@ -21,6 +19,9 @@
         </template>
         <span>Highlighted rows indicate where the traveller is currently in transit.</span>
       </v-tooltip>
+
+      <v-spacer />
+      <RefreshTableButton @click="refreshTable" />
     </v-card-title>
     <v-card-text>
       <TravelAuthorizationsSupervisorDataTable
