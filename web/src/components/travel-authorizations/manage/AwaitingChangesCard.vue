@@ -11,6 +11,7 @@
       <SupervisorTravelAuthorizationsByStatusTable
         ref="table"
         :status="STATUSES.CHANGE_REQUESTED"
+        route-query-suffix="AwaitingChanges"
       />
     </v-card-text>
   </v-card>

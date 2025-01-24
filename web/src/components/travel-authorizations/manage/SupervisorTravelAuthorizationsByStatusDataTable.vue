@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="items"
+    :items="travelAuthorizations"
     :loading="isLoading"
     :items-per-page.sync="perPage"
     :page.sync="page"
@@ -24,105 +24,99 @@
   </v-data-table>
 </template>
 
-<script>
+<script setup>
+import { computed, ref } from "vue"
 import { isNil } from "lodash"
 import { DateTime } from "luxon"
-import { mapActions, mapGetters } from "vuex"
 
-import travelAuthorizationsApi from "@/api/travel-authorizations-api"
+import useRouteQuery from "@/use/utils/use-route-query"
+import useCurrentUser from "@/use/use-current-user"
+import useTravelAuthorizations from "@/use/use-travel-authorizations"
 
-export default {
-  name: "SupervisorTravelAuthorizationsByStatusTable",
-  props: {
-    status: {
-      type: String,
-      required: true,
-    },
+const props = defineProps({
+  status: {
+    type: String,
+    required: true,
   },
-  data: () => ({
-    items: [],
-    headers: [
-      {
-        text: "TA Form Number",
-        value: "id",
-      },
-      {
-        text: "Department/Branch",
-        value: "departmentAndBranch",
-      },
-      {
-        text: "Requestee",
-        value: "name",
-      },
-      {
-        text: "Departure Date",
-        value: "departingAt",
-      },
-      {
-        text: "Return Date",
-        value: "returningAt",
-      },
-    ],
-    isLoading: false,
-    totalCount: 0,
-    perPage: 10,
-    page: 1,
-  }),
-  computed: {
-    ...mapGetters("current/user", { currentUser: "attributes" }),
+  where: {
+    type: Object,
+    default: () => ({}),
   },
-  watch: {
-    page() {
-      this.refresh()
-    },
-    perPage() {
-      this.refresh()
-    },
+  filters: {
+    type: Object,
+    default: () => ({}),
   },
-  async mounted() {
-    await this.ensureCurrentUser()
-    await this.refresh()
+  routeQuerySuffix: {
+    type: String,
+    default: "",
   },
-  methods: {
-    ...mapActions("current/user", { ensureCurrentUser: "ensure" }),
-    refresh() {
-      this.isLoading = true
-      return travelAuthorizationsApi
-        .list({
-          where: {
-            status: this.status,
-            supervisorEmail: this.currentUser.email,
-          },
-          page: this.page,
-          perPage: this.perPage,
-        })
-        .then(({ travelAuthorizations, totalCount }) => {
-          this.items = travelAuthorizations
-          this.totalCount = totalCount
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
-    },
-    formatDepartmentAndBranch(item) {
-      return [item.department, item.branch].filter(Boolean).join("/")
-    },
-    formatDate(value) {
-      if (isNil(value)) return "Unknown"
+})
 
-      const date = DateTime.fromISO(value, { zone: "utc" })
-      return date.toFormat("dd-LLL-yyyy")
-    },
-    goToManageTravelAuthorization(travelAuthorization) {
-      const travelAuthorizationId = travelAuthorization.id
-      this.$router.push({
-        name: "ManageTravelAuthorizationDetailsPage",
-        params: { travelAuthorizationId },
-      })
-    },
+const headers = ref([
+  {
+    text: "TA Form Number",
+    value: "id",
   },
+  {
+    text: "Department/Branch",
+    value: "departmentAndBranch",
+  },
+  {
+    text: "Requestee",
+    value: "name",
+  },
+  {
+    text: "Departure Date",
+    value: "departingAt",
+  },
+  {
+    text: "Return Date",
+    value: "returningAt",
+  },
+])
+
+const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", { transform: Number })
+const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, "10", { transform: Number })
+
+const { currentUser } = useCurrentUser()
+
+const travelAuthorizationsQuery = computed(() => {
+  return {
+    where: {
+      ...props.where,
+      status: props.status,
+      supervisorEmail: currentUser.value.email,
+    },
+    filters: props.filters,
+    page: page.value,
+    perPage: perPage.value,
+  }
+})
+const { travelAuthorizations, totalCount, isLoading, refresh } =
+  useTravelAuthorizations(travelAuthorizationsQuery)
+
+function formatDepartmentAndBranch(item) {
+  return [item.department, item.branch].filter(Boolean).join("/")
 }
+
+function formatDate(value) {
+  if (isNil(value)) return "Unknown"
+
+  const date = DateTime.fromISO(value, { zone: "utc" })
+  return date.toFormat("dd-LLL-yyyy")
+}
+
+function goToManageTravelAuthorization(travelAuthorization) {
+  const travelAuthorizationId = travelAuthorization.id
+  this.$router.push({
+    name: "ManageTravelAuthorizationDetailsPage",
+    params: {
+      travelAuthorizationId,
+    },
+  })
+}
+
+defineExpose({
+  refresh,
+})
 </script>

@@ -11,6 +11,7 @@
       <SupervisorTravelAuthorizationsByStatusTable
         ref="table"
         :status="STATUSES.EXPENSE_CLAIM_SUBMITTED"
+        route-query-suffix="AwaitingExpenseApproval"
       />
     </v-card-text>
   </v-card>

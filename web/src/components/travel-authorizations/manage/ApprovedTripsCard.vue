@@ -11,6 +11,7 @@
       <SupervisorTravelAuthorizationsByStatusTable
         ref="table"
         :status="STATUSES.APPROVED"
+        route-query-suffix="ApprovedTrips"
       />
     </v-card-text>
   </v-card>
