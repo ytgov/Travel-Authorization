@@ -71,8 +71,14 @@ const headers = ref([
   },
 ])
 
-const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", { transform: Number })
-const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, "10", { transform: Number })
+const page = useRouteQuery(`page${props.routeQuerySuffix}`, 1, {
+  get: (value) => parseInt(value, 10),
+  set: (value) => value.toString(),
+})
+const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, 10, {
+  get: (value) => parseInt(value, 10),
+  set: (value) => value.toString(),
+})
 
 const { currentUser } = useCurrentUser()
 
