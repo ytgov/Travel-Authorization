@@ -4,39 +4,50 @@ import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
 export { integerTransformer } from "@/utils/use-route-query-transformers"
 
-/** @typedef {import("vue-router").RouteParamValueRaw | string[]} RouteParamValueRaw */
-/** @typedef {import("@vueuse/shared").MaybeRefOrGetter} MaybeRefOrGetter */
+/** @typedef {import("vue-router").RouteParamValueRaw | string[]} RouteQueryValueRaw */
 
 const _queue = new WeakMap()
 
 /**
- * See https://vueuse.org/router/useRouteQuery/
+ * See https://vueuse.org/router/useRouteQuery/ (v12.5.0)
  *
- * code back-ported from https://github.com/vueuse/vueuse/blob/efd507956638328bb74b584712ebb78ed3590112/packages/router/useRouteQuery/index.ts
- * @template [T=RouteParamValueRaw]
+ * Code back-ported from https://github.com/vueuse/vueuse/blob/1e153e936a6055d633becd3a685603b4492d8791/packages/router/useRouteQuery/index.ts
+ * @template [T=RouteQueryValueRaw]
  * @template [K=T]
  * @callback UseRouteQuery
  * @param {string} name
- * @param {import("vue").MaybeRefOrGetter<T>} defaultValue
+ * @param {import("@vueuse/shared").MaybeRefOrGetter<T>} defaultValue
  * @param {{
- *   mode: import("vue-router").RouterMode,
- *   route: import("vue-router").Route,
- *   router: import("vue-router").Router
- *   transform: (value: T) => K
- * }} options
+ *   mode?: import("@vueuse/shared").MaybeRef<"replace" | "push">,
+ *   route?: import("vue-router").Route,
+ *   router?: import("vue-router").Router,
+ *   transform?: ((value: T) => K) | {
+ *     get?: (value: T) => K,
+ *     set?: (value: K) => T
+ *   }
+ * }} [options]
  * @returns {import("vue").Ref<K>}
  */
-
-/** @type {UseRouteQuery} */
 export function useRouteQuery(name, defaultValue, options = {}) {
-  const {
-    mode = "replace",
-    route = useRoute(),
-    router = useRouter(),
-    transform = (value) => value,
-  } = options
+  const { mode = "replace", route = useRoute(), router = useRouter(), transform } = options
 
-  if (!_queue.has(router)) _queue.set(router, new Map())
+  let transformGet = (value) => value
+  let transformSet = (value) => value
+
+  if (typeof transform === "function") {
+    transformGet = transform
+  } else if (transform) {
+    if (transform.get) {
+      transformGet = transform.get
+    }
+    if (transform.set) {
+      transformSet = transform.set
+    }
+  }
+
+  if (!_queue.has(router)) {
+    _queue.set(router, new Map())
+  }
 
   const _queriesQueue = _queue.get(router)
 
@@ -56,13 +67,15 @@ export function useRouteQuery(name, defaultValue, options = {}) {
       get() {
         track()
 
-        return transform(query !== undefined ? query : toValue(defaultValue))
+        return transformGet(query !== undefined ? query : toValue(defaultValue))
       },
       set(v) {
+        v = transformSet(v)
+
         if (query === v) return
 
-        query = v === defaultValue || v === null ? undefined : v
-        _queriesQueue.set(name, v === defaultValue || v === null ? undefined : v)
+        query = v === toValue(defaultValue) ? undefined : v
+        _queriesQueue.set(name, v === toValue(defaultValue) ? undefined : v)
 
         trigger()
 
@@ -87,6 +100,8 @@ export function useRouteQuery(name, defaultValue, options = {}) {
   watch(
     () => route.query[name],
     (v) => {
+      if (query === transformGet(v)) return
+
       query = v
 
       _trigger()
