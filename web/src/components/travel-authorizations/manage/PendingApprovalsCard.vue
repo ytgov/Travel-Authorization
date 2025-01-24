@@ -19,7 +19,7 @@
 <script>
 import { STATUSES } from "@/api/travel-authorizations-api"
 
-import SupervisorTravelAuthorizationsByStatusTable from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/SupervisorTravelAuthorizationsByStatusTable.vue"
+import SupervisorTravelAuthorizationsByStatusTable from "@/components/travel-authorizations/manage/SupervisorTravelAuthorizationsByStatusDataTable.vue"
 import RefreshTableButton from "@/modules/travel-authorizations/components/manage-travel-authorizations-page/RefreshTableButton.vue"
 
 export default {
