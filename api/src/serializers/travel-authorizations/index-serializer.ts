@@ -30,7 +30,7 @@ export type TravelAuthorizationIndexView = Pick<
   lastName: string | null
   department: string | null
   branch: string | null
-  isTraveling: boolean
+  isTravelling: boolean
 } & TravelAuthorizationStateFlagsView
 
 export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
@@ -58,7 +58,7 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
       lastName: this.traveller.lastName,
       department: this.traveller.department,
       branch: this.traveller.branch,
-      isTraveling: this.isTravelling(),
+      isTravelling: this.isTravelling(),
       ...stateFlagsAttributes,
     }
   }
