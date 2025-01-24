@@ -75,8 +75,11 @@ describe("api/src/services/expenses/prefill-service.ts", () => {
           type: Expense.Types.ESTIMATE,
           expenseType: Expense.ExpenseTypes.MEALS_AND_INCIDENTALS,
         })
-        const estimates = await travelAuthorization.getExpenses({
-          where: { type: Expense.Types.ESTIMATE },
+        const estimates = await Expense.findAll({
+          where: {
+            travelAuthorizationId: travelAuthorization.id,
+            type: Expense.Types.ESTIMATE,
+          },
         })
 
         // Act

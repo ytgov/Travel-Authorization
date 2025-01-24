@@ -1,21 +1,8 @@
 import {
   Association,
-  BelongsToCreateAssociationMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
   ForeignKey,
-  HasManyAddAssociationMixin,
-  HasManyAddAssociationsMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
-  HasManyHasAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
-  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
@@ -109,85 +96,6 @@ export class TravelAuthorization extends Model<
   }
 
   // Associations
-  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
-  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getPreApprovalProfile: BelongsToGetAssociationMixin<TravelAuthorizationPreApprovalProfile>
-  declare setPreApprovalProfile: BelongsToSetAssociationMixin<
-    TravelAuthorizationPreApprovalProfile,
-    TravelAuthorizationPreApprovalProfile["id"]
-  >
-  declare createPreApprovalProfile: BelongsToCreateAssociationMixin<TravelAuthorizationPreApprovalProfile>
-
-  declare getPurpose: BelongsToGetAssociationMixin<TravelPurpose>
-  declare setPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
-  declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
-
-  declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
-  declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<
-    TravelDeskTravelRequest,
-    TravelDeskTravelRequest["travelAuthorizationId"]
-  >
-  declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
-
-  declare getUser: BelongsToGetAssociationMixin<User>
-  declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createUser: BelongsToCreateAssociationMixin<User>
-
-  declare getExpenses: HasManyGetAssociationsMixin<Expense>
-  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["travelAuthorizationId"]>
-  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["travelAuthorizationId"]>
-  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["travelAuthorizationId"]>
-  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare countExpenses: HasManyCountAssociationsMixin
-  declare createExpense: HasManyCreateAssociationMixin<Expense>
-
-  declare getStops: HasManyGetAssociationsMixin<Stop>
-  declare setStops: HasManySetAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare hasStop: HasManyHasAssociationMixin<Stop, Stop["travelAuthorizationId"]>
-  declare hasStops: HasManyHasAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare addStop: HasManyAddAssociationMixin<Stop, Stop["travelAuthorizationId"]>
-  declare addStops: HasManyAddAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare removeStop: HasManyRemoveAssociationMixin<Stop, Stop["travelAuthorizationId"]>
-  declare removeStops: HasManyRemoveAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare countStops: HasManyCountAssociationsMixin
-  declare createStop: HasManyCreateAssociationMixin<Stop>
-
-  declare getTravelSegments: HasManyGetAssociationsMixin<TravelSegment>
-  declare setTravelSegments: HasManySetAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare hasTravelSegment: HasManyHasAssociationMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare hasTravelSegments: HasManyHasAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare addTravelSegment: HasManyAddAssociationMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare addTravelSegments: HasManyAddAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare removeTravelSegment: HasManyRemoveAssociationMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare removeTravelSegments: HasManyRemoveAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare countTravelSegments: HasManyCountAssociationsMixin
-  declare createTravelSegment: HasManyCreateAssociationMixin<TravelSegment>
-
   declare preApprovalProfile?: NonAttribute<TravelAuthorizationPreApprovalProfile>
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
