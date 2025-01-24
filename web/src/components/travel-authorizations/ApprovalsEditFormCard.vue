@@ -48,7 +48,7 @@
         <v-row>
           <v-col
             cols="12"
-            md="3"
+            md="6"
           >
             <SearchableUserEmailCombobox
               v-model="travelAuthorization.supervisorEmail"
