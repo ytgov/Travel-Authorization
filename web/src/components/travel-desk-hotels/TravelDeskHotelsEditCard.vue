@@ -1,62 +1,56 @@
 <template>
-  <div>
-    <TitleCard class="mt-10">
-      <template #title>
-        <div>Hotel Request</div>
-      </template>
-      <template #body>
-        <div class="d-flex justify-end pr-4">
-          <TravelDeskHotelCreateDialog
-            class="ml-auto mr-3"
-            :travel-desk-travel-request-id="travelDeskTravelRequestId"
+  <v-card>
+    <v-card-title class="d-flex justify-space-between align-center">
+      <h3>Hotel Requests</h3>
+      <TravelDeskHotelCreateDialog
+        :activator-props="{
+          class: 'my-0',
+        }"
+        :travel-desk-travel-request-id="travelDeskTravelRequestId"
+        :min-date="minDate"
+        :max-date="maxDate"
+        :flight-start="earliestFlightDate"
+        :flight-end="latestFlightDate"
+        @created="refreshTravelDeskHotels"
+      />
+    </v-card-title>
+    <v-card-text>
+      <TravelDeskHotelsDataTable
+        ref="travelDeskHotelsDataTable"
+        :where="whereClause"
+      >
+        <template #top>
+          <TravelDeskHotelEditDialog
+            ref="editDialog"
             :min-date="minDate"
             :max-date="maxDate"
             :flight-start="earliestFlightDate"
             :flight-end="latestFlightDate"
-            @created="refreshTravelDeskHotels"
+            @saved="refreshTravelDeskHotels"
           />
-        </div>
-        <v-row class="mb-3 mx-3">
-          <v-col cols="12">
-            <TravelDeskHotelsDataTable
-              ref="travelDeskHotelsDataTable"
-              :where="whereClause"
+        </template>
+        <template #item.actions="{ item }">
+          <div class="d-flex justify-end">
+            <v-btn
+              title="Edit"
+              icon
+              color="blue"
+              @click="showEditDialog(item)"
+              ><v-icon>mdi-pencil</v-icon></v-btn
             >
-              <template #top>
-                <TravelDeskHotelEditDialog
-                  ref="editDialog"
-                  :min-date="minDate"
-                  :max-date="maxDate"
-                  :flight-start="earliestFlightDate"
-                  :flight-end="latestFlightDate"
-                  @saved="refreshTravelDeskHotels"
-                />
-              </template>
-              <template #item.actions="{ item }">
-                <div class="d-flex justify-end">
-                  <v-btn
-                    title="Edit"
-                    icon
-                    color="blue"
-                    @click="showEditDialog(item)"
-                    ><v-icon>mdi-pencil</v-icon></v-btn
-                  >
-                  <v-btn
-                    :loading="isLoading"
-                    title="Delete"
-                    icon
-                    color="red"
-                    @click="deleteHotel(item)"
-                    ><v-icon>mdi-close</v-icon></v-btn
-                  >
-                </div>
-              </template>
-            </TravelDeskHotelsDataTable>
-          </v-col>
-        </v-row>
-      </template>
-    </TitleCard>
-  </div>
+            <v-btn
+              :loading="isLoading"
+              title="Delete"
+              icon
+              color="red"
+              @click="deleteHotel(item)"
+              ><v-icon>mdi-close</v-icon></v-btn
+            >
+          </div>
+        </template>
+      </TravelDeskHotelsDataTable>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>
@@ -67,7 +61,6 @@ import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
-import TitleCard from "@/modules/travelDesk/views/Common/TitleCard.vue"
 import TravelDeskHotelCreateDialog from "@/components/travel-desk-hotels/TravelDeskHotelCreateDialog.vue"
 import TravelDeskHotelEditDialog from "@/components/travel-desk-hotels/TravelDeskHotelEditDialog.vue"
 import TravelDeskHotelsDataTable from "@/components/travel-desk-hotels/TravelDeskHotelsDataTable.vue"

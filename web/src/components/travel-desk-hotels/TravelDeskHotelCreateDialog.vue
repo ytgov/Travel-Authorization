@@ -3,11 +3,12 @@
     v-model="showDialog"
     persistent
     max-width="80%"
+    @keydown.esc="close"
   >
     <template #activator="{ on, attrs }">
       <v-btn
         color="primary"
-        v-bind="attrs"
+        v-bind="merge(attrs, activatorProps)"
         v-on="on"
       >
         Add Hotel
@@ -142,7 +143,7 @@
 <script setup>
 import { ref, nextTick, watch, watchEffect } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
-import { isNil } from "lodash"
+import { isNil, merge } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
@@ -151,6 +152,10 @@ import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 
 const props = defineProps({
+  activatorProps: {
+    type: Object,
+    default: () => ({}),
+  },
   travelDeskTravelRequestId: {
     type: Number,
     required: true,
