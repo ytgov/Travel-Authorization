@@ -1,4 +1,3 @@
-import { WhereOptions } from "sequelize"
 import { isNil } from "lodash"
 
 import { TravelDeskHotel, TravelDeskTravelRequest } from "@/models"
@@ -8,19 +7,19 @@ import { IndexSerializer } from "@/serializers/travel-desk-hotels"
 
 import BaseController from "@/controllers/base-controller"
 
-export class TravelDeskHotelsController extends BaseController {
+export class TravelDeskHotelsController extends BaseController<TravelDeskHotel> {
   async index() {
     try {
-      const where = this.query.where as WhereOptions<TravelDeskHotel>
+      const where = this.buildWhere()
+      const scopes = this.buildFilterScopes()
+      const order = this.buildOrder()
 
-      const scopedTravelDeskHotels = TravelDeskHotelsPolicy.applyScope(
-        TravelDeskHotel,
-        this.currentUser
-      )
+      const scopedTravelDeskHotels = TravelDeskHotelsPolicy.applyScope(scopes, this.currentUser)
 
       const totalCount = await scopedTravelDeskHotels.count({ where })
       const travelDeskHotels = await scopedTravelDeskHotels.findAll({
         where,
+        order,
         limit: this.pagination.limit,
         offset: this.pagination.offset,
       })
