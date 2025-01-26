@@ -157,15 +157,27 @@ class DevHelper
   end
 
   ##
-  # Generates and checks out a new branch based on the Jira issue URL.
+  # Generates and checks out a new branch based on the GitHub issue URL.
   # Example:
-  #   dev branch-from https://github.com/icefoganalytics/internal-data-portal/issues/98
+  #   dev branch-from https://github.com/icefoganalytics/travel-authorization/issues/218
   #
   # Produces:
-  #   git checkout -b issue-98/switch-test-suite-from-jest-to-vitest
+  #   git checkout -b issue-218/switch-test-suite-from-jest-to-vitest
   def branch_from(github_issue_url, *args, **kwargs)
     branch_name = GithubApi.build_branch_name(github_issue_url)
     system("git checkout -b #{branch_name}")
+  end
+
+  ##
+  # Fetches the description of a GitHub issue and prints it to the console in markdown format.
+  # Example:
+  #   dev description-from https://github.com/icefoganalytics/travel-authorization/issues/218
+  #
+  # Produces:
+  #   ... a bunch of markdown text ...
+  def description_from(github_issue_url, *args, **kwargs)
+    description = GithubApi.fetch_issue_body(github_issue_url)
+    puts description
   end
 
   ##
