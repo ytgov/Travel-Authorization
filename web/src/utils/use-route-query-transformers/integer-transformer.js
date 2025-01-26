@@ -6,8 +6,17 @@ import { isNil } from "lodash"
  * @param {string | null | undefined} value - The value to transform.
  * @returns {number | null} - The transformed integer or null if the value is nil.
  */
-export function integerTransformer(value) {
-  if (isNil(value)) return null
+export const integerTransformer = {
+  get(value) {
+    if (isNil(value)) return null
 
-  return parseInt(value)
+    return parseInt(value, 10)
+  },
+  set(value) {
+    if (isNil(value)) return null
+
+    return value.toString()
+  },
 }
+
+export default integerTransformer
