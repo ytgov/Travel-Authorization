@@ -8,6 +8,10 @@ import { allRecordsScope } from "@/policies/base-policy"
 import PolicyFactory from "@/policies/policy-factory"
 
 export class TravelDeskHotelsPolicy extends PolicyFactory(TravelDeskHotel) {
+  show(): boolean {
+    return this.travelDeskTravelRequestsPolicy.show()
+  }
+
   create(): boolean {
     return this.travelDeskTravelRequestsPolicy.update()
   }
