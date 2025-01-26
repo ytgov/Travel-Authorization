@@ -90,7 +90,10 @@
             </v-col>
           </v-row>
 
-          <v-row class="mt-0 mx-3">
+          <v-row
+            v-if="hotel.isDedicatedConferenceHotelAvailable"
+            class="mt-0 mx-3"
+          >
             <v-col
               cols="12"
               md="4"
