@@ -20,7 +20,7 @@
           title="Edit"
           icon
           color="blue"
-          @click="showEditDialog(item)"
+          @click="showEditDialog(item.id)"
           ><v-icon>mdi-pencil</v-icon></v-btn
         >
         <v-btn
@@ -56,27 +56,27 @@ defineProps({
   },
   minDate: {
     type: String,
-    required: true,
+    default: null,
   },
   maxDate: {
     type: String,
-    required: true,
+    default: null,
   },
   earliestFlightDate: {
     type: String,
-    required: true,
+    default: null,
   },
   latestFlightDate: {
     type: String,
-    required: true,
+    default: null,
   },
 })
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelEditDialog> | null>} */
 const editDialog = ref(null)
 
-function showEditDialog(hotel) {
-  editDialog.value?.show(hotel)
+function showEditDialog(travelDeskHotelId) {
+  editDialog.value?.show(travelDeskHotelId)
 }
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelsDataTable> | null>} */

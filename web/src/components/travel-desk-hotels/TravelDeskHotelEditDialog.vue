@@ -1,14 +1,23 @@
 <template>
   <v-dialog
-    v-model="showDialog"
+    :value="showDialog"
     persistent
-    max-width="80%"
+    max-width="1200px"
+    @keydown.esc="hide"
+    @input="hideIfFalse"
   >
     <v-form
       ref="form"
-      @submit.prevent="updateAndClose"
+      @submit.prevent="updateAndHide"
     >
-      <v-card :loading="isLoading">
+      <v-skeleton-loader
+        v-if="isNil(travelDeskHotelId) || isNil(travelDeskHotel)"
+        type="card"
+      />
+      <v-card
+        v-else
+        :loading="isLoading"
+      >
         <v-card-title class="blue">
           <div class="text-h5">Edit Hotel</div>
         </v-card-title>
@@ -20,7 +29,7 @@
               md="4"
             >
               <v-text-field
-                v-model="hotel.checkIn"
+                v-model="travelDeskHotel.checkIn"
                 label="Check-in Date *"
                 type="date"
                 :rules="[required]"
@@ -30,7 +39,7 @@
                 required
               />
               <v-text-field
-                v-model="hotel.checkOut"
+                v-model="travelDeskHotel.checkOut"
                 label="Check-out Date *"
                 type="date"
                 :rules="[required]"
@@ -40,7 +49,7 @@
                 required
               />
               <LocationsAutocomplete
-                v-model="hotel.city"
+                v-model="travelDeskHotel.city"
                 label="City *"
                 item-value="city"
                 :rules="[required]"
@@ -48,7 +57,7 @@
                 required
               />
               <v-radio-group
-                v-model="hotel.isDedicatedConferenceHotelAvailable"
+                v-model="travelDeskHotel.isDedicatedConferenceHotelAvailable"
                 label="Conference/Meeting Hotel? *"
                 :rules="[required]"
                 outlined
@@ -70,7 +79,7 @@
               md="8"
             >
               <v-textarea
-                v-model="hotel.additionalInformation"
+                v-model="travelDeskHotel.additionalInformation"
                 label="Additional Information"
                 rows="8"
                 outlined
@@ -85,7 +94,7 @@
               md="4"
             >
               <v-text-field
-                v-model="hotel.conferenceName"
+                v-model="travelDeskHotel.conferenceName"
                 :rules="[required]"
                 label="Conference/Meeting Name *"
                 outlined
@@ -97,7 +106,7 @@
               md="8"
             >
               <v-text-field
-                v-model="hotel.conferenceHotelName"
+                v-model="travelDeskHotel.conferenceHotelName"
                 label="Conference/Meeting Hotel *"
                 :rules="[required]"
                 outlined
@@ -112,7 +121,7 @@
           <v-btn
             :loading="isLoading"
             color="grey darken-5"
-            @click="close"
+            @click="hide"
           >
             Cancel
           </v-btn>
@@ -130,13 +139,14 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch, computed } from "vue"
-import { useRoute, useRouter } from "vue2-helpers/vue-router"
-import { cloneDeep } from "lodash"
+import { ref, nextTick, watch } from "vue"
+import { isNil } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
+import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
+import useTravelDeskHotel from "@/use/use-travel-desk-hotel"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
 
@@ -162,71 +172,72 @@ defineProps({
 
 const emit = defineEmits(["saved"])
 
-const hotel = ref({})
-const hotelId = computed(() => hotel.value.id)
+const travelDeskHotelId = useRouteQuery("showHotelEdit", undefined, {
+  transformer: integerTransformer,
+})
 
-const snack = useSnack()
-const router = useRouter()
-const route = useRoute()
+const { travelDeskHotel, isLoading } = useTravelDeskHotel(travelDeskHotelId)
+
 const showDialog = ref(false)
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
-const isLoading = ref(false)
+
+function show(newTravelDeskHotelId) {
+  travelDeskHotelId.value = newTravelDeskHotelId
+}
+
+function hide() {
+  travelDeskHotelId.value = undefined
+}
 
 watch(
-  () => showDialog.value,
-  (value) => {
-    if (value) {
-      if (route.query.showHotelEdit === hotelId.value?.toString()) {
-        return
-      }
-
-      router.push({ query: { showHotelEdit: hotelId.value } })
+  travelDeskHotelId,
+  (newTravelDeskHotelId) => {
+    if (isNil(newTravelDeskHotelId)) {
+      showDialog.value = false
+      travelDeskHotel.value = null
+      form.value?.resetValidation()
     } else {
-      router.push({ query: { showHotelEdit: undefined } })
+      showDialog.value = true
     }
+  },
+  {
+    immediate: true,
   }
 )
 
-function show(newHotel) {
-  hotel.value = cloneDeep(newHotel)
-  showDialog.value = true
-}
+const snack = useSnack()
 
-function close() {
-  showDialog.value = false
-  resetState()
-  form.value?.resetValidation()
-}
-
-async function updateAndClose() {
+async function updateAndHide() {
   if (!form.value?.validate()) {
-    snack("Please fill in all required fields", { color: "error" })
+    snack.error("Please fill in all required fields")
     return
   }
 
   isLoading.value = true
   try {
-    const { travelDeskHotel: newHotel } = await travelDeskHotelsApi.update(
-      hotelId.value,
-      hotel.value
+    const { travelDeskHotel: newTravelDeskHotel } = await travelDeskHotelsApi.update(
+      travelDeskHotelId.value,
+      travelDeskHotel.value
     )
-    close()
+    hide()
 
     await nextTick()
-    emit("saved", newHotel.id)
-    snack("Hotel request saved successfully", { color: "success" })
+    emit("saved", newTravelDeskHotel.id)
+    snack.success("Hotel request saved successfully")
   } catch (error) {
-    console.error(error)
-    snack("Failed to save hotel request", { color: "error" })
+    console.error(`Failed to save hotel request: ${error}`)
+    snack.error(`Failed to save hotel request: ${error}`)
   } finally {
     isLoading.value = false
   }
 }
 
-function resetState() {
-  hotel.value = {}
+function hideIfFalse(value) {
+  if (value !== false) return
+
+  hide()
 }
 
 defineExpose({
@@ -234,9 +245,4 @@ defineExpose({
 })
 </script>
 
-<style scoped>
-.label {
-  font-weight: 600;
-  font-size: 10pt !important;
-}
-</style>
+<style scoped></style>
