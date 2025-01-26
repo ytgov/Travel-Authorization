@@ -218,6 +218,11 @@ async function updateAndHide() {
     return
   }
 
+  if (travelDeskHotel.value.isDedicatedConferenceHotelAvailable === false) {
+    travelDeskHotel.value.conferenceName = undefined
+    travelDeskHotel.value.conferenceHotelName = undefined
+  }
+
   isLoading.value = true
   try {
     const { travelDeskHotel: newTravelDeskHotel } = await travelDeskHotelsApi.update(

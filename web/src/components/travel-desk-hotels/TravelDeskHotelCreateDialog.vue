@@ -31,7 +31,7 @@
               md="4"
             >
               <v-text-field
-                v-model="hotel.checkIn"
+                v-model="travelDeskHotelAttributes.checkIn"
                 label="Check-in Date *"
                 type="date"
                 :rules="[required]"
@@ -41,7 +41,7 @@
                 required
               />
               <v-text-field
-                v-model="hotel.checkOut"
+                v-model="travelDeskHotelAttributes.checkOut"
                 label="Check-out Date *"
                 type="date"
                 :rules="[required]"
@@ -51,7 +51,7 @@
                 required
               />
               <LocationsAutocomplete
-                v-model="hotel.city"
+                v-model="travelDeskHotelAttributes.city"
                 label="City *"
                 item-value="city"
                 :rules="[required]"
@@ -59,7 +59,7 @@
                 required
               />
               <v-radio-group
-                v-model="hotel.isDedicatedConferenceHotelAvailable"
+                v-model="travelDeskHotelAttributes.isDedicatedConferenceHotelAvailable"
                 label="Conference/Meeting Hotel? *"
                 :rules="[required]"
                 outlined
@@ -81,7 +81,7 @@
               md="8"
             >
               <v-textarea
-                v-model="hotel.additionalInformation"
+                v-model="travelDeskHotelAttributes.additionalInformation"
                 label="Additional Information"
                 rows="8"
                 outlined
@@ -91,7 +91,7 @@
           </v-row>
 
           <v-row
-            v-if="hotel.isDedicatedConferenceHotelAvailable"
+            v-if="travelDeskHotelAttributes.isDedicatedConferenceHotelAvailable"
             class="mt-0 mx-3"
           >
             <v-col
@@ -99,7 +99,7 @@
               md="4"
             >
               <v-text-field
-                v-model="hotel.conferenceName"
+                v-model="travelDeskHotelAttributes.conferenceName"
                 label="Conference/Meeting Name *"
                 :rules="[required]"
                 outlined
@@ -111,7 +111,7 @@
               md="8"
             >
               <v-text-field
-                v-model="hotel.conferenceHotelName"
+                v-model="travelDeskHotelAttributes.conferenceHotelName"
                 label="Conference/Meeting Hotel *"
                 :rules="[required]"
                 outlined
@@ -184,7 +184,7 @@ const props = defineProps({
 
 const emit = defineEmits(["created"])
 
-const hotel = ref({
+const travelDeskHotelAttributes = ref({
   travelRequestId: props.travelDeskTravelRequestId,
   checkIn: props.flightStart,
   checkOut: props.flightEnd,
@@ -209,14 +209,14 @@ watch(
 )
 
 watchEffect(() => {
-  if (isNil(hotel.value.checkIn)) {
-    hotel.value.checkIn = props.flightStart
+  if (isNil(travelDeskHotelAttributes.value.checkIn)) {
+    travelDeskHotelAttributes.value.checkIn = props.flightStart
   }
 })
 
 watchEffect(() => {
-  if (isNil(hotel.value.checkOut)) {
-    hotel.value.checkOut = props.flightEnd
+  if (isNil(travelDeskHotelAttributes.value.checkOut)) {
+    travelDeskHotelAttributes.value.checkOut = props.flightEnd
   }
 })
 
@@ -243,9 +243,16 @@ async function createAndClose() {
     return
   }
 
+  if (travelDeskHotelAttributes.value.isDedicatedConferenceHotelAvailable === false) {
+    travelDeskHotelAttributes.value.conferenceName = undefined
+    travelDeskHotelAttributes.value.conferenceHotelName = undefined
+  }
+
   isLoading.value = true
   try {
-    const { travelDeskHotel: newHotel } = await travelDeskHotelsApi.create(hotel.value)
+    const { travelDeskHotel: newHotel } = await travelDeskHotelsApi.create(
+      travelDeskHotelAttributes.value
+    )
     close()
 
     await nextTick()
@@ -260,7 +267,7 @@ async function createAndClose() {
 }
 
 function resetState() {
-  hotel.value = {
+  travelDeskHotelAttributes.value = {
     travelRequestId: props.travelDeskTravelRequestId,
     checkIn: props.flightStart,
     checkOut: props.flightEnd,
