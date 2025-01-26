@@ -27,7 +27,7 @@
 <script setup>
 import { computed, ref } from "vue"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 
 import TravelDeskFlightOptionsDataIterator from "@/components/travel-desk-flight-options/TravelDeskFlightOptionsDataIterator.vue"
 import TravelDeskFlightRequestsEditTable from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditTable.vue"
@@ -40,7 +40,7 @@ const props = defineProps({
 })
 
 const expandTravelDeskFlightRequest = useRouteQuery("expandTravelDeskFlightRequest", undefined, {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 function expandItem(travelDeskFlightRequestId) {

@@ -53,7 +53,7 @@ import { useI18n } from "@/plugins/vue-i18n-plugin"
 
 import travelDeskQuestionsApi from "@/api/travel-desk-questions-api"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 import useTravelDeskQuestions from "@/use/use-travel-desk-questions"
 import TravelDeskQuestionEditDialog from "@/components/travel-desk-questions/TravelDeskQuestionEditDialog.vue"
@@ -100,10 +100,10 @@ const headers = [
 const { t } = useI18n()
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, props.defaultPerPage, {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 const travelDeskQuestionsQuery = computed(() => ({

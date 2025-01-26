@@ -116,7 +116,7 @@ import { required } from "@/utils/validators"
 
 import travelDeskFlightOptionsApi from "@/api/travel-desk-flight-options-api"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightOption from "@/use/use-travel-desk-flight-option"
 import useTravelDeskFlightSegments from "@/use/use-travel-desk-flight-segments"
@@ -127,7 +127,7 @@ import TravelDeskFlightSegmentAttributesCard from "@/components/travel-desk-flig
 const emit = defineEmits(["saved"])
 
 const travelDeskFlightOptionId = useRouteQuery("showFlightOptionEdit", undefined, {
-  transformer: integerTransformer,
+  transformer: integerTransformerLegacy,
 })
 
 const { travelDeskFlightOption, isLoading } = useTravelDeskFlightOption(travelDeskFlightOptionId)

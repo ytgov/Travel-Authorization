@@ -19,7 +19,7 @@ import { computed } from "vue"
 
 import formatDate from "@/utils/format-date"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
 const props = defineProps({
@@ -61,10 +61,10 @@ const headers = [
 ]
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, props.defaultPerPage, {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 const travelDeskFlightRequestsQuery = computed(() => ({

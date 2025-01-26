@@ -59,7 +59,7 @@ import formatDate from "@/utils/format-date"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 import useTravelDeskFlightRequests from "@/use/use-travel-desk-flight-requests"
 
@@ -119,10 +119,10 @@ const headers = [
 ]
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, "5", {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 const travelDeskFlightRequestsQuery = computed(() => ({
