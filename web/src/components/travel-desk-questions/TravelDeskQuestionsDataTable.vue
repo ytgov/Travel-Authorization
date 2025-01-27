@@ -22,7 +22,7 @@ import { computed } from "vue"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useTravelDeskQuestions from "@/use/use-travel-desk-questions"
 
 const props = defineProps({
@@ -62,10 +62,10 @@ const headers = [
 const { t } = useI18n()
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, props.defaultPerPage, {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 const travelDeskQuestionsQuery = computed(() => ({

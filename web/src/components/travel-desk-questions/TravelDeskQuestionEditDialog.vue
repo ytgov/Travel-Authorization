@@ -87,7 +87,7 @@ import travelDeskQuestionsApi from "@/api/travel-desk-questions-api"
 
 import { required } from "@/utils/validators"
 import useSnack from "@/use/use-snack"
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useTravelDeskQuestion from "@/use/use-travel-desk-question"
 
 import RequestTypeSelect from "@/components/travel-desk-questions/RequestTypeSelect.vue"
@@ -95,7 +95,7 @@ import RequestTypeSelect from "@/components/travel-desk-questions/RequestTypeSel
 const emit = defineEmits(["saved"])
 
 const travelDeskQuestionId = useRouteQuery("showQuestionEdit", undefined, {
-  transformer: integerTransformer,
+  transformer: integerTransformerLegacy,
 })
 
 const { travelDeskQuestion, isLoading } = useTravelDeskQuestion(travelDeskQuestionId)

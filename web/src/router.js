@@ -23,7 +23,7 @@ const routes = [
       {
         name: "DashboardPage",
         path: "dashboard",
-        component: () => import("@/pages/DashboardPage"),
+        component: () => import("@/pages/DashboardPage.vue"),
       },
       {
         // TODO: push readcrumbs into higher layout
@@ -140,12 +140,12 @@ const routes = [
       {
         path: "qa/scenarios",
         name: "Qa-Scenarios",
-        component: () => import("@/pages/qa/ScenariosListPage"),
+        component: () => import("@/pages/qa/ScenariosListPage.vue"),
       },
       {
         path: "health-check",
         name: "HealthCheck",
-        component: () => import("@/pages/HealthCheckPage"),
+        component: () => import("@/pages/HealthCheckPage.vue"),
         meta: { requiresAuth: false },
       },
     ],
@@ -227,20 +227,20 @@ const routes = [
               {
                 path: "request",
                 name: "my-travel-requests/request/RequestPage",
-                component: () => import("@/pages/my-travel-requests/request/RequestPage"),
+                component: () => import("@/pages/my-travel-requests/request/RequestPage.vue"),
                 props: true,
               },
               {
                 path: "request/edit-travel-details",
                 name: "my-travel-requests/request/RequestEditTravelDetailsPage",
                 component: () =>
-                  import("@/pages/my-travel-requests/request/RequestEditTravelDetailsPage"),
+                  import("@/pages/my-travel-requests/request/RequestEditTravelDetailsPage.vue"),
                 props: true,
               },
               {
                 path: "request/edit",
                 name: "my-travel-requests/request/RequestEditPage",
-                component: () => import("@/pages/my-travel-requests/request/RequestEditPage"),
+                component: () => import("@/pages/my-travel-requests/request/RequestEditPage.vue"),
                 props: true,
               },
               {
@@ -303,7 +303,7 @@ const routes = [
   {
     path: "*",
     name: "Not Found",
-    component: () => import("@/pages/NotFoundPage"),
+    component: () => import("@/pages/NotFoundPage.vue"),
     meta: { requiresAuth: false },
   },
 ]

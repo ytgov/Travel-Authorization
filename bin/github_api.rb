@@ -25,6 +25,23 @@ class GithubApi
     format_branch_name(issue_repo, issue_number, issue_title)
   end
 
+  # Fetches the body of a GitHub issue using GitHub CLI
+  def self.fetch_issue_body(github_issue_url)
+    issue_repo = extract_issue_repo(github_issue_url)
+    issue_number = extract_issue_number(github_issue_url)
+
+    command = "gh issue view #{issue_number} --repo #{issue_repo} --json body --jq .body"
+    puts "running: #{command}"
+    stdout, stderr, status = Open3.capture3(command)
+
+    if status.success?
+      stdout.strip
+    else
+      puts "Error fetching issue body: #{stderr}"
+      exit(1)
+    end
+  end
+
   private
 
   def self.extract_issue_repo(url)

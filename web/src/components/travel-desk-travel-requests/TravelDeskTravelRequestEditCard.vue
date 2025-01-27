@@ -18,8 +18,9 @@
         :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :travel-authorization-id="travelAuthorizationId"
       />
-      <TravelDeskHotelsEditTable
-        ref="travelDeskHotelEditTable"
+      <TravelDeskHotelsEditCard
+        ref="travelDeskHotelEditCard"
+        class="mt-6"
         :travel-desk-travel-request-id="travelDeskTravelRequestId"
         :travel-authorization-id="travelAuthorizationId"
       />
@@ -38,7 +39,7 @@ import { isNil } from "lodash"
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
 import TravelDeskFlightRequestsEditCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestsEditCard.vue"
-import TravelDeskHotelsEditTable from "@/components/travel-desk-hotels/TravelDeskHotelsEditTable.vue"
+import TravelDeskHotelsEditCard from "@/components/travel-desk-hotels/TravelDeskHotelsEditCard.vue"
 import TravelDeskOtherTransportationsEditTable from "@/components/travel-desk-other-transportations/TravelDeskOtherTransportationsEditTable.vue"
 import TravelDeskRentalCarsEditTable from "@/components/travel-desk-rental-cars/TravelDeskRentalCarsEditTable.vue"
 
@@ -56,12 +57,12 @@ const travelAuthorizationId = computed(() => travelDeskTravelRequest.value?.trav
 
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskRentalCarsEditTable> | null>} */
 const travelDeskRentalCarsEditTable = ref(null)
-/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelsEditTable> | null>} */
-const travelDeskHotelEditTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof TravelDeskHotelsEditCard> | null>} */
+const travelDeskHotelEditCard = ref(null)
 
 function refreshTablesUsingFlightInfo() {
   travelDeskRentalCarsEditTable.value?.refresh()
-  travelDeskHotelEditTable.value?.refresh()
+  travelDeskHotelEditCard.value?.refresh()
 }
 </script>
 

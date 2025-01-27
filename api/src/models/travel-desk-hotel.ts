@@ -11,6 +11,7 @@ import {
   NonAttribute,
   DataTypes,
 } from "sequelize"
+import { isEmpty, isNil } from "lodash"
 
 import sequelize from "@/db/db-client"
 
@@ -36,8 +37,8 @@ export class TravelDeskHotel extends Model<
   declare travelRequestId: ForeignKey<TravelDeskTravelRequest["id"]>
   declare city: string
   declare isDedicatedConferenceHotelAvailable: boolean
-  declare conferenceName: string
-  declare conferenceHotelName: string
+  declare conferenceName: string | null
+  declare conferenceHotelName: string | null
   declare checkIn: Date | string // DATEONLY accepts Date or string, but returns string
   declare checkOut: Date | string // DATEONLY accepts Date or string, but returns string
   declare additionalInformation: CreationOptional<string | null>
@@ -96,11 +97,11 @@ TravelDeskHotel.init(
     },
     conferenceName: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
     },
     conferenceHotelName: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
     },
     checkIn: {
       type: DataTypes.DATEONLY,
@@ -151,6 +152,31 @@ TravelDeskHotel.init(
   },
   {
     sequelize,
+    validate: {
+      isDedicatedConferenceHotelAvailableAndConferenceNameAndHotelNameContinuity() {
+        if (
+          this.isDedicatedConferenceHotelAvailable &&
+          (isNil(this.conferenceName) ||
+            isEmpty(this.conferenceName) ||
+            isNil(this.conferenceHotelName) ||
+            isEmpty(this.conferenceHotelName))
+        ) {
+          throw new Error(
+            "if isDedicatedConferenceHotelAvailable is true, then conferenceName and conferenceHotelName must be provided"
+          )
+        } else if (
+          this.isDedicatedConferenceHotelAvailable === false &&
+          (!isNil(this.conferenceName) ||
+            !isEmpty(this.conferenceName) ||
+            !isNil(this.conferenceHotelName) ||
+            !isEmpty(this.conferenceHotelName))
+        ) {
+          throw new Error(
+            "if isDedicatedConferenceHotelAvailable is false, then conferenceName and conferenceHotelName must not be provided"
+          )
+        }
+      },
+    },
   }
 )
 

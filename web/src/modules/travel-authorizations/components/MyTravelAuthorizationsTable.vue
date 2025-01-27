@@ -77,7 +77,7 @@ import { isNil, isEmpty } from "lodash"
 
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import formatDate from "@/utils/format-date"
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
 
@@ -121,11 +121,11 @@ const headers = ref([
 ])
 
 const page = useRouteQuery("page", "1", {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 const perPage = useRouteQuery("perPage", "10", {
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 const { currentUser } = useCurrentUser()

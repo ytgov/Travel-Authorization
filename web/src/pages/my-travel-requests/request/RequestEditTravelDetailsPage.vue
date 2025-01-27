@@ -3,14 +3,20 @@
     v-if="isNil(travelDeskTravelRequest)"
     type="card"
   />
-  <TravelerDetailsFormCard
-    v-else
-    ref="travelerDetailsFormCard"
-    v-model="travelDeskTravelRequest"
-    :is-saving="isLoading"
-    class="mt-4"
-    @save-requested="saveAndNotify"
-  />
+  <v-card v-else>
+    <v-card-title>
+      <h2>Traveller Desk Request</h2>
+    </v-card-title>
+    <v-card-text>
+      <TravelerDetailsFormCard
+        ref="travelerDetailsFormCard"
+        v-model="travelDeskTravelRequest"
+        :is-saving="isLoading"
+        class="mt-4"
+        @save-requested="saveAndNotify"
+      />
+    </v-card-text>
+  </v-card>
 </template>
 
 <script setup>

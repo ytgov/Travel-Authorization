@@ -140,7 +140,7 @@ import { isNil, isEmpty } from "lodash"
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import formatDate from "@/utils/format-date"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useVuetifySortByToSequelizeSafeOrder from "@/use/utils/use-vuetify-sort-by-to-sequelize-safe-order"
 import useVuetifySortByToSafeRouteQuery from "@/use/utils/use-vuetify-sort-by-to-safe-route-query"
 import useVuetify2SortByShim from "@/use/utils/use-vuetify2-sort-by-shim"
@@ -167,8 +167,8 @@ const headers = ref([
 
 const { t } = useI18n()
 
-const page = useRouteQuery("page", "1", { transform: integerTransformer })
-const perPage = useRouteQuery("perPage", "15", { transform: integerTransformer })
+const page = useRouteQuery("page", "1", { transform: integerTransformerLegacy })
+const perPage = useRouteQuery("perPage", "15", { transform: integerTransformerLegacy })
 
 const sortBy = useVuetifySortByToSafeRouteQuery("sortBy", [
   {

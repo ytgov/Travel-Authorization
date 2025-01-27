@@ -184,6 +184,7 @@ router
   .post(TravelDeskHotelsController.create)
 router
   .route("/api/travel-desk-hotels/:travelDeskHotelId")
+  .get(TravelDeskHotelsController.show)
   .patch(TravelDeskHotelsController.update)
   .delete(TravelDeskHotelsController.destroy)
 

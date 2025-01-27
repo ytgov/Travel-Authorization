@@ -37,7 +37,7 @@ import { useRouter } from "vue2-helpers/vue-router"
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 
 import formatDate from "@/utils/format-date"
-import useRouteQuery from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
 
@@ -90,12 +90,10 @@ const headers = ref([
 ])
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, 1, {
-  get: (value) => parseInt(value, 10),
-  set: (value) => value.toString(),
+  transform: integerTransformer,
 })
 const perPage = useRouteQuery(`perPage${props.routeQuerySuffix}`, 10, {
-  get: (value) => parseInt(value, 10),
-  set: (value) => value.toString(),
+  transform: integerTransformer,
 })
 
 const { currentUser } = useCurrentUser()

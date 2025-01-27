@@ -41,7 +41,7 @@ import { isNil } from "lodash"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 
 const emit = defineEmits({
   booked: null,
@@ -51,7 +51,7 @@ const confirmBookingDialog = ref(false)
 const isLoading = ref(false)
 const travelDeskTravelRequestId = useRouteQuery("showConfirmBooking", null, {
   mode: "push",
-  transform: integerTransformer,
+  transform: integerTransformerLegacy,
 })
 
 const snack = useSnack()

@@ -4,7 +4,7 @@
     :value="currentStepNumber"
     vertical
     outlined
-    :width="$vuetify.breakpoint.mdAndUp ? 300 : undefined"
+    :width="$vuetify.breakpoint.mdAndUp ? 250 : undefined"
   >
     <v-stepper-step
       v-for="(step, index) in steps"
