@@ -2,8 +2,8 @@
   <v-dialog
     v-model="showDialog"
     persistent
-    max-width="80%"
-    @keydown.esc="close"
+    max-width="1200px"
+    @keydown.esc="hide"
   >
     <template #activator="{ on, attrs }">
       <v-btn
@@ -17,7 +17,7 @@
 
     <v-form
       ref="form"
-      @submit.prevent="createAndClose"
+      @submit.prevent="createAndHide"
     >
       <v-card :loading="isLoading">
         <v-card-title class="blue">
@@ -126,7 +126,7 @@
           <v-btn
             :loading="isLoading"
             color="grey darken-5"
-            @click="close"
+            @click="hide"
           >
             Cancel
           </v-btn>
@@ -144,12 +144,12 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch, watchEffect } from "vue"
-import { useRoute, useRouter } from "vue2-helpers/vue-router"
-import { isNil, merge } from "lodash"
+import { ref, nextTick, watchEffect } from "vue"
+import { merge } from "lodash"
 
 import { required } from "@/utils/validators"
 import { useSnack } from "@/plugins/snack-plugin"
+import useRouteQuery, { booleanTransformer } from "@/use/utils/use-route-query"
 import travelDeskHotelsApi from "@/api/travel-desk-hotels-api"
 
 import LocationsAutocomplete from "@/components/locations/LocationsAutocomplete.vue"
@@ -162,6 +162,10 @@ const props = defineProps({
   travelDeskTravelRequestId: {
     type: Number,
     required: true,
+  },
+  conferenceName: {
+    type: String,
+    default: null,
   },
   minDate: {
     type: String,
@@ -184,62 +188,39 @@ const props = defineProps({
 
 const emit = defineEmits(["created"])
 
+const showDialog = useRouteQuery("showHotelCreate", false, {
+  transform: booleanTransformer,
+})
+
 const travelDeskHotelAttributes = ref({
   travelRequestId: props.travelDeskTravelRequestId,
+  conferenceName: props.conferenceName,
   checkIn: props.flightStart,
   checkOut: props.flightEnd,
   isDedicatedConferenceHotelAvailable: true,
 })
 
-const snack = useSnack()
-const router = useRouter()
-const route = useRoute()
-const showDialog = ref(route.query.showHotelCreate === "true")
+watchEffect(() => {
+  travelDeskHotelAttributes.value.travelRequestId = props.travelDeskTravelRequestId
+})
+watchEffect(() => {
+  travelDeskHotelAttributes.value.conferenceName = props.conferenceName
+})
+watchEffect(() => {
+  travelDeskHotelAttributes.value.checkIn = props.flightStart
+})
+watchEffect(() => {
+  travelDeskHotelAttributes.value.checkOut = props.flightEnd
+})
 
 /** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
 const form = ref(null)
 const isLoading = ref(false)
+const snack = useSnack()
 
-watch(
-  () => props.travelDeskTravelRequestId,
-  () => {
-    resetState()
-  },
-  { immediate: true }
-)
-
-watchEffect(() => {
-  if (isNil(travelDeskHotelAttributes.value.checkIn)) {
-    travelDeskHotelAttributes.value.checkIn = props.flightStart
-  }
-})
-
-watchEffect(() => {
-  if (isNil(travelDeskHotelAttributes.value.checkOut)) {
-    travelDeskHotelAttributes.value.checkOut = props.flightEnd
-  }
-})
-
-watch(
-  () => showDialog.value,
-  (value) => {
-    if (value) {
-      router.push({ query: { showHotelCreate: "true" } })
-    } else {
-      router.push({ query: { showHotelCreate: undefined } })
-    }
-  }
-)
-
-function close() {
-  showDialog.value = false
-  resetState()
-  form.value?.resetValidation()
-}
-
-async function createAndClose() {
+async function createAndHide() {
   if (!form.value?.validate()) {
-    snack("Please fill in all required fields", { color: "error" })
+    snack.error("Please fill in all required fields")
     return
   }
 
@@ -253,26 +234,29 @@ async function createAndClose() {
     const { travelDeskHotel: newHotel } = await travelDeskHotelsApi.create(
       travelDeskHotelAttributes.value
     )
-    close()
+    hide()
 
     await nextTick()
     emit("created", newHotel.id)
-    snack("Hotel request created successfully", { color: "success" })
+    snack.success("Hotel request created successfully")
   } catch (error) {
     console.error(error)
-    snack("Failed to create hotel request", { color: "error" })
+    snack.error("Failed to create hotel request")
   } finally {
     isLoading.value = false
   }
 }
 
-function resetState() {
+function hide() {
+  showDialog.value = false
   travelDeskHotelAttributes.value = {
     travelRequestId: props.travelDeskTravelRequestId,
+    conferenceName: props.conferenceName,
     checkIn: props.flightStart,
     checkOut: props.flightEnd,
     isDedicatedConferenceHotelAvailable: true,
   }
+  form.value?.resetValidation()
 }
 </script>
 

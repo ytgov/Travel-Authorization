@@ -11,6 +11,7 @@
         :max-date="maxDate"
         :flight-start="earliestFlightDate"
         :flight-end="latestFlightDate"
+        :conference-name="conferenceName"
         @created="refreshTravelDeskHotels"
       />
     </v-card-title>
@@ -53,6 +54,15 @@ const whereClause = computed(() => ({
 
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+
+const isConference = computed(() =>
+  travelAuthorization.value?.purpose?.purpose?.toLowerCase().includes("conference")
+)
+const conferenceName = computed(() => {
+  if (!isConference.value) return null
+
+  return travelAuthorization.value?.eventName
+})
 
 const minDate = computed(() => travelAuthorization.value?.startDate?.slice(0, 10))
 const maxDate = computed(() => travelAuthorization.value?.endDate?.slice(0, 10))
