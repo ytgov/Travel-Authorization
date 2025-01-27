@@ -20,12 +20,12 @@
       @submit.prevent="createAndHide"
     >
       <v-card :loading="isLoading">
-        <v-card-title class="blue">
-          <div class="text-h5">Add Hotel</div>
+        <v-card-title>
+          <h2>Add Hotel</h2>
         </v-card-title>
 
         <v-card-text>
-          <v-row class="mt-5 mx-3">
+          <v-row>
             <v-col
               cols="12"
               md="4"

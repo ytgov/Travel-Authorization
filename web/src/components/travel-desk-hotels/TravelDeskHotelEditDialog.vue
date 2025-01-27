@@ -18,12 +18,12 @@
         v-else
         :loading="isLoading"
       >
-        <v-card-title class="blue">
-          <div class="text-h5">Edit Hotel</div>
+        <v-card-title>
+          <h2>Edit Hotel</h2>
         </v-card-title>
 
         <v-card-text>
-          <v-row class="mt-5 mx-3">
+          <v-row>
             <v-col
               cols="12"
               md="4"
