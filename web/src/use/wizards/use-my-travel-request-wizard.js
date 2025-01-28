@@ -38,35 +38,17 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
 
   const previousStep = computed(() => {
     const previousStepIndex = currentStepIndex.value - 1
-    if (previousStepIndex < 0) {
-      return {
-        to: {
-          name: "my-travel-requests/MyTravelRequestsWizardPage",
-        },
-      }
-    }
+    if (previousStepIndex < 0) return null
 
     const previousStep = state.steps[previousStepIndex]
-    if (isNil(previousStep)) {
-      return {
-        to: {
-          name: "my-travel-requests/MyTravelRequestsWizardPage",
-        },
-      }
-    }
+    if (isNil(previousStep)) return null
 
     return previousStep
   })
 
   const nextStep = computed(() => {
     const nextStep = state.steps[currentStepIndex.value + 1]
-    if (isNil(nextStep)) {
-      return {
-        to: {
-          name: "my-travel-requests/MyTravelRequestsWizardPage",
-        },
-      }
-    }
+    if (isNil(nextStep)) return null
 
     return nextStep
   })
@@ -74,6 +56,12 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   const router = useRouter()
 
   async function goToPreviousStep() {
+    if (isNil(previousStep.value)) {
+      return router.push({
+        name: "my-travel-requests/MyTravelRequestsPage",
+      })
+    }
+
     const previousStepName = previousStep.value.id
     await save({
       wizardStepName: previousStepName,
@@ -88,6 +76,12 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
   }
 
   async function goToNextStep() {
+    if (isNil(nextStep.value)) {
+      return router.push({
+        name: "my-travel-requests/MyTravelRequestsPage",
+      })
+    }
+
     const nextStepName = nextStep.value.id
     await save({
       wizardStepName: nextStepName,
