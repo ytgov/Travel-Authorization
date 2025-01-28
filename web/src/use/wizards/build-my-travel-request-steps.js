@@ -155,15 +155,11 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
         import("@/components/my-travel-request-wizard/ReviewSubmittedEstimateStep.vue"),
     },
     {
-      id: "awaiting-travel-authorization-approval",
+      id: "awaiting-supervisor-approval",
       title: "Waiting for approval",
       subtitle: "Travel request is submitted to supervisor and waiting for approval.",
-      to: {
-        name: "my-travel-requests/AwaitingApprovalPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () =>
+        import("@/components/my-travel-request-wizard/AwaitingSupervisorApprovalStep.vue"),
       continueButtonProps: {
         disabled: true,
       },
