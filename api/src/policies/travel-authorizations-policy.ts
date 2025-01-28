@@ -55,7 +55,7 @@ export class TravelAuthorizationsPolicy extends PolicyFactory(TravelAuthorizatio
       return [
         "preApprovalProfileId",
         "purposeId",
-        "stepNumber",
+        "wizardStepName",
         "firstName",
         "lastName",
         "department",
@@ -121,7 +121,7 @@ export class TravelAuthorizationsPolicy extends PolicyFactory(TravelAuthorizatio
       ]
     }
 
-    return ["stepNumber"]
+    return ["wizardStepName"]
   }
 
   permittedAttributesForCreate(): Path[] {
