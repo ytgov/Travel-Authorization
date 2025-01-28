@@ -160,9 +160,7 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       subtitle: "Travel request is submitted to supervisor and waiting for approval.",
       component: () =>
         import("@/components/my-travel-request-wizard/AwaitingSupervisorApprovalStep.vue"),
-      continueButtonProps: {
-        disabled: true,
-      },
+      continueButtonText: "Check status?",
     },
 
     {
