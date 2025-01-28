@@ -6,7 +6,7 @@
     :items-per-page.sync="perPage"
     :page.sync="page"
     :server-items-length="totalCount"
-    @click:row="goToFormDetails"
+    @click:row="goToMyTravelRequestWizardStep"
   >
     <template #top>
       <DeleteTravelAuthorizationDialog
@@ -141,14 +141,17 @@ const { travelAuthorizations, totalCount, isLoading, refresh } =
 
 const router = useRouter()
 
-async function goToFormDetails(travelAuthorization) {
+async function goToMyTravelRequestWizardStep(travelAuthorization) {
   const { isDraft, isSubmitted, isTravelDeskOptionsRanked } = travelAuthorization
 
   const travelAuthorizationId = travelAuthorization.id
   if (isDraft) {
     router.push({
-      name: "my-travel-requests/details/DetailsEditPurposePage",
-      params: { travelAuthorizationId },
+      name: "my-travel-requests/MyTravelRequestWizardPage",
+      params: {
+        travelAuthorizationId: travelAuthorization.id,
+        stepName: travelAuthorization.wizardStepName || "edit-purpose-details",
+      },
     })
   } else if (isSubmitted) {
     router.push({
