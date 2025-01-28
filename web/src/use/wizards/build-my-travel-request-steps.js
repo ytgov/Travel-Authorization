@@ -53,12 +53,6 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
   const travelAuthorizationId = unref(travelAuthorizationIdMaybeRef)
 
   //   {
-  //     path: "details/submit",
-  //     name: "my-travel-requests/details/DetailsSubmitPage",
-  //     component: () => import("@/pages/my-travel-requests/details/DetailsSubmitPage.vue"),
-  //     props: true,
-  //   },
-  //   {
   //     path: "estimate",
   //     name: "my-travel-requests/estimate/EstimatePage",
   //     component: () => import("@/pages/my-travel-requests/estimate/EstimatePage.vue"),
@@ -158,12 +152,7 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       id: "submit-to-supervisor",
       title: "Details: submit",
       subtitle: "Submit travel request",
-      to: {
-        name: "my-travel-requests/details/DetailsSubmitPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/SubmitToSupervisorStep.vue"),
       continueButtonText: "Submit to Supervisor",
     },
     {
