@@ -59,12 +59,6 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
   //     props: true,
   //   },
   //   {
-  //     path: "request",
-  //     name: "my-travel-requests/request/RequestPage",
-  //     component: () => import("@/pages/my-travel-requests/request/RequestPage.vue"),
-  //     props: true,
-  //   },
-  //   {
   //     path: "awaiting-request-options",
   //     name: "my-travel-requests/AwaitingRequestOptionsPage",
   //     component: () =>
@@ -170,15 +164,10 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       continueButtonText: "Submit",
     },
     {
-      id: "review-travel-desk-travel-request-details",
+      id: "review-request-details",
       title: "Request",
       subtitle: "Review request details",
-      to: {
-        name: "my-travel-requests/request/RequestPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/ReviewRequestDetailsStep.vue"),
       backButtonProps: {
         disabled: true,
       },
