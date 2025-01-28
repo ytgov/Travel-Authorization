@@ -156,15 +156,10 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       continueButtonText: "Submit to Supervisor",
     },
     {
-      id: "review-travel-authorization-trip-details",
+      id: "review-trip-details",
       title: "Details",
       subtitle: "Review submitted trip details",
-      to: {
-        name: "my-travel-requests/details/DetailsPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/ReviewTripDetailsStep.vue"),
       backButtonText: "Revert to Draft",
       backButtonProps: {
         color: "warning",
