@@ -184,6 +184,10 @@ const breadcrumbs = computed(() => [
       name: "my-travel-requests/MyTravelRequestsPage",
     },
   },
+  {
+    text: "Wizard",
+    disabled: true,
+  },
   isNil(currentStep.value?.id)
     ? {
         text: "loading ...",
