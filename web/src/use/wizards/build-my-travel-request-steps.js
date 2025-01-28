@@ -84,12 +84,6 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
   //     props: true,
   //   },
   //   {
-  //     path: "request/edit",
-  //     name: "my-travel-requests/request/RequestEditPage",
-  //     component: () => import("@/pages/my-travel-requests/request/RequestEditPage.vue"),
-  //     props: true,
-  //   },
-  //   {
   //     path: "awaiting-request-options",
   //     name: "my-travel-requests/AwaitingRequestOptionsPage",
   //     component: () =>
@@ -203,15 +197,10 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       },
     },
     {
-      id: "edit-travel-desk-travel-request-other-models",
-      title: "Request: edit",
-      subtitle: "Edit travel desk request",
-      to: {
-        name: "my-travel-requests/request/RequestEditPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      id: "submit-to-travel-desk",
+      title: "Request: submit",
+      subtitle: "Submit to travel desk",
+      component: () => import("@/components/my-travel-request-wizard/SubmitToTravelDeskStep.vue"),
       continueButtonText: "Submit",
     },
     {
