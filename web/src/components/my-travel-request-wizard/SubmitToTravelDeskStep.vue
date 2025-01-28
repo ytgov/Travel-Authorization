@@ -38,6 +38,10 @@ const travelDeskTravelRequestId = computed(() => {
   return travelAuthorization.value?.travelDeskTravelRequest?.id
 })
 
+async function initialize(context) {
+  context.setEditableSteps(["edit-traveller-details"])
+}
+
 const snack = useSnack()
 
 async function submitAndNotify() {
@@ -54,6 +58,7 @@ async function submitAndNotify() {
 }
 
 defineExpose({
+  initialize,
   continue: submitAndNotify,
 })
 </script>
