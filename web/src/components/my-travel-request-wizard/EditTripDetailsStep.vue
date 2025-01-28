@@ -1,12 +1,12 @@
 <template>
   <DetailsEditFormCard
     ref="detailsEditFormCard"
-    :travel-authorization-id="travelAuthorizationIdAsNumber"
+    :travel-authorization-id="travelAuthorizationId"
   />
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { ref } from "vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
 
@@ -14,14 +14,12 @@ import DetailsEditFormCard from "@/components/travel-authorizations/DetailsEditF
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
 const emit = defineEmits(["updated"])
-
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
 async function initialize(context) {
   context.setEditableSteps(["edit-purpose-details"])
@@ -42,7 +40,7 @@ async function validateAndSave() {
 
     await detailsEditFormCard.value.save()
     snack.success("Travel request saved.")
-    emit("updated", travelAuthorizationIdAsNumber.value)
+    emit("updated", props.travelAuthorizationId)
     return true
   } catch (error) {
     snack.error(error.message)

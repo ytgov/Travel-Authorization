@@ -3,19 +3,19 @@
     <div class="d-flex justify-end">
       <EstimateCreateDialog
         v-if="hasEstimates"
-        :travel-authorization-id="travelAuthorizationIdAsNumber"
+        :travel-authorization-id="travelAuthorizationId"
         @created="refreshEstimates"
       />
       <EstimateGenerateDialog
         v-else
-        :travel-authorization-id="travelAuthorizationIdAsNumber"
+        :travel-authorization-id="travelAuthorizationId"
         @created="refreshEstimates"
       />
     </div>
 
     <EstimatesTable
       ref="estimatesTable"
-      :travel-authorization-id="travelAuthorizationIdAsNumber"
+      :travel-authorization-id="travelAuthorizationId"
     />
   </div>
 </template>
@@ -37,16 +37,14 @@ import EstimatesTable from "@/modules/travel-authorizations/components/edit-my-t
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
 const expensesQuery = computed(() => ({
   where: {
-    travelAuthorizationId: travelAuthorizationIdAsNumber.value,
+    travelAuthorizationId: props.travelAuthorizationId,
     type: EXPENSE_TYPES.ESTIMATE,
   },
 }))

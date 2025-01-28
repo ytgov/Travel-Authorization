@@ -24,7 +24,7 @@ import TravelDeskTravelRequestEditCard from "@/components/travel-desk-travel-req
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })

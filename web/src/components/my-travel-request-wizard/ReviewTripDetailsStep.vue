@@ -2,24 +2,24 @@
   <div>
     <v-row>
       <v-col>
-        <PurposeCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <PurposeCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <DetailsCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <DetailsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <ApprovalsCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <ApprovalsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { ref } from "vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import travelAuthorizationApi from "@/api/travel-authorizations-api"
@@ -30,12 +30,10 @@ import ApprovalsCard from "@/components/travel-authorizations/ApprovalsCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
-
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
 const isLoading = ref(false)
 const snack = useSnack()

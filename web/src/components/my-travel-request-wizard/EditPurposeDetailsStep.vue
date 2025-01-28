@@ -1,12 +1,12 @@
 <template>
   <PurposeEditFormCard
     ref="purposeEditFormCard"
-    :travel-authorization-id="travelAuthorizationIdAsNumber"
+    :travel-authorization-id="travelAuthorizationId"
   />
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { ref } from "vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
 
@@ -14,14 +14,12 @@ import PurposeEditFormCard from "@/components/travel-authorizations/PurposeEditF
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
 const emit = defineEmits(["updated"])
-
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
 const isLoading = ref(false)
 /** @type {import('vue').Ref<InstanceType<typeof PurposeEditFormCard> | null>} */
@@ -38,7 +36,7 @@ async function validateAndSave() {
 
     await purposeEditFormCard.value.save()
     snack.success("Travel request saved.")
-    emit("updated", travelAuthorizationIdAsNumber.value)
+    emit("updated", props.travelAuthorizationId)
     return true
   } catch (error) {
     snack.error(error.message)
