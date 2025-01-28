@@ -186,23 +186,20 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       subtitle: "Rank options provided",
       component: () => import("@/components/my-travel-request-wizard/RankFlightOptionsStep.vue"),
       continueButtonText: "Submit Option Rankings",
-    },
-    {
-      id: "waiting-for-booking-confirmation",
-      title: "Waiting for booking",
-      subtitle: "Travel request flight options are ranked, waiting for booking confirmation.",
-      to: {
-        name: "my-travel-requests/AwaitingRequestBookingPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
       backButtonProps: {
         disabled: true,
       },
-      continueButtonProps: {
+    },
+    {
+      id: "awaiting-booking-confirmation",
+      title: "Waiting for booking",
+      subtitle: "Travel request flight options are ranked, waiting for booking confirmation.",
+      component: () =>
+        import("@/components/my-travel-request-wizard/AwaitingBookingConfirmationStep.vue"),
+      backButtonProps: {
         disabled: true,
       },
+      continueButtonText: "Check status?",
     },
     {
       id: "awaiting-travel-start",
