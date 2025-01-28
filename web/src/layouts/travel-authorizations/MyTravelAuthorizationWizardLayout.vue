@@ -58,14 +58,16 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, toRefs } from "vue"
+import { computed, nextTick, onMounted, ref, toRefs } from "vue"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 import { isNil } from "lodash"
+
+import useBreadcrumbs from "@/use/use-breadcrumbs"
+import useMyTravelRequestWizard from "@/use/wizards/use-my-travel-request-wizard"
 
 import StateStepper from "@/components/common/wizards/StateStepper.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable.vue"
-import useMyTravelRequestWizard from "@/use/wizards/use-my-travel-request-wizard"
 
 /**
  * @template [T=any]
@@ -88,10 +90,12 @@ const {
   currentStep,
   isLoading,
   isReady,
+  save,
   refresh,
   goToStep,
   goToNextStep,
   goToPreviousStep,
+  markAsEditable,
 } = useMyTravelRequestWizard(travelAuthorizationId)
 
 const route = useRoute()
@@ -102,9 +106,18 @@ onMounted(async () => {
 
   if (isNil(currentWizardStepName.value)) {
     const firstStep = steps.value[0]
-    return goToStep(firstStep.id)
+    await save({
+      wizardStepName: firstStep.id,
+    })
   } else if (currentStep.value.to && currentStep.value.to.name !== route.name) {
     await router.push(currentStep.value.to)
+  }
+
+  await nextTick()
+  if (currentStepComponent.value?.initialize) {
+    currentStepComponent.value.initialize({
+      markAsEditable,
+    })
   }
 })
 
@@ -150,4 +163,18 @@ const summaryHeaderPanel = ref(null)
 async function refreshHeaderAndLocalState() {
   await Promise.all([summaryHeaderPanel.value?.refresh(), refresh()])
 }
+
+const breadcrumbs = computed(() => [
+  {
+    text: "My Travel Requests",
+    to: {
+      name: "my-travel-requests/MyTravelRequestsPage",
+    },
+  },
+  {
+    text: currentStep.value.subtitle,
+    to: currentStep.value.to,
+  },
+])
+useBreadcrumbs(breadcrumbs)
 </script>

@@ -21,12 +21,10 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
+import { computed, ref } from "vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import EstimateCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateCreateDialog"
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
@@ -62,32 +60,12 @@ async function refreshEstimates() {
   await Promise.all([refresh(), estimatesTable.value?.refresh()])
 }
 
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
-
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/estimate/EstimatePage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-  {
-    text: "Edit",
-    to: {
-      name: "my-travel-requests/estimate/EstimateEditPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
+async function initialize(context) {
+  context.markAsEditable([
+    "edit-travel-authorization-purpose-details",
+    "edit-travel-authorization-trip-details",
+  ])
+}
 
 const snack = useSnack()
 
@@ -101,6 +79,7 @@ async function validate() {
 }
 
 defineExpose({
+  initialize,
   continue: validate,
 })
 </script>

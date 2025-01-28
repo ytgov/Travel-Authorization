@@ -6,11 +6,9 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
+import { computed, ref } from "vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import PurposeEditFormCard from "@/components/travel-authorizations/PurposeEditFormCard.vue"
 
@@ -25,9 +23,7 @@ const emit = defineEmits(["updated"])
 
 const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization, isLoading } = useTravelAuthorization(travelAuthorizationId)
-
+const isLoading = ref(false)
 /** @type {import('vue').Ref<InstanceType<typeof PurposeEditFormCard> | null>} */
 const purposeEditFormCard = ref(null)
 const snack = useSnack()
@@ -42,7 +38,7 @@ async function validateAndSave() {
 
     await purposeEditFormCard.value.save()
     snack.success("Travel request saved.")
-    emit("updated", travelAuthorization.value.id)
+    emit("updated", travelAuthorizationIdAsNumber.value)
     return true
   } catch (error) {
     snack.error(error.message)
@@ -50,37 +46,6 @@ async function validateAndSave() {
     isLoading.value = false
   }
 }
-
-const travelAuthorizationEventName = computed(() => {
-  if (isLoading.value) {
-    return "loading ..."
-  }
-
-  return travelAuthorization.value?.eventName || "New Travel Request"
-})
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorizationEventName.value,
-    to: {
-      name: "my-travel-requests/details/DetailsPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-  {
-    text: "Edit",
-    to: {
-      name: "my-travel-requests/details/DetailsEditPurposePage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
 
 defineExpose({
   continue: validateAndSave,

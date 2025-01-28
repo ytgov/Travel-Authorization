@@ -37,6 +37,7 @@ async function createAndGoToEditPage() {
   try {
     const { travelAuthorization } = await travelAuthorizationsApi.create({
       userId: currentUser.value.id,
+      wizardStepName: "edit-purpose-details",
       stopsAttributes: [
         {
           accommodationType: ACCOMMODATION_TYPES.HOTEL,
