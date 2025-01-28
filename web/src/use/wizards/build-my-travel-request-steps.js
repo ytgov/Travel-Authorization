@@ -176,15 +176,9 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       id: "awaiting-flight-options",
       title: "Awaiting flight options",
       subtitle: "Awaiting flight options from travel desk",
-      to: {
-        name: "my-travel-requests/AwaitingRequestOptionsPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
-      continueButtonProps: {
-        disabled: true,
-      },
+      component: () =>
+        import("@/components/my-travel-request-wizard/AwaitingFlightOptionsStep.vue"),
+      continueButtonText: "Check status?",
     },
     {
       id: "rank-flight-options",
