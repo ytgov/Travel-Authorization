@@ -142,31 +142,22 @@ const { travelAuthorizations, totalCount, isLoading, refresh } =
 const router = useRouter()
 
 async function goToMyTravelRequestWizardStep(travelAuthorization) {
-  const { isDraft, isSubmitted, isTravelDeskOptionsRanked } = travelAuthorization
-
   const travelAuthorizationId = travelAuthorization.id
-  if (isDraft) {
+  if (travelAuthorization.wizardStepName) {
     router.push({
       name: "my-travel-requests/MyTravelRequestWizardPage",
       params: {
-        travelAuthorizationId: travelAuthorization.id,
-        stepName: travelAuthorization.wizardStepName || "edit-purpose-details",
+        travelAuthorizationId,
+        stepName: travelAuthorization.wizardStepName,
       },
-    })
-  } else if (isSubmitted) {
-    router.push({
-      name: "my-travel-requests/AwaitingApprovalPage",
-      params: { travelAuthorizationId },
-    })
-  } else if (isTravelDeskOptionsRanked) {
-    router.push({
-      name: "my-travel-requests/AwaitingRequestBookingPage",
-      params: { travelAuthorizationId },
     })
   } else {
     router.push({
-      name: "my-travel-requests/details/DetailsPage",
-      params: { travelAuthorizationId },
+      name: "my-travel-requests/MyTravelRequestWizardPage",
+      params: {
+        travelAuthorizationId,
+        stepName: "edit-purpose-details",
+      },
     })
   }
 }
