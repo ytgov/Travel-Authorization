@@ -53,18 +53,6 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
   const travelAuthorizationId = unref(travelAuthorizationIdMaybeRef)
 
   //   {
-  //     path: "estimate",
-  //     name: "my-travel-requests/estimate/EstimatePage",
-  //     component: () => import("@/pages/my-travel-requests/estimate/EstimatePage.vue"),
-  //     props: true,
-  //   },
-  //   {
-  //     path: "estimate/edit",
-  //     name: "my-travel-requests/estimate/EstimateEditPage",
-  //     component: () => import("@/pages/my-travel-requests/estimate/EstimateEditPage.vue"),
-  //     props: true,
-  //   },
-  //   {
   //     path: "awaiting-approval",
   //     name: "my-travel-requests/AwaitingApprovalPage",
   //     component: () => import("@/pages/my-travel-requests/AwaitingApprovalPage.vue"),
@@ -160,15 +148,11 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       },
     },
     {
-      id: "review-expense-estimate",
+      id: "review-submitted-estimate",
       title: "Estimate",
       subtitle: "Review submitted estimate",
-      to: {
-        name: "my-travel-requests/estimate/EstimatePage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () =>
+        import("@/components/my-travel-request-wizard/ReviewSubmittedEstimateStep.vue"),
     },
     {
       id: "awaiting-travel-authorization-approval",
