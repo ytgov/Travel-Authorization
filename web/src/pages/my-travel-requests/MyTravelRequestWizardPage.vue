@@ -104,7 +104,7 @@ const {
   goToStep,
   goToNextStep,
   goToPreviousStep,
-  markAsEditable,
+  setEditableSteps,
 } = useMyTravelRequestWizard(travelAuthorizationIdAsNumber)
 
 onMounted(async () => {
@@ -127,7 +127,7 @@ watch(
 
     if (newStepComponent.initialize) {
       newStepComponent.initialize({
-        markAsEditable,
+        setEditableSteps,
       })
     }
   },

@@ -41,7 +41,7 @@ const isLoading = ref(false)
 const snack = useSnack()
 
 async function initialize(context) {
-  // TODO: mark all as non-editable
+  context.setEditableSteps([])
 }
 
 async function revertToDraft() {

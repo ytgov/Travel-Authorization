@@ -42,7 +42,7 @@ const emit = defineEmits(["updated"])
 const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
 async function initialize(context) {
-  context.markAsEditable(["edit-purpose-details", "edit-trip-details", "generate-estimate"])
+  context.setEditableSteps(["edit-purpose-details", "edit-trip-details", "generate-estimate"])
 }
 
 const isLoading = ref(false)

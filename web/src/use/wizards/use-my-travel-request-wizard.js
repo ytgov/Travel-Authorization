@@ -133,10 +133,12 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     })
   }
 
-  function markAsEditable(stepIds) {
+  function setEditableSteps(stepIds) {
     state.steps.forEach((step) => {
       if (stepIds.includes(step.id)) {
         step.editable = true
+      } else {
+        step.editable = false
       }
     })
   }
@@ -154,7 +156,7 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     goToStep,
     goToPreviousStep,
     goToNextStep,
-    markAsEditable,
+    setEditableSteps,
   }
 }
 
