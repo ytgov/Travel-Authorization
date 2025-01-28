@@ -45,8 +45,6 @@ async function initialize(context) {
 const snack = useSnack()
 
 async function checkForFlightOptions() {
-  if (hasFlightOptions.value) return true
-
   try {
     await refresh()
 

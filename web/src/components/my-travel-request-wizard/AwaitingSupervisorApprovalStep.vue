@@ -34,8 +34,6 @@ async function initialize(context) {
 const snack = useSnack()
 
 async function checkForApproval() {
-  if (isApproved.value) return true
-
   try {
     await refresh()
 
