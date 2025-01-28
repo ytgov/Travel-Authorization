@@ -184,12 +184,7 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       id: "rank-flight-options",
       title: "Rank options",
       subtitle: "Rank options provided",
-      to: {
-        name: "my-travel-requests/request/RequestOptionsProvidedPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/RankFlightOptionsStep.vue"),
       continueButtonText: "Submit Option Rankings",
     },
     {
