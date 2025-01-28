@@ -6,10 +6,7 @@ import { isNil } from "lodash"
  *   id: string;
  *   title: string;
  *   subtitle: string;
- *   to: {
- *     name: string;
- *     params?: Object;
- *   };
+ *   component: () => import("*.vue");
  *   continueButtonText?: string;
  *   continueButtonProps?: import("vuetify/lib/VBtn").VBtn;
  *   backButtonText?: string;
@@ -35,17 +32,9 @@ export function buildStep(options) {
     throw new Error("subtitle is required")
   }
 
-  if (isNil(options.to)) {
-    throw new Error("to is required")
-  }
-
-  if (isNil(options.to.name)) {
-    throw new Error("to.name is required")
-  }
-
-  if (isNil(options.to.params)) {
-    throw new Error("to.params is required")
-  }
+  // if (isNil(options.component)) {
+  //   throw new Error("component is required")
+  // }
 
   return {
     editable: false,
@@ -63,42 +52,110 @@ export function buildStep(options) {
 export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
   const travelAuthorizationId = unref(travelAuthorizationIdMaybeRef)
 
+  //   {
+  //     path: "details/submit",
+  //     name: "my-travel-requests/details/DetailsSubmitPage",
+  //     component: () => import("@/pages/my-travel-requests/details/DetailsSubmitPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "estimate",
+  //     name: "my-travel-requests/estimate/EstimatePage",
+  //     component: () => import("@/pages/my-travel-requests/estimate/EstimatePage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "estimate/edit",
+  //     name: "my-travel-requests/estimate/EstimateEditPage",
+  //     component: () => import("@/pages/my-travel-requests/estimate/EstimateEditPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "awaiting-approval",
+  //     name: "my-travel-requests/AwaitingApprovalPage",
+  //     component: () => import("@/pages/my-travel-requests/AwaitingApprovalPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "request",
+  //     name: "my-travel-requests/request/RequestPage",
+  //     component: () => import("@/pages/my-travel-requests/request/RequestPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "request/edit-travel-details",
+  //     name: "my-travel-requests/request/RequestEditTravelDetailsPage",
+  //     component: () =>
+  //       import("@/pages/my-travel-requests/request/RequestEditTravelDetailsPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "request/edit",
+  //     name: "my-travel-requests/request/RequestEditPage",
+  //     component: () => import("@/pages/my-travel-requests/request/RequestEditPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "awaiting-request-options",
+  //     name: "my-travel-requests/AwaitingRequestOptionsPage",
+  //     component: () =>
+  //       import("@/pages/my-travel-requests/AwaitingRequestOptionsPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "request/rank-options",
+  //     name: "my-travel-requests/request/RequestOptionsProvidedPage",
+  //     component: () =>
+  //       import("@/pages/my-travel-requests/request/RequestOptionsProvidedPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "awaiting-request-booking",
+  //     name: "my-travel-requests/AwaitingRequestBookingPage",
+  //     component: () =>
+  //       import("@/pages/my-travel-requests/AwaitingRequestBookingPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "expense",
+  //     name: "my-travel-requests/expense/ExpensePage",
+  //     component: () => import("@/pages/my-travel-requests/expense/ExpensePage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "expense/edit",
+  //     name: "my-travel-requests/expense/ExpenseEditPage",
+  //     component: () => import("@/pages/my-travel-requests/expense/ExpenseEditPage.vue"),
+  //     props: true,
+  //   },
+  //   {
+  //     path: "awaiting-travel-start",
+  //     name: "my-travel-requests/AwaitingTravelStartPage",
+  //     component: () => import("@/pages/my-travel-requests/AwaitingTravelStartPage.vue"),
+  //     props: true,
+  //   },
+  // ]
   return [
     {
-      id: "edit-travel-authorization-purpose-details",
+      id: "edit-purpose-details",
       title: "Details: purpose",
       subtitle: "Enter trip purpose",
-      to: {
-        name: "my-travel-requests/details/DetailsEditPurposePage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/EditPurposeDetailsStep.vue"),
     },
     {
-      id: "edit-travel-authorization-trip-details",
+      id: "edit-trip-details",
       title: "Details: trip",
       subtitle: "Enter trip details",
-      to: {
-        name: "my-travel-requests/details/DetailsEditTripPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/EditTripDetailsStep.vue"),
     },
     {
-      id: "edit-expense-estimate",
+      id: "generate-estimate",
       title: "Estimate: edit",
       subtitle: "Generate estimate",
-      to: {
-        name: "my-travel-requests/estimate/EstimateEditPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/GenerateEstimateStep.vue"),
     },
     {
-      id: "submit-travel-authorization",
+      id: "submit-to-supervisor",
       title: "Details: submit",
       subtitle: "Submit travel request",
       to: {

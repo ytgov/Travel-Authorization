@@ -16,10 +16,17 @@
               class="mb-5"
             />
 
-            <router-view
+            <v-skeleton-loader
+              v-if="isNil(currentStep.component)"
+              type="card"
+            />
+            <component
+              :is="currentStep.component"
+              v-else
               ref="currentStepComponent"
+              :travel-authorization-id="travelAuthorizationIdAsNumber"
               @updated="refreshHeaderAndLocalState"
-            ></router-view>
+            />
 
             <div class="d-flex flex-column flex-md-row justify-md-end">
               <v-btn
@@ -58,8 +65,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref, toRefs } from "vue"
-import { useRoute, useRouter } from "vue2-helpers/vue-router"
+import { computed, onMounted, ref, watch } from "vue"
 import { isNil } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
@@ -79,11 +85,14 @@ const props = defineProps({
     type: [String, Number],
     required: true,
   },
+  stepName: {
+    type: String,
+    default: null,
+  },
 })
 
 const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
 
-const { travelAuthorizationId } = toRefs(props)
 const {
   currentWizardStepName,
   steps,
@@ -96,10 +105,7 @@ const {
   goToNextStep,
   goToPreviousStep,
   markAsEditable,
-} = useMyTravelRequestWizard(travelAuthorizationId)
-
-const route = useRoute()
-const router = useRouter()
+} = useMyTravelRequestWizard(travelAuthorizationIdAsNumber)
 
 onMounted(async () => {
   await isReady()
@@ -109,19 +115,26 @@ onMounted(async () => {
     await save({
       wizardStepName: firstStep.id,
     })
-  } else if (currentStep.value.to && currentStep.value.to.name !== route.name) {
-    await router.push(currentStep.value.to)
-  }
-
-  await nextTick()
-  if (currentStepComponent.value?.initialize) {
-    currentStepComponent.value.initialize({
-      markAsEditable,
-    })
   }
 })
 
 const currentStepComponent = ref(null)
+
+watch(
+  () => currentStepComponent.value,
+  (newStepComponent) => {
+    if (isNil(newStepComponent)) return
+
+    if (newStepComponent.initialize) {
+      newStepComponent.initialize({
+        markAsEditable,
+      })
+    }
+  },
+  {
+    immediate: true,
+  }
+)
 
 async function backAndGoToPreviousStep() {
   if (isNil(currentStepComponent.value?.back)) {
@@ -171,10 +184,21 @@ const breadcrumbs = computed(() => [
       name: "my-travel-requests/MyTravelRequestsPage",
     },
   },
-  {
-    text: currentStep.value.subtitle,
-    to: currentStep.value.to,
-  },
+  isNil(currentStep.value?.id)
+    ? {
+        text: "loading ...",
+        disabled: true,
+      }
+    : {
+        text: currentStep.value.subtitle,
+        to: {
+          name: "my-travel-requests/MyTravelRequestWizardPage",
+          params: {
+            travelAuthorizationId: travelAuthorizationIdAsNumber.value,
+            stepName: currentStep.value.id,
+          },
+        },
+      },
 ])
 useBreadcrumbs(breadcrumbs)
 </script>

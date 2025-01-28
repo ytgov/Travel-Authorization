@@ -61,10 +61,7 @@ async function refreshEstimates() {
 }
 
 async function initialize(context) {
-  context.markAsEditable([
-    "edit-travel-authorization-purpose-details",
-    "edit-travel-authorization-trip-details",
-  ])
+  context.markAsEditable(["edit-purpose-details", "edit-trip-details"])
 }
 
 const snack = useSnack()
