@@ -4,8 +4,8 @@
       <StateStepper
         class="flex-shrink-0"
         :steps="steps"
-        :current-step-number="currentStepNumber"
-        @update:currentStepNumber="goToStep"
+        :current-wizard-step-name="currentWizardStepName"
+        @update:currentWizardStepName="goToStep"
       />
       <div class="ml-md-2 flex-grow-1">
         <v-card class="default">
@@ -65,7 +65,7 @@ import { isNil } from "lodash"
 import StateStepper from "@/components/common/wizards/StateStepper.vue"
 import SummaryHeaderPanel from "@/components/travel-authorizations/SummaryHeaderPanel.vue"
 import TravelAuthorizationActionLogsTable from "@/modules/travel-authorizations/components/TravelAuthorizationActionLogsTable.vue"
-import useMyTravelRequestWizard from "@/use/wizards/use-my-travel-authorization-wizard"
+import useMyTravelRequestWizard from "@/use/wizards/use-my-travel-request-wizard"
 
 /**
  * @template [T=any]
@@ -83,7 +83,7 @@ const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthor
 
 const { travelAuthorizationId } = toRefs(props)
 const {
-  currentStepNumber,
+  currentWizardStepName,
   steps,
   currentStep,
   isLoading,
@@ -100,9 +100,9 @@ const router = useRouter()
 onMounted(async () => {
   await isReady()
 
-  const step = steps.value.find((step) => step.to?.name === route.name)
-  if (!isNil(step) && step.number !== currentStepNumber.value) {
-    return goToStep(step.number)
+  if (isNil(currentWizardStepName.value)) {
+    const firstStep = steps.value[0]
+    return goToStep(firstStep.id)
   } else if (currentStep.value.to && currentStep.value.to.name !== route.name) {
     await router.push(currentStep.value.to)
   }
