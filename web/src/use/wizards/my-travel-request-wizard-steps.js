@@ -47,8 +47,8 @@ export function buildStep(options) {
  *   id: string
  * }
  */
-export function buildMyTravelRequestSteps() {
-  return [
+export const MY_TRAVEL_REQUEST_WIZARD_STEPS = Object.freeze(
+  [
     {
       id: "edit-purpose-details",
       title: "Details: purpose",
@@ -182,6 +182,8 @@ export function buildMyTravelRequestSteps() {
       continueButtonText: "Return to My Travel Requests",
     },
   ].map(buildStep)
-}
+)
 
-export default buildMyTravelRequestSteps
+export const FIRST_STEP_ID = MY_TRAVEL_REQUEST_WIZARD_STEPS[0].id
+
+export default MY_TRAVEL_REQUEST_WIZARD_STEPS

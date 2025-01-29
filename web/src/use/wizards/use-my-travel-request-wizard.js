@@ -1,20 +1,15 @@
 import { computed, nextTick, reactive, toRefs, watch } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
-import { isNil } from "lodash"
+import { cloneDeep, isNil } from "lodash"
 
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
-import buildMyTravelRequestSteps from "@/use/wizards/build-my-travel-request-steps"
-
-const state = reactive({
-  travelAuthorizationId: null,
-  steps: [],
-  isLoading: false,
-  isErrored: false,
-})
+import MY_TRAVEL_REQUEST_WIZARD_STEPS from "@/use/wizards/my-travel-request-wizard-steps"
 
 export function useMyTravelRequestWizard(travelAuthorizationId) {
-  state.steps = buildMyTravelRequestSteps(travelAuthorizationId)
+  const state = reactive({
+    steps: cloneDeep(MY_TRAVEL_REQUEST_WIZARD_STEPS),
+  })
 
   const { travelAuthorization, isLoading, refresh, save } =
     useTravelAuthorization(travelAuthorizationId)

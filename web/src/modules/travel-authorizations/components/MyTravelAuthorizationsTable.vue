@@ -78,6 +78,7 @@ import { isNil, isEmpty } from "lodash"
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import formatDate from "@/utils/format-date"
 import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
+import { FIRST_STEP_ID } from "@/use/wizards/my-travel-request-wizard-steps"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
 
@@ -156,7 +157,7 @@ async function goToMyTravelRequestWizardStep(travelAuthorization) {
       name: "my-travel-requests/MyTravelRequestWizardPage",
       params: {
         travelAuthorizationId,
-        stepName: "edit-purpose-details",
+        stepName: FIRST_STEP_ID,
       },
     })
   }

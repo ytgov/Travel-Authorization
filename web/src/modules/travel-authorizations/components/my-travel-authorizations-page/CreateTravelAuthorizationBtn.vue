@@ -18,6 +18,7 @@ import { ACCOMMODATION_TYPES, TRAVEL_METHODS } from "@/api/stops-api"
 import travelAuthorizationsApi from "@/api/travel-authorizations-api"
 
 import useCurrentUser from "@/use/use-current-user"
+import { FIRST_STEP_ID } from "@/use/wizards/my-travel-request-wizard-steps"
 
 defineProps({
   color: {
@@ -37,7 +38,7 @@ async function createAndGoToEditPage() {
   try {
     const { travelAuthorization } = await travelAuthorizationsApi.create({
       userId: currentUser.value.id,
-      wizardStepName: "edit-purpose-details",
+      wizardStepName: FIRST_STEP_ID,
       stopsAttributes: [
         {
           accommodationType: ACCOMMODATION_TYPES.HOTEL,
@@ -54,7 +55,7 @@ async function createAndGoToEditPage() {
       name: "my-travel-requests/MyTravelRequestWizardPage",
       params: {
         travelAuthorizationId: travelAuthorization.id,
-        stepName: "edit-purpose-details",
+        stepName: FIRST_STEP_ID,
       },
     })
   } catch (error) {
