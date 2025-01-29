@@ -1,4 +1,3 @@
-import { unref } from "vue"
 import { isNil } from "lodash"
 
 /**
@@ -32,9 +31,9 @@ export function buildStep(options) {
     throw new Error("subtitle is required")
   }
 
-  // if (isNil(options.component)) {
-  //   throw new Error("component is required")
-  // }
+  if (isNil(options.component)) {
+    throw new Error("component is required")
+  }
 
   return {
     editable: false,
@@ -44,60 +43,11 @@ export function buildStep(options) {
 
 /**
  *
- * @param {number | Ref<number>} travelAuthorizationIdMaybeRef
  * @returns {
  *   id: string
  * }
  */
-export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
-  const travelAuthorizationId = unref(travelAuthorizationIdMaybeRef)
-
-  //   {
-  //     path: "awaiting-approval",
-  //     name: "my-travel-requests/AwaitingApprovalPage",
-  //     component: () => import("@/pages/my-travel-requests/AwaitingApprovalPage.vue"),
-  //     props: true,
-  //   },
-  //   {
-  //     path: "awaiting-request-options",
-  //     name: "my-travel-requests/AwaitingRequestOptionsPage",
-  //     component: () =>
-  //       import("@/pages/my-travel-requests/AwaitingRequestOptionsPage.vue"),
-  //     props: true,
-  //   },
-  //   {
-  //     path: "request/rank-options",
-  //     name: "my-travel-requests/request/RequestOptionsProvidedPage",
-  //     component: () =>
-  //       import("@/pages/my-travel-requests/request/RequestOptionsProvidedPage.vue"),
-  //     props: true,
-  //   },
-  //   {
-  //     path: "awaiting-request-booking",
-  //     name: "my-travel-requests/AwaitingRequestBookingPage",
-  //     component: () =>
-  //       import("@/pages/my-travel-requests/AwaitingRequestBookingPage.vue"),
-  //     props: true,
-  //   },
-  //   {
-  //     path: "expense",
-  //     name: "my-travel-requests/expense/ExpensePage",
-  //     component: () => import("@/pages/my-travel-requests/expense/ExpensePage.vue"),
-  //     props: true,
-  //   },
-  //   {
-  //     path: "expense/edit",
-  //     name: "my-travel-requests/expense/ExpenseEditPage",
-  //     component: () => import("@/pages/my-travel-requests/expense/ExpenseEditPage.vue"),
-  //     props: true,
-  //   },
-  //   {
-  //     path: "awaiting-travel-start",
-  //     name: "my-travel-requests/AwaitingTravelStartPage",
-  //     component: () => import("@/pages/my-travel-requests/AwaitingTravelStartPage.vue"),
-  //     props: true,
-  //   },
-  // ]
+export function buildMyTravelRequestSteps() {
   return [
     {
       id: "edit-purpose-details",
@@ -225,15 +175,11 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       id: "review-expenses",
       title: "Expense",
       subtitle: "Review submitted expense",
-      to: {
-        name: "my-travel-requests/expense/ExpensePage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
+      component: () => import("@/components/my-travel-request-wizard/ReviewExpensesStep.vue"),
       backButtonProps: {
         disabled: true,
       },
+      continueButtonText: "Return to My Travel Requests",
     },
   ].map(buildStep)
 }
