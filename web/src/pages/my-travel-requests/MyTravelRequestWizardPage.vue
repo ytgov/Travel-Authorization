@@ -65,7 +65,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 import { isNil } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
@@ -98,25 +98,12 @@ const {
   steps,
   currentStep,
   isLoading,
-  isReady,
-  save,
   refresh,
   goToStep,
   goToNextStep,
   goToPreviousStep,
   setEditableSteps,
 } = useMyTravelRequestWizard(travelAuthorizationIdAsNumber)
-
-onMounted(async () => {
-  await isReady()
-
-  if (isNil(currentWizardStepName.value)) {
-    const firstStep = steps.value[0]
-    await save({
-      wizardStepName: firstStep.id,
-    })
-  }
-})
 
 const currentStepComponent = ref(null)
 

@@ -1,4 +1,4 @@
-import { computed, nextTick, reactive, toRefs, watch } from "vue"
+import { computed, reactive, toRefs, watch } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep, isNil } from "lodash"
 
@@ -9,10 +9,22 @@ import MY_TRAVEL_REQUEST_WIZARD_STEPS from "@/use/wizards/my-travel-request-wiza
 export function useMyTravelRequestWizard(travelAuthorizationId) {
   const state = reactive({
     steps: cloneDeep(MY_TRAVEL_REQUEST_WIZARD_STEPS),
+    isReady: false,
   })
 
   const { travelAuthorization, isLoading, refresh, save } =
     useTravelAuthorization(travelAuthorizationId)
+
+  watch(
+    () => cloneDeep(travelAuthorization.value),
+    (newTravelAuthorization) => {
+      if (!isNil(newTravelAuthorization.id)) {
+        state.isReady = true
+      } else {
+        state.isReady = false
+      }
+    }
+  )
 
   const currentWizardStepName = computed(() => travelAuthorization.value.wizardStepName || null)
 
@@ -108,26 +120,6 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     })
   }
 
-  async function isReady() {
-    return new Promise((resolve) => {
-      if (isLoading.value === false) {
-        return resolve(true)
-      }
-
-      const stopWatch = watch(
-        isLoading,
-        async (newIsLoading) => {
-          if (newIsLoading === false) {
-            await nextTick()
-            stopWatch()
-            resolve(true)
-          }
-        },
-        { immediate: true }
-      )
-    })
-  }
-
   function setEditableSteps(stepIds) {
     state.steps.forEach((step) => {
       if (stepIds.includes(step.id)) {
@@ -145,8 +137,6 @@ export function useMyTravelRequestWizard(travelAuthorizationId) {
     previousStep,
     nextStep,
     isLoading,
-    isReady,
-    save,
     refresh,
     goToStep,
     goToPreviousStep,
