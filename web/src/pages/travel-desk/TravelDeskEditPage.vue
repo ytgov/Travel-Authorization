@@ -164,7 +164,7 @@
 
       <TravelDeskTravelRequestConfirmBookingDialog
         ref="confirmBookingDialog"
-        @booked="refresh"
+        @booked="returnToTravelDesk"
       />
     </v-card>
   </v-container>
@@ -241,6 +241,12 @@ async function refresh() {
 }
 
 const router = useRouter()
+
+async function returnToTravelDesk() {
+  return router.push({
+    name: "TravelDeskPage",
+  })
+}
 
 async function markTravelRequestAsOptionsProvidedAndReturnToTravelDesk() {
   isLoading.value = true
