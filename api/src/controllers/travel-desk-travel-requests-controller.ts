@@ -121,10 +121,13 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
         "rentalCars",
         {
           association: "travelAuthorization",
+          required: true,
           include: [
             "user",
             {
               association: "travelSegments",
+              separate: true,
+              order: [["segmentNumber", "ASC"]],
               include: ["departureLocation", "arrivalLocation"],
             },
           ],
