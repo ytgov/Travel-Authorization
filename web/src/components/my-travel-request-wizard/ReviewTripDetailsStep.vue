@@ -2,29 +2,27 @@
   <div>
     <v-row>
       <v-col>
-        <PurposeCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <PurposeCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <DetailsCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <DetailsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <ApprovalsCard :travel-authorization-id="travelAuthorizationIdAsNumber" />
+        <ApprovalsCard :travel-authorization-id="travelAuthorizationId" />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
+import { ref } from "vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
 import travelAuthorizationApi from "@/api/travel-authorizations-api"
-import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import PurposeCard from "@/components/travel-authorizations/PurposeCard.vue"
 import DetailsCard from "@/components/travel-authorizations/DetailsCard.vue"
@@ -32,18 +30,17 @@ import ApprovalsCard from "@/components/travel-authorizations/ApprovalsCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
-
 const isLoading = ref(false)
 const snack = useSnack()
+
+async function initialize(context) {
+  context.setEditableSteps([])
+}
 
 async function revertToDraft() {
   isLoading.value = true
@@ -60,24 +57,8 @@ async function revertToDraft() {
   }
 }
 
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/details/DetailsPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
-
 defineExpose({
+  initialize,
   back: revertToDraft,
 })
 </script>

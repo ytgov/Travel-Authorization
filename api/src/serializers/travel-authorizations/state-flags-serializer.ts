@@ -1,4 +1,6 @@
-import { TravelAuthorization, TravelDeskTravelRequest, User } from "@/models"
+import { isNil } from "lodash"
+
+import { TravelAuthorization, TravelDeskTravelRequest, TravelSegment, User } from "@/models"
 import BaseSerializer from "@/serializers/base-serializer"
 
 export type TravelAuthorizationStateFlagsView = {
@@ -21,6 +23,7 @@ export type TravelAuthorizationStateFlagsView = {
   isTravelDeskBooked: boolean
   isTravelDeskComplete: boolean
   // Composite states
+  isTravellingByAir: boolean
   isInFinalState: boolean
   isInTravelDeskFlow: boolean
 }
@@ -55,6 +58,7 @@ export class StateFlagsSerializer extends BaseSerializer<TravelAuthorization> {
       isTravelDeskComplete: this.isTravelDeskComplete(),
 
       // Composite states
+      isTravellingByAir: this.isTravellingByAir(),
       isInFinalState: this.isInFinalState(),
       isInTravelDeskFlow: this.isInTravelDeskFlow(),
     }
@@ -139,6 +143,16 @@ export class StateFlagsSerializer extends BaseSerializer<TravelAuthorization> {
   }
 
   // Composite States
+  private isTravellingByAir() {
+    if (isNil(this.record.travelSegments)) {
+      return false
+    }
+
+    return this.record.travelSegments.some(
+      (travelSegment) => travelSegment.modeOfTransport === TravelSegment.TravelMethods.AIRCRAFT
+    )
+  }
+
   private isInFinalState() {
     return this.isDeleted() || this.isDenied() || this.isExpenseClaimDenied() || this.isExpensed()
   }

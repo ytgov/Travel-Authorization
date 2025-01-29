@@ -37,7 +37,7 @@ export type TravelAuthorizationShowView = Pick<
   | "summary"
   | "benefits"
   | "status"
-  | "stepNumber"
+  | "wizardStepName"
   | "supervisorEmail"
   | "requestChange"
   | "denialReason"
@@ -90,7 +90,7 @@ export class ShowSerializer extends BaseSerializer<TravelAuthorization> {
         "summary",
         "benefits",
         "status",
-        "stepNumber",
+        "wizardStepName",
         "supervisorEmail",
         "requestChange",
         "denialReason",

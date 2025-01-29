@@ -7,19 +7,19 @@
 
           <ExpenseCreateDialog
             v-if="hasExpenses"
-            :form-id="travelAuthorizationIdAsNumber"
+            :form-id="travelAuthorizationId"
             @created="refreshExpenseCreationDependencies"
           />
           <ExpensePrefillDialog
             v-else
-            :travel-authorization-id="travelAuthorizationIdAsNumber"
+            :travel-authorization-id="travelAuthorizationId"
             @created="refreshExpenseCreationDependencies"
           />
         </div>
 
         <ExpensesTable
           ref="expensesTable"
-          :travel-authorization-id="travelAuthorizationIdAsNumber"
+          :travel-authorization-id="travelAuthorizationId"
           @changed="refreshExpenseChangedDependencies"
         />
         * Meals and Incidentals will be calculated by the system; do not add these expenses.
@@ -31,14 +31,14 @@
         <h3>Meals and Incidentals</h3>
         <MealsAndIncidentalsTable
           ref="mealsAndIncidentalsTable"
-          :travel-authorization-id="travelAuthorizationIdAsNumber"
+          :travel-authorization-id="travelAuthorizationId"
         />
       </v-col>
       <v-col>
         <h3>Totals</h3>
         <TotalsTable
           ref="totalsTable"
-          :travel-authorization-id="travelAuthorizationIdAsNumber"
+          :travel-authorization-id="travelAuthorizationId"
           class="white"
         />
       </v-col>
@@ -49,14 +49,14 @@
           <h3>Coding</h3>
 
           <GeneralLedgerCodingCreateDialog
-            :travel-authorization-id="travelAuthorizationIdAsNumber"
+            :travel-authorization-id="travelAuthorizationId"
             @created="refreshCodingsCreatedDependencies"
           />
         </div>
 
         <GeneralLedgerCodingsTable
           ref="codingsTable"
-          :travel-authorization-id="travelAuthorizationIdAsNumber"
+          :travel-authorization-id="travelAuthorizationId"
           @changed="refreshCodingsChangedDependencies"
         />
       </v-col>
@@ -66,7 +66,7 @@
       <v-col>
         <RequestApprovalForm
           ref="requestApprovalForm"
-          :travel-authorization-id="travelAuthorizationIdAsNumber"
+          :travel-authorization-id="travelAuthorizationId"
         />
       </v-col>
     </v-row>
@@ -74,11 +74,9 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
+import { computed, ref } from "vue"
 
-import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import ExpenseCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpenseCreateDialog"
 import ExpensePrefillDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-expense-page/ExpensePrefillDialog"
@@ -91,16 +89,14 @@ import TotalsTable from "@/modules/travel-authorizations/components/edit-my-trav
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
 const expenseOptions = computed(() => ({
   where: {
-    travelAuthorizationId: travelAuthorizationIdAsNumber.value,
+    travelAuthorizationId: props.travelAuthorizationId,
     type: EXPENSE_TYPES.EXPENSE,
   },
 }))
@@ -108,10 +104,15 @@ const { expenses, isLoading, refresh } = useExpenses(expenseOptions)
 
 const hasExpenses = computed(() => isLoading.value === false && expenses.value.length > 0)
 
+/** @type {import("vue").Ref<InstanceType<typeof ExpensesTable> | null>} */
 const expensesTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof MealsAndIncidentalsTable> | null>} */
 const mealsAndIncidentalsTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof TotalsTable> | null>} */
 const totalsTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof GeneralLedgerCodingsTable> | null>} */
 const codingsTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof RequestApprovalForm> | null>} */
 const requestApprovalForm = ref(null)
 
 async function refreshExpenseCreationDependencies() {
@@ -136,35 +137,13 @@ async function refreshCodingsChangedDependencies() {
   await requestApprovalForm.value?.refresh()
 }
 
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
-
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/expense/ExpensePage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-  {
-    text: "Edit",
-    to: {
-      name: "my-travel-requests/expense/ExpenseEditPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
+async function initialize(context) {
+  context.setEditableSteps([])
+}
 
 // TODO: split submission step into its own page
 defineExpose({
+  initialize,
   continue: () => requestApprovalForm.value?.submit(),
 })
 </script>

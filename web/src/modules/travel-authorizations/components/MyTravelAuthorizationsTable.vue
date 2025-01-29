@@ -6,7 +6,7 @@
     :items-per-page.sync="perPage"
     :page.sync="page"
     :server-items-length="totalCount"
-    @click:row="goToFormDetails"
+    @click:row="goToMyTravelRequestWizardStep"
   >
     <template #top>
       <DeleteTravelAuthorizationDialog
@@ -141,31 +141,14 @@ const { travelAuthorizations, totalCount, isLoading, refresh } =
 
 const router = useRouter()
 
-async function goToFormDetails(travelAuthorization) {
-  const { isDraft, isSubmitted, isTravelDeskOptionsRanked } = travelAuthorization
-
-  const travelAuthorizationId = travelAuthorization.id
-  if (isDraft) {
-    router.push({
-      name: "my-travel-requests/details/DetailsEditPurposePage",
-      params: { travelAuthorizationId },
-    })
-  } else if (isSubmitted) {
-    router.push({
-      name: "my-travel-requests/AwaitingApprovalPage",
-      params: { travelAuthorizationId },
-    })
-  } else if (isTravelDeskOptionsRanked) {
-    router.push({
-      name: "my-travel-requests/AwaitingRequestBookingPage",
-      params: { travelAuthorizationId },
-    })
-  } else {
-    router.push({
-      name: "my-travel-requests/details/DetailsPage",
-      params: { travelAuthorizationId },
-    })
-  }
+async function goToMyTravelRequestWizardStep(travelAuthorization) {
+  return router.push({
+    name: "my-travel-requests/MyTravelRequestWizardPage",
+    params: {
+      travelAuthorizationId: travelAuthorization.id,
+      stepName: travelAuthorization.wizardStepName,
+    },
+  })
 }
 
 function formatDateWrapper(value) {

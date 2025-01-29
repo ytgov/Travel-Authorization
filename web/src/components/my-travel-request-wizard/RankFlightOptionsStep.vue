@@ -32,13 +32,11 @@
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
+import { computed, ref } from "vue"
 import { isNil } from "lodash"
 
 import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
-import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useSnack from "@/use/use-snack"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
 
 import TravelDeskFlightRequestFlightOptionsOrderCard from "@/components/travel-desk-flight-requests/TravelDeskFlightRequestFlightOptionsOrderCard.vue"
@@ -46,17 +44,15 @@ import TravelDeskFlightRequestsCard from "@/components/travel-desk-flight-reques
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
 // TODO: Consider loading travelAuthorization and pulling travelDeskTravel request from there.
 const travelDeskTravelRequestQueryOptions = computed(() => ({
   where: {
-    travelAuthorizationId: travelAuthorizationIdAsNumber.value,
+    travelAuthorizationId: props.travelAuthorizationId,
   },
   perPage: 1,
 }))
@@ -68,13 +64,14 @@ const travelDeskTravelRequestId = computed(() => {
   return travelDeskTravelRequests.value[0]?.id
 })
 
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
-
 /** @type {import("vue").Ref<InstanceType<typeof TravelDeskFlightRequestFlightOptionsOrderCard> | null>} */
 const travelDeskFlightRequestFlightOptionsOrderCard = ref(null)
 
 const snack = useSnack()
+
+async function initialize(context) {
+  context.setEditableSteps([])
+}
 
 async function save() {
   try {
@@ -91,31 +88,8 @@ async function save() {
   }
 }
 
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/request/RequestPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-  {
-    text: "Rank Options",
-    to: {
-      name: "my-travel-requests/request/RequestOptionsProvidedPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
-
 defineExpose({
+  initialize,
   continue: save,
 })
 </script>

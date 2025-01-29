@@ -19,28 +19,24 @@
 </template>
 
 <script setup>
-import { computed, toRefs } from "vue"
+import { computed } from "vue"
 import { isNil } from "lodash"
 
-import useBreadcrumbs from "@/use/use-breadcrumbs"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskTravelRequests from "@/use/use-travel-desk-travel-requests"
 
 import TravelDeskTravelRequestCard from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
 // TODO: Consider loading travelAuthorization and pulling travelDeskTravel request from there.
 const travelDeskTravelRequestQueryOptions = computed(() => ({
   where: {
-    travelAuthorizationId: travelAuthorizationIdAsNumber.value,
+    travelAuthorizationId: props.travelAuthorizationId,
   },
   perPage: 1,
 }))
@@ -56,23 +52,11 @@ const travelDeskTravelRequestId = computed(() => {
   return travelDeskTravelRequest.value?.id
 })
 
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
+async function initialize(context) {
+  context.setEditableSteps([])
+}
 
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/request/RequestPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
+defineExpose({
+  initialize,
+})
 </script>

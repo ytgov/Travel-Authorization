@@ -81,7 +81,7 @@ export class TravelAuthorization extends Model<
   declare summary: string | null
   declare benefits: string | null
   declare status: Statuses | null
-  declare stepNumber: CreationOptional<number>
+  declare wizardStepName: string | null
   // TODO: consider making this supervisorId?
   declare supervisorEmail: string | null
   declare requestChange: string | null
@@ -317,10 +317,9 @@ TravelAuthorization.init(
         },
       },
     },
-    stepNumber: {
-      type: DataTypes.INTEGER,
+    wizardStepName: {
+      type: DataTypes.STRING(255),
       allowNull: true,
-      defaultValue: 1,
     },
     supervisorEmail: {
       type: DataTypes.STRING(255),

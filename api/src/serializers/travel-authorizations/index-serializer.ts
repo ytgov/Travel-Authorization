@@ -18,7 +18,7 @@ import {
 
 export type TravelAuthorizationIndexView = Pick<
   TravelAuthorization,
-  "id" | "eventName" | "tripType" | "status" | "createdAt" | "updatedAt"
+  "id" | "eventName" | "tripType" | "wizardStepName" | "status" | "createdAt" | "updatedAt"
 > & {
   // computed fields
   finalDestination?: Pick<Location, "id" | "city" | "province" | "createdAt" | "updatedAt">
@@ -45,7 +45,15 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
     const stateFlagsAttributes = StateFlagsSerializer.perform(this.record, this.currentUser)
 
     return {
-      ...pick(this.record, ["id", "eventName", "tripType", "status", "createdAt", "updatedAt"]),
+      ...pick(this.record, [
+        "id",
+        "eventName",
+        "tripType",
+        "wizardStepName",
+        "status",
+        "createdAt",
+        "updatedAt",
+      ]),
       // computed fields
       finalDestination:
         this.lastStop?.location &&

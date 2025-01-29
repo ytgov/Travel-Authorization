@@ -3,30 +3,28 @@
     <div class="d-flex justify-end">
       <EstimateCreateDialog
         v-if="hasEstimates"
-        :travel-authorization-id="travelAuthorizationIdAsNumber"
+        :travel-authorization-id="travelAuthorizationId"
         @created="refreshEstimates"
       />
       <EstimateGenerateDialog
         v-else
-        :travel-authorization-id="travelAuthorizationIdAsNumber"
+        :travel-authorization-id="travelAuthorizationId"
         @created="refreshEstimates"
       />
     </div>
 
     <EstimatesTable
       ref="estimatesTable"
-      :travel-authorization-id="travelAuthorizationIdAsNumber"
+      :travel-authorization-id="travelAuthorizationId"
     />
   </div>
 </template>
 
 <script setup>
-import { computed, ref, toRefs } from "vue"
+import { computed, ref } from "vue"
 
 import { useSnack } from "@/plugins/snack-plugin"
-import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useExpenses, { TYPES as EXPENSE_TYPES } from "@/use/use-expenses"
-import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import EstimateCreateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateCreateDialog"
 import EstimateGenerateDialog from "@/modules/travel-authorizations/components/edit-my-travel-authorization-estimate-page/EstimateGenerateDialog"
@@ -39,16 +37,14 @@ import EstimatesTable from "@/modules/travel-authorizations/components/edit-my-t
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
 
-const travelAuthorizationIdAsNumber = computed(() => parseInt(props.travelAuthorizationId))
-
 const expensesQuery = computed(() => ({
   where: {
-    travelAuthorizationId: travelAuthorizationIdAsNumber.value,
+    travelAuthorizationId: props.travelAuthorizationId,
     type: EXPENSE_TYPES.ESTIMATE,
   },
 }))
@@ -62,32 +58,9 @@ async function refreshEstimates() {
   await Promise.all([refresh(), estimatesTable.value?.refresh()])
 }
 
-const { travelAuthorizationId } = toRefs(props)
-const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
-
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/estimate/EstimatePage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-  {
-    text: "Edit",
-    to: {
-      name: "my-travel-requests/estimate/EstimateEditPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
+async function initialize(context) {
+  context.setEditableSteps(["edit-purpose-details", "edit-trip-details"])
+}
 
 const snack = useSnack()
 
@@ -101,6 +74,7 @@ async function validate() {
 }
 
 defineExpose({
+  initialize,
   continue: validate,
 })
 </script>

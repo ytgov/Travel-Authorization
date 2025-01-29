@@ -25,7 +25,6 @@ import { isNil } from "lodash"
 
 import { useSnack } from "@/plugins/snack-plugin"
 
-import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 import useTravelDeskTravelRequest from "@/use/use-travel-desk-travel-request"
 
@@ -33,7 +32,7 @@ import TravelerDetailsFormCard from "@/components/travel-desk-travel-requests/Tr
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
@@ -73,31 +72,12 @@ async function saveAndNotify() {
   }
 }
 
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/request/RequestPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-  {
-    text: "Edit",
-    to: {
-      name: "my-travel-requests/request/RequestEditPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
+async function initialize(context) {
+  context.setEditableSteps([])
+}
 
 defineExpose({
+  initialize,
   continue: saveAndNotify,
 })
 </script>

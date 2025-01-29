@@ -18,14 +18,13 @@ import { useSnack } from "@/plugins/snack-plugin"
 
 import travelDeskTravelRequestsApi from "@/api/travel-desk-travel-requests-api"
 
-import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useTravelAuthorization from "@/use/use-travel-authorization"
 
 import TravelDeskTravelRequestEditCard from "@/components/travel-desk-travel-requests/TravelDeskTravelRequestEditCard.vue"
 
 const props = defineProps({
   travelAuthorizationId: {
-    type: [String, Number],
+    type: Number,
     required: true,
   },
 })
@@ -38,6 +37,10 @@ const { travelAuthorization } = useTravelAuthorization(travelAuthorizationId)
 const travelDeskTravelRequestId = computed(() => {
   return travelAuthorization.value?.travelDeskTravelRequest?.id
 })
+
+async function initialize(context) {
+  context.setEditableSteps(["edit-traveller-details"])
+}
 
 const snack = useSnack()
 
@@ -54,31 +57,8 @@ async function submitAndNotify() {
   }
 }
 
-const breadcrumbs = computed(() => [
-  {
-    text: "My Travel Requests",
-    to: {
-      name: "my-travel-requests/MyTravelRequestsPage",
-    },
-  },
-  {
-    text: travelAuthorization.value?.eventName || "loading ...",
-    to: {
-      name: "my-travel-requests/request/RequestPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-  {
-    text: "Edit",
-    to: {
-      name: "my-travel-requests/request/RequestEditPage",
-      params: { travelAuthorizationId: travelAuthorizationId.value },
-    },
-  },
-])
-useBreadcrumbs(breadcrumbs)
-
 defineExpose({
+  initialize,
   continue: submitAndNotify,
 })
 </script>
