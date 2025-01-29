@@ -212,14 +212,12 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       continueButtonText: "Check status?",
     },
     {
-      id: "edit-submit-expenses",
+      id: "submit-expenses",
       title: "Expense: edit",
       subtitle: "Submit expenses",
-      to: {
-        name: "my-travel-requests/expense/ExpenseEditPage",
-        params: {
-          travelAuthorizationId,
-        },
+      component: () => import("@/components/my-travel-request-wizard/SubmitExpensesStep.vue"),
+      backButtonProps: {
+        disabled: true,
       },
       continueButtonText: "Submit to Supervisor",
     },
