@@ -129,6 +129,12 @@ export class TravelDeskTravelRequestsController extends BaseController<TravelDes
             },
           ],
         },
+        {
+          association: "travelDeskPassengerNameRecordDocument",
+          attributes: {
+            exclude: ["pnrDocument"],
+          },
+        },
       ],
     })
   }

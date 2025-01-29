@@ -130,7 +130,7 @@
           Send to Traveler
         </v-btn>
         <v-tooltip
-          v-else-if="isNil(travelDeskTravelRequest.invoiceNumber)"
+          v-else-if="needsInvoiceNumber"
           top
         >
           <template #activator="{ on }">
@@ -222,6 +222,9 @@ const {
 const isOptionsProvidedState = computed(
   () =>
     travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
+)
+const needsInvoiceNumber = computed(() =>
+  isNil(travelDeskTravelRequest.value?.travelDeskPassengerNameRecordDocument?.invoiceNumber)
 )
 
 const savingData = ref(false)
