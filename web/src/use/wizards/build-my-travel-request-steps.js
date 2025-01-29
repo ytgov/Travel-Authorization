@@ -205,15 +205,11 @@ export function buildMyTravelRequestSteps(travelAuthorizationIdMaybeRef) {
       id: "awaiting-travel-start",
       title: "Awaiting travel start",
       subtitle: "Waiting for travel to start",
-      to: {
-        name: "my-travel-requests/AwaitingTravelStartPage",
-        params: {
-          travelAuthorizationId,
-        },
-      },
-      continueButtonProps: {
+      component: () => import("@/components/my-travel-request-wizard/AwaitingTravelStartStep.vue"),
+      backButtonProps: {
         disabled: true,
       },
+      continueButtonText: "Check status?",
     },
     {
       id: "edit-submit-expenses",
