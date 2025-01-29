@@ -78,7 +78,6 @@ import { isNil, isEmpty } from "lodash"
 import { useI18n } from "@/plugins/vue-i18n-plugin"
 import formatDate from "@/utils/format-date"
 import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
-import { FIRST_STEP_ID } from "@/use/wizards/my-travel-request-wizard-steps"
 import useCurrentUser from "@/use/use-current-user"
 import useTravelAuthorizations from "@/use/use-travel-authorizations"
 
@@ -143,24 +142,13 @@ const { travelAuthorizations, totalCount, isLoading, refresh } =
 const router = useRouter()
 
 async function goToMyTravelRequestWizardStep(travelAuthorization) {
-  const travelAuthorizationId = travelAuthorization.id
-  if (travelAuthorization.wizardStepName) {
-    router.push({
-      name: "my-travel-requests/MyTravelRequestWizardPage",
-      params: {
-        travelAuthorizationId,
-        stepName: travelAuthorization.wizardStepName,
-      },
-    })
-  } else {
-    router.push({
-      name: "my-travel-requests/MyTravelRequestWizardPage",
-      params: {
-        travelAuthorizationId,
-        stepName: FIRST_STEP_ID,
-      },
-    })
-  }
+  return router.push({
+    name: "my-travel-requests/MyTravelRequestWizardPage",
+    params: {
+      travelAuthorizationId: travelAuthorization.id,
+      stepName: travelAuthorization.wizardStepName,
+    },
+  })
 }
 
 function formatDateWrapper(value) {
