@@ -53,7 +53,7 @@
           </v-btn>
         </div>
         <v-divider class="mb-7" />
-        <v-row v-if="travelDeskTravelRequest.invoiceNumber">
+        <v-row v-if="hasInvoiceNumber">
           <v-col>
             <TravelDeskInvoiceCard :travel-desk-travel-request-id="travelDeskTravelRequest.id" />
           </v-col>
@@ -108,13 +108,13 @@
           <div>Back</div>
         </v-btn>
         <ItineraryModal
-          v-if="travelDeskTravelRequest.invoiceNumber"
+          v-if="hasInvoiceNumber"
           class="ml-auto mr-3"
-          :invoice-number="travelDeskTravelRequest.invoiceNumber"
+          :invoice-number="hasInvoiceNumber"
         />
         <UploadPnrModal
           :travel-request="travelDeskTravelRequest"
-          :class="travelDeskTravelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
+          :class="hasInvoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
           @saveData="saveNewTravelRequest('save')"
           @close="refresh"
         />
@@ -130,7 +130,7 @@
           Send to Traveler
         </v-btn>
         <v-tooltip
-          v-else-if="needsInvoiceNumber"
+          v-else-if="!hasInvoiceNumber"
           top
         >
           <template #activator="{ on }">
@@ -223,8 +223,8 @@ const isOptionsProvidedState = computed(
   () =>
     travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
 )
-const needsInvoiceNumber = computed(() =>
-  isNil(travelDeskTravelRequest.value?.travelDeskPassengerNameRecordDocument?.invoiceNumber)
+const hasInvoiceNumber = computed(
+  () => !isNil(travelDeskTravelRequest.value?.travelDeskPassengerNameRecordDocument?.invoiceNumber)
 )
 
 const savingData = ref(false)
