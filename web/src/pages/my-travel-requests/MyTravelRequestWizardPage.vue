@@ -66,7 +66,7 @@
 
 <script setup>
 import { computed, ref, watch } from "vue"
-import { isNil } from "lodash"
+import { isNil, isEmpty, isString } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 import useMyTravelRequestWizard from "@/use/wizards/use-my-travel-request-wizard"
@@ -149,11 +149,21 @@ async function continueAndGoToNextStep() {
 
   isLoading.value = true
   try {
-    const stepSuccess = await currentStepComponent.value?.continue()
-    if (stepSuccess !== true) {
+    const stepSuccessOrNextStepName = await currentStepComponent.value?.continue()
+    if (
+      stepSuccessOrNextStepName === false ||
+      isNil(stepSuccessOrNextStepName) ||
+      (isString(stepSuccessOrNextStepName) && isEmpty(stepSuccessOrNextStepName))
+    ) {
       return
     }
-    return goToNextStep()
+
+    if (stepSuccessOrNextStepName === true) {
+      return goToNextStep()
+    }
+
+    const stepName = stepSuccessOrNextStepName
+    return goToStep(stepName)
   } finally {
     isLoading.value = false
   }

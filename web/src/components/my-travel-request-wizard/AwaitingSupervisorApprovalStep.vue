@@ -26,6 +26,7 @@ const props = defineProps({
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, refresh } = useTravelAuthorization(travelAuthorizationId)
 const isApproved = computed(() => travelAuthorization.value.status === STATUSES.APPROVED)
+const isTravellingByAir = computed(() => travelAuthorization.value.isTravellingByAir)
 
 async function initialize(context) {
   context.setEditableSteps(["review-trip-details", "review-submitted-estimate"])
@@ -40,6 +41,12 @@ async function checkForApproval() {
     await nextTick()
     if (isApproved.value) {
       snack.info("Travel authorization approved!")
+      if (!isTravellingByAir.value) {
+        // TODO: consider if this should redirect somewhere else
+        // if travel has started.
+        return "awaiting-travel-start"
+      }
+
       return true
     }
 
