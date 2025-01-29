@@ -55,7 +55,7 @@ async function createAndGoToEditPage() {
       name: "my-travel-requests/MyTravelRequestWizardPage",
       params: {
         travelAuthorizationId: travelAuthorization.id,
-        stepName: FIRST_STEP_ID,
+        stepName: travelAuthorization.wizardStepName,
       },
     })
   } catch (error) {
