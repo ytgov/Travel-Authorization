@@ -5,11 +5,7 @@
     </v-card-title>
 
     <v-card-text>
-      <p>Waiting for the following conditions to be met:</p>
-      <ul>
-        <li v-if="isInPreExpensingStates"><p>Travel authorization to be approved.</p></li>
-        <li v-if="isBeforeTravelStartDate"><p>Departure date to have passed.</p></li>
-      </ul>
+      <p>Waiting for the departure date to have passed.</p>
     </v-card-text>
   </v-card>
 </template>
@@ -19,9 +15,7 @@ import { computed, nextTick, toRefs } from "vue"
 import { isNil } from "lodash"
 
 import useSnack from "@/use/use-snack"
-import useTravelAuthorization, {
-  STATUSES as TRAVEL_AUTHORIZATION_STATUSES,
-} from "@/use/use-travel-authorization"
+import useTravelAuthorization from "@/use/use-travel-authorization"
 
 const props = defineProps({
   travelAuthorizationId: {
@@ -33,13 +27,6 @@ const props = defineProps({
 const { travelAuthorizationId } = toRefs(props)
 const { travelAuthorization, refresh } = useTravelAuthorization(travelAuthorizationId)
 
-const isInPreExpensingStates = computed(() => {
-  return (
-    travelAuthorization.value?.status === TRAVEL_AUTHORIZATION_STATUSES.DRAFT ||
-    travelAuthorization.value?.status === TRAVEL_AUTHORIZATION_STATUSES.SUBMITTED
-  )
-})
-
 const isBeforeTravelStartDate = computed(() => {
   const firstTravelSegment = travelAuthorization.value?.travelSegments?.[0]
   if (isNil(firstTravelSegment)) return false
@@ -48,7 +35,7 @@ const isBeforeTravelStartDate = computed(() => {
 })
 
 const canContinue = computed(() => {
-  return !isInPreExpensingStates.value && !isBeforeTravelStartDate.value
+  return !isBeforeTravelStartDate.value
 })
 
 async function initialize(context) {
@@ -67,9 +54,7 @@ async function checkTravelStartStatus() {
       return true
     }
 
-    if (isInPreExpensingStates.value) {
-      snack.warning("Travel authorization needs to be approved first.")
-    } else if (isBeforeTravelStartDate.value) {
+    if (isBeforeTravelStartDate.value) {
       snack.warning("Travel has not started yet.")
     }
     return false
