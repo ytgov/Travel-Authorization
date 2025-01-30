@@ -1,25 +1,13 @@
 import {
   Association,
-  BelongsToCreateAssociationMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
   CreationOptional,
   DataTypes,
   ForeignKey,
-  HasManyAddAssociationMixin,
-  HasManyAddAssociationsMixin,
-  HasManyCountAssociationsMixin,
-  HasManyCreateAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyHasAssociationMixin,
-  HasManyHasAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  HasManyRemoveAssociationsMixin,
-  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
   NonAttribute,
+  Op,
 } from "sequelize"
 import { DateTime } from "luxon"
 
@@ -32,6 +20,12 @@ import TravelDeskTravelRequest from "@/models/travel-desk-travel-request"
 import TravelPurpose from "@/models/travel-purpose"
 import TravelSegment from "@/models/travel-segment"
 import User from "@/models/user"
+
+import {
+  buildIsTravellingQuery,
+  buildIsUpcomingTravelQuery,
+  buildIsBeforeTripEndQuery,
+} from "@/queries/travel-authorizations"
 
 // TODO: state management is going to be a bit deal for this project
 // we should do some aggressive data modeling an engineering before this becomes unmagable
@@ -87,7 +81,7 @@ export class TravelAuthorization extends Model<
   declare summary: string | null
   declare benefits: string | null
   declare status: Statuses | null
-  declare stepNumber: CreationOptional<number>
+  declare wizardStepName: string | null
   // TODO: consider making this supervisorId?
   declare supervisorEmail: string | null
   declare requestChange: string | null
@@ -109,85 +103,6 @@ export class TravelAuthorization extends Model<
   }
 
   // Associations
-  // https://sequelize.org/docs/v6/other-topics/typescript/#usage
-  // https://sequelize.org/docs/v6/core-concepts/assocs/#special-methodsmixins-added-to-instances
-  // https://sequelize.org/api/v7/types/_sequelize_core.index.belongstocreateassociationmixin
-  declare getPreApprovalProfile: BelongsToGetAssociationMixin<TravelAuthorizationPreApprovalProfile>
-  declare setPreApprovalProfile: BelongsToSetAssociationMixin<
-    TravelAuthorizationPreApprovalProfile,
-    TravelAuthorizationPreApprovalProfile["id"]
-  >
-  declare createPreApprovalProfile: BelongsToCreateAssociationMixin<TravelAuthorizationPreApprovalProfile>
-
-  declare getPurpose: BelongsToGetAssociationMixin<TravelPurpose>
-  declare setPurpose: BelongsToSetAssociationMixin<TravelPurpose, TravelPurpose["id"]>
-  declare createPurpose: BelongsToCreateAssociationMixin<TravelPurpose>
-
-  declare getTravelDeskTravelRequest: BelongsToGetAssociationMixin<TravelDeskTravelRequest>
-  declare setTravelDeskTravelRequest: BelongsToSetAssociationMixin<
-    TravelDeskTravelRequest,
-    TravelDeskTravelRequest["travelAuthorizationId"]
-  >
-  declare createTravelDeskTravelRequest: BelongsToCreateAssociationMixin<TravelDeskTravelRequest>
-
-  declare getUser: BelongsToGetAssociationMixin<User>
-  declare setUser: BelongsToSetAssociationMixin<User, User["id"]>
-  declare createUser: BelongsToCreateAssociationMixin<User>
-
-  declare getExpenses: HasManyGetAssociationsMixin<Expense>
-  declare setExpenses: HasManySetAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare hasExpense: HasManyHasAssociationMixin<Expense, Expense["travelAuthorizationId"]>
-  declare hasExpenses: HasManyHasAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare addExpense: HasManyAddAssociationMixin<Expense, Expense["travelAuthorizationId"]>
-  declare addExpenses: HasManyAddAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare removeExpense: HasManyRemoveAssociationMixin<Expense, Expense["travelAuthorizationId"]>
-  declare removeExpenses: HasManyRemoveAssociationsMixin<Expense, Expense["travelAuthorizationId"]>
-  declare countExpenses: HasManyCountAssociationsMixin
-  declare createExpense: HasManyCreateAssociationMixin<Expense>
-
-  declare getStops: HasManyGetAssociationsMixin<Stop>
-  declare setStops: HasManySetAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare hasStop: HasManyHasAssociationMixin<Stop, Stop["travelAuthorizationId"]>
-  declare hasStops: HasManyHasAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare addStop: HasManyAddAssociationMixin<Stop, Stop["travelAuthorizationId"]>
-  declare addStops: HasManyAddAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare removeStop: HasManyRemoveAssociationMixin<Stop, Stop["travelAuthorizationId"]>
-  declare removeStops: HasManyRemoveAssociationsMixin<Stop, Stop["travelAuthorizationId"]>
-  declare countStops: HasManyCountAssociationsMixin
-  declare createStop: HasManyCreateAssociationMixin<Stop>
-
-  declare getTravelSegments: HasManyGetAssociationsMixin<TravelSegment>
-  declare setTravelSegments: HasManySetAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare hasTravelSegment: HasManyHasAssociationMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare hasTravelSegments: HasManyHasAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare addTravelSegment: HasManyAddAssociationMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare addTravelSegments: HasManyAddAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare removeTravelSegment: HasManyRemoveAssociationMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare removeTravelSegments: HasManyRemoveAssociationsMixin<
-    TravelSegment,
-    TravelSegment["travelAuthorizationId"]
-  >
-  declare countTravelSegments: HasManyCountAssociationsMixin
-  declare createTravelSegment: HasManyCreateAssociationMixin<TravelSegment>
-
   declare preApprovalProfile?: NonAttribute<TravelAuthorizationPreApprovalProfile>
   declare purpose?: NonAttribute<TravelPurpose>
   declare travelDeskTravelRequest?: NonAttribute<TravelDeskTravelRequest>
@@ -402,10 +317,9 @@ TravelAuthorization.init(
         },
       },
     },
-    stepNumber: {
-      type: DataTypes.INTEGER,
+    wizardStepName: {
+      type: DataTypes.STRING(255),
       allowNull: true,
-      defaultValue: 1,
     },
     supervisorEmail: {
       type: DataTypes.STRING(255),
@@ -467,6 +381,48 @@ TravelAuthorization.init(
   {
     sequelize,
     paranoid: false,
+    scopes: {
+      isTravelling() {
+        const currentDate = new Date().toISOString()
+        return {
+          where: {
+            id: {
+              [Op.in]: buildIsTravellingQuery(),
+            },
+          },
+          replacements: {
+            currentDate,
+          },
+        }
+      },
+      isUpcomingTravel() {
+        const currentDate = new Date().toISOString()
+        return {
+          where: {
+            id: {
+              [Op.in]: buildIsUpcomingTravelQuery(),
+            },
+          },
+          replacements: {
+            currentDate,
+          },
+        }
+      },
+      // TODO: consider if I should send the current date from the front-end?
+      isBeforeTripEnd() {
+        const currentDate = new Date().toISOString()
+        return {
+          where: {
+            id: {
+              [Op.in]: buildIsBeforeTripEndQuery(),
+            },
+          },
+          replacements: {
+            currentDate,
+          },
+        }
+      },
+    },
   }
 )
 

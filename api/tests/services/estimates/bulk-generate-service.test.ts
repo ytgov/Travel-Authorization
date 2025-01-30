@@ -278,6 +278,85 @@ describe("api/src/services/estimates/bulk-generate-service.ts", () => {
           }),
         ])
       })
+
+      test("when departure time is late in the day, no claims are generated for that day", async () => {
+        const travelAuthorization = await travelAuthorizationFactory.create({
+          tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
+        })
+        const whitehorse = await locationFactory.create({ city: "Whitehorse", province: "YT" })
+        const vancouver = await locationFactory.create({ city: "Vancouver", province: "BC" })
+        const travelSegment1 = await travelSegmentFactory
+          .associations({
+            travelAuthorization,
+            departureLocation: whitehorse,
+            arrivalLocation: vancouver,
+          })
+          .create({
+            segmentNumber: 1,
+            departureOn: new Date("2025-01-31"),
+            departureTime: "22:47:00",
+            modeOfTransport: Stop.TravelMethods.AIRCRAFT,
+            accommodationType: Stop.AccommodationTypes.HOTEL,
+          })
+        const travelSegment2 = await travelSegmentFactory
+          .associations({
+            travelAuthorization,
+            departureLocation: vancouver,
+            arrivalLocation: whitehorse,
+          })
+          .create({
+            segmentNumber: 2,
+            departureOn: new Date("2025-02-01"),
+            departureTime: "23:32:00",
+            modeOfTransport: Stop.TravelMethods.AIRCRAFT,
+            accommodationType: null,
+          })
+
+        const expenses = await BulkGenerateService.perform(
+          travelAuthorization.id,
+          [travelSegment1, travelSegment2],
+          { daysOffTravelStatus: 0 }
+        )
+
+        expect(expenses).toEqual([
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Aircraft from Whitehorse to Vancouver",
+            date: "2025-01-31",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Hotel in Vancouver",
+            date: "2025-01-31",
+            cost: 250.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Accommodations",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Aircraft from Vancouver to Whitehorse",
+            date: "2025-02-01",
+            cost: 350.0,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Transportation",
+          }),
+          expect.objectContaining({
+            travelAuthorizationId: travelAuthorization.id,
+            description: "Breakfast/Lunch/Dinner/Incidentals",
+            date: "2025-02-01",
+            cost: 123.40,
+            currency: "CAD",
+            type: "Estimate",
+            expenseType: "Meals & Incidentals",
+          }),
+        ])
+      })
     })
   })
 })

@@ -4,20 +4,15 @@
     :value="currentStepNumber"
     vertical
     outlined
-    :width="$vuetify.breakpoint.mdAndUp ? 300 : undefined"
+    :width="$vuetify.breakpoint.mdAndUp ? 250 : undefined"
   >
     <v-stepper-step
       v-for="(step, index) in steps"
       :key="index"
-      :step="step.number"
-      :complete="step.number < currentStepNumber"
-      :editable="step.disabled !== true && step.number <= currentStepNumber"
-      @click="
-        updateCurrentStepNumber(
-          step.number,
-          step.disabled !== true && step.number <= currentStepNumber
-        )
-      "
+      :step="index + 1"
+      :complete="index + 1 < currentStepNumber"
+      :editable="step.editable"
+      @click="updateCurrentWizardStepName(step.id, step.editable)"
     >
       {{ step.title }}
       <small v-if="step.subtitle">
@@ -32,23 +27,27 @@ import { computed } from "vue"
 import md5 from "md5"
 
 const props = defineProps({
-  currentStepNumber: {
-    type: Number,
-    required: true,
+  currentWizardStepName: {
+    type: String,
+    default: null,
   },
   steps: {
     type: Array,
-    required: true,
+    default: () => [],
   },
 })
 
-const emit = defineEmits(["update:currentStepNumber"])
+const emit = defineEmits(["update:currentWizardStepName"])
 
 const stepsHash = computed(() => md5(JSON.stringify(props.steps)))
 
-function updateCurrentStepNumber(stepNumber, editable) {
+const currentStepNumber = computed(() => {
+  return props.steps.findIndex((step) => step.id === props.currentWizardStepName) + 1
+})
+
+function updateCurrentWizardStepName(wizardStepName, editable) {
   if (editable) {
-    emit("update:currentStepNumber", stepNumber)
+    emit("update:currentWizardStepName", wizardStepName)
   }
 }
 </script>

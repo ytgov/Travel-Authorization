@@ -3,8 +3,11 @@
     class="ma-0"
     color="secondary"
     :to="{
-      name: 'my-travel-requests/expense/ExpenseEditPage',
-      params: { travelAuthorizationId },
+      name: 'my-travel-requests/MyTravelRequestWizardPage',
+      params: {
+        travelAuthorizationId,
+        stepName: 'submit-expenses',
+      },
     }"
     @click.stop
   >

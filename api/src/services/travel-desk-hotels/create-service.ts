@@ -7,7 +7,10 @@ import BaseService from "@/services/base-service"
 type Attributes = Partial<TravelDeskHotel>
 
 export class CreateService extends BaseService {
-  constructor(protected attributes: Attributes, protected currentUser: User) {
+  constructor(
+    protected attributes: Attributes,
+    protected currentUser: User
+  ) {
     super()
   }
 
@@ -16,8 +19,6 @@ export class CreateService extends BaseService {
       travelRequestId,
       city,
       isDedicatedConferenceHotelAvailable,
-      conferenceName,
-      conferenceHotelName,
       checkIn,
       checkOut,
       ...optionalAttributes
@@ -35,14 +36,6 @@ export class CreateService extends BaseService {
       throw new Error("Is dedicated conference hotel available is required.")
     }
 
-    if (isNil(conferenceName)) {
-      throw new Error("Conference name is required.")
-    }
-
-    if (isNil(conferenceHotelName)) {
-      throw new Error("Conference hotel name is required.")
-    }
-
     if (isNil(checkIn)) {
       throw new Error("Check-in date is required.")
     }
@@ -55,8 +48,6 @@ export class CreateService extends BaseService {
       travelRequestId,
       city,
       isDedicatedConferenceHotelAvailable,
-      conferenceName,
-      conferenceHotelName,
       checkIn,
       checkOut,
       ...optionalAttributes,

@@ -106,8 +106,8 @@ export class IndexSerializer extends BaseSerializer<TravelDeskTravelRequest> {
       isBooked,
       locationsTraveled,
       requestedOptions,
-      travelEndDate,
       travelStartDate,
+      travelEndDate,
       userDisplayName,
     }
   }

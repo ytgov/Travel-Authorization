@@ -2,6 +2,7 @@ import { isEmpty, isNil, last, first, pick } from "lodash"
 
 import {
   Expense,
+  Location,
   Stop,
   TravelAuthorization,
   TravelDeskTravelRequest,
@@ -15,18 +16,21 @@ import {
   type TravelAuthorizationStateFlagsView,
 } from "@/serializers/travel-authorizations/state-flags-serializer"
 
-export type TravelAuthorizationIndexView = Pick<TravelAuthorization, "id" | "eventName"> & {
+export type TravelAuthorizationIndexView = Pick<
+  TravelAuthorization,
+  "id" | "eventName" | "tripType" | "wizardStepName" | "status" | "createdAt" | "updatedAt"
+> & {
   // computed fields
-  finalDestination: string | undefined
-  departingAt: string | undefined
-  returningAt: string | undefined
-  phase: string
-  status: string
-  action: string
-  firstName: string
-  lastName: string
-  department: string
-  branch: string
+  finalDestination?: Pick<Location, "id" | "city" | "province" | "createdAt" | "updatedAt">
+  departingAt?: string | null
+  returningAt?: string | null
+  phase?: string
+  action?: string[]
+  firstName: string | null
+  lastName: string | null
+  department: string | null
+  branch: string | null
+  isTravelling: boolean
 } & TravelAuthorizationStateFlagsView
 
 export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
@@ -37,22 +41,32 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
     super(record)
   }
 
-  perform() {
+  perform(): TravelAuthorizationIndexView {
     const stateFlagsAttributes = StateFlagsSerializer.perform(this.record, this.currentUser)
 
     return {
-      ...pick(this.record, ["id", "eventName", "status", "createdAt", "updatedAt"]),
+      ...pick(this.record, [
+        "id",
+        "eventName",
+        "tripType",
+        "wizardStepName",
+        "status",
+        "createdAt",
+        "updatedAt",
+      ]),
       // computed fields
-      finalDestination: this.lastStop?.location,
-      departingAt: this.firstStop?.departureAt,
-      returningAt: this.lastStop?.departureAt,
+      finalDestination:
+        this.lastStop?.location &&
+        pick(this.lastStop?.location, ["id", "city", "province", "createdAt", "updatedAt"]),
+      departingAt: this.firstStop?.departureAt?.toISOString(),
+      returningAt: this.lastStop?.departureAt?.toISOString(),
       phase: this.determinePhase(),
       action: this.determineAction(),
       firstName: this.traveller.firstName,
       lastName: this.traveller.lastName,
       department: this.traveller.department,
       branch: this.traveller.branch,
-      isTraveling: this.isTravelling(),
+      isTravelling: this.isTravelling(),
       ...stateFlagsAttributes,
     }
   }
@@ -209,13 +223,6 @@ export class IndexSerializer extends BaseSerializer<TravelAuthorization> {
     return (
       this.record.travelDeskTravelRequest?.status ===
       TravelDeskTravelRequest.Statuses.OPTIONS_PROVIDED
-    )
-  }
-
-  private travelDeskIsOptionsRanked() {
-    return (
-      this.record.travelDeskTravelRequest?.status ===
-      TravelDeskTravelRequest.Statuses.OPTIONS_RANKED
     )
   }
 

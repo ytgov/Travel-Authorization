@@ -1,4 +1,4 @@
-import { clone, isNil, min, startCase, times, toLower } from "lodash"
+import { clone, isEmpty, isNil, min, startCase, times, toLower } from "lodash"
 import { CreationAttributes, Op } from "sequelize"
 
 import {
@@ -193,6 +193,10 @@ export class BulkGenerateService extends BaseService {
 
     const estimates = []
     for (const { date, claims } of claimsPerDay) {
+      if (isEmpty(claims)) {
+        continue
+      }
+
       const location = BulkGenerate.determineFinalDestination(this.travelSegments)
       const province = location.province
       // TODO: consider using i18n to convert claim types to human readable strings

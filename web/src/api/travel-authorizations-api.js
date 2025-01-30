@@ -50,7 +50,7 @@ export const TRIP_TYPES = Object.freeze({
  *   summary: string | null;
  *   benefits: string | null;
  *   status: Statuses;
- *   stepNumber: number;
+ *   wizardStepName: string | null;
  *   supervisorEmail: string | null;
  *   requestChange: string | null;
  *   denialReason: string | null;
@@ -79,7 +79,7 @@ export const TRIP_TYPES = Object.freeze({
  *   email?: string;
  *   mailcode?: string;
  *   status?: Statuses;
- *   stepNumber?: number;
+ *   wizardStepName?: string;
  *   supervisorEmail?: string;
  *   tripType?: TripTypes;
  *   allTravelWithinTerritory?: boolean;

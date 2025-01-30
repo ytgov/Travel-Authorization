@@ -107,6 +107,17 @@ const { currentUser } = useCurrentUser()
 const isCurrentUser = computed(() => !isNil(props.userId) && props.userId === currentUser.value?.id)
 
 const userProfileLink = computed(() => {
-  return isCurrentUser.value ? "/profile" : `/users/${props.userId}`
+  if (isCurrentUser.value) {
+    return {
+      name: "ProfilePage",
+    }
+  }
+
+  return {
+    name: "users/UserPage",
+    params: {
+      userId: props.userId,
+    },
+  }
 })
 </script>

@@ -25,13 +25,22 @@ export class UpdateService extends BaseService {
           "rentalCars",
           {
             association: "travelAuthorization",
+            required: true,
             include: [
               "user",
               {
                 association: "travelSegments",
+                separate: true,
+                order: [["segmentNumber", "ASC"]],
                 include: ["departureLocation", "arrivalLocation"],
               },
             ],
+          },
+          {
+            association: "travelDeskPassengerNameRecordDocument",
+            attributes: {
+              exclude: ["pnrDocument"],
+            },
           },
         ],
       })

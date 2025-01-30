@@ -53,7 +53,7 @@
           </v-btn>
         </div>
         <v-divider class="mb-7" />
-        <v-row v-if="travelDeskTravelRequest.invoiceNumber">
+        <v-row v-if="hasInvoiceNumber">
           <v-col>
             <TravelDeskInvoiceCard :travel-desk-travel-request-id="travelDeskTravelRequest.id" />
           </v-col>
@@ -108,17 +108,19 @@
           <div>Back</div>
         </v-btn>
         <ItineraryModal
-          v-if="travelDeskTravelRequest.invoiceNumber"
+          v-if="hasInvoiceNumber"
           class="ml-auto mr-3"
-          :invoice-number="travelDeskTravelRequest.invoiceNumber"
+          :invoice-number="hasInvoiceNumber"
         />
         <UploadPnrModal
           :travel-request="travelDeskTravelRequest"
-          :class="travelDeskTravelRequest.invoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
+          :class="hasInvoiceNumber ? 'ml-1 mr-2' : 'ml-auto mr-2'"
           @saveData="saveNewTravelRequest('save')"
           @close="refresh"
         />
+
         <v-btn
+          v-if="isOptionsProvidedState"
           class="mr-2 px-5"
           color="primary"
           :loading="isLoading"
@@ -127,28 +129,49 @@
         >
           Send to Traveler
         </v-btn>
-
+        <v-tooltip
+          v-else-if="!hasInvoiceNumber"
+          top
+        >
+          <template #activator="{ on }">
+            <span
+              class="align-self-stretch align-self-md-auto"
+              v-on="on"
+            >
+              <v-btn
+                class="mx-md-3"
+                :loading="isLoading"
+                disabled
+                :block="$vuetify.breakpoint.smAndDown"
+              >
+                Booking Complete (?)
+              </v-btn>
+            </span>
+          </template>
+          <span>Invoice number required. Upload PNR.</span>
+        </v-tooltip>
         <v-btn
-          v-if="travelDeskTravelRequest.invoiceNumber"
-          class="mr-5 px-5"
-          color="#005A65"
+          v-else
+          class="mx-md-3"
+          color="primary"
           :loading="isLoading"
           :block="$vuetify.breakpoint.smAndDown"
           @click="openConfirmBookingDialog"
-          >Booking Complete
+        >
+          Booking Complete
         </v-btn>
       </v-card-actions>
 
       <TravelDeskTravelRequestConfirmBookingDialog
         ref="confirmBookingDialog"
-        @booked="refresh"
+        @booked="returnToTravelDesk"
       />
     </v-card>
   </v-container>
 </template>
 
 <script setup>
-import { nextTick, ref, toRefs } from "vue"
+import { computed, nextTick, ref, toRefs } from "vue"
 import { useRouter } from "vue2-helpers/vue-router"
 import { cloneDeep, isNil } from "lodash"
 
@@ -196,6 +219,14 @@ const {
   save: saveTravelDeskTravelRequest,
 } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
+const isOptionsProvidedState = computed(
+  () =>
+    travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
+)
+const hasInvoiceNumber = computed(
+  () => !isNil(travelDeskTravelRequest.value?.travelDeskPassengerNameRecordDocument?.invoiceNumber)
+)
+
 const savingData = ref(false)
 
 async function refresh() {
@@ -210,6 +241,12 @@ async function refresh() {
 }
 
 const router = useRouter()
+
+async function returnToTravelDesk() {
+  return router.push({
+    name: "TravelDeskPage",
+  })
+}
 
 async function markTravelRequestAsOptionsProvidedAndReturnToTravelDesk() {
   isLoading.value = true

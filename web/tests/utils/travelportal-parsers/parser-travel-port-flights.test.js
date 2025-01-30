@@ -3,7 +3,7 @@ import simpleDedent from "@/support/simple-dedent"
 
 describe("web/src/utils/travel-port-parsers/parser-travel-port-flights.js", () => {
   describe(".parseTravelportFlights", () => {
-    test.only.each([
+    test.each([
       {
         text: `
         Air Canada AC303

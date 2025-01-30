@@ -135,7 +135,7 @@ import { required } from "@/utils/validators"
 
 import travelDeskFlightRequestsApi from "@/api/travel-desk-flight-requests-api"
 
-import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { integerTransformerLegacy } from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 import useTraveDeskFlightRequest from "@/use/use-travel-desk-flight-request"
 
@@ -156,7 +156,7 @@ defineProps({
 const emit = defineEmits(["saved"])
 
 const travelDeskFlightRequestId = useRouteQuery("showFlightRequestEdit", undefined, {
-  transformer: integerTransformer,
+  transformer: integerTransformerLegacy,
 })
 
 const { travelDeskFlightRequest, isLoading } = useTraveDeskFlightRequest(travelDeskFlightRequestId)
