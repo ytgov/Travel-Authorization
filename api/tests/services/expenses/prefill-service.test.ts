@@ -2,7 +2,7 @@ import PrefillService from "@/services/expenses/prefill-service"
 
 import { Expense, TravelAuthorization } from "@/models"
 
-import { expenseFactory, travelAuthorizationFactory, travelSegmentFactory } from "@/factories"
+import { expenseFactory, travelAuthorizationFactory } from "@/factories"
 
 describe("api/src/services/expenses/prefill-service.ts", () => {
   describe("PrefillService", () => {
@@ -11,21 +11,7 @@ describe("api/src/services/expenses/prefill-service.ts", () => {
         // Arrange
         const travelAuthorization = await travelAuthorizationFactory.create({
           tripType: TravelAuthorization.TripTypes.ROUND_TRIP,
-          status: TravelAuthorization.Statuses.APPROVED,
         })
-        await travelSegmentFactory.create({
-          travelAuthorizationId: travelAuthorization.id,
-          departureOn: "2022-06-05",
-          departureTime: "08:30",
-          segmentNumber: 0,
-        })
-        await travelSegmentFactory.create({
-          travelAuthorizationId: travelAuthorization.id,
-          departureOn: "2022-06-07",
-          departureTime: "11:30",
-          segmentNumber: 1,
-        })
-
         await expenseFactory.create({
           travelAuthorizationId: travelAuthorization.id,
           description: "Aircraft from Whitehorse to Vancouver",
