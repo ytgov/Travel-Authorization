@@ -120,7 +120,17 @@
         />
 
         <v-btn
-          v-if="isSubmittedState"
+          v-if="isDraftState"
+          class="mr-2 px-5"
+          color="primary"
+          :loading="isLoading"
+          :block="$vuetify.breakpoint.smAndDown"
+          @click="markTravelRequestAsSubmittedAndReturnToTravelDesk"
+        >
+          Submit for Traveler
+        </v-btn>
+        <v-btn
+          v-else-if="isSubmittedState"
           class="mr-2 px-5"
           color="primary"
           :loading="isLoading"
@@ -130,7 +140,28 @@
           Send to Traveler
         </v-btn>
         <v-tooltip
-          v-else-if="!hasInvoiceNumber"
+          v-else-if="isOptionsProvidedState"
+          top
+        >
+          <template #activator="{ on }">
+            <span
+              class="align-self-stretch align-self-md-auto"
+              v-on="on"
+            >
+              <v-btn
+                class="mx-md-3"
+                :loading="isLoading"
+                disabled
+                :block="$vuetify.breakpoint.smAndDown"
+              >
+                Booking Complete (?)
+              </v-btn>
+            </span>
+          </template>
+          <span>Waiting for traveler to rank flight options, before booking can be finalized.</span>
+        </v-tooltip>
+        <v-tooltip
+          v-else-if="isOptionsRankedState && !hasInvoiceNumber"
           top
         >
           <template #activator="{ on }">
@@ -151,7 +182,7 @@
           <span>Invoice number required. Upload PNR.</span>
         </v-tooltip>
         <v-btn
-          v-else
+          v-else-if="isOptionsRankedState && hasInvoiceNumber"
           class="mx-md-3"
           color="primary"
           :loading="isLoading"
@@ -160,6 +191,15 @@
         >
           Booking Complete
         </v-btn>
+        <template v-else-if="isBookedState || isCompleteState">
+          <!-- No op: travel request is complete -->
+        </template>
+        <v-alert
+          v-else
+          type="warning"
+        >
+          Unhandled state: {{ travelDeskTravelRequest.status }}
+        </v-alert>
       </v-card-actions>
 
       <TravelDeskTravelRequestConfirmBookingDialog
@@ -208,7 +248,6 @@ const props = defineProps({
   },
 })
 
-const snack = useSnack()
 const { currentUser } = useCurrentUser()
 
 const { travelDeskTravelRequestId } = toRefs(props)
@@ -219,8 +258,24 @@ const {
   save: saveTravelDeskTravelRequest,
 } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
+const isDraftState = computed(
+  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.DRAFT
+)
 const isSubmittedState = computed(
   () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED
+)
+const isOptionsProvidedState = computed(
+  () =>
+    travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
+)
+const isOptionsRankedState = computed(
+  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_RANKED
+)
+const isBookedState = computed(
+  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.BOOKED
+)
+const isCompleteState = computed(
+  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.COMPLETE
 )
 const hasInvoiceNumber = computed(
   () => !isNil(travelDeskTravelRequest.value?.travelDeskPassengerNameRecordDocument?.invoiceNumber)
@@ -247,6 +302,24 @@ async function returnToTravelDesk() {
   })
 }
 
+const snack = useSnack()
+
+async function markTravelRequestAsSubmittedAndReturnToTravelDesk() {
+  isLoading.value = true
+  try {
+    await travelDeskTravelRequestsApi.submit(travelDeskTravelRequestId.value)
+    return router.push({
+      name: "TravelDeskPage",
+    })
+  } catch (error) {
+    console.error("Failed to submit travel desk travel request:", error)
+    snack.error(`Failed to submit request: ${error}`)
+    return false
+  } finally {
+    isLoading.value = false
+  }
+}
+
 async function markTravelRequestAsOptionsProvidedAndReturnToTravelDesk() {
   isLoading.value = true
   try {
@@ -258,7 +331,8 @@ async function markTravelRequestAsOptionsProvidedAndReturnToTravelDesk() {
       name: "TravelDeskPage",
     })
   } catch (error) {
-    console.error(error)
+    console.error("Failed to submit travel desk travel request:", error)
+    snack.error(`Failed to submit request: ${error}`)
   } finally {
     isLoading.value = false
   }
