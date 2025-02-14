@@ -120,7 +120,7 @@
         />
 
         <v-btn
-          v-if="isOptionsProvidedState"
+          v-if="isSubmittedState"
           class="mr-2 px-5"
           color="primary"
           :loading="isLoading"
@@ -219,9 +219,8 @@ const {
   save: saveTravelDeskTravelRequest,
 } = useTravelDeskTravelRequest(travelDeskTravelRequestId)
 
-const isOptionsProvidedState = computed(
-  () =>
-    travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.OPTIONS_PROVIDED
+const isSubmittedState = computed(
+  () => travelDeskTravelRequest.value?.status === TRAVEL_DESK_TRAVEL_REQUEST_STATUSES.SUBMITTED
 )
 const hasInvoiceNumber = computed(
   () => !isNil(travelDeskTravelRequest.value?.travelDeskPassengerNameRecordDocument?.invoiceNumber)
