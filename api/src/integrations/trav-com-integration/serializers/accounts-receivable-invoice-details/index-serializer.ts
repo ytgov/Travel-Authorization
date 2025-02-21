@@ -1,4 +1,4 @@
-import { isEmpty, isNil, isUndefined, pick, sortBy } from "lodash"
+import { isEmpty, isNil, isUndefined, last, pick, sortBy } from "lodash"
 
 import {
   AccountsReceivableInvoice,
@@ -36,6 +36,7 @@ export type AccountsReceivableInvoiceDetailIndexView = Pick<
   // magic attributes
   agentName: string | null // see includeAgentNameAttribute scope
   flightInfo: string
+  finalDestination: string
 
   // associations
   // TODO: move invoice type definition to accounts-receivable-invoice show serializer
@@ -83,6 +84,7 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       agentName: string | null
     }
     const flightInfo = this.buildFlightInfo(this.segments)
+    const finalDestination = this.buildFinalDestination(this.segments)
 
     // TODO: move invoice serialization to accounts receivable invoice show serializer
     const invoice = pick(
@@ -146,6 +148,7 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       ),
       agentName,
       flightInfo,
+      finalDestination,
       invoice,
       segments,
     }
@@ -155,6 +158,10 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
     return segments
       .map((segment) => {
         const { airlineCode, flightNumber, arrivalCityCode, arrivalCity } = segment
+        if (isUndefined(arrivalCity)) {
+          throw new Error("Requires segment to preload 'arrivalCity' association")
+        }
+
         if (isNil(arrivalCityCode) || isEmpty(arrivalCityCode)) {
           return `${airlineCode}${flightNumber}`
         }
@@ -171,6 +178,29 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
         return `${airlineCode}${flightNumber}\u00A0(${cityName})`
       })
       .join(", ")
+  }
+
+  private buildFinalDestination(segments: Segment[]): string {
+    const lastSegment = last(segments)
+    if (isNil(lastSegment)) {
+      return ""
+    }
+
+    const { arrivalCity } = lastSegment
+    if (isUndefined(arrivalCity)) {
+      throw new Error("Requires segment to preload 'arrivalCity' association")
+    }
+
+    if (isNil(arrivalCity)) {
+      return ""
+    }
+
+    const { cityName } = arrivalCity
+    if (isNil(cityName) || isEmpty(cityName)) {
+      return ""
+    }
+
+    return cityName
   }
 
   private get segments(): Segment[] {
