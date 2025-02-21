@@ -19,7 +19,11 @@ import { useRouteQuery } from "@/use/utils/use-route-query"
  * @returns {import("vue").Ref<K>}
  */
 
-/** @type {UseRouteQueryEnhanced} */
+/**
+ * @type {UseRouteQueryEnhanced}
+ *
+ * @deprecated - prefer web/src/use/utils/use-route-query.js, now that it supports get/set https://github.com/icefoganalytics/travel-authorization/commit/3114b0751c59387037851abf011d3ad070b1008c
+ */
 export function useRouteQueryEnhanced(name, defaultValue, options) {
   const query = useRouteQuery(name, defaultValue)
 
@@ -33,4 +37,5 @@ export function useRouteQueryEnhanced(name, defaultValue, options) {
   })
 }
 
+/** * @deprecated - prefer web/src/use/utils/use-route-query.js, now that it supports get/set https://github.com/icefoganalytics/travel-authorization/commit/3114b0751c59387037851abf011d3ad070b1008c */
 export default useRouteQueryEnhanced
