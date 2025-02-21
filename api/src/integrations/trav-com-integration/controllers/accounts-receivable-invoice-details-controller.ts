@@ -12,7 +12,10 @@ export class AccountsReceivableInvoiceDetailsController extends BaseController<A
     try {
       const where = this.buildWhere()
       const scopes = this.buildFilterScopes(["includeAgentNameAttribute"])
-      const order = this.buildOrder()
+      const order = this.buildOrder([
+        ["segments", "departureInfo", "ASC"],
+        ["segments", "arrivalInfo", "ASC"],
+      ])
 
       const scopedAccountsReceivableInvoiceDetails =
         AccountsReceivableInvoiceDetailsPolicy.applyScope(scopes, this.currentUser)
