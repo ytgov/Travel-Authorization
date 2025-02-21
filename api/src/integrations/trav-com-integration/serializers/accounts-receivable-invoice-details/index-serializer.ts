@@ -37,6 +37,7 @@ export type AccountsReceivableInvoiceDetailIndexView = Pick<
   agentName: string
   flightInfo: string
   finalDestination: string
+  department: string
 
   // associations
   // TODO: move invoice type definition to accounts-receivable-invoice show serializer
@@ -83,6 +84,7 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
     const agentName = this.buildAgentName(this.record)
     const flightInfo = this.buildFlightInfo(this.segments)
     const finalDestination = this.buildFinalDestination(this.segments)
+    const department = this.record.invoice.department ?? ""
 
     const invoice = this.serializeInvoice(this.record.invoice)
     const segments = this.serializeSegments(this.segments)
@@ -117,6 +119,7 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       agentName,
       flightInfo,
       finalDestination,
+      department,
       invoice,
       segments,
     }
