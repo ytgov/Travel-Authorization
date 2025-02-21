@@ -34,7 +34,7 @@ export type AccountsReceivableInvoiceDetailIndexView = Pick<
   | "addedBy"
 > & {
   // magic attributes
-  agentName: string | null // see includeAgentNameAttribute scope
+  agentName: string
   flightInfo: string
   finalDestination: string
 
@@ -80,44 +80,12 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       throw new Error("'invoice' association is required")
     }
 
-    const { agentName } = this.record.dataValues as AccountsReceivableInvoiceDetail & {
-      agentName: string | null
-    }
+    const agentName = this.buildAgentName(this.record)
     const flightInfo = this.buildFlightInfo(this.segments)
     const finalDestination = this.buildFinalDestination(this.segments)
 
-    // TODO: move invoice serialization to accounts receivable invoice show serializer
-    const invoice = pick(
-      this.record.invoice,
-      "id",
-      "invoiceNumber",
-      "profileNumber",
-      "profileName",
-      "department",
-      "bookingDate",
-      "systemDate",
-      "description",
-      "invoiceRemarks"
-    )
-
-    // TODO: move segment serialization to segments show serializer
-    const segments = this.segments.map((segment) =>
-      pick(
-        segment,
-        "id",
-        "invoiceId",
-        "invoiceDetailId",
-        "legNumber",
-        "departureCityCode",
-        "departureInfo",
-        "arrivalCityCode",
-        "arrivalInfo",
-        "airlineCode",
-        "flightNumber",
-        "classOfService",
-        "fareBasis"
-      )
-    )
+    const invoice = this.serializeInvoice(this.record.invoice)
+    const segments = this.serializeSegments(this.segments)
 
     return {
       ...pick(
@@ -152,6 +120,24 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       invoice,
       segments,
     }
+  }
+
+  /**
+   * See includeAgentNameAttribute scope
+   */
+  private buildAgentName(accountReceivableInvoiceDetail: AccountsReceivableInvoiceDetail): string {
+    const { dataValues } = accountReceivableInvoiceDetail as AccountsReceivableInvoiceDetail & {
+      dataValues: {
+        agentName: string | null
+      }
+    }
+
+    const { agentName } = dataValues
+    if (isUndefined(agentName)) {
+      throw new Error("'agentName' attribute include is required")
+    }
+
+    return agentName ?? ""
   }
 
   private buildFlightInfo(segments: Segment[]): string {
@@ -202,6 +188,43 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
     }
 
     return cityName
+  }
+
+  // TODO: move invoice serialization to accounts receivable invoice show serializer
+  private serializeInvoice(accountsReceivableInvoice: AccountsReceivableInvoice) {
+    return pick(
+      accountsReceivableInvoice,
+      "id",
+      "invoiceNumber",
+      "profileNumber",
+      "profileName",
+      "department",
+      "bookingDate",
+      "systemDate",
+      "description",
+      "invoiceRemarks"
+    )
+  }
+
+  // TODO: move segment serialization to segments show serializer
+  private serializeSegments(segments: Segment[]) {
+    return segments.map((segment) =>
+      pick(
+        segment,
+        "id",
+        "invoiceId",
+        "invoiceDetailId",
+        "legNumber",
+        "departureCityCode",
+        "departureInfo",
+        "arrivalCityCode",
+        "arrivalInfo",
+        "airlineCode",
+        "flightNumber",
+        "classOfService",
+        "fareBasis"
+      )
+    )
   }
 
   private get segments(): Segment[] {
