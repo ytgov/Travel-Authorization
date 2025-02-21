@@ -78,8 +78,8 @@ const routes = [
               },
               {
                 path: "all",
-                name: "flight-expenses/AllFlightExpenesPage",
-                component: () => import("@/pages/flight-expenses/AllFlightExpenesPage.vue"),
+                name: "flight-expenses/AllFlightExpensesPage",
+                component: () => import("@/pages/flight-expenses/AllFlightExpensesPage.vue"),
               },
               {
                 path: "reconciled",

@@ -47,7 +47,7 @@
 
       <v-list-item
         :to="{
-          name: 'flight-expenses/AllFlightExpenesPage',
+          name: 'flight-expenses/AllFlightExpensesPage',
         }"
       >
         <v-list-item-icon>

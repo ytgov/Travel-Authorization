@@ -110,13 +110,13 @@ useBreadcrumbs([
   {
     text: "Flight Expenses",
     to: {
-      name: "flight-expenses/AllFlightExpenesPage",
+      name: "flight-expenses/AllFlightExpensesPage",
     },
   },
   {
     text: "All Flights Expenses",
     to: {
-      name: "flight-expenses/AllFlightExpenesPage",
+      name: "flight-expenses/AllFlightExpensesPage",
     },
   },
 ])

@@ -62,7 +62,7 @@
       >
         <v-tab
           :to="{
-            name: 'flight-expenses/AllFlightExpenesPage',
+            name: 'flight-expenses/AllFlightExpensesPage',
           }"
         >
           All
