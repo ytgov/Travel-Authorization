@@ -167,16 +167,17 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
         }
 
         if (isNil(arrivalCity)) {
-          return `${airlineCode}${flightNumber}\u00A0(${arrivalCityCode})`
+          return `${airlineCode}${flightNumber} (${arrivalCityCode})`
         }
 
         const { cityName } = arrivalCity
         if (isNil(cityName) || isEmpty(cityName)) {
-          return `${airlineCode}${flightNumber}\u00A0(${arrivalCityCode})`
+          return `${airlineCode}${flightNumber} (${arrivalCityCode})`
         }
 
-        return `${airlineCode}${flightNumber}\u00A0(${cityName})`
+        return `${airlineCode}${flightNumber} (${cityName})`
       })
+      .map((flightInfo) => flightInfo.replace(/\s/g, "\u00A0"))
       .join(", ")
   }
 
