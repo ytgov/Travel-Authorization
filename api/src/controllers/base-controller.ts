@@ -10,7 +10,7 @@ import { type BaseScopeOptions } from "@/policies"
 export type Actions = "index" | "show" | "new" | "edit" | "create" | "update" | "destroy"
 
 /** Keep in sync with web/src/api/base-api.ts */
-export type ModelOrder = Order & [string, string]
+export type ModelOrder = Order & ([Col, string] | [string, string] | [string, string, string])
 
 // Keep in sync with web/src/api/base-api.ts
 const MAX_PER_PAGE = 1000
@@ -213,18 +213,15 @@ export class BaseController<TModel extends Model = never> {
   buildOrder(
     overridableOrder: ModelOrder[] = [],
     nonOverridableOrder: ModelOrder[] = []
-  ): [Col, string][] | undefined {
+  ): ModelOrder[] | undefined {
     const orderQuery = this.query.order as unknown as ModelOrder[] | undefined
 
     if (isNil(orderQuery)) {
-      const rawOrder = [...nonOverridableOrder, ...overridableOrder]
-      const orderAsColumns = this.columnifyOrderings(rawOrder)
-      return orderAsColumns
+      return [...nonOverridableOrder, ...overridableOrder]
     }
 
-    const rawOrder = [...nonOverridableOrder, ...orderQuery, ...overridableOrder]
-    const orderAsColumns = this.columnifyOrderings(rawOrder)
-    return orderAsColumns
+    const orderQueryAsColumns = this.columnifyOrderings(orderQuery)
+    return [...nonOverridableOrder, ...orderQueryAsColumns, ...overridableOrder]
   }
 
   private determineLimit(perPage: number) {
