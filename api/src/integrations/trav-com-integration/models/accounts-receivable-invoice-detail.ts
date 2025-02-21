@@ -15,6 +15,7 @@ import { compactSql } from "@/integrations/trav-com-integration/utils"
 import sequelize from "@/integrations/trav-com-integration/db/db-client"
 
 import AccountsReceivableInvoice from "@/integrations/trav-com-integration/models/accounts-receivable-invoice"
+import City from "@/integrations/trav-com-integration/models/city"
 import Segment from "@/integrations/trav-com-integration/models/segment"
 
 export type ArInvoiceDetailNoHealthRaw = {
@@ -72,15 +73,22 @@ export class AccountsReceivableInvoiceDetail extends Model<
   declare addedBy: number
 
   // associations
+  declare city?: NonAttribute<City>
   declare invoice?: NonAttribute<AccountsReceivableInvoice>
   declare segments?: NonAttribute<Segment[]>
 
   declare static associations: {
+    city: Association<AccountsReceivableInvoiceDetail, City>
     invoice: Association<AccountsReceivableInvoiceDetail, AccountsReceivableInvoice>
     segments: Association<AccountsReceivableInvoiceDetail, Segment>
   }
 
   static establishAssociations() {
+    this.belongsTo(City, {
+      as: "city",
+      foreignKey: "cityCode",
+      targetKey: "cityCode",
+    })
     this.belongsTo(AccountsReceivableInvoice, {
       as: "invoice",
       foreignKey: "invoiceId",

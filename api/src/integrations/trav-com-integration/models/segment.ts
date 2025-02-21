@@ -13,6 +13,7 @@ import sequelize from "@/integrations/trav-com-integration/db/db-client"
 
 import AccountsReceivableInvoice from "@/integrations/trav-com-integration/models/accounts-receivable-invoice"
 import AccountsReceivableInvoiceDetail from "@/integrations/trav-com-integration/models/accounts-receivable-invoice-detail"
+import City from "@/integrations/trav-com-integration/models/city"
 
 export type SegmentNoHealthRaw = {
   segmentID: number
@@ -44,10 +45,14 @@ export class Segment extends Model<InferAttributes<Segment>, InferCreationAttrib
   declare fareBasis: string | null
 
   // associations
+  declare arrivalCity?: NonAttribute<City>
+  declare departureCity?: NonAttribute<City>
   declare invoice?: NonAttribute<AccountsReceivableInvoice>
   declare invoiceDetail?: NonAttribute<AccountsReceivableInvoiceDetail>
 
   declare static associations: {
+    arrivalCity: Association<Segment, City>
+    departureCity: Association<Segment, City>
     invoice: Association<Segment, AccountsReceivableInvoice>
     invoiceDetail: Association<Segment, AccountsReceivableInvoiceDetail>
   }
@@ -60,6 +65,16 @@ export class Segment extends Model<InferAttributes<Segment>, InferCreationAttrib
     this.belongsTo(AccountsReceivableInvoiceDetail, {
       as: "invoiceDetail",
       foreignKey: "invoiceDetailId",
+    })
+    this.belongsTo(City, {
+      as: "departureCity",
+      foreignKey: "departureCityCode",
+      targetKey: "cityCode",
+    })
+    this.belongsTo(City, {
+      as: "arrivalCity",
+      foreignKey: "arrivalCityCode",
+      targetKey: "cityCode",
     })
   }
 }
