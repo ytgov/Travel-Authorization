@@ -2,9 +2,7 @@ import { customRef, nextTick, watch } from "vue-demi"
 import { toValue, tryOnScopeDispose } from "@vueuse/shared"
 import { useRoute, useRouter } from "vue2-helpers/vue-router"
 
-export { booleanTransformer } from "@/utils/use-route-query-transformers"
-export { integerTransformer } from "@/utils/use-route-query-transformers"
-export { integerTransformerLegacy } from "@/utils/use-route-query-transformers"
+export * from "@/utils/use-route-query-transformers"
 
 /** @typedef {import("vue-router").RouteParamValueRaw | string[]} RouteQueryValueRaw */
 

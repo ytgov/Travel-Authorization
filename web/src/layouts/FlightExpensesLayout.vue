@@ -111,6 +111,7 @@ import { isEmpty } from "lodash"
 
 import http from "@/api/http-client"
 import { TRAVEL_COM_URL } from "@/urls"
+import useRouteQuery, { jsonTransformer } from "@/use/utils/use-route-query"
 
 import DatePickerRangeDialog from "@/components/common/DatePickerRangeDialog.vue"
 
@@ -122,10 +123,15 @@ const alertMsg = ref("")
 
 const isLoading = ref(false)
 
-const dateRange = ref([
+const INTIAL_DATE_RANGE = [
   DateTime.local().toISODate(),
   DateTime.local().minus({ days: 1 }).toISODate(),
-])
+]
+const INTIAL_DATE_RANGE_AS_STRING = JSON.stringify(INTIAL_DATE_RANGE)
+
+const dateRange = useRouteQuery("dateRange", INTIAL_DATE_RANGE_AS_STRING, {
+  transform: jsonTransformer,
+})
 
 const startDate = computed(() => dateRange.value[0])
 const endDate = computed(() => dateRange.value[1])
@@ -135,7 +141,7 @@ function clearDateRange() {
 }
 
 function resetDateRange() {
-  dateRange.value = [DateTime.local().toISODate(), DateTime.local().minus({ days: 1 }).toISODate()]
+  dateRange.value = INTIAL_DATE_RANGE
 }
 
 onMounted(async () => {
@@ -145,9 +151,15 @@ onMounted(async () => {
 async function getFlights() {
   isLoading.value = true
   try {
-    const { data: newFlights } = await http.get(
-      `${TRAVEL_COM_URL}/flights/${startDate.value}/${endDate.value}`
-    )
+    // Remove this hack once we are using the non-legacy endpoint.
+    let dateRangeParams
+    if (!isEmpty(dateRange.value)) {
+      dateRangeParams = `${startDate.value}/${endDate.value}`
+    } else {
+      dateRangeParams = `1753-01-01/9999-12-31`
+    }
+
+    const { data: newFlights } = await http.get(`${TRAVEL_COM_URL}/flights/${dateRangeParams}`)
     flights.value = newFlights || []
   } catch (error) {
     console.log(`Failed to load flights: ${error}`)
