@@ -19,31 +19,16 @@
         v-bind="slotProps"
       ></slot>
     </template>
-    <!--
-    agent: agent,
-    flightInfo: flightInfo.join(","),
-    finalDestination: lastLegCity,
-    travelerFirstName: name[1],
-    travelerLastName: name[0],
-    -->
     <template #item.invoice.bookingDate="{ value }">
       {{ formatDate(value) }}
     </template>
     <template #item.sellingFare="{ value }"> {{ formatCurrency(value) }} </template>
 
-    <template #item.agent="{ value }">
+    <template #item.agentName="{ value }">
       {{ capitalize(value) }}
     </template>
 
     <template #item.vendorName="{ value }">
-      {{ capitalize(value) }}
-    </template>
-
-    <template #item.travelerFirstName="{ value }">
-      {{ capitalize(value) }}
-    </template>
-
-    <template #item.travelerLastName="{ value }">
       {{ capitalize(value) }}
     </template>
 
@@ -115,17 +100,14 @@ const headers = ref([
   {
     text: "Cost",
     value: "sellingFare",
-    sortable: false,
   },
   {
     text: "Agent",
     value: "agentName", // from includeAgentNameAttribute scope
-    sortable: false,
   },
   {
     text: "Airline",
     value: "vendorName",
-    sortable: false,
   },
   {
     text: "Flight Info",

@@ -1,5 +1,6 @@
 import { isEmpty, isNil, isUndefined, last, pick, sortBy } from "lodash"
 
+import guessNameCapitalization from "@/integrations/trav-com-integration/utils/guess-name-capitalization"
 import {
   AccountsReceivableInvoice,
   AccountsReceivableInvoiceDetail,
@@ -38,6 +39,8 @@ export type AccountsReceivableInvoiceDetailIndexView = Pick<
   flightInfo: string
   finalDestination: string
   department: string
+  travelerFirstName: string
+  travelerLastName: string
 
   // associations
   // TODO: move invoice type definition to accounts-receivable-invoice show serializer
@@ -85,6 +88,7 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
     const flightInfo = this.buildFlightInfo(this.segments)
     const finalDestination = this.buildFinalDestination(this.segments)
     const department = this.record.invoice.department ?? ""
+    const [travelerFirstName, travelerLastName] = this.buildTravelerFirstAndLastName(this.record)
 
     const invoice = this.serializeInvoice(this.record.invoice)
     const segments = this.serializeSegments(this.segments)
@@ -120,6 +124,8 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       flightInfo,
       finalDestination,
       department,
+      travelerFirstName,
+      travelerLastName,
       invoice,
       segments,
     }
@@ -155,16 +161,18 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
           return `${airlineCode}${flightNumber}`
         }
 
+        const formattedArrivalCityCode = guessNameCapitalization(arrivalCityCode)
         if (isNil(arrivalCity)) {
-          return `${airlineCode}${flightNumber} (${arrivalCityCode})`
+          return `${airlineCode}${flightNumber} (${formattedArrivalCityCode})`
         }
 
         const { cityName } = arrivalCity
         if (isNil(cityName) || isEmpty(cityName)) {
-          return `${airlineCode}${flightNumber} (${arrivalCityCode})`
+          return `${airlineCode}${flightNumber} (${formattedArrivalCityCode})`
         }
 
-        return `${airlineCode}${flightNumber} (${cityName})`
+        const formattedCityName = guessNameCapitalization(cityName)
+        return `${airlineCode}${flightNumber} (${formattedCityName})`
       })
       .map((flightInfo) => flightInfo.replace(/\s/g, "\u00A0"))
       .join(", ")
@@ -191,6 +199,37 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
     }
 
     return cityName
+  }
+
+  private buildTravelerFirstAndLastName(
+    accountReceivableInvoiceDetail: AccountsReceivableInvoiceDetail
+  ): [string, string] {
+    const { passengerName } = accountReceivableInvoiceDetail
+    if (isNil(passengerName) || isEmpty(passengerName)) {
+      return ["", ""]
+    }
+
+    const [lastName, firstNameAndTitle] = passengerName
+      .split("/")
+      .map((part) => part.trim())
+      .map((part) => guessNameCapitalization(part))
+
+    if (
+      (isNil(lastName) || isEmpty(lastName)) &&
+      (isNil(firstNameAndTitle) || isEmpty(firstNameAndTitle))
+    ) {
+      return ["", ""]
+    }
+
+    const [firstName, _title] = firstNameAndTitle
+      .split(" ")
+      .map((part) => part.trim())
+      .map((part) => guessNameCapitalization(part))
+    if (isNil(firstName) || isEmpty(firstName)) {
+      return ["", lastName]
+    }
+
+    return [firstName, lastName]
   }
 
   // TODO: move invoice serialization to accounts receivable invoice show serializer
