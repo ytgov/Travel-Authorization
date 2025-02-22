@@ -36,7 +36,6 @@
       <div
         v-for="(flight, index) in item.flightInfo?.split(',')"
         :key="'flight-info-' + index"
-        style="line-height: 1rem"
       >
         {{ flight }}
       </div>
@@ -96,18 +95,22 @@ const headers = ref([
     text: "Purchase Date",
     value: "invoice.bookingDate",
     sortable: false,
+    width: "9rem",
   },
   {
     text: "Cost",
     value: "sellingFare",
+    width: "7rem",
   },
   {
     text: "Agent",
     value: "agentName", // from includeAgentNameAttribute scope
+    width: "10rem",
   },
   {
     text: "Airline",
     value: "vendorName",
+    width: "10rem",
   },
   {
     text: "Flight Info",
@@ -118,6 +121,7 @@ const headers = ref([
     text: "Final Destination",
     value: "finalDestination",
     sortable: false,
+    width: "10rem",
   },
   {
     text: "Department",
@@ -128,11 +132,13 @@ const headers = ref([
     text: "Traveler First Name",
     value: "travelerFirstName",
     sortable: false,
+    width: "11rem",
   },
   {
     text: "Traveler Last Name",
     value: "travelerLastName",
     sortable: false,
+    width: "11rem",
   },
   {
     text: "Reconciled",
