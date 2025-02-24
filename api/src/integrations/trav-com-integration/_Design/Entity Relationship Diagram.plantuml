@@ -89,10 +89,30 @@ entity "segmentsNoHealth" {
   FareBasis : nvarchar(15)
 }
 
+namespace external #LightGrey {
+  entity "flight_reconciliations" {
+    * id : serial4 <<PK>>
+    --
+    * reconcilerd_id : int4 <<FK>>
+    * external_trav_com_identifier : int4 <<UNIQUE>>
+    * reconciled : bool : default false
+    --
+    reconcile_period : int4
+    --
+    * created_at : timestamptz : default CURRENT_TIMESTAMP
+    * updated_at : timestamptz : default CURRENT_TIMESTAMP
+    deleted_at : timestamptz
+    --
+    From Travel Authorization database relates to TravCom database table ARInvoiceDetailsNoHealth -> InvoiceDetailID
+  }
+}
+
 ARInvoicesNoHealth::InvoiceID |o--|{ ARInvoiceDetailsNoHealth::InvoiceID
 ARInvoicesNoHealth::InvoiceID |o--|{ segmentsNoHealth::invoiceID
 ARInvoiceDetailsNoHealth::InvoiceDetailID |o--|{ segmentsNoHealth::invoiceDetailID
 Cities::CityCode }o--o| ARInvoiceDetailsNoHealth::CityCode
 Cities::CityCode }o--|| segmentsNoHealth::ArrivalCityCode
 Cities::CityCode }o--|| segmentsNoHealth::DepartureCityCode
+
+ARInvoiceDetailsNoHealth::InvoiceDetailID }o..|| external.flight_reconciliations::invoiceDetailID
 @enduml
