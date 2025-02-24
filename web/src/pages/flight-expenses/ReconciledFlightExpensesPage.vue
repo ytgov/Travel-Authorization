@@ -3,6 +3,7 @@
     v-model="selectedFlights"
     :filters="filters"
     reconciled
+    show-select
   >
     <template #top>
       <v-row>

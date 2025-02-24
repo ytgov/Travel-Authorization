@@ -2,6 +2,7 @@
   <AccountsReceivableInvoiceDetailsDataTable
     v-model="selectedFlights"
     :filters="filters"
+    show-select
   >
     <template #top>
       <v-row>
