@@ -11,6 +11,7 @@ import {
   Op,
 } from "sequelize"
 
+import { FlightReconciliation } from "@/models"
 import { compactSql } from "@/integrations/trav-com-integration/utils"
 import sequelize from "@/integrations/trav-com-integration/db/db-client"
 
@@ -76,6 +77,9 @@ export class AccountsReceivableInvoiceDetail extends Model<
   declare city?: NonAttribute<City>
   declare invoice?: NonAttribute<AccountsReceivableInvoice>
   declare segments?: NonAttribute<Segment[]>
+
+  // external association, you cannot eager load this
+  declare flightReconciliation?: NonAttribute<FlightReconciliation>
 
   declare static associations: {
     city: Association<AccountsReceivableInvoiceDetail, City>

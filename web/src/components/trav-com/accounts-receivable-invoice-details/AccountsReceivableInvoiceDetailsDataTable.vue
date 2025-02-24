@@ -48,20 +48,12 @@
         Yes
       </v-chip>
       <v-chip
-        v-else-if="value === false"
+        v-else
         color="warning"
         text-color="white"
         size="small"
       >
         No
-      </v-chip>
-      <v-chip
-        v-else
-        color="error"
-        text-color="white"
-        size="small"
-      >
-        Unknown
       </v-chip>
     </template>
   </v-data-table>
@@ -165,7 +157,7 @@ const headers = computed(() => {
   } else if (props.reconciled === true) {
     baseHeaders.push({
       text: "Reconcile Period",
-      value: "reconcilePeriod",
+      value: "flightReconciliation.reconcilePeriod",
       sortable: false,
     })
   } else if (props.unreconciled === true) {

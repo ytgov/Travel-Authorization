@@ -4,6 +4,7 @@ import logger from "@/utils/logger"
 
 import { AccountsReceivableInvoiceDetail } from "@/integrations/trav-com-integration/models"
 import { AccountsReceivableInvoiceDetailsPolicy } from "@/integrations/trav-com-integration/policies"
+import { IndexService } from "@/integrations/trav-com-integration/services/accounts-receivable-invoice-details"
 import { IndexSerializer } from "@/integrations/trav-com-integration/serializers/accounts-receivable-invoice-details"
 import BaseController from "@/controllers/base-controller"
 
@@ -21,7 +22,8 @@ export class AccountsReceivableInvoiceDetailsController extends BaseController<A
         AccountsReceivableInvoiceDetailsPolicy.applyScope(scopes, this.currentUser)
 
       const totalCount = await scopedAccountsReceivableInvoiceDetails.count({ where })
-      const accountsReceivableInvoiceDetails = await scopedAccountsReceivableInvoiceDetails.findAll(
+      const accountsReceivableInvoiceDetails = await IndexService.perform(
+        scopedAccountsReceivableInvoiceDetails,
         {
           where,
           limit: this.pagination.limit,
@@ -36,10 +38,10 @@ export class AccountsReceivableInvoiceDetailsController extends BaseController<A
           ],
         }
       )
+
       const serializedAccountsReceivableInvoiceDetails = IndexSerializer.perform(
         accountsReceivableInvoiceDetails
       )
-
       return this.response.status(200).json({
         accountsReceivableInvoiceDetails: serializedAccountsReceivableInvoiceDetails,
         totalCount,

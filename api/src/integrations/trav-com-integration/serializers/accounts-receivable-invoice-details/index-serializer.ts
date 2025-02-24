@@ -6,7 +6,9 @@ import {
   AccountsReceivableInvoiceDetail,
   Segment,
 } from "@/integrations/trav-com-integration/models"
+import { type AccountsReceivableInvoiceDetailWithFlightReconciliation } from "@/integrations/trav-com-integration/services/accounts-receivable-invoice-details/index-service"
 import BaseSerializer from "@/serializers/base-serializer"
+import { FlightReconciliation } from "@/models"
 
 export type AccountsReceivableInvoiceDetailIndexView = Pick<
   AccountsReceivableInvoiceDetail,
@@ -72,10 +74,11 @@ export type AccountsReceivableInvoiceDetailIndexView = Pick<
     | "classOfService"
     | "fareBasis"
   >[]
+  flightReconciliation: FlightReconciliation | null
 }
 
-export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDetail> {
-  constructor(protected record: AccountsReceivableInvoiceDetail) {
+export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDetailWithFlightReconciliation> {
+  constructor(protected record: AccountsReceivableInvoiceDetailWithFlightReconciliation) {
     super(record)
   }
 
@@ -92,6 +95,7 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
 
     const invoice = this.serializeInvoice(this.record.invoice)
     const segments = this.serializeSegments(this.segments)
+    const flightReconciliation = this.record.flightReconciliation ?? null
 
     return {
       ...pick(
@@ -128,6 +132,7 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       travelerLastName,
       invoice,
       segments,
+      flightReconciliation,
     }
   }
 
