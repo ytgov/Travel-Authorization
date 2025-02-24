@@ -1,13 +1,8 @@
 <template>
-  <!-- TODO: build a stock flight expenses table component -->
-  <v-data-table
+  <AccountsReceivableInvoiceDetailsDataTable
     v-model="selectedFlights"
-    :headers="headers"
-    :items="reconciledFlights"
-    :items-per-page="15"
-    dense
-    item-key="invoiceDetailID"
-    :show-select="isAdmin"
+    :filters="filters"
+    reconciled
   >
     <template #top>
       <v-row>
@@ -17,7 +12,6 @@
           md="2"
         >
           <v-btn
-            v-if="isAdmin"
             :disabled="selectedFlights.length == 0"
             color="primary"
             block
@@ -79,128 +73,46 @@
         </v-card>
       </v-dialog>
     </template>
-
-    <template #item.purchaseDate="{ item }">
-      {{ formatDate(item.purchaseDate) }}
-    </template>
-
-    <template #item.agent="{ item }">
-      {{ capitalize(item.agent) }}
-    </template>
-
-    <template #item.airline="{ item }">
-      {{ capitalize(item.airline) }}
-    </template>
-
-    <template #item.travelerFirstName="{ item }">
-      {{ capitalize(item.travelerFirstName) }}
-    </template>
-
-    <template #item.travelerLastName="{ item }">
-      {{ capitalize(item.travelerLastName) }}
-    </template>
-
-    <template #item.flightInfo="{ item }">
-      <div
-        v-for="(flight, inx) in item.flightInfo.split(',')"
-        :key="'flight-info-' + inx"
-        style="line-height: 1rem"
-      >
-        {{ flight }}
-      </div>
-    </template>
-    <template #item.cost="{ item }"> {{ formatCurrency(item.cost) }} </template>
-    <template #item.reconciled="{ item }">
-      <div class="text-center">
-        <v-icon
-          v-if="item.reconciled"
-          color="success"
-          >mdi-checkbox-marked</v-icon
-        >
-        <v-icon
-          v-else
-          color="warning"
-          >mdi-close-box</v-icon
-        >
-      </div>
-    </template>
-  </v-data-table>
+  </AccountsReceivableInvoiceDetailsDataTable>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { ExportToCsv } from "export-to-csv"
+import { isNil, isEmpty } from "lodash"
 
 import http from "@/api/http-client"
 import { FLIGHT_RECONCILE_URL } from "@/urls"
 
-import { capitalize, formatCurrency, formatDate } from "@/utils/formatters"
+import AccountsReceivableInvoiceDetailsDataTable from "@/components/trav-com/accounts-receivable-invoice-details/AccountsReceivableInvoiceDetailsDataTable.vue"
 
-import useCurrentUser from "@/use/use-current-user"
-
-defineProps({
-  reconciledFlights: {
-    type: Array,
-    default: () => [],
+const props = defineProps({
+  startDate: {
+    type: String,
+    default: "",
+  },
+  endDate: {
+    type: String,
+    default: "",
   },
 })
 
-const emit = defineEmits(["updateTable"])
+const emit = defineEmits(["updated"])
 
-const { isAdmin } = useCurrentUser()
+const filters = computed(() => {
+  const baseFilters = {}
 
-const headers = ref([
-  {
-    text: "Purchase Date",
-    value: "purchaseDate",
-    sortable: false,
-  },
-  {
-    text: "Cost",
-    value: "cost",
-    sortable: false,
-  },
-  {
-    text: "Agent",
-    value: "agent",
-    sortable: false,
-  },
-  {
-    text: "Airline",
-    value: "airline",
-    sortable: false,
-  },
-  {
-    text: "Flight Info",
-    value: "flightInfo",
-    sortable: false,
-  },
-  {
-    text: "Final Destination",
-    value: "finalDestination",
-    sortable: false,
-  },
-  {
-    text: "Department",
-    value: "dept",
-    sortable: false,
-  },
-  {
-    text: "Traveler First Name",
-    value: "travelerFirstName",
-    sortable: false,
-  },
-  {
-    text: "Traveler Last Name",
-    value: "travelerLastName",
-    sortable: false,
-  },
-  {
-    text: "Reconcile Period",
-    value: "reconcilePeriod",
-    sortable: false,
-  },
-])
+  if (
+    !isNil(props.startDate) &&
+    !isEmpty(props.startDate) &&
+    !isNil(props.endDate) &&
+    !isEmpty(props.endDate)
+  ) {
+    baseFilters.invoiceBookingDateBetween = [props.startDate, props.endDate]
+  }
+
+  return baseFilters
+})
 
 const selectedFlights = ref([])
 
@@ -276,7 +188,7 @@ async function unReconcile() {
     await http.post(`${FLIGHT_RECONCILE_URL}/`, body)
 
     unReconcileDialog.value = false
-    emit("updateTable")
+    emit("updated")
   } catch (error) {
     console.log(`Failed to unReconcile flight expenses: ${error}`)
   } finally {

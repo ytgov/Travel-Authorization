@@ -90,6 +90,7 @@
         :un-reconciled-flights="unReconciledFlights"
         :reconciled-flights="reconciledFlights"
         @updateTable="refresh"
+        @updated="refresh"
       ></router-view>
     </v-card-text>
   </v-card>

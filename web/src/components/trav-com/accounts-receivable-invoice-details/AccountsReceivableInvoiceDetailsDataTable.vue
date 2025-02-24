@@ -60,7 +60,8 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue"
+import { computed } from "vue"
+import { isNil } from "lodash"
 
 import { capitalize, formatCurrency, formatDate } from "@/utils/formatters"
 
@@ -83,65 +84,84 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  reconciled: {
+    type: Boolean,
+    default: null,
+  },
 })
 
-const headers = ref([
-  {
-    text: "Purchase Date",
-    value: "invoice.bookingDate",
-    sortable: false,
-    width: "9rem",
-  },
-  {
-    text: "Cost",
-    value: "sellingFare",
-    width: "7rem",
-  },
-  {
-    text: "Agent",
-    value: "agentName", // from includeAgentNameAttribute scope
-    width: "10rem",
-  },
-  {
-    text: "Airline",
-    value: "vendorName",
-    width: "10rem",
-  },
-  {
-    text: "Flight Info",
-    value: "flightInfo",
-    sortable: false,
-  },
-  {
-    text: "Final Destination",
-    value: "finalDestination",
-    sortable: false,
-    width: "10rem",
-  },
-  {
-    text: "Department",
-    value: "department",
-    sortable: false,
-  },
-  {
-    text: "Traveler First Name",
-    value: "travelerFirstName",
-    sortable: false,
-    width: "11rem",
-  },
-  {
-    text: "Traveler Last Name",
-    value: "travelerLastName",
-    sortable: false,
-    width: "11rem",
-  },
-  {
-    text: "Reconciled",
-    value: "invoice.reconciled",
-    sortable: false,
-    align: "center",
-  },
-])
+const headers = computed(() => {
+  const baseHeaders = [
+    {
+      text: "Purchase Date",
+      value: "invoice.bookingDate",
+      sortable: false,
+      width: "9rem",
+    },
+    {
+      text: "Cost",
+      value: "sellingFare",
+      width: "7rem",
+    },
+    {
+      text: "Agent",
+      value: "agentName", // from includeAgentNameAttribute scope
+      width: "10rem",
+    },
+    {
+      text: "Airline",
+      value: "vendorName",
+      width: "10rem",
+    },
+    {
+      text: "Flight Info",
+      value: "flightInfo",
+      sortable: false,
+    },
+    {
+      text: "Final Destination",
+      value: "finalDestination",
+      sortable: false,
+      width: "10rem",
+    },
+    {
+      text: "Department",
+      value: "department",
+      sortable: false,
+    },
+    {
+      text: "Traveler First Name",
+      value: "travelerFirstName",
+      sortable: false,
+      width: "11rem",
+    },
+    {
+      text: "Traveler Last Name",
+      value: "travelerLastName",
+      sortable: false,
+      width: "11rem",
+    },
+  ]
+
+  if (isNil(props.reconciled)) {
+    baseHeaders.push({
+      text: "Reconciled",
+      value: "invoice.reconciled",
+      sortable: false,
+      align: "center",
+    })
+  } else if (props.reconciled === true) {
+    baseHeaders.push({
+      text: "Reconcile Period",
+      value: "reconcilePeriod",
+      sortable: false,
+    })
+  } else {
+    // no-op
+  }
+
+  return baseHeaders
+})
 
 const page = useRouteQuery(`page${props.routeQuerySuffix}`, "1", {
   transform: integerTransformer,
