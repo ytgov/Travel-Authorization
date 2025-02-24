@@ -83,15 +83,6 @@
         </v-tab>
       </v-tabs>
 
-      <v-alert
-        v-if="alertMsg"
-        dense
-        class="mt-5"
-        color="warning"
-        dismissible
-        >{{ alertMsg }}</v-alert
-      >
-
       <!-- TODO: make each tab load its own data via composable -->
       <router-view
         :start-date="startDate"
@@ -118,8 +109,6 @@ import DatePickerRangeDialog from "@/components/common/DatePickerRangeDialog.vue
 const flights = ref([])
 const reconciledFlights = computed(() => flights.value.filter((flight) => flight.reconciled))
 const unReconciledFlights = computed(() => flights.value.filter((flight) => !flight.reconciled))
-
-const alertMsg = ref("")
 
 const isLoading = ref(false)
 
