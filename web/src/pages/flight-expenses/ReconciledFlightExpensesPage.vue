@@ -97,8 +97,6 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["updated"])
-
 const filters = computed(() => {
   const baseFilters = {}
 
@@ -188,7 +186,6 @@ async function unReconcile() {
     await http.post(`${FLIGHT_RECONCILE_URL}/`, body)
 
     unReconcileDialog.value = false
-    emit("updated")
   } catch (error) {
     console.log(`Failed to unReconcile flight expenses: ${error}`)
   } finally {

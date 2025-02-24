@@ -83,33 +83,22 @@
         </v-tab>
       </v-tabs>
 
-      <!-- TODO: make each tab load its own data via composable -->
       <router-view
         :start-date="startDate"
         :end-date="endDate"
-        :un-reconciled-flights="unReconciledFlights"
-        :reconciled-flights="reconciledFlights"
-        @updateTable="refresh"
-        @updated="refresh"
-      ></router-view>
+      />
     </v-card-text>
   </v-card>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed } from "vue"
 import { DateTime } from "luxon"
 import { isEmpty } from "lodash"
 
-import http from "@/api/http-client"
-import { TRAVEL_COM_URL } from "@/urls"
 import useRouteQuery, { jsonTransformer } from "@/use/utils/use-route-query"
 
 import DatePickerRangeDialog from "@/components/common/DatePickerRangeDialog.vue"
-
-const flights = ref([])
-const reconciledFlights = computed(() => flights.value.filter((flight) => flight.reconciled))
-const unReconciledFlights = computed(() => flights.value.filter((flight) => !flight.reconciled))
 
 const isLoading = ref(false)
 
@@ -132,33 +121,5 @@ function clearDateRange() {
 
 function resetDateRange() {
   dateRange.value = INTIAL_DATE_RANGE
-}
-
-onMounted(async () => {
-  await getFlights()
-})
-
-async function getFlights() {
-  isLoading.value = true
-  try {
-    // Remove this hack once we are using the non-legacy endpoint.
-    let dateRangeParams
-    if (!isEmpty(dateRange.value)) {
-      dateRangeParams = `${startDate.value}/${endDate.value}`
-    } else {
-      dateRangeParams = `1753-01-01/9999-12-31`
-    }
-
-    const { data: newFlights } = await http.get(`${TRAVEL_COM_URL}/flights/${dateRangeParams}`)
-    flights.value = newFlights || []
-  } catch (error) {
-    console.log(`Failed to load flights: ${error}`)
-  } finally {
-    isLoading.value = false
-  }
-}
-
-async function refresh() {
-  return getFlights()
 }
 </script>

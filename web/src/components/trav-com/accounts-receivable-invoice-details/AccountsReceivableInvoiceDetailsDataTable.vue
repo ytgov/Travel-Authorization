@@ -38,9 +38,9 @@
         {{ flight }}
       </div>
     </template>
-    <template #item.invoice.reconciled="{ value }">
+    <template #item.flightReconciliation.reconciled="{ value }">
       <v-chip
-        v-if="value"
+        v-if="value === true"
         color="success"
         text-color="white"
         size="small"
@@ -48,12 +48,20 @@
         Yes
       </v-chip>
       <v-chip
-        v-else
+        v-else-if="value === false"
         color="warning"
         text-color="white"
         size="small"
       >
         No
+      </v-chip>
+      <v-chip
+        v-else
+        color="error"
+        text-color="white"
+        size="small"
+      >
+        Unknown
       </v-chip>
     </template>
   </v-data-table>
@@ -85,6 +93,10 @@ const props = defineProps({
     default: "",
   },
   reconciled: {
+    type: Boolean,
+    default: null,
+  },
+  unreconciled: {
     type: Boolean,
     default: null,
   },
@@ -143,10 +155,10 @@ const headers = computed(() => {
     },
   ]
 
-  if (isNil(props.reconciled)) {
+  if (isNil(props.reconciled) && isNil(props.unreconciled)) {
     baseHeaders.push({
       text: "Reconciled",
-      value: "invoice.reconciled",
+      value: "flightReconciliation.reconciled",
       sortable: false,
       align: "center",
     })
@@ -156,8 +168,10 @@ const headers = computed(() => {
       value: "reconcilePeriod",
       sortable: false,
     })
+  } else if (props.unreconciled === true) {
+    // don't add any headers
   } else {
-    // no-op
+    // don't add any headers
   }
 
   return baseHeaders
