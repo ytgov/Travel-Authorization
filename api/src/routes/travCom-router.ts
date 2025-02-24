@@ -5,7 +5,7 @@ import logger from "@/utils/logger"
 import { RequiresAuth } from "@/middleware"
 import { airports } from "@/json/airportCodes"
 import { TRAVCOM_DB_CONFIG } from "@/config"
-import { Location } from "@/models"
+import { FlightReconciliation, Location } from "@/models"
 
 import dbLegacy from "@/db/db-client-legacy"
 
@@ -166,10 +166,11 @@ travComRouter.get(
           flightInfo.push(flight)
         }
 
-        const flightReconcile = await dbLegacy("flightReconciliation")
-          .select("reconciled")
-          .where("invoiceDetailID", invoiceDetailID)
-          .first()
+        const flightReconcile = await FlightReconciliation.findOne({
+          where: {
+            externalTravComIdentifier: invoiceDetailID,
+          },
+        })
 
         const name = invoiceDetail.PassengerName.split("/")
           .join(",")
@@ -190,7 +191,7 @@ travComRouter.get(
           travelerFirstName: name[1],
           travelerLastName: name[0],
           reconciled: flightReconcile ? flightReconcile.reconciled : false,
-          reconcileID: flightReconcile ? flightReconcile.reconcileID : null,
+          reconcileID: flightReconcile ? flightReconcile.id : null,
           reconcilePeriod: flightReconcile ? flightReconcile.reconcilePeriod : null,
         }
 
@@ -337,8 +338,8 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     record.finalDestinationProvince = destination[0]
       ? destination[0].province
       : arrAirport[0]
-      ? arrAirport[0].iso_country
-      : ""
+        ? arrAirport[0].iso_country
+        : ""
 
     record.averageDurationDays = record.days / record.totalTrips
     record.averageExpensesPerDay = record.totalExpenses / record.days
