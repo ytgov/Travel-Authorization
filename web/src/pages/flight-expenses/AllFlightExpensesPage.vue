@@ -3,8 +3,8 @@
     v-model="selectedFlights"
     :filters="filters"
   >
-    <template #top="{ isAdmin }">
-      <v-row v-if="isAdmin">
+    <template #top>
+      <v-row>
         <v-spacer />
         <v-col
           cols="12"

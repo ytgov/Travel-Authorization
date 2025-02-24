@@ -8,14 +8,12 @@
     :headers="headers"
     :server-items-length="totalCount"
     :loading="isLoading"
-    :show-select="isAdmin"
     v-bind="$attrs"
     v-on="$listeners"
   >
     <template #top="slotProps">
       <slot
         name="top"
-        :is-admin="isAdmin"
         v-bind="slotProps"
       ></slot>
     </template>
@@ -70,7 +68,6 @@ import useRouteQuery, { integerTransformer } from "@/use/utils/use-route-query"
 import useVuetifySortByToSafeRouteQuery from "@/use/utils/use-vuetify-sort-by-to-safe-route-query"
 import useVuetifySortByToSequelizeSafeOrder from "@/use/utils/use-vuetify-sort-by-to-sequelize-safe-order"
 import useVuetify2SortByShim from "@/use/utils/use-vuetify2-sort-by-shim"
-import useCurrentUser from "@/use/use-current-user"
 import useAccountsReceivableInvoiceDetails from "@/use/trav-com/use-accounts-receivable-invoice-details"
 
 const props = defineProps({
@@ -87,8 +84,6 @@ const props = defineProps({
     default: "",
   },
 })
-
-const { isAdmin } = useCurrentUser()
 
 const headers = ref([
   {
