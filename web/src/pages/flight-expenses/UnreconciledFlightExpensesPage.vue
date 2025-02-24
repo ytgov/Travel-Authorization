@@ -1,6 +1,7 @@
 <template>
   <AccountsReceivableInvoiceDetailsDataTable
-    v-model="selectedFlights"
+    ref="accountsReceivableInvoiceDetailsDataTable"
+    v-model="selectedAccountsReceivableInvoiceDetails"
     :filters="filters"
     unreconciled
     show-select
@@ -13,7 +14,7 @@
           md="2"
         >
           <v-btn
-            :disabled="selectedFlights.length == 0"
+            :disabled="isEmpty(selectedAccountsReceivableInvoiceDetails)"
             color="primary"
             block
             @click="exportToExcel"
@@ -25,62 +26,16 @@
           cols="12"
           md="2"
         >
-          <v-btn
-            :disabled="selectedFlights.length == 0"
-            color="primary"
-            block
-            @click="openReconcile"
-          >
-            Reconcile
-          </v-btn>
+          <FlightReconciliationsCreateDialog
+            :selected-accounts-receivable-invoice-details="selectedAccountsReceivableInvoiceDetails"
+            :activator-props="{
+              disabled: isEmpty(selectedAccountsReceivableInvoiceDetails),
+              block: true,
+            }"
+            @created="refresh"
+          />
         </v-col>
       </v-row>
-
-      <!-- TODO: make dialog into a separate component -->
-      <v-dialog
-        v-model="reconcileDialog"
-        persistent
-        max-width="400px"
-      >
-        <v-card>
-          <v-card-title
-            class="primary"
-            style="border-bottom: 1px solid black"
-          >
-            <div class="text-h5">Reconcile Flights</div>
-          </v-card-title>
-
-          <v-card-text>
-            <v-select
-              v-model="period"
-              :items="periodOptions"
-              :rules="[required]"
-              class="mt-5"
-              label="What Period?"
-              outlined
-              required
-            >
-            </v-select>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn
-              color="grey darken-5"
-              @click="reconcileDialog = false"
-            >
-              Cancel
-            </v-btn>
-            <v-btn
-              class="ml-auto"
-              :loading="savingData"
-              color="green darken-1"
-              @click="addPeriod"
-            >
-              Reconcile
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </template>
   </AccountsReceivableInvoiceDetailsDataTable>
 </template>
@@ -88,14 +43,10 @@
 <script setup>
 import { computed, ref } from "vue"
 import { ExportToCsv } from "export-to-csv"
-import { isNil, isEmpty, range } from "lodash"
-
-import http from "@/api/http-client"
-import { FLIGHT_RECONCILE_URL } from "@/urls"
-
-import { required } from "@/utils/validators"
+import { isNil, isEmpty } from "lodash"
 
 import AccountsReceivableInvoiceDetailsDataTable from "@/components/trav-com/accounts-receivable-invoice-details/AccountsReceivableInvoiceDetailsDataTable.vue"
+import FlightReconciliationsCreateDialog from "@/components/flight-reconciliations/FlightReconciliationsCreateDialog.vue"
 
 const props = defineProps({
   startDate: {
@@ -123,50 +74,10 @@ const filters = computed(() => {
   return baseFilters
 })
 
-const selectedFlights = ref([])
-
-const reconcileDialog = ref(false)
-const savingData = ref(false)
-
-const period = ref(null)
-const periodOptions = ref(range(1, 13)) // [1,2, ..., 12]
-
-function openReconcile() {
-  period.value = null
-  savingData.value = false
-  reconcileDialog.value = true
-}
-
-async function addPeriod() {
-  if (isNil(period.value)) return
-
-  savingData.value = true
-  const body = []
-  for (const flight of selectedFlights.value) {
-    const reconcile = {
-      invoiceID: flight.invoiceID,
-      invoiceDetailID: flight.invoiceDetailID,
-      reconciled: true,
-      reconcilePeriod: period.value,
-    }
-    if (flight.reconcileID) {
-      reconcile.reconcileID = flight.reconcileID
-    }
-    body.push(reconcile)
-  }
-
-  try {
-    await http.post(`${FLIGHT_RECONCILE_URL}/`, body)
-    reconcileDialog.value = false
-  } catch (error) {
-    console.log(`Failed to reconcile flight expenses: ${error}`)
-  } finally {
-    savingData.value = false
-  }
-}
+const selectedAccountsReceivableInvoiceDetails = ref([])
 
 async function exportToExcel() {
-  const csvInfo = selectedFlights.value.map((flight) => {
+  const csvInfo = selectedAccountsReceivableInvoiceDetails.value.map((flight) => {
     return {
       purchaseDate: flight.purchaseDate ? flight.purchaseDate : "",
       cost: flight.cost ? "$" + flight.cost : "",
@@ -206,6 +117,13 @@ async function exportToExcel() {
   }
   const csvExporter = new ExportToCsv(options)
   csvExporter.generateCsv(csvInfo)
+}
+
+/** @type {import("vue").Ref<InstanceType<typeof AccountsReceivableInvoiceDetailsDataTable> | null>} */
+const accountsReceivableInvoiceDetailsDataTable = ref(null)
+
+function refresh() {
+  accountsReceivableInvoiceDetailsDataTable.value?.refresh()
 }
 </script>
 
