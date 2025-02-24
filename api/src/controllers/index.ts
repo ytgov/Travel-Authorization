@@ -1,5 +1,6 @@
 export { CurrentUserController } from "./current-user-controller"
 export { ExpensesController } from "./expenses-controller"
+export { FlightReconciliationsController } from "./flight-reconciliations-controller"
 export { GeneralLedgerCodingsController } from "./general-ledger-codings-controller"
 export { LocationsController } from "./locations-controller"
 export { PerDiemsController } from "./per-diems-controller"

@@ -10,6 +10,7 @@ import {
   CurrentUserController,
   Expenses,
   ExpensesController,
+  FlightReconciliationsController,
   GeneralLedgerCodingsController,
   LocationsController,
   PerDiemsController,
@@ -93,6 +94,16 @@ router
   .route("/api/expenses/:expenseId/upload")
   .get(Expenses.UploadController.show)
   .post(Expenses.UploadController.create)
+
+router
+  .route("/api/flight-reconciliations")
+  .get(FlightReconciliationsController.index)
+  .post(FlightReconciliationsController.create)
+router
+  .route("/api/flight-reconciliations/:flightReconciliationId")
+  .get(FlightReconciliationsController.show)
+  .patch(FlightReconciliationsController.update)
+  .delete(FlightReconciliationsController.destroy)
 
 router.route("/api/per-diems").get(PerDiemsController.index)
 router
