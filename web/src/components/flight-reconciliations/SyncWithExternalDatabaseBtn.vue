@@ -1,0 +1,33 @@
+<template>
+  <v-btn
+    :loading="isLoading"
+    v-bind="$attrs"
+    v-on="$listeners"
+    @click="syncWithExternalDatabase"
+  >
+    Sync with External Database
+  </v-btn>
+</template>
+
+<script setup>
+import { ref } from "vue"
+
+import flightReconciliationsApi from "@/api/flight-reconciliations-api"
+import useSnack from "@/use/use-snack"
+
+const isLoading = ref(false)
+const snack = useSnack()
+
+async function syncWithExternalDatabase() {
+  isLoading.value = true
+  try {
+    await flightReconciliationsApi.sync()
+    snack.success("Synced with external database.")
+  } catch (error) {
+    console.error(`Failed to sync with external database: ${error}`, { error })
+    snack.error(`Failed to sync with external database: ${error}`)
+  } finally {
+    isLoading.value = false
+  }
+}
+</script>

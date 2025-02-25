@@ -6,6 +6,15 @@
   >
     <template #top>
       <v-row>
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <SyncWithExternalDatabaseBtn
+            color="secondary"
+            block
+          />
+        </v-col>
         <v-spacer />
         <v-col
           cols="12"
@@ -33,6 +42,7 @@ import { isNil, isEmpty } from "lodash"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
+import SyncWithExternalDatabaseBtn from "@/components/flight-reconciliations/SyncWithExternalDatabaseBtn.vue"
 
 const props = defineProps({
   startDate: {

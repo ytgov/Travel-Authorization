@@ -102,6 +102,11 @@ export const flightReconciliationsApi = {
   async delete(flightReconciliationId) {
     await http.delete(`/api/flight-reconciliations/${flightReconciliationId}`)
   },
+
+  // Special actions
+  async sync() {
+    await http.post("/api/flight-reconciliations/sync")
+  },
 }
 
 export default flightReconciliationsApi
