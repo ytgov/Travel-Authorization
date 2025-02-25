@@ -5,7 +5,11 @@ import {
   FindOptions,
   Model,
   ModelStatic,
+  ScopeOptions,
+  WhereAttributeHash,
 } from "sequelize"
+
+type BaseModelStatic<M extends BaseModel> = typeof BaseModel & ModelStatic<M>
 
 // See api/node_modules/@sequelize/core/lib/model.d.ts -> Model
 export abstract class BaseModel<
@@ -14,7 +18,14 @@ export abstract class BaseModel<
   // eslint-disable-next-line @typescript-eslint/ban-types
   TCreationAttributes extends {} = TModelAttributes,
 > extends Model<TModelAttributes, TCreationAttributes> {
-  // static findByPk<M extends Model, R = Attributes<M>>(
+  public static scope<M extends BaseModel>(
+    this: ModelStatic<M>,
+    options?: string | ScopeOptions | readonly (string | ScopeOptions)[] | WhereAttributeHash<M>
+  ): BaseModelStatic<M> {
+    return super.scope(options) as BaseModelStatic<M>
+  }
+
+  // static findByPk<M extends Model, R = Attributes<M>>
   //   this: ModelStatic<M>,
   //   identifier: unknown,
   //   options: FindByPkOptions<M> & { raw: true; rejectOnEmpty?: false },

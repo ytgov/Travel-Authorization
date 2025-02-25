@@ -64,6 +64,7 @@
 
 <script setup>
 import { ref, computed } from "vue"
+import { isNil, isEmpty } from "lodash"
 
 import SyncWithTravComBtn from "@/components/flight-reconciliations/SyncWithTravComBtn.vue"
 import DateRangeTableFilterDiv from "@/components/flight-reconciliations/tables/DateRangeTableFilterDiv.vue"
@@ -73,9 +74,13 @@ const dateRange = ref([])
 const startDate = computed(() => dateRange.value[0])
 const endDate = computed(() => dateRange.value[1])
 
-const filters = computed(() => ({
-  invoiceBookingDateBetween: dateRange.value,
-}))
+const filters = computed(() => {
+  if (isNil(dateRange.value) || isEmpty(dateRange.value)) return {}
+
+  return {
+    invoiceBookingDateBetween: dateRange.value,
+  }
+})
 
 const loadedDateRangeTableFilterDiv = ref(false)
 const waiting = computed(() =>

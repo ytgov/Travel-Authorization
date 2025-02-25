@@ -26,66 +26,62 @@ export class SyncService extends BaseService {
     super()
   }
 
-  async perform(): Promise<FlightReconciliation[]> {
+  async perform(): Promise<void> {
     const scopes = this.buildFilterScopes()
     const scopedAccountsReceivableInvoiceDetails = AccountsReceivableInvoiceDetail.scope(scopes)
 
     const { where } = this.query
     const order = this.buildOrder()
-    const accountReceivableInvoiceDetails = await scopedAccountsReceivableInvoiceDetails.findAll({
-      where,
-      limit: this.query.limit,
-      offset: this.query.offset,
-      order,
-      include: [
-        "invoice",
-        {
-          association: "segments",
-          include: ["arrivalCity"],
-        },
-      ],
-    })
-    const serializedAccountsReceivableInvoiceDetails =
-      AccountsReceivableInvoiceDetails.IndexSerializer.perform(accountReceivableInvoiceDetails)
+    await scopedAccountsReceivableInvoiceDetails.findEach(
+      {
+        where,
+        order,
+        include: [
+          "invoice",
+          {
+            association: "segments",
+            include: ["arrivalCity"],
+          },
+        ],
+      },
+      async (accountsReceivableInvoiceDetail) => {
+        const serializedInvoiceDetail = AccountsReceivableInvoiceDetails.IndexSerializer.perform(
+          accountsReceivableInvoiceDetail
+        )
 
-    const flightReconciliationsAttributes = serializedAccountsReceivableInvoiceDetails.map(
-      (invoiceDetail) => {
-        const { invoice } = invoiceDetail
+        const { invoice } = serializedInvoiceDetail
         const invoiceBookingDate = this.buildBookingDate(invoice.bookingDate)
-        return {
+
+        const flightReconciliationAttributes = {
           reconcilerId: this.currentUser.id,
-          externalTravComIdentifier: invoiceDetail.id,
+          externalTravComIdentifier: serializedInvoiceDetail.id,
           invoiceBookingDate,
           invoiceDepartment: invoice.department,
-          invoiceDetailSellingFare: invoiceDetail.sellingFare,
-          invoiceDetailComputedAgentName: invoiceDetail.agentName,
-          invoiceDetailVendorName: invoiceDetail.vendorName,
-          invoiceDetailComputedTravelerFirstName: invoiceDetail.travelerFirstName,
-          invoiceDetailComputedTravelerLastName: invoiceDetail.travelerLastName,
-          segmentsComputedFlightInfo: invoiceDetail.flightInfo,
-          segmentsComputedFinalDestination: invoiceDetail.finalDestination,
+          invoiceDetailSellingFare: serializedInvoiceDetail.sellingFare,
+          invoiceDetailComputedAgentName: serializedInvoiceDetail.agentName,
+          invoiceDetailVendorName: serializedInvoiceDetail.vendorName,
+          invoiceDetailComputedTravelerFirstName: serializedInvoiceDetail.travelerFirstName,
+          invoiceDetailComputedTravelerLastName: serializedInvoiceDetail.travelerLastName,
+          segmentsComputedFlightInfo: serializedInvoiceDetail.flightInfo,
+          segmentsComputedFinalDestination: serializedInvoiceDetail.finalDestination,
           reconciled: false,
           reconcilePeriod: null,
+        }
+
+        const flightReconciliation = await FlightReconciliation.findOne({
+          where: {
+            externalTravComIdentifier: flightReconciliationAttributes.externalTravComIdentifier,
+          },
+        })
+        if (isNil(flightReconciliation)) {
+          await FlightReconciliation.create(flightReconciliationAttributes)
+        } else {
+          await flightReconciliation.update(flightReconciliationAttributes)
         }
       }
     )
 
-    const flightReconciliations = []
-    for (const flightReconciliationAttributes of flightReconciliationsAttributes) {
-      let flightReconciliation = await FlightReconciliation.findOne({
-        where: {
-          externalTravComIdentifier: flightReconciliationAttributes.externalTravComIdentifier,
-        },
-      })
-      if (isNil(flightReconciliation)) {
-        flightReconciliation = await FlightReconciliation.create(flightReconciliationAttributes)
-      } else {
-        await flightReconciliation.update(flightReconciliationAttributes)
-      }
-      flightReconciliations.push(flightReconciliation)
-    }
-
-    return flightReconciliations
+    return
   }
 
   private buildFilterScopes(): BaseScopeOptions[] {

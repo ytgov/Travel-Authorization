@@ -6,11 +6,11 @@ import {
   InferAttributes,
   InferCreationAttributes,
   literal,
-  Model,
   NonAttribute,
   Op,
 } from "sequelize"
 
+import BaseModel from "@/models/base-model"
 import { FlightReconciliation } from "@/models"
 import { compactSql } from "@/integrations/trav-com-integration/utils"
 import sequelize from "@/integrations/trav-com-integration/db/db-client"
@@ -45,7 +45,7 @@ export type ArInvoiceDetailNoHealthRaw = {
   AddedBy: number
 }
 
-export class AccountsReceivableInvoiceDetail extends Model<
+export class AccountsReceivableInvoiceDetail extends BaseModel<
   InferAttributes<AccountsReceivableInvoiceDetail>,
   InferCreationAttributes<AccountsReceivableInvoiceDetail>
 > {
