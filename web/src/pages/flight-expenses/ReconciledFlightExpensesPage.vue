@@ -1,5 +1,6 @@
 <template>
   <FlightReconciliationsDataTable
+    ref="flightReconciliationsDataTable"
     v-model="selectedFlightReconciliations"
     :filters="filters"
     :where="where"
@@ -27,53 +28,21 @@
           md="2"
         >
           <v-btn
-            :disabled="isEmpty(selectedFlightReconciliations)"
             color="primary"
+            :disabled="isEmpty(selectedFlightReconciliationIds)"
             block
-            @click="openUnReconcile"
+            @click="showBulkUnreconcileDialog(selectedFlightReconciliationIds)"
           >
-            UnReconcile
+            Unreconcile
           </v-btn>
         </v-col>
       </v-row>
 
-      <!-- TODO: make this a component -->
-      <v-dialog
-        v-model="unReconcileDialog"
-        persistent
-        max-width="400px"
-      >
-        <v-card>
-          <v-card-title
-            class="warning"
-            style="border-bottom: 1px solid black"
-          >
-            <div class="text-h5">Unreconcile Flights</div>
-          </v-card-title>
-
-          <v-card-text class="mt-4">
-            By Unreconciling these records, the period will be removed and the record will be
-            returned to the reconcile list.
-          </v-card-text>
-
-          <v-card-actions>
-            <v-btn
-              color="grey darken-5"
-              @click="unReconcileDialog = false"
-            >
-              Cancel
-            </v-btn>
-            <v-btn
-              class="ml-auto"
-              :loading="savingData"
-              color="green darken-1"
-              @click="unReconcile"
-            >
-              Continue
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <!-- TODO: consider if I should support unreconciling on a per-row basis as well? -->
+      <FlightReconciliationsBulkUnreconcileDialog
+        ref="flightReconciliationsBulkUnreconcileDialog"
+        @saved="refresh"
+      />
     </template>
   </FlightReconciliationsDataTable>
 </template>
@@ -83,10 +52,8 @@ import { computed, ref } from "vue"
 import { ExportToCsv } from "export-to-csv"
 import { isNil, isEmpty } from "lodash"
 
-import http from "@/api/http-client"
-import { FLIGHT_RECONCILE_URL } from "@/urls"
-
 import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
+import FlightReconciliationsBulkUnreconcileDialog from "@/components/flight-reconciliations/FlightReconciliationsBulkUnreconcileDialog.vue"
 
 const props = defineProps({
   startDate: {
@@ -119,8 +86,16 @@ const where = computed(() => ({
 
 const selectedFlightReconciliations = ref([])
 
-const unReconcileDialog = ref(false)
-const savingData = ref(false)
+const selectedFlightReconciliationIds = computed(() =>
+  selectedFlightReconciliations.value.map((flightReconciliation) => flightReconciliation.id)
+)
+
+/** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsBulkUnreconcileDialog> | null>} */
+const flightReconciliationsBulkUnreconcileDialog = ref(null)
+
+function showBulkUnreconcileDialog(flightReconciliationIds) {
+  flightReconciliationsBulkUnreconcileDialog.value.show(flightReconciliationIds)
+}
 
 // TODO: switch to back-end rendering at a dedicated endpoint via
 // fast-csv, see https://github.com/icefoganalytics/internal-data-portal/blob/0eb01fff60c6b5d72b060f89e92cf15336225531/api/src/controllers/download/datasets-controller.ts#L28
@@ -168,34 +143,11 @@ async function exportToExcel() {
   csvExporter.generateCsv(csvInfo)
 }
 
-function openUnReconcile() {
-  savingData.value = false
-  unReconcileDialog.value = true
-}
+/** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsDataTable> | null>} */
+const flightReconciliationsDataTable = ref(null)
 
-async function unReconcile() {
-  savingData.value = true
-  try {
-    const body = []
-    for (const flight of selectedFlightReconciliations.value) {
-      const reconcile = {
-        reconcileID: flight.reconcileID,
-        invoiceID: flight.invoiceID,
-        invoiceDetailID: flight.invoiceDetailID,
-        reconciled: false,
-        reconcilePeriod: null,
-      }
-      body.push(reconcile)
-    }
-
-    await http.post(`${FLIGHT_RECONCILE_URL}/`, body)
-
-    unReconcileDialog.value = false
-  } catch (error) {
-    console.log(`Failed to unReconcile flight expenses: ${error}`)
-  } finally {
-    savingData.value = false
-  }
+function refresh() {
+  flightReconciliationsDataTable.value?.refresh()
 }
 </script>
 
