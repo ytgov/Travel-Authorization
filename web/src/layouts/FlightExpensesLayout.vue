@@ -8,6 +8,7 @@
         <v-tab
           :to="{
             name: 'flight-expenses/AllFlightExpensesPage',
+            query: $route.query,
           }"
         >
           All
@@ -15,6 +16,7 @@
         <v-tab
           :to="{
             name: 'flight-expenses/UnreconciledFlightExpensesPage',
+            query: $route.query,
           }"
         >
           Unreconciled
@@ -22,6 +24,7 @@
         <v-tab
           :to="{
             name: 'flight-expenses/ReconciledFlightExpensesPage',
+            query: $route.query,
           }"
         >
           Reconciled
