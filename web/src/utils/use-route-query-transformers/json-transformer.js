@@ -15,7 +15,7 @@ export const jsonTransformer = {
     return JSON.parse(value)
   },
   set(value) {
-    if (isUndefined(value)) return ""
+    if (isUndefined(value)) return undefined
 
     return JSON.stringify(value)
   },
