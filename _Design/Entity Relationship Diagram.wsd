@@ -62,8 +62,17 @@ entity "flight_reconciliations" {
   --
   * reconcilerd_id : int4 <<FK>>
   * external_trav_com_identifier : int4 <<UNIQUE>>
+  * invoice_detail_segment numeric(19, 4)
+  * invoice_detail_vendor_name varchar(255)
+  * invoice_detail_computed_traveler_first_name varchar(255)
+  * invoice_detail_computed_traveler_last_name varchar(255)
   * reconciled : bool : default false
   --
+  invoice_booking_date timestamptz
+  invoice_department varchar(255)
+  invoice_detail_computed_agent_name varchar(255)
+  segments_computed_flight_info text
+  segments_computed_final_destination varchar(255)
   reconcile_period : int4
   --
   * created_at : timestamptz : default CURRENT_TIMESTAMP
