@@ -3,38 +3,25 @@
     v-model="showDialog"
     max-width="400px"
     @keydown.esc="hide"
+    @input="hideIfFalse"
   >
-    <template #activator="slotData">
-      <slot
-        name="activator"
-        v-bind="slotData"
-      >
-        <v-btn
-          color="primary"
-          v-bind="merge({}, slotData.attrs, activatorProps)"
-          v-on="slotData.on"
-        >
-          Reconcile
-        </v-btn>
-      </slot>
-    </template>
-
     <v-form
       ref="form"
-      @submit.prevent="createAndHide"
+      @submit.prevent="updateAndHide"
     >
       <v-card :loading="isLoading">
         <v-card-title>
           <h2>Reconcile Flights</h2>
         </v-card-title>
+
         <v-divider />
+
         <v-card-text>
           <v-row>
             <v-col cols="12">
-              <v-select
-                v-model="flightReconciliationAttributes.reconcilePeriod"
+              <FlightReconciliationPeriodSelect
+                v-model="flightReconciliationBulkAttributes.reconcilePeriod"
                 label="What Period? *"
-                :items="periodOptions"
                 :rules="[required]"
                 outlined
                 required
@@ -67,50 +54,52 @@
 
 <script setup>
 import { ref, nextTick, watch } from "vue"
-import { cloneDeep, isEmpty, merge, range } from "lodash"
+import { cloneDeep, isEmpty, isNil } from "lodash"
 
 import { required } from "@/utils/validators"
 
 import flightReconciliationsApi from "@/api/flight-reconciliations-api"
 
-import useRouteQuery, { booleanTransformer } from "@/use/utils/use-route-query"
+import useRouteQuery, { jsonTransformer } from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 
-const props = defineProps({
-  selectedFlightReconciliations: {
-    type: Array,
-    required: true,
-  },
-  activatorProps: {
-    type: Object,
-    default: () => ({}),
-  },
+import FlightReconciliationPeriodSelect from "@/components/flight-reconciliations/FlightReconciliationPeriodSelect.vue"
+
+const emit = defineEmits(["saved"])
+
+const flightReconciliationIds = useRouteQuery("showFlightReconciliationsBulkEdit", undefined, {
+  transformer: jsonTransformer,
 })
 
-const emit = defineEmits(["created"])
-
-const flightReconciliationAttributes = ref({
+const flightReconciliationBulkAttributes = ref({
   period: null,
 })
 
-const periodOptions = ref(range(1, 13).concat(14)) // [1-12, 14]
+function show(newFlightReconciliationIds) {
+  flightReconciliationIds.value = newFlightReconciliationIds
+}
 
-const showDialog = useRouteQuery(
-  "showFlightReconciliationsBulkEdit",
-  !isEmpty(props.selectedFlightReconciliations),
-  {
-    transform: booleanTransformer,
-  }
-)
+function hide() {
+  flightReconciliationIds.value = undefined
+}
+
+const showDialog = ref(false)
+
+/** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
+const form = ref(null)
 
 watch(
-  () => cloneDeep(props.selectedFlightReconciliations),
-  (newSelectedFlights) => {
-    if (isEmpty(newSelectedFlights)) {
+  () => cloneDeep(flightReconciliationIds.value),
+  (newFlightReconciliationIds) => {
+    if (isNil(newFlightReconciliationIds) || isEmpty(newFlightReconciliationIds)) {
       showDialog.value = false
+      flightReconciliationBulkAttributes.value = {
+        period: null,
+      }
+      form.value?.resetValidation()
+    } else {
+      showDialog.value = true
     }
-
-    resetAttributes()
   },
   {
     immediate: true,
@@ -118,13 +107,10 @@ watch(
   }
 )
 
-/** @type {import("vue").Ref<InstanceType<typeof import("vuetify/lib").VForm> | null>} */
-const form = ref(null)
 const isLoading = ref(false)
-
 const snack = useSnack()
 
-async function createAndHide() {
+async function updateAndHide() {
   if (!form.value?.validate()) {
     snack.error("Please fill in all required fields")
     return
@@ -133,40 +119,39 @@ async function createAndHide() {
   isLoading.value = true
   try {
     const updatedFlightReconciliationIds = []
-    for (const flightReconciliation of props.selectedFlightReconciliations) {
+    for (const flightReconciliationId of flightReconciliationIds.value) {
       const attributes = {
+        ...flightReconciliationBulkAttributes.value,
         reconciled: true,
-        ...flightReconciliationAttributes.value,
       }
-      const { flightReconciliation: updatedFlightReconciliation } =
-        await flightReconciliationsApi.update(flightReconciliation.id, attributes)
-      updatedFlightReconciliationIds.push(updatedFlightReconciliation.id)
+      const { flightReconciliation } = await flightReconciliationsApi.update(
+        flightReconciliationId,
+        attributes
+      )
+      updatedFlightReconciliationIds.push(flightReconciliation.id)
     }
     hide()
 
     await nextTick()
-    emit("created", updatedFlightReconciliationIds)
+    emit("saved", updatedFlightReconciliationIds)
     snack.success("Flights reconciled successfully")
   } catch (error) {
-    snack.error("Failed to reconcile flights")
+    console.error(`Failed to reconcile flights: ${error}`, { error })
+    snack.error(`Failed to reconcile flights: ${error}`)
   } finally {
     isLoading.value = false
   }
 }
 
-function hide() {
-  showDialog.value = false
-  resetAttributes()
-  form.value?.resetValidation()
+function hideIfFalse(value) {
+  if (value !== false) return
+
+  hide()
 }
 
-function resetAttributes() {
-  flightReconciliationAttributes.value = cloneDeep(props.selectedFlightReconciliations)
-}
+defineExpose({
+  show,
+})
 </script>
 
-<style scoped>
-.gap-4 {
-  gap: 1rem; /* 16px */
-}
-</style>
+<style scoped></style>

@@ -27,16 +27,22 @@
           cols="12"
           md="2"
         >
-          <FlightReconciliationsBulkEditDialog
-            :selected-flight-reconciliations="selectedFlightReconciliations"
-            :activator-props="{
-              disabled: isEmpty(selectedFlightReconciliations),
-              block: true,
-            }"
-            @created="refresh"
-          />
+          <v-btn
+            color="primary"
+            :disabled="isEmpty(selectedFlightReconciliationIds)"
+            block
+            @click="showBulkEditDialog(selectedFlightReconciliationIds)"
+          >
+            Reconcile
+          </v-btn>
         </v-col>
       </v-row>
+
+      <!-- TODO: consider if I should support reconciling on a per-row basis as well? -->
+      <FlightReconciliationsBulkEditDialog
+        ref="flightReconciliationsBulkEditDialog"
+        @saved="refresh"
+      />
     </template>
   </FlightReconciliationsDataTable>
 </template>
@@ -79,6 +85,16 @@ const where = computed(() => ({
 }))
 
 const selectedFlightReconciliations = ref([])
+const selectedFlightReconciliationIds = computed(() =>
+  selectedFlightReconciliations.value.map((flightReconciliation) => flightReconciliation.id)
+)
+
+/** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsBulkEditDialog> | null>} */
+const flightReconciliationsBulkEditDialog = ref(null)
+
+function showBulkEditDialog(flightReconciliationIds) {
+  flightReconciliationsBulkEditDialog.value.show(flightReconciliationIds)
+}
 
 async function exportToExcel() {
   const csvInfo = selectedFlightReconciliations.value.map((flight) => {
