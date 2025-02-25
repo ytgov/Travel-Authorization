@@ -25,6 +25,15 @@ export class FlightReconciliation extends Model<
   declare id: CreationOptional<number>
   declare reconcilerId: ForeignKey<User["id"]>
   declare externalTravComIdentifier: number // References the external database TravCom -> ARInvoiceDetailsNoHealth -> InvoiceDetailID
+  declare invoiceBookingDate: Date | null
+  declare invoiceDepartment: string | null
+  declare invoiceDetailSellingFare: number
+  declare invoiceDetailComputedAgentName: string | null
+  declare invoiceDetailVendorName: string
+  declare invoiceDetailComputedTravelerFirstName: string
+  declare invoiceDetailComputedTravelerLastName: string
+  declare segmentsComputedFlightInfo: string | null
+  declare segmentsComputedFinalDestination: string | null
   declare reconciled: CreationOptional<boolean>
   declare reconcilePeriod: number | null
   declare createdAt: CreationOptional<Date>
@@ -66,6 +75,42 @@ FlightReconciliation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       unique: true,
+    },
+    invoiceBookingDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    invoiceDepartment: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    invoiceDetailSellingFare: {
+      type: DataTypes.DECIMAL(19, 4),
+      allowNull: false,
+    },
+    invoiceDetailComputedAgentName: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    invoiceDetailVendorName: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    invoiceDetailComputedTravelerFirstName: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    invoiceDetailComputedTravelerLastName: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    segmentsComputedFlightInfo: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    segmentsComputedFinalDestination: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     reconciled: {
       type: DataTypes.BOOLEAN,
