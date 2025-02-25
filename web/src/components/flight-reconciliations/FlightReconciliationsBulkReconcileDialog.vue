@@ -72,7 +72,7 @@ const flightReconciliationIds = useRouteQuery("showFlightReconciliationsBulkReco
 })
 
 const flightReconciliationBulkAttributes = ref({
-  period: null,
+  reconcilePeriod: null,
 })
 
 function show(newFlightReconciliationIds) {
@@ -94,7 +94,7 @@ watch(
     if (isNil(newFlightReconciliationIds) || isEmpty(newFlightReconciliationIds)) {
       showDialog.value = false
       flightReconciliationBulkAttributes.value = {
-        period: null,
+        reconcilePeriod: null,
       }
       form.value?.resetValidation()
     } else {
