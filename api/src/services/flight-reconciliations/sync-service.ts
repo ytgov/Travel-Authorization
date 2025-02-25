@@ -1,5 +1,5 @@
 import { Attributes, WhereOptions } from "sequelize"
-import { isEmpty, isNil } from "lodash"
+import { isEmpty, isNil, pick } from "lodash"
 import { DateTime } from "luxon"
 
 import { AccountsReceivableInvoiceDetail } from "@/integrations/trav-com-integration/models"
@@ -76,7 +76,18 @@ export class SyncService extends BaseService {
         if (isNil(flightReconciliation)) {
           await FlightReconciliation.create(flightReconciliationAttributes)
         } else {
-          await flightReconciliation.update(flightReconciliationAttributes)
+          const safeFlightReconciliationAttributes = pick(flightReconciliationAttributes, [
+            "invoiceBookingDate",
+            "invoiceDepartment",
+            "invoiceDetailSellingFare",
+            "invoiceDetailComputedAgentName",
+            "invoiceDetailVendorName",
+            "invoiceDetailComputedTravelerFirstName",
+            "invoiceDetailComputedTravelerLastName",
+            "segmentsComputedFlightInfo",
+            "segmentsComputedFinalDestination",
+          ])
+          await flightReconciliation.update(safeFlightReconciliationAttributes)
         }
       }
     )
