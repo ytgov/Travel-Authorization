@@ -87,11 +87,25 @@ export function useRouteQuery(name, defaultValue, options = {}) {
 
           const { params, query, hash } = route
 
+          // Check if the new query is actually different before navigating
+          const newQueryParams = { ...query, ...newQueries }
+          if (JSON.stringify(newQueryParams) === JSON.stringify(route.query)) {
+            return // Stop navigation if nothing changed
+          }
+
           router[toValue(mode)]({
             params,
-            query: { ...query, ...newQueries },
+            query: newQueryParams,
             hash,
           })
+          // If you actually want to try to debug the nav duplication error, use the following.
+          // .catch((error) => {
+          //   if (error.name === "NavigationDuplicated") {
+          //     console.warn(error)
+          //   } else {
+          //     console.error(error)
+          //   }
+          // })
         })
       },
     }
