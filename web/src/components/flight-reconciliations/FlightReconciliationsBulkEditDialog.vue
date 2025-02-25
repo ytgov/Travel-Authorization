@@ -68,7 +68,7 @@ import FlightReconciliationPeriodSelect from "@/components/flight-reconciliation
 const emit = defineEmits(["saved"])
 
 const flightReconciliationIds = useRouteQuery("showFlightReconciliationsBulkEdit", undefined, {
-  transformer: jsonTransformer,
+  transform: jsonTransformer,
 })
 
 const flightReconciliationBulkAttributes = ref({
