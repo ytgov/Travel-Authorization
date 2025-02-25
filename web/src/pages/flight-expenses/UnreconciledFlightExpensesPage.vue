@@ -1,8 +1,9 @@
 <template>
-  <AccountsReceivableInvoiceDetailsDataTable
-    ref="accountsReceivableInvoiceDetailsDataTable"
-    v-model="selectedAccountsReceivableInvoiceDetails"
+  <FlightReconciliationsDataTable
+    ref="flightReconciliationsDataTable"
+    v-model="selectedFlightReconciliations"
     :filters="filters"
+    :where="where"
     unreconciled
     show-select
   >
@@ -14,7 +15,7 @@
           md="2"
         >
           <v-btn
-            :disabled="isEmpty(selectedAccountsReceivableInvoiceDetails)"
+            :disabled="isEmpty(selectedFlightReconciliations)"
             color="primary"
             block
             @click="exportToExcel"
@@ -27,9 +28,9 @@
           md="2"
         >
           <FlightReconciliationsCreateDialog
-            :selected-accounts-receivable-invoice-details="selectedAccountsReceivableInvoiceDetails"
+            :selected-flight-reconciliations="selectedFlightReconciliations"
             :activator-props="{
-              disabled: isEmpty(selectedAccountsReceivableInvoiceDetails),
+              disabled: isEmpty(selectedFlightReconciliations),
               block: true,
             }"
             @created="refresh"
@@ -37,7 +38,7 @@
         </v-col>
       </v-row>
     </template>
-  </AccountsReceivableInvoiceDetailsDataTable>
+  </FlightReconciliationsDataTable>
 </template>
 
 <script setup>
@@ -45,7 +46,7 @@ import { computed, ref } from "vue"
 import { ExportToCsv } from "export-to-csv"
 import { isNil, isEmpty } from "lodash"
 
-import AccountsReceivableInvoiceDetailsDataTable from "@/components/trav-com/accounts-receivable-invoice-details/AccountsReceivableInvoiceDetailsDataTable.vue"
+import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
 import FlightReconciliationsCreateDialog from "@/components/flight-reconciliations/FlightReconciliationsCreateDialog.vue"
 
 const props = defineProps({
@@ -73,11 +74,14 @@ const filters = computed(() => {
 
   return baseFilters
 })
+const where = computed(() => ({
+  reconciled: false,
+}))
 
-const selectedAccountsReceivableInvoiceDetails = ref([])
+const selectedFlightReconciliations = ref([])
 
 async function exportToExcel() {
-  const csvInfo = selectedAccountsReceivableInvoiceDetails.value.map((flight) => {
+  const csvInfo = selectedFlightReconciliations.value.map((flight) => {
     return {
       purchaseDate: flight.purchaseDate ? flight.purchaseDate : "",
       cost: flight.cost ? "$" + flight.cost : "",
@@ -119,11 +123,11 @@ async function exportToExcel() {
   csvExporter.generateCsv(csvInfo)
 }
 
-/** @type {import("vue").Ref<InstanceType<typeof AccountsReceivableInvoiceDetailsDataTable> | null>} */
-const accountsReceivableInvoiceDetailsDataTable = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsDataTable> | null>} */
+const flightReconciliationsDataTable = ref(null)
 
 function refresh() {
-  accountsReceivableInvoiceDetailsDataTable.value?.refresh()
+  flightReconciliationsDataTable.value?.refresh()
 }
 </script>
 

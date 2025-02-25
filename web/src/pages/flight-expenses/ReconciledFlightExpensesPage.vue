@@ -1,7 +1,8 @@
 <template>
-  <AccountsReceivableInvoiceDetailsDataTable
-    v-model="selectedFlights"
+  <FlightReconciliationsDataTable
+    v-model="selectedFlightReconciliations"
     :filters="filters"
+    :where="where"
     reconciled
     show-select
   >
@@ -13,7 +14,7 @@
           md="2"
         >
           <v-btn
-            :disabled="selectedFlights.length == 0"
+            :disabled="isEmpty(selectedFlightReconciliations)"
             color="primary"
             block
             @click="exportToExcel"
@@ -26,7 +27,7 @@
           md="2"
         >
           <v-btn
-            :disabled="selectedFlights.length == 0"
+            :disabled="isEmpty(selectedFlightReconciliations)"
             color="primary"
             block
             @click="openUnReconcile"
@@ -74,7 +75,7 @@
         </v-card>
       </v-dialog>
     </template>
-  </AccountsReceivableInvoiceDetailsDataTable>
+  </FlightReconciliationsDataTable>
 </template>
 
 <script setup>
@@ -85,7 +86,7 @@ import { isNil, isEmpty } from "lodash"
 import http from "@/api/http-client"
 import { FLIGHT_RECONCILE_URL } from "@/urls"
 
-import AccountsReceivableInvoiceDetailsDataTable from "@/components/trav-com/accounts-receivable-invoice-details/AccountsReceivableInvoiceDetailsDataTable.vue"
+import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
 
 const props = defineProps({
   startDate: {
@@ -112,8 +113,11 @@ const filters = computed(() => {
 
   return baseFilters
 })
+const where = computed(() => ({
+  reconciled: true,
+}))
 
-const selectedFlights = ref([])
+const selectedFlightReconciliations = ref([])
 
 const unReconcileDialog = ref(false)
 const savingData = ref(false)
@@ -121,7 +125,7 @@ const savingData = ref(false)
 // TODO: switch to back-end rendering at a dedicated endpoint via
 // fast-csv, see https://github.com/icefoganalytics/internal-data-portal/blob/0eb01fff60c6b5d72b060f89e92cf15336225531/api/src/controllers/download/datasets-controller.ts#L28
 async function exportToExcel() {
-  const csvInfo = selectedFlights.value.map((flight) => {
+  const csvInfo = selectedFlightReconciliations.value.map((flight) => {
     return {
       purchaseDate: flight.purchaseDate ? flight.purchaseDate : "",
       cost: flight.cost ? "$" + flight.cost : "",
@@ -173,7 +177,7 @@ async function unReconcile() {
   savingData.value = true
   try {
     const body = []
-    for (const flight of selectedFlights.value) {
+    for (const flight of selectedFlightReconciliations.value) {
       const reconcile = {
         reconcileID: flight.reconcileID,
         invoiceID: flight.invoiceID,

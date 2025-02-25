@@ -77,7 +77,7 @@ import useRouteQuery, { booleanTransformer } from "@/use/utils/use-route-query"
 import useSnack from "@/use/use-snack"
 
 const props = defineProps({
-  selectedAccountsReceivableInvoiceDetails: {
+  selectedFlightReconciliations: {
     type: Array,
     required: true,
   },
@@ -97,14 +97,14 @@ const periodOptions = ref(range(1, 13).concat(14)) // [1-12, 14]
 
 const showDialog = useRouteQuery(
   "showFlightReconciliationsCreate",
-  !isEmpty(props.selectedAccountsReceivableInvoiceDetails),
+  !isEmpty(props.selectedFlightReconciliations),
   {
     transform: booleanTransformer,
   }
 )
 
 watch(
-  () => cloneDeep(props.selectedAccountsReceivableInvoiceDetails),
+  () => cloneDeep(props.selectedFlightReconciliations),
   (newSelectedFlights) => {
     if (isEmpty(newSelectedFlights)) {
       showDialog.value = false
@@ -132,20 +132,20 @@ async function createAndHide() {
 
   isLoading.value = true
   try {
-    const flightReconciliationIds = []
-    for (const flight of props.selectedAccountsReceivableInvoiceDetails) {
+    const updatedFlightReconciliationIds = []
+    for (const flightReconciliation of props.selectedFlightReconciliations) {
       const attributes = {
-        externalTravComIdentifier: flight.id,
         reconciled: true,
         ...flightReconciliationAttributes.value,
       }
-      const { flightReconciliation } = await flightReconciliationsApi.create(attributes)
-      flightReconciliationIds.push(flightReconciliation.id)
+      const { flightReconciliation: updatedFlightReconciliation } =
+        await flightReconciliationsApi.update(flightReconciliation.id, attributes)
+      updatedFlightReconciliationIds.push(updatedFlightReconciliation.id)
     }
     hide()
 
     await nextTick()
-    emit("created", flightReconciliationIds)
+    emit("created", updatedFlightReconciliationIds)
     snack.success("Flights reconciled successfully")
   } catch (error) {
     snack.error("Failed to reconcile flights")
@@ -161,7 +161,7 @@ function hide() {
 }
 
 function resetAttributes() {
-  flightReconciliationAttributes.value = cloneDeep(props.selectedAccountsReceivableInvoiceDetails)
+  flightReconciliationAttributes.value = cloneDeep(props.selectedFlightReconciliations)
 }
 </script>
 

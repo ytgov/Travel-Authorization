@@ -7,6 +7,7 @@ import {
   InferCreationAttributes,
   Model,
   NonAttribute,
+  Op,
 } from "sequelize"
 import { range } from "lodash"
 
@@ -157,6 +158,17 @@ FlightReconciliation.init(
         },
       },
     ],
+    scopes: {
+      invoiceBookingDateBetween([startDate, endDate]: [string, string]) {
+        return {
+          where: {
+            invoiceBookingDate: {
+              [Op.between]: [startDate, endDate],
+            },
+          },
+        }
+      },
+    },
   }
 )
 

@@ -1,6 +1,6 @@
 <template>
-  <AccountsReceivableInvoiceDetailsDataTable
-    v-model="selectedFlights"
+  <FlightReconciliationsDataTable
+    v-model="selectedFlightReconciliations"
     :filters="filters"
     show-select
   >
@@ -12,7 +12,7 @@
           md="2"
         >
           <v-btn
-            :disabled="selectedFlights.length == 0"
+            :disabled="isEmpty(selectedFlightReconciliations)"
             color="primary"
             block
             @click="exportToExcel"
@@ -22,7 +22,7 @@
         </v-col>
       </v-row>
     </template>
-  </AccountsReceivableInvoiceDetailsDataTable>
+  </FlightReconciliationsDataTable>
 </template>
 
 <script setup>
@@ -32,7 +32,7 @@ import { isNil, isEmpty } from "lodash"
 
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 
-import AccountsReceivableInvoiceDetailsDataTable from "@/components/trav-com/accounts-receivable-invoice-details/AccountsReceivableInvoiceDetailsDataTable.vue"
+import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
 
 const props = defineProps({
   startDate: {
@@ -60,12 +60,12 @@ const filters = computed(() => {
   }
 })
 
-const selectedFlights = ref([])
+const selectedFlightReconciliations = ref([])
 
 // TODO: switch to back-end rendering at a dedicated endpoint via
 // fast-csv, see https://github.com/icefoganalytics/internal-data-portal/blob/0eb01fff60c6b5d72b060f89e92cf15336225531/api/src/controllers/download/datasets-controller.ts#L28
 async function exportToExcel() {
-  const csvInfo = selectedFlights.value.map((flight) => {
+  const csvInfo = selectedFlightReconciliations.value.map((flight) => {
     return {
       purchaseDate: flight.purchaseDate ? flight.purchaseDate : "",
       cost: flight.cost ? "$" + flight.cost : "",
