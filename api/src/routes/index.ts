@@ -46,7 +46,6 @@ import { userRouter } from "./users-router"
 import { preapprovedRouter } from "./preapproved-router"
 import { travelDeskRouter } from "./traveldesk-router"
 import { travComRouter } from "./travCom-router"
-import { reconcileRouter } from "./reconcile-router"
 import { lookupRouter } from "./lookup-router"
 import { lookupTableRouter } from "./lookup-tables-router"
 //// END LEGACY IMPORTS
@@ -81,7 +80,6 @@ router.use("/api/preapproved", preapprovedRouter)
 router.use("/api/traveldesk", travelDeskRouter)
 
 router.use("/api/travCom", travComRouter)
-router.use("/api/reconcile", reconcileRouter)
 //// END MORE LEGACY ROUTES
 
 router.route("/api/current-user").get(CurrentUserController.show)
