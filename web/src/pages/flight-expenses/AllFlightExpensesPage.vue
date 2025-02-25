@@ -1,5 +1,6 @@
 <template>
   <FlightReconciliationsDataTable
+    ref="flightReconciliationsDataTable"
     v-model="selectedFlightReconciliations"
     :filters="filters"
     show-select
@@ -14,6 +15,7 @@
             :filters="filters"
             color="secondary"
             block
+            @synced="refresh"
           />
         </v-col>
         <v-spacer />
@@ -116,6 +118,13 @@ async function exportToExcel() {
   }
   const csvExporter = new ExportToCsv(options)
   csvExporter.generateCsv(csvInfo)
+}
+
+/** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsDataTable> | null>} */
+const flightReconciliationsDataTable = ref(null)
+
+async function refresh() {
+  await flightReconciliationsDataTable.value?.refresh()
 }
 
 useBreadcrumbs([

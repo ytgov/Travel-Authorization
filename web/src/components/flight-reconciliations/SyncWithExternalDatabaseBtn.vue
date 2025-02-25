@@ -22,6 +22,8 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(["synced"])
+
 const isLoading = ref(false)
 const snack = useSnack()
 
@@ -31,6 +33,7 @@ async function syncWithExternalDatabase() {
     await flightReconciliationsApi.sync({
       filters: props.filters,
     })
+    emit("synced")
     snack.success("Synced with external database.")
   } catch (error) {
     console.error(`Failed to sync with external database: ${error}`, { error })
