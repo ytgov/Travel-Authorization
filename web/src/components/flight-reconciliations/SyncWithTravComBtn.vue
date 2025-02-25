@@ -11,7 +11,9 @@
 
 <script setup>
 import { ref } from "vue"
+import { isNil, isEmpty } from "lodash"
 
+import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
 import flightReconciliationsApi from "@/api/flight-reconciliations-api"
 import useSnack from "@/use/use-snack"
 
@@ -28,6 +30,15 @@ const isLoading = ref(false)
 const snack = useSnack()
 
 async function syncWithExternalDatabase() {
+  if (isNil(props.filters) || isEmpty(props.filters)) {
+    if (
+      !blockedToTrueConfirm(
+        "Are you sure you want to sync _all_ of TravCom?\nThis will take a long time."
+      )
+    )
+      return
+  }
+
   isLoading.value = true
   try {
     await flightReconciliationsApi.sync({
