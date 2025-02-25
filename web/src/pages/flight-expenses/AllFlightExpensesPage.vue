@@ -7,21 +7,10 @@
   >
     <template #top>
       <v-row>
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <SyncWithExternalDatabaseBtn
-            :filters="filters"
-            color="secondary"
-            block
-            @synced="refresh"
-          />
-        </v-col>
         <v-spacer />
         <v-col
           cols="12"
-          md="2"
+          md="3"
         >
           <v-btn
             :disabled="isEmpty(selectedFlightReconciliations)"
@@ -45,7 +34,6 @@ import { isNil, isEmpty } from "lodash"
 import useBreadcrumbs from "@/use/use-breadcrumbs"
 
 import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
-import SyncWithExternalDatabaseBtn from "@/components/flight-reconciliations/SyncWithExternalDatabaseBtn.vue"
 
 const props = defineProps({
   startDate: {
@@ -126,6 +114,10 @@ const flightReconciliationsDataTable = ref(null)
 async function refresh() {
   await flightReconciliationsDataTable.value?.refresh()
 }
+
+defineExpose({
+  refresh,
+})
 
 useBreadcrumbs([
   {

@@ -5,7 +5,7 @@
     v-on="$listeners"
     @click="syncWithExternalDatabase"
   >
-    Sync with External Database
+    Sync with TravCom
   </v-btn>
 </template>
 
@@ -34,10 +34,10 @@ async function syncWithExternalDatabase() {
       filters: props.filters,
     })
     emit("synced")
-    snack.success("Synced with external database.")
+    snack.success("Synced with TravCom.")
   } catch (error) {
-    console.error(`Failed to sync with external database: ${error}`, { error })
-    snack.error(`Failed to sync with external database: ${error}`)
+    console.error(`Failed to sync with TravCom: ${error}`, { error })
+    snack.error(`Failed to sync with TravCom: ${error}`)
   } finally {
     isLoading.value = false
   }

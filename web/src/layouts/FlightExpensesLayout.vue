@@ -1,65 +1,10 @@
 <template>
-  <v-card :loading="isLoading">
+  <v-card :loading="waiting">
     <v-card-title>
       <h2 class="mb-md-0">Flight Expenses</h2>
-      <v-row class="d-flex align-center">
-        <v-spacer />
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <DatePickerRangeDialog
-            v-model="dateRange"
-            label="Records date range"
-            :activator-props="{
-              outlined: true,
-              dense: true,
-              hideDetails: true,
-            }"
-          />
-        </v-col>
-        <v-col
-          cols="12"
-          md="2"
-        >
-          <v-btn
-            v-if="isEmpty(dateRange)"
-            class="my-0"
-            color="primary"
-            block
-            primary
-            @click="resetDateRange"
-          >
-            <v-icon
-              small
-              left
-              >mdi-refresh</v-icon
-            >
-            Reset
-          </v-btn>
-          <v-btn
-            v-else
-            class="my-0"
-            color="primary"
-            block
-            primary
-            @click="clearDateRange"
-          >
-            <v-icon
-              small
-              left
-              >mdi-close</v-icon
-            >
-            Clear
-          </v-btn>
-        </v-col>
-      </v-row>
     </v-card-title>
     <v-card-text>
-      <v-tabs
-        active-class="primary--text teal lighten-5"
-        show-arrows
-      >
+      <v-tabs show-arrows>
         <v-tab
           :to="{
             name: 'flight-expenses/AllFlightExpensesPage',
@@ -83,43 +28,63 @@
         </v-tab>
       </v-tabs>
 
+      <v-row class="mt-4">
+        <v-col
+          cols="12"
+          md="6"
+        >
+          <DateRangeTableFilterDiv
+            v-model="dateRange"
+            :loaded.sync="loadedDateRangeTableFilterDiv"
+          />
+        </v-col>
+        <v-spacer />
+        <v-col
+          cols="12"
+          md="3"
+        >
+          <SyncWithTravComBtn
+            class="my-0"
+            :filters="filters"
+            color="secondary"
+            block
+            @synced="refresh"
+          />
+        </v-col>
+      </v-row>
+
       <router-view
+        ref="routerViewComponent"
         :start-date="startDate"
         :end-date="endDate"
-      />
+      ></router-view>
     </v-card-text>
   </v-card>
 </template>
 
 <script setup>
 import { ref, computed } from "vue"
-import { DateTime } from "luxon"
-import { isEmpty } from "lodash"
 
-import useRouteQuery, { jsonTransformer } from "@/use/utils/use-route-query"
+import SyncWithTravComBtn from "@/components/flight-reconciliations/SyncWithTravComBtn.vue"
+import DateRangeTableFilterDiv from "@/components/flight-reconciliations/tables/DateRangeTableFilterDiv.vue"
 
-import DatePickerRangeDialog from "@/components/common/DatePickerRangeDialog.vue"
-
-const isLoading = ref(false)
-
-const INTIAL_DATE_RANGE = [
-  DateTime.local().toISODate(),
-  DateTime.local().minus({ days: 1 }).toISODate(),
-]
-const INTIAL_DATE_RANGE_AS_STRING = JSON.stringify(INTIAL_DATE_RANGE)
-
-const dateRange = useRouteQuery("dateRange", INTIAL_DATE_RANGE_AS_STRING, {
-  transform: jsonTransformer,
-})
+const dateRange = ref([])
 
 const startDate = computed(() => dateRange.value[0])
 const endDate = computed(() => dateRange.value[1])
 
-function clearDateRange() {
-  dateRange.value = []
-}
+const filters = computed(() => ({
+  invoiceBookingDateBetween: dateRange.value,
+}))
 
-function resetDateRange() {
-  dateRange.value = INTIAL_DATE_RANGE
+const loadedDateRangeTableFilterDiv = ref(false)
+const waiting = computed(() =>
+  [loadedDateRangeTableFilterDiv.value].some((loaded) => loaded === false)
+)
+
+const routerViewComponent = ref(null)
+
+async function refresh() {
+  await routerViewComponent.value?.refresh()
 }
 </script>
