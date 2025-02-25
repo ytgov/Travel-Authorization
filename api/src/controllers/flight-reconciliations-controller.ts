@@ -78,6 +78,7 @@ export class FlightReconciliationsController extends BaseController<FlightReconc
         flightReconciliation,
       })
     } catch (error) {
+      logger.error(`Error creating flight reconciliation: ${error}`, { error })
       return this.response.status(422).json({
         message: `Failed to create flight reconciliation: ${error}`,
       })

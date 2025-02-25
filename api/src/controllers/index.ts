@@ -24,6 +24,7 @@ export { UsersController } from "./users-controller"
 
 // Namespaced controllers
 export * as Expenses from "./expenses"
+export * as FlightReconciliations from "./flight-reconciliations"
 export * as Qa from "./qa"
 export * as TravelAuthorizations from "./travel-authorizations"
 export * as TravelDeskFlightOptions from "./travel-desk-flight-options"

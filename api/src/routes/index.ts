@@ -10,6 +10,7 @@ import {
   CurrentUserController,
   Expenses,
   ExpensesController,
+  FlightReconciliations,
   FlightReconciliationsController,
   GeneralLedgerCodingsController,
   LocationsController,
@@ -99,6 +100,7 @@ router
   .route("/api/flight-reconciliations")
   .get(FlightReconciliationsController.index)
   .post(FlightReconciliationsController.create)
+router.route("/api/flight-reconciliations/sync").post(FlightReconciliations.SyncController.create)
 router
   .route("/api/flight-reconciliations/:flightReconciliationId")
   .get(FlightReconciliationsController.show)
