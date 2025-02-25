@@ -104,8 +104,16 @@ export const flightReconciliationsApi = {
   },
 
   // Special actions
-  async sync() {
-    await http.post("/api/flight-reconciliations/sync")
+  /**
+   * @param {FlightReconciliationsQueryOptions} [query={}]
+   * @returns {Promise<{
+   *   flightReconciliations: FlightReconciliation[];
+   *   totalCount: number;
+   * }>}
+   */
+  async sync(query = {}) {
+    const { data } = await http.post("/api/flight-reconciliations/sync", query)
+    return data
   },
 }
 

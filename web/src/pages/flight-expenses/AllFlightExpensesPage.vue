@@ -11,6 +11,7 @@
           md="4"
         >
           <SyncWithExternalDatabaseBtn
+            :filters="filters"
             color="secondary"
             block
           />

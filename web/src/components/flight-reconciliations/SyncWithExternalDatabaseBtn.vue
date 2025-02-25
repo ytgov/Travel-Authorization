@@ -15,13 +15,22 @@ import { ref } from "vue"
 import flightReconciliationsApi from "@/api/flight-reconciliations-api"
 import useSnack from "@/use/use-snack"
 
+const props = defineProps({
+  filters: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+
 const isLoading = ref(false)
 const snack = useSnack()
 
 async function syncWithExternalDatabase() {
   isLoading.value = true
   try {
-    await flightReconciliationsApi.sync()
+    await flightReconciliationsApi.sync({
+      filters: props.filters,
+    })
     snack.success("Synced with external database.")
   } catch (error) {
     console.error(`Failed to sync with external database: ${error}`, { error })

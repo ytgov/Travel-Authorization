@@ -15,7 +15,12 @@ export class SyncController extends BaseController<FlightReconciliation> {
         })
       }
 
-      await SyncService.perform(this.currentUser)
+      const query = {
+        ...this.request.body,
+        limit: this.pagination.limit,
+        offset: this.pagination.offset,
+      }
+      await SyncService.perform(query, this.currentUser)
       return this.response.status(201).json({
         message: "Flight reconciliation synced successfully.",
       })
