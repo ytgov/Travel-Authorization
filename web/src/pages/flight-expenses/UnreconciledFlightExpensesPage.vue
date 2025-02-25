@@ -31,7 +31,7 @@
             color="primary"
             :disabled="isEmpty(selectedFlightReconciliationIds)"
             block
-            @click="showBulkEditDialog(selectedFlightReconciliationIds)"
+            @click="showBulkReconcileDialog(selectedFlightReconciliationIds)"
           >
             Reconcile
           </v-btn>
@@ -39,8 +39,8 @@
       </v-row>
 
       <!-- TODO: consider if I should support reconciling on a per-row basis as well? -->
-      <FlightReconciliationsBulkEditDialog
-        ref="flightReconciliationsBulkEditDialog"
+      <FlightReconciliationsBulkReconcileDialog
+        ref="flightReconciliationsBulkReconcileDialog"
         @saved="refresh"
       />
     </template>
@@ -53,7 +53,7 @@ import { ExportToCsv } from "export-to-csv"
 import { isNil, isEmpty } from "lodash"
 
 import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
-import FlightReconciliationsBulkEditDialog from "@/components/flight-reconciliations/FlightReconciliationsBulkEditDialog.vue"
+import FlightReconciliationsBulkReconcileDialog from "@/components/flight-reconciliations/FlightReconciliationsBulkReconcileDialog.vue"
 
 const props = defineProps({
   startDate: {
@@ -89,11 +89,11 @@ const selectedFlightReconciliationIds = computed(() =>
   selectedFlightReconciliations.value.map((flightReconciliation) => flightReconciliation.id)
 )
 
-/** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsBulkEditDialog> | null>} */
-const flightReconciliationsBulkEditDialog = ref(null)
+/** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsBulkReconcileDialog> | null>} */
+const flightReconciliationsBulkReconcileDialog = ref(null)
 
-function showBulkEditDialog(flightReconciliationIds) {
-  flightReconciliationsBulkEditDialog.value.show(flightReconciliationIds)
+function showBulkReconcileDialog(flightReconciliationIds) {
+  flightReconciliationsBulkReconcileDialog.value.show(flightReconciliationIds)
 }
 
 async function exportToExcel() {
