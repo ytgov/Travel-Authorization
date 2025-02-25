@@ -96,7 +96,7 @@ const flightReconciliationAttributes = ref({
 const periodOptions = ref(range(1, 13).concat(14)) // [1-12, 14]
 
 const showDialog = useRouteQuery(
-  "showFlightReconciliationsCreate",
+  "showFlightReconciliationsBulkEdit",
   !isEmpty(props.selectedFlightReconciliations),
   {
     transform: booleanTransformer,

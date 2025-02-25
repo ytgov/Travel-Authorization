@@ -27,7 +27,7 @@
           cols="12"
           md="2"
         >
-          <FlightReconciliationsCreateDialog
+          <FlightReconciliationsBulkEditDialog
             :selected-flight-reconciliations="selectedFlightReconciliations"
             :activator-props="{
               disabled: isEmpty(selectedFlightReconciliations),
@@ -47,7 +47,7 @@ import { ExportToCsv } from "export-to-csv"
 import { isNil, isEmpty } from "lodash"
 
 import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
-import FlightReconciliationsCreateDialog from "@/components/flight-reconciliations/FlightReconciliationsCreateDialog.vue"
+import FlightReconciliationsBulkEditDialog from "@/components/flight-reconciliations/FlightReconciliationsBulkEditDialog.vue"
 
 const props = defineProps({
   startDate: {
