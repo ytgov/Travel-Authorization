@@ -14,14 +14,12 @@
           cols="12"
           md="2"
         >
-          <v-btn
-            :disabled="isEmpty(selectedFlightReconciliations)"
+          <ExportToCsvButton
+            :flight-reconciliation-ids="selectedFlightReconciliationIds"
+            :disabled="isEmpty(selectedFlightReconciliationIds)"
             color="primary"
             block
-            @click="exportToExcel"
-          >
-            Export To Excel
-          </v-btn>
+          />
         </v-col>
         <v-col
           cols="12"
@@ -49,11 +47,11 @@
 
 <script setup>
 import { computed, ref } from "vue"
-import { ExportToCsv } from "export-to-csv"
 import { isNil, isEmpty } from "lodash"
 
 import FlightReconciliationsDataTable from "@/components/flight-reconciliations/FlightReconciliationsDataTable.vue"
 import FlightReconciliationsBulkUnreconcileDialog from "@/components/flight-reconciliations/FlightReconciliationsBulkUnreconcileDialog.vue"
+import ExportToCsvButton from "@/components/flight-reconciliations/ExportToCsvButton.vue"
 
 const props = defineProps({
   startDate: {
@@ -95,52 +93,6 @@ const flightReconciliationsBulkUnreconcileDialog = ref(null)
 
 function showBulkUnreconcileDialog(flightReconciliationIds) {
   flightReconciliationsBulkUnreconcileDialog.value.show(flightReconciliationIds)
-}
-
-// TODO: switch to back-end rendering at a dedicated endpoint via
-// fast-csv, see https://github.com/icefoganalytics/internal-data-portal/blob/0eb01fff60c6b5d72b060f89e92cf15336225531/api/src/controllers/download/datasets-controller.ts#L28
-async function exportToExcel() {
-  const csvInfo = selectedFlightReconciliations.value.map((flight) => {
-    return {
-      purchaseDate: flight.purchaseDate ? flight.purchaseDate : "",
-      cost: flight.cost ? "$" + flight.cost : "",
-      agent: flight.agent ? flight.agent : "",
-      airline: flight.airline ? flight.airline : "",
-      flightInfo: flight.flightInfo ? flight.flightInfo : "",
-      finalDestination: flight.finalDestination ? flight.finalDestination : "",
-      department: flight.dept ? flight.dept : "",
-      travelerFirstName: flight.travelerFirstName ? flight.travelerFirstName : "",
-      travelerLastName: flight.travelerLastName ? flight.travelerLastName : "",
-      reconciled: flight.reconciled ? "Yes" : "No",
-      reconcilePeriod: flight.reconcilePeriod ? flight.reconcilePeriod : "",
-    }
-  })
-  const options = {
-    fieldSeparator: ",",
-    quoteStrings: '"',
-    decimalSeparator: ".",
-    showLabels: true,
-    showTitle: false,
-    title: "",
-    filename: "Flights",
-    useTextFile: false,
-    useBom: true,
-    useKeysAsHeaders: false,
-    headers: [
-      "Purchase Date",
-      "Cost",
-      "Agent",
-      "Airline",
-      "Flight Info",
-      "Final Destination",
-      "Department",
-      "Traveler First Name",
-      "Traveler last Name",
-      "Reconciled",
-    ],
-  }
-  const csvExporter = new ExportToCsv(options)
-  csvExporter.generateCsv(csvInfo)
 }
 
 /** @type {import("vue").Ref<InstanceType<typeof FlightReconciliationsDataTable> | null>} */
