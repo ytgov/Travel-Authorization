@@ -103,7 +103,6 @@ const headers = computed(() => {
     {
       text: "Purchase Date",
       value: "invoiceBookingDate",
-      sortable: false,
       width: "9rem",
     },
     {
@@ -124,29 +123,24 @@ const headers = computed(() => {
     {
       text: "Flight Info",
       value: "segmentsComputedFlightInfo",
-      sortable: false,
     },
     {
       text: "Final Destination",
       value: "segmentsComputedFinalDestination",
-      sortable: false,
       width: "10rem",
     },
     {
       text: "Department",
       value: "invoiceDepartment",
-      sortable: false,
     },
     {
       text: "Traveler First Name",
       value: "invoiceDetailComputedTravelerFirstName",
-      sortable: false,
       width: "11rem",
     },
     {
       text: "Traveler Last Name",
       value: "invoiceDetailComputedTravelerLastName",
-      sortable: false,
       width: "11rem",
     },
   ]
