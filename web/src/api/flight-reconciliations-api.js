@@ -76,18 +76,6 @@ export const flightReconciliationsApi = {
    *   flightReconciliation: FlightReconciliation;
    * }>}
    */
-  async create(attributes) {
-    const { data } = await http.post("/api/flight-reconciliations", attributes)
-    return data
-  },
-
-  /**
-   * @param {number} flightReconciliationId
-   * @param {Partial<FlightReconciliation>} attributes
-   * @returns {Promise<{
-   *   flightReconciliation: FlightReconciliation;
-   * }>}
-   */
   async update(flightReconciliationId, attributes) {
     const { data } = await http.patch(
       `/api/flight-reconciliations/${flightReconciliationId}`,

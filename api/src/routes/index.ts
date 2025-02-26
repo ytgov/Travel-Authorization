@@ -94,10 +94,7 @@ router
   .get(Expenses.UploadController.show)
   .post(Expenses.UploadController.create)
 
-router
-  .route("/api/flight-reconciliations")
-  .get(FlightReconciliationsController.index)
-  .post(FlightReconciliationsController.create)
+router.route("/api/flight-reconciliations").get(FlightReconciliationsController.index)
 router.route("/api/flight-reconciliations/sync").post(FlightReconciliations.SyncController.create)
 router
   .route("/api/flight-reconciliations/:flightReconciliationId")

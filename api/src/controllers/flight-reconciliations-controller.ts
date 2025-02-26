@@ -3,7 +3,7 @@ import { isNil } from "lodash"
 import logger from "@/utils/logger"
 import { FlightReconciliation } from "@/models"
 import { FlightReconciliationsPolicy } from "@/policies"
-import { CreateService, UpdateService } from "@/services/flight-reconciliations"
+import { UpdateService } from "@/services/flight-reconciliations"
 
 import BaseController from "@/controllers/base-controller"
 
@@ -14,7 +14,10 @@ export class FlightReconciliationsController extends BaseController<FlightReconc
       const scopes = this.buildFilterScopes()
       const order = this.buildOrder([["createdAt", "ASC"]])
 
-      const scopedFlightReconciliations = FlightReconciliationsPolicy.applyScope(scopes, this.currentUser)
+      const scopedFlightReconciliations = FlightReconciliationsPolicy.applyScope(
+        scopes,
+        this.currentUser
+      )
 
       const totalCount = await scopedFlightReconciliations.count({ where })
       const flightReconciliations = await scopedFlightReconciliations.findAll({
@@ -59,28 +62,6 @@ export class FlightReconciliationsController extends BaseController<FlightReconc
       logger.error(`Error fetching flight reconciliation: ${error}`, { error })
       return this.response.status(400).json({
         message: `Failed to retrieve flight reconciliation: ${error}`,
-      })
-    }
-  }
-
-  async create() {
-    try {
-      const policy = this.buildPolicy()
-      if (!policy.create()) {
-        return this.response.status(403).json({
-          message: "You are not authorized to create flight reconciliations.",
-        })
-      }
-
-      const permittedAttributes = policy.permitAttributesForCreate(this.request.body)
-      const flightReconciliation = CreateService.perform(permittedAttributes, this.currentUser)
-      return this.response.status(201).json({
-        flightReconciliation,
-      })
-    } catch (error) {
-      logger.error(`Error creating flight reconciliation: ${error}`, { error })
-      return this.response.status(422).json({
-        message: `Failed to create flight reconciliation: ${error}`,
       })
     }
   }
