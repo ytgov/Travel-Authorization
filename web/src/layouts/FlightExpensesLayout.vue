@@ -44,7 +44,7 @@
         <v-spacer />
         <v-col
           cols="12"
-          md="3"
+          md="4"
         >
           <SyncWithTravComBtn
             class="my-0"

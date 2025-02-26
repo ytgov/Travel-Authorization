@@ -6,6 +6,34 @@
     @click="syncWithExternalDatabase"
   >
     Sync from TravCom ({{ totalCount }})
+    <v-tooltip left>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          right
+          small
+          v-bind="attrs"
+          v-on="on"
+          @click.stop
+          >mdi-help-circle-outline</v-icon
+        >
+      </template>
+      <span>
+        The number of TravCom records that match the provided filtering pattern and will be synced.
+        <br />
+        This does not distinguish between reconciled and unreconciled records as TravCom is not
+        tracking that data.
+        <br />
+        <br />
+        The best way to use this feature, is to go to the "All" flight expenses tab, and pick a date
+        range.
+        <br />
+        If the number of records to be synced matches the number of records that are listed in the
+        table, then the table is up to date.
+        <br />
+        If not, you can sync the filtered records and the table will now include those records as
+        unreconciled entries.
+      </span>
+    </v-tooltip>
   </v-btn>
 </template>
 
