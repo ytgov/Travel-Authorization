@@ -1,6 +1,5 @@
 import { Attributes, WhereOptions } from "sequelize"
-import { isEmpty, isNil, pick } from "lodash"
-import { DateTime } from "luxon"
+import { isEmpty, isNil } from "lodash"
 
 import { AccountsReceivableInvoiceDetail } from "@/integrations/trav-com-integration/models"
 import { AccountsReceivableInvoiceDetails } from "@/integrations/trav-com-integration/serializers"
@@ -50,12 +49,9 @@ export class SyncService extends BaseService {
         )
 
         const { invoice } = serializedInvoiceDetail
-        const invoiceBookingDate = this.buildBookingDate(invoice.bookingDate)
 
         const flightReconciliationAttributes = {
-          reconcilerId: this.currentUser.id,
-          externalTravComIdentifier: serializedInvoiceDetail.id,
-          invoiceBookingDate,
+          invoiceBookingDate: invoice.bookingDate,
           invoiceDepartment: invoice.department,
           invoiceDetailSellingFare: serializedInvoiceDetail.sellingFare,
           invoiceDetailComputedAgentName: serializedInvoiceDetail.agentName,
@@ -64,30 +60,24 @@ export class SyncService extends BaseService {
           invoiceDetailComputedTravelerLastName: serializedInvoiceDetail.travelerLastName,
           segmentsComputedFlightInfo: serializedInvoiceDetail.flightInfo,
           segmentsComputedFinalDestination: serializedInvoiceDetail.finalDestination,
-          reconciled: false,
-          reconcilePeriod: null,
         }
 
         const flightReconciliation = await FlightReconciliation.findOne({
           where: {
-            externalTravComIdentifier: flightReconciliationAttributes.externalTravComIdentifier,
+            externalTravComIdentifier: serializedInvoiceDetail.id,
           },
         })
         if (isNil(flightReconciliation)) {
-          await FlightReconciliation.create(flightReconciliationAttributes)
+          const flightReconciliationCreationAttributes = {
+            ...flightReconciliationAttributes,
+            externalTravComIdentifier: serializedInvoiceDetail.id,
+            reconcilerId: this.currentUser.id,
+            reconciled: false,
+            reconcilePeriod: null,
+          }
+          await FlightReconciliation.create(flightReconciliationCreationAttributes)
         } else {
-          const safeFlightReconciliationAttributes = pick(flightReconciliationAttributes, [
-            "invoiceBookingDate",
-            "invoiceDepartment",
-            "invoiceDetailSellingFare",
-            "invoiceDetailComputedAgentName",
-            "invoiceDetailVendorName",
-            "invoiceDetailComputedTravelerFirstName",
-            "invoiceDetailComputedTravelerLastName",
-            "segmentsComputedFlightInfo",
-            "segmentsComputedFinalDestination",
-          ])
-          await flightReconciliation.update(safeFlightReconciliationAttributes)
+          await flightReconciliation.update(flightReconciliationAttributes)
         }
       }
     )
@@ -119,15 +109,6 @@ export class SyncService extends BaseService {
     }
 
     return [...order, ...baseOrder]
-  }
-
-  private buildBookingDate(bookingDate: string | null): Date | null {
-    if (isNil(bookingDate) || isEmpty(bookingDate)) return null
-
-    const bookingDateTimeUTC = DateTime.fromFormat(bookingDate, "yyyy-MM-dd HH:mm:ss.SSS", {
-      zone: "utc",
-    })
-    return bookingDateTimeUTC.toJSDate()
   }
 }
 

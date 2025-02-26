@@ -35,8 +35,8 @@ export class AccountsReceivableInvoice extends Model<
   declare profileNumber: string | null
   declare profileName: string | null
   declare department: string | null
-  declare bookingDate: string | null
-  declare systemDate: string | null
+  declare bookingDate: Date | null
+  declare systemDate: Date | null
   declare description: string | null
   declare invoiceRemarks: string | null
 
