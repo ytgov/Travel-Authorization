@@ -9,6 +9,7 @@ import {
   NonAttribute,
   Op,
 } from "sequelize"
+import { sortBy } from "lodash"
 
 import BaseModel from "@/models/base-model"
 import { FlightReconciliation } from "@/models"
@@ -234,13 +235,16 @@ AccountsReceivableInvoiceDetail.init(
     timestamps: false,
     paranoid: false,
     scopes: {
-      invoiceBookingDateBetween([startDate, endDate]: [string, string]) {
+      invoiceBookingDateBetween([date1, date2]: [string, string]) {
+        const [startDate, endDate] = sortBy([date1, date2])
+
         return {
           include: {
             association: "invoice",
             where: {
               bookingDate: {
-                [Op.between]: [startDate, endDate],
+                [Op.gte]: startDate,
+                [Op.lte]: endDate,
               },
             },
           },

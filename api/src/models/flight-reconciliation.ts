@@ -9,7 +9,7 @@ import {
   NonAttribute,
   Op,
 } from "sequelize"
-import { range } from "lodash"
+import { range, sortBy } from "lodash"
 
 import sequelize from "@/db/db-client"
 
@@ -159,11 +159,14 @@ FlightReconciliation.init(
       },
     ],
     scopes: {
-      invoiceBookingDateBetween([startDate, endDate]: [string, string]) {
+      invoiceBookingDateBetween([date1, date2]: [string, string]) {
+        const [startDate, endDate] = sortBy([date1, date2])
+
         return {
           where: {
             invoiceBookingDate: {
-              [Op.between]: [startDate, endDate],
+              [Op.gte]: startDate,
+              [Op.lte]: endDate,
             },
           },
         }
