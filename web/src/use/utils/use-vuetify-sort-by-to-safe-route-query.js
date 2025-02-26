@@ -1,10 +1,12 @@
 import { isEmpty, isNil, isString } from "lodash"
 
-import useRouteQueryEnhanced from "@/use/utils/use-route-query-enhanced"
+import useRouteQuery from "@/use/utils/use-route-query"
 
 /** @typedef {{ key: string; order?: boolean | "asc" | "desc" }} SortItem */
 
-const SEPARATOR = "."
+const KEY_ORDER_SEPARATOR = "."
+const LAST_DOT_REGEX = /\.(?=[^.]+$)/
+const VALUE_SEPARATOR = ","
 
 /**
  * @callback UseVuetifySortByToSafeRouteQuery
@@ -26,11 +28,11 @@ export function useVuetifySortByToSafeRouteQuery(name, defaultValue) {
     }
 
     if (isString(newSortBy)) {
-      newSortBy = [newSortBy]
+      newSortBy = newSortBy.split(VALUE_SEPARATOR)
     }
 
     return newSortBy.map((entry) => {
-      const [key, order] = entry.split(SEPARATOR)
+      const [key, order] = entry.split(LAST_DOT_REGEX)
       return { key, order }
     })
   }
@@ -45,13 +47,17 @@ export function useVuetifySortByToSafeRouteQuery(name, defaultValue) {
       return
     }
 
-    return sortByValue.map(({ key, order }) => `${key}${SEPARATOR}${order}`)
+    const remapedValue = sortByValue.map(({ key, order }) => `${key}${KEY_ORDER_SEPARATOR}${order}`)
+    const stringifiedValue = remapedValue.join(VALUE_SEPARATOR)
+    return stringifiedValue
   }
 
   const defaultValueString = stringify(defaultValue)
-  return useRouteQueryEnhanced(name, defaultValueString, {
-    parse,
-    stringify,
+  return useRouteQuery(name, defaultValueString, {
+    transform: {
+      get: parse,
+      set: stringify,
+    },
   })
 }
 
