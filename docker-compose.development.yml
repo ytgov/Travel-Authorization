@@ -102,7 +102,7 @@ services:
     user: root
     environment:
       MSSQL_SA_PASSWORD: *default-trav-com-db-password # requires secure password
-      TZ: "America/Whitehorse"
+      TZ: "UTC"
       ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
