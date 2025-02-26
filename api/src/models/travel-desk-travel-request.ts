@@ -10,7 +10,6 @@ import {
   NonAttribute,
 } from "sequelize"
 import { isNil } from "lodash"
-import minify from "pg-minify"
 
 import sequelize from "@/db/db-client"
 
@@ -303,12 +302,13 @@ TravelDeskTravelRequest.init(
     },
     scopes: {
       includeIsBookedAttribute() {
-        const isBookedQuery = minify(/* sql */ `
+        const isBookedQuery = /* sql */ `
           CASE
-            WHEN "TravelDeskTravelRequest"."status" = '${TravelDeskTravelRequest.Statuses.BOOKED}' THEN 1
+            WHEN "TravelDeskTravelRequest"."status" = '${TravelDeskTravelRequest.Statuses
+            .BOOKED}' THEN 1
             ELSE 0
           END
-        `)
+        `
         return {
           attributes: {
             include: [[literal(isBookedQuery), "isBooked"]],
@@ -317,12 +317,12 @@ TravelDeskTravelRequest.init(
       },
       // TODO: rewrite with ids once data model supports it
       includeIsAssignedToCurrentUserAttribute(currentUserDisplayName: string) {
-        const isAssignedToCurrentUserQuery = minify(/* sql */ `
+        const isAssignedToCurrentUserQuery = /* sql */ `
           CASE
             WHEN "travel_desk_officer" = '${currentUserDisplayName}' THEN 1
             ELSE 0
           END
-        `)
+        `
         return {
           attributes: {
             include: [[literal(isAssignedToCurrentUserQuery), "isAssignedToCurrentUser"]],
@@ -330,11 +330,16 @@ TravelDeskTravelRequest.init(
         }
       },
       includeTravelStartDateAttribute() {
-        const travelStartDateQuery = minify(/* sql */ `(
-          SELECT MIN("departure_on")
-          FROM "travel_segments"
-          WHERE "travel_segments"."travel_authorization_id" = "TravelDeskTravelRequest"."travel_authorization_id"
-        )`)
+        const travelStartDateQuery = /* sql */ `
+          (
+            SELECT
+              MIN("departure_on")
+            FROM
+              "travel_segments"
+            WHERE
+              "travel_segments"."travel_authorization_id" = "TravelDeskTravelRequest"."travel_authorization_id"
+          )
+        `
         return {
           attributes: {
             include: [[literal(travelStartDateQuery), "travelStartDate"]],

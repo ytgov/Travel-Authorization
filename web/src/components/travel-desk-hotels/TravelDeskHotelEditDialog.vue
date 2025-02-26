@@ -176,7 +176,7 @@ defineProps({
 const emit = defineEmits(["saved"])
 
 const travelDeskHotelId = useRouteQuery("showHotelEdit", undefined, {
-  transformer: integerTransformer,
+  transform: integerTransformer,
 })
 
 const { travelDeskHotel, isLoading } = useTravelDeskHotel(travelDeskHotelId)

@@ -57,13 +57,29 @@ entity "expenses" {
   updated_at : timestamptz
 }
 
-entity "flightReconciliation" {
-  * reconcileID : serial4
+entity "flight_reconciliations" {
+  * id : serial4 <<PK>>
   --
-  * invoiceID : int4
-  * invoiceDetailID : int4 <<UNIQUE>>
-  reconciled : bool
-  reconcilePeriod : int4
+  * reconcilerd_id : int4 <<FK>>
+  * external_trav_com_identifier : int4 <<UNIQUE>>
+  * invoice_detail_segment numeric(19, 4)
+  * invoice_detail_vendor_name varchar(255)
+  * invoice_detail_computed_traveler_first_name varchar(255)
+  * invoice_detail_computed_traveler_last_name varchar(255)
+  * reconciled : bool : default false
+  --
+  invoice_booking_date timestamptz
+  invoice_department varchar(255)
+  invoice_detail_computed_agent_name varchar(255)
+  segments_computed_flight_info text
+  segments_computed_final_destination varchar(255)
+  reconcile_period : int4
+  --
+  * created_at : timestamptz : default CURRENT_TIMESTAMP
+  * updated_at : timestamptz : default CURRENT_TIMESTAMP
+  deleted_at : timestamptz
+  --
+  Relates to external TravCom database table ARInvoiceDetailsNoHealth -> InvoiceDetailID
 }
 
 entity "general_ledger_codings" {
@@ -561,6 +577,24 @@ entity "YgEmployees" {
   username : varchar(255)
 }
 
+namespace external #LightGrey {
+  entity "ARInvoicesNoHealth" {
+    * InvoiceID : decimal(18,0) <<PK>>
+    --
+    * InvoiceNumber : nvarchar(10)
+    --
+    ProfileNumber : nvarchar(10)
+    ProfileName : nvarchar(50)
+    Department : nvarchar(30)
+    BookingDate : datetime2
+    SystemDate : datetime2
+    Description : nvarchar(50)
+    InvoiceRemarks : nvarchar(MAX)
+    --
+    From the TravCom database, supports flight_reconciliations.
+  }
+}
+
 ' Relationships
 expenses .. per_diems : estimates generation
 expenses .. travel_allowances : estimates generation
@@ -591,4 +625,6 @@ travel_segments::travel_authorization_id ||--o{ travel_authorizations::id
 users::roles }o..o{ roles::name
 users::id }o--|| travel_desk_flight_options::traveler_id
 users::id }o--|| travel_authorizations::user_id
+
+flight_reconciliations::external_trav_com_identifier ||..o{ external.ARInvoicesNoHealth::InvoiceNumber
 @enduml

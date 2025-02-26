@@ -2,6 +2,7 @@ import db from "@/db/db-client"
 
 import DistanceMatrix from "./distance-matrix"
 import Expense from "./expense"
+import FlightReconciliation from "./flight-reconciliation"
 import GeneralLedgerCoding from "./general-ledger-coding"
 import Location from "./location"
 import PerDiem from "./per-diem"
@@ -29,6 +30,7 @@ import TravelSegment from "./travel-segment"
 import User from "./user"
 
 Expense.establishAssociations()
+FlightReconciliation.establishAssociations()
 GeneralLedgerCoding.establishAssociations()
 Stop.establishAssociations()
 TravelAuthorization.establishAssociations()
@@ -53,6 +55,7 @@ User.establishAssociations()
 export {
   DistanceMatrix,
   Expense,
+  FlightReconciliation,
   GeneralLedgerCoding,
   Location,
   PerDiem,
