@@ -11,7 +11,6 @@
 
 <script setup>
 import { range } from "lodash"
-import { defineEmits } from "vue"
 
 const PERIOD_OPTIONS = range(1, 13).concat(14) // [1-12, 14]
 
