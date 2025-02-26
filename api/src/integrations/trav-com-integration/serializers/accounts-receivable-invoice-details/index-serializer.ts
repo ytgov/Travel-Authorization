@@ -2,13 +2,10 @@ import { isEmpty, isNil, isUndefined, last, pick, sortBy } from "lodash"
 
 import guessNameCapitalization from "@/integrations/trav-com-integration/utils/guess-name-capitalization"
 import {
-  AccountsReceivableInvoice,
   AccountsReceivableInvoiceDetail,
   Segment,
 } from "@/integrations/trav-com-integration/models"
-import { type AccountsReceivableInvoiceDetailWithFlightReconciliation } from "@/integrations/trav-com-integration/services/accounts-receivable-invoice-details/index-service"
 import BaseSerializer from "@/serializers/base-serializer"
-import { FlightReconciliation } from "@/models"
 
 export type AccountsReceivableInvoiceDetailIndexView = Pick<
   AccountsReceivableInvoiceDetail,
@@ -40,62 +37,30 @@ export type AccountsReceivableInvoiceDetailIndexView = Pick<
   agentName: string
   flightInfo: string
   finalDestination: string
-  department: string
   travelerFirstName: string
   travelerLastName: string
-
-  // associations
-  // TODO: move invoice type definition to accounts-receivable-invoice show serializer
-  invoice: Pick<
-    AccountsReceivableInvoice,
-    | "id"
-    | "invoiceNumber"
-    | "profileNumber"
-    | "profileName"
-    | "department"
-    | "bookingDate"
-    | "systemDate"
-    | "description"
-    | "invoiceRemarks"
-  >
-  // TODO: move segment type definition to segments show serializer
-  segments: Pick<
-    Segment,
-    | "id"
-    | "invoiceId"
-    | "invoiceDetailId"
-    | "legNumber"
-    | "departureCityCode"
-    | "departureInfo"
-    | "arrivalCityCode"
-    | "arrivalInfo"
-    | "airlineCode"
-    | "flightNumber"
-    | "classOfService"
-    | "fareBasis"
-  >[]
-  flightReconciliation: FlightReconciliation | null
+  invoiceBookingDate: Date | null
+  invoiceDepartment: string | null
 }
 
-export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDetailWithFlightReconciliation> {
-  constructor(protected record: AccountsReceivableInvoiceDetailWithFlightReconciliation) {
+export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDetail> {
+  constructor(protected record: AccountsReceivableInvoiceDetail) {
     super(record)
   }
 
   perform(): AccountsReceivableInvoiceDetailIndexView {
-    if (isUndefined(this.record.invoice)) {
+    const { invoice } = this.record
+    if (isUndefined(invoice)) {
       throw new Error("'invoice' association is required")
     }
 
     const agentName = this.buildAgentName(this.record)
     const flightInfo = this.buildFlightInfo(this.segments)
     const finalDestination = this.buildFinalDestination(this.segments)
-    const department = this.record.invoice.department ?? ""
     const [travelerFirstName, travelerLastName] = this.buildTravelerFirstAndLastName(this.record)
 
-    const invoice = this.serializeInvoice(this.record.invoice)
-    const segments = this.serializeSegments(this.segments)
-    const flightReconciliation = this.record.flightReconciliation ?? null
+    const invoiceDepartment = invoice.department
+    const invoiceBookingDate = invoice.bookingDate
 
     return {
       ...pick(
@@ -127,12 +92,10 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
       agentName,
       flightInfo,
       finalDestination,
-      department,
       travelerFirstName,
       travelerLastName,
-      invoice,
-      segments,
-      flightReconciliation,
+      invoiceBookingDate,
+      invoiceDepartment,
     }
   }
 
@@ -235,43 +198,6 @@ export class IndexSerializer extends BaseSerializer<AccountsReceivableInvoiceDet
     }
 
     return [firstName, lastName]
-  }
-
-  // TODO: move invoice serialization to accounts receivable invoice show serializer
-  private serializeInvoice(accountsReceivableInvoice: AccountsReceivableInvoice) {
-    return pick(
-      accountsReceivableInvoice,
-      "id",
-      "invoiceNumber",
-      "profileNumber",
-      "profileName",
-      "department",
-      "bookingDate",
-      "systemDate",
-      "description",
-      "invoiceRemarks"
-    )
-  }
-
-  // TODO: move segment serialization to segments show serializer
-  private serializeSegments(segments: Segment[]) {
-    return segments.map((segment) =>
-      pick(
-        segment,
-        "id",
-        "invoiceId",
-        "invoiceDetailId",
-        "legNumber",
-        "departureCityCode",
-        "departureInfo",
-        "arrivalCityCode",
-        "arrivalInfo",
-        "airlineCode",
-        "flightNumber",
-        "classOfService",
-        "fareBasis"
-      )
-    )
   }
 
   private get segments(): Segment[] {
