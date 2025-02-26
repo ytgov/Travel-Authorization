@@ -25,6 +25,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  order: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const flightReconciliationsQuery = computed(() => {
@@ -32,6 +36,7 @@ const flightReconciliationsQuery = computed(() => {
     where: {
       id: props.flightReconciliationIds,
     },
+    order: props.order,
   }
 })
 const { flightReconciliations, isLoading } = useFlightReconciliations(flightReconciliationsQuery, {

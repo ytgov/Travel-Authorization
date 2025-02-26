@@ -14,6 +14,7 @@
     <template #top="slotProps">
       <slot
         name="top"
+        :order="order"
         v-bind="slotProps"
       ></slot>
     </template>

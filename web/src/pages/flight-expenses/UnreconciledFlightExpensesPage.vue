@@ -7,7 +7,7 @@
     unreconciled
     show-select
   >
-    <template #top>
+    <template #top="{ order }">
       <v-row>
         <v-spacer />
         <v-col
@@ -16,6 +16,7 @@
         >
           <ExportToCsvButton
             :flight-reconciliation-ids="selectedFlightReconciliationIds"
+            :order="order"
             :disabled="isEmpty(selectedFlightReconciliationIds)"
             color="primary"
             block
