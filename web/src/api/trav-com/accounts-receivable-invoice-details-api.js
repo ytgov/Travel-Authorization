@@ -78,20 +78,6 @@ export const accountsReceivableInvoiceDetailsApi = {
     })
     return data
   },
-
-  /**
-   * @param {number} accountsReceivableInvoiceDetailId
-   * @returns {Promise<{
-   *   accountsReceivableInvoiceDetail: AccountsReceivableInvoiceDetail;
-   *   policy: Policy;
-   * }>}
-   */
-  async get(accountsReceivableInvoiceDetailId) {
-    const { data } = await http.get(
-      `/api/trav-com/accounts-receivable-invoice-details/${accountsReceivableInvoiceDetailId}`
-    )
-    return data
-  },
 }
 
 export default accountsReceivableInvoiceDetailsApi
