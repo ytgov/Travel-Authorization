@@ -9,6 +9,7 @@ import {
   TRAVCOM_DB_PORT,
   NODE_ENV,
 } from "@/config"
+import { compactSql } from "@/integrations/trav-com-integration/utils/compact-sql"
 
 export const transactionManager = createNamespace("transaction-manager-trav-com")
 Sequelize.useCLS(transactionManager)
@@ -19,6 +20,10 @@ if (TRAVCOM_DB_PASS === undefined) throw new Error("database password is unset."
 if (TRAVCOM_DB_HOST === undefined) throw new Error("database host is unset.")
 if (TRAVCOM_DB_PORT === undefined) throw new Error("database port is unset.")
 
+function sqlLogger(query: string) {
+  console.log(compactSql(query))
+}
+
 export const SEQUELIZE_CONFIG: Options = {
   username: TRAVCOM_DB_USER,
   password: TRAVCOM_DB_PASS,
@@ -27,7 +32,7 @@ export const SEQUELIZE_CONFIG: Options = {
   host: TRAVCOM_DB_HOST,
   port: TRAVCOM_DB_PORT,
   schema: "dbo",
-  logging: NODE_ENV === "development" ? console.log : false,
+  logging: NODE_ENV === "development" ? sqlLogger : false,
   // Non-standard tables must now declare their customizations
   // If possible, standardize new tables, rather than customizing them.
   define: {
