@@ -5,18 +5,27 @@
     v-on="$listeners"
     @click="syncWithExternalDatabase"
   >
-    Sync with TravCom
+    Sync from TravCom ({{ totalCount }})
   </v-btn>
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { computed } from "vue"
 import { isNil, isEmpty } from "lodash"
 
 import blockedToTrueConfirm from "@/utils/blocked-to-true-confirm"
 import flightReconciliationsApi from "@/api/flight-reconciliations-api"
-import useSnack from "@/use/use-snack"
 
+import useSnack from "@/use/use-snack"
+import useAccountsReceivableInvoiceDetails from "@/use/trav-com/use-accounts-receivable-invoice-details"
+
+/** @typedef {import('@/api/trav-com/accounts-receivable-invoice-details-api.js').AccountsReceivableInvoiceDetailFiltersOptions} AccountsReceivableInvoiceDetailFiltersOptions */
+/** @typedef {import('@/api/flight-reconciliations-api.js').FlightReconciliationFiltersOptions} FlightReconciliationFiltersOptions */
+
+/** @typedef {keyof AccountsReceivableInvoiceDetailFiltersOptions & keyof FlightReconciliationFiltersOptions} CommonFilterOptions */
+/** @typedef {Pick<AccountsReceivableInvoiceDetailFiltersOptions & FlightReconciliationFiltersOptions, CommonFilterOptions>} SyncWithTravComBtnFilterOptions */
+
+/** @type {{ filters: SyncWithTravComBtnFilterOptions }} */
 const props = defineProps({
   filters: {
     type: Object,
@@ -26,7 +35,14 @@ const props = defineProps({
 
 const emit = defineEmits(["synced"])
 
-const isLoading = ref(false)
+const accountsReceivableInvoiceDetailsQuery = computed(() => ({
+  filters: props.filters,
+  perPage: 1,
+}))
+const { totalCount, isLoading } = useAccountsReceivableInvoiceDetails(
+  accountsReceivableInvoiceDetailsQuery
+)
+
 const snack = useSnack()
 
 async function syncWithExternalDatabase() {
