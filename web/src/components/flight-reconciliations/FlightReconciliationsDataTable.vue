@@ -150,14 +150,12 @@ const headers = computed(() => {
     baseHeaders.push({
       text: "Reconciled",
       value: "reconciled",
-      sortable: false,
       align: "center",
     })
   } else if (props.reconciled === true) {
     baseHeaders.push({
       text: "Reconcile Period",
       value: "reconcilePeriod",
-      sortable: false,
     })
   } else if (props.unreconciled === true) {
     // don't add any headers
