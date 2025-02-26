@@ -1,8 +1,7 @@
 import { Attributes, WhereOptions } from "sequelize"
 import { isEmpty, isNil } from "lodash"
 
-import { AccountsReceivableInvoiceDetail } from "@/integrations/trav-com-integration/models"
-import { AccountsReceivableInvoiceDetails } from "@/integrations/trav-com-integration/serializers"
+import { TravComIntegration } from "@/integrations"
 
 import { FlightReconciliation, User } from "@/models"
 import { BaseScopeOptions } from "@/policies"
@@ -11,7 +10,7 @@ import { ModelOrder } from "@/controllers/base-controller"
 
 type AccountsReceivableInvoiceDetailQuery = {
   filters?: Record<string, unknown>
-  where?: WhereOptions<Attributes<AccountsReceivableInvoiceDetail>>
+  where?: WhereOptions<Attributes<TravComIntegration.Models.AccountsReceivableInvoiceDetail>>
   limit?: number
   offset?: number
   order?: ModelOrder[]
@@ -27,7 +26,8 @@ export class SyncService extends BaseService {
 
   async perform(): Promise<void> {
     const scopes = this.buildFilterScopes()
-    const scopedAccountsReceivableInvoiceDetails = AccountsReceivableInvoiceDetail.scope(scopes)
+    const scopedAccountsReceivableInvoiceDetails =
+      TravComIntegration.Models.AccountsReceivableInvoiceDetail.scope(scopes)
 
     const { where } = this.query
     const order = this.buildOrder()
@@ -44,9 +44,10 @@ export class SyncService extends BaseService {
         ],
       },
       async (accountsReceivableInvoiceDetail) => {
-        const serializedInvoiceDetail = AccountsReceivableInvoiceDetails.IndexSerializer.perform(
-          accountsReceivableInvoiceDetail
-        )
+        const serializedInvoiceDetail =
+          TravComIntegration.Serializers.AccountsReceivableInvoiceDetails.IndexSerializer.perform(
+            accountsReceivableInvoiceDetail
+          )
 
         const flightReconciliationAttributes = {
           invoiceBookingDate: serializedInvoiceDetail.invoiceBookingDate,
