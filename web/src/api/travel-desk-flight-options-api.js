@@ -1,6 +1,7 @@
 import http from "@/api/http-client"
 
 /** @typedef {import('@/api/base-api.js').Policy} Policy */
+/** @typedef {import("@/api/base-api").ModelOrder} ModelOrder */
 
 export const DOES_NOT_WORK = 0
 
@@ -42,6 +43,7 @@ export const DOES_NOT_WORK = 0
  *   filters?: TravelDeskFlightOptionFiltersOptions;
  *   page?: number;
  *   perPage?: number
+ *   order?: ModelOrder[];
  * }} TravelDeskFlightOptionsQueryOptions
  */
 

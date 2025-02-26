@@ -95,7 +95,7 @@ import RequestTypeSelect from "@/components/travel-desk-questions/RequestTypeSel
 const emit = defineEmits(["saved"])
 
 const travelDeskQuestionId = useRouteQuery("showQuestionEdit", undefined, {
-  transformer: integerTransformerLegacy,
+  transform: integerTransformerLegacy,
 })
 
 const { travelDeskQuestion, isLoading } = useTravelDeskQuestion(travelDeskQuestionId)

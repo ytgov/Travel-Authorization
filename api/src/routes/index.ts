@@ -3,12 +3,15 @@ import { DatabaseError } from "sequelize"
 
 import logger from "@/utils/logger"
 import { GIT_COMMIT_HASH, RELEASE_TAG } from "@/config"
+import { TravComIntegration } from "@/integrations"
 import { databaseHealthCheckMiddleware, jwtMiddleware, authorizationMiddleware } from "@/middleware"
 import { healthCheckRouter } from "@/routes/healthcheck-router"
 import {
   CurrentUserController,
   Expenses,
   ExpensesController,
+  FlightReconciliations,
+  FlightReconciliationsController,
   GeneralLedgerCodingsController,
   LocationsController,
   PerDiemsController,
@@ -43,7 +46,6 @@ import { userRouter } from "./users-router"
 import { preapprovedRouter } from "./preapproved-router"
 import { travelDeskRouter } from "./traveldesk-router"
 import { travComRouter } from "./travCom-router"
-import { reconcileRouter } from "./reconcile-router"
 import { lookupRouter } from "./lookup-router"
 import { lookupTableRouter } from "./lookup-tables-router"
 //// END LEGACY IMPORTS
@@ -78,7 +80,6 @@ router.use("/api/preapproved", preapprovedRouter)
 router.use("/api/traveldesk", travelDeskRouter)
 
 router.use("/api/travCom", travComRouter)
-router.use("/api/reconcile", reconcileRouter)
 //// END MORE LEGACY ROUTES
 
 router.route("/api/current-user").get(CurrentUserController.show)
@@ -92,6 +93,14 @@ router
   .route("/api/expenses/:expenseId/upload")
   .get(Expenses.UploadController.show)
   .post(Expenses.UploadController.create)
+
+router.route("/api/flight-reconciliations").get(FlightReconciliationsController.index)
+router.route("/api/flight-reconciliations/sync").post(FlightReconciliations.SyncController.create)
+router
+  .route("/api/flight-reconciliations/:flightReconciliationId")
+  .get(FlightReconciliationsController.show)
+  .patch(FlightReconciliationsController.update)
+  .delete(FlightReconciliationsController.destroy)
 
 router.route("/api/per-diems").get(PerDiemsController.index)
 router
@@ -278,6 +287,11 @@ router
 router
   .route("/api/travel-authorization-action-logs")
   .get(TravelAuthorizationActionLogsController.index)
+
+// TravCom Integration
+router
+  .route("/api/trav-com/accounts-receivable-invoice-details")
+  .get(TravComIntegration.Controllers.AccountsReceivableInvoiceDetailsController.index)
 
 // QA testing scenarios
 router.route("/api/qa/scenarios").get(Qa.ScenariosController.index)

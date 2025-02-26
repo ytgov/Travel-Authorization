@@ -127,7 +127,7 @@ import TravelDeskFlightSegmentAttributesCard from "@/components/travel-desk-flig
 const emit = defineEmits(["saved"])
 
 const travelDeskFlightOptionId = useRouteQuery("showFlightOptionEdit", undefined, {
-  transformer: integerTransformerLegacy,
+  transform: integerTransformerLegacy,
 })
 
 const { travelDeskFlightOption, isLoading } = useTravelDeskFlightOption(travelDeskFlightOptionId)

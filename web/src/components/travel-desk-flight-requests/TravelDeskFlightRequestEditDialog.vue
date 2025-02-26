@@ -156,7 +156,7 @@ defineProps({
 const emit = defineEmits(["saved"])
 
 const travelDeskFlightRequestId = useRouteQuery("showFlightRequestEdit", undefined, {
-  transformer: integerTransformerLegacy,
+  transform: integerTransformerLegacy,
 })
 
 const { travelDeskFlightRequest, isLoading } = useTraveDeskFlightRequest(travelDeskFlightRequestId)

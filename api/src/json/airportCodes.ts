@@ -1,3 +1,4 @@
+/** @deprecated - prefer api/src/integrations/trav-com-integration/models/city.ts */
 export const airports = [
     {
       "name": "Anaa Airport",

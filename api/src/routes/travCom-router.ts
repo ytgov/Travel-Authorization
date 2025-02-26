@@ -13,42 +13,6 @@ const db = knex(TRAVCOM_DB_CONFIG)
 
 export const travComRouter = express.Router()
 
-travComRouter.get("/ARInvoices", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoicesNoHealth").select()
-  res.status(200).json({ data: result })
-})
-
-travComRouter.get("/ARInvoices/:id", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoicesNoHealth").where({ InvoiceID: req.params.id }).select()
-  res.status(200).json({ data: result })
-})
-
-travComRouter.get("/ARInvoiceDetails", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.ARInvoiceDetailsNoHealth").select()
-  res.status(200).json({ data: result })
-})
-
-travComRouter.get(
-  "/ARInvoiceDetails/:id",
-  RequiresAuth,
-  async function (req: Request, res: Response) {
-    const result = await db("dbo.ARInvoiceDetailsNoHealth")
-      .where({ InvoiceID: req.params.id })
-      .select()
-    res.status(200).json({ data: result })
-  }
-)
-
-travComRouter.get("/segments", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.segmentsNoHealth").select()
-  res.status(200).json({ data: result })
-})
-
-travComRouter.get("/segments/:id", RequiresAuth, async function (req: Request, res: Response) {
-  const result = await db("dbo.segmentsNoHealth").where({ InvoiceID: req.params.id }).select()
-  res.status(200).json({ data: result })
-})
-
 travComRouter.get(
   "/itinerary/:InvoiceNumber",
   RequiresAuth,
@@ -103,102 +67,6 @@ travComRouter.get(
     }
 
     res.status(200).json(result)
-  }
-)
-
-travComRouter.get(
-  "/flights/:start/:end",
-  RequiresAuth,
-  async function (req: Request, res: Response) {
-    const startDate = req.params.start + "T00:00:00Z"
-    const endDate = req.params.end + "T00:00:00Z"
-
-    const invoices = await db("dbo.ARInvoicesNoHealth")
-      .where("BookingDate", ">=", startDate)
-      .where("BookingDate", "<=", endDate)
-      .select()
-
-    const results: any[] = []
-    let ctt = 0
-    for (const invoice of invoices) {
-      const InvoiceID = invoice.InvoiceID
-      //TODO Only 1000 records
-      ctt++
-      if (ctt > 1000) break
-
-      const details = await db("dbo.ARInvoiceDetailsNoHealth")
-        .where({ InvoiceID: InvoiceID })
-        .select()
-      const unsortedSegments = await db("dbo.segmentsNoHealth")
-        .where({ InvoiceID: InvoiceID })
-        .select()
-      if (!unsortedSegments || unsortedSegments.length == 0) continue
-
-      const segments = unsortedSegments.sort((a: any, b: any) =>
-        a.DepartureInfo >= b.DepartureInfo ? 1 : -1
-      )
-
-      const detailedSegments: any = {}
-      for (const segment of segments) {
-        if (!detailedSegments[segment.InvoiceDetailID])
-          detailedSegments[segment.InvoiceDetailID] = []
-        detailedSegments[segment.InvoiceDetailID].push(segment)
-      }
-
-      const detail = details.filter((detail: any) => detail.ProductCode == 18)[0]
-      const agent = detail ? detail.VendorName : ""
-
-      for (const invoiceDetailID of Object.keys(detailedSegments)) {
-        const invoiceDetail = details.filter(
-          (detail: any) => detail.InvoiceDetailID == invoiceDetailID
-        )[0]
-        if (!invoiceDetail) continue
-
-        const flightInfo: string[] = []
-        let lastLegCity = ""
-
-        for (const segment of detailedSegments[invoiceDetailID]) {
-          const arrAirport = airports.filter(
-            (airport) => airport.iata_code == segment.ArrivalCityCode
-          )
-          lastLegCity = arrAirport[0]?.municipality ? arrAirport[0].municipality : ""
-          const flight = segment.AirlineCode + Number(segment.FlightNumber) + " " + lastLegCity
-          flightInfo.push(flight)
-        }
-
-        const flightReconcile = await dbLegacy("flightReconciliation")
-          .select("reconciled")
-          .where("invoiceDetailID", invoiceDetailID)
-          .first()
-
-        const name = invoiceDetail.PassengerName.split("/")
-          .join(",")
-          .split(" ")
-          .join(",")
-          .split(",")
-
-        const result = {
-          invoiceDetailID: invoiceDetailID,
-          invoiceID: InvoiceID,
-          cost: invoiceDetail.SellingFare,
-          agent: agent,
-          purchaseDate: invoice.BookingDate,
-          airline: invoiceDetail.VendorName,
-          flightInfo: flightInfo.join(","),
-          finalDestination: lastLegCity,
-          dept: invoice.Department,
-          travelerFirstName: name[1],
-          travelerLastName: name[0],
-          reconciled: flightReconcile ? flightReconcile.reconciled : false,
-          reconcileID: flightReconcile ? flightReconcile.reconcileID : null,
-          reconcilePeriod: flightReconcile ? flightReconcile.reconcilePeriod : null,
-        }
-
-        results.push(result)
-      }
-    }
-
-    res.status(200).json(results)
   }
 )
 
@@ -337,8 +205,8 @@ travComRouter.get("/update-statistics", RequiresAuth, async function (req: Reque
     record.finalDestinationProvince = destination[0]
       ? destination[0].province
       : arrAirport[0]
-      ? arrAirport[0].iso_country
-      : ""
+        ? arrAirport[0].iso_country
+        : ""
 
     record.averageDurationDays = record.days / record.totalTrips
     record.averageExpensesPerDay = record.totalExpenses / record.days
